@@ -1,0 +1,6 @@
+div(class="accounts")
+  ul(class="tabs cf", data-bind="foreach:list")
+    li(class="tab")
+      a(data-bind="click:$parent.clickItem,active:active,text:title")
+  div(data-bind="foreach:list")
+    div(data-bind="template:viewTmpl")

@@ -1,0 +1,10 @@
+div(class="login", data-bind="swapLoginFields:1")
+  h2(class="logo") Security Sciences
+  div(class="form")
+    h1(class="title", data-bind="text:title")
+    //- placeholder for login form --)
+    span(class="ph-loginform")
+    div(class="helper-actions")
+      input(type="checkbox", id="remember", data-bind="checked:rememberMe", class="remember")
+      label(for="remember") Remember me
+      a(data-bind="click:clickForgot", class="btn-forgot") Forgot your password?

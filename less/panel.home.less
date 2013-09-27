@@ -1,0 +1,68 @@
+.panels .home {
+  ul li {
+    a:before {
+      content:'';
+      display: block;
+      width: 24px;
+      height: 24px;
+      font-family: 'SecuritySciences';
+      font-size: 24px;
+      position: absolute;
+      top: 15px;
+      left: 15px;
+    }
+    &.home a:before {
+      content: "\e007";
+    }
+    &.car-nav a:before {
+      content: "\e002";
+    }
+    &.bracelet a:before {
+      content: "\e008";
+    }
+    &.phone a:before {
+      content: "\e009";
+    }
+    &.child a:before {
+      content: "\e00a";
+    }
+    &.pet a:before {
+      content: "\e00b";
+    }
+    &.car a:before {
+      content: "\e00c";
+    }
+    &.watch a:before {
+      content: "\e00d";
+    }
+  }
+  .content ul li {
+    border-bottom: 0px solid transparent;
+    color: rgba(255,255,255,0.75);
+    cursor: default;
+    padding: 0;
+    &:before {
+      content: '';
+    }
+    a:active:before,
+    a:active,
+    a:active a,
+    a:active .sub {
+      color: @site-blue;
+    }
+    a {
+      display: block;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.75);
+      cursor: pointer;
+      padding: 20px 20px 20px 50px;
+      font-weight: 300;
+      position: relative;
+    }
+    a:active,
+    &:hover a:active {
+      background: white;
+      .transition(0s);
+    }
+  }
+}

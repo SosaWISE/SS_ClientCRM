@@ -1,0 +1,45 @@
+!!! HTML5
+html
+  head
+    title Security Sciences
+    meta(http-equiv='X-UA-Compatible', content='IE=Edge,chrome=1')
+    meta(http-equiv='content-type', content='text/html; charset=utf-8')
+    link(href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,300', rel='stylesheet', type='text/css')
+    link(rel="stylesheet", type='text/css', media='screen', href="index.css")
+  body
+    div(id="main")
+      div(style="display:none;", id="login-container", data-bind="with:login")
+        div(data-bind="template:viewTmpl", id="login-view")
+
+      div(style="display:none;", id="site-container")
+        nav(class="primary")
+          //- home
+          a(href="#" class="logo")
+            span(class="ico")
+            h1(class="txt") &nbps;
+
+          //- panels
+          <!-- ko foreach:panels -->
+          div(data-bind="active:active")
+            a(data-bind="attr:{href:'#/'+id,'class':id}")
+              div(data-bind="visible:active")
+                div(class="indicator")
+              span(class="ico", data-bind="html:ico")
+              span(class="txt", data-bind="text:name")
+          <!-- /ko -->
+
+        div(class="wrap")
+          div(class="panels", data-bind="foreach:panels")
+            div(data-bind="active:active")
+              div(data-bind="template:viewTmpl,attr:{id:id+'-view','class':'view sidebar '+id}")
+
+      div(data-bind="template:{name:'tmpl-notices',data:notify}")
+
+    //- Insert templates here
+    div(style="display:none")
+      include ./jade/_all
+
+    //- START Script References.
+    script(src="/js/requirejsConfig.js")
+    script(data-main="bootstrapper", src="/js/lib/require.js")
+    //-   END Script References.

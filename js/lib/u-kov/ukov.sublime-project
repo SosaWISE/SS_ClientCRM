@@ -1,0 +1,23 @@
+{
+  "folders": [
+    {
+      "path": "./"
+    }
+  ],
+  "settings": {
+    "tab_size": 2,
+    "translate_tabs_to_spaces": true,
+    "trim_automatic_white_space": true,
+    "ensure_newline_at_eof_on_save": true
+  },
+  "build_systems": [
+    {
+      "name": "Project",
+      "cmd": ["grunt", "--no-color", "test"]
+    },
+    {
+      "name": "ProjectTest",
+      "cmd": ["grunt", "--no-color", "test"]
+    }
+  ]
+}

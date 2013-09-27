@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Jasmine Spec Runner</title>
+
+	<link rel="stylesheet" type="text/css" href="specs/lib/jasmine.css">
+
+	<script src="specs/lib/phantom-polyfill.js"></script>
+	<script src="specs/lib/jasmine.js"></script>
+	<script src="specs/lib/jasmine-html.js"></script>
+
+	<script>
+		var require = {
+			// by default load any module from this path
+			baseUrl: './src',
+			// defines where each is located. does NOT load/require them
+			paths: {
+				jquery: '../../../lib/jquery-1.7.2',
+				ko: '../../../lib/knockout',
+			},
+		};
+	</script>
+	<script data-main="../allspecs" src="../../lib/require.js"></script>
+
+	<script src="specs/lib/reporter.js"></script>
+
+</head>
+<body>
+</body>
+</html>

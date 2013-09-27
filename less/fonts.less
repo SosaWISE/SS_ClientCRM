@@ -1,0 +1,19 @@
+// mixin
+.font-face(@fnt) {
+  font-family: '@{fnt}';
+  src:url('../fonts/@{fnt}.eot');
+  src:url('../fonts/@{fnt}.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/@{fnt}.woff') format('woff'),
+    url('../fonts/@{fnt}.ttf') format('truetype'),
+    url('../fonts/@{fnt}.svg#@{fnt}') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+// define fonts
+@font-face {
+  .font-face('entypo')
+}
+@font-face {
+  .font-face('SecuritySciences')
+}

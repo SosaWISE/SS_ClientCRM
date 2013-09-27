@@ -1,0 +1,66 @@
+nav.primary {
+  background-color: rgba(0,0,0,.75);
+  position: fixed;
+  top:0;right:0;bottom:0;left:0;
+  width: 80px;
+  padding: 12px 10px;
+
+  .active a {
+    color: inherit;
+  }
+  :not(.active) a:hover .ico,
+  :not(.active) a:hover .txt {
+    color: rgba(255,255,255,.5);
+  }
+  a {
+    color: rgba(255,255,255,.25);
+    position: relative;
+    display: block;
+    width: 60px;
+    margin: 0 0 10px 0;
+
+    &.settings {
+      position: absolute;
+      bottom: 0px;
+      left: 10px;
+    }
+    &.logo .ico {
+      width: 32px;
+      height: 32px;
+      background: url(../img/logo-ico.png) no-repeat;
+      margin: 10px auto;
+    }
+    &.logo .txt {
+      overflow: hidden;
+      width: 0;
+      height: 0;
+      text-indent: -99999px;
+    }
+
+    .ico {
+      display: block;
+      width: 60px;
+      text-align: center;
+      font-family: 'entypo';
+      font-size: 30px;
+      line-height: 1.3em;
+    }
+    .txt {
+      display: block;
+      text-align: center;
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+  }
+
+  .indicator {
+    position: absolute;
+    top: 15px;
+    right: -10px;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-right-color: inherit;
+  }
+}

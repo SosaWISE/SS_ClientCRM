@@ -1,0 +1,19 @@
+.accounts {
+  .account {
+    color: white;
+    overflow: auto;
+    position: absolute;
+    top:38px;
+    right:0;
+    bottom:0;
+    left:0;
+
+    .transition(.5s);
+    opacity: 0;
+    visibility: hidden;
+    &.active {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
