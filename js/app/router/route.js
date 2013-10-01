@@ -164,7 +164,7 @@ define([], function() {
     if (!route.controller.loaded()) {
       // store the subscription to loaded
       route.onLoaded = route.controller.loaded.subscribe(activateController);
-      route.controller.load();
+      route.controller.load(routeData);
     } else {
       activateController();
     }

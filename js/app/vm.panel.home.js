@@ -15,7 +15,7 @@ define([
   }
   utils.inherits(HomePanelViewModel, ControllerViewModel);
 
-  HomePanelViewModel.prototype.onLoad = function(cb) { // overrides base
+  HomePanelViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
     cb(false);
 
     var _this = this;

@@ -15,7 +15,7 @@ define([
   }
   utils.inherits(PanelViewModel, ControllerViewModel);
 
-  PanelViewModel.prototype.onLoad = function(cb) { // overrides base
+  PanelViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
     cb(false);
   };
   PanelViewModel.prototype.onActivate = function() { // overrides base

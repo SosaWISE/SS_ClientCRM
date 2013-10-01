@@ -34,15 +34,13 @@
   }
 
 
-  // active
+  // toggle classes
   //---------------------------
   createToggleClassHandler('active');
-  // editing
-  //---------------------------
   createToggleClassHandler('editing');
-  // disabled
-  //---------------------------
   createToggleClassHandler('cssDisabled', 'disabled');
+  createToggleClassHandler('fullheight');
+  createToggleClassHandler('fullwidth');
 
   // swapLoginFields
   //---------------------------

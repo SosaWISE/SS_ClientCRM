@@ -1,6 +1,13 @@
 div(class="accounts")
-  ul(class="tabs cf", data-bind="foreach:list")
+  ul(class="tabs cf")
+    li(class="tab")
+      a(data-bind="click:clickSearch,active:searchVM.active") Search
+    <!-- ko foreach:list -->
     li(class="tab")
       a(data-bind="click:$parent.clickItem,active:active,text:title")
-  div(data-bind="foreach:list")
+    <!-- /ko -->
+  div
+    div(data-bind="template:{name:searchVM.viewTmpl,data:searchVM}")
+    <!-- ko foreach:list -->
     div(data-bind="template:viewTmpl")
+    <!-- /ko -->

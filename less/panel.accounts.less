@@ -1,7 +1,7 @@
 .accounts {
   .account {
     color: white;
-    overflow: auto;
+    overflow: hidden;
     position: absolute;
     top:38px;
     right:0;
@@ -14,6 +14,158 @@
     &.active {
       opacity: 1;
       visibility: visible;
+    }
+  }
+
+  .details {
+    overflow: auto;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 200px;
+    bottom: 200px;
+    transition: bottom .5s, right .5s;
+    &.fullheight {
+      bottom: 20px;
+    }
+    &.fullwidth {
+      right: 20px;
+    }
+
+    .col {
+      float:left;
+      width: 33%;
+      padding-right: 20px;
+    }
+
+    .module {
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+      margin-top: 20px;
+
+      .title {
+        font-size: 1.1em;
+        font-weight: 500;
+      }
+      .contents {
+        color: #222;
+        background-color: #ddd;
+        padding: 10px;
+
+        .userinfo {
+          min-height: 85px;
+          .img {
+            width: 80px;
+            height: 80px;
+            float:left;
+            margin-right: 5px;
+            background-repeat: no-repeat;
+          }
+        }
+
+        span {
+          display: block;
+          &:before {
+            font-weight: 500;
+          }
+        }
+        .name {
+          font-weight: 500;
+        }
+        .mobile:before {
+          content: "M: ";
+        }
+        .work:before {
+          content: "W: ";
+        }
+        .home:before {
+          content: "H: ";
+        }
+        .email:before {
+          content: "E: ";
+        }
+
+        .credit-score {
+          width: 100%;
+          text-align: center;
+          font-weight: 500;
+          padding: 5px;
+
+          > span {
+            padding: 5px;
+            margin-left: auto;
+            margin-right: auto;
+          }
+
+          .excellent {
+            background-color: green;
+          }
+        }
+      }
+
+      &.empty {
+        .border-radius(25px);
+        border-width: 4px;
+        border-style: dashed;
+        border-color: #FFFFFF;
+        height: 150px;
+        text-align: center;
+        .title {
+          line-height: 140px;
+          font-size: 1.5em;
+          font-weight: 500;
+        }
+        .contents {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .notes {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 200px;
+    transition: bottom .5s;
+    &.fullheight {
+      bottom: -180px;
+    }
+    .title {
+      margin-left: 20px;
+      cursor: pointer;
+    }
+    .contents {
+      background: white;
+      position: absolute;
+      left: 5px;
+      top: 20px;
+      right: 5px;
+      bottom: 5px;
+    }
+  }
+
+  .rep {
+    position: absolute;
+    top: 0;
+    // left: 0;
+    right: 0;
+    bottom: 0;
+    width: 200px;
+    transition: right .5s;
+    &.fullwidth {
+      right: -180px;
+    }
+
+    .vertical-title {
+      .transform(rotate(90deg));
+      .transform-origin(0px 100% 0px);
+    }
+    .title {
+      // margin-left: 20px;
+      cursor: pointer;
     }
   }
 }

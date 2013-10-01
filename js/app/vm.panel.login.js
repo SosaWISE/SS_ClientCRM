@@ -78,7 +78,7 @@ define([
   // members
   //
 
-  LoginViewModel.prototype.onLoad = function(cb) { // override me
+  LoginViewModel.prototype.onLoad = function(routeData, cb) { // override me
     cb(false);
   };
   LoginViewModel.prototype.onActivate = function(routeData) {

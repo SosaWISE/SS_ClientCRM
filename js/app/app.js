@@ -61,7 +61,7 @@ define([
   });
 
   //
-  router.addRoute(app.panelMap.accounts, 'accounts', '', {});
+  router.addRoute(app.panelMap.accounts, 'accounts', ':id/:action', {});
   router.addRoute(app.panelMap.home, 'home', '', {});
 
   return app;

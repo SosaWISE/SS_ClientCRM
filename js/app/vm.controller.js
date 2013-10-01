@@ -53,7 +53,8 @@ define([
     var result;
     if (this.list) {
       this.list().some(function(item) {
-        if (item.id === id) {
+        /* jshint eqeqeq:false */
+        if (item.id == id) {
           result = item;
           return result;
         }
@@ -83,9 +84,6 @@ define([
     $('title').text(parts.join(' '));
   };
   ControllerViewModel.prototype.onActivate = function(routeData) { // overrides base
-    // // ensure nothing else is active
-    // this.onDeactivate();
-
     var child = this.findChild(routeData[this.childName]);
     if (!child) {
       this.removeExtraRouteData(routeData);
@@ -106,14 +104,14 @@ define([
     }
   };
 
-  ControllerViewModel.prototype.load = function() {
+  ControllerViewModel.prototype.load = function(routeData) {
     var _this = this;
     if (_this.loaded() || _this.loading()) {
       return;
     }
 
     _this.loading(true);
-    _this.onLoad(function(loadChilds) {
+    _this.onLoad(routeData, function(loadChilds) {
       var list = loadChilds ? _this.list() : null,
         cbCount = list ? list.length : 0;
 
@@ -145,7 +143,7 @@ define([
       }
     });
   };
-  ControllerViewModel.prototype.onLoad = function(cb) { // override me
+  ControllerViewModel.prototype.onLoad = function(routeData, cb) { // override me
     cb(true);
   };
 

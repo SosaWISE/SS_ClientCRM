@@ -1,3 +1,61 @@
 div(class="account", data-bind="active:active")
-  div Account
-  div(data-bind="text:title")
+  //- div(data-bind="if:true")
+    div(class="white", data-bind="template:'tmpl-spinner'")
+
+  div(class="details", data-bind="fullheight:hideNotes,fullwidth:hideRep")
+    div Account
+    div(data-bind="text:title")
+
+    div(class="col")
+      //- div(class="module")
+      //-   span(class="title") title goes here
+      //-   div(class="contents") contents go here
+
+      div(class="module")
+        span(class="title") Contract Owner
+        div(class="contents")
+          div(class="userinfo")
+            span(class="img", style="background-image:url(https://secure.gravatar.com/avatar/f47bda756ab7abfaeb7b5e1b59d5edc9?s=80&r=pg&d=https%3A%2F%2Fkanbanflow.com%2Fimg%2Fgd.png);")
+            span(class="name") Andres Sosa
+            span(class="address") 1573 N Technology Way
+            span(class="address") Suite 1100, Bldg A
+            span(class="address") Orem, UT 84057
+          span(class="phone mobile") (801) 822-9323
+          span(class="phone work") (801) 822-7862
+          span(class="phone home") (801) 226-7067
+          span(class="email") asosa@securitysciences.com
+          div(class="credit-score")
+            span(class="excellent") Credit Score: TU Excellent
+      div(class="module empty")
+        span(class="title") Shipping Address
+        div(class="contents") contents go here
+
+    div(class="col")
+      div(class="module empty")
+        span(class="title") System Information
+        div(class="contents") contents go here
+      div(class="module empty")
+        span(class="title") Monitored Party
+        div(class="contents") contents go here
+      div(class="module empty")
+        span(class="title") Premise Address
+        div(class="contents") contents go here
+
+    div(class="col")
+      div(class="module empty")
+        span(class="title") Billing Information
+        div(class="contents") contents go here
+      div(class="module empty")
+        span(class="title") Billing History
+        div(class="contents") contents go here
+
+
+  div(class="notes", data-bind="fullheight:hideNotes")
+    span(class="title", data-bind="click:clickToggleNotes") Notes & History:
+    div(class="contents") contents go here
+
+  div(class="rep", data-bind="fullwidth:hideRep")
+    div(class="vertical-title")
+      span(class="title", data-bind="click:clickToggleRep") Sales Rep & Technician
+    div(class="contents")
+      //- span contents go here
