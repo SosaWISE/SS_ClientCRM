@@ -1,6 +1,6 @@
 define([
   'notify',
-  'utils',
+  'util/utils',
   'vm.controller',
   'vm.account.search',
   'vm.account.new',

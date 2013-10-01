@@ -1,6 +1,10 @@
-define([], function() {
+define([
+  'util/strings'
+], function(
+  strings
+) {
   "use strict";
-  /* jshint eqnull:true, unused:false */
+  /* jshint eqnull:true */
 
   var validators = {},
     notString = 'Value is not a string',
@@ -8,7 +12,8 @@ define([], function() {
     notInt = 'Value is not an int',
     notFloat = 'Value is not a float',
     // , notDate = 'Value is not a date',
-    notInRange = 'Value is not in specified range',
+    notInRange = 'Value is not between {0} and {1}',
+    maxLength = 'Value is more than {0} letters',
     notPattern = 'Value does not match specified pattern',
     valRequired = 'Value is required',
     passwordMsg = 'A password must be atleast 6 or more letters and contain at least one upper case letter, one lower case letter and one digit.',
@@ -18,8 +23,8 @@ define([], function() {
 
   validators.isString = function(message) {
     message = message || notString;
-    return function getStringErrMsg(val, model) {
-      if (val == null) { // if null or undefined, return undefined
+    return function(val /*, model*/ ) {
+      if (val == null) {
         return;
       }
       if (typeof(val) !== 'string') {
@@ -29,8 +34,8 @@ define([], function() {
   };
   validators.isBool = function(message) {
     message = message || notBool;
-    return function getBoolErrMsg(val, model) {
-      if (val == null) { // if null or undefined, return undefined
+    return function(val /*, model*/ ) {
+      if (val == null) {
         return;
       }
       if (typeof(val) !== 'boolean') {
@@ -40,8 +45,8 @@ define([], function() {
   };
   validators.isInt = function(message) {
     message = message || notInt;
-    return function getIntErrMsg(val, model) {
-      if (val == null) { // if null or undefined, return undefined
+    return function(val /*, model*/ ) {
+      if (val == null) {
         return;
       }
       // if (parseInt(val, 10) !== parseFloat(val)) {
@@ -52,8 +57,8 @@ define([], function() {
   };
   validators.isFloat = function(message) {
     message = message || notFloat;
-    return function getFloatErrMsg(val, model) {
-      if (val == null) { // if null or undefined, return undefined
+    return function(val /*, model*/ ) {
+      if (val == null) {
         return;
       }
       if (typeof(val) !== 'number') {
@@ -64,8 +69,8 @@ define([], function() {
   };
   // validators.isDate = function(message) {
   // 	message = message || notDate;
-  // 	return function getDateErrMsg(val, model) {
-  // 		if (val == null) { // if null or undefined, return undefined
+  // 	return getDateErrMsg(val/*, model*/) {
+  // 		if (val == null) {
   // 			return;
   // 		}
   // 		if (true) { //@TODO:
@@ -76,20 +81,31 @@ define([], function() {
 
   validators.isInRange = function(min, max, message) {
     message = message || notInRange;
-    return function getRangeErrMsg(val, model) {
-      if (val == null) { // if null or undefined, return undefined
+    return function(val /*, model*/ ) {
+      if (val == null) {
         return;
       }
       // val = parseFloat(val);
       if (val < min || max < val) {
-        return message;
+        return strings.format(message, min, max);
+      }
+    };
+  };
+  validators.maxLength = function(max, message) {
+    message = message || maxLength;
+    return function(val /*, model*/ ) {
+      if (val == null) {
+        return;
+      }
+      if (max < val.length) {
+        return strings.format(message, max);
       }
     };
   };
   validators.isPattern = function(regex, message) {
     message = message || notPattern;
-    return function getPatternErrMsg(val, model) {
-      if (val == null) { // if null or undefined, return undefined
+    return function(val /*, model*/ ) {
+      if (val == null) {
         return;
       }
       if (!regex.test(val)) {
@@ -100,7 +116,7 @@ define([], function() {
 
   validators.isRequired = function(message) {
     message = message || valRequired;
-    return function getRequiredErrMsg(val, model) {
+    return function(val /*, model*/ ) {
       if (!val && val !== 0) {
         return message;
       }
@@ -109,8 +125,8 @@ define([], function() {
 
   validators.isPassword = function(message) {
     message = message || passwordMsg;
-    return function getRequiredErrMsg(val, model) {
-      if (val == null) { // if null or undefined, return undefined
+    return function(val /*, model*/ ) {
+      if (val == null) {
         return;
       }
       if (!passwordRegex.test(val) || val.length < 6) {

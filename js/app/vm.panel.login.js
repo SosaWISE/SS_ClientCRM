@@ -2,7 +2,7 @@ define([
   'notify',
   'util/strings',
   'ko',
-  'utils',
+  'util/utils',
   'vm.controller',
   'dataservice',
   'router/router',

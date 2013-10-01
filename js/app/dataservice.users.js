@@ -1,5 +1,5 @@
 define([
-  'utils',
+  'util/utils',
   'dataservice.base',
   'config'
 ], function(

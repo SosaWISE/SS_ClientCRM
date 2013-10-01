@@ -1,6 +1,6 @@
 define([
   'notify',
-  'utils',
+  'util/utils',
   'vm.base',
   'ko'
 ], function(

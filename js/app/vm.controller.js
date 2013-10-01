@@ -1,7 +1,7 @@
 define([
   'jquery',
   'config',
-  'utils',
+  'util/utils',
   'ko',
   'vm.base',
 ], function(

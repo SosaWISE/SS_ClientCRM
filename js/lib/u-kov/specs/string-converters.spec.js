@@ -74,5 +74,53 @@ define([
         expect(precision5Converter('10.2')).toBe(10.2);
       });
     });
+
+    describe('phone converter', function() {
+      var converter = converters.phone();
+
+      it('should always return expected output when valid', function() {
+        var expected = '(123) 123-1234';
+        expect(converter('1231231234')).toBe(expected);
+        expect(converter('(123)123-1234')).toBe(expected);
+        expect(converter('123.123.1234')).toBe(expected);
+      });
+      it('should return Error when invalid', function() {
+        expect(converter('123123123') instanceof Error).toBe(true);
+        expect(converter('(23)123-1234') instanceof Error).toBe(true);
+        expect(converter('123.23.1234') instanceof Error).toBe(true);
+        expect(converter('asdf') instanceof Error).toBe(true);
+      });
+    });
+
+    describe('date converter', function() {
+      var converter = converters.date('MM/DD/YYYY', false);
+
+      it('should always return expected output when valid', function() {
+        var expected = '09/04/1982';
+        expect(converter(expected)).toBe(expected);
+        expect(converter('9/4/1982')).toBe(expected);
+        expect(converter('sep 4 1982')).toBe(expected);
+        expect(converter('Sep 4 1982')).toBe(expected);
+        expect(converter('4 sep 1982')).toBe(expected);
+        expect(converter('4 Sep 1982')).toBe(expected);
+      });
+      it('should use 2000\'s when 49 and below is entered', function() {
+        expect(converter('Sep 4 49')).toBe('09/04/2049');
+        expect(converter('Sep 4 0')).toBe('09/04/2000');
+      });
+      it('should use 1900\'s when year 50 and up is entered', function() {
+        expect(converter('Sep 4 50')).toBe('09/04/1950');
+        expect(converter('Sep 4 99')).toBe('09/04/1999');
+      });
+
+      it('should return Error when invalid', function() {
+        expect(converter('Sep 4 100') instanceof Error).toBe(true);
+        expect(converter('4 Frog 1982') instanceof Error).toBe(true);
+        expect(converter('4 1982') instanceof Error).toBe(true);
+      });
+      it('should return Error when no day is specified', function() {
+        expect(converter('Sep 1982') instanceof Error).toBe(true);
+      });
+    });
   });
 });
