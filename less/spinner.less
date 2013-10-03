@@ -45,9 +45,22 @@
   .rotation((-135deg + (@n * 45)));
 }
 
+.spinner-wrap {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
 .spinner {
-  position:relative;
-  width:42px;
+  @width:42px;
+
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: (@width/2) * -1;
+  margin-top: (@width/2) * -1;
+  display: block;
+
+  width:@width;
   height:52px;
 
   .bar {

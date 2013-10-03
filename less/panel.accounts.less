@@ -1,3 +1,19 @@
+
+.info {
+  .mobile:before {
+    content: "M: ";
+  }
+  .work:before {
+    content: "W: ";
+  }
+  .home:before {
+    content: "H: ";
+  }
+  .email:before {
+    content: "E: ";
+  }
+}
+
 .accounts {
   .account {
     color: white;
@@ -63,7 +79,6 @@
             background-repeat: no-repeat;
           }
         }
-
         span {
           display: block;
           &:before {
@@ -72,18 +87,6 @@
         }
         .name {
           font-weight: 500;
-        }
-        .mobile:before {
-          content: "M: ";
-        }
-        .work:before {
-          content: "W: ";
-        }
-        .home:before {
-          content: "H: ";
-        }
-        .email:before {
-          content: "E: ";
         }
 
         .credit-score {

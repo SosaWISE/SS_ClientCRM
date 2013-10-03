@@ -87,5 +87,5 @@ define([
     this.post('RunCredit', data, cb);
   };
 
-  return new QualifyDataservice();
+  return QualifyDataservice;
 });

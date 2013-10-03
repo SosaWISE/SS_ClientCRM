@@ -21,21 +21,30 @@ define([
       /^([0-9]{1,2} \w+ )([0-9]{1,2})$/, // DD MMM YY
     ];
 
+  function trim(text) {
+    if (text) {
+      text = (text + '').replace(/^\s+|\s+$/g, '');
+    } else {
+      text = null;
+    }
+    return text;
+  }
+
+
   converters.string = function() {
     return function convString(val) {
       return trim(val);
     };
   };
-
-  function trim(text) {
-    if (text) {
-      text = (text + '').replace(/^\s+|\s+$/g, '');
-    } else {
-      text = '';
-    }
-    return text;
-  }
-
+  converters.toUpper = function() {
+    return function convString(val) {
+      val = trim(val);
+      if (val) {
+        val = trim(val).toUpperCase();
+      }
+      return val;
+    };
+  };
   converters.bool = function() {
     return function convBool(val) {
       val = val.toLowerCase();
@@ -109,7 +118,6 @@ define([
       }
     };
   };
-
   converters.phone = function(outputFormat) {
     outputFormat = outputFormat || '({0}) {1}-{2}';
     return function convPhone(val) {

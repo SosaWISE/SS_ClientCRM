@@ -22,5 +22,5 @@ define([
     this.post('UsersRead', data, cb);
   };
 
-  return new DataserviceEvents();
+  return DataserviceEvents;
 });

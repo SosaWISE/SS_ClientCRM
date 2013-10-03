@@ -1,7 +1,10 @@
 define([
-], function() {
+  'dataservice.qualify'
+], function(
+  QualifyDataservice
+) {
   "use strict";
   return {
-
+    qualify: new QualifyDataservice(),
   };
 });

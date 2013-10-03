@@ -26,5 +26,5 @@ define([
     this.post('SessionTerminate', null, cb);
   };
 
-  return new DataserviceSession();
+  return DataserviceSession;
 });
