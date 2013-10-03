@@ -4,8 +4,7 @@ define([
   'vm.controller',
   'vm.account.search',
   'vm.account.new',
-  // 'vm.account'
-  'vm.rep.find'
+  'vm.account'
 ], function(
   notify,
   utils,

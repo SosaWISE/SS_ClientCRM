@@ -1,5 +1,8 @@
-div(class="account", data-bind="active:active")
-  div(class="form-wrap")
+div(class="layer", style="width:400px;height:280px")
+  div(class="body")
+    div(class="actions", data-bind="if:loaded")
+      span(class="btn-bg") Next
+
     ul(class="edit-form")
       li
         span(class="label") Rep ID
@@ -9,28 +12,13 @@ div(class="account", data-bind="active:active")
     div(data-bind="if:loaded")
       div(data-bind="with:repData")
         div(class="info repinfo")
-          span(class="img", data-bind="bgimg:img")
+          div(class="img-wrap")
+            span(class="img", data-bind="bgimg:img")
           span(class="name", data-bind="text:fullname")
           span(class="season", data-bind="text:season")
           span(class="office", data-bind="text:office")
           span(class="phone mobile", data-bind="text:phone")
           span(class="email", data-bind="text:email")
+
     div(data-bind="if:loading")
       div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
-
-  //- ul(class="edit-form")
-    li
-      span(class="rep-img", data-bind="bgimg:img")
-    li
-      span(class="label") Season
-      span(class="value", data-bind="text:season")
-    li
-      span(class="label") Office
-      span(class="value", data-bind="text:office")
-    li
-      span(class="label") Phone
-      span(class="value", data-bind="text:phone")
-    li
-      span(class="label") Email
-      span(class="value", data-bind="text:email")
-

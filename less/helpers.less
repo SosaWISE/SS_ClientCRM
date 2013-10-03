@@ -21,6 +21,7 @@
 .border-radius (@arguments) {
   border-radius: @arguments;
   // .background-clip(padding-box);
+
   -webkit-border-radius: @arguments;
   -moz-border-radius: @arguments;
   -ms-border-radius: @arguments;
@@ -28,8 +29,8 @@
 }
 
 
-.transition (@arguments) {
-  -webkit-transition: @arguments;
+.transition (...) {
+  // -webkit-transition: @arguments;
   -moz-transition: @arguments;
   -ms-transition: @arguments;
   transition: @arguments;
@@ -37,7 +38,7 @@
 
 
 .box-shadow(@arguments) {
-  -webkit-box-shadow: @arguments;
+  // -webkit-box-shadow: @arguments;
   -moz-box-shadow: @arguments;
   box-shadow: @arguments;
 }
@@ -121,6 +122,13 @@
 .scale(@ratio:1.5){
   .transform(scale(@ratio));
 }
+
+
+
+
+
+
+
 
 
 

@@ -21,7 +21,7 @@ define([
     setTimeout(function() {
       callCount++;
       var resp;
-      if (callCount % 2 === 1) {
+      if (callCount % 2 === 0) {
         resp = {
           Code: 1,
           Message: 'The code is 1, which is bad... i think.',
@@ -44,7 +44,7 @@ define([
       }
 
       cb(resp);
-    }, 1000 * 0.5);
+    }, 1000 * 2);
   };
   /////MOCKING//////////////////////
 
@@ -107,7 +107,7 @@ define([
     };
   }
   utils.inherits(FindRepViewModel, BaseViewModel);
-  FindRepViewModel.prototype.viewTmpl = 'tmpl-rep_find';
+  FindRepViewModel.prototype.viewTmpl = 'tmpl-layer_rep_find';
 
   return FindRepViewModel;
 });

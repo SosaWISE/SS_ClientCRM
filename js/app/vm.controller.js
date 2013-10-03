@@ -110,6 +110,8 @@ define([
       return;
     }
 
+    //@TODO: user joiner
+
     _this.loading(true);
     _this.onLoad(routeData, function(loadChilds) {
       var list = loadChilds ? _this.list() : null,

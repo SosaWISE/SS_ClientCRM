@@ -120,10 +120,14 @@ define([], function() {
   // use this if the the panel should change
   // this tries to look up the route
   Route.prototype.goTo = function(routeData, allowHistory) {
-    // look up new route
-    var otherRoute = this.router.routeMap[routeData.route || this.name];
-    otherRoute.addDefaults(routeData);
-    this.router.goToRoute(otherRoute.name, routeData, allowHistory);
+    var router = this.router,
+      routeName = routeData.route || this.name,
+      // look up new route
+      route = router.routeMap[routeName];
+    if (route) {
+      route.addDefaults(routeData);
+    }
+    router.goToRoute(routeName, routeData, allowHistory);
   };
   // use this if the panel will stay the same
   Route.prototype.setRouteData = function(routeData) {

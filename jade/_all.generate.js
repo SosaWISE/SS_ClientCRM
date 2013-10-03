@@ -17,9 +17,10 @@
     if (name[0] === '_') {
       return;
     }
-    // remove file extension
-    name = path.basename(name, path.extname(name));
-    output.push('#tmpl-' + name + '\n  include ./' + name + '\n');
+    // for id, remove file extension
+    var id = path.basename(name, path.extname(name));
+    id = '#tmpl-' + id.replace(/\./g, '_');
+    output.push(id + '\n  include ./' + name + '\n');
   });
 
   // write file
