@@ -49,6 +49,11 @@
     ko.bindingHandlers[name] = {
       init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
         var func = valueAccessor();
+        // if it's a command we need the execute function
+        if (ko.isCommand(func)) {
+          func = func.execute;
+        }
+
         $(element).keyup(function(event) {
           if (event.keyCode === keyCode) {
             if (forceBlur) {
@@ -107,4 +112,42 @@
       });
     },
   };
+
+
+  // size
+  //---------------------------
+
+  function createSizeHandler(name) {
+    ko.bindingHandlers[name] = {
+      update: function(element, valueAccessor) {
+        var size = ko.utils.unwrapObservable(valueAccessor());
+        if (size) {
+          size += "";
+          size = size.match(/%$/) ? size : size + "px";
+        } else {
+          size = "";
+        }
+
+        $(element).css(name, size);
+      },
+    };
+  }
+  createSizeHandler('width');
+  createSizeHandler('height');
+
+
+  // fillheight
+  //---------------------------
+  ko.bindingHandlers.fillheight = {
+    update: function(element, valueAccessor) {
+      valueAccessor = unwrap(valueAccessor());
+      // http://stackoverflow.com/questions/90178/make-a-div-fill-the-remaining-screen-space
+      // Element Height = Viewport height - element.offset.top - desired bottom margin
+      // $(element).height(element.offsetParent.offsetHeight - element.offsetTop);
+
+      // element = $(element);
+      $(element).height($(element).parent().height() - element.offsetTop);
+    },
+  };
+
 });

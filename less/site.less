@@ -61,7 +61,7 @@ input {
 
 // main colors
 body {
-  transition: color .25s, background-color .25s, border-color .25s;
+  .transition(color .25s, background-color .25s, border-color .25s;);
 }
 .mixin-body-color (@color) {
   color: @color;
@@ -69,10 +69,7 @@ body {
   border-right-color: @color;
 
   .layer {
-    .body {
-      background-color: @color;
-      // color: #FFF;
-    }
+    background-color: @color;
   }
 }
 .mixin-content-active (@color) {

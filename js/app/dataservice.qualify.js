@@ -27,16 +27,55 @@ define([
     this.post('SalesRepRead', data, cb);
   };
 
-  //------------input-AddressParam-------------
-  // AddressID                    long
-  // DealerId                     int        (require)
-  // StreetAddress                string     (require)
-  // StreetAddress2               string
-  // City                         string
-  // State                        string
-  // PostalCode                   string     (require)
-  // PhoneNumber                  string
-  //-----------result-QlAddress-------------
+  /* input/results
+    //------------input-AddressParam-------------
+    // AddressID                    long
+    // DealerId                     int        (require)
+    // StreetAddress                string     (require)
+    // StreetAddress2               string
+    // City                         string
+    // State                        string
+    // PostalCode                   string     (require)
+    // PhoneNumber                  string
+    //-----------result-QlAddress-------------
+    // AddressID
+    // DealerId
+    // ValidationVendorId
+    // AddressValidationStateId
+    // StateId
+    // CountryId
+    // TimeZoneId
+    // AddressTypeId
+    // StreetAddress
+    // StreetAddress2
+    // StreetNumber
+    // StreetName
+    // StreetType
+    // PreDirectional
+    // PostDirectional
+    // Extension
+    // ExtensionNumber
+    // County
+    // CountyCode
+    // Urbanization
+    // UrbanizationCode
+    // City
+    // PostalCode
+    // PlusFour
+    // Phone
+    // DeliveryPoint
+    // Latitude
+    // Longitude
+    // CongressionalDistric
+    // DPV
+    // DPVResponse
+    // DPVFootnote
+    // CarrierRoute
+    // IsActive
+    // IsDeleted
+    // CreatedBy
+    // CreatedOn
+  */
   QualifyDataservice.prototype.validateAddress = function(data, cb) {
     this.post('validateAddress', data, cb);
   };

@@ -1,5 +1,4 @@
-
-.info {
+.info > {
   .mobile:before {
     content: "M: ";
   }
@@ -12,8 +11,33 @@
   .email:before {
     content: "E: ";
   }
-}
+  div {
+    // display: block;
+    margin: 2px;
+    &:before {
+      font-weight: 500;
+    }
+    white-space: nowrap;
+  }
+  .name {
+    font-weight: 500;
+  }
 
+
+  .img-wrap {
+    // width: 100px;
+    // height: 100px;
+    float: left;
+    margin-right: 10px;
+    .box-shadow(1px 2px 8px rgba(0, 0, 0, 0.8));
+    .img {
+      margin: 0px;
+      // width: 100px;
+      // height: 100px;
+      background-repeat: no-repeat;
+    }
+  }
+}
 div.tab {
   overflow: hidden;
   position: absolute;
@@ -31,6 +55,10 @@ div.tab {
   }
 }
 
+
+
+
+
 .accounts {
   .account {
     color: white;
@@ -40,7 +68,7 @@ div.tab {
     overflow: auto;
     position: absolute;
     top: 20px;
-    left: 20px;
+    left: 0px;
     right: 200px;
     bottom: 200px;
     transition: bottom .5s, right .5s;
@@ -54,11 +82,11 @@ div.tab {
     .col {
       float:left;
       width: 33%;
-      padding-right: 20px;
+      padding-left: 20px;
     }
 
     .module {
-      overflow: hidden;
+      // overflow: hidden;
       position: relative;
       width: 100%;
       margin-top: 20px;
@@ -66,30 +94,21 @@ div.tab {
       .title {
         font-size: 1.1em;
         font-weight: 500;
+        overflow: hidden;
       }
       .contents {
+        overflow: hidden;
         color: #222;
         background-color: #ddd;
         padding: 10px;
+        .box-shadow(1px 2px 3px rgba(0, 0, 0, 0.7));
 
         .userinfo {
           min-height: 85px;
           .img {
             width: 80px;
             height: 80px;
-            float:left;
-            margin-right: 5px;
-            background-repeat: no-repeat;
           }
-        }
-        span {
-          display: block;
-          &:before {
-            font-weight: 500;
-          }
-        }
-        .name {
-          font-weight: 500;
         }
 
         .credit-score {

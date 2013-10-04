@@ -15,17 +15,17 @@ define([
     var _this = this;
     LayersViewModel.super_.call(_this, options);
 
-    _this.layers = ko.observableArray();
-    _this.topLayers = ko.observableArray();
+    _this.showLayers = ko.observableArray();
+    _this.alertLayers = ko.observableArray();
   }
   utils.inherits(LayersViewModel, BaseViewModel);
   LayersViewModel.prototype.viewTmpl = 'tmpl-layers';
 
   LayersViewModel.prototype.show = function(vm) {
-    return add(this.layers, vm);
+    return add(this.showLayers, vm);
   };
   LayersViewModel.prototype.alert = function(vm) {
-    return add(this.topLayers, vm);
+    return add(this.alertLayers, vm);
   };
 
   function add(layers, vm) {

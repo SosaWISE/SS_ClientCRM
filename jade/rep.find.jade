@@ -1,0 +1,17 @@
+h1(class="title") Sales Rep
+ul(class="edit-form")
+  li
+    span(class="label") Rep ID
+    input(type="text", placeholder="NAME001",
+      data-bind="hasfocus:focusRepID,ukov:repData.SalesRepID,value:repData.SalesRepID,valueUpdate:'keyup',enter:cmdFind")
+
+div(data-bind="if:loaded")
+  div(class="info repinfo", data-bind="with:repResult")
+    div(class="img-wrap")
+      div(class="img", data-bind="bgimg:img")
+    //- div(class="name", data-bind="text:SalesRepID")
+    div(class="name", data-bind="text:fullname")
+    div(class="season", data-bind="text:season")
+    div(class="office", data-bind="text:office")
+    div(class="phone mobile", data-bind="text:phone")
+    div(class="email", data-bind="text:email")

@@ -1,0 +1,10 @@
+div(class="layer", data-bind="width:width,height:height")
+  div(data-bind="with:vm")
+    div(data-bind="if:loading")
+      div(class="spinner-wrap white", data-bind="template:'tmpl-spinner',active:true")
+
+    div(style="height:100%;", data-bind="template:viewTmpl")
+
+    div(class="actions", data-bind="if:loaded")
+      //- span(class="btn-bg", data-bind="click:clickPrev") Previous
+      span(class="btn-bg", data-bind="click:clickNext") Next

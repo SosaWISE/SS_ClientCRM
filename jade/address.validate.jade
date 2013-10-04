@@ -1,0 +1,28 @@
+h1(class="title") Premise Address
+ul(class="edit-form")
+  li
+    span(class="label") Zip code
+    input(type="text", placeholder="12345",
+      data-bind="hasfocus:focus,ukov:addressData.PostalCode,value:addressData.PostalCode,valueUpdate:'keyup',enter:cmdValidate")
+  li
+    span(class="label") Street Address
+    input(type="text", placeholder="55 W Main St",
+      data-bind="ukov:addressData.StreetAddress,value:addressData.StreetAddress,valueUpdate:'keyup',enter:cmdValidate")
+  li
+    span(class="label") Premise Phone
+    input(type="text", placeholder="(123) 123-1234",
+      data-bind="ukov:addressData.Phone,value:addressData.Phone,valueUpdate:'keyup',enter:cmdValidate")
+  li
+    span(class="btn-bg", data-bind="cmd:cmdValidate") Validate Address
+
+div(data-bind="if:loaded", style="margin-left:20px;")
+  div(class="info", data-bind="with:addressResult")
+      div(class="address", data-bind="text:StreetAddress")
+      div(class="address", data-bind="text:StreetAddress2")
+      div(class="address")
+        span(data-bind="text:City")
+        |,&nbsp;
+        span(data-bind="text:StateId")
+        |&nbsp;
+        span(data-bind="text:PostalCode")
+      div(class="phone", data-bind="text:Phone")

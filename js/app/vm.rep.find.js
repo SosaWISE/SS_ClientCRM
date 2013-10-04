@@ -32,7 +32,7 @@ define([
           Code: 0,
           Message: '',
           Value: {
-            repId: data.repId,
+            SalesRepID: data.SalesRepID,
             img: 'https://secure.gravatar.com/avatar/f47bda756ab7abfaeb7b5e1b59d5edc9?s=100&r=pg&d=https%3A%2F%2Fkanbanflow.com%2Fimg%2Fgd.png',
             fullname: 'Andres Sosa',
             season: 'Summer 2013',
@@ -49,13 +49,16 @@ define([
   /////MOCKING//////////////////////
 
   ukov.schema['find-rep'] = {
-    repId: {
+    SalesRepID: {
       converter: ukov.converters.toUpper(),
       validators: [
         ukov.validators.isRequired('Rep ID is required'),
         ukov.validators.isPattern(/^[a-z]{4}[0-9]{3}$/i, 'invalid Rep ID. expected format: NAME001'),
       ],
     },
+    // SeasonId: {},
+    // TeamLocationId: {},
+
     img: {},
     fullname: {},
     season: {},
@@ -68,46 +71,58 @@ define([
     var _this = this;
     FindRepViewModel.super_.call(_this, options);
 
-    _this.focusRepID = ko.observable(true);
+    _this.focusRepID = ko.observable(false);
     _this.repData = ukov.wrapModel({}, 'find-rep', 'find-rep-vm');
     _this.loading = ko.observable(false);
     _this.loaded = ko.observable(false);
+    _this.repResult = ko.observable(null);
 
-    _this.repData.repId('sosa001');
+    /////TESTING//////////////////////
+    _this.repData.SalesRepID('sosa001');
+    /////TESTING//////////////////////
 
     //
     // events
     //
-    _this.clickFind = function() {
-      var repId = _this.repData.model.repId;
-
-      if (!_this.repData.repId.isValid()) {
-        alert('invalid');
-        return;
-      }
-
-      _this.loaded(false);
-      _this.loading(true);
-      dataservice.qualify.salesRepRead({
-        repId: repId
-      }, function(resp) {
-        _this.loading(false);
-
-        if (resp.Code !== 0) {
-          notify.notify('warn', resp.Message, 10);
-          _this.focusRepID(true);
-          return;
+    _this.cmdFind = ko.command(
+      function(cb) {
+        _this.repData.SalesRepID.validate();
+        if (!_this.repData.SalesRepID.isValid()) {
+          notify.notify('warn', _this.repData.SalesRepID.errMsg(), 7);
+          return cb();
         }
 
-        _this.repData.markClean(resp.Value, true);
-        delete resp.Value.repId; // this value is entered by the user so don't overwrite it
-        _this.repData.setVal(resp.Value, true);
-        _this.loaded(true);
-      });
-    };
+        _this.loaded(false);
+        var model = _this.repData.getValue();
+        dataservice.qualify.salesRepRead(model, function(resp) {
+          if (resp.Code !== 0) {
+            notify.notify('warn', resp.Message, 10);
+            _this.focusRepID(true);
+          } else {
+            _this.repData.markClean(resp.Value, true);
+            _this.repResult(resp.Value);
+            _this.loaded(true);
+          }
+          cb();
+        });
+      }
+    );
+
+    _this.loading = _this.cmdFind.isExecuting;
   }
   utils.inherits(FindRepViewModel, BaseViewModel);
-  FindRepViewModel.prototype.viewTmpl = 'tmpl-layer_rep_find';
+  FindRepViewModel.prototype.viewTmpl = 'tmpl-rep_find';
+  FindRepViewModel.prototype.width = 350;
+  FindRepViewModel.prototype.height = 300;
+
+  FindRepViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
+    var _this = this;
+
+    // this timeout makes it possible to focus the rep id
+    setTimeout(function() {
+      _this.focusRepID(true);
+    }, 100);
+  };
 
   return FindRepViewModel;
 });

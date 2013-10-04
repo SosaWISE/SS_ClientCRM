@@ -22,7 +22,7 @@ define([
   // public members
   //
   BaseViewModel.prototype.activate = function(routeData) {
-    routeData = this.onActivate(routeData);
+    this.onActivate(routeData);
     this.active(true);
   };
   BaseViewModel.prototype.onActivate = function( /*routeData*/ ) {
