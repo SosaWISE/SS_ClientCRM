@@ -24,7 +24,7 @@ define([
   function trim(text) {
     if (text) {
       text = (text + '').replace(/^\s+|\s+$/g, '');
-    } else {
+    } else if (text !== '') {
       text = null;
     }
     return text;

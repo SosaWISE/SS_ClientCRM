@@ -38,9 +38,24 @@
   createToggleClassHandler('active');
   createToggleClassHandler('editing');
   createToggleClassHandler('cssDisabled', 'disabled');
-  createToggleClassHandler('fullheight');
-  createToggleClassHandler('fullwidth');
-
+  ko.bindingHandlers.toggle = {
+    update: function(element, valueAccessor) {
+      var obj = valueAccessor(),
+        el = $(element);
+      Object.keys(obj).forEach(function(cls) {
+        var hasVal = unwrap(obj[cls]);
+        if (hasVal) {
+          setTimeout(function() { // needed for browser transitions
+            el.addClass(cls);
+          }, 0);
+        } else {
+          setTimeout(function() {
+            el.removeClass(cls);
+          }, 0);
+        }
+      });
+    },
+  };
 
   // key handlers
   //---------------------------

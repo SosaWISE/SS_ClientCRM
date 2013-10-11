@@ -22,6 +22,9 @@ define([
     NewAccountViewModel.super_.call(_this, options);
 
     _this.title = ko.observable(_this.title);
+    _this.hideNotes = ko.observable(false);
+    _this.hideRep = ko.observable(false);
+    _this.hideEditor = ko.observable(false);
 
     _this.findRepVM = new FindRepViewModel();
     _this.findRepVM.clickNext = function() {

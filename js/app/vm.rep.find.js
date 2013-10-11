@@ -15,39 +15,6 @@ define([
 ) {
   "use strict";
 
-  /////MOCKING//////////////////////
-  var callCount = 0;
-  dataservice.qualify.salesRepRead = function(data, cb) {
-    setTimeout(function() {
-      callCount++;
-      var resp;
-      if (callCount % 2 === 0) {
-        resp = {
-          Code: 1,
-          Message: 'The code is 1, which is bad... i think.',
-          Value: null,
-        };
-      } else {
-        resp = {
-          Code: 0,
-          Message: '',
-          Value: {
-            SalesRepID: data.SalesRepID,
-            img: 'https://secure.gravatar.com/avatar/f47bda756ab7abfaeb7b5e1b59d5edc9?s=100&r=pg&d=https%3A%2F%2Fkanbanflow.com%2Fimg%2Fgd.png',
-            fullname: 'Andres Sosa',
-            season: 'Summer 2013',
-            office: 'Tampa 1',
-            phone: '(123) 123-1234',
-            email: 'e@mail.com',
-          },
-        };
-      }
-
-      cb(resp);
-    }, 1000 * 2);
-  };
-  /////MOCKING//////////////////////
-
   ukov.schema['find-rep'] = {
     SalesRepID: {
       converter: ukov.converters.toUpper(),

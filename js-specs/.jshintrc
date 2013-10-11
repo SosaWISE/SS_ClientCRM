@@ -1,5 +1,5 @@
 {
-  "strict": false,
+  "strict": true,
   "node": true,
   "browser": true,
 
@@ -30,6 +30,8 @@
     "it",
     "expect",
     "spyOn",
+    "createSpy",
+    "createSpyObj",
     "waitsFor"
   ]
 }

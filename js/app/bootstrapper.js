@@ -7,18 +7,24 @@ define(['../loadDependencies'], function() {
     'router/router',
     'dataservice',
     'ko',
-    'app'
+    'app',
+    '../../js-mocks/index'
   ], function(
     $,
     config,
     router,
     dataservice,
     ko,
-    app
+    app,
+    mock
   ) {
     console.log("Bootstrapping version: ", config.version);
     console.log("Application Token: " + config.token);
     console.log("CORS Domain: " + config.serviceDomain);
+
+    mock({
+      timeout: 1000 * 2,
+    });
 
     config.user.subscribe(function(user) {
       if (user) {

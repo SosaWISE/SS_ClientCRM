@@ -1,2 +1,9 @@
-div(class="tab account", data-bind="active:active")
+div(class="tab", data-bind="active:active")
   div(class="layers", data-bind="template:{name:'tmpl-layers',data:layersVM}")
+
+  div(style="width:300px;")
+    div(class="")
+
+  div(class="details", data-bind="toggle:{'hide-editor':hideEditor,'hide-notes':hideNotes,'hide-reps':hideRep}")
+
+  div(class="notes", data-bind="toggle:{'hide-editor':hideEditor,'hide-notes':hideNotes}")

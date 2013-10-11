@@ -14,8 +14,10 @@ define([
       it('should trim', function() {
         expect(converter('  b  ')).toBe('b');
       });
-      it('should be empty string for falsy values', function() {
-        expect(converter(null)).toBe('');
+      it('should be null for non empty string falsy values', function() {
+        expect(converter(null)).toBe(null);
+        expect(converter()).toBe(null);
+        expect(converter('')).toBe('');
       });
     });
 

@@ -17,7 +17,8 @@ define([
 
     _this.title = ko.observable(_this.title);
     _this.hideNotes = ko.observable(false);
-    _this.hideRep = ko.observable(true);
+    _this.showReps = ko.observable(false);
+    _this.showEditor = ko.observable(false);
 
     //
     // events
@@ -25,8 +26,11 @@ define([
     _this.clickToggleNotes = function() {
       _this.hideNotes(!_this.hideNotes());
     };
-    _this.clickToggleRep = function() {
-      _this.hideRep(!_this.hideRep());
+    _this.clickToggleReps = function() {
+      _this.showReps(!_this.showReps());
+    };
+    _this.clickToggleEditor = function() {
+      _this.showEditor(!_this.showEditor());
     };
   }
   utils.inherits(AccountViewModel, BaseViewModel);

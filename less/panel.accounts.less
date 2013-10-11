@@ -55,109 +55,37 @@ div.tab {
   }
 }
 
+.btn-edit {
+  content: "\e01b";
+  font-family: 'SecuritySciences';
+  width: 32px;
+  height: 32px;
+  font-size: 28px;
+  text-align: center;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 
-
+@account-bg: @site-blue;
 
 
 .accounts {
-  .account {
-    color: white;
-  }
+  @tranSec: .25s;
 
-  .details {
-    overflow: auto;
+  .account-editor {
     position: absolute;
-    top: 20px;
-    left: 0px;
-    right: 200px;
-    bottom: 200px;
-    transition: bottom .5s, right .5s;
-    &.fullheight {
-      bottom: 20px;
-    }
-    &.fullwidth {
-      right: 20px;
-    }
-
-    .col {
-      float:left;
-      width: 33%;
-      padding-left: 20px;
-    }
-
-    .module {
-      // overflow: hidden;
-      position: relative;
-      width: 100%;
-      margin-top: 20px;
-
-      .title {
-        font-size: 1.1em;
-        font-weight: 500;
-        overflow: hidden;
-      }
-      .contents {
-        overflow: hidden;
-        color: #222;
-        background-color: #ddd;
-        padding: 10px;
-        .box-shadow(1px 2px 3px rgba(0, 0, 0, 0.7));
-
-        .userinfo {
-          min-height: 85px;
-          .img {
-            width: 80px;
-            height: 80px;
-          }
-        }
-
-        .credit-score {
-          width: 100%;
-          text-align: center;
-          font-weight: 500;
-          padding: 5px;
-
-          > span {
-            padding: 5px;
-            margin-left: auto;
-            margin-right: auto;
-          }
-
-          .excellent {
-            background-color: green;
-          }
-        }
-      }
-
-      &.empty {
-        .border-radius(25px);
-        border-width: 4px;
-        border-style: dashed;
-        border-color: #FFFFFF;
-        height: 150px;
-        text-align: center;
-        .title {
-          line-height: 140px;
-          font-size: 1.5em;
-          font-weight: 500;
-        }
-        .contents {
-          display: none;
-        }
-      }
-    }
-  }
-
-  .notes {
-    position: absolute;
-    left: 0;
-    right: 0;
+    top: 0;
+    // right: 0;
     bottom: 0;
-    height: 200px;
-    transition: bottom .5s;
-    &.fullheight {
-      bottom: -180px;
+    left: -300px;
+    width: 300px;
+    .transition(bottom @tranSec;);
+    &.show-editor {
+      left: 0px;
     }
+
     .title {
       margin-left: 20px;
       cursor: pointer;
@@ -172,25 +100,208 @@ div.tab {
     }
   }
 
-  .rep {
+  .account {
+    // overflow: auto;
     position: absolute;
     top: 0;
-    // left: 0;
     right: 0;
     bottom: 0;
-    width: 200px;
-    transition: right .5s;
-    &.fullwidth {
-      right: -180px;
+    left: 0;
+    .transition(left @tranSec);
+    &.show-editor {
+      left: 300px;
     }
 
-    .vertical-title {
-      .transform(rotate(90deg));
-      .transform-origin(0px 100% 0px);
+    background-color: #fff;
+    color: #6c6c6c;
+
+    .details {
+      overflow: auto;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      bottom: 300px;
+      left: 0;
+      .transition(right @tranSec, bottom @tranSec;);
+      &.hide-notes {
+        bottom: 20px;
+      }
+      &.show-reps {
+        right: 300px;
+      }
+
+      .col {
+        float:left;
+        width: 33%;
+        padding-left: 20px;
+        > .title {
+          font-size: 1.3em;
+          font-weight: 500;
+          overflow: hidden;
+          text-transform: uppercase;
+          text-align: center;
+          display: block;
+        }
+      }
+
+      .module {
+        // overflow: hidden;
+        position: relative;
+        width: 100%;
+        margin-top: 20px;
+
+        > .title {
+          font-size: 1.2em;
+          font-weight: 500;
+          overflow: hidden;
+          // text-transform: uppercase;
+        }
+        .contents {
+          overflow: hidden;
+          color: #222;
+          background-color: #ddd;
+          padding: 10px;
+          .box-shadow(1px 2px 3px rgba(0, 0, 0, 0.7));
+
+          .userinfo {
+            min-height: 85px;
+            .img {
+              width: 80px;
+              height: 80px;
+            }
+          }
+
+          .credit-score {
+            width: 100%;
+            text-align: center;
+            font-weight: 500;
+            padding: 5px;
+
+            > span {
+              padding: 5px 10px 5px 10px;
+              margin-left: auto;
+              margin-right: auto;
+              .border-radius(5px);
+            }
+
+            .excellent {
+              background-color: green;
+            }
+          }
+        }
+
+        &.empty {
+          overflow: hidden;
+          .border-radius(25px);
+          border-width: 4px;
+          border-style: dashed;
+          border-color: #6c6c6c;
+          display:table;
+          height: 150px;
+          text-align: center;
+          .transition(opacity .25s;);
+          opacity: 0.2;
+          &.enabled {
+            opacity: 0.7;
+            &:hover {
+              opacity: 1;
+            }
+            .title:after {
+              content: "\e01b";
+              font-family: 'SecuritySciences';
+              width: 32px;
+              height: 32px;
+              font-size: 16px;
+              text-align: center;
+              margin-left: 5px;
+            }
+            cursor: pointer;
+          }
+          .title {
+            display:table-cell;
+            vertical-align: middle;
+            font-size: 1.2em;
+            font-weight: 500;
+            text-transform: none;
+          }
+          .contents {
+            display: none;
+          }
+        }
+      }
     }
-    .title {
-      // margin-left: 20px;
-      cursor: pointer;
+
+    .notes {
+      position: absolute;
+      // top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 300px;
+      .transition(bottom @tranSec;);
+      &.hide-notes {
+        bottom: -280px;
+      }
+
+      .title {
+        margin-left: 20px;
+        cursor: pointer;
+      }
+      .contents {
+        overflow-y: auto;
+        position: absolute;
+        left: 5px;
+        top: 20px;
+        right: 5px;
+        bottom: 5px;
+      }
+    }
+
+    .rep {
+      position: absolute;
+      top: 0;
+      right: -280px;
+      bottom: 300px;
+      // left: 0;
+      width: 300px;
+      .transition(right @tranSec, bottom @tranSec;);
+      &.show-reps {
+        right: 0;
+      }
+      &.hide-notes {
+        bottom: 20px;
+      }
+
+      color: #fff;
+
+      .vertical-title {
+        .transform(rotate(90deg));
+        .transform-origin(0px 100% 0px);
+        font-size: 1.1em;
+        font-weight: 500;
+        span {
+          background-color: @account-bg;
+          padding-left: 5px;
+          padding-right: 5px;
+          text-transform: uppercase;
+          .border-radius(0px 0px 5px 5px);
+        }
+      }
+      .title {
+        // margin-left: 20px;
+        cursor: pointer;
+      }
+      .contents {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 20px;
+        width: 280px;
+        // height: 100%;
+        border-left: solid 2px @account-bg;
+        background-color: @account-bg;
+      }
     }
   }
 }
