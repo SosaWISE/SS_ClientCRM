@@ -1,7 +1,7 @@
-define([
-  'notify',
-  'util/utils',
-  'vm.base',
+define('src/vm.layers', [
+  'src/notify',
+  'src/util/utils',
+  'src/vm.base',
   'ko'
 ], function(
   notify,

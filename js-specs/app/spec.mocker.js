@@ -1,4 +1,6 @@
-define(['mocker'], function(mocker) {
+define('spec/app/spec.mocker', [
+  'src/mocker'
+], function(mocker) {
   "use strict";
 
   // mocker.random = Math.random;

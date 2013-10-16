@@ -1,4 +1,4 @@
-define([
+define('src/util/utils', [
   'underscore',
   'moment'
 ], function(

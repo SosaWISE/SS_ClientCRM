@@ -1,5 +1,5 @@
-define([
-  './utils',
+define('src/util/strings', [
+  'src/util/utils',
 ], function(
   utils
 ) {

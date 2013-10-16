@@ -1,6 +1,6 @@
-define([
-  'mocker',
-  'dataservice.qualify'
+define('mock/app/dataservice.qualify.mock', [
+  'src/mocker',
+  'src/dataservice.qualify'
 ], function(
   mocker,
   QualifyDataservice

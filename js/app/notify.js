@@ -1,7 +1,7 @@
-define([
+define('src/notify', [
   'ko',
-  'resources',
-  'util/strings'
+  'src/resources',
+  'src/util/strings'
 ], function(
   ko,
   resources,

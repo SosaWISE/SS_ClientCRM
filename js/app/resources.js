@@ -1,4 +1,5 @@
-define([], function() {
+define('src/resources', [
+], function() {
   "use strict";
 
   return {

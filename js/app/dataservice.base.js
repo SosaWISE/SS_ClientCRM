@@ -1,6 +1,6 @@
-define([
+define('src/dataservice.base', [
   'jquery',
-  'util/querystring'
+  'src/util/querystring'
 ], function(
   $,
   querystring

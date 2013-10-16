@@ -1,5 +1,5 @@
-define([
-  'util/joiner'
+define('spec/app/util/spec.joiner', [
+  'src/util/joiner'
 ], function(joiner) {
   "use strict";
 

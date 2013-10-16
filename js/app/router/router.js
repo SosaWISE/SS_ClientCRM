@@ -1,7 +1,7 @@
-define([
+define('src/router/router', [
   'jquery',
-  './route',
-  'config'
+  'src/router/route',
+  'src/config'
 ], function(
   $,
   Route,

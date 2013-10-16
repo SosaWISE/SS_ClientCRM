@@ -1,4 +1,5 @@
-define([], function() {
+define('src/router/route', [
+], function() {
   "use strict";
 
   function Route(router, controller, name, regx, parts, defaultRouteData) {

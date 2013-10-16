@@ -1,5 +1,5 @@
-define([
- './app/dataservice.qualify.mock'
+define('mock/index', [
+ 'mock/app/dataservice.qualify.mock'
 ], function() {
   "use strict";
 

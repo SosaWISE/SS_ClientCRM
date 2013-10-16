@@ -1,5 +1,5 @@
-define([
- './utils',
+define('src/util/joiner', [
+ 'src/util/utils',
 ], function(
   utils
 ) {

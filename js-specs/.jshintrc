@@ -18,7 +18,6 @@
   "smarttabs": true,
 
   "predef": [
-    "requirejs",
     "define",
 
     "alert",
@@ -32,6 +31,7 @@
     "spyOn",
     "createSpy",
     "createSpyObj",
-    "waitsFor"
+    "waitsFor",
+    "runs"
   ]
 }

@@ -1,4 +1,6 @@
-define(['ko'], function(ko) {
+define('src/knockout/ko.bindingHandlers.cmd', [
+  'ko'
+], function(ko) {
   "use strict";
 
   function makeValueAccessor(value) {

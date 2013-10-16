@@ -3,7 +3,7 @@
  * To override the defaults, set the values in webconfig.js
  */
 // define config module
-define([
+define('src/config', [
   'webconfig',
   'ko'
 ], function(

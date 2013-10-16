@@ -1,7 +1,7 @@
-define([
+define('src/u-kov/app/ukov-model', [
   'ko',
-  './ukov-prop',
-  './ukov-prop-array'
+  'src/u-kov/app/ukov-prop',
+  'src/u-kov/app/ukov-prop-array'
 ], function(
   ko,
   ukovProp,

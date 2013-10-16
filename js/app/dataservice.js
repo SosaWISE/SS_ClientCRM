@@ -1,5 +1,5 @@
-define([
-  'dataservice.qualify'
+define('src/dataservice', [
+  'src/dataservice.qualify'
 ], function(
   QualifyDataservice
 ) {

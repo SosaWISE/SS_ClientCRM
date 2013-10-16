@@ -1,10 +1,10 @@
-define([
-  'notify',
-  'util/utils',
-  'vm.base',
+define('src/vm.rep.find', [
+  'src/notify',
+  'src/util/utils',
+  'src/vm.base',
   'ko',
-  'ukov',
-  'dataservice'
+  'src/ukov',
+  'src/dataservice'
 ], function(
   notify,
   utils,

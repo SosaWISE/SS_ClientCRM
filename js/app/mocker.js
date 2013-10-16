@@ -1,4 +1,5 @@
-define([], function() {
+define('src/mocker', [
+], function() {
   'use strict';
 
   var mocker = {},
@@ -43,7 +44,7 @@ define([], function() {
       return results.join('. ');
     },
     PHONE: function(cache) {
-      return fromTemplate('(@NUMBER(100,999)) @NUMBER(100,999,cb)-@NUMBER(1000,9999)', cache);
+      return fromTemplate('(@NUMBER(200,999)) @NUMBER(100,999)-@NUMBER(1000,9999)', cache);
     },
     EMAIL: function(cache) {
       return fromTemplate('@NAME.@LAST_NAME@@LAST_NAME(cb).com', cache).toLowerCase();
@@ -277,9 +278,10 @@ define([], function() {
 
   // set to Math.random if you want more random
   mocker.random = function random() {
-    var result = Number('0.' + Math.sin(mocker.randomIndex).toString().substr(6));
-    mocker.randomIndex++;
-    return result;
+    // http://stackoverflow.com/questions/521295/javascript-random-seeds/19303725#19303725
+    var x = Math.sin(mocker.randomIndex++) * 10000;
+    x = x - Math.floor(x);
+    return x;
   };
   mocker.randomIndex = 1;
   mocker.fromTemplate = function(template) {

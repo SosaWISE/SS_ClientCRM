@@ -1,7 +1,7 @@
-define([
+define('src/u-kov/app/ukov-prop-array', [
   'ko',
-  './ukov-model',
-  './ukov-prop'
+  'src/u-kov/app/ukov-model',
+  'src/u-kov/app/ukov-prop'
 ], function(
   ko,
   UkovModel, // should be undefined since ukov-model requires this file
@@ -76,7 +76,7 @@ define([
     if (this.docIsmodel) {
       // lazy require to circumvent circular dependency issues
       if (!UkovModel) {
-        UkovModel = require('./ukov-model');
+        UkovModel = require('src/u-kov/app/ukov-model');
       }
       prop = new UkovModel(this.update, model, initialValue, doc, index);
     } else if (Array.isArray(doc)) {

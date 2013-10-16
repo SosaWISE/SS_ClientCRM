@@ -1,8 +1,8 @@
-define([
+define('src/u-kov/app/bindings', [
  'jquery',
  'ko',
- './ukov',
- './ukov-collection'
+ 'src/u-kov/app/ukov',
+ 'src/u-kov/app/ukov-collection'
 ], function(
   $,
   ko,

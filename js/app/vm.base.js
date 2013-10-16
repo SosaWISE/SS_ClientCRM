@@ -1,4 +1,4 @@
-define([
+define('src/vm.base', [
   'ko'
 ], function(
   ko

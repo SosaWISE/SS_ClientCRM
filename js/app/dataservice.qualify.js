@@ -1,7 +1,7 @@
-define([
-  'util/utils',
-  'dataservice.base',
-  'config'
+define('src/dataservice.qualify', [
+  'src/util/utils',
+  'src/dataservice.base',
+  'src/config'
 ], function(
   utils,
   DataserviceBase,

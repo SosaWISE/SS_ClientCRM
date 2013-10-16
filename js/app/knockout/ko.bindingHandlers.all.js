@@ -1,10 +1,10 @@
-﻿define([
+﻿define('src/knockout/ko.bindingHandlers.all', [
   'jquery',
   'ko',
   // include other handlers
-  './ko.bindingHandlers.cmd',
-  './ko.bindingHandlers.notice',
-  './ko.bindingHandlers.value'
+  'src/knockout/ko.bindingHandlers.cmd',
+  'src/knockout/ko.bindingHandlers.notice',
+  'src/knockout/ko.bindingHandlers.value'
 ], function(
   $,
   ko

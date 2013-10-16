@@ -1,52 +1,23 @@
-define([
-  '../js/loadDependencies'
-], function() {
+define('spec/allspecs', [
+  'spec/runner'
+], function(runner) {
   "use strict";
-
-  var orderedSpecs = [
-      '../../js-specs/app/spec.mocker',
+  runner([
+    [
+      'spec/lib/spec.depends',
     ],
-    specs = [
-      '../../js-specs/app/router/spec.route',
-      '../../js-specs/app/router/spec.router',
+    [
+      'spec/app/spec.mocker',
+    ],
+    [
+      'spec/app/router/spec.route',
+      'spec/app/router/spec.router',
 
-      '../../js-specs/app/util/spec.joiner',
-      '../../js-specs/app/util/spec.strings',
+      'spec/app/util/spec.joiner',
+      'spec/app/util/spec.strings',
 
-      '../../js-specs/app/spec.dataservice.base',
-      '../../js-specs/app/spec.notify',
-    ];
-
-  console.time('load ordered specs');
-  (function loadNext() {
-    // pop first spec in array
-    var spec = orderedSpecs.shift();
-    if (spec) {
-      // load next spec
-      require([spec], loadNext);
-    } else {
-      console.timeEnd('load ordered specs');
-      console.time('load specs');
-      require([
-        '../../js-mocks/index'
-      ].concat(specs), function(mock) {
-        console.timeEnd('load specs');
-
-        mock({});
-
-        var jasmineEnv = jasmine.getEnv(),
-          htmlReporter;
-
-        jasmineEnv.updateInterval = 1000;
-        htmlReporter = new jasmine.HtmlReporter();
-        jasmineEnv.addReporter(htmlReporter);
-
-        jasmineEnv.specFilter = function(spec) {
-          return htmlReporter.specFilter(spec);
-        };
-
-        jasmineEnv.execute();
-      });
-    }
-  })();
+      'spec/app/spec.dataservice.base',
+      'spec/app/spec.notify',
+    ]
+  ], {});
 });

@@ -1,4 +1,6 @@
-define(['dataservice.base'], function(DataserviceBase) {
+define('spec/app/spec.dataservice.base', [
+  'src/dataservice.base'
+], function(DataserviceBase) {
   "use strict";
 
   describe('dataservice.base', function() {

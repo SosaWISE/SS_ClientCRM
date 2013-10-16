@@ -19,8 +19,8 @@ var DEBUG=true;
         var target = module['exports'] || exports; // module.exports is for Node.js
         factory(target);
     } else if (typeof define === 'function' && define['amd']) {
-        // [2] AMD anonymous module
-        define(['exports'], factory);
+        // [2] AMD name module
+        define('ko', ['exports'], factory);//ACLS: added name 'ko'
     } else {
         // [3] No module loader (plain <script> tag) - put directly in global namespace
         factory(window['ko'] = {});

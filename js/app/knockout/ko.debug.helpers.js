@@ -1,4 +1,6 @@
-﻿define(['ko'], function(ko) {
+﻿define('src/knockout/ko.debug.helpers', [
+  'ko'
+], function(ko) {
   "use strict";
 
   //track the number of re-evaluations for a computed observable

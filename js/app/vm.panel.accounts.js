@@ -1,10 +1,10 @@
-define([
-  'notify',
-  'util/utils',
-  'vm.controller',
-  'vm.account.search',
-  'vm.account.new',
-  'vm.account'
+define('src/vm.panel.accounts', [
+  'src/notify',
+  'src/util/utils',
+  'src/vm.controller',
+  'src/vm.account.search',
+  'src/vm.account.new',
+  'src/vm.account'
 ], function(
   notify,
   utils,

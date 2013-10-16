@@ -1,10 +1,10 @@
-define([
-  'notify',
-  'util/utils',
-  'vm.base',
-  'vm.layers',
-  'vm.rep.find',
-  'vm.address.validate',
+define('src/vm.account.new', [
+  'src/notify',
+  'src/util/utils',
+  'src/vm.base',
+  'src/vm.layers',
+  'src/vm.rep.find',
+  'src/vm.address.validate',
   'ko'
 ], function(
   notify,

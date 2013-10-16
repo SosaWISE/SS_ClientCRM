@@ -1,5 +1,5 @@
-define([
-  'util/strings'
+define('spec/app/util/spec.strings', [
+  'src/util/strings'
 ], function(strings) {
   "use strict";
 

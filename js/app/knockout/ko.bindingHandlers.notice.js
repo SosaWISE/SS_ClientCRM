@@ -1,4 +1,4 @@
-define([
+define('src/knockout/ko.bindingHandlers.notice', [
   'jquery',
   'ko'
 ], function(

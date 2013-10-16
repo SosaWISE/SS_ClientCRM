@@ -1,6 +1,6 @@
-define([
- './ukov-model',
- './ukov-collection'
+define('src/u-kov/app/ukov', [
+ 'src/u-kov/app/ukov-model',
+ 'src/u-kov/app/ukov-collection'
 ], function(
   UkovModel,
   UkovCollection

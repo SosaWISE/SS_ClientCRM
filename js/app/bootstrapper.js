@@ -1,30 +1,42 @@
-define(['../loadDependencies'], function() {
+define('src/bootstrapper', [
+ // load main libs
+  'jquery',
+  'ko',
+ // load plugins
+  'src/knockout/ko.debug.helpers',
+  'src/knockout/ko.command',
+  'src/knockout/ko.bindingHandlers.all',
+
+  'src/config',
+  'src/router/router',
+  'src/dataservice',
+  'src/app'
+], function(
+  $, ko, // main libs
+  p1, p2, p3, //plugins
+
+  config,
+  router,
+  dataservice,
+  app
+) {
   "use strict";
+  console.log("Bootstrapping version: ", config.version);
+  console.log("Application Token: " + config.token);
+  console.log("CORS Domain: " + config.serviceDomain);
 
-  require([
-    'jquery',
-    'config',
-    'router/router',
-    'dataservice',
-    'ko',
-    'app',
-    '../../js-mocks/index'
-  ], function(
-    $,
-    config,
-    router,
-    dataservice,
-    ko,
-    app,
-    mock
-  ) {
-    console.log("Bootstrapping version: ", config.version);
-    console.log("Application Token: " + config.token);
-    console.log("CORS Domain: " + config.serviceDomain);
-
-    mock({
-      timeout: 1000 * 2,
-    });
+  var deps = [];
+  if (config.useMocks) {
+    deps = ['mock/index'];
+  } else {
+    deps = [];
+  }
+  require(deps, function(mock) {
+    if (mock) {
+      mock({
+        // timeout: 1000 * 2,
+      });
+    }
 
     config.user.subscribe(function(user) {
       if (user) {

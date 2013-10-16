@@ -1,12 +1,12 @@
-define([
-  'notify',
-  'util/strings',
+define('src/vm.panel.login', [
+  'src/notify',
+  'src/util/strings',
   'ko',
-  'util/utils',
-  'vm.controller',
-  'dataservice',
-  'router/router',
-  'config'
+  'src/util/utils',
+  'src/vm.controller',
+  'src/dataservice',
+  'src/router/router',
+  'src/config'
 ], function(
   notify,
   strings,

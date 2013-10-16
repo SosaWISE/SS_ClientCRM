@@ -9,11 +9,13 @@
   <script src="js-specs/lib/phantom-polyfill.js"></script>
   <script src="js-specs/lib/jasmine.js"></script>
   <script src="js-specs/lib/jasmine-html.js"></script>
-
-  <script src="js/requirejsConfig.js"></script>
-  <script data-main="../../js-specs/allspecs" src="js/lib/require.js"></script>
-
   <script src="js-specs/lib/reporter.js"></script>
+
+  <script src="js/depends.conf.js"></script>
+  <script src="js/lib/depends.js"></script>
+  <script>
+    require('spec/allspecs');
+  </script>
 
 </head>
 <body>

@@ -1,4 +1,6 @@
-﻿define(['ko'], function(ko) {
+﻿define('src/knockout/ko.command', [
+  'ko'
+], function(ko) {
   "use strict";
 
   ko.isCommand = function(obj) {
