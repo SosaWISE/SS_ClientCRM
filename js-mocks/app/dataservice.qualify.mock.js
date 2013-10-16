@@ -1,8 +1,8 @@
 define('mock/app/dataservice.qualify.mock', [
-  'src/mocker',
+  'mock/mockery',
   'src/dataservice.qualify'
 ], function(
-  mocker,
+  mockery,
   QualifyDataservice
 ) {
   "use strict";
@@ -10,7 +10,7 @@ define('mock/app/dataservice.qualify.mock', [
   return function(settings) {
     QualifyDataservice.prototype.salesRepRead = function(data, cb) {
       setTimeout(function() {
-        var resp = mocker.fromTemplate({
+        var resp = mockery.fromTemplate({
           Code: 0,
           Message: '',
           Value: {
@@ -29,7 +29,7 @@ define('mock/app/dataservice.qualify.mock', [
     };
     QualifyDataservice.prototype.validateAddress = function(data, cb) {
       setTimeout(function() {
-        var resp = mocker.fromTemplate({
+        var resp = mockery.fromTemplate({
           Code: 0,
           Message: '',
           Value: {

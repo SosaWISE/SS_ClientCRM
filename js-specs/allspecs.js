@@ -7,7 +7,7 @@ define('spec/allspecs', [
       'spec/lib/spec.depends',
     ],
     [
-      'spec/app/spec.mocker',
+      'spec/spec.mockery',
     ],
     [
       'spec/app/router/spec.route',

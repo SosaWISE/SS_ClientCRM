@@ -1,15 +1,16 @@
-define('src/mocker', [
+// the mock factory
+define('mock/mockery', [
 ], function() {
   'use strict';
 
-  var mocker = {},
+  var mockery = {},
     tokenRegx = /@([A-Z_0-9]+(:?\([^\(\)]*\))?)/g,
     loremIpsum = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum',
     incMap = {};
 
-  mocker.fn = {
+  mockery.fn = {
     BOOL: function() {
-      return mocker.random() >= 0.5;
+      return mockery.random() >= 0.5;
     },
     NUMBER: function(cache, min, max) {
       return randomFromRange(min, max, 0, 10);
@@ -91,7 +92,7 @@ define('src/mocker', [
       return padLeft(randomDate().getSeconds(), '0', 2);
     },
   };
-  mocker.fn.NAME = [].concat(mocker.fn.MALE_NAME).concat(mocker.fn.FEMALE_NAME);
+  mockery.fn.NAME = [].concat(mockery.fn.MALE_NAME).concat(mockery.fn.FEMALE_NAME);
 
   function fromTemplate(template, cache, range) {
     if (template == null) {
@@ -220,9 +221,9 @@ define('src/mocker', [
       // pass along the cache as the first param
       params.unshift(cache);
 
-      fnValue = mocker.fn[fnName];
+      fnValue = mockery.fn[fnName];
       if (!fnValue) {
-        if (mocker.log) {
+        if (mockery.log) {
           console.warn(fnName);
           console.warn(params);
         }
@@ -232,7 +233,7 @@ define('src/mocker', [
 
       // must be an array or a function
       if (Array.isArray(fnValue)) {
-        result = fnValue[Math.floor(fnValue.length * mocker.random())];
+        result = fnValue[Math.floor(fnValue.length * mockery.random())];
       } else {
         result = fnValue.apply(null, params);
       }
@@ -269,29 +270,29 @@ define('src/mocker', [
       max = min;
       min = tmp;
     }
-    return Math.round(mocker.random() * (max - min)) + min;
+    return Math.round(mockery.random() * (max - min)) + min;
   }
 
   function randomDate() {
-    return new Date(Math.floor(mocker.random() * new Date().valueOf()));
+    return new Date(Math.floor(mockery.random() * new Date().valueOf()));
   }
 
   // set to Math.random if you want more random
-  mocker.random = function random() {
+  mockery.random = function random() {
     // http://stackoverflow.com/questions/521295/javascript-random-seeds/19303725#19303725
-    var x = Math.sin(mocker.randomIndex++) * 10000;
+    var x = Math.sin(mockery.randomIndex++) * 10000;
     x = x - Math.floor(x);
     return x;
   };
-  mocker.randomIndex = 1;
-  mocker.fromTemplate = function(template) {
+  mockery.randomIndex = 1;
+  mockery.fromTemplate = function(template) {
     return fromTemplate(template, {});
   };
-  mocker.log = false;
-  mocker.getData = getData;
-  mocker.randomFromRange = randomFromRange;
-  mocker.padLeft = padLeft;
-  mocker.padRight = padRight;
+  mockery.log = false;
+  mockery.getData = getData;
+  mockery.randomFromRange = randomFromRange;
+  mockery.padLeft = padLeft;
+  mockery.padRight = padRight;
 
-  return mocker;
+  return mockery;
 });
