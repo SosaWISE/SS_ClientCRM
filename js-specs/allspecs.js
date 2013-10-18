@@ -17,6 +17,7 @@ define('spec/allspecs', [
       'spec/app/util/spec.strings',
 
       'spec/app/spec.dataservice.base',
+      'spec/app/spec.harold',
       'spec/app/spec.notify',
     ]
   ], function() {
