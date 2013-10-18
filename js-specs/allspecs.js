@@ -2,7 +2,7 @@ define('spec/allspecs', [
   'spec/runner'
 ], function(runner) {
   "use strict";
-  runner([
+  runner({}, [
     [
       'spec/lib/spec.depends',
     ],
@@ -19,5 +19,7 @@ define('spec/allspecs', [
       'spec/app/spec.dataservice.base',
       'spec/app/spec.notify',
     ]
-  ], {});
+  ], function() {
+    console.log(' - specs loaded');
+  });
 });

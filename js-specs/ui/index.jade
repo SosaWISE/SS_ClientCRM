@@ -1,0 +1,31 @@
+!!! HTML5
+html
+  head
+    title UI Tests
+    meta(http-equiv="X-UA-Compatible", content="IE=Edge,chrome=1")
+    meta(http-equiv="content-type", content="text/html; charset=utf-8")
+    link(href="http://fonts.googleapis.com/css?family=Roboto:400,500,700,300", rel="stylesheet", type="text/css")
+
+    link(rel="stylesheet", type="text/css", href="/js-specs/lib/jasmine.css")
+    script(src="/js-specs/lib/phantom-polyfill.js")
+    script(src="/js-specs/lib/jasmine.js")
+    script(src="/js-specs/lib/jasmine-html.js")
+    script(src="/js-specs/lib/reporter.js")
+
+    link(rel="stylesheet", type="text/css", media="screen", href="/index.css")
+  body
+    ul(class="tabs cf")
+      li(class="tab specs")
+        a Results
+      li(class="tab page")
+        a(class="frameLocation") Page
+    div
+      div(class="container page", style="position:absolute;top:38px;right:0px;bottom:0px;left:0px;")
+        iframe(id="pageFrame", src="/index.html", name="indexhtml", style="width:100%;height:100%;position:absolute;top:0px;right:0px;bottom:0px;left:0px;")
+      div(class="container specs", style="position:absolute;top:38px;right:0px;bottom:0px;left:0px;background-color:#eeeeee;")
+        div(class="ph-HTMLReporter")
+
+    script(src="/js/depends.conf.js")
+    script(src="/js/lib/depends.js")
+    script
+      require("spec/ui/index");

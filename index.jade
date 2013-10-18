@@ -39,9 +39,13 @@ html
     div(style="display:none")
       include ./jade/_all
 
+    //- testing
+    script
+      parent.browser && parent.browser.init(window);
+
     //- debug
-    script(src="js/depends.conf.js")
-    script(src="js/lib/depends.js")
+    script(src="/js/depends.conf.js")
+    script(src="/js/lib/depends.js")
 
     //- compiled
     //- script(src="/build/lib.js")
