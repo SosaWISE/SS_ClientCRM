@@ -1,4 +1,4 @@
-define('spec/jasmine-ui', [
+define('spec/ui/jasmine-matchers', [
   'jquery'
 ], function($) {
   'use strict';

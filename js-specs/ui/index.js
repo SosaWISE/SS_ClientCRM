@@ -3,7 +3,7 @@ define('spec/ui/index', [
   'spec/ui/_all',
   'jquery',
   'spec/ui/browser',
-  'spec/jasmine-ui'
+  'spec/ui/jasmine-matchers'
 ], function(
   runner,
   uiSpecs,
