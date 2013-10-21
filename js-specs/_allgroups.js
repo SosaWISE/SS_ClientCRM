@@ -1,14 +1,22 @@
-define('spec/allspecs', [
-  'spec/runner'
-], function(runner) {
+define('spec/_allgroups', [
+  'src/u-kov/specs/_all',
+], function(
+  ukovSpecs
+) {
   "use strict";
-  runner({}, [
+  var specGroups = [
+    // lib specs
     [
       'spec/lib/spec.depends',
     ],
     [
       'spec/spec.mockery',
     ],
+
+    // u-kov specs
+    ukovSpecs,
+
+    // app specs
     [
       'spec/app/router/spec.route',
       'spec/app/router/spec.router',
@@ -20,7 +28,7 @@ define('spec/allspecs', [
       'spec/app/spec.harold',
       'spec/app/spec.notify',
     ]
-  ], function() {
-    console.log(' - specs loaded');
-  });
+  ];
+
+  return specGroups;
 });

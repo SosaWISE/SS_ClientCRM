@@ -1,8 +1,8 @@
 /*global describe,it,beforeEach,expect*/
-define([
+define('src/u-kov/specs/ukov.spec', [
  'ko',
- 'ukov',
- 'ukov-model'
+ 'src/u-kov/app/ukov',
+ 'src/u-kov/app/ukov-model'
 ], function(
   ko,
   Ukov,
