@@ -1,12 +1,14 @@
 define('spec/ui/index', [
+  'spec/runner',
+  'spec/ui/_all',
   'jquery',
   'spec/ui/browser',
-  'spec/runner',
   'spec/jasmine-ui'
 ], function(
+  runner,
+  uiSpecs,
   $,
-  browser,
-  runner
+  browser
 ) {
   'use strict';
 
@@ -48,9 +50,7 @@ define('spec/ui/index', [
 
   browser.ready($('.frameLocation'), function() {
     runner({}, [
-      [
-        'spec/ui/spec.account.new',
-      ],
+      uiSpecs
     ], function() {
       console.log(' - specs loaded');
       $('.ph-HTMLReporter').replaceWith($('#HTMLReporter'));

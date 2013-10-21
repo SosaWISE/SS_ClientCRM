@@ -12,14 +12,4 @@ html
     script(src="/js/lib/depends.js")
 
     script
-      require([
-        'spec/runner',
-        'spec/_allgroups'
-      ], function(
-        runner,
-        _allgroups
-      ) {
-        runner({}, _allgroups, function() {
-          console.log(' - specs loaded');
-        });
-      });
+      require('spec/index');
