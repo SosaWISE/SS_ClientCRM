@@ -1,0 +1,8 @@
+div(class="combo")
+  div(class="cover",data-bind="text:selectedItem().text,click:clickToggleOpen")
+  div(class="combo-list",data-bind="visible:isOpen")
+    input(type="text",data-bind="hasfocus:focusInput,select:selectInput,event:{keydown:inputKeydown},value:filterText,valueUpdate:'keyup'")
+    ul(data-bind="foreach:list")
+      li(data-bind="visible:matches,click:$parent.selectItem")
+        div(data-bind="scrollIntoView:active,active:active")
+          a(data-bind="html:html")

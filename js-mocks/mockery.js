@@ -48,24 +48,24 @@ define('mock/mockery', [
       return fromTemplate('(@NUMBER(200,999)) @NUMBER(100,999)-@NUMBER(1000,9999)', cache);
     },
     EMAIL: function(cache) {
-      return fromTemplate('@NAME.@LAST_NAME@@LAST_NAME(cb).com', cache).toLowerCase();
+      return fromTemplate('@NAME.@LASTNAME@@LASTNAME(cb).com', cache).toLowerCase();
     },
     FULLNAME: function(cache) {
-      return fromTemplate('@NAME @LAST_NAME', cache);
+      return fromTemplate('@NAME @LASTNAME', cache);
     },
     CHAR_UPPER: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
     CHAR_LOWER: 'abcdefghijklmnopqrstuvwxyz'.split(''),
-    MALE_NAME: ['James', 'John', 'Robert', 'Michael', 'William', 'David',
+    MNAME: ['James', 'John', 'Robert', 'Michael', 'William', 'David',
         'Richard', 'Charles', 'Joseph', 'Thomas', 'Christopher', 'Daniel',
         'Paul', 'Mark', 'Donald', 'George', 'Kenneth', 'Steven', 'Edward',
         'Brian', 'Ronald', 'Anthony', 'Kevin', 'Jason', 'Matthew', 'Gary',
         'Timothy', 'Jose', 'Larry', 'Jeffrey', 'Frank', 'Scott', 'Eric'],
-    FEMALE_NAME: ['Mary', 'Patricia', 'Linda', 'Barbara', 'Elizabeth',
+    FEMNAME: ['Mary', 'Patricia', 'Linda', 'Barbara', 'Elizabeth',
         'Jennifer', 'Maria', 'Susan', 'Margaret', 'Dorothy', 'Lisa', 'Nancy',
         'Karen', 'Betty', 'Helen', 'Sandra', 'Donna', 'Carol', 'Ruth', 'Sharon',
         'Michelle', 'Laura', 'Sarah', 'Kimberly', 'Deborah', 'Jessica',
         'Shirley', 'Cynthia', 'Angela', 'Melissa', 'Brenda', 'Amy', 'Anna'],
-    LAST_NAME: ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller',
+    LASTNAME: ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller',
         'Davis', 'Garcia', 'Rodriguez', 'Wilson', 'Martinez', 'Anderson',
         'Taylor', 'Thomas', 'Hernandez', 'Moore', 'Martin', 'Jackson',
         'Thompson', 'White', 'Lopez', 'Lee', 'Gonzalez', 'Harris', 'Clark',
@@ -92,7 +92,7 @@ define('mock/mockery', [
       return padLeft(randomDate().getSeconds(), '0', 2);
     },
   };
-  mockery.fn.NAME = [].concat(mockery.fn.MALE_NAME).concat(mockery.fn.FEMALE_NAME);
+  mockery.fn.NAME = [].concat(mockery.fn.MNAME).concat(mockery.fn.FEMNAME);
 
   function fromTemplate(template, cache, range) {
     if (template == null) {

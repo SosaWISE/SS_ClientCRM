@@ -4,14 +4,18 @@ define('src/vm.rep.find', [
   'src/vm.base',
   'ko',
   'src/ukov',
-  'src/dataservice'
+  'src/dataservice',
+  'mock/mockery',
+  'src/vm.combo',
 ], function(
   notify,
   utils,
   BaseViewModel,
   ko,
   ukov,
-  dataservice
+  dataservice,
+  mockery,
+  ComboViewModel
 ) {
   "use strict";
 
@@ -76,6 +80,17 @@ define('src/vm.rep.find', [
     );
 
     _this.loading = _this.cmdFind.isExecuting;
+
+    //////////////TESTING///////////////////////////////
+    _this.comboVM = new ComboViewModel();
+    _this.comboVM.setList(mockery.fromTemplate({
+      'list|100-100': [
+        {
+          text: '@FULLNAME',
+        }
+      ]
+    }).list);
+    //////////////TESTING///////////////////////////////
   }
   utils.inherits(FindRepViewModel, BaseViewModel);
   FindRepViewModel.prototype.viewTmpl = 'tmpl-rep_find';

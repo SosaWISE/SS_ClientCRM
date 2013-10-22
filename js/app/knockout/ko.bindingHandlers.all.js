@@ -165,4 +165,27 @@
     },
   };
 
+
+  // scroll element into view
+  //---------------------------
+  ko.bindingHandlers.scrollIntoView = {
+    update: function(element, valueAccessor) {
+      if (unwrap(valueAccessor())) {
+        element.scrollIntoView();
+      }
+    },
+  };
+
+  // select element
+  //---------------------------
+  ko.bindingHandlers.select = {
+    update: function(element, valueAccessor) {
+      var observable = valueAccessor();
+      if (observable()) {
+        element.select();
+        observable(false);
+      }
+    },
+  };
+
 });

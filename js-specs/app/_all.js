@@ -9,6 +9,7 @@ define('spec/app/_all', [
     'spec/app/util/spec.joiner',
     'spec/app/util/spec.strings',
 
+    'spec/app/vm.combo.spec',
     'spec/app/spec.dataservice.base',
     'spec/app/spec.harold',
     'spec/app/spec.notify',
