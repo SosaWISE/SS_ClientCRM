@@ -1,4 +1,4 @@
-define('src/harold', [
+define('src/core/harold', [
   'src/util/utils'
 ], function(
   utils

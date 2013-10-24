@@ -1,9 +1,9 @@
 define('src/app', [
-  'src/router/router',
+  'src/core/router',
   'src/vm.panel.login',
   'src/vm.panel.home',
   'src/vm.panel.accounts',
-  'src/notify'
+  'src/core/notify'
 ], function(
   router,
   LoginViewModel,

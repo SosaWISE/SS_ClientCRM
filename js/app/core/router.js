@@ -1,6 +1,6 @@
-define('src/router/router', [
+define('src/core/router', [
   'jquery',
-  'src/router/route',
+  'src/core/route',
   'src/config'
 ], function(
   $,

@@ -1,4 +1,4 @@
-define('src/notify', [
+define('src/core/notify', [
   'ko',
   'src/resources',
   'src/util/strings'

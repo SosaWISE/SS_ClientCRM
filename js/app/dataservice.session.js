@@ -1,6 +1,6 @@
 define('src/dataservice.session', [
   'src/util/utils',
-  'src/dataservice.base',
+  'src/core/dataservice.base',
   'src/config'
 ], function(
   utils,

@@ -1,4 +1,4 @@
-define('src/router/route', [
+define('src/core/route', [
 ], function() {
   "use strict";
 

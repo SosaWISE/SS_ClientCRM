@@ -1,7 +1,7 @@
 define('src/vm.account.search', [
-  'src/notify',
+  'src/core/notify',
   'src/util/utils',
-  'src/vm.base',
+  'src/core/vm.base',
   'ko'
 ], function(
   notify,

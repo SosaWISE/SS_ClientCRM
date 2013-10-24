@@ -1,7 +1,7 @@
 define('src/vm.panel.home', [
-  'src/notify',
+  'src/core/notify',
   'src/util/utils',
-  'src/vm.controller',
+  'src/core/vm.controller',
 ], function(
   notify,
   utils,

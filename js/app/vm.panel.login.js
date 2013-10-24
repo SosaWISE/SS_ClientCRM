@@ -1,11 +1,11 @@
 define('src/vm.panel.login', [
-  'src/notify',
+  'src/core/notify',
   'src/util/strings',
   'ko',
   'src/util/utils',
-  'src/vm.controller',
+  'src/core/vm.controller',
   'src/dataservice',
-  'src/router/router',
+  'src/core/router',
   'src/config'
 ], function(
   notify,

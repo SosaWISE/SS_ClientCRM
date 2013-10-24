@@ -8,7 +8,7 @@ define('src/bootstrapper', [
   'src/knockout/ko.bindingHandlers.all',
 
   'src/config',
-  'src/router/router',
+  'src/core/router',
   'src/dataservice',
   'src/app'
 ], function(

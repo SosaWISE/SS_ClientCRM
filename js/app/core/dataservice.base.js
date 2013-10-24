@@ -1,4 +1,4 @@
-define('src/dataservice.base', [
+define('src/core/dataservice.base', [
   'jquery',
   'src/util/querystring'
 ], function(

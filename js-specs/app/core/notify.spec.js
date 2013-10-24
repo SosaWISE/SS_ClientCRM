@@ -1,5 +1,5 @@
-define('spec/app/spec.notify', [
-  'src/notify',
+define('spec/app/core/notify.spec', [
+  'src/core/notify',
   'ko'
 ], function(
   notify,

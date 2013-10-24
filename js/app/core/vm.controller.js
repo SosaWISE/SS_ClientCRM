@@ -1,9 +1,9 @@
-define('src/vm.controller', [
+define('src/core/vm.controller', [
   'jquery',
   'src/config',
   'src/util/utils',
   'ko',
-  'src/vm.base',
+  'src/core/vm.base',
 ], function(
   $,
   config,

@@ -1,7 +1,7 @@
 define('src/vm.panel.accounts', [
-  'src/notify',
+  'src/core/notify',
   'src/util/utils',
-  'src/vm.controller',
+  'src/core/vm.controller',
   'src/vm.account.search',
   'src/vm.account.new',
   'src/vm.account'

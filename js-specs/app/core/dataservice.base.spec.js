@@ -1,5 +1,5 @@
-define('spec/app/spec.dataservice.base', [
-  'src/dataservice.base'
+define('spec/app/core/dataservice.base.spec', [
+  'src/core/dataservice.base'
 ], function(DataserviceBase) {
   "use strict";
 

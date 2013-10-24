@@ -1,5 +1,5 @@
-define('spec/app/spec.harold', [
-  'src/harold'
+define('spec/app/core/harold.spec', [
+  'src/core/harold'
 ], function(
   harold
 ) {

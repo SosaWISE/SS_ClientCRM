@@ -1,5 +1,5 @@
-define('spec/app/router/spec.route', [
-  'src/router/route'
+define('spec/app/core/route.spec', [
+  'src/core/route'
 ], function(Route) {
   "use strict";
 
