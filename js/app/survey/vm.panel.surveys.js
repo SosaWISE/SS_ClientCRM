@@ -19,7 +19,7 @@ define('src/survey/vm.panel.surveys', [
   }
   utils.inherits(SurveysPanelViewModel, ControllerViewModel);
 
-  SurveysPanelViewModel.prototype.onLoad = function(routeData, cb) { // override me
+  SurveysPanelViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
     var _this = this;
     dataservice.survey.getSurveyTypes({}, function(resp) {
       if (resp.Code !== 0) {

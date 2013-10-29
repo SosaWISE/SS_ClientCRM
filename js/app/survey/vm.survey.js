@@ -70,6 +70,8 @@ define('src/survey/vm.survey', [
     // ];
     _this.translations = ko.observableArray();
 
+    _this.translationsCss = ko.computed(_this.computeTranslationsCss, _this);
+
     //
     // events
     //
@@ -77,7 +79,7 @@ define('src/survey/vm.survey', [
   utils.inherits(SurveyViewModel, ControllerViewModel);
   SurveyViewModel.prototype.viewTmpl = 'tmpl-survey';
 
-  SurveyViewModel.prototype.onLoad = function(routeData, cb) { // override me
+  SurveyViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
     var _this = this,
       childList = [],
       join = joiner(),
@@ -129,6 +131,16 @@ define('src/survey/vm.survey', [
       _this.list(childList);
       cb(true);
     });
+  };
+
+  SurveyViewModel.prototype.computeTranslationsCss = function() {
+    var results = [];
+    this.translations().forEach(function(surveyTranslationVM) {
+      if (surveyTranslationVM.active()) {
+        results.push('show-' + surveyTranslationVM.model.LocalizationCode);
+      }
+    });
+    return results.join(' ');
   };
 
   function makeTree(list, parent) {

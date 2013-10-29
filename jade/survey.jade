@@ -1,22 +1,15 @@
-div(class="survey")
-  h3(data-bind="text:model.Version")
+div(class="survey",data-bind="css:translationsCss")
+  div(class="head")
+    ul(class="toggles",data-bind="foreach:translations")
+      li(data-bind="click:click")
+        a(data-bind="active:active")
+          span(data-bind="text:model.LocalizationCode")
 
-  //- //- SurveyTranslations & Questions
-  //- h2 SurveyTranslations &amp; Questions
-  //- div(data-bind="foreach:list")
-  //-   h4(data-bind="text:model.SurveyId")
+    br
+  div(class="content")
+    //- h2 Questions
+    div(data-bind="foreach:questions")
+      //- h4(data-bind="text:model.QuestionID")
+      div(data-bind="template:viewTmpl")
 
-  //- SurveyTranslations
-  ul(data-bind="foreach:translations")
-    li
-      a(data-bind="text:model.LocalizationCode")
-    //- div(data-bind="foreach:list")
-      h4(data-bind="text:QuestionTranslationID")
-      h5(data-bind="text:Name")
-
-  h2 Questions
-  div(data-bind="foreach:questions")
-    h4(data-bind="text:model.QuestionID")
-    div(data-bind="template:viewTmpl")
-
-  br
+    br

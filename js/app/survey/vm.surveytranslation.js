@@ -20,11 +20,19 @@ define('src/survey/vm.surveytranslation', [
     SurveyTranslationViewModel.super_.call(_this, options);
 
     _this.questionTranslationsMap = ko.observable({});
+
+
+    //
+    // events
+    //
+    _this.click = function() {
+      _this.active(!_this.active());
+    };
   }
   utils.inherits(SurveyTranslationViewModel, ControllerViewModel);
   SurveyTranslationViewModel.prototype.viewTmpl = 'tmpl-surveytranslation';
 
-  SurveyTranslationViewModel.prototype.onLoad = function(routeData, cb) { // override me
+  SurveyTranslationViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
     var _this = this;
 
     dataservice.survey.getQuestionTranslations({

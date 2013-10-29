@@ -30,7 +30,7 @@ define('src/survey/vm.surveytype', [
   utils.inherits(SurveyTypeViewModel, ControllerViewModel);
   SurveyTypeViewModel.prototype.viewTmpl = 'tmpl-surveytype';
 
-  SurveyTypeViewModel.prototype.onLoad = function(routeData, cb) { // override me
+  SurveyTypeViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
     var _this = this,
       childList = [],
       join = joiner(),
