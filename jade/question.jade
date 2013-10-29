@@ -1,0 +1,35 @@
+table
+  tr
+    td
+      //- h3(data-bind="text:number")
+      h2 1.
+    td
+      //- input(type="text",placeholder="Essence of Question")
+      span(data-bind="text:questionMeaning.model.Name")
+  <!-- ko foreach:translations -->
+  tr
+    td
+    td
+      div(data-bind="text:LocalizationCode")
+      div(data-bind="text:model.TextFormat")
+      br
+  <!-- /ko -->
+  tr(data-bind="visible:questionMeaning.list().length>0")
+    td
+    td
+      h4 Tokens:
+      ul(data-bind="foreach:questionMeaning.list")
+        li
+          a(data-bind="text:Token")
+  tr(data-bind="visible:list().length>0")
+    td
+    td
+      h4 Possible Answers:
+      ul(data-bind="foreach:list")
+        li
+          a(data-bind="text:AnswerText")
+  tr
+    td
+    td
+      div(data-bind="foreach:questions")
+        div(data-bind="template:viewTmpl")

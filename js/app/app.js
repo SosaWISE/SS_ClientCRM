@@ -3,12 +3,14 @@ define('src/app', [
   'src/vm.panel.login',
   'src/vm.panel.home',
   'src/vm.panel.accounts',
+  'src/survey/vm.panel.surveys',
   'src/core/notify'
 ], function(
   router,
   LoginViewModel,
   HomePanelViewModel,
   AccountsPanelViewModel,
+  SurveysPanelViewModel,
   notify
 ) {
   "use strict";
@@ -49,6 +51,11 @@ define('src/app', [
       name: 'Accounts',
       ico: '&#128101;',
     }),
+    new SurveysPanelViewModel({
+      id: 'surveys',
+      name: 'Surveys',
+      ico: '&#128101;',
+    }),
   ]);
   setTemplate(app.panels, 'viewTmpl', 'panel_');
 
@@ -61,8 +68,9 @@ define('src/app', [
   });
 
   //
-  router.addRoute(app.panelMap.accounts, 'accounts', ':id/:action', {});
+  router.addRoute(app.panelMap.surveys, 'surveys', ':typeid', {});
   router.addRoute(app.panelMap.home, 'home', '', {});
+  router.addRoute(app.panelMap.accounts, 'accounts', ':id/:action', {});
 
   return app;
 });

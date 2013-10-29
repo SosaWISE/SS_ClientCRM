@@ -4,6 +4,7 @@ define('mock/mockery', [
   'use strict';
 
   var mockery = {},
+    identitySeed = 1000,
     tokenRegx = /@([A-Z_0-9]+(:?\([^\(\)]*\))?)/g,
     loremIpsum = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum',
     incMap = {};
@@ -20,10 +21,26 @@ define('mock/mockery', [
       if (val) {
         val++;
       } else {
-        val = 1000; // default start value
+        val = identitySeed; // default start value
       }
       incMap[key] = val;
       return val;
+    },
+    INC_NULLABLE: function(cache, key) {
+      if (mockery.random() >= 0.8) {
+        return null; // top level
+      } else {
+        return mockery.fn.INC(cache, key + 'NULLABLE');
+      }
+    },
+    REF_INC: function(cache, key) {
+      return mockery.fn.NUMBER(cache, identitySeed, incMap[key] || identitySeed);
+    },
+    FK: function(cache, key) {
+      return incModulus(cache, key, key + '_FK_');
+      // var count = incMap[key] - identitySeed + 1,
+      //   fkCount = mockery.fn.INC(cache, key + '_FK_') - identitySeed;
+      // return (fkCount % count) + identitySeed;
     },
     IMG: function(cache, width, height, category) {
       return 'http://lorempixel.com/' + width + '/' + height + '/' + (category || '');
@@ -32,12 +49,16 @@ define('mock/mockery', [
       var results = [],
         num = randomFromRange(min, max, 10, 50),
         length = 0,
+        splitIndex,
+        str = loremIpsum,
         tmpStr;
+      splitIndex = Math.floor((loremIpsum.length - 2) * mockery.random());
+      str = loremIpsum.substr(splitIndex) + loremIpsum.substr(0, splitIndex);
       while (length < num) {
-        if ((length + loremIpsum.length) < num) {
-          tmpStr = loremIpsum;
+        if ((length + str.length) < num) {
+          tmpStr = str;
         } else {
-          tmpStr = loremIpsum.substr(0, num - length);
+          tmpStr = str.substr(0, num - length);
         }
         results.push(tmpStr);
         length += tmpStr.length + 2; // includes join string length
@@ -262,6 +283,12 @@ define('mock/mockery', [
     return txt;
   }
 
+  function incModulus(cache, refKey, key) {
+    var count = incMap[refKey] - identitySeed + 1,
+      refCount = mockery.fn.INC(cache, key) - identitySeed;
+    return (refCount % count) + identitySeed;
+  }
+
   function randomFromRange(min, max, defaultMin, defaultMax) {
     min = (min) ? parseInt(min, 10) : (defaultMin || 0);
     max = (max) ? parseInt(max, 10) : (defaultMax || 10);
@@ -293,6 +320,7 @@ define('mock/mockery', [
   mockery.randomFromRange = randomFromRange;
   mockery.padLeft = padLeft;
   mockery.padRight = padRight;
+  mockery.incModulus = incModulus;
 
   return mockery;
 });

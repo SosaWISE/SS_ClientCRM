@@ -1,5 +1,6 @@
 define('mock/index', [
- 'mock/app/dataservice.qualify.mock'
+ 'mock/app/dataservice.qualify.mock',
+ 'mock/app/dataservice.survey.mock',
 ], function() {
   "use strict";
 
