@@ -8,7 +8,7 @@
 
 
 
-.mixin-edit-btn(@content, @top, @left) {
+.mixin-edit-btn(@content, @top, @left, @fontSize:28px) {
   content: @content;
   display: block;
   width: 32px;
@@ -18,7 +18,7 @@
   left: @left;
   color: white;
   font-family: 'SecuritySciences';
-  font-size: 28px;
+  font-size: @fontSize;
   text-align: center;
 }
 

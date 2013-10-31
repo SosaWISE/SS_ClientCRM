@@ -38,6 +38,7 @@ define('src/core/vm.layers', [
         }
       },
     };
+    vm.closeLayer = layer.close;
     layers.push(layer);
     return layer;
   }

@@ -2,20 +2,24 @@ table(style="margin-top:10px;")
   tr
     td(style="vertical-align:top;")
       //- h3(data-bind="text:number")
-      h2 1.
+      h2(data-bind="text:name")
     td
       //- input(type="text",placeholder="Essence of Question")
       span(data-bind="text:questionMeaning.model.Name")
-      div(data-bind="visible:questionMeaning.list().length>0")
-        span Tokens:
-        ul(class="tokens cf",data-bind="foreach:questionMeaning.list")
-          li
-            a(data-bind="text:Token")
-      div(data-bind="visible:list().length>0")
-        span Possible Answers:
-        ul(class="pa cf",data-bind="foreach:list")
-          li
-            a(data-bind="text:AnswerText")
+      ul(class="sv tokens cf",data-bind="visible:questionMeaning.list().length>0")
+        li
+          span(style="color:black") Tokens:
+        <!-- ko foreach:questionMeaning.list -->
+        li
+          a(data-bind="text:Token")
+        <!-- /ko -->
+      ul(class="sv pa cf",data-bind="visible:list().length>0")
+        li
+          span(style="color:black") Possible Answers:
+        <!-- ko foreach:list -->
+        li
+          a(data-bind="text:AnswerText")
+        <!-- /ko -->
   <!-- ko foreach:translations -->
   tr
     td
@@ -29,3 +33,11 @@ table(style="margin-top:10px;")
     td
       div(data-bind="foreach:questions")
         div(data-bind="template:viewTmpl")
+  tr
+    td
+    td
+      div(class="actions")
+        ul(class="sv")
+          li
+            a(class="btn add-btn",data-bind="click:surveyVM.clickAddQuestion")
+              span(data-bind="text:nextName")

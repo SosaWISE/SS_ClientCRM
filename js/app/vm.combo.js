@@ -23,6 +23,7 @@ define('src/vm.combo', [
     _this.filterText = ko.observable('');
     _this.selectedItem = ko.observable(_this.noItemSelected);
     _this.list = ko.observableArray();
+    _this.actions = ko.observableArray();
     _this.isOpen = ko.observable(false);
     _this.focusInput = ko.observable(false);
     _this.selectInput = ko.observable(false);
@@ -75,6 +76,11 @@ define('src/vm.combo', [
         _this.selectedItem(item);
         _this.clickClose();
       }
+    };
+
+    _this.clickAction = function(action) {
+      _this.clickClose();
+      action.onClick(_this.filterText());
     };
   }
   utils.inherits(ComboViewModel, BaseViewModel);

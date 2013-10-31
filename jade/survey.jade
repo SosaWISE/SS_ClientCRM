@@ -1,15 +1,20 @@
 div(class="survey",data-bind="css:translationsCss")
+  div(class="layers", data-bind="template:{name:'tmpl-layers',data:layersVM}")
+
   div(class="head")
-    ul(class="toggles",data-bind="foreach:translations")
+    ul(class="sv",data-bind="foreach:translations")
       li(data-bind="click:click")
-        a(data-bind="active:active")
+        a(class="btn",data-bind="active:active")
           span(data-bind="text:model.LocalizationCode")
 
     br
   div(class="content")
-    //- h2 Questions
     div(data-bind="foreach:questions")
-      //- h4(data-bind="text:model.QuestionID")
+      //- start question recursion
       div(data-bind="template:viewTmpl")
 
-    br
+    div(class="actions")
+      ul(class="sv")
+        li
+          a(class="btn add-btn",data-bind="click:clickAddQuestion")
+            span(data-bind="text:nextName")

@@ -1,16 +1,12 @@
 div(class="module-nav")
   //- SurveyTypes
-  div(data-bind="foreach:list")
-    h2(data-bind="text:model.Name")
+  <!-- ko foreach:list -->
+  h2(data-bind="text:model.Name")
+  ul(data-bind="foreach:surveys")
+    li
+      a(data-bind="text:model.Version")
 
-    ul(data-bind="foreach:surveys")
-      li
-        a(data-bind="text:model.Version")
-
-    //- h2 Question Meanings
-    //- div(data-bind="foreach:questionMeanings")
-    //-   h4(data-bind="text:Name")
-
-    //- Surveys
-    div(data-bind="foreach:surveys")
-      div(class="module",data-bind="template:viewTmpl")
+  <!-- ko with:surveys()[0] -->
+  div(class="module",data-bind="template:viewTmpl")
+  <!-- /ko -->
+  <!-- /ko -->

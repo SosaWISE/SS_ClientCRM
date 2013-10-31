@@ -19,12 +19,17 @@ define('src/survey/vm.question', [
     var _this = this;
     QuestionViewModel.super_.call(_this, options);
 
+    // observables
     _this.questions = ko.observableArray();
-
+    _this.groupOrder = ko.observable(-1);
+    // computed observables
     _this.translations = ko.computed(_this.computeTranslations, _this);
+    _this.name = ko.computed(_this.computeName, _this);
+    _this.nextName = ko.computed(_this.computeNextName, _this);
   }
   utils.inherits(QuestionViewModel, ControllerViewModel);
   QuestionViewModel.prototype.viewTmpl = 'tmpl-question';
+  QuestionViewModel.prototype.parent = null;
 
   QuestionViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
     var _this = this;
@@ -62,6 +67,20 @@ define('src/survey/vm.question', [
     });
     return results;
   };
+  QuestionViewModel.prototype.computeName = function() {
+    var _this = this;
+    return getName(_this.parent, _this.groupOrder());
+  };
+  QuestionViewModel.prototype.computeNextName = function() {
+    // next child name
+    var _this = this;
+    return getName(_this, _this.questions().length);
+  };
+
+  function getName(parent, index) {
+    var pName = parent ? parent.name() : '';
+    return pName + (index + 1) + '.';
+  }
 
 
   return QuestionViewModel;

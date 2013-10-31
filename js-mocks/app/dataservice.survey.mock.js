@@ -7,18 +7,112 @@ define('mock/app/dataservice.survey.mock', [
 ) {
   "use strict";
 
-  var surveyTypes,
-    surveys,
-    surveyTranslations,
-    tokens,
-    questionMeanings,
-    questionMeanings_Tokens_Map,
-    questions,
-    questionTranslations,
-    possibleAnswers,
-    questions_PossibleAnswers_Map,
-    tokenCount = 0,
-    tokenValues = [
+  function mock(settings) {
+    function send(cb, value) {
+      setTimeout(function() {
+        cb({
+          Code: 0,
+          Message: '',
+          Value: value,
+        });
+      }, settings.timeout);
+    }
+
+    Dataservice.prototype.getSurveyTypes = function(data, cb) {
+      send(cb, surveyTypes);
+    };
+
+    Dataservice.prototype.getSurveys = function(data, cb) {
+      var list = [];
+      surveys.forEach(function(item) {
+        if (item.SurveyTypeId === data.SurveyTypeID) {
+          list.push(item);
+        }
+      });
+      send(cb, list);
+    };
+
+    Dataservice.prototype.getTokens = function(data, cb) {
+      send(cb, tokens);
+    };
+
+    Dataservice.prototype.getQuestionMeanings = function(data, cb) {
+      var list = [];
+      questionMeanings.forEach(function(item) {
+        if (item.SurveyTypeId === data.SurveyTypeID) {
+          list.push(item);
+        }
+      });
+      send(cb, list);
+    };
+
+    Dataservice.prototype.getQuestionMeaningTokens = function(data, cb) {
+      var list = [];
+      questionMeanings_Tokens_Map.forEach(function(item) {
+        if (item.QuestionMeaningId === data.QuestionMeaningID) {
+
+          tokens.some(function(token) {
+            if (item.TokenId === token.TokenID) {
+              list.push(token);
+              return true;
+            }
+          });
+        }
+      });
+      send(cb, list);
+    };
+
+    Dataservice.prototype.getQuestions = function(data, cb) {
+      var list = [];
+      questions.forEach(function(item) {
+        if (item.SurveyId === data.SurveyID) {
+          list.push(item);
+        }
+      });
+      send(cb, list);
+    };
+    Dataservice.prototype.getSurveyTranslations = function(data, cb) {
+      var list = [];
+      surveyTranslations.forEach(function(item) {
+        if (item.SurveyId === data.SurveyID) {
+          list.push(item);
+        }
+      });
+      send(cb, list);
+    };
+
+    Dataservice.prototype.getQuestionPossibleAnswers = function(data, cb) {
+      var list = [];
+      questions_PossibleAnswers_Map.forEach(function(item) {
+        if (item.QuestionId === data.QuestionID) {
+
+          possibleAnswers.some(function(pa) {
+            if (item.PossibleAnswerId === pa.PossibleAnswerID) {
+              list.push(pa);
+              return true;
+            }
+          });
+        }
+      });
+      send(cb, list);
+    };
+
+    Dataservice.prototype.getQuestionTranslations = function(data, cb) {
+      var list = [];
+      questionTranslations.forEach(function(item) {
+        if (item.SurveyTranslationId === data.SurveyTranslationID) {
+          list.push(item);
+        }
+      });
+      send(cb, list);
+    };
+  }
+
+  (function() {
+    // mockery.random = Math.random;
+
+    var tokenCount = 0,
+      tokenValues = [
       'CompanyName',
       'ADUserDisplayName',
 
@@ -32,34 +126,44 @@ define('mock/app/dataservice.survey.mock', [
 
       'SystemDetails.PremisePhone',
     ],
-    paCount = 0,
-    paValues = [
+      paCount = 0,
+      paValues = [
       'yes',
       'no',
       'maybe',
     ],
-    localeCount = 0,
-    localeValues = [
+      localeCount = 0,
+      localeValues = [
       'en',
       'it',
     ];
 
-  // mockery.random = Math.random;
+    function modulusValue(count, values) {
+      return values[count % values.length];
+    }
 
-  function modulusValue(count, values) {
-    return values[count % values.length];
-  }
+    mockery.fn.SV_TOKEN = function() {
+      return modulusValue(tokenCount++, tokenValues);
+    };
+    mockery.fn.SV_PA = function() {
+      return modulusValue(paCount++, paValues);
+    };
+    mockery.fn.LOCALE = function() {
+      return modulusValue(localeCount++, localeValues);
+    };
+  })();
 
-  mockery.fn.SV_TOKEN = function() {
-    return modulusValue(tokenCount++, tokenValues);
-  };
-  mockery.fn.SV_PA = function() {
-    return modulusValue(paCount++, paValues);
-  };
-  mockery.fn.LOCALE = function() {
-    return modulusValue(localeCount++, localeValues);
-  };
-
+  // data used in mock function
+  var surveyTypes,
+    surveys,
+    surveyTranslations,
+    tokens,
+    questionMeanings,
+    questionMeanings_Tokens_Map,
+    questions,
+    questionTranslations,
+    possibleAnswers,
+    questions_PossibleAnswers_Map;
 
   surveyTypes = mockery.fromTemplate({
     'list|1-1': [
@@ -168,106 +272,5 @@ define('mock/app/dataservice.survey.mock', [
     ],
   }).list;
 
-
-
-  return function(settings) {
-    function send(cb, value) {
-      setTimeout(function() {
-        cb({
-          Code: 0,
-          Message: '',
-          Value: value,
-        });
-      }, settings.timeout);
-    }
-
-    Dataservice.prototype.getSurveyTypes = function(data, cb) {
-      send(cb, surveyTypes);
-    };
-
-    Dataservice.prototype.getSurveys = function(data, cb) {
-      var list = [];
-      surveys.forEach(function(item) {
-        if (item.SurveyTypeId === data.SurveyTypeID) {
-          list.push(item);
-        }
-      });
-      send(cb, list);
-    };
-
-    Dataservice.prototype.getTokens = function(data, cb) {
-      send(cb, tokens);
-    };
-
-    Dataservice.prototype.getQuestionMeanings = function(data, cb) {
-      var list = [];
-      questionMeanings.forEach(function(item) {
-        if (item.SurveyTypeId === data.SurveyTypeID) {
-          list.push(item);
-        }
-      });
-      send(cb, list);
-    };
-
-    Dataservice.prototype.getQuestionMeaningTokens = function(data, cb) {
-      var list = [];
-      questionMeanings_Tokens_Map.forEach(function(item) {
-        if (item.QuestionMeaningId === data.QuestionMeaningID) {
-
-          tokens.some(function(token) {
-            if (item.TokenId === token.TokenID) {
-              list.push(token);
-              return true;
-            }
-          });
-        }
-      });
-      send(cb, list);
-    };
-
-    Dataservice.prototype.getQuestions = function(data, cb) {
-      var list = [];
-      questions.forEach(function(item) {
-        if (item.SurveyId === data.SurveyID) {
-          list.push(item);
-        }
-      });
-      send(cb, list);
-    };
-    Dataservice.prototype.getSurveyTranslations = function(data, cb) {
-      var list = [];
-      surveyTranslations.forEach(function(item) {
-        if (item.SurveyId === data.SurveyID) {
-          list.push(item);
-        }
-      });
-      send(cb, list);
-    };
-
-    Dataservice.prototype.getQuestionPossibleAnswers = function(data, cb) {
-      var list = [];
-      questions_PossibleAnswers_Map.forEach(function(item) {
-        if (item.QuestionId === data.QuestionID) {
-
-          possibleAnswers.some(function(pa) {
-            if (item.PossibleAnswerId === pa.PossibleAnswerID) {
-              list.push(pa);
-              return true;
-            }
-          });
-        }
-      });
-      send(cb, list);
-    };
-
-    Dataservice.prototype.getQuestionTranslations = function(data, cb) {
-      var list = [];
-      questionTranslations.forEach(function(item) {
-        if (item.SurveyTranslationId === data.SurveyTranslationID) {
-          list.push(item);
-        }
-      });
-      send(cb, list);
-    };
-  };
+  return mock;
 });

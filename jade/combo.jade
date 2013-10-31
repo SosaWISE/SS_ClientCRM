@@ -2,7 +2,13 @@ div(class="combo")
   div(class="cover",data-bind="text:selectedItem().text,click:clickToggleOpen")
   div(class="combo-list",data-bind="visible:isOpen")
     input(type="text",data-bind="hasfocus:focusInput,select:selectInput,event:{keydown:inputKeydown},value:filterText,valueUpdate:'keyup'")
-    ul(data-bind="foreach:list")
+    ul
+      <!-- ko foreach:list -->
       li(data-bind="visible:matches,click:$parent.selectItem")
         div(data-bind="scrollIntoView:active,active:active")
           a(data-bind="html:html")
+      <!-- /ko -->
+      <!-- ko foreach:actions -->
+      li(class="action",data-bind="click:$parent.clickAction")
+        a(class="btn",data-bind="text:text")
+      <!-- /ko -->

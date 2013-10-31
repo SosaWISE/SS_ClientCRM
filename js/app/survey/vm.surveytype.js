@@ -24,7 +24,7 @@ define('src/survey/vm.surveytype', [
     SurveyTypeViewModel.super_.call(_this, options);
 
     _this.surveys = ko.observableArray();
-    // _this.questionMeanings = ko.observableArray();
+    _this.questionMeanings = ko.observableArray();
     _this.questionMeaningsMap = {};
   }
   utils.inherits(SurveyTypeViewModel, ControllerViewModel);
@@ -73,7 +73,7 @@ define('src/survey/vm.surveytype', [
         list.forEach(function(vm) {
           _this.questionMeaningsMap[vm.model.QuestionMeaningID] = vm;
         });
-        // _this.questionMeanings(list);
+        _this.questionMeanings(list);
         childList = childList.concat(list);
       }
       jList.pop()();

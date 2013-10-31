@@ -1,5 +1,6 @@
 
 .layers {
+  z-index: 100;
   position: absolute;
   display: table;
   width: 100%;
@@ -34,14 +35,21 @@
       height: 100%;
       // overflow: hidden;
 
+      > .content {
+        padding: 20px;
+      }
 
       // .body {
       // padding: 1px;
-      .actions {
+      > .actions {
         position: absolute;
         bottom: 5px;
         right: 20px;
+        width: 100%;
+        ul {
+          float: right;
         }
+      }
       // }
 
       h1.title {
