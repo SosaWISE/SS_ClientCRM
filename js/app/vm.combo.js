@@ -75,6 +75,12 @@ define('src/vm.combo', [
       if (item) {
         _this.selectedItem(item);
         _this.clickClose();
+
+        if (item !== _this.list()[_this.activeIndex]) {
+          _this.deactivateCurrent();
+          _this.activeIndex = _this.list().indexOf(item) - 1;
+          _this.activateNext(true);
+        }
       }
     };
 

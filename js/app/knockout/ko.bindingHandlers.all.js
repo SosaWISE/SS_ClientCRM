@@ -168,13 +168,37 @@
 
   // scroll element into view
   //---------------------------
-  ko.bindingHandlers.scrollIntoView = {
+  ko.bindingHandlers.scrollTop = {
     update: function(element, valueAccessor) {
       if (unwrap(valueAccessor())) {
         element.scrollIntoView();
       }
     },
   };
+
+  // scroll element to middle
+  //---------------------------
+  ko.bindingHandlers.scrollMiddle = {
+    update: function(element, valueAccessor, allBindingsAccessor) {
+      if (unwrap(valueAccessor())) {
+        var top, parent, up = allBindingsAccessor().up || 1;
+        parent = element;
+        while (up > 0 && parent.parentNode) {
+          parent = parent.parentNode;
+          up--;
+        }
+        top = documentOffsetTop(element) - (parent.clientHeight / 2);
+        top = element.offsetTop - parent.offsetTop;
+        top = top - (parent.clientHeight / 2) + (element.clientHeight / 2);
+        parent.scrollTop = top;
+      }
+    },
+  };
+
+  function documentOffsetTop(element) {
+    return element.offsetTop + (element.offsetParent ? documentOffsetTop(element.offsetParent) : 0);
+  }
+
 
   // select element
   //---------------------------

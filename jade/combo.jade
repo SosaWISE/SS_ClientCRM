@@ -5,7 +5,7 @@ div(class="combo")
     ul
       <!-- ko foreach:list -->
       li(data-bind="visible:matches,click:$parent.selectItem")
-        div(data-bind="scrollIntoView:active,active:active")
+        div(data-bind="up:2,scrollMiddle:active,active:active")
           a(data-bind="html:html")
       <!-- /ko -->
       <!-- ko foreach:actions -->

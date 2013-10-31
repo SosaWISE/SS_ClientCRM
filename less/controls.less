@@ -116,9 +116,13 @@
 
 .combo {
   position: relative;
+  border: solid 1px white;
+  .border-radius(3px);
 
   .cover {
     cursor: pointer;
+    padding: 5px;
+    // margin: 5px;
   }
   .combo-list {
     position: absolute;
@@ -134,10 +138,11 @@
   input {
   }
   ul {
-    margin-top: 1px;
+    margin-top: 0px;
     max-height: 175px;
     overflow-x: auto;
     background-color: #fff;
+    .border-radius(0px 0px 5px 5px);
 
     li {
       margin-bottom: 0px !important;
