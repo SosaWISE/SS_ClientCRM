@@ -1,8 +1,7 @@
 div(class="layer", data-bind="width:300,height:250")
-  //- div(data-bind="if:loading")
+  div(data-bind="if:saving")
     div(class="spinner-wrap white", data-bind="template:'tmpl-spinner',active:true")
 
-  //- div(style="height:100%;")
   div(class="content")
     span(data-bind="text:nextName")
     ul(class="edit-form")

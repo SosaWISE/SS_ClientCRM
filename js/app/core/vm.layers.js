@@ -21,24 +21,30 @@ define('src/core/vm.layers', [
   utils.inherits(LayersViewModel, BaseViewModel);
   LayersViewModel.prototype.viewTmpl = 'tmpl-layers';
 
-  LayersViewModel.prototype.show = function(vm) {
-    return add(this.showLayers, vm);
+  LayersViewModel.prototype.show = function(vm, onClose) {
+    return add(this, this.showLayers, vm, onClose);
   };
-  LayersViewModel.prototype.alert = function(vm) {
-    return add(this.alertLayers, vm);
+  LayersViewModel.prototype.alert = function(vm, onClose) {
+    return add(this, this.alertLayers, vm, onClose);
   };
 
-  function add(layers, vm) {
+  function add(layersVM, layers, vm, onClose) {
     var layer = {
       vm: vm,
-      close: function() {
+      close: function(result) {
         var index = layers.indexOf(layer);
         if (index > -1) {
           layers.splice(index, 1);
         }
+        if (typeof(onClose) === 'function') {
+          onClose(result);
+        }
       },
     };
-    vm.closeLayer = layer.close;
+
+    vm.layersVM = layersVM;
+    vm.layer = layer;
+
     layers.push(layer);
     return layer;
   }

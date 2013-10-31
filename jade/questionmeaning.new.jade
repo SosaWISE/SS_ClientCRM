@@ -1,13 +1,12 @@
-div(class="layer", data-bind="width:300,height:250")
-  //- div(data-bind="if:loading")
+div(class="layer", data-bind="width:300,height:155")
+  div(data-bind="if:saving")
     div(class="spinner-wrap white", data-bind="template:'tmpl-spinner',active:true")
 
-  //- div(style="height:100%;")
   div(class="content")
     ul(class="edit-form")
       li
         span(class="label") Question Meaning
-        input(type="text",data-bind="value:name")
+        input(type="text",data-bind="ukov:qmData.Name,value:qmData.Name,valueUpdate:'keyup'")
 
   div(class="actions")
     ul(class="sv")

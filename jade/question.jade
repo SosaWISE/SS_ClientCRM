@@ -1,4 +1,4 @@
-table(style="margin-top:10px;")
+table(class="question")
   tr
     td(style="vertical-align:top;")
       //- h3(data-bind="text:number")
@@ -39,5 +39,5 @@ table(style="margin-top:10px;")
       div(class="actions")
         ul(class="sv")
           li
-            a(class="btn add-btn",data-bind="click:surveyVM.clickAddQuestion")
+            a(title="add sub question",class="btn add-btn",data-bind="click:surveyVM.clickAddQuestion")
               span(data-bind="text:nextName")

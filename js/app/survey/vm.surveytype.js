@@ -85,5 +85,20 @@ define('src/survey/vm.surveytype', [
     });
   };
 
+  SurveyTypeViewModel.prototype.addQuestionMeaning = function(model) {
+    var _this = this,
+      id = model.QuestionMeaningID,
+      vm;
+    if (_this.questionMeaningsMap[id]) {
+      return;
+    }
+    vm = new QuestionMeaningViewModel({
+      model: model,
+    });
+    _this.questionMeaningsMap[id] = vm;
+    _this.questionMeanings.push(vm);
+    return vm;
+  };
+
   return SurveyTypeViewModel;
 });

@@ -8,20 +8,19 @@ define('mock/app/dataservice.survey.mock', [
   "use strict";
 
   function mock(settings) {
-    function send(cb, value) {
+    function send(cb, value, timeout) {
       setTimeout(function() {
         cb({
           Code: 0,
           Message: '',
           Value: value,
         });
-      }, settings.timeout);
+      }, timeout || settings.timeout);
     }
 
     Dataservice.prototype.getSurveyTypes = function(data, cb) {
       send(cb, surveyTypes);
     };
-
     Dataservice.prototype.getSurveys = function(data, cb) {
       var list = [];
       surveys.forEach(function(item) {
@@ -31,11 +30,9 @@ define('mock/app/dataservice.survey.mock', [
       });
       send(cb, list);
     };
-
     Dataservice.prototype.getTokens = function(data, cb) {
       send(cb, tokens);
     };
-
     Dataservice.prototype.getQuestionMeanings = function(data, cb) {
       var list = [];
       questionMeanings.forEach(function(item) {
@@ -45,7 +42,6 @@ define('mock/app/dataservice.survey.mock', [
       });
       send(cb, list);
     };
-
     Dataservice.prototype.getQuestionMeaningTokens = function(data, cb) {
       var list = [];
       questionMeanings_Tokens_Map.forEach(function(item) {
@@ -61,7 +57,6 @@ define('mock/app/dataservice.survey.mock', [
       });
       send(cb, list);
     };
-
     Dataservice.prototype.getQuestions = function(data, cb) {
       var list = [];
       questions.forEach(function(item) {
@@ -80,7 +75,6 @@ define('mock/app/dataservice.survey.mock', [
       });
       send(cb, list);
     };
-
     Dataservice.prototype.getQuestionPossibleAnswers = function(data, cb) {
       var list = [];
       questions_PossibleAnswers_Map.forEach(function(item) {
@@ -96,7 +90,6 @@ define('mock/app/dataservice.survey.mock', [
       });
       send(cb, list);
     };
-
     Dataservice.prototype.getQuestionTranslations = function(data, cb) {
       var list = [];
       questionTranslations.forEach(function(item) {
@@ -105,6 +98,27 @@ define('mock/app/dataservice.survey.mock', [
         }
       });
       send(cb, list);
+    };
+
+
+
+
+    Dataservice.prototype.createQuestionMeaning = function(data, cb) {
+      send(cb, {
+        QuestionMeaningID: mockery.fromTemplate('@INC(questionMeaning)'),
+        SurveyTypeId: data.SurveyTypeId,
+        Name: data.Name,
+      });
+    };
+    Dataservice.prototype.createQuestion = function(data, cb) {
+      send(cb, {
+        QuestionID: mockery.fromTemplate('@INC(question)'),
+        SurveyId: data.SurveyId,
+        QuestionMeaningId: data.QuestionMeaningId,
+        ParentId: data.ParentId,
+        GroupOrder: data.GroupOrder,
+        MapToTokenId: data.MapToTokenId,
+      });
     };
   }
 
@@ -227,7 +241,7 @@ define('mock/app/dataservice.survey.mock', [
         SurveyId: '@REF_INC(survey)',
         QuestionMeaningId: '@REF_INC(questionMeaning)',
         ParentId: null,
-        GroupOrder: '@NUMBER(0,5)',
+        GroupOrder: null, //'@NUMBER(0,5)',
         MapToTokenId: '@REF_INC(token)',
       }
     ],
@@ -238,11 +252,21 @@ define('mock/app/dataservice.survey.mock', [
         SurveyId: '@REF_INC(survey)',
         QuestionMeaningId: '@REF_INC(questionMeaning)',
         ParentId: '@REF_INC(question)',
-        GroupOrder: '@NUMBER(0,5)',
+        GroupOrder: null, //'@NUMBER(0,5)',
         MapToTokenId: '@REF_INC(token)',
       }
     ],
   }).list);
+  // set correct GroupOrders
+  (function() {
+    var countMap = {};
+    questions.forEach(function(q) {
+      var parentId = q.ParentId || 'null',
+        count = countMap[parentId] || 1;
+      countMap[parentId] = count + 1;
+      q.GroupOrder = count - 1;
+    });
+  })();
   questionTranslations = mockery.fromTemplate({
     'list|20-20': [
       {

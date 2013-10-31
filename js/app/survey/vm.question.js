@@ -20,8 +20,9 @@ define('src/survey/vm.question', [
     QuestionViewModel.super_.call(_this, options);
 
     // observables
+    _this.parent = ko.observable(_this.parent);
+    _this.groupOrder = ko.observable(_this.model.GroupOrder);
     _this.questions = ko.observableArray();
-    _this.groupOrder = ko.observable(-1);
     // computed observables
     _this.translations = ko.computed(_this.computeTranslations, _this);
     _this.name = ko.computed(_this.computeName, _this);
@@ -29,7 +30,6 @@ define('src/survey/vm.question', [
   }
   utils.inherits(QuestionViewModel, ControllerViewModel);
   QuestionViewModel.prototype.viewTmpl = 'tmpl-question';
-  QuestionViewModel.prototype.parent = null;
 
   QuestionViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
     var _this = this;
@@ -69,12 +69,16 @@ define('src/survey/vm.question', [
   };
   QuestionViewModel.prototype.computeName = function() {
     var _this = this;
-    return getName(_this.parent, _this.groupOrder());
+    return getName(_this.parent(), _this.groupOrder());
   };
   QuestionViewModel.prototype.computeNextName = function() {
     // next child name
     var _this = this;
-    return getName(_this, _this.questions().length);
+    return getName(_this, _this.nextGroupOrder());
+  };
+
+  QuestionViewModel.prototype.nextGroupOrder = function() {
+    return this.questions().length;
   };
 
   function getName(parent, index) {

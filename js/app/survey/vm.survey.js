@@ -1,27 +1,25 @@
 define('src/survey/vm.survey', [
-  'src/core/notify',
-  'src/util/utils',
   'src/util/joiner',
-  'src/core/vm.controller',
   'src/core/vm.layers',
   'src/survey/vm.question',
   'src/survey/vm.question.new',
-  'src/survey/vm.questionmeaning.new',
   'src/survey/vm.surveytranslation',
   'src/dataservice',
-  'ko'
+  'ko',
+  'src/core/notify',
+  'src/core/vm.controller',
+  'src/util/utils',
 ], function(
-  notify,
-  utils,
   joiner,
-  ControllerViewModel,
   LayersViewModel,
   QuestionViewModel,
   NewQuestionViewModel,
-  NewQuestionMeaningViewModel,
   SurveyTranslationViewModel,
   dataservice,
-  ko
+  ko,
+  notify,
+  ControllerViewModel,
+  utils
 ) {
   'use strict';
 
@@ -45,36 +43,22 @@ define('src/survey/vm.survey', [
     // events
     //
     _this.clickAddQuestion = function(parentVM) {
-      var vm, list = [];
-      _this.surveyTypeVM.questionMeanings().forEach(function(vm) {
-        //@TODO: don't add used meanings
-        list.push({
-          vm: vm,
-          text: vm.model.Name,
+      var parent = (parentVM === _this) ? null : parentVM,
+        vm = new NewQuestionViewModel({
+          surveyVM: _this,
+          surveyTypeVM: _this.surveyTypeVM,
+          parent: parent,
+          nextName: parentVM.nextName(),
+          groupOrder: parentVM.nextGroupOrder(),
         });
+      _this.layersVM.show(vm, function(model) {
+        if (!model) {
+          return;
+        }
+        var vm = createQuestion(_this, parent, model);
+        _this.list.push(vm);
+        parentVM.questions.push(vm);
       });
-      vm = new NewQuestionViewModel({
-        surveyVM: _this,
-        nextName: parentVM.nextName(),
-        parent: (parentVM === _this) ? null : parentVM,
-        questionMeanings: list,
-        onAddClick: function(filterText) {
-          var vm = new NewQuestionMeaningViewModel({
-            surveyTypeVM: _this.surveyTypeVM,
-            name: filterText,
-          });
-          _this.layersVM.show(vm);
-        },
-      });
-      _this.layersVM.show(vm);
-
-      // var vm = new QuestionViewModel({
-      //   parent: parentVM,
-      //   surveyVM: _this,
-      //   model: {},
-      //   // questionMeaning: _this.surveyTypeVM.questionMeaningsMap[item.QuestionMeaningId],
-      // });
-      // vm = vm;
     };
   }
   utils.inherits(SurveyViewModel, ControllerViewModel);
@@ -95,11 +79,7 @@ define('src/survey/vm.survey', [
       } else {
         var list = [];
         resp.Value.forEach(function(item) {
-          list.push(new QuestionViewModel({
-            surveyVM: _this,
-            model: item,
-            questionMeaning: _this.surveyTypeVM.questionMeaningsMap[item.QuestionMeaningId],
-          }));
+          list.push(createQuestion(_this, null, item));
         });
         _this.questions(makeTree(list));
         // _this.list(list);
@@ -144,27 +124,36 @@ define('src/survey/vm.survey', [
     return results.join(' ');
   };
   SurveyViewModel.prototype.computeNextName = function() {
-    return (this.questions().length + 1) + '.';
+    return (this.nextGroupOrder() + 1) + '.';
+  };
+
+  SurveyViewModel.prototype.nextGroupOrder = function() {
+    return this.questions().length;
   };
 
   function makeTree(list, parent) {
-    var branch = [],
-      index = 0;
+    var branch = [];
     list.forEach(function(item) {
       if (
         (parent && item.model.ParentId === parent.model.QuestionID) ||
         (!parent && item.model.ParentId == null)
       ) {
-        item.parent = parent;
-        item.groupOrder(index);
-        index++;
-
+        item.parent(parent);
         branch.push(item);
         // begin recursion
         item.questions(makeTree(list, item));
       }
     });
     return branch;
+  }
+
+  function createQuestion(surveyVM, parent, model) {
+    return new QuestionViewModel({
+      surveyVM: surveyVM,
+      parent: parent,
+      model: model,
+      questionMeaning: surveyVM.surveyTypeVM.questionMeaningsMap[model.QuestionMeaningId],
+    });
   }
 
   return SurveyViewModel;

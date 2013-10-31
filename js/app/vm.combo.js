@@ -96,22 +96,18 @@ define('src/vm.combo', [
     var _this = this,
       wrapList = new Array(list.length);
     list.forEach(function(item, index) {
-      if (!item.text) {
-        throw new Error('no text field: ' + JSON.stringify(item));
-      }
-      wrapList[index] = {
-        item: item,
-        text: item.text,
-        html: ko.observable(item.text),
-        matches: ko.observable(false),
-        active: ko.observable(false),
-      };
+      wrapList[index] = wrapItem(item);
     });
     _this.list(wrapList);
     filterList(_this.list(), _this.filterText());
     // select first visible item in the list
     _this.selectedItem(wrapList[findNextIndex(wrapList, wrapList.length, true)] || _this.noItemSelected);
     _this.deactivateCurrent();
+  };
+  ComboViewModel.prototype.addItem = function(vm) {
+    var item = wrapItem(vm);
+    this.list.push(item);
+    return item;
   };
 
   ComboViewModel.prototype.deactivateCurrent = function() {
@@ -136,6 +132,19 @@ define('src/vm.combo', [
       item.active(true);
     }
   };
+
+  function wrapItem(item) {
+    if (!item.text) {
+      throw new Error('no text field: ' + JSON.stringify(item));
+    }
+    return {
+      item: item,
+      text: item.text,
+      html: ko.observable(item.text),
+      matches: ko.observable(false),
+      active: ko.observable(false),
+    };
+  }
 
   function findNextIndex(list, startIndex, down) {
     var index = startIndex,
