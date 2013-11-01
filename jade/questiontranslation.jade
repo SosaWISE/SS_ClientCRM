@@ -1,0 +1,17 @@
+div(class="q-translation")
+  div(class="locale")
+    span(data-bind="text:LocalizationCode")
+    |:
+  div(data-bind="visible:!editorVM()")
+    a(title="edit language",data-bind="click:clickEdit")
+      span(data-bind="text:qtData.TextFormat")
+  div(data-bind="with:editorVM")
+    div(data-bind="template:viewTmpl")
+    div(class="actions")
+      ul(class="sv")
+        li(data-bind="click:$parent.clickEndEdit")
+          a(class="btn")
+            span Cancel
+        li(data-bind="click:$parent.clickSave")
+          a(class="btn")
+            span Save

@@ -1,9 +1,10 @@
 table(class="question")
+  thead
   tr
-    td(style="vertical-align:top;")
+    td(class="title")
       //- h3(data-bind="text:number")
       h2(data-bind="text:name")
-    td
+    td(class="content")
       //- input(type="text",placeholder="Essence of Question")
       span(data-bind="text:questionMeaning.model.Name")
       ul(class="sv tokens cf",data-bind="visible:questionMeaning.list().length>0")
@@ -24,9 +25,7 @@ table(class="question")
   tr
     td
     td
-      div(data-bind="css:'css-'+LocalizationCode")
-        div(data-bind="text:LocalizationCode")
-        div(data-bind="text:model.TextFormat")
+      div(data-bind="template:viewTmpl,css:'css-'+LocalizationCode")
   <!-- /ko -->
   tr
     td

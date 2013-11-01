@@ -1,0 +1,4 @@
+div(class="md-editor")
+  //- 'input' updates textarea whenever the value changes (e.g.:paste,drop,etc.)
+  textarea(data-bind="value:input,valueUpdate:'input'")
+div(class="md-html",data-bind="html:output")

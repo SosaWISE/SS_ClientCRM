@@ -1,17 +1,17 @@
 define('src/survey/vm.question', [
-  'src/core/notify',
-  'src/util/utils',
-  'src/core/vm.controller',
   'src/survey/vm.questiontranslation',
   'src/dataservice',
   'ko',
+  'src/core/notify',
+  'src/util/utils',
+  'src/core/vm.controller',
 ], function(
-  notify,
-  utils,
-  ControllerViewModel,
   QuestionTranslationViewModel,
   dataservice,
-  ko
+  ko,
+  notify,
+  utils,
+  ControllerViewModel
 ) {
   'use strict';
 
@@ -51,13 +51,14 @@ define('src/survey/vm.question', [
       results = [],
       questionId = _this.model.QuestionID;
     _this.surveyVM.translations().forEach(function(surveyTranslationVM) {
-      var vm = surveyTranslationVM.questionTranslationsMap()[questionId];
+      var map = surveyTranslationVM.questionTranslationsMap(),
+        vm = map[questionId];
       if (!vm) {
-        vm = new QuestionTranslationViewModel({
+        map[questionId] = vm = new QuestionTranslationViewModel({
           surveyTranslationVM: surveyTranslationVM,
           model: {
             // QuestionTranslationID: 0,
-            SurveyTranslationId: surveyTranslationVM.SurveyTranslationID,
+            SurveyTranslationId: surveyTranslationVM.model.SurveyTranslationID,
             QuestionId: questionId,
             TextFormat: 'missing...',
           },

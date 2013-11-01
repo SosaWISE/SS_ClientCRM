@@ -1,11 +1,11 @@
 define('src/vm.combo', [
+  'ko',
   'src/util/utils',
   'src/core/vm.base',
-  'ko'
 ], function(
+  ko,
   utils,
-  BaseViewModel,
-  ko
+  BaseViewModel
 ) {
   "use strict";
 

@@ -3,15 +3,15 @@ define('src/survey/vm.questionmeaning.new', [
   'src/dataservice',
   'ko',
   'src/core/notify',
-  'src/core/vm.base',
   'src/util/utils',
+  'src/core/vm.base',
 ], function(
   ukov,
   dataservice,
   ko,
   notify,
-  BaseViewModel,
-  utils
+  utils,
+  BaseViewModel
 ) {
   'use strict';
 
@@ -56,6 +56,7 @@ define('src/survey/vm.questionmeaning.new', [
       }
       _this.saving(true);
       dataservice.survey.createQuestionMeaning(_this.qmData.model, function(resp) {
+        _this.saving(false);
         if (resp.Code !== 0) {
           notify.notify('error', resp.Message);
         } else {

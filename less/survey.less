@@ -10,20 +10,28 @@
     // border-left: solid 1px;
     padding-top: 10px;
     padding-bottom: 10px;
+
+    td.title {
+      vertical-align:top;
+    }
+    td.content {
+      width: 100%;
+    }
   }
 
   .css-es,
   .css-it,
   .css-en {
-    transition: max-height 0.5s;
+    transition: max-height 0.25s;
     max-height: 0px;
-    overflow: hidden;
+    overflow-y: hidden;
   }
   &.show-es .css-es,
   &.show-it .css-it,
   &.show-en .css-en {
-    // display: inherit;
-    max-height: 100px;
+    transition: max-height 3s;
+    max-height: 1000px;
+    // overflow-y: auto;
   }
 
   ul.sv {
@@ -42,7 +50,7 @@
     }
   }
 
-  .content {
+  > .content {
     padding-bottom: 30px;
   }
 
@@ -86,6 +94,55 @@
     position: relative;
     &:before {
       .mixin-edit-btn("\e016", 7px, -2px, 16px);
+    }
+  }
+
+  .q-translation {
+    padding-left: 20px;
+    padding-right: 20px;
+    position: relative;
+    // min-height: 20px;
+
+    .locale {
+      position: absolute;
+      left: 0px;
+      font-weight: 900;
+      // font-size:1.1em;
+    }
+  }
+
+
+  .md-editor {
+    textarea {
+      width: 100%;
+      resize: vertical;
+      height: 50px;
+      max-height: 300px;
+    }
+  }
+
+  .md-html {
+    color: black;
+    margin-right: 20px;
+
+    p {
+      margin: 0px;
+    }
+
+    strong {
+      font-weight: 500;
+    }
+    em {
+      font-style: italic;
+    }
+    blockquote {
+      color: #999999;
+      margin: 10px;
+      font-size: 0.9em;
+    }
+    ol{
+      list-style: decimal;
+      margin: 10px 10px 10px 35px;
     }
   }
 }
