@@ -57,11 +57,17 @@ define('src/survey/vm.questiontranslation', [
       _this.editorVM(vm);
     };
     _this.clickEndEdit = function() {
+      if (_this.saving()) {
+        return;
+      }
       // reset text
       _this.qtData.TextFormat(_this.qtData.TextFormat.cleanVal());
       _this.editorVM(null);
     };
     _this.clickSave = function() {
+      if (_this.saving()) {
+        return;
+      }
       _this.qtData.TextFormat.validate();
       _this.qtData.update();
       if (!_this.qtData.isValid()) {
@@ -74,6 +80,8 @@ define('src/survey/vm.questiontranslation', [
         if (resp.Code !== 0) {
           notify.notify('error', resp.Message);
         } else {
+          _this.qtData.setVal(resp.Value);
+          _this.qtData.markClean(resp.Value);
           _this.editorVM(null);
         }
       });

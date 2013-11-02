@@ -51,22 +51,29 @@ define('src/survey/vm.question.new', [
     // events
     //
     _this.clickCancel = function() {
+      if (_this.saving()) {
+        return;
+      }
       _this.layer.close(false);
     };
     _this.clickAdd = function() {
+      if (_this.saving()) {
+        return;
+      }
       var selectedItem = _this.qmComboVM.selectedItem();
       if (!selectedItem) {
         notify.notify('warn', 'No question meaning selected', 10);
         return;
       }
       _this.saving(true);
-      dataservice.survey.createQuestion({
+      dataservice.survey.saveQuestion({
         SurveyId: _this.surveyVM.model.SurveyID,
         QuestionMeaningId: selectedItem.item.vm.model.QuestionMeaningID,
         ParentId: (_this.parent) ? _this.parent.model.QuestionID : null,
         GroupOrder: _this.groupOrder,
         MapToTokenId: null,
       }, function(resp) {
+        _this.saving(false);
         if (resp.Code !== 0) {
           notify.notify('error', resp.Message);
         } else {

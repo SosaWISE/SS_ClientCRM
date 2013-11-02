@@ -1,9 +1,9 @@
 define('mock/app/dataservice.survey.mock', [
+  'src/dataservice.survey',
   'mock/mockery',
-  'src/dataservice.survey'
 ], function(
-  mockery,
-  Dataservice
+  Dataservice,
+  mockery
 ) {
   "use strict";
 
@@ -103,23 +103,54 @@ define('mock/app/dataservice.survey.mock', [
 
 
 
-    Dataservice.prototype.createQuestionMeaning = function(data, cb) {
-      send(cb, {
-        QuestionMeaningID: mockery.fromTemplate('@INC(questionMeaning)'),
+    Dataservice.prototype.saveQuestionMeaning = function(data, cb) {
+      send(cb, createOrUpdate(questionMeanings, 'QuestionMeaningID', '@INC(questionMeaning)', {
+        QuestionMeaningID: data.QuestionMeaningID,
         SurveyTypeId: data.SurveyTypeId,
         Name: data.Name,
-      });
+      }));
     };
-    Dataservice.prototype.createQuestion = function(data, cb) {
-      send(cb, {
-        QuestionID: mockery.fromTemplate('@INC(question)'),
+    Dataservice.prototype.saveQuestion = function(data, cb) {
+      send(cb, createOrUpdate(questions, 'QuestionID', '@INC(question)', {
+        QuestionID: data.QuestionID,
         SurveyId: data.SurveyId,
         QuestionMeaningId: data.QuestionMeaningId,
         ParentId: data.ParentId,
         GroupOrder: data.GroupOrder,
         MapToTokenId: data.MapToTokenId,
-      });
+      }));
     };
+    Dataservice.prototype.saveQuestionTranslation = function(data, cb) {
+      send(cb, createOrUpdate(questionTranslations, 'QuestionTranslationID', '@INC(questionTranslation)', {
+        QuestionTranslationID: data.QuestionTranslationID,
+        SurveyTranslationId: data.SurveyTranslationId,
+        QuestionId: data.QuestionId,
+        TextFormat: data.TextFormat,
+      }));
+    };
+
+    function createOrUpdate(list, idName, idTemplate, newValue) {
+      var id = newValue[idName],
+        index;
+      if (id > 0) {
+        if (!list.some(function(item, i) {
+          if (item[idName] === id) {
+            index = i;
+            return true;
+          }
+        })) {
+          throw new Error('invalid id. id not in list.');
+        }
+
+        // replace old value with new value
+        list.splice(index, 1, newValue);
+      } else {
+        newValue[idName] = mockery.fromTemplate(idTemplate);
+        // add new value
+        list.push(newValue);
+      }
+      return newValue;
+    }
   }
 
   (function() {

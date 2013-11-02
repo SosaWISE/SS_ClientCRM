@@ -45,9 +45,15 @@ define('src/survey/vm.questionmeaning.new', [
     // events
     //
     _this.clickCancel = function() {
+      if (_this.saving()) {
+        return;
+      }
       _this.layer.close(false);
     };
     _this.clickAdd = function() {
+      if (_this.saving()) {
+        return;
+      }
       _this.qmData.Name.validate();
       _this.qmData.update();
       if (!_this.qmData.isValid()) {
@@ -55,7 +61,7 @@ define('src/survey/vm.questionmeaning.new', [
         return;
       }
       _this.saving(true);
-      dataservice.survey.createQuestionMeaning(_this.qmData.model, function(resp) {
+      dataservice.survey.saveQuestionMeaning(_this.qmData.model, function(resp) {
         _this.saving(false);
         if (resp.Code !== 0) {
           notify.notify('error', resp.Message);
