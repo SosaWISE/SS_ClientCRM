@@ -1,7 +1,7 @@
 define('src/survey/vm.questiontranslation', [
   'src/ukov',
   'src/dataservice',
-  'src/survey/vm.mdeditor',
+  'src/survey/vm.questiontranslation.editor',
   'ko',
   'src/core/notify',
   'src/util/utils',
@@ -9,7 +9,7 @@ define('src/survey/vm.questiontranslation', [
 ], function(
   ukov,
   dataservice,
-  MDEditorViewModel,
+  EditorQuestionTranslationViewModel,
   ko,
   notify,
   utils,
@@ -32,6 +32,7 @@ define('src/survey/vm.questiontranslation', [
   function QuestionTranslationViewModel(options) {
     var _this = this;
     QuestionTranslationViewModel.super_.call(_this, options);
+    _this.ensureProps(['surveyTranslationVM', 'questionVM']);
 
     _this.LocalizationCode = _this.surveyTranslationVM.model.LocalizationCode;
 
@@ -51,8 +52,9 @@ define('src/survey/vm.questiontranslation', [
         return;
       }
       //
-      var vm = new MDEditorViewModel({
+      var vm = new EditorQuestionTranslationViewModel({
         input: _this.qtData.TextFormat,
+        questionMeaningVM: _this.questionVM.questionMeaningVM,
       });
       _this.editorVM(vm);
     };

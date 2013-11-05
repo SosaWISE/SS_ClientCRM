@@ -122,6 +122,7 @@ define('src/survey/vm.survey', [
         var list = [];
         resp.Value.forEach(function(item) {
           list.push(new SurveyTranslationViewModel({
+            surveyVM: _this,
             model: item,
           }));
         });
@@ -181,11 +182,11 @@ define('src/survey/vm.survey', [
 
   function createQuestion(surveyVM, parent, model) {
     return new QuestionViewModel({
-      possibleAnswersVM: surveyVM.possibleAnswersVM,
       surveyVM: surveyVM,
+      possibleAnswersVM: surveyVM.possibleAnswersVM,
+      questionMeaningVM: surveyVM.surveyTypeVM.getQuestionMeaning(model.QuestionMeaningId),
       parent: parent,
       model: model,
-      questionMeaningVM: surveyVM.surveyTypeVM.getQuestionMeaning(model.QuestionMeaningId),
     });
   }
 

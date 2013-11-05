@@ -20,6 +20,7 @@ define('src/survey/vm.question', [
   function QuestionViewModel(options) {
     var _this = this;
     QuestionViewModel.super_.call(_this, options);
+    _this.ensureProps(['surveyVM', 'possibleAnswersVM', 'questionMeaningVM']);
 
     // observables
     _this.parent = ko.observable(_this.parent);
@@ -57,17 +58,25 @@ define('src/survey/vm.question', [
       results = [],
       questionId = _this.model.QuestionID;
     _this.surveyVM.translations().forEach(function(surveyTranslationVM) {
-      var map = surveyTranslationVM.questionTranslationsMap(),
-        vm = map[questionId];
+      var list = surveyTranslationVM.list(),
+        map = surveyTranslationVM.map,
+        vm;
+      // create map cache if there isn't one
+      if (!map) {
+        surveyTranslationVM.map = map = {};
+        list.forEach(function(model) {
+          map[model.QuestionId] = createQuestionTranslation(_this, surveyTranslationVM, model);
+        });
+      }
+      // get question translation
+      vm = map[questionId];
+      // create empty question translation
       if (!vm) {
-        map[questionId] = vm = new QuestionTranslationViewModel({
-          surveyTranslationVM: surveyTranslationVM,
-          model: {
-            // QuestionTranslationID: 0,
-            SurveyTranslationId: surveyTranslationVM.model.SurveyTranslationID,
-            QuestionId: questionId,
-            TextFormat: 'missing...',
-          },
+        map[questionId] = vm = createQuestionTranslation(_this, surveyTranslationVM, {
+          // QuestionTranslationID: 0,
+          SurveyTranslationId: surveyTranslationVM.model.SurveyTranslationID,
+          QuestionId: questionId,
+          TextFormat: 'missing...',
         });
       }
       results.push(vm);
@@ -102,6 +111,14 @@ define('src/survey/vm.question', [
   function createPossibleAnswerMap(possibleAnswersVM, model) {
     return new QPossibleAnswerMapViewModel({
       possibleAnswersVM: possibleAnswersVM,
+      model: model,
+    });
+  }
+
+  function createQuestionTranslation(questionVM, surveyTranslationVM, model) {
+    return new QuestionTranslationViewModel({
+      questionVM: questionVM,
+      surveyTranslationVM: surveyTranslationVM,
       model: model,
     });
   }

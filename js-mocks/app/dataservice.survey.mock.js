@@ -347,7 +347,7 @@ define('mock/app/dataservice.survey.mock', [
     });
   })();
   questionTranslations = mockery.fromTemplate({
-    'list|2-2': [
+    'list|1-1': [
       {
         QuestionTranslationID: '@INC(questionTranslation)',
         SurveyTranslationId: 1000, //'@FK(surveyTranslation)',

@@ -19,9 +19,6 @@ define('src/survey/vm.surveytranslation', [
     var _this = this;
     SurveyTranslationViewModel.super_.call(_this, options);
 
-    _this.questionTranslationsMap = ko.observable({});
-
-
     //
     // events
     //
@@ -41,16 +38,12 @@ define('src/survey/vm.surveytranslation', [
       if (resp.Code !== 0) {
         notify.notify('error', resp.Message);
       } else {
-        var map = {};
-        resp.Value.forEach(function(item) {
-          map[item.QuestionId] = new QuestionTranslationViewModel({
-            surveyTranslationVM: _this,
-            model: item,
-          });
-        });
-        _this.questionTranslationsMap(map);
+        // clear cache
+        _this.map = null;
+        //
+        _this.list(resp.Value);
       }
-      cb(true);
+      cb(false);
     });
   };
 
