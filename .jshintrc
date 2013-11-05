@@ -18,6 +18,8 @@
   "smarttabs": true,
 
   "predef": [
+    "Intl",
+
     "define",
 
     "alert"

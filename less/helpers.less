@@ -6,6 +6,13 @@
 @site-magenta: #b93e92;
 
 
+.user-select(@arguments) {
+  -webkit-touch-callout: @arguments;
+  -webkit-user-select: @arguments;
+  -moz-user-select: @arguments;
+  -ms-user-select: @arguments;
+  user-select: @arguments;
+}
 
 .background-clip(@arguments) {
   -moz-background-clip: @arguments;

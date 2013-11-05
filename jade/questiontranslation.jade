@@ -7,7 +7,7 @@ div(class="q-translation")
     |:
   div(data-bind="visible:!editorVM()")
     a(title="edit language",data-bind="click:clickEdit")
-      span(data-bind="text:qtData.TextFormat")
+      pre(data-bind="text:qtData.TextFormat")
   div(data-bind="with:editorVM")
     div(data-bind="template:viewTmpl")
     div(class="actions")

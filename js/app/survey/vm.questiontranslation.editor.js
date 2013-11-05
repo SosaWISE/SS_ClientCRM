@@ -29,11 +29,13 @@ define('src/survey/vm.questiontranslation.editor', [
   EditorQuestionTranslationViewModel.prototype.computeHtml = function() {
     //@TODO: format {0:c},{0:spaced},etc.
     //@TODO: format with real & mock tokens
-    var params = [];
+    var html,
+      params = [];
+    html = markdown.toHTML(this.input());
     this.questionMeaningVM.tokens().forEach(function(tokenMap) {
       params.push(tokenMap.token.Token);
     });
-    return markdown.toHTML(strings.aformat(this.input(), params));
+    return strings.aformat(html, params, '[missing param]');
   };
 
   return EditorQuestionTranslationViewModel;

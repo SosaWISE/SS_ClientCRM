@@ -6,7 +6,12 @@ define('src/util/strings', [
   "use strict";
 
   var strings = {},
-    formatRegex = /\{([0-9]+)\}/g;
+    formatRegex = /\{([0-9]+)(?::([0-9A-Z]+))?\}/gi, // {0} or {0:decoratorName}
+    usdFormatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+    });
 
   // e.g.: strings.format('{0} {1}', 'bob', 'bobbins') === 'bob bobbins'
   strings.format = function(format /*, ...args*/ ) {
@@ -24,15 +29,33 @@ define('src/util/strings', [
     // since we want zero-based indexes and speed we'll choose the last one
     return strings.aformat(format, utils.argsToArray(arguments, 1));
   };
-  strings.aformat = function(format, argsArray) {
-    return (format || '').replace(formatRegex, function(item, match) {
-      var val = argsArray[match];
+  strings.aformat = function(format, argsArray, missingParamText) {
+    var decorators = strings.decorators;
+    format = format || '';
+    missingParamText = missingParamText || '';
+    return format.replace(formatRegex, function(item, paramIndex, formatName) {
+      formatName = formatName;
+      var val = argsArray[paramIndex];
       if (val != null) {
-        return val;
+        if (formatName && typeof(decorators[formatName]) === 'function') {
+          return decorators[formatName](val);
+        } else {
+          return val;
+        }
       } else {
-        return "";
+        return missingParamText;
       }
     });
+  };
+
+  strings.decorators = {
+    c: function(val) {
+      return usdFormatter.format(val);
+    },
+    space: function(val) {
+      val = val || '';
+      return val.split('').join('&nbsp;');
+    },
   };
 
   return strings;
