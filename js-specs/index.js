@@ -14,7 +14,7 @@ define('spec/index', [
     // lib specs
     libSpecs,
     [
-      'spec/spec.mockery',
+      'spec/mockery.spec',
     ],
 
     // app specs

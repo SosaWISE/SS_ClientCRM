@@ -3,8 +3,8 @@ define('spec/app/_all', [
   'use strict';
 
   var specs = [
-    'spec/app/util/spec.joiner',
-    'spec/app/util/spec.strings',
+    'spec/app/util/joiner.spec',
+    'spec/app/util/strings.spec',
 
     'spec/app/vm.combo.spec',
     'spec/app/core/dataservice.base.spec',

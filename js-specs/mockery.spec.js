@@ -1,4 +1,4 @@
-define('spec/spec.mockery', [
+define('spec/mockery.spec', [
   'mock/mockery'
 ], function(mockery) {
   "use strict";

@@ -25,7 +25,7 @@
   });
 })();
 
-define('spec/lib/spec.depends', [
+define('spec/lib/depends.spec', [
 ], function() {
   "use strict";
 

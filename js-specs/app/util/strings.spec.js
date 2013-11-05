@@ -1,4 +1,4 @@
-define('spec/app/util/spec.strings', [
+define('spec/app/util/strings.spec', [
   'src/util/strings'
 ], function(strings) {
   "use strict";

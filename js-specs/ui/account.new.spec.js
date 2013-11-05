@@ -1,4 +1,4 @@
-define('spec/ui/spec.account.new', [
+define('spec/ui/account.new.spec', [
   'jquery',
   'spec/ui/browser'
 ], function(

@@ -3,7 +3,7 @@ define('spec/ui/_all', [
   'use strict';
 
   var specs = [
-    'spec/ui/spec.account.new',
+    'spec/ui/account.new.spec',
   ];
   return specs;
 });

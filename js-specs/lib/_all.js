@@ -3,7 +3,7 @@ define('spec/lib/_all', [
   'use strict';
 
   var specs = [
-    'spec/lib/spec.depends',
+    'spec/lib/depends.spec',
   ];
   return specs;
 });
