@@ -61,7 +61,7 @@ define('src/survey/vm.question.new', [
         return;
       }
       var selectedItem = _this.qmComboVM.selectedItem();
-      if (!selectedItem) {
+      if (selectedItem === _this.qmComboVM.noItemSelected) {
         notify.notify('warn', 'No question meaning selected', 10);
         return;
       }

@@ -37,6 +37,7 @@
   }
   createToggleClassHandler('active');
   createToggleClassHandler('editing');
+  createToggleClassHandler('busy');
   createToggleClassHandler('cssDisabled', 'disabled');
   ko.bindingHandlers.toggle = {
     update: function(element, valueAccessor) {

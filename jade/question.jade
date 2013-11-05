@@ -2,31 +2,32 @@ table(class="question")
   thead
   tr
     td(class="title")
-      //- h3(data-bind="text:number")
       h2(data-bind="text:name")
     td(class="content")
-      //- input(type="text",placeholder="Essence of Question")
-      span(data-bind="text:questionMeaning.model.Name")
-      ul(class="sv tokens cf",data-bind="visible:questionMeaning.list().length>0")
+      <!-- ko with:questionMeaningVM -->
+      span(class="qm",data-bind="text:model.Name")
+      div(style="color:black;") Tokens:
+      ul(class="sv tlist cf")
         li
-          span(style="color:black") Tokens:
-        <!-- ko foreach:questionMeaning.list -->
-        li
-          a(data-bind="text:Token")
+          a(class="btn small add-btn",data-bind="click:$parent.surveyVM.clickAddToken") Add
+        <!-- ko foreach:tokens -->
+        li(data-bind="cmd:cmdToggle")
+          a(class="btn small",data-bind="active:active,busy:cmdToggle.busy")
+            span(data-bind="text:token.Token")
         <!-- /ko -->
-      ul(class="sv pa cf",data-bind="visible:list().length>0")
+      <!-- /ko -->
+      div(style="color:black;") Possible Answers:
+      ul(class="sv tlist cf")
         li
-          span(style="color:black") Possible Answers:
+          a(class="btn small add-btn",data-bind="click:surveyVM.clickAddPossibleAnswer") Add
         <!-- ko foreach:list -->
-        li
-          a(data-bind="text:AnswerText")
+        li(data-bind="cmd:cmdToggle")
+          a(class="btn small",data-bind="active:active,busy:cmdToggle.busy")
+            span(data-bind="text:possibleAnswer.AnswerText")
         <!-- /ko -->
-  <!-- ko foreach:translations -->
-  tr
-    td
-    td
+      <!-- ko foreach:translations -->
       div(data-bind="template:viewTmpl,css:'css-'+LocalizationCode")
-  <!-- /ko -->
+      <!-- /ko -->
   tr
     td
     td

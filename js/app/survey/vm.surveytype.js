@@ -25,7 +25,7 @@ define('src/survey/vm.surveytype', [
 
     _this.surveys = ko.observableArray();
     _this.questionMeanings = ko.observableArray();
-    _this.questionMeaningsMap = {};
+    _this.qmMap = {};
   }
   utils.inherits(SurveyTypeViewModel, ControllerViewModel);
   SurveyTypeViewModel.prototype.viewTmpl = 'tmpl-surveytype';
@@ -46,6 +46,7 @@ define('src/survey/vm.surveytype', [
         var list = [];
         resp.Value.forEach(function(item) {
           list.push(new SurveyViewModel({
+            possibleAnswersVM: _this.possibleAnswersVM,
             surveyTypeVM: _this,
             model: item,
           }));
@@ -67,11 +68,12 @@ define('src/survey/vm.surveytype', [
         var list = [];
         resp.Value.forEach(function(item) {
           list.push(new QuestionMeaningViewModel({
+            tokensVM: _this.tokensVM,
             model: item,
           }));
         });
         list.forEach(function(vm) {
-          _this.questionMeaningsMap[vm.model.QuestionMeaningID] = vm;
+          _this.qmMap[vm.model.QuestionMeaningID] = vm;
         });
         _this.questionMeanings(list);
         childList = childList.concat(list);
@@ -89,15 +91,23 @@ define('src/survey/vm.surveytype', [
     var _this = this,
       id = model.QuestionMeaningID,
       vm;
-    if (_this.questionMeaningsMap[id]) {
+    if (_this.qmMap[id]) {
       return;
     }
     vm = new QuestionMeaningViewModel({
       model: model,
     });
-    _this.questionMeaningsMap[id] = vm;
+    _this.qmMap[id] = vm;
     _this.questionMeanings.push(vm);
     return vm;
+  };
+
+  SurveyTypeViewModel.prototype.getQuestionMeaning = function(questionMeaningId) {
+    var result = this.qmMap[questionMeaningId];
+    if (!result) {
+      console.error('no questionmeaning for', questionMeaningId);
+    }
+    return result;
   };
 
   return SurveyTypeViewModel;

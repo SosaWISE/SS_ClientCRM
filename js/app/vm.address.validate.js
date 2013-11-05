@@ -79,7 +79,7 @@ define('src/vm.address.validate', [
       }
     );
 
-    _this.loading = _this.cmdValidate.isExecuting;
+    _this.loading = _this.cmdValidate.busy;
   }
   utils.inherits(ValidateAddressViewModel, BaseViewModel);
   ValidateAddressViewModel.prototype.viewTmpl = 'tmpl-address_validate';

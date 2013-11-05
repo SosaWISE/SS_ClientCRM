@@ -43,6 +43,8 @@ define('src/knockout/ko.bindingHandlers.cmd', [
         });
       }
 
+      // toggle 'busy' class
+      ko.bindingHandlers.busy.update(element, makeValueAccessor(!canExecute), allBindingsAccessor, viewModel);
       // toggle 'disabled' class
       ko.bindingHandlers.cssDisabled.update(element, makeValueAccessor(!canExecute), allBindingsAccessor, viewModel);
 

@@ -75,7 +75,7 @@ define('src/vm.rep.find', [
       }
     );
 
-    _this.loading = _this.cmdFind.isExecuting;
+    _this.loading = _this.cmdFind.busy;
   }
   utils.inherits(FindRepViewModel, BaseViewModel);
   FindRepViewModel.prototype.viewTmpl = 'tmpl-rep_find';

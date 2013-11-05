@@ -1,6 +1,9 @@
 define('src/survey/vm.survey', [
   'src/util/joiner',
   'src/core/vm.layers',
+  'src/survey/vm.qpossibleanswermap.new',
+  'src/survey/vm.questionmeaning',
+  'src/survey/vm.qmtokenmap.new',
   'src/survey/vm.question',
   'src/survey/vm.question.new',
   'src/survey/vm.surveytranslation',
@@ -12,6 +15,9 @@ define('src/survey/vm.survey', [
 ], function(
   joiner,
   LayersViewModel,
+  NewQPossibleAnswerMapViewModel,
+  QuestionMeaningViewModel,
+  NewQMTokenMapViewModel,
   QuestionViewModel,
   NewQuestionViewModel,
   SurveyTranslationViewModel,
@@ -59,6 +65,24 @@ define('src/survey/vm.survey', [
         _this.list.push(vm);
         parentVM.questions.push(vm);
       });
+    };
+    _this.clickAddToken = function(vm) {
+      if (!(vm instanceof QuestionMeaningViewModel)) {
+        throw new Error('vm is wrong type');
+      }
+      _this.layersVM.show(new NewQMTokenMapViewModel({
+        questionMeaningVM: vm,
+        tokensVM: _this.surveyTypeVM.tokensVM,
+      }));
+    };
+    _this.clickAddPossibleAnswer = function(vm) {
+      if (!(vm instanceof QuestionViewModel)) {
+        throw new Error('vm is wrong type');
+      }
+      _this.layersVM.show(new NewQPossibleAnswerMapViewModel({
+        questionVM: vm,
+        possibleAnswersVM: _this.possibleAnswersVM,
+      }));
     };
   }
   utils.inherits(SurveyViewModel, ControllerViewModel);
@@ -109,6 +133,14 @@ define('src/survey/vm.survey', [
     });
 
     join.when(function() {
+      // activate english
+      _this.translations().some(function(item) {
+        if (item.model.LocalizationCode === 'en') {
+          item.active(true);
+          return true;
+        }
+      });
+
       _this.list(childList);
       cb(true);
     });
@@ -149,10 +181,11 @@ define('src/survey/vm.survey', [
 
   function createQuestion(surveyVM, parent, model) {
     return new QuestionViewModel({
+      possibleAnswersVM: surveyVM.possibleAnswersVM,
       surveyVM: surveyVM,
       parent: parent,
       model: model,
-      questionMeaning: surveyVM.surveyTypeVM.questionMeaningsMap[model.QuestionMeaningId],
+      questionMeaningVM: surveyVM.surveyTypeVM.getQuestionMeaning(model.QuestionMeaningId),
     });
   }
 

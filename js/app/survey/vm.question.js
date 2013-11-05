@@ -1,4 +1,5 @@
 define('src/survey/vm.question', [
+  'src/survey/vm.qpossibleanswermap',
   'src/survey/vm.questiontranslation',
   'src/dataservice',
   'ko',
@@ -6,6 +7,7 @@ define('src/survey/vm.question', [
   'src/util/utils',
   'src/core/vm.controller',
 ], function(
+  QPossibleAnswerMapViewModel,
   QuestionTranslationViewModel,
   dataservice,
   ko,
@@ -34,13 +36,17 @@ define('src/survey/vm.question', [
   QuestionViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
     var _this = this;
 
-    dataservice.survey.getQuestionPossibleAnswers({
+    dataservice.survey.getQuestionPossibleAnswerMaps({
       QuestionID: _this.model.QuestionID,
     }, function(resp) {
       if (resp.Code !== 0) {
         notify.notify('error', resp.Message);
       } else {
-        _this.list(resp.Value);
+        var list = [];
+        resp.Value.forEach(function(item) {
+          list.push(createPossibleAnswerMap(_this.possibleAnswersVM, item));
+        });
+        _this.list(list);
       }
       cb(false);
     });
@@ -87,6 +93,18 @@ define('src/survey/vm.question', [
     return pName + (index + 1) + '.';
   }
 
+
+  QuestionViewModel.prototype.addPossibleAnswerMap = function(model) {
+    var _this = this;
+    _this.list.push(createPossibleAnswerMap(_this.possibleAnswersVM, model));
+  };
+
+  function createPossibleAnswerMap(possibleAnswersVM, model) {
+    return new QPossibleAnswerMapViewModel({
+      possibleAnswersVM: possibleAnswersVM,
+      model: model,
+    });
+  }
 
   return QuestionViewModel;
 });

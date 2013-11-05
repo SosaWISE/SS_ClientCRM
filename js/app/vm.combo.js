@@ -104,8 +104,8 @@ define('src/vm.combo', [
     _this.selectedItem(wrapList[findNextIndex(wrapList, wrapList.length, true)] || _this.noItemSelected);
     _this.deactivateCurrent();
   };
-  ComboViewModel.prototype.addItem = function(vm) {
-    var item = wrapItem(vm);
+  ComboViewModel.prototype.addItem = function(item) {
+    item = wrapItem(item);
     this.list.push(item);
     return item;
   };

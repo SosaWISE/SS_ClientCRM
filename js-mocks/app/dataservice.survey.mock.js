@@ -8,12 +8,16 @@ define('mock/app/dataservice.survey.mock', [
   "use strict";
 
   function mock(settings) {
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
     function send(cb, value, timeout) {
       setTimeout(function() {
         cb({
           Code: 0,
           Message: '',
-          Value: value,
+          Value: clone(value),
         });
       }, timeout || settings.timeout);
     }
@@ -42,17 +46,11 @@ define('mock/app/dataservice.survey.mock', [
       });
       send(cb, list);
     };
-    Dataservice.prototype.getQuestionMeaningTokens = function(data, cb) {
+    Dataservice.prototype.getQuestionMeaningTokenMaps = function(data, cb) {
       var list = [];
       questionMeanings_Tokens_Map.forEach(function(item) {
         if (item.QuestionMeaningId === data.QuestionMeaningID) {
-
-          tokens.some(function(token) {
-            if (item.TokenId === token.TokenID) {
-              list.push(token);
-              return true;
-            }
-          });
+          list.push(item);
         }
       });
       send(cb, list);
@@ -75,17 +73,14 @@ define('mock/app/dataservice.survey.mock', [
       });
       send(cb, list);
     };
-    Dataservice.prototype.getQuestionPossibleAnswers = function(data, cb) {
+    Dataservice.prototype.getPossibleAnswers = function(data, cb) {
+      send(cb, possibleAnswers);
+    };
+    Dataservice.prototype.getQuestionPossibleAnswerMaps = function(data, cb) {
       var list = [];
       questions_PossibleAnswers_Map.forEach(function(item) {
         if (item.QuestionId === data.QuestionID) {
-
-          possibleAnswers.some(function(pa) {
-            if (item.PossibleAnswerId === pa.PossibleAnswerID) {
-              list.push(pa);
-              return true;
-            }
-          });
+          list.push(item);
         }
       });
       send(cb, list);
@@ -99,6 +94,7 @@ define('mock/app/dataservice.survey.mock', [
       });
       send(cb, list);
     };
+
 
 
 
@@ -147,6 +143,56 @@ define('mock/app/dataservice.survey.mock', [
       } else {
         newValue[idName] = mockery.fromTemplate(idTemplate);
         // add new value
+        list.push(newValue);
+      }
+      return newValue;
+    }
+
+
+
+    Dataservice.prototype.saveQuestionMeaningTokenMap = function(data, cb) {
+      send(cb, saveWithNoPKey(questionMeanings_Tokens_Map, {
+        QuestionMeaningId: data.QuestionMeaningId,
+        TokenId: data.TokenId,
+        IsDeleted: data.IsDeleted,
+      }, function(list, value) {
+        var index;
+        list.some(function(item, i) {
+          if (item.QuestionMeaningId === value.QuestionMeaningId &&
+            item.TokenId === value.TokenId) {
+            index = i;
+            return true;
+          }
+        });
+        return index;
+      }));
+    };
+    Dataservice.prototype.saveQuestionPossibleAnswerMap = function(data, cb) {
+      send(cb, saveWithNoPKey(questions_PossibleAnswers_Map, {
+        QuestionId: data.QuestionId,
+        PossibleAnswerId: data.PossibleAnswerId,
+        Expands: data.Expands,
+        IsDeleted: data.IsDeleted,
+      }, function(list, value) {
+        var index;
+        list.some(function(item, i) {
+          if (item.QuestionId === value.QuestionId &&
+            item.PossibleAnswerId === value.PossibleAnswerId) {
+            index = i;
+            return true;
+          }
+        });
+        return index;
+      }));
+    };
+
+    function saveWithNoPKey(list, newValue, findFunc) {
+      var index = findFunc(list, newValue);
+      if (index > -1) {
+        // update
+        list.splice(index, 1, newValue);
+      } else {
+        // create
         list.push(newValue);
       }
       return newValue;
@@ -238,7 +284,7 @@ define('mock/app/dataservice.survey.mock', [
   }).list;
 
   tokens = mockery.fromTemplate({
-    'list|5-7': [
+    'list|9-9': [
       {
         TokenID: '@INC(token)',
         Token: '@SV_TOKEN',
@@ -247,7 +293,7 @@ define('mock/app/dataservice.survey.mock', [
   }).list;
 
   questionMeanings = mockery.fromTemplate({
-    'list|30-30': [
+    'list|10-10': [
       {
         QuestionMeaningID: '@INC(questionMeaning)',
         SurveyTypeId: '@REF_INC(surveyType)',
@@ -257,16 +303,17 @@ define('mock/app/dataservice.survey.mock', [
   }).list;
 
   questionMeanings_Tokens_Map = mockery.fromTemplate({
-    'list|50-50': [
+    'list|5-5': [
       {
         QuestionMeaningId: '@FK(questionMeaning)',
         TokenId: '@REF_INC(token)',
+        IsDeleted: false,
       }
     ],
   }).list;
 
   questions = mockery.fromTemplate({
-    'list|5-5': [
+    'list|1-1': [
       {
         QuestionID: '@INC(question)',
         SurveyId: '@REF_INC(survey)',
@@ -276,18 +323,19 @@ define('mock/app/dataservice.survey.mock', [
         MapToTokenId: '@REF_INC(token)',
       }
     ],
-  }).list.concat(mockery.fromTemplate({
-    'list|15-15': [
-      {
-        QuestionID: '@INC(question)',
-        SurveyId: '@REF_INC(survey)',
-        QuestionMeaningId: '@REF_INC(questionMeaning)',
-        ParentId: '@REF_INC(question)',
-        GroupOrder: null, //'@NUMBER(0,5)',
-        MapToTokenId: '@REF_INC(token)',
-      }
-    ],
-  }).list);
+  }).list;
+  // .concat(mockery.fromTemplate({
+  //   'list|1-1': [
+  //     {
+  //       QuestionID: '@INC(question)',
+  //       SurveyId: '@REF_INC(survey)',
+  //       QuestionMeaningId: '@REF_INC(questionMeaning)',
+  //       ParentId: '@REF_INC(question)',
+  //       GroupOrder: null, //'@NUMBER(0,5)',
+  //       MapToTokenId: '@REF_INC(token)',
+  //     }
+  //   ],
+  // }).list);
   // set correct GroupOrders
   (function() {
     var countMap = {};
@@ -299,7 +347,7 @@ define('mock/app/dataservice.survey.mock', [
     });
   })();
   questionTranslations = mockery.fromTemplate({
-    'list|20-20': [
+    'list|2-2': [
       {
         QuestionTranslationID: '@INC(questionTranslation)',
         SurveyTranslationId: 1000, //'@FK(surveyTranslation)',
@@ -310,7 +358,7 @@ define('mock/app/dataservice.survey.mock', [
   }).list;
 
   possibleAnswers = mockery.fromTemplate({
-    'list|15-15': [
+    'list|3-3': [
       {
         PossibleAnswerID: '@INC(possibleAnswer)',
         AnswerText: '@SV_PA',
@@ -319,10 +367,12 @@ define('mock/app/dataservice.survey.mock', [
   }).list;
 
   questions_PossibleAnswers_Map = mockery.fromTemplate({
-    'list|20-20': [
+    'list|2-2': [
       {
-        QuestionId: '@REF_INC(question)',
-        PossibleAnswerId: '@REF_INC(possibleAnswer)',
+        QuestionId: '@FK(question)',
+        PossibleAnswerId: '@FK(possibleAnswer)',
+        Expands: true,
+        IsDeleted: false,
       }
     ],
   }).list;

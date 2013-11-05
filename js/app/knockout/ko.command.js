@@ -10,27 +10,27 @@
     var _cmd = ko.observable(),
       can;
 
-    _cmd.isExecuting = ko.observable();
+    _cmd.busy = ko.observable();
 
     function onComplete() {
-      _cmd.isExecuting(false);
+      _cmd.busy(false);
     }
     _cmd.execute = function() {
       if (!can) {
         return;
       }
-      _cmd.isExecuting(true);
+      _cmd.busy(true);
       return execute.call(this, onComplete);
     };
 
     if (canExecute) {
       _cmd.canExecute = ko.computed(function() {
-        can = canExecute(_cmd.isExecuting());
+        can = canExecute(_cmd.busy());
         return can;
       });
     } else {
       _cmd.canExecute = ko.computed(function() {
-        can = !_cmd.isExecuting();
+        can = !_cmd.busy();
         return can;
       });
     }

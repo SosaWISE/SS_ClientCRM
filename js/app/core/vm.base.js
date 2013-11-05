@@ -18,6 +18,15 @@ define('src/core/vm.base', [
   BaseViewModel.prototype.viewTmpl = null;
   BaseViewModel.prototype.booleanOptions = [true, false];
 
+  BaseViewModel.prototype.ensureProps = function(propNames) {
+    var _this = this;
+    propNames.forEach(function(name) {
+      if (!_this[name]) {
+        throw new Error('missing ' + name);
+      }
+    });
+  };
+
   //
   // public members
   //
