@@ -182,7 +182,7 @@ define('src/survey/vm.survey', [
       ) {
         item.parent(parent);
         branch.push(item);
-        // begin recursion
+        // start recursion
         item.questions(makeTree(list, item));
       }
     });

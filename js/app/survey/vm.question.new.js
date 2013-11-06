@@ -23,7 +23,7 @@ define('src/survey/vm.question.new', [
     _this.ensureProps(['surveyVM', 'surveyTypeVM']);
 
     _this.qmComboVM = new ComboViewModel();
-    _this.qmComboVM.setList(createComboList([], _this.surveyTypeVM.questionMeanings()));
+    _this.qmComboVM.setList(createComboList(_this.surveyVM, _this.surveyTypeVM.questionMeanings()));
     _this.qmComboVM.actions([
       {
         text: 'Add New Meaning',
@@ -83,13 +83,17 @@ define('src/survey/vm.question.new', [
     });
   };
 
-  function createComboList(questionMeanings, allQuestionMeanings) {
+  function createComboList(surveyVM, allQuestionMeanings) {
     var map = {},
       result = [];
 
-    questionMeanings.forEach(function(vm) {
-      map[vm.model.QuestionMeaningId] = true;
-    });
+    (function addToMap(questions) {
+      questions.forEach(function(vm) {
+        map[vm.model.QuestionMeaningId] = true;
+        // start recursion
+        addToMap(vm.questions());
+      });
+    })(surveyVM.questions());
 
     allQuestionMeanings.forEach(function(vm) {
       // don't add used tokens
