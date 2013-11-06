@@ -1,11 +1,13 @@
-div(class="module-nav")
+div(class="module-nav survey-types")
   <!-- ko foreach:surveyTypes -->
   h2(data-bind="text:model.Name")
-  ul(data-bind="foreach:surveys")
-    li
-      a(data-bind="text:model.Version")
+  ul
+    <!-- ko foreach:surveys -->
+    li(data-bind="click:$parents[1].clickSurvey")
+      a(data-bind="active:active")
+        span(data-bind="text:model.Version")
+    <!-- /ko -->
+   <!-- /ko -->
 
-  //- selected survey
-  div(data-bind="with:surveys()[0]")
-    div(class="module",data-bind="template:viewTmpl")
-  <!-- /ko -->
+div(data-bind="with:activeChild")
+  div(class="module",data-bind="template:viewTmpl")

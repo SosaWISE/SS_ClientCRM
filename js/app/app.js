@@ -59,6 +59,15 @@ define('src/app', [
   ]);
   setTemplate(app.panels, 'viewTmpl', 'panel_');
 
+  app.clickPanel = function(panelVM) {
+    if (panelVM.active()) {
+      return;
+    }
+    panelVM.goToRoute(panelVM.lastRouteData || {
+      route: panelVM.id,
+    });
+  };
+
 
   //
   // add routes
@@ -68,7 +77,7 @@ define('src/app', [
   });
 
   //
-  router.addRoute(app.panelMap.surveys, 'surveys', ':typeid', {});
+  router.addRoute(app.panelMap.surveys, 'surveys', ':surveyid', {});
   router.addRoute(app.panelMap.home, 'home', '', {});
   router.addRoute(app.panelMap.accounts, 'accounts', ':id/:action', {});
 

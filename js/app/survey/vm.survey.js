@@ -36,6 +36,7 @@ define('src/survey/vm.survey', [
     SurveyViewModel.super_.call(_this, options);
 
     _this.title = ko.observable(_this.title);
+    _this.id = _this.model.SurveyID;
 
     // observables
     _this.questions = ko.observableArray();
@@ -155,6 +156,10 @@ define('src/survey/vm.survey', [
       _this.list(childList);
       cb(true);
     });
+  };
+
+  SurveyViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
+    // do nothing
   };
 
   SurveyViewModel.prototype.hasLocalizationCode = function(localizationCode) {

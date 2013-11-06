@@ -21,7 +21,7 @@ html
           //- panels
           <!-- ko foreach:panels -->
           div(data-bind="active:active")
-            a(data-bind="attr:{href:'#/'+id,'class':id}")
+            a(data-bind="css:id,click:$parent.clickPanel")
               div(data-bind="visible:active")
                 div(class="indicator")
               span(class="ico", data-bind="html:ico")

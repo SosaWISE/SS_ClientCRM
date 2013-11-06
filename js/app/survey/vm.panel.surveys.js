@@ -26,8 +26,27 @@ define('src/survey/vm.panel.surveys', [
     SurveysPanelViewModel.super_.call(_this, options);
 
     _this.surveyTypes = ko.observableArray();
+
+    //
+    // events
+    //
+    _this.clickSurvey = function(surveyVM) {
+      if (surveyVM.active()) {
+        return;
+      }
+      _this.onDeactivate();
+      _this.activeChild(surveyVM);
+      surveyVM.activate();
+
+      var routeData = _this.lastRouteData || {};
+      routeData.surveyid = surveyVM.id;
+      _this.setRouteData(routeData);
+    };
   }
   utils.inherits(SurveysPanelViewModel, ControllerViewModel);
+  SurveysPanelViewModel.prototype.childName = 'surveyid';
+  SurveysPanelViewModel.prototype.defaultChild = '';
+  SurveysPanelViewModel.prototype.extraRouteData = ['id', 'action'];
 
   SurveysPanelViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
     var _this = this,
@@ -65,8 +84,20 @@ define('src/survey/vm.panel.surveys', [
     });
   };
 
-  SurveysPanelViewModel.prototype.onActivate = function(routeData) { // overrides base
-    routeData = routeData;
+  SurveysPanelViewModel.prototype.findChild = function(id) {
+    var _this = this,
+      result;
+
+    _this.surveyTypes().some(function(surveyTypeVM) {
+      return surveyTypeVM.surveys().some(function(surveyVM) {
+        /* jshint eqeqeq:false */
+        if (surveyVM.model.SurveyID == id) {
+          result = surveyVM;
+          return true;
+        }
+      });
+    });
+    return result;
   };
 
   return SurveysPanelViewModel;

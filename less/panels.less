@@ -302,66 +302,75 @@ ul.tabs {
 }
 
 .module-nav {
+  .user-select(none);
+  position: absolute;
+  top:0;
+  // right:0;
+  bottom:0;
+  left:0;
   width: 200px;
 
   overflow-y: auto;
   height: 100%;
 
-  .module {
-    position: absolute;
-    top:0;
-    right:0;
-    bottom:0;
-    left:200px;
-    background: white;
+  h2 {
+    padding: 20px 10px 5px 20px;
+  }
+}
+.module {
+  position: absolute;
+  top:0;
+  right:0;
+  bottom:0;
+  left:200px;
+  background: white;
 
-    // overflow: auto;
-    // height: 100%;
+  // overflow: auto;
+  // height: 100%;
+
+  h2 {
+    padding: 0px 10px;
+  }
+
+  // a {
+  //   font-weight: 400;
+  //   color: rgba(0,0,0,0.66);
+  //   &:hover {
+  //     text-decoration: underline;
+  //   }
+  // }
+
+  div .head {
+    height: 61px;
+    padding: 20px 10px;
+    position: relative;
+    .box-shadow-2(0px 1px 0px rgba(0, 0, 0, 0.1), inset 4px 0px 6px -2px rgba(0, 0, 0, 0.3));
 
     h2 {
-      padding: 0px 10px;
+      font-size: 18px;
+      color: rgba(0, 0, 0, 0.66);
     }
 
-    // a {
-    //   font-weight: 400;
-    //   color: rgba(0,0,0,0.66);
-    //   &:hover {
-    //     text-decoration: underline;
-    //   }
-    // }
-
-    div .head {
-      height: 61px;
-      padding: 20px 10px;
-      position: relative;
-      .box-shadow-2(0px 1px 0px rgba(0, 0, 0, 0.1), inset 4px 0px 6px -2px rgba(0, 0, 0, 0.5));
-
-      h2 {
-        font-size: 18px;
-        color: rgba(0, 0, 0, 0.66);
-      }
-
-      .search-wrap {
-        position: absolute;
-          top: 17px;
-          right: 15px;
-      }
-
-      input.search {
-        border: 1px solid rgba(0, 0, 0, 0.2);
-        .border-radius(50px);
-        padding: 5px 5px 5px 30px;
-        outline: none;
-        width: 225px;
-        margin: 0;
-      }
-    }
-
-    > div > .content {
+    .search-wrap {
       position: absolute;
-      top:60px;right:0;bottom:0;left:0;
-      overflow-y: auto;
-      .box-shadow(inset 4px 0px 6px -2px rgba(0, 0, 0, 0.5));
+        top: 17px;
+        right: 15px;
     }
+
+    input.search {
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      .border-radius(50px);
+      padding: 5px 5px 5px 30px;
+      outline: none;
+      width: 225px;
+      margin: 0;
+    }
+  }
+
+  > div > .content {
+    position: absolute;
+    top:60px;right:0;bottom:0;left:0;
+    overflow-y: auto;
+    .box-shadow(inset 4px 0px 6px -2px rgba(0, 0, 0, 0.3));
   }
 }

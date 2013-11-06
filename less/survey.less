@@ -1,3 +1,23 @@
+.survey-types {
+  > ul {
+    margin-left: 30px;
+
+    a {
+      padding: 5px;
+      width: 100%;
+      display: block;
+
+      color: white;
+      &.active {
+        .border-radius(5px 0px 0px 5px);
+        color: @site-green;
+        background-color: white;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
 .survey {
   position: relative;
   width: 100%;

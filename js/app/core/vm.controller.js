@@ -19,6 +19,7 @@ define('src/core/vm.controller', [
 
     _this.loaded = ko.observable(false);
     _this.loading = ko.observable(false);
+    _this.activeChild = ko.observable(null);
     _this.list = ko.observableArray();
   }
   utils.inherits(ControllerViewModel, BaseViewModel);
@@ -89,18 +90,22 @@ define('src/core/vm.controller', [
       this.removeExtraRouteData(routeData);
       child = this.findChild(this.defaultChild);
     }
-    routeData[this.childName] = child.id;
-
-    child.activate(routeData);
-    this.activeChild = child;
-
-    this.setTitle(child.name);
+    if (!child) {
+      delete routeData[this.childName];
+      this.setTitle(this.name || '');
+    } else {
+      routeData[this.childName] = child.id;
+      child.activate(routeData);
+      this.setTitle(child.name);
+    }
+    this.activeChild(child);
     // this.setTitle(this.name + '/' + child.name);
   };
   ControllerViewModel.prototype.onDeactivate = function() { // overrides base
-    if (this.activeChild) {
-      this.activeChild.deactivate();
-      this.activeChild = null;
+    var activeChild = this.activeChild;
+    if (activeChild()) {
+      activeChild().deactivate();
+      activeChild(null);
     }
   };
 

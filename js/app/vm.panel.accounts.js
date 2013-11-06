@@ -97,26 +97,11 @@ define('src/vm.panel.accounts', [
     }
     return result;
   };
-  AccountsPanelViewModel.prototype.onActivate = function(routeData) { // overrides base
-    var child = this.findChild(routeData[this.childName]);
-    if (!child) {
-      this.removeExtraRouteData(routeData);
-      child = this.findChild(this.defaultChild);
-    }
-    routeData[this.childName] = child.id;
-
-    child.activate(routeData);
-    this.activeChild = child;
-
-    this.setTitle(child.name);
-  };
 
   AccountsPanelViewModel.prototype.selectItem = function(vm) {
-    if (this.activeChild) {
-      this.activeChild.deactivate();
-    }
-    this.activeChild = vm;
-    this.activeChild.activate();
+    this.onDeactivate();
+    this.activeChild(vm);
+    vm.activate();
 
     var id;
     if (vm instanceof SearchAccountViewModel) {

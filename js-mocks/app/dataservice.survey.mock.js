@@ -234,6 +234,12 @@ define('mock/app/dataservice.survey.mock', [
       localeValues = [
       'en',
       'it',
+    ],
+      stCount = 0,
+      stValues = [
+      'Pre Survey',
+      'Post Survey',
+      'Some Survey',
     ];
 
     function modulusValue(count, values) {
@@ -248,6 +254,9 @@ define('mock/app/dataservice.survey.mock', [
     };
     mockery.fn.LOCALE = function() {
       return modulusValue(localeCount++, localeValues);
+    };
+    mockery.fn.SV_TYPE = function() {
+      return modulusValue(stCount++, stValues);
     };
   })();
 
@@ -264,18 +273,18 @@ define('mock/app/dataservice.survey.mock', [
     questions_PossibleAnswers_Map;
 
   surveyTypes = mockery.fromTemplate({
-    'list|1-1': [
+    'list|3-3': [
       {
         SurveyTypeID: '@INC(surveyType)',
-        Name: 'PreSurvey',
+        Name: '@SV_TYPE',
       }
     ],
   }).list;
   surveys = mockery.fromTemplate({
-    'list|1-1': [
+    'list|2-2': [
       {
         SurveyID: '@INC(survey)',
-        SurveyTypeId: '@REF_INC(surveyType)',
+        SurveyTypeId: '@FK(surveyType)',
         Version: '@NUMBER(1,2).1.@INC(surveyVersion)',
       }
     ],
@@ -284,7 +293,7 @@ define('mock/app/dataservice.survey.mock', [
     'list|2-2': [
       {
         SurveyTranslationID: '@INC(surveyTranslation)',
-        SurveyId: '@REF_INC(survey)',
+        SurveyId: 1000,
         LocalizationCode: '@LOCALE',
       }
     ],
@@ -303,7 +312,7 @@ define('mock/app/dataservice.survey.mock', [
     'list|4-4': [
       {
         QuestionMeaningID: '@INC(questionMeaning)',
-        SurveyTypeId: '@REF_INC(surveyType)',
+        SurveyTypeId: 1000,
         Name: '@TEXT(15,30)',
       }
     ],
@@ -313,7 +322,7 @@ define('mock/app/dataservice.survey.mock', [
     'list|5-5': [
       {
         QuestionMeaningId: '@FK(questionMeaning)',
-        TokenId: '@REF_INC(token)',
+        TokenId: '@FK(token)',
         IsDeleted: false,
       }
     ],
