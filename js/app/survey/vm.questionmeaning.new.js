@@ -33,8 +33,6 @@ define('src/survey/vm.questionmeaning.new', [
       throw new Error('missing surveyTypeVM');
     }
 
-    _this.saving = ko.observable(false);
-
     _this.qmData = ukov.wrapModel({
       // QuestionMeaningID: 0,
       SurveyTypeId: _this.surveyTypeVM.model.SurveyTypeID,
@@ -45,31 +43,27 @@ define('src/survey/vm.questionmeaning.new', [
     // events
     //
     _this.clickCancel = function() {
-      if (_this.saving()) {
+      if (_this.cmdAdd.busy()) {
         return;
       }
-      _this.layer.close(false);
+      _this.layer.close();
     };
-    _this.clickAdd = function() {
-      if (_this.saving()) {
-        return;
-      }
+    _this.cmdAdd = ko.command(function(cb) {
       _this.qmData.Name.validate();
       _this.qmData.update();
       if (!_this.qmData.isValid()) {
         notify.notify('warn', _this.qmData.errMsg(), 10);
-        return;
+        return cb();
       }
-      _this.saving(true);
       dataservice.survey.saveQuestionMeaning(_this.qmData.model, function(resp) {
-        _this.saving(false);
         if (resp.Code !== 0) {
           notify.notify('error', resp.Message);
         } else {
           _this.layer.close(resp.Value);
         }
+        cb();
       });
-    };
+    });
   }
   utils.inherits(NewQuestionMeaningViewModel, BaseViewModel);
   NewQuestionMeaningViewModel.prototype.viewTmpl = 'tmpl-questionmeaning_new';

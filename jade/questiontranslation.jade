@@ -1,20 +1,19 @@
-div(class="q-translation")
-  div(data-bind="if:saving")
-    div(class="spinner-wrap black", data-bind="template:'tmpl-spinner',active:true")
+div(data-bind="if:cmdSave.busy")
+  div(class="spinner-wrap black", data-bind="template:'tmpl-spinner',active:true")
 
-  div(class="locale")
-    span(data-bind="text:LocalizationCode")
-    |:
-  div(data-bind="visible:!editorVM()")
-    a(title="edit language",data-bind="click:clickEdit")
-      pre(data-bind="text:qtData.TextFormat")
-  div(data-bind="with:editorVM")
-    div(data-bind="template:viewTmpl")
-    div(class="actions")
-      ul(class="sv")
-        li(data-bind="click:$parent.clickEndEdit")
-          a(class="btn")
-            span Cancel
-        li(data-bind="click:$parent.clickSave")
-          a(class="btn")
-            span Save
+div(class="locale")
+  span(data-bind="text:LocalizationCode")
+  |:
+div(class="edit",data-bind="visible:!editorVM()")
+  a(title="edit language",data-bind="click:clickEdit")
+    pre(data-bind="text:qtData.TextFormat")
+div(data-bind="with:editorVM")
+  div(data-bind="template:viewTmpl")
+  div(class="actions")
+    ul(class="sv")
+      li(data-bind="click:$parent.clickEndEdit")
+        a(class="btn")
+          span Cancel
+      li(data-bind="cmd:$parent.cmdSave")
+        a(class="btn")
+          span Save

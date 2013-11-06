@@ -1,11 +1,15 @@
-div(class="survey",data-bind="css:translationsCss")
+div(class="survey")
   div(class="layers", data-bind="template:{name:'tmpl-layers',data:layersVM}")
 
   div(class="head")
-    ul(class="sv",data-bind="foreach:translations")
+    ul(class="sv")
+      li
+        a(class="add-btn btn",data-bind="click:clickAddSurveyTranslation") Add
+      <!-- ko foreach:translations -->
       li(data-bind="click:click")
         a(class="btn",data-bind="active:active")
           span(data-bind="text:model.LocalizationCode")
+      <!-- /ko -->
 
   div(class="content")
     div(data-bind="foreach:questions")

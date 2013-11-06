@@ -7,6 +7,7 @@ define('src/survey/vm.survey', [
   'src/survey/vm.question',
   'src/survey/vm.question.new',
   'src/survey/vm.surveytranslation',
+  'src/survey/vm.surveytranslation.new',
   'src/dataservice',
   'ko',
   'src/core/notify',
@@ -21,6 +22,7 @@ define('src/survey/vm.survey', [
   QuestionViewModel,
   NewQuestionViewModel,
   SurveyTranslationViewModel,
+  NewSurveyTranslationViewModel,
   dataservice,
   ko,
   notify,
@@ -39,7 +41,6 @@ define('src/survey/vm.survey', [
     _this.questions = ko.observableArray();
     _this.translations = ko.observableArray();
     // computed observables
-    _this.translationsCss = ko.computed(_this.computeTranslationsCss, _this);
     _this.nextName = ko.computed(_this.computeNextName, _this);
 
 
@@ -48,6 +49,18 @@ define('src/survey/vm.survey', [
     //
     // events
     //
+    _this.clickAddSurveyTranslation = function() {
+      _this.layersVM.show(new NewSurveyTranslationViewModel({
+        surveyVM: _this,
+      }), function(model) {
+        if (!model) {
+          return;
+        }
+        var vm = createSurveyTranslation(_this, model);
+        _this.translations.push(vm);
+        vm.active(true);
+      });
+    };
     _this.clickAddQuestion = function(parentVM) {
       var parent = (parentVM === _this) ? null : parentVM,
         vm = new NewQuestionViewModel({
@@ -120,11 +133,8 @@ define('src/survey/vm.survey', [
         notify.notify('error', resp.Message);
       } else {
         var list = [];
-        resp.Value.forEach(function(item) {
-          list.push(new SurveyTranslationViewModel({
-            surveyVM: _this,
-            model: item,
-          }));
+        resp.Value.forEach(function(model) {
+          list.push(createSurveyTranslation(_this, model));
         });
         _this.translations(list);
         //
@@ -147,15 +157,14 @@ define('src/survey/vm.survey', [
     });
   };
 
-  SurveyViewModel.prototype.computeTranslationsCss = function() {
-    var results = [];
-    this.translations().forEach(function(surveyTranslationVM) {
-      if (surveyTranslationVM.active()) {
-        results.push('show-' + surveyTranslationVM.model.LocalizationCode);
-      }
+  SurveyViewModel.prototype.hasLocalizationCode = function(localizationCode) {
+    // create case insensitive matcher
+    var regx = new RegExp('^' + localizationCode + '$', 'i');
+    return this.translations().some(function(surveyTranslationVM) {
+      return regx.test(surveyTranslationVM.model.LocalizationCode);
     });
-    return results.join(' ');
   };
+
   SurveyViewModel.prototype.computeNextName = function() {
     return (this.nextGroupOrder() + 1) + '.';
   };
@@ -186,6 +195,13 @@ define('src/survey/vm.survey', [
       possibleAnswersVM: surveyVM.possibleAnswersVM,
       questionMeaningVM: surveyVM.surveyTypeVM.getQuestionMeaning(model.QuestionMeaningId),
       parent: parent,
+      model: model,
+    });
+  }
+
+  function createSurveyTranslation(surveyVM, model) {
+    return new SurveyTranslationViewModel({
+      surveyVM: surveyVM,
       model: model,
     });
   }

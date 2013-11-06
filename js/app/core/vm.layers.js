@@ -46,6 +46,10 @@ define('src/core/vm.layers', [
     vm.layer = layer;
 
     layers.push(layer);
+
+    // activate the view model
+    vm.activate({});
+
     return layer;
   }
 

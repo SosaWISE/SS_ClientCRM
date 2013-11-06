@@ -30,7 +30,7 @@ define('src/survey/vm.qpossibleanswermap.new', [
       if (_this.cmdAdd.busy()) {
         return;
       }
-      _this.layer.close(false);
+      _this.layer.close();
     };
     _this.cmdAdd = ko.command(function(cb) {
       var selectedItem = _this.paComboVM.selectedItem();
@@ -47,7 +47,7 @@ define('src/survey/vm.qpossibleanswermap.new', [
           notify.notify('error', resp.Message);
         } else {
           _this.questionVM.addPossibleAnswerMap(resp.Value);
-          _this.layer.close(); //resp.Value);
+          _this.layer.close();
         }
         cb();
       });

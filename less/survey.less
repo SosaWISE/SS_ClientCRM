@@ -23,21 +23,6 @@
     }
   }
 
-  .css-es,
-  .css-it,
-  .css-en {
-    transition: max-height 0.25s;
-    max-height: 0px;
-    overflow-y: hidden;
-  }
-  &.show-es .css-es,
-  &.show-it .css-it,
-  &.show-en .css-en {
-    transition: max-height 3s;
-    max-height: 1000px;
-    // overflow-y: auto;
-  }
-
   ul.sv {
     list-style: none;
     padding: 0;
@@ -101,12 +86,11 @@
   }
 
   .actions {
-    // margin-top: 20px;
-    padding: 20px 0px;
+    padding: 20px 0px 20px 10px;
     height: 60px;
   }
   .add-btn {
-    margin: 10px;
+    margin-right: 10px;
     padding-left: 36px;
     position: relative;
     &:before {
@@ -114,7 +98,6 @@
     }
 
     &.small {
-      margin-right: 8px;
       padding: 3px 10px 3px 28px;
       position: relative;
       &:before {
@@ -123,7 +106,16 @@
     }
   }
 
-  .q-translation {
+  .translation {
+    transition: max-height 0.25s;
+    max-height: 0px;
+    overflow-y: hidden;
+    &.active {
+      transition: max-height 3s;
+      max-height: 1000px;
+      // overflow-y: auto;
+    }
+
     padding-left: 60px;
     padding-right: 20px;
     position: relative;
@@ -134,6 +126,11 @@
       font-weight: 900;
       width: 58px;
       text-align: right;
+    }
+    .edit {
+      &:hover {
+        background-color: rgba(0,0,0,0.05);
+      }
     }
   }
 

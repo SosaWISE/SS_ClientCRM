@@ -26,7 +26,8 @@ table(class="question")
             span(data-bind="text:possibleAnswer.AnswerText")
         <!-- /ko -->
       <!-- ko foreach:translations -->
-      div(data-bind="template:viewTmpl,css:'css-'+LocalizationCode")
+      div(class="translation",data-bind="active:show")
+        div(data-bind="template:viewTmpl")
       <!-- /ko -->
   tr
     td

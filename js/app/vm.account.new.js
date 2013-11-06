@@ -41,13 +41,16 @@ define('src/vm.account.new', [
       width: ko.observable(0),
       height: ko.observable(0),
       viewTmpl: 'tmpl-account_new_layer',
+      activate: function(routeData) {
+        _this.layer.vm().activate(routeData);
+      },
     };
 
     function setLayer(vm) {
       _this.layer.vm(vm);
       _this.layer.width(vm.width);
       _this.layer.height(vm.height);
-      vm.activate();
+      _this.layer.activate({});
     }
     setLayer(_this.findRepVM);
 

@@ -30,7 +30,7 @@ define('src/survey/vm.qmtokenmap.new', [
       if (_this.cmdAdd.busy()) {
         return;
       }
-      _this.layer.close(false);
+      _this.layer.close();
     };
     _this.cmdAdd = ko.command(function(cb) {
       var selectedItem = _this.tokenComboVM.selectedItem();
@@ -47,7 +47,7 @@ define('src/survey/vm.qmtokenmap.new', [
           notify.notify('error', resp.Message);
         } else {
           _this.questionMeaningVM.addTokenMap(resp.Value);
-          _this.layer.close(); //resp.Value);
+          _this.layer.close();
         }
         cb();
       });

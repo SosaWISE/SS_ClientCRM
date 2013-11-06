@@ -18,16 +18,15 @@ define('src/survey/vm.questiontranslation.editor', [
   function EditorQuestionTranslationViewModel(options) {
     var _this = this;
     EditorQuestionTranslationViewModel.super_.call(_this, options);
-    _this.ensureProps(['questionMeaningVM']);
+    _this.ensureProps(['questionMeaningVM', 'input']);
 
-    // _this.input = ko.observable('');
+    // _this.input = should be passed in
     _this.output = ko.computed(_this.computeHtml, _this);
   }
   utils.inherits(EditorQuestionTranslationViewModel, BaseViewModel);
   EditorQuestionTranslationViewModel.prototype.viewTmpl = 'tmpl-questiontranslation_editor';
 
   EditorQuestionTranslationViewModel.prototype.computeHtml = function() {
-    //@TODO: format {0:c},{0:spaced},etc.
     //@TODO: format with real & mock tokens
     var html,
       params = [];

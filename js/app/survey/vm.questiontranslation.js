@@ -38,7 +38,15 @@ define('src/survey/vm.questiontranslation', [
 
     // observables
     _this.editorVM = ko.observable(null);
-    _this.saving = ko.observable(false);
+    // computed observables
+    _this.show = ko.computed({
+      // don't evaluate until someone requests the value,
+      // since this vm is created inside of another computed
+      deferEvaluation: true,
+      read: function() {
+        return this.active();
+      },
+    }, _this.surveyTranslationVM);
 
     _this.qtData = ukov.wrapModel(_this.model, 'questiontranslation-validate', 'questiontranslation-validate-vm');
 
@@ -58,36 +66,31 @@ define('src/survey/vm.questiontranslation', [
       });
       _this.editorVM(vm);
     };
-    _this.clickEndEdit = function() {
-      if (_this.saving()) {
+    _this.clickEndEdit = function(force) {
+      if (!force && _this.cmdSave.busy()) {
         return;
       }
       // reset text
       _this.qtData.TextFormat(_this.qtData.TextFormat.cleanVal());
       _this.editorVM(null);
     };
-    _this.clickSave = function() {
-      if (_this.saving()) {
-        return;
-      }
+    _this.cmdSave = ko.command(function(cb) {
       _this.qtData.TextFormat.validate();
       _this.qtData.update();
       if (!_this.qtData.isValid()) {
         notify.notify('warn', _this.qtData.errMsg(), 10);
-        return;
+        return cb();
       }
-      _this.saving(true);
       dataservice.survey.saveQuestionTranslation(_this.qtData.model, function(resp) {
-        _this.saving(false);
         if (resp.Code !== 0) {
           notify.notify('error', resp.Message);
         } else {
-          _this.qtData.setVal(resp.Value);
           _this.qtData.markClean(resp.Value);
-          _this.editorVM(null);
+          _this.clickEndEdit(true);
         }
+        cb();
       });
-    };
+    });
   }
   utils.inherits(QuestionTranslationViewModel, BaseViewModel);
   QuestionTranslationViewModel.prototype.viewTmpl = 'tmpl-questiontranslation';

@@ -18,28 +18,12 @@ define('src/survey/vm.question.new', [
   'use strict';
 
   function NewQuestionViewModel(options) {
-    var _this = this,
-      list = [];
+    var _this = this;
     NewQuestionViewModel.super_.call(_this, options);
-    if (!_this.surveyVM) {
-      throw new Error('missing surveyVM');
-    }
-    if (!_this.surveyTypeVM) {
-      throw new Error('missing surveyTypeVM');
-    }
-
-    _this.saving = ko.observable(false);
-
-    _this.surveyTypeVM.questionMeanings().forEach(function(vm) {
-      //@TODO: don't add used meanings
-      list.push({
-        vm: vm,
-        text: vm.model.Name,
-      });
-    });
+    _this.ensureProps(['surveyVM', 'surveyTypeVM']);
 
     _this.qmComboVM = new ComboViewModel();
-    _this.qmComboVM.setList(list);
+    _this.qmComboVM.setList(createComboList([], _this.surveyTypeVM.questionMeanings()));
     _this.qmComboVM.actions([
       {
         text: 'Add New Meaning',
@@ -51,21 +35,17 @@ define('src/survey/vm.question.new', [
     // events
     //
     _this.clickCancel = function() {
-      if (_this.saving()) {
+      if (_this.cmdAdd.busy()) {
         return;
       }
-      _this.layer.close(false);
+      _this.layer.close();
     };
-    _this.clickAdd = function() {
-      if (_this.saving()) {
-        return;
-      }
+    _this.cmdAdd = ko.command(function(cb) {
       var selectedItem = _this.qmComboVM.selectedItem();
       if (selectedItem === _this.qmComboVM.noItemSelected) {
         notify.notify('warn', 'No question meaning selected', 10);
-        return;
+        return cb();
       }
-      _this.saving(true);
       dataservice.survey.saveQuestion({
         SurveyId: _this.surveyVM.model.SurveyID,
         QuestionMeaningId: selectedItem.item.vm.model.QuestionMeaningID,
@@ -73,14 +53,14 @@ define('src/survey/vm.question.new', [
         GroupOrder: _this.groupOrder,
         MapToTokenId: null,
       }, function(resp) {
-        _this.saving(false);
         if (resp.Code !== 0) {
           notify.notify('error', resp.Message);
         } else {
           _this.layer.close(resp.Value);
         }
+        cb();
       });
-    };
+    });
   }
   utils.inherits(NewQuestionViewModel, BaseViewModel);
   NewQuestionViewModel.prototype.viewTmpl = 'tmpl-question_new';
@@ -102,6 +82,27 @@ define('src/survey/vm.question.new', [
       _this.qmComboVM.selectItem(item);
     });
   };
+
+  function createComboList(questionMeanings, allQuestionMeanings) {
+    var map = {},
+      result = [];
+
+    questionMeanings.forEach(function(vm) {
+      map[vm.model.QuestionMeaningId] = true;
+    });
+
+    allQuestionMeanings.forEach(function(vm) {
+      // don't add used tokens
+      if (map[vm.model.QuestionMeaningID]) {
+        return;
+      }
+      result.push({
+        vm: vm,
+        text: vm.model.Name,
+      });
+    });
+    return result;
+  }
 
   return NewQuestionViewModel;
 });

@@ -124,6 +124,13 @@ define('mock/app/dataservice.survey.mock', [
         TextFormat: data.TextFormat,
       }));
     };
+    Dataservice.prototype.saveSurveyTranslation = function(data, cb) {
+      send(cb, createOrUpdate(surveyTranslations, 'SurveyTranslationID', '@INC(surveyTranslation)', {
+        SurveyTranslationID: data.SurveyTranslationID,
+        SurveyId: data.SurveyId,
+        LocalizationCode: data.LocalizationCode,
+      }));
+    };
 
     function createOrUpdate(list, idName, idTemplate, newValue) {
       var id = newValue[idName],
@@ -293,7 +300,7 @@ define('mock/app/dataservice.survey.mock', [
   }).list;
 
   questionMeanings = mockery.fromTemplate({
-    'list|10-10': [
+    'list|4-4': [
       {
         QuestionMeaningID: '@INC(questionMeaning)',
         SurveyTypeId: '@REF_INC(surveyType)',
