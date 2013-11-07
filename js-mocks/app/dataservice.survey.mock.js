@@ -99,6 +99,19 @@ define('mock/app/dataservice.survey.mock', [
 
 
 
+    Dataservice.prototype.saveSurveyType = function(data, cb) {
+      send(cb, createOrUpdate(surveyTypes, 'SurveyTypeID', '@INC(surveyType)', {
+        SurveyTypeID: data.SurveyTypeID,
+        Name: data.Name,
+      }));
+    };
+    Dataservice.prototype.saveSurvey = function(data, cb) {
+      send(cb, createOrUpdate(surveys, 'SurveyID', '@INC(survey)', {
+        SurveyID: data.SurveyID,
+        SurveyTypeId: data.SurveyTypeId,
+        Version: data.Version,
+      }));
+    };
     Dataservice.prototype.saveQuestionMeaning = function(data, cb) {
       send(cb, createOrUpdate(questionMeanings, 'QuestionMeaningID', '@INC(questionMeaning)', {
         QuestionMeaningID: data.QuestionMeaningID,

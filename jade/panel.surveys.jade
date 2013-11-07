@@ -1,13 +1,19 @@
-div(class="module-nav survey-types")
+div(class="layers", data-bind="template:{name:'tmpl-layers',data:layersVM}")
+
+div(class="p-nav survey-types")
   <!-- ko foreach:surveyTypes -->
-  h2(data-bind="text:model.Name")
+  div(class="survey-type")
+    div(class="actions")
+      a(class="btn small add-btn",data-bind="click:clickAddSurvey") New
+    h2(data-bind="text:model.Name")
   ul
     <!-- ko foreach:surveys -->
     li(data-bind="click:$parents[1].clickSurvey")
       a(data-bind="active:active")
         span(data-bind="text:model.Version")
     <!-- /ko -->
+    li
    <!-- /ko -->
 
-div(data-bind="with:activeChild")
-  div(class="module",data-bind="template:viewTmpl")
+div(class="p-module",data-bind="with:activeChild")
+  div(data-bind="template:viewTmpl")

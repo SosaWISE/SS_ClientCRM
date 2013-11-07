@@ -4,6 +4,7 @@ define('src/survey/vm.surveytype', [
   'src/util/joiner',
   'ko',
   'src/core/vm.controller',
+  'src/survey/vm.survey.new',
   'src/survey/vm.survey',
   'src/survey/vm.questionmeaning',
   'src/dataservice',
@@ -13,6 +14,7 @@ define('src/survey/vm.surveytype', [
   joiner,
   ko,
   ControllerViewModel,
+  NewSurveyViewModel,
   SurveyViewModel,
   QuestionMeaningViewModel,
   dataservice
@@ -22,10 +24,25 @@ define('src/survey/vm.surveytype', [
   function SurveyTypeViewModel(options) {
     var _this = this;
     SurveyTypeViewModel.super_.call(_this, options);
+    _this.ensureProps(['layersVM']);
 
     _this.surveys = ko.observableArray();
     _this.questionMeanings = ko.observableArray();
     _this.qmMap = {};
+
+    //
+    // events
+    //
+    _this.clickAddSurvey = function() {
+      _this.layersVM.show(new NewSurveyViewModel({
+        surveyTypeVM: _this,
+      }), function(model) {
+        if (!model) {
+          return;
+        }
+        _this.surveys.push(createSurvey(_this, model));
+      });
+    };
   }
   utils.inherits(SurveyTypeViewModel, ControllerViewModel);
   SurveyTypeViewModel.prototype.viewTmpl = 'tmpl-surveytype';
@@ -44,12 +61,8 @@ define('src/survey/vm.surveytype', [
         notify.notify('error', resp.Message);
       } else {
         var list = [];
-        resp.Value.forEach(function(item) {
-          list.push(new SurveyViewModel({
-            possibleAnswersVM: _this.possibleAnswersVM,
-            surveyTypeVM: _this,
-            model: item,
-          }));
+        resp.Value.forEach(function(model) {
+          list.push(createSurvey(_this, model));
         });
         _this.surveys(list);
         // _this.list(list);
@@ -109,6 +122,14 @@ define('src/survey/vm.surveytype', [
     }
     return result;
   };
+
+  function createSurvey(surveyTypeVM, model) {
+    return new SurveyViewModel({
+      possibleAnswersVM: surveyTypeVM.possibleAnswersVM,
+      surveyTypeVM: surveyTypeVM,
+      model: model,
+    });
+  }
 
   return SurveyTypeViewModel;
 });

@@ -1,0 +1,17 @@
+div(class="layer",style="width:300px;height:250px")
+  div(data-bind="if:cmdAdd.busy")
+    div(class="spinner-wrap white", data-bind="template:'tmpl-spinner',active:true")
+
+  div(class="content")
+    h2(data-bind="text:surveyTypeVM.model.Name")
+    ul(class="edit-form")
+      li
+        span(class="label") Version
+        input(type="text",data-bind="ukov:sData.Version,value:sData.Version,valueUpdate:'keyup'")
+
+  div(class="actions")
+    ul(class="sv")
+      li
+        a(class="btn",data-bind="click:clickCancel") Cancel
+      li
+        a(class="btn",data-bind="cmd:cmdAdd") Add

@@ -29,9 +29,7 @@ define('src/survey/vm.questionmeaning.new', [
   function NewQuestionMeaningViewModel(options) {
     var _this = this;
     NewQuestionMeaningViewModel.super_.call(_this, options);
-    if (!_this.surveyTypeVM) {
-      throw new Error('missing surveyTypeVM');
-    }
+    _this.ensureProps(['surveyTypeVM']);
 
     _this.qmData = ukov.wrapModel({
       // QuestionMeaningID: 0,

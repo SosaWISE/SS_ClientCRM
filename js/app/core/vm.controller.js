@@ -28,32 +28,38 @@ define('src/core/vm.controller', [
   ControllerViewModel.prototype.extraRouteData = ['id', 'action'];
 
   ControllerViewModel.prototype.setRoute = function(route) {
-    if (this.route) {
+    var _this = this;
+    if (_this.route) {
       throw new Error('controller can only be associated with one route');
     }
-    this.route = route;
+    _this.route = route;
   };
-  ControllerViewModel.prototype.goToRoute = function(routeData, allowHistory) {
-    this.lastRouteData = routeData;
-    if (this.parent) {
-      this.parent.goToRoute(routeData, allowHistory);
+  ControllerViewModel.prototype.getLastRouteData = function() {
+    var _this = this;
+    return _this.route.lastRouteData;
+  };
+  ControllerViewModel.prototype.redirectTo = function(routeData, allowHistory) {
+    var _this = this;
+    if (_this.parent) {
+      _this.parent.redirectTo(routeData, allowHistory);
     } else {
-      this.route.goTo(routeData, allowHistory);
+      _this.route.redirectTo(routeData, allowHistory);
     }
   };
   ControllerViewModel.prototype.setRouteData = function(routeData) {
-    this.lastRouteData = routeData;
-    if (this.parent) {
-      this.parent.setRouteData(routeData);
+    var _this = this;
+    if (_this.parent) {
+      _this.parent.setRouteData(routeData);
     } else {
-      this.route.setRouteData(routeData);
+      _this.route.setRouteData(routeData);
     }
   };
 
   ControllerViewModel.prototype.findChild = function(id) {
-    var result;
-    if (this.list) {
-      this.list().some(function(item) {
+    var _this = this,
+      result;
+    if (_this.list) {
+      _this.list().some(function(item) {
         /* jshint eqeqeq:false */
         if (item.id == id) {
           result = item;
@@ -64,8 +70,9 @@ define('src/core/vm.controller', [
     return result;
   };
   ControllerViewModel.prototype.removeExtraRouteData = function(routeData) {
-    if (this.extraRouteData) {
-      this.extraRouteData.forEach(function(paramName) {
+    var _this = this;
+    if (_this.extraRouteData) {
+      _this.extraRouteData.forEach(function(paramName) {
         delete routeData[paramName];
       });
     }
@@ -85,24 +92,26 @@ define('src/core/vm.controller', [
     $('title').text(parts.join(' '));
   };
   ControllerViewModel.prototype.onActivate = function(routeData) { // overrides base
-    var child = this.findChild(routeData[this.childName]);
+    var _this = this,
+      child = _this.findChild(routeData[_this.childName]);
     if (!child) {
-      this.removeExtraRouteData(routeData);
-      child = this.findChild(this.defaultChild);
+      _this.removeExtraRouteData(routeData);
+      child = _this.findChild(_this.defaultChild);
     }
     if (!child) {
-      delete routeData[this.childName];
-      this.setTitle(this.name || '');
+      delete routeData[_this.childName];
+      _this.setTitle(_this.name || '');
     } else {
-      routeData[this.childName] = child.id;
+      routeData[_this.childName] = child.id;
       child.activate(routeData);
-      this.setTitle(child.name);
+      _this.setTitle(child.name);
     }
-    this.activeChild(child);
-    // this.setTitle(this.name + '/' + child.name);
+    _this.activeChild(child);
+    // _this.setTitle(_this.name + '/' + child.name);
   };
   ControllerViewModel.prototype.onDeactivate = function() { // overrides base
-    var activeChild = this.activeChild;
+    var _this = this,
+      activeChild = _this.activeChild;
     if (activeChild()) {
       activeChild().deactivate();
       activeChild(null);

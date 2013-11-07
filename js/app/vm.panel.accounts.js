@@ -71,21 +71,21 @@ define('src/vm.panel.accounts', [
   AccountsPanelViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
     var _this = this,
       vm;
-    /* jshint eqeqeq:false */
-    if (routeData.id && parseInt(routeData.id, 10) == routeData.id) {
-      vm = this.findChild(routeData.id);
-      if (!vm) {
-        vm = new AccountViewModel({
-          id: parseInt(routeData.id, 10),
-          title: routeData.id,
-        });
-        _this.list.splice(_this.list().length - 1, 0, vm);
-        //@TODO: load account asynchronously
-        cb(false);
-        return;
+    setTimeout(function() {
+      /* jshint eqeqeq:false */
+      if (routeData.id && parseInt(routeData.id, 10) == routeData.id) {
+        vm = _this.findChild(routeData.id);
+        if (!vm) {
+          //@TODO: load real account
+          vm = new AccountViewModel({
+            id: parseInt(routeData.id, 10),
+            title: routeData.id,
+          });
+          _this.list.splice(_this.list().length - 1, 0, vm);
+        }
       }
-    }
-    cb(false);
+      cb(false);
+    }, 5000);
   };
   AccountsPanelViewModel.prototype.findChild = function(id) {
     var _this = this,
@@ -93,17 +93,18 @@ define('src/vm.panel.accounts', [
     if (id === _this.searchVM.id) {
       result = _this.searchVM;
     } else {
-      result = AccountsPanelViewModel.super_.prototype.findChild.call(this, id);
+      result = AccountsPanelViewModel.super_.prototype.findChild.call(_this, id);
     }
     return result;
   };
 
   AccountsPanelViewModel.prototype.selectItem = function(vm) {
-    this.onDeactivate();
-    this.activeChild(vm);
+    var _this = this,
+      id;
+    _this.onDeactivate();
+    _this.activeChild(vm);
     vm.activate();
 
-    var id;
     if (vm instanceof SearchAccountViewModel) {
       id = "search";
     } else if (vm instanceof NewAccountViewModel) {
@@ -111,8 +112,8 @@ define('src/vm.panel.accounts', [
     } else {
       id = vm.id;
     }
-    this.setRouteData({
-      route: this.id,
+    _this.setRouteData({
+      route: _this.id,
       id: id,
     });
   };

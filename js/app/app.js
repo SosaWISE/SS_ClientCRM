@@ -63,9 +63,9 @@ define('src/app', [
     if (panelVM.active()) {
       return;
     }
-    panelVM.goToRoute(panelVM.lastRouteData || {
+    panelVM.redirectTo(panelVM.getLastRouteData() || {
       route: panelVM.id,
-    });
+    }, true);
   };
 
 

@@ -1,5 +1,6 @@
 define('src/survey/vm.panel.surveys', [
   'src/util/joiner',
+  'src/core/vm.layers',
   'src/survey/vm.tokens',
   'src/survey/vm.possibleanswers',
   'src/survey/vm.surveytype',
@@ -10,6 +11,7 @@ define('src/survey/vm.panel.surveys', [
   'src/core/vm.controller',
 ], function(
   joiner,
+  LayersViewModel,
   TokensViewModel,
   PossibleAnswersViewModel,
   SurveyTypeViewModel,
@@ -27,6 +29,9 @@ define('src/survey/vm.panel.surveys', [
 
     _this.surveyTypes = ko.observableArray();
 
+    _this.layersVM = new LayersViewModel();
+
+
     //
     // events
     //
@@ -38,9 +43,9 @@ define('src/survey/vm.panel.surveys', [
       _this.activeChild(surveyVM);
       surveyVM.activate();
 
-      var routeData = _this.lastRouteData || {};
-      routeData.surveyid = surveyVM.id;
-      _this.setRouteData(routeData);
+      _this.setRouteData({
+        surveyid: surveyVM.id,
+      });
     };
   }
   utils.inherits(SurveysPanelViewModel, ControllerViewModel);
@@ -67,6 +72,7 @@ define('src/survey/vm.panel.surveys', [
         var list = [];
         resp.Value.forEach(function(item) {
           list.push(new SurveyTypeViewModel({
+            layersVM: _this.layersVM,
             tokensVM: tokensVM,
             possibleAnswersVM: possibleAnswersVM,
             model: item,

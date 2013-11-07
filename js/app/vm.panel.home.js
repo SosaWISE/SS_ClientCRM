@@ -19,23 +19,19 @@ define('src/vm.panel.home', [
     cb(false);
 
     var _this = this;
-    notify.notify('fence', '/devices/devices/100169/edit', 0, {
+    notify.notify('info', '/surveys/1000', 0, {
       view: function() {
-        _this.goToRoute({
-          route: 'devices',
-          tab: 'devices',
-          id: 100169,
-          action: 'edit',
+        _this.redirectTo({
+          route: 'surveys',
+          surveyid: 1000,
         });
       },
     });
-    notify.notify('fence', '/devices/devices/100203/edit', 0, {
+    notify.notify('info', '/surveys/1001', 0, {
       view: function() {
-        _this.goToRoute({
-          route: 'devices',
-          tab: 'devices',
-          id: 100203,
-          action: 'edit',
+        _this.redirectTo({
+          route: 'surveys',
+          surveyid: 1001,
         });
       },
     });
@@ -48,6 +44,9 @@ define('src/vm.panel.home', [
   };
   HomePanelViewModel.prototype.onActivate = function() { // overrides base
     this.setTitle(this.name);
+  };
+  HomePanelViewModel.prototype.onDeactivate = function() { // overrides base
+
   };
   return HomePanelViewModel;
 });

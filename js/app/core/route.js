@@ -120,21 +120,26 @@ define('src/core/route', [
 
   // use this if the the panel should change
   // this tries to look up the route
-  Route.prototype.goTo = function(routeData, allowHistory) {
-    var router = this.router,
-      routeName = routeData.route || this.name,
+  Route.prototype.redirectTo = function(routeData, allowHistory) {
+    var _this = this,
+      routeName = routeData.route || _this.name,
       // look up new route
-      route = router.routeMap[routeName];
+      route = _this.router.routeMap[routeName];
     if (route) {
       route.addDefaults(routeData);
     }
-    router.goToRoute(routeName, routeData, allowHistory);
+    route.lastRouteData = routeData;
+    _this.router.redirectTo(routeName, routeData, allowHistory);
   };
   // use this if the panel will stay the same
   Route.prototype.setRouteData = function(routeData) {
-    this.addDefaults(routeData);
-    var path = this.toPath(routeData);
-    this.router.setPath(path, false);
+    var _this = this;
+    if (routeData.route && routeData.route !== _this.name) {
+      throw new Error('');
+    }
+    _this.addDefaults(routeData);
+    _this.lastRouteData = routeData;
+    _this.router.setPath(_this.toPath(routeData), false);
   };
 
 
@@ -154,6 +159,8 @@ define('src/core/route', [
   }
 
   function activateRoute(route, routeData, cb) {
+    route.lastRouteData = routeData;
+
     // ensure the previous has been disposed
     disposeOnLoaded(route);
 

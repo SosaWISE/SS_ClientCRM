@@ -22,7 +22,7 @@ define('src/vm.account.search', [
     // events
     //
     _this.clickOpen = function() {
-      _this.goToRoute({
+      _this.redirectTo({
         id: 100000 + count,
       });
       count++;

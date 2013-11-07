@@ -87,28 +87,15 @@ define('src/core/router', [
   Router.prototype.goToPath = function(path, allowHistory) {
     var _this = this,
       user = config.user(),
-      routes = user ? this.routes : this.anonRoutes,
-      route,
-      activated = false;
+      routes = user ? _this.routes : _this.anonRoutes,
+      route;
 
-    function onActivated(pathTaken) {
-      activated = true;
-      if (pathTaken) {
-        // ensure that it gets added to the history
-        if (allowHistory && pathTaken === path) {
-          _this.setPath('', false);
-        }
-        // set pathTaken in address bar
-        _this.setPath(pathTaken, allowHistory);
-      }
-    }
-
-    if (this.prevRoute) {
+    if (_this.prevRoute) {
       //@TODO: store in app data???
       // StateKeys: {
       //   lastView: 'state.active-hash'
       // },
-      this.prevRoute.deactivate();
+      _this.prevRoute.deactivate();
     }
 
     // find the first route that matches the path
@@ -121,23 +108,26 @@ define('src/core/router', [
       path = route.toPath(route.fromPath('/' + route.name));
     }
 
+    // set path before the route is activated
+    _this.setPath(path, allowHistory);
     // activate the route
-    route.activate(path, onActivated);
-    // check if it was activated synchronously
-    if (!activated) {
-      // temporarily set the path while the route is being activated
-      this.setPath(path, false);
-    }
+    route.activate(path, function onActivated(pathTaken) {
+      if (pathTaken !== path) {
+        // set pathTaken in address bar
+        _this.setPath(pathTaken, false);
+      }
+    });
 
     showElements(user, route.name);
-    this.prevRoute = route;
+    _this.prevRoute = route;
   };
-  Router.prototype.goToRoute = function(routeName, routeData, allowHistory) {
-    var route = this.routeMap[routeName];
+  Router.prototype.redirectTo = function(routeName, routeData, allowHistory) {
+    var _this = this,
+      route = _this.routeMap[routeName];
     if (!route) {
       throw new Error('no route named ' + routeName);
     }
-    return this.goToPath(route.toPath(routeData), allowHistory);
+    return _this.goToPath(route.toPath(routeData), allowHistory);
   };
 
 
