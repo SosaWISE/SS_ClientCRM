@@ -27,7 +27,7 @@ define('src/survey/vm.panel.surveys', [
     var _this = this;
     SurveysPanelViewModel.super_.call(_this, options);
 
-    _this.surveyTypes = ko.observableArray();
+    _this.surveyTypes = _this.childs;
 
     _this.layersVM = new LayersViewModel();
 
@@ -41,67 +41,60 @@ define('src/survey/vm.panel.surveys', [
       }
       _this.onDeactivate();
       _this.activeChild(surveyVM);
-      surveyVM.activate();
 
-      _this.setRouteData({
+      // surveyVM.activate();
+      _this.redirectTo({
         surveyid: surveyVM.id,
-      });
+      }, false);
     };
   }
   utils.inherits(SurveysPanelViewModel, ControllerViewModel);
-  SurveysPanelViewModel.prototype.childName = 'surveyid';
-  SurveysPanelViewModel.prototype.defaultChild = '';
-  SurveysPanelViewModel.prototype.extraRouteData = ['id', 'action'];
 
-  SurveysPanelViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
+  SurveysPanelViewModel.prototype.onLoad = function(join) { // overrides base
     var _this = this,
-      childList = [],
-      join = joiner(),
-      jList = [],
       tokensVM = new TokensViewModel(),
-      possibleAnswersVM = new PossibleAnswersViewModel();
+      possibleAnswersVM = new PossibleAnswersViewModel(),
+      cb = join.add(),
+      depJoin = join.create();
 
-    childList.push(tokensVM);
-    childList.push(possibleAnswersVM);
+    tokensVM.load(depJoin.add());
+    possibleAnswersVM.load(depJoin.add());
 
-    jList.push(join.add());
     dataservice.survey.getSurveyTypes({}, function(resp) {
       if (resp.Code !== 0) {
-        notify.notify('error', resp.Message);
-      } else {
-        var list = [];
-        resp.Value.forEach(function(item) {
-          list.push(new SurveyTypeViewModel({
+        return cb(resp);
+      }
+      // ensure the dependencies have loaded
+      depJoin.when(function(err) {
+        if (err) {
+          return cb(err);
+        }
+        var list = resp.Value.map(function(model) {
+          var vm = new SurveyTypeViewModel({
             layersVM: _this.layersVM,
             tokensVM: tokensVM,
             possibleAnswersVM: possibleAnswersVM,
-            model: item,
-          }));
+            model: model,
+          });
+          vm.load(join.add());
+          return vm;
         });
         _this.surveyTypes(list);
-        childList = childList.concat(list);
-      }
-      jList.pop()();
-    });
-
-    join.when(function() {
-      _this.list(childList);
-      cb(true);
+        //
+        cb();
+      });
     });
   };
 
-  SurveysPanelViewModel.prototype.findChild = function(id) {
+  SurveysPanelViewModel.prototype.findChild = function(routeData) {
     var _this = this,
       result;
-
     _this.surveyTypes().some(function(surveyTypeVM) {
-      return surveyTypeVM.surveys().some(function(surveyVM) {
-        /* jshint eqeqeq:false */
-        if (surveyVM.model.SurveyID == id) {
-          result = surveyVM;
-          return true;
-        }
-      });
+      // use whichever survey type finds a child
+      if (surveyTypeVM.findChild(routeData)) {
+        result = surveyTypeVM;
+        return true;
+      }
     });
     return result;
   };

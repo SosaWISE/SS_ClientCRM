@@ -6,13 +6,14 @@ define('src/core/vm.base', [
   "use strict";
 
   function BaseViewModel(options) {
+    var _this = this;
     if (options) {
       delete options.active;
-      ko.utils.extend(this, options);
+      ko.utils.extend(_this, options);
     }
 
-    this.active = ko.observable(false);
-    // this.saving = ko.observable(false);
+    _this.active = ko.observable(false);
+    // _this.saving = ko.observable(false);
   }
   BaseViewModel.prototype.name = null;
   BaseViewModel.prototype.viewTmpl = null;
@@ -30,28 +31,26 @@ define('src/core/vm.base', [
   //
   // public members
   //
-  BaseViewModel.prototype.activate = function(routeData) {
-    this.onActivate(routeData);
-    this.active(true);
-  };
-  BaseViewModel.prototype.onActivate = function( /*routeData*/ ) {
-    // override me
-  };
-
-  BaseViewModel.prototype.deactivate = function() {
-    // if (this.active()) {
-    this.onDeactivate();
-    this.active(false);
-    // }
-  };
-  BaseViewModel.prototype.onDeactivate = function() {
-    // override me
-  };
-
   BaseViewModel.prototype.getTemplate = function(vm) {
     return vm.viewTmpl;
   };
 
+  // BaseViewModel.prototype.activate = function(routeData) {
+  //   this.onActivate(routeData);
+  //   this.active(true);
+  // };
+  // BaseViewModel.prototype.onActivate = function( /*routeData*/ ) {
+  //   // override me
+  // };
+  // BaseViewModel.prototype.deactivate = function() {
+  //   // if (this.active()) {
+  //   this.onDeactivate();
+  //   this.active(false);
+  //   // }
+  // };
+  // BaseViewModel.prototype.onDeactivate = function() {
+  //   // override me
+  // };
 
   return BaseViewModel;
 });

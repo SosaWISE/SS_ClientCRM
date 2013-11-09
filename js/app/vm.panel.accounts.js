@@ -19,15 +19,16 @@ define('src/vm.panel.accounts', [
     var _this = this;
     AccountsPanelViewModel.super_.call(_this, options);
 
-    _this.childName = 'id';
-    _this.defaultChild = 'search';
-    _this.extraRouteData = ['action'];
+    // _this.childName = 'id';
+    // _this.defaultChild = 'search';
+    // _this.extraRouteData = ['action'];
 
     _this.searchVM = new SearchAccountViewModel({
       id: 'search',
       title: 'Search',
     });
 
+    _this.list = _this.childs;
     _this.list([
       new AccountViewModel({
         id: 100001,
@@ -65,8 +66,11 @@ define('src/vm.panel.accounts', [
       // _this.list.push(vm);
       _this.selectItem(vm);
     };
+
+    _this.defaultChild = _this.searchVM;
   }
   utils.inherits(AccountsPanelViewModel, ControllerViewModel);
+  // AccountsPanelViewModel.prototype.routePart = '';
 
   AccountsPanelViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
     var _this = this,
@@ -85,7 +89,7 @@ define('src/vm.panel.accounts', [
         }
       }
       cb(false);
-    }, 5000);
+    }, 0);
   };
   AccountsPanelViewModel.prototype.findChild = function(id) {
     var _this = this,

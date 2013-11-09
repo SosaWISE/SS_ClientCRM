@@ -104,18 +104,43 @@ define('src/core/route', [
     // merge parts into path
     return pathParts.join('/');
   };
-  Route.prototype.deactivate = function() {
-    disposeOnLoaded(this);
-    this.controller.deactivate();
-  };
+  // Route.prototype.deactivate = function() {
+  //   disposeOnLoaded(this);
+  //   this.controller.deactivate();
+  // };
   Route.prototype.activate = function(path, cb) {
-    var routeData = this.fromPath(path);
-    if (routeData) {
+    var _this = this,
+      routeCtx = _this.createContext(path, cb);
+    if (routeCtx) {
       // the path matches this route so we can activate it
-      activateRoute(this, routeData, cb);
+      _this.controller.activate(routeCtx);
     }
-    // true if this route has been activated
-    return !!routeData;
+    // undefined if this route has NOT been activated
+    return routeCtx;
+  };
+
+  Route.prototype.createContext = function(path, cb) {
+    var disposed, route = this,
+      routeData = route.fromPath(path);
+    if (routeData) {
+      return {
+        route: route,
+        path: path,
+        routeData: routeData,
+        dispose: function() {
+          disposed = true;
+          route.controller.deactivate();
+        },
+        active: function() {
+          return !disposed;
+        },
+        done: function() {
+          if (!disposed) {
+            cb(route.toPath(routeData));
+          }
+        },
+      };
+    }
   };
 
   // use this if the the panel should change
@@ -128,14 +153,14 @@ define('src/core/route', [
     if (route) {
       route.addDefaults(routeData);
     }
-    route.lastRouteData = routeData;
+    // route.lastRouteData = routeData;
     _this.router.redirectTo(routeName, routeData, allowHistory);
   };
   // use this if the panel will stay the same
   Route.prototype.setRouteData = function(routeData) {
     var _this = this;
     if (routeData.route && routeData.route !== _this.name) {
-      throw new Error('');
+      throw new Error('non-matching routes');
     }
     _this.addDefaults(routeData);
     _this.lastRouteData = routeData;
@@ -151,36 +176,35 @@ define('src/core/route', [
     return str == null || str.length === 0;
   }
 
-  function disposeOnLoaded(route) {
-    if (route.onLoaded) {
-      route.onLoaded.dispose();
-      route.onLoaded = null;
-    }
-  }
-
-  function activateRoute(route, routeData, cb) {
-    route.lastRouteData = routeData;
-
-    // ensure the previous has been disposed
-    disposeOnLoaded(route);
-
-    function activateController() {
-      // we only needed it for one event
-      disposeOnLoaded(route);
-      // the controller modifies the routeData to fit what it has
-      route.controller.activate(routeData);
-      // return the path taken
-      cb(route.toPath(routeData));
-    }
-
-    if (!route.controller.loaded()) {
-      // store the subscription to loaded
-      route.onLoaded = route.controller.loaded.subscribe(activateController);
-      route.controller.load(routeData);
-    } else {
-      activateController();
-    }
-  }
+  // function disposeOnLoaded(route) {
+  //   if (route.onLoaded) {
+  //     route.onLoaded.dispose();
+  //     route.onLoaded = null;
+  //   }
+  // }
+  // function activateRoute(route, routeData, cb) {
+  //   route.lastRouteData = routeData;
+  //
+  //   // ensure the previous has been disposed
+  //   disposeOnLoaded(route);
+  //
+  //   function activateController() {
+  //     // we only needed it for one event
+  //     disposeOnLoaded(route);
+  //     // the controller modifies the routeData to fit what it has
+  //     route.controller.activate(routeData);
+  //     // return the path taken
+  //     cb(route.toPath(routeData));
+  //   }
+  //
+  //   if (!route.controller.loaded()) {
+  //     // store the subscription to loaded
+  //     route.onLoaded = route.controller.loaded.subscribe(activateController);
+  //     route.controller.load(routeData);
+  //   } else {
+  //     activateController();
+  //   }
+  // }
 
   return Route;
 });

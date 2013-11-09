@@ -47,8 +47,8 @@ define('src/core/vm.layers', [
 
     layers.push(layer);
 
-    // activate the view model
-    vm.activate({});
+    // set the view model as active
+    vm.active(true);
 
     return layer;
   }

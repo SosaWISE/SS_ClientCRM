@@ -34,6 +34,7 @@ define('src/survey/vm.survey', [
   function SurveyViewModel(options) {
     var _this = this;
     SurveyViewModel.super_.call(_this, options);
+    _this.ensureProps(['surveyTypeVM', 'possibleAnswersVM']);
 
     _this.title = ko.observable(_this.title);
     _this.id = _this.model.SurveyID;
@@ -100,49 +101,14 @@ define('src/survey/vm.survey', [
     };
   }
   utils.inherits(SurveyViewModel, ControllerViewModel);
+  SurveyViewModel.prototype.routePart = 'surveyid';
   SurveyViewModel.prototype.viewTmpl = 'tmpl-survey';
 
-  SurveyViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
-    var _this = this,
-      childList = [],
-      join = joiner(),
-      jList = [];
+  SurveyViewModel.prototype.onLoad = function(join) { // overrides base
+    var _this = this;
 
-    jList.push(join.add());
-    dataservice.survey.getQuestions({
-      SurveyID: _this.model.SurveyID,
-    }, function(resp) {
-      if (resp.Code !== 0) {
-        notify.notify('error', resp.Message);
-      } else {
-        var list = [];
-        resp.Value.forEach(function(item) {
-          list.push(createQuestion(_this, null, item));
-        });
-        _this.questions(makeTree(list));
-        // _this.list(list);
-        childList = childList.concat(list);
-      }
-      jList.pop()();
-    });
-
-    jList.push(join.add());
-    dataservice.survey.getSurveyTranslations({
-      SurveyID: _this.model.SurveyID,
-    }, function(resp) {
-      if (resp.Code !== 0) {
-        notify.notify('error', resp.Message);
-      } else {
-        var list = [];
-        resp.Value.forEach(function(model) {
-          list.push(createSurveyTranslation(_this, model));
-        });
-        _this.translations(list);
-        //
-        childList = childList.concat(list);
-      }
-      jList.pop()();
-    });
+    loadQuestions(_this, join);
+    loadSurveyTranslations(_this, join);
 
     join.when(function() {
       // activate english
@@ -152,11 +118,45 @@ define('src/survey/vm.survey', [
           return true;
         }
       });
-
-      _this.list(childList);
-      cb(true);
     });
   };
+
+  function loadQuestions(_this, join) {
+    var cb = join.add();
+    dataservice.survey.getQuestions({
+      SurveyID: _this.model.SurveyID,
+    }, function(resp) {
+      if (resp.Code !== 0) {
+        return cb(resp);
+      }
+      var list = [];
+      resp.Value.map(function(item) {
+        var vm = createQuestion(_this, null, item);
+        vm.load(join.add());
+        return vm;
+      });
+      _this.questions(makeTree(list));
+      cb();
+    });
+  }
+
+  function loadSurveyTranslations(_this, join) {
+    var cb = join.add();
+    dataservice.survey.getSurveyTranslations({
+      SurveyID: _this.model.SurveyID,
+    }, function(resp) {
+      if (resp.Code !== 0) {
+        return cb(resp);
+      }
+      var list = resp.Value.map(function(model) {
+        var vm = createSurveyTranslation(_this, model);
+        vm.load(join.add());
+        return vm;
+      });
+      _this.translations(list);
+      cb();
+    });
+  }
 
   SurveyViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
     // do nothing

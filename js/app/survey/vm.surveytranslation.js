@@ -19,6 +19,8 @@ define('src/survey/vm.surveytranslation', [
     var _this = this;
     SurveyTranslationViewModel.super_.call(_this, options);
 
+    _this.list = _this.childs;
+
     //
     // events
     //
@@ -29,21 +31,21 @@ define('src/survey/vm.surveytranslation', [
   utils.inherits(SurveyTranslationViewModel, ControllerViewModel);
   SurveyTranslationViewModel.prototype.viewTmpl = 'tmpl-surveytranslation';
 
-  SurveyTranslationViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
-    var _this = this;
+  SurveyTranslationViewModel.prototype.onLoad = function(join) { // overrides base
+    var _this = this,
+      cb = join.add();
 
     dataservice.survey.getQuestionTranslations({
       SurveyTranslationID: _this.model.SurveyTranslationID,
     }, function(resp) {
       if (resp.Code !== 0) {
-        notify.notify('error', resp.Message);
-      } else {
-        // clear cache
-        _this.map = null;
-        //
-        _this.list(resp.Value);
+        return cb(resp);
       }
-      cb(false);
+      // clear cache
+      _this.map = null;
+      //
+      _this.list(resp.Value);
+      cb();
     });
   };
 

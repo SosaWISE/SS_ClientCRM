@@ -17,23 +17,24 @@ define('src/survey/vm.possibleanswers', [
     var _this = this;
     PossibleAnswersViewModel.super_.call(_this, options);
 
+    _this.possibleAnswers = _this.childs;
     _this.paMap = {};
   }
   utils.inherits(PossibleAnswersViewModel, ControllerViewModel);
 
-  PossibleAnswersViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
-    var _this = this;
+  PossibleAnswersViewModel.prototype.onLoad = function(join) { // overrides base
+    var _this = this,
+      cb = join.add();
 
     dataservice.survey.getPossibleAnswers({}, function(resp) {
       if (resp.Code !== 0) {
-        notify.notify('error', resp.Message);
-      } else {
-        resp.Value.forEach(function(item) {
-          _this.paMap[item.PossibleAnswerID] = item;
-        });
-        _this.list(resp.Value);
+        return cb(resp);
       }
-      cb(false);
+      resp.Value.forEach(function(item) {
+        _this.paMap[item.PossibleAnswerID] = item;
+      });
+      _this.possibleAnswers(resp.Value);
+      cb();
     });
   };
 

@@ -15,5 +15,8 @@ div(class="p-nav survey-types")
     li
    <!-- /ko -->
 
+//- active type
 div(class="p-module",data-bind="with:activeChild")
-  div(data-bind="template:viewTmpl")
+  //- active survey
+  div(data-bind="with:activeChild")
+    div(data-bind="template:viewTmpl")

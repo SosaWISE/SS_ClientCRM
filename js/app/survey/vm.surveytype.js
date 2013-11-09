@@ -1,7 +1,6 @@
 define('src/survey/vm.surveytype', [
   'src/core/notify',
   'src/util/utils',
-  'src/util/joiner',
   'ko',
   'src/core/vm.controller',
   'src/survey/vm.survey.new',
@@ -11,7 +10,6 @@ define('src/survey/vm.surveytype', [
 ], function(
   notify,
   utils,
-  joiner,
   ko,
   ControllerViewModel,
   NewSurveyViewModel,
@@ -24,9 +22,9 @@ define('src/survey/vm.surveytype', [
   function SurveyTypeViewModel(options) {
     var _this = this;
     SurveyTypeViewModel.super_.call(_this, options);
-    _this.ensureProps(['layersVM']);
+    _this.ensureProps(['layersVM', 'tokensVM', 'possibleAnswersVM']);
 
-    _this.surveys = ko.observableArray();
+    _this.surveys = _this.childs;
     _this.questionMeanings = ko.observableArray();
     _this.qmMap = {};
 
@@ -45,60 +43,53 @@ define('src/survey/vm.surveytype', [
     };
   }
   utils.inherits(SurveyTypeViewModel, ControllerViewModel);
-  SurveyTypeViewModel.prototype.viewTmpl = 'tmpl-surveytype';
+  // SurveyTypeViewModel.prototype.viewTmpl = 'tmpl-surveytype';
 
-  SurveyTypeViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
-    var _this = this,
-      childList = [],
-      join = joiner(),
-      jList = [];
+  SurveyTypeViewModel.prototype.onLoad = function(join) { // overrides base
+    var _this = this;
+    loadSurveys(_this, join);
+    loadQuestionMeaning(_this, join);
+  };
 
-    jList.push(join.add());
+  function loadSurveys(_this, join) {
+    var cb = join.add();
     dataservice.survey.getSurveys({
       SurveyTypeID: _this.model.SurveyTypeID
     }, function(resp) {
       if (resp.Code !== 0) {
-        notify.notify('error', resp.Message);
-      } else {
-        var list = [];
-        resp.Value.forEach(function(model) {
-          list.push(createSurvey(_this, model));
-        });
-        _this.surveys(list);
-        // _this.list(list);
-        childList = childList.concat(list);
+        return cb(resp);
       }
-      jList.pop()();
+      var list = resp.Value.map(function(model) {
+        var vm = createSurvey(_this, model);
+        // lazy loaded surveys
+        // vm.load(join.add());
+        return vm;
+      });
+      _this.surveys(list);
+      cb();
     });
+  }
 
-    jList.push(join.add());
+  function loadQuestionMeaning(_this, join) {
+    var cb = join.add();
     dataservice.survey.getQuestionMeanings({
       SurveyTypeID: _this.model.SurveyTypeID
     }, function(resp) {
       if (resp.Code !== 0) {
-        notify.notify('error', resp.Message);
-      } else {
-        var list = [];
-        resp.Value.forEach(function(item) {
-          list.push(new QuestionMeaningViewModel({
-            tokensVM: _this.tokensVM,
-            model: item,
-          }));
-        });
-        list.forEach(function(vm) {
-          _this.qmMap[vm.model.QuestionMeaningID] = vm;
-        });
-        _this.questionMeanings(list);
-        childList = childList.concat(list);
+        return cb(resp);
       }
-      jList.pop()();
+      var list = resp.Value.forEach(function(model) {
+        var vm = new QuestionMeaningViewModel({
+          tokensVM: _this.tokensVM,
+          model: model,
+        });
+        _this.qmMap[model.QuestionMeaningID] = vm;
+        vm.load(join.add());
+      });
+      _this.questionMeanings(list);
+      cb();
     });
-
-    join.when(function() {
-      _this.list(childList);
-      cb(true);
-    });
-  };
+  }
 
   SurveyTypeViewModel.prototype.addQuestionMeaning = function(model) {
     var _this = this,

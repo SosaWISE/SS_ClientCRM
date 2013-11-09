@@ -22,6 +22,8 @@ define('src/survey/vm.question', [
     QuestionViewModel.super_.call(_this, options);
     _this.ensureProps(['surveyVM', 'possibleAnswersVM', 'questionMeaningVM']);
 
+    _this.possibleAnswerMaps = _this.childs;
+
     // observables
     _this.parent = ko.observable(_this.parent);
     _this.groupOrder = ko.observable(_this.model.GroupOrder);
@@ -34,22 +36,21 @@ define('src/survey/vm.question', [
   utils.inherits(QuestionViewModel, ControllerViewModel);
   QuestionViewModel.prototype.viewTmpl = 'tmpl-question';
 
-  QuestionViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
-    var _this = this;
+  QuestionViewModel.prototype.onLoad = function(join) { // overrides base
+    var _this = this,
+      cb = join.add();
 
     dataservice.survey.getQuestionPossibleAnswerMaps({
       QuestionID: _this.model.QuestionID,
     }, function(resp) {
       if (resp.Code !== 0) {
-        notify.notify('error', resp.Message);
-      } else {
-        var list = [];
-        resp.Value.forEach(function(item) {
-          list.push(createPossibleAnswerMap(_this.possibleAnswersVM, item));
-        });
-        _this.list(list);
+        return cb(resp);
       }
-      cb(false);
+      var list = resp.Value.map(function(item) {
+        return createPossibleAnswerMap(_this.possibleAnswersVM, item);
+      });
+      _this.possibleAnswerMaps(list);
+      cb();
     });
   };
 
@@ -105,7 +106,7 @@ define('src/survey/vm.question', [
 
   QuestionViewModel.prototype.addPossibleAnswerMap = function(model) {
     var _this = this;
-    _this.list.push(createPossibleAnswerMap(_this.possibleAnswersVM, model));
+    _this.possibleAnswerMaps.push(createPossibleAnswerMap(_this.possibleAnswersVM, model));
   };
 
   function createPossibleAnswerMap(possibleAnswersVM, model) {

@@ -19,33 +19,32 @@ define('src/survey/vm.questionmeaning', [
     var _this = this;
     QuestionMeaningViewModel.super_.call(_this, options);
 
-    _this.tokens = _this.list;
+    _this.tokenMaps = _this.childs;
   }
   utils.inherits(QuestionMeaningViewModel, ControllerViewModel);
   QuestionMeaningViewModel.prototype.viewTmpl = 'tmpl-questionmeaning';
 
-  QuestionMeaningViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
-    var _this = this;
+  QuestionMeaningViewModel.prototype.onLoad = function(join) { // overrides base
+    var _this = this,
+      cb = join.add();
 
     dataservice.survey.getQuestionMeaningTokenMaps({
       QuestionMeaningID: _this.model.QuestionMeaningID,
     }, function(resp) {
       if (resp.Code !== 0) {
-        notify.notify('error', resp.Message);
-      } else {
-        var list = [];
-        resp.Value.forEach(function(item) {
-          list.push(createTokenMap(_this.tokensVM, item));
-        });
-        _this.tokens(list);
+        return cb(resp);
       }
-      cb(false);
+      var list = resp.Value.map(function(item) {
+        return createTokenMap(_this.tokensVM, item);
+      });
+      _this.tokenMaps(list);
+      cb();
     });
   };
 
   QuestionMeaningViewModel.prototype.addTokenMap = function(model) {
     var _this = this;
-    _this.list.push(createTokenMap(_this.tokensVM, model));
+    _this.tokenMaps.push(createTokenMap(_this.tokensVM, model));
   };
 
   function createTokenMap(tokensVM, model) {

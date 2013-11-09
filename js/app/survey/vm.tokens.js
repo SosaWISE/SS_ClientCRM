@@ -17,23 +17,25 @@ define('src/survey/vm.tokens', [
     var _this = this;
     TokensViewModel.super_.call(_this, options);
 
+    _this.list = _this.childs;
+
     _this.tokenMap = {};
   }
   utils.inherits(TokensViewModel, ControllerViewModel);
 
-  TokensViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
-    var _this = this;
+  TokensViewModel.prototype.onLoad = function(join) { // overrides base
+    var _this = this,
+      cb = join.add();
 
     dataservice.survey.getTokens({}, function(resp) {
       if (resp.Code !== 0) {
-        notify.notify('error', resp.Message);
-      } else {
-        resp.Value.forEach(function(token) {
-          _this.tokenMap[token.TokenID] = token;
-        });
-        _this.list(resp.Value);
+        return cb(resp);
       }
-      cb(false);
+      resp.Value.forEach(function(token) {
+        _this.tokenMap[token.TokenID] = token;
+      });
+      _this.list(resp.Value);
+      cb();
     });
   };
 
