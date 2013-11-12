@@ -63,7 +63,7 @@ define('src/app', [
     if (panelVM.active()) {
       return;
     }
-    panelVM.redirectTo(panelVM.getLastRouteData() || {
+    panelVM.goTo(panelVM.getLastRouteData() || {
       route: panelVM.id,
     }, true);
   };
@@ -79,7 +79,7 @@ define('src/app', [
   //
   router.addRoute(app.panelMap.surveys, 'surveys', ':surveyid', {});
   router.addRoute(app.panelMap.home, 'home', '', {});
-  router.addRoute(app.panelMap.accounts, 'accounts', ':id/:action', {});
+  router.addRoute(app.panelMap.accounts, 'accounts', ':accountid/:action', {});
 
   return app;
 });

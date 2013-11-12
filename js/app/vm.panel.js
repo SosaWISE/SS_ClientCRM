@@ -15,8 +15,8 @@ define('src/vm.panel', [
   }
   utils.inherits(PanelViewModel, ControllerViewModel);
 
-  PanelViewModel.prototype.onLoad = function(routeData, cb) { // overrides base
-    cb(false);
+  PanelViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+    join = join;
   };
   PanelViewModel.prototype.onActivate = function() { // overrides base
     this.setTitle(this.name);

@@ -1,7 +1,7 @@
 define('src/vm.account.new', [
   'src/core/notify',
   'src/util/utils',
-  'src/core/vm.base',
+  'src/core/vm.controller',
   'src/core/vm.layers',
   'src/vm.rep.find',
   'src/vm.address.validate',
@@ -9,7 +9,7 @@ define('src/vm.account.new', [
 ], function(
   notify,
   utils,
-  BaseViewModel,
+  ControllerViewModel,
   LayersViewModel,
   FindRepViewModel,
   ValidateAddressViewModel,
@@ -57,23 +57,21 @@ define('src/vm.account.new', [
     _this.layersVM = new LayersViewModel();
     _this.layersVM.show(_this.layer);
   }
-  utils.inherits(NewAccountViewModel, BaseViewModel);
+  utils.inherits(NewAccountViewModel, ControllerViewModel);
   NewAccountViewModel.prototype.viewTmpl = 'tmpl-account_new';
 
-  NewAccountViewModel.prototype.onActivate = function(routeData) { // overrides base
+  NewAccountViewModel.prototype.onActivate = function() { // overrides base
     var _this = this,
       vm = _this.layer.vm();
-
     if (vm) {
-      vm.activate(routeData);
+      vm.active(true);
     }
   };
   NewAccountViewModel.prototype.onDeactivate = function() { // overrides base
     var _this = this,
       vm = _this.layer.vm();
-
     if (vm) {
-      vm.deactivate();
+      vm.active(false);
     }
   };
 

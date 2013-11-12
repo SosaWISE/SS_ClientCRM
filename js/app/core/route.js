@@ -104,14 +104,11 @@ define('src/core/route', [
     // merge parts into path
     return pathParts.join('/');
   };
-  // Route.prototype.deactivate = function() {
-  //   disposeOnLoaded(this);
-  //   this.controller.deactivate();
-  // };
   Route.prototype.activate = function(path, cb) {
     var _this = this,
       routeCtx = _this.createContext(path, cb);
     if (routeCtx) {
+      _this.lastRouteData = routeCtx.routeData;
       // the path matches this route so we can activate it
       _this.controller.activate(routeCtx);
     }
@@ -143,28 +140,18 @@ define('src/core/route', [
     }
   };
 
-  // use this if the the panel should change
-  // this tries to look up the route
-  Route.prototype.redirectTo = function(routeData, allowHistory) {
+  // runs route activation process
+  Route.prototype.goTo = function(routeData, allowHistory) {
     var _this = this,
-      routeName = routeData.route || _this.name,
-      // look up new route
-      route = _this.router.routeMap[routeName];
-    if (route) {
-      route.addDefaults(routeData);
-    }
-    // route.lastRouteData = routeData;
-    _this.router.redirectTo(routeName, routeData, allowHistory);
+      route = lookupRoute(_this, routeData);
+    route.router.goTo(route.name, routeData, allowHistory);
   };
-  // use this if the panel will stay the same
+  // only changes url in address bar
   Route.prototype.setRouteData = function(routeData) {
-    var _this = this;
-    if (routeData.route && routeData.route !== _this.name) {
-      throw new Error('non-matching routes');
-    }
-    _this.addDefaults(routeData);
+    var _this = this,
+      route = lookupRoute(_this, routeData);
     _this.lastRouteData = routeData;
-    _this.router.setPath(_this.toPath(routeData), false);
+    route.router.setPath(_this.toPath(routeData), false);
   };
 
 
@@ -176,35 +163,16 @@ define('src/core/route', [
     return str == null || str.length === 0;
   }
 
-  // function disposeOnLoaded(route) {
-  //   if (route.onLoaded) {
-  //     route.onLoaded.dispose();
-  //     route.onLoaded = null;
-  //   }
-  // }
-  // function activateRoute(route, routeData, cb) {
-  //   route.lastRouteData = routeData;
-  //
-  //   // ensure the previous has been disposed
-  //   disposeOnLoaded(route);
-  //
-  //   function activateController() {
-  //     // we only needed it for one event
-  //     disposeOnLoaded(route);
-  //     // the controller modifies the routeData to fit what it has
-  //     route.controller.activate(routeData);
-  //     // return the path taken
-  //     cb(route.toPath(routeData));
-  //   }
-  //
-  //   if (!route.controller.loaded()) {
-  //     // store the subscription to loaded
-  //     route.onLoaded = route.controller.loaded.subscribe(activateController);
-  //     route.controller.load(routeData);
-  //   } else {
-  //     activateController();
-  //   }
-  // }
+  function lookupRoute(route, routeData) {
+    if (routeData.route) {
+      // look up new route
+      route = route.router.routeMap[routeData.route] || route;
+    }
+    if (route) {
+      route.addDefaults(routeData);
+    }
+    return route;
+  }
 
   return Route;
 });

@@ -24,6 +24,7 @@ define('src/survey/vm.surveytype', [
     SurveyTypeViewModel.super_.call(_this, options);
     _this.ensureProps(['layersVM', 'tokensVM', 'possibleAnswersVM']);
 
+    _this.id = _this.model.SurveyTypeID;
     _this.surveys = _this.childs;
     _this.questionMeanings = ko.observableArray();
     _this.qmMap = {};
@@ -43,15 +44,16 @@ define('src/survey/vm.surveytype', [
     };
   }
   utils.inherits(SurveyTypeViewModel, ControllerViewModel);
+  SurveyTypeViewModel.prototype.routePart = null;
   // SurveyTypeViewModel.prototype.viewTmpl = 'tmpl-surveytype';
 
-  SurveyTypeViewModel.prototype.onLoad = function(join) { // overrides base
+  SurveyTypeViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this;
-    loadSurveys(_this, join);
-    loadQuestionMeaning(_this, join);
+    loadSurveys(_this, routeData, join);
+    loadQuestionMeaning(_this, routeData, join);
   };
 
-  function loadSurveys(_this, join) {
+  function loadSurveys(_this, routeData, join) {
     var cb = join.add();
     dataservice.survey.getSurveys({
       SurveyTypeID: _this.model.SurveyTypeID
@@ -62,7 +64,7 @@ define('src/survey/vm.surveytype', [
       var list = resp.Value.map(function(model) {
         var vm = createSurvey(_this, model);
         // lazy loaded surveys
-        // vm.load(join.add());
+        // vm.load(routeData, join.add());
         return vm;
       });
       _this.surveys(list);
@@ -70,7 +72,7 @@ define('src/survey/vm.surveytype', [
     });
   }
 
-  function loadQuestionMeaning(_this, join) {
+  function loadQuestionMeaning(_this, routeData, join) {
     var cb = join.add();
     dataservice.survey.getQuestionMeanings({
       SurveyTypeID: _this.model.SurveyTypeID
@@ -78,13 +80,14 @@ define('src/survey/vm.surveytype', [
       if (resp.Code !== 0) {
         return cb(resp);
       }
-      var list = resp.Value.forEach(function(model) {
+      var list = resp.Value.map(function(model) {
         var vm = new QuestionMeaningViewModel({
           tokensVM: _this.tokensVM,
           model: model,
         });
         _this.qmMap[model.QuestionMeaningID] = vm;
-        vm.load(join.add());
+        vm.load(routeData, join.add());
+        return vm;
       });
       _this.questionMeanings(list);
       cb();

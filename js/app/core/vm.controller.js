@@ -31,6 +31,14 @@ define('src/core/vm.controller', [
   ControllerViewModel.prototype.routePart = 'route';
   ControllerViewModel.prototype.defaultChild = null;
 
+  ControllerViewModel.prototype.setRoute = function(route) {
+    var _this = this;
+    if (_this.route) {
+      throw new Error('controller can only be associated with one route');
+    }
+    _this.route = route;
+  };
+
   // activate async
   ControllerViewModel.prototype.activate = function(routeCtx) {
     var _this = this;
@@ -41,7 +49,7 @@ define('src/core/vm.controller', [
     // immdediately set as active
     _this.active(true);
     // load self
-    _this.load(function() {
+    _this.load(routeCtx.routeData, function() {
       // check if routeCtx is still active
       if (!routeCtx.active()) {
         return;
@@ -81,8 +89,7 @@ define('src/core/vm.controller', [
       var routePart = item.routePart;
       if (routePart) {
         /* jshint eqeqeq:false */
-        // routeData will always be a string,
-        // but id won't always be a string
+        // 10001 == '10001'
         if (item.id == routeData[routePart]) {
           result = item;
           return result;
@@ -122,7 +129,7 @@ define('src/core/vm.controller', [
       activeChild(null);
     }
   };
-  ControllerViewModel.prototype.load = function(cb) {
+  ControllerViewModel.prototype.load = function(routeData, cb) {
     var _this = this,
       join,
       subscription;
@@ -136,7 +143,7 @@ define('src/core/vm.controller', [
       // load
       _this.loading(true);
       join = joiner();
-      _this.onLoad(join);
+      _this.onLoad(routeData, join);
       join.when(function(errResp) {
         if (errResp) {
           notify.notify('error', errResp.Message);
@@ -155,77 +162,19 @@ define('src/core/vm.controller', [
       });
     }
   };
-  ControllerViewModel.prototype.onLoad = function(join) {
+  ControllerViewModel.prototype.onLoad = function(routeData, join) {
     join.add()();
-  };
-
-  /*
-  ControllerViewModel.prototype.loadChildAsync = function(routeCtx) {
-    var _this = this,
-      joinCb,
-      join = _this._loadChildJoin;
-    if (!join) {
-      _this._loadChildJoin = join = joiner();
-      joinCb = join.add();
-
-      _this.loading(true);
-      _this.onLoadChild(routeCtx.routeData, function() {
-        _this.loading(false);
-        joinCb();
-
-        // var list = loadChilds ? _this.list() : null,
-        //   cbCount = list ? list.length : 0;
-        //
-        // function checkLoaded() {
-        //   if (cbCount === 0) {
-        //     // all of the child view models have loaded
-        //     _this.loading(false);
-        //     _this.loaded(true);
-        //   }
-        // }
-        //
-        // if (cbCount === 0) {
-        //   checkLoaded();
-        // } else {
-        //   // load child view models
-        //   list.forEach(function(item) {
-        //     if (item.loaded()) {
-        //       cbCount--;
-        //       checkLoaded();
-        //     } else {
-        //       var sub = item.loaded.subscribe(function() {
-        //         sub.dispose();
-        //         cbCount--;
-        //         checkLoaded();
-        //       });
-        //       item.load();
-        //     }
-        //   });
-        // }
-      });
-    }
-
-    return join;
-  };
-  */
-
-  ControllerViewModel.prototype.setRoute = function(route) {
-    var _this = this;
-    if (_this.route) {
-      throw new Error('controller can only be associated with one route');
-    }
-    _this.route = route;
   };
   ControllerViewModel.prototype.getLastRouteData = function() {
     var _this = this;
     return _this.route.lastRouteData;
   };
-  ControllerViewModel.prototype.redirectTo = function(routeData, allowHistory) {
+  ControllerViewModel.prototype.goTo = function(routeData, allowHistory) {
     var _this = this;
     if (_this.parent) {
-      _this.parent.redirectTo(routeData, allowHistory);
+      _this.parent.goTo(routeData, allowHistory);
     } else {
-      _this.route.redirectTo(routeData, allowHistory);
+      _this.route.goTo(routeData, allowHistory);
     }
   };
   ControllerViewModel.prototype.setRouteData = function(routeData) {

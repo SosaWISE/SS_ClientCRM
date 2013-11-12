@@ -120,7 +120,7 @@ define('src/core/router', [
 
     showElements(user, route.name);
   };
-  Router.prototype.redirectTo = function(routeName, routeData, allowHistory) {
+  Router.prototype.goTo = function(routeName, routeData, allowHistory) {
     var _this = this,
       route = _this.routeMap[routeName];
     if (!route) {

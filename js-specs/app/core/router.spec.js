@@ -23,7 +23,7 @@ define('spec/app/core/router.spec', [
     //     expect(true).toBe(true);
     //   });
     // });
-    // describe('redirectTo', function() {
+    // describe('goTo', function() {
     //   it('should ', function() {
     //     expect(true).toBe(true);
     //   });

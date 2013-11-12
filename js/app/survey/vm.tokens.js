@@ -23,7 +23,7 @@ define('src/survey/vm.tokens', [
   }
   utils.inherits(TokensViewModel, ControllerViewModel);
 
-  TokensViewModel.prototype.onLoad = function(join) { // overrides base
+  TokensViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this,
       cb = join.add();
 

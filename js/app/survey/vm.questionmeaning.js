@@ -24,7 +24,7 @@ define('src/survey/vm.questionmeaning', [
   utils.inherits(QuestionMeaningViewModel, ControllerViewModel);
   QuestionMeaningViewModel.prototype.viewTmpl = 'tmpl-questionmeaning';
 
-  QuestionMeaningViewModel.prototype.onLoad = function(join) { // overrides base
+  QuestionMeaningViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this,
       cb = join.add();
 

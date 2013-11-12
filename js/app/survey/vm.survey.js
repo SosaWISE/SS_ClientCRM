@@ -77,8 +77,13 @@ define('src/survey/vm.survey', [
           return;
         }
         var vm = createQuestion(_this, parent, model);
-        _this.list.push(vm);
-        parentVM.questions.push(vm);
+        // make sure it is loaded
+        vm.load({}, function(errResp) {
+          if (errResp) {
+            return notify.notify('error', errResp.Message);
+          }
+          parentVM.questions.push(vm);
+        });
       });
     };
     _this.clickAddToken = function(vm) {
@@ -104,11 +109,11 @@ define('src/survey/vm.survey', [
   SurveyViewModel.prototype.routePart = 'surveyid';
   SurveyViewModel.prototype.viewTmpl = 'tmpl-survey';
 
-  SurveyViewModel.prototype.onLoad = function(join) { // overrides base
+  SurveyViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this;
 
-    loadQuestions(_this, join);
-    loadSurveyTranslations(_this, join);
+    loadQuestions(_this, routeData, join);
+    loadSurveyTranslations(_this, routeData, join);
 
     join.when(function() {
       // activate english
@@ -121,7 +126,7 @@ define('src/survey/vm.survey', [
     });
   };
 
-  function loadQuestions(_this, join) {
+  function loadQuestions(_this, routeData, join) {
     var cb = join.add();
     dataservice.survey.getQuestions({
       SurveyID: _this.model.SurveyID,
@@ -129,18 +134,20 @@ define('src/survey/vm.survey', [
       if (resp.Code !== 0) {
         return cb(resp);
       }
-      var list = [];
-      resp.Value.map(function(item) {
+      var list = resp.Value.map(function(item) {
         var vm = createQuestion(_this, null, item);
-        vm.load(join.add());
+        vm.load(routeData, join.add());
         return vm;
       });
+      // // wait for everything to be loaded before setting
+      // join.when(function() {
       _this.questions(makeTree(list));
+      // });
       cb();
     });
   }
 
-  function loadSurveyTranslations(_this, join) {
+  function loadSurveyTranslations(_this, routeData, join) {
     var cb = join.add();
     dataservice.survey.getSurveyTranslations({
       SurveyID: _this.model.SurveyID,
@@ -150,7 +157,7 @@ define('src/survey/vm.survey', [
       }
       var list = resp.Value.map(function(model) {
         var vm = createSurveyTranslation(_this, model);
-        vm.load(join.add());
+        vm.load(routeData, join.add());
         return vm;
       });
       _this.translations(list);

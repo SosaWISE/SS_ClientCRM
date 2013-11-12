@@ -21,7 +21,7 @@ define('src/survey/vm.qmtokenmap.new', [
     _this.ensureProps(['questionMeaningVM', 'tokensVM']);
 
     _this.tokenComboVM = new ComboViewModel();
-    _this.tokenComboVM.setList(createComboList(_this.questionMeaningVM.tokens(), _this.tokensVM.list()));
+    _this.tokenComboVM.setList(createComboList(_this.questionMeaningVM.tokenMaps(), _this.tokensVM.list()));
 
     //
     // events

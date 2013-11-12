@@ -7,7 +7,7 @@ define('spec/app/core/route.spec', [
     var route;
     beforeEach(function() {
       route = Route.create({
-        redirectTo: function() {},
+        goTo: function() {},
       }, {
         setRoute: function() {},
       }, 'devices', ':tab/:id/:action', {

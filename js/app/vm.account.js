@@ -1,12 +1,12 @@
 define('src/vm.account', [
   'src/core/notify',
   'src/util/utils',
-  'src/core/vm.base',
+  'src/core/vm.controller',
   'ko'
 ], function(
   notify,
   utils,
-  BaseViewModel,
+  ControllerViewModel,
   ko
 ) {
   "use strict";
@@ -33,8 +33,16 @@ define('src/vm.account', [
       _this.showEditor(!_this.showEditor());
     };
   }
-  utils.inherits(AccountViewModel, BaseViewModel);
+  utils.inherits(AccountViewModel, ControllerViewModel);
   AccountViewModel.prototype.viewTmpl = 'tmpl-account';
+
+  AccountViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+    var cb = join.add();
+    setTimeout(function() {
+      cb();
+      //@TODO: load real account
+    }, 0);
+  };
 
   return AccountViewModel;
 });

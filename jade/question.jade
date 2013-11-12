@@ -10,7 +10,7 @@ table(class="question")
       ul(class="sv tlist cf")
         li
           a(class="btn small add-btn",data-bind="click:$parent.surveyVM.clickAddToken") Add
-        <!-- ko foreach:tokens -->
+        <!-- ko foreach:tokenMaps -->
         li(data-bind="cmd:cmdToggle")
           a(class="btn small",data-bind="active:active,busy:cmdToggle.busy")
             span(data-bind="text:token.Token")
@@ -20,7 +20,7 @@ table(class="question")
       ul(class="sv tlist cf")
         li
           a(class="btn small add-btn",data-bind="click:surveyVM.clickAddPossibleAnswer") Add
-        <!-- ko foreach:list -->
+        <!-- ko foreach:possibleAnswerMaps -->
         li(data-bind="cmd:cmdToggle")
           a(class="btn small",data-bind="active:active,busy:cmdToggle.busy")
             span(data-bind="text:possibleAnswer.AnswerText")

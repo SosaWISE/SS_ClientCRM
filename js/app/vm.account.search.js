@@ -1,12 +1,12 @@
 define('src/vm.account.search', [
   'src/core/notify',
   'src/util/utils',
-  'src/core/vm.base',
+  'src/core/vm.controller',
   'ko'
 ], function(
   notify,
   utils,
-  BaseViewModel,
+  ControllerViewModel,
   ko
 ) {
   "use strict";
@@ -22,13 +22,13 @@ define('src/vm.account.search', [
     // events
     //
     _this.clickOpen = function() {
-      _this.redirectTo({
+      _this.goTo({
         id: 100000 + count,
       });
       count++;
     };
   }
-  utils.inherits(SearchAccountViewModel, BaseViewModel);
+  utils.inherits(SearchAccountViewModel, ControllerViewModel);
   SearchAccountViewModel.prototype.viewTmpl = 'tmpl-account_search';
 
   return SearchAccountViewModel;

@@ -39,26 +39,22 @@ define('src/survey/vm.panel.surveys', [
       if (surveyVM.active()) {
         return;
       }
-      _this.onDeactivate();
-      _this.activeChild(surveyVM);
-
-      // surveyVM.activate();
-      _this.redirectTo({
+      _this.goTo({
         surveyid: surveyVM.id,
-      }, false);
+      });
     };
   }
   utils.inherits(SurveysPanelViewModel, ControllerViewModel);
 
-  SurveysPanelViewModel.prototype.onLoad = function(join) { // overrides base
+  SurveysPanelViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this,
       tokensVM = new TokensViewModel(),
       possibleAnswersVM = new PossibleAnswersViewModel(),
       cb = join.add(),
       depJoin = join.create();
 
-    tokensVM.load(depJoin.add());
-    possibleAnswersVM.load(depJoin.add());
+    tokensVM.load(routeData, depJoin.add());
+    possibleAnswersVM.load(routeData, depJoin.add());
 
     dataservice.survey.getSurveyTypes({}, function(resp) {
       if (resp.Code !== 0) {
@@ -76,7 +72,7 @@ define('src/survey/vm.panel.surveys', [
             possibleAnswersVM: possibleAnswersVM,
             model: model,
           });
-          vm.load(join.add());
+          vm.load(routeData, join.add());
           return vm;
         });
         _this.surveyTypes(list);

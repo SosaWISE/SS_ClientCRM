@@ -31,7 +31,7 @@ define('src/survey/vm.surveytranslation', [
   utils.inherits(SurveyTranslationViewModel, ControllerViewModel);
   SurveyTranslationViewModel.prototype.viewTmpl = 'tmpl-surveytranslation';
 
-  SurveyTranslationViewModel.prototype.onLoad = function(join) { // overrides base
+  SurveyTranslationViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this,
       cb = join.add();
 

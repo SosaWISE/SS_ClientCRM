@@ -21,7 +21,8 @@ define('src/survey/vm.qpossibleanswermap.new', [
     _this.ensureProps(['questionVM', 'possibleAnswersVM']);
 
     _this.paComboVM = new ComboViewModel();
-    _this.paComboVM.setList(createComboList(_this.questionVM.list(), _this.possibleAnswersVM.list()));
+    _this.paComboVM.setList(
+      createComboList(_this.questionVM.possibleAnswerMaps(), _this.possibleAnswersVM.possibleAnswers()));
 
     //
     // events
