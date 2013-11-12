@@ -31,7 +31,7 @@ define('src/survey/vm.questiontranslation.editor', [
     var html,
       params = [];
     html = markdown.toHTML(this.input());
-    this.questionMeaningVM.tokens().forEach(function(tokenMap) {
+    this.questionMeaningVM.tokenMaps().forEach(function(tokenMap) {
       params.push(tokenMap.token.Token);
     });
     return strings.aformat(html, params, '[missing param]');
