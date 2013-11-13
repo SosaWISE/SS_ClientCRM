@@ -24,7 +24,7 @@ define('src/dataservice.qualify', [
   // TeamLocationId               int        (require)
   //-----------result-RuSalesRep-------------
   QualifyDataservice.prototype.salesRepRead = function(data, cb) {
-    this.post('SalesRepRead', data, cb);
+    this.post('SalesRepRead', data, null, cb);
   };
 
   /* input/results
@@ -77,7 +77,7 @@ define('src/dataservice.qualify', [
     // CreatedOn
   */
   QualifyDataservice.prototype.validateAddress = function(data, cb) {
-    this.post('validateAddress', data, cb);
+    this.post('validateAddress', data, null, cb);
   };
 
   //------------input-AddressParam-------------
@@ -91,7 +91,7 @@ define('src/dataservice.qualify', [
   // PhoneNumber                  string
   //-----------result-[]QlHomeOwner-------------
   QualifyDataservice.prototype.propertyOwner = function(data, cb) {
-    this.post('PropertyOwner', data, cb);
+    this.post('PropertyOwner', data, null, cb);
   };
 
   //------------input-LeadParam-------------
@@ -123,7 +123,7 @@ define('src/dataservice.qualify', [
   // PhoneMobile                  String     (required §)
   //-----------result-QlCreditReport-------------
   QualifyDataservice.prototype.runCredit = function(data, cb) {
-    this.post('RunCredit', data, cb);
+    this.post('RunCredit', data, null, cb);
   };
 
   return QualifyDataservice;

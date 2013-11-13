@@ -2,7 +2,7 @@ define('src/knockout/ko.bindingHandlers.value', [
   'jquery',
   'ko'
 ], function(
-  $,
+  jquery,
   ko
 ) {
   "use strict";
@@ -23,7 +23,7 @@ define('src/knockout/ko.bindingHandlers.value', [
       (element.type === 'text' || element.type === 'password')) {
       //@NOTE: click is used instead of focus because focus will select the
       //       text and then a click event will happen and unselect the text
-      $(element)
+      jquery(element)
         .click(function() {
           // this should select all the text only if the user clicks the text
           // the if statements are in hopes of stopping annoying behavior such as:

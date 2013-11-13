@@ -3,7 +3,7 @@ define('src/core/router', [
   'src/core/route',
   'src/config'
 ], function(
-  $,
+  jquery,
   Route,
   config
 ) {
@@ -152,9 +152,9 @@ define('src/core/router', [
     return routeFound;
   }
 
-  var bodyEl = $('body'),
-    loginEl = $('#login-container'),
-    siteEl = $('#site-container');
+  var bodyEl = jquery('body'),
+    loginEl = jquery('#login-container'),
+    siteEl = jquery('#site-container');
 
   function showElements(user, cls) {
     if (user) {

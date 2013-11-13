@@ -2,7 +2,7 @@ define('src/core/dataservice.base', [
   'jquery',
   'src/util/querystring'
 ], function(
-  $,
+  jquery,
   querystring
 ) {
   "use strict";
@@ -28,30 +28,32 @@ define('src/core/dataservice.base', [
     return this.baseUrl + frontSlash(id) + frontSlash(link) + (query ? ('?' + query) : '');
   };
 
-  DataserviceBase.prototype.get = function(path, queryObj, callback) {
-    this.ajax('GET', null, path, queryObj, null, callback);
+  //@NOTE: currently the webservice only supports POST and GET
+
+  DataserviceBase.prototype.post = function(path, data, setter, callback) {
+    this.ajax('POST', null, path, null, data, setter, callback);
   };
-  DataserviceBase.prototype.post = function(path, data, callback) {
-    this.ajax('POST', null, path, null, data, callback);
+  DataserviceBase.prototype.get = function(path, queryObj, setter, callback) {
+    this.ajax('GET', null, path, queryObj, null, setter, callback);
   };
 
-  DataserviceBase.prototype.create = function(data, callback) {
-    this.ajax('POST', null, null, null, data, callback);
+  DataserviceBase.prototype.save = function(data, setter, callback) { // used to be `create`
+    this.ajax('POST', null, null, null, data, setter, callback);
   };
-  DataserviceBase.prototype.read = function(id, link, queryObj, callback) {
-    this.ajax('GET', id, link, queryObj, null, callback);
+  DataserviceBase.prototype.read = function(params, setter, callback) {
+    this.ajax('GET', params.id, params.link, params.queryObj, null, setter, callback);
   };
-  DataserviceBase.prototype.update = function(id, data, callback) {
-    this.ajax('PATCH', id, null, null, data, callback);
-  };
-  DataserviceBase.prototype.del = DataserviceBase.prototype.delete = function(id, callback) {
-    this.ajax('DELETE', id, null, null, null, callback);
-  };
-  DataserviceBase.prototype.replace = function(id, data, callback) {
-    this.ajax('PUT', id, null, null, data, callback);
-  };
+  // DataserviceBase.prototype.update = function(id, data, setter, callback) {
+  //   this.ajax('PATCH', id, null, null, data, setter, callback);
+  // };
+  // DataserviceBase.prototype.del = DataserviceBase.prototype.delete = function(id, setter, callback) {
+  //   this.ajax('DELETE', id, null, null, null, setter, callback);
+  // };
+  // DataserviceBase.prototype.replace = function(id, data, setter, callback) {
+  //   this.ajax('PUT', id, null, null, data, setter, callback);
+  // };
 
-  DataserviceBase.prototype.ajax = function(httpVerb, id, link, queryObj, data, callback) {
+  DataserviceBase.prototype.ajax = function(httpVerb, id, link, queryObj, data, setter, callback) {
     queryObj = (queryObj || {});
     if (!queryObj.SessionId) {
       queryObj.SessionId = _sessionId;
@@ -79,6 +81,7 @@ define('src/core/dataservice.base', [
       dataType: 'json',
 
       callback: callback,
+      setter: setter,
     };
 
     // add to history
@@ -95,7 +98,7 @@ define('src/core/dataservice.base', [
     var _this = this;
 
     // make request
-    return $.ajax({
+    return jquery.ajax({
       url: context.requestUrl,
       type: context.httpVerb,
       data: context.data,
@@ -133,7 +136,7 @@ define('src/core/dataservice.base', [
       return;
     }
 
-    var value, code, message, response;
+    var value, code, message, responseData;
     try {
 
       try {
@@ -143,27 +146,27 @@ define('src/core/dataservice.base', [
       }
 
       if (textStatus === 'timeout') {
-        code = 3;
+        code = 990003;
         message = 'Request Timeout Error';
       } else {
-        code = 2;
+        code = 990002;
         message = 'Server Error';
       }
 
-      response = {
+      responseData = {
         Code: code,
         Message: errorThrown || message,
         Value: value,
       };
     } catch (ex) {
       console.log(ex);
-      response = {
-        Code: 1,
+      responseData = {
+        Code: 990001,
         Message: 'Error processing response',
         Value: null,
       };
     }
-    this.onComplete(response, textStatus, xhr, context);
+    this.onComplete(responseData, textStatus, xhr, context);
   };
 
   DataserviceBase.prototype.onComplete = function(responseData, textStatus, xhr, context) {
@@ -179,8 +182,18 @@ define('src/core/dataservice.base', [
     if (typeof(context.callback) === 'function') {
       // try to update session id
       DataserviceBase.sessionID(responseData.SessionId);
+      var err;
+      // check if there was an error
+      if (responseData.Code === 0) {
+        // try to set setter value,
+        if (typeof(context.setter) === 'function') {
+          context.setter(responseData.Value);
+        }
+      } else {
+        err = responseData;
+      }
       // call callback function
-      context.callback(responseData, context);
+      context.callback(err, responseData, context);
     }
   };
 

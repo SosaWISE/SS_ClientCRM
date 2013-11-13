@@ -1,5 +1,3 @@
-div(class="layers", data-bind="template:{name:'tmpl-layers',data:layersVM}")
-
 div(class="p-nav survey-types")
   <!-- ko foreach:surveyTypes -->
   div(class="survey-type")
@@ -20,3 +18,5 @@ div(class="p-module",data-bind="with:activeChild")
   //- active survey
   div(data-bind="with:activeChild")
     div(data-bind="template:viewTmpl")
+
+div(class="layers", data-bind="template:{name:'tmpl-layers',data:layersVM}")

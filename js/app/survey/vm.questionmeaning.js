@@ -18,6 +18,7 @@ define('src/survey/vm.questionmeaning', [
   function QuestionMeaningViewModel(options) {
     var _this = this;
     QuestionMeaningViewModel.super_.call(_this, options);
+    _this.ensureProps(['tokensVM']);
 
     _this.tokenMaps = _this.childs;
   }
@@ -28,11 +29,12 @@ define('src/survey/vm.questionmeaning', [
     var _this = this,
       cb = join.add();
 
-    dataservice.survey.getQuestionMeaningTokenMaps({
-      QuestionMeaningID: _this.model.QuestionMeaningID,
-    }, function(resp) {
-      if (resp.Code !== 0) {
-        return cb(resp);
+    dataservice.survey.questionMeanings.read({
+      id: _this.model.QuestionMeaningID,
+      link: 'questionMeaningTokenMaps',
+    }, null, function(err, resp) {
+      if (err) {
+        return cb(err);
       }
       var list = resp.Value.map(function(item) {
         return createTokenMap(_this.tokensVM, item);

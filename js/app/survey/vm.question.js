@@ -22,6 +22,7 @@ define('src/survey/vm.question', [
     QuestionViewModel.super_.call(_this, options);
     _this.ensureProps(['surveyVM', 'possibleAnswersVM', 'questionMeaningVM']);
 
+    _this.id = _this.model.QuestionID;
     _this.possibleAnswerMaps = _this.childs;
 
     // observables
@@ -40,11 +41,12 @@ define('src/survey/vm.question', [
     var _this = this,
       cb = join.add();
 
-    dataservice.survey.getQuestionPossibleAnswerMaps({
-      QuestionID: _this.model.QuestionID,
-    }, function(resp) {
-      if (resp.Code !== 0) {
-        return cb(resp);
+    dataservice.survey.questions.read({
+      id: _this.id,
+      link: 'questionPossibleAnswerMaps',
+    }, null, function(err, resp) {
+      if (err) {
+        return cb(err);
       }
       var list = resp.Value.map(function(item) {
         return createPossibleAnswerMap(_this.possibleAnswersVM, item);
@@ -57,7 +59,7 @@ define('src/survey/vm.question', [
   QuestionViewModel.prototype.computeTranslations = function() {
     var _this = this,
       results = [],
-      questionId = _this.model.QuestionID;
+      questionId = _this.id;
     _this.surveyVM.translations().forEach(function(surveyTranslationVM) {
       var list = surveyTranslationVM.list(),
         map = surveyTranslationVM.map,

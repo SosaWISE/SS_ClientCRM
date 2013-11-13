@@ -3,11 +3,11 @@ define('src/dataservice', [
   'src/dataservice.survey'
 ], function(
   QualifyDataservice,
-  SurveyDataservice
+  createSurveyDataservices
 ) {
   "use strict";
   return {
     qualify: new QualifyDataservice(),
-    survey: new SurveyDataservice(),
+    survey: createSurveyDataservices(),
   };
 });

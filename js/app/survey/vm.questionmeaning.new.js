@@ -53,9 +53,9 @@ define('src/survey/vm.questionmeaning.new', [
         notify.notify('warn', _this.qmData.errMsg(), 10);
         return cb();
       }
-      dataservice.survey.saveQuestionMeaning(_this.qmData.model, function(resp) {
-        if (resp.Code !== 0) {
-          notify.notify('error', resp.Message);
+      dataservice.survey.questionMeanings.save(_this.qmData.model, null, function(err, resp) {
+        if (err) {
+          notify.notify('error', err.Message);
         } else {
           _this.layer.close(resp.Value);
         }

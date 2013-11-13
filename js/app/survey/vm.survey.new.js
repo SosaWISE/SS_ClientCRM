@@ -56,9 +56,9 @@ define('src/survey/vm.survey.new', [
         notify.notify('warn', _this.sData.errMsg(), 10);
         return cb();
       }
-      dataservice.survey.saveSurvey(_this.sData.model, function(resp) {
-        if (resp.Code !== 0) {
-          notify.notify('error', resp.Message);
+      dataservice.survey.surveys.save(_this.sData.model, null, function(err, resp) {
+        if (err) {
+          notify.notify('error', err.Message);
         } else {
           _this.layer.close(resp.Value);
         }

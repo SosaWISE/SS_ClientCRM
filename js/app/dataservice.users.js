@@ -19,7 +19,7 @@ define('src/dataservice.users', [
   //
 
   DataserviceEvents.prototype.getData = function(data, cb) {
-    this.post('UsersRead', data, cb);
+    this.post('UsersRead', data, null, cb);
   };
 
   return DataserviceEvents;

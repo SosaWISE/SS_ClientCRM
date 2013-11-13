@@ -2,7 +2,7 @@ define('spec/ui/account.new.spec', [
   'jquery',
   'spec/ui/browser'
 ], function(
-  $,
+  jquery,
   browser
 ) {
   "use strict";
@@ -48,7 +48,7 @@ define('spec/ui/account.new.spec', [
         }).
         delay(function() {
           var resultEl = browser.div('.rep-find .repinfo');
-          expect($(resultEl)).toBeVisible();
+          expect(jquery(resultEl)).toBeVisible();
         });
       });
     });

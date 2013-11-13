@@ -28,9 +28,9 @@ define('src/survey/vm.qmtokenmap', [
       function(cb) {
         var model = _this.model;
         model.IsDeleted = !model.IsDeleted;
-        dataservice.survey.saveQuestionMeaningTokenMap(model, function(resp) {
-          if (resp.Code !== 0) {
-            notify.notify('warn', resp.Message, 10);
+        dataservice.survey.questionMeaningTokenMaps.save(model, null, function(err, resp) {
+          if (err) {
+            notify.notify('warn', err.Message, 10);
           } else {
             _this.model = resp.Value;
             _this.active(!_this.model.IsDeleted);

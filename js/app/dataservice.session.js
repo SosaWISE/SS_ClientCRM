@@ -20,10 +20,10 @@ define('src/dataservice.session', [
   DataserviceSession.prototype.SessionStart = function(appToken, cb) {
     this.post('SessionStart', {
       AppToken: appToken,
-    }, cb);
+    }, null, cb);
   };
   DataserviceSession.prototype.SessionTerminate = function(cb) {
-    this.post('SessionTerminate', null, cb);
+    this.post('SessionTerminate', null, null, cb);
   };
 
   return DataserviceSession;

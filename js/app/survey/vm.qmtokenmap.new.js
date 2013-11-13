@@ -38,13 +38,13 @@ define('src/survey/vm.qmtokenmap.new', [
         notify.notify('warn', 'No token selected', 10);
         return cb();
       }
-      dataservice.survey.saveQuestionMeaningTokenMap({
+      dataservice.survey.questionMeaningTokenMaps.save({
         QuestionMeaningId: _this.questionMeaningVM.model.QuestionMeaningID,
         TokenId: selectedItem.item.token.TokenID,
         IsDeleted: false,
-      }, function(resp) {
-        if (resp.Code !== 0) {
-          notify.notify('error', resp.Message);
+      }, null, function(err, resp) {
+        if (err) {
+          notify.notify('error', err.Message);
         } else {
           _this.questionMeaningVM.addTokenMap(resp.Value);
           _this.layer.close();

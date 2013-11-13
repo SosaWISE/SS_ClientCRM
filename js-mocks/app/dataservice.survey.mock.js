@@ -1,8 +1,8 @@
 define('mock/app/dataservice.survey.mock', [
-  'src/dataservice.survey',
+  'src/dataservice',
   'mock/mockery',
 ], function(
-  Dataservice,
+  dataservice,
   mockery
 ) {
   "use strict";
@@ -12,137 +12,197 @@ define('mock/app/dataservice.survey.mock', [
       return JSON.parse(JSON.stringify(value));
     }
 
-    function send(cb, value, timeout) {
-      setTimeout(function() {
-        cb({
+    function send(value, setter, cb, timeout) {
+      var err, result;
+      if (!value) {
+        err = {
+          Code: 12345,
+          Message: 'No value',
+          Value: null,
+        };
+      } else {
+        result = {
           Code: 0,
-          Message: '',
+          Message: 'Success',
           Value: clone(value),
-        });
+        };
+      }
+
+      setTimeout(function() {
+        if (!err && typeof(setter) === 'function') {
+          setter(value);
+        }
+        cb(err, result);
       }, timeout || settings.timeout);
     }
 
-    Dataservice.prototype.getSurveyTypes = function(data, cb) {
-      send(cb, surveyTypes);
-    };
-    Dataservice.prototype.getSurveys = function(data, cb) {
-      var list = [];
-      surveys.forEach(function(item) {
-        if (item.SurveyTypeId === data.SurveyTypeID) {
-          list.push(item);
-        }
+    function filterListBy(list, propName, id) {
+      return list.filter(function(item) {
+        return item[propName] === id;
       });
-      send(cb, list);
+    }
+
+    function findSingleBy(list, propName, id) {
+      return list.filter(function(item) {
+        return item[propName] === id;
+      })[0];
+    }
+
+    function findSingleOrAll(list, propName, id) {
+      var result;
+      if (id > 0) {
+        result = findSingleBy(list, propName, id);
+      } else {
+        result = list;
+      }
+      return result;
+    }
+
+    dataservice.survey.tokens.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = findSingleOrAll(tokens, 'TokenID', id);
+          break;
+      }
+      send(result, setter, cb);
     };
-    Dataservice.prototype.getTokens = function(data, cb) {
-      send(cb, tokens);
+
+    dataservice.survey.possibleAnswers.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = findSingleOrAll(possibleAnswers, 'PossibleAnswerID', id);
+          break;
+      }
+      send(result, setter, cb);
     };
-    Dataservice.prototype.getQuestionMeanings = function(data, cb) {
-      var list = [];
-      questionMeanings.forEach(function(item) {
-        if (item.SurveyTypeId === data.SurveyTypeID) {
-          list.push(item);
-        }
-      });
-      send(cb, list);
+
+    dataservice.survey.surveyTypes.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = findSingleOrAll(surveyTypes, 'SurveyTypeID', id);
+          break;
+        case 'surveys':
+          result = filterListBy(surveys, 'SurveyTypeId', id);
+          break;
+        case 'questionMeanings':
+          result = filterListBy(questionMeanings, 'SurveyTypeId', id);
+          break;
+      }
+      send(result, setter, cb);
     };
-    Dataservice.prototype.getQuestionMeaningTokenMaps = function(data, cb) {
-      var list = [];
-      questionMeanings_Tokens_Map.forEach(function(item) {
-        if (item.QuestionMeaningId === data.QuestionMeaningID) {
-          list.push(item);
-        }
-      });
-      send(cb, list);
+
+    dataservice.survey.questionMeanings.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = findSingleOrAll(questionMeanings, 'QuestionMeaningID', id);
+          break;
+        case 'questionMeaningTokenMaps':
+          result = filterListBy(questionMeanings_Tokens_Map, 'QuestionMeaningId', id);
+          break;
+      }
+      send(result, setter, cb);
     };
-    Dataservice.prototype.getQuestions = function(data, cb) {
-      var list = [];
-      questions.forEach(function(item) {
-        if (item.SurveyId === data.SurveyID) {
-          list.push(item);
-        }
-      });
-      send(cb, list);
+
+    dataservice.survey.surveys.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = findSingleOrAll(surveys, 'SurveyID', id);
+          break;
+        case 'surveyType':
+          result = findSingleBy(surveys, 'SurveyID', id);
+          if (result) {
+            result = findSingleBy(surveyTypes, 'SurveyTypeID', result.SurveyTypeId);
+          }
+          break;
+        case 'questions':
+          result = filterListBy(questions, 'SurveyId', id);
+          break;
+        case 'surveyTranslations':
+          result = filterListBy(surveyTranslations, 'SurveyId', id);
+          break;
+      }
+      send(result, setter, cb);
     };
-    Dataservice.prototype.getSurveyTranslations = function(data, cb) {
-      var list = [];
-      surveyTranslations.forEach(function(item) {
-        if (item.SurveyId === data.SurveyID) {
-          list.push(item);
-        }
-      });
-      send(cb, list);
+
+    dataservice.survey.questions.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = findSingleOrAll(questions, 'QuestionID', id);
+          break;
+        case 'questionPossibleAnswerMaps':
+          result = filterListBy(questions_PossibleAnswers_Map, 'QuestionId', id);
+          break;
+      }
+      send(result, setter, cb);
     };
-    Dataservice.prototype.getPossibleAnswers = function(data, cb) {
-      send(cb, possibleAnswers);
-    };
-    Dataservice.prototype.getQuestionPossibleAnswerMaps = function(data, cb) {
-      var list = [];
-      questions_PossibleAnswers_Map.forEach(function(item) {
-        if (item.QuestionId === data.QuestionID) {
-          list.push(item);
-        }
-      });
-      send(cb, list);
-    };
-    Dataservice.prototype.getQuestionTranslations = function(data, cb) {
-      var list = [];
-      questionTranslations.forEach(function(item) {
-        if (item.SurveyTranslationId === data.SurveyTranslationID) {
-          list.push(item);
-        }
-      });
-      send(cb, list);
+
+    dataservice.survey.surveyTranslations.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = findSingleOrAll(surveyTranslations, 'SurveyTranslationID', id);
+          break;
+        case 'questionTranslations':
+          result = filterListBy(questionTranslations, 'SurveyTranslationId', id);
+          break;
+      }
+      send(result, setter, cb);
     };
 
 
 
 
 
-    Dataservice.prototype.saveSurveyType = function(data, cb) {
-      send(cb, createOrUpdate(surveyTypes, 'SurveyTypeID', '@INC(surveyType)', {
+    dataservice.survey.surveyTypes.save = function(data, setter, cb) {
+      send(createOrUpdate(surveyTypes, 'SurveyTypeID', '@INC(surveyType)', {
         SurveyTypeID: data.SurveyTypeID,
         Name: data.Name,
-      }));
+      }), setter, cb);
     };
-    Dataservice.prototype.saveSurvey = function(data, cb) {
-      send(cb, createOrUpdate(surveys, 'SurveyID', '@INC(survey)', {
+    dataservice.survey.surveys.save = function(data, setter, cb) {
+      send(createOrUpdate(surveys, 'SurveyID', '@INC(survey)', {
         SurveyID: data.SurveyID,
         SurveyTypeId: data.SurveyTypeId,
         Version: data.Version,
-      }));
+      }), setter, cb);
     };
-    Dataservice.prototype.saveQuestionMeaning = function(data, cb) {
-      send(cb, createOrUpdate(questionMeanings, 'QuestionMeaningID', '@INC(questionMeaning)', {
+    dataservice.survey.questionMeanings.save = function(data, setter, cb) {
+      send(createOrUpdate(questionMeanings, 'QuestionMeaningID', '@INC(questionMeaning)', {
         QuestionMeaningID: data.QuestionMeaningID,
         SurveyTypeId: data.SurveyTypeId,
         Name: data.Name,
-      }));
+      }), setter, cb);
     };
-    Dataservice.prototype.saveQuestion = function(data, cb) {
-      send(cb, createOrUpdate(questions, 'QuestionID', '@INC(question)', {
+    dataservice.survey.questions.save = function(data, setter, cb) {
+      send(createOrUpdate(questions, 'QuestionID', '@INC(question)', {
         QuestionID: data.QuestionID,
         SurveyId: data.SurveyId,
         QuestionMeaningId: data.QuestionMeaningId,
         ParentId: data.ParentId,
         GroupOrder: data.GroupOrder,
         MapToTokenId: data.MapToTokenId,
-      }));
+      }), setter, cb);
     };
-    Dataservice.prototype.saveQuestionTranslation = function(data, cb) {
-      send(cb, createOrUpdate(questionTranslations, 'QuestionTranslationID', '@INC(questionTranslation)', {
+    dataservice.survey.questionTranslations.save = function(data, setter, cb) {
+      send(createOrUpdate(questionTranslations, 'QuestionTranslationID', '@INC(questionTranslation)', {
         QuestionTranslationID: data.QuestionTranslationID,
         SurveyTranslationId: data.SurveyTranslationId,
         QuestionId: data.QuestionId,
         TextFormat: data.TextFormat,
-      }));
+      }), setter, cb);
     };
-    Dataservice.prototype.saveSurveyTranslation = function(data, cb) {
-      send(cb, createOrUpdate(surveyTranslations, 'SurveyTranslationID', '@INC(surveyTranslation)', {
+    dataservice.survey.surveyTranslations.save = function(data, setter, cb) {
+      send(createOrUpdate(surveyTranslations, 'SurveyTranslationID', '@INC(surveyTranslation)', {
         SurveyTranslationID: data.SurveyTranslationID,
         SurveyId: data.SurveyId,
         LocalizationCode: data.LocalizationCode,
-      }));
+      }), setter, cb);
     };
 
     function createOrUpdate(list, idName, idTemplate, newValue) {
@@ -170,8 +230,8 @@ define('mock/app/dataservice.survey.mock', [
 
 
 
-    Dataservice.prototype.saveQuestionMeaningTokenMap = function(data, cb) {
-      send(cb, saveWithNoPKey(questionMeanings_Tokens_Map, {
+    dataservice.survey.questionMeaningTokenMaps.save = function(data, setter, cb) {
+      send(saveWithNoPKey(questionMeanings_Tokens_Map, {
         QuestionMeaningId: data.QuestionMeaningId,
         TokenId: data.TokenId,
         IsDeleted: data.IsDeleted,
@@ -185,10 +245,10 @@ define('mock/app/dataservice.survey.mock', [
           }
         });
         return index;
-      }));
+      }), setter, cb);
     };
-    Dataservice.prototype.saveQuestionPossibleAnswerMap = function(data, cb) {
-      send(cb, saveWithNoPKey(questions_PossibleAnswers_Map, {
+    dataservice.survey.questionPossibleAnswerMaps.save = function(data, setter, cb) {
+      send(saveWithNoPKey(questions_PossibleAnswers_Map, {
         QuestionId: data.QuestionId,
         PossibleAnswerId: data.PossibleAnswerId,
         Expands: data.Expands,
@@ -203,7 +263,7 @@ define('mock/app/dataservice.survey.mock', [
           }
         });
         return index;
-      }));
+      }), setter, cb);
     };
 
     function saveWithNoPKey(list, newValue, findFunc) {

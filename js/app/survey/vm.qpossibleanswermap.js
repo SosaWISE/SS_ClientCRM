@@ -27,9 +27,9 @@ define('src/survey/vm.qpossibleanswermap', [
       function(cb) {
         var model = _this.model;
         model.IsDeleted = !model.IsDeleted;
-        dataservice.survey.saveQuestionPossibleAnswerMap(model, function(resp) {
-          if (resp.Code !== 0) {
-            notify.notify('warn', resp.Message, 10);
+        dataservice.survey.questionPossibleAnswerMap.save(model, null, function(err, resp) {
+          if (err) {
+            notify.notify('warn', err.Message);
           } else {
             _this.model = resp.Value;
             _this.active(!_this.model.IsDeleted);

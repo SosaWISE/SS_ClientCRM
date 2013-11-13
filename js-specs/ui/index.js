@@ -7,16 +7,16 @@ define('spec/ui/index', [
 ], function(
   runner,
   uiSpecs,
-  $,
+  jquery,
   browser
 ) {
   'use strict';
 
-  var specContainer = $('.container.specs'),
+  var specContainer = jquery('.container.specs'),
     clickedTab = false;
 
   function tabsMouseout() {
-    var specsActive = $('.tab.specs a').hasClass('active');
+    var specsActive = jquery('.tab.specs a').hasClass('active');
     if (clickedTab) {
       if (specsActive) {
         specContainer.show();
@@ -31,29 +31,29 @@ define('spec/ui/index', [
   }
 
   function selectTab(name) {
-    $('.tab a').removeClass('active');
-    $('.tab.' + name + ' a').addClass('active');
+    jquery('.tab a').removeClass('active');
+    jquery('.tab.' + name + ' a').addClass('active');
     tabsMouseout();
   }
   'page,specs'.split(',').forEach(function(name) {
-    $('.tab.' + name).click(function() {
+    jquery('.tab.' + name).click(function() {
       clickedTab = true;
       selectTab(name);
     });
   });
   selectTab('specs');
-  $('.tabs').hover(function() {
-    var specsActive = $('.tab.specs a').hasClass('active');
+  jquery('.tabs').hover(function() {
+    var specsActive = jquery('.tab.specs a').hasClass('active');
     specContainer.show();
     specContainer.css('opacity', specsActive ? 0.5 : 0.9);
   }, tabsMouseout);
 
-  browser.ready($('.frameLocation'), function() {
+  browser.ready(jquery('.frameLocation'), function() {
     runner({}, [
       uiSpecs
     ], function() {
       console.log(' - specs loaded');
-      $('.ph-HTMLReporter').replaceWith($('#HTMLReporter'));
+      jquery('.ph-HTMLReporter').replaceWith(jquery('#HTMLReporter'));
     });
   });
 });

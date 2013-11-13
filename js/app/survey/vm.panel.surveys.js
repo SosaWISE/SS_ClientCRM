@@ -1,5 +1,4 @@
 define('src/survey/vm.panel.surveys', [
-  'src/util/joiner',
   'src/core/vm.layers',
   'src/survey/vm.tokens',
   'src/survey/vm.possibleanswers',
@@ -10,7 +9,6 @@ define('src/survey/vm.panel.surveys', [
   'src/util/utils',
   'src/core/vm.controller',
 ], function(
-  joiner,
   LayersViewModel,
   TokensViewModel,
   PossibleAnswersViewModel,
@@ -26,6 +24,8 @@ define('src/survey/vm.panel.surveys', [
   function SurveysPanelViewModel(options) {
     var _this = this;
     SurveysPanelViewModel.super_.call(_this, options);
+
+    _this.controller = _this;
 
     _this.surveyTypes = _this.childs;
 
@@ -56,17 +56,18 @@ define('src/survey/vm.panel.surveys', [
     tokensVM.load(routeData, depJoin.add());
     possibleAnswersVM.load(routeData, depJoin.add());
 
-    dataservice.survey.getSurveyTypes({}, function(resp) {
-      if (resp.Code !== 0) {
-        return cb(resp);
+    dataservice.survey.surveyTypes.read({}, null, function(err, resp) {
+      if (err) {
+        return cb(err);
       }
-      // ensure the dependencies have loaded
+      // wait until the dependencies have been loaded
       depJoin.when(function(err) {
         if (err) {
           return cb(err);
         }
         var list = resp.Value.map(function(model) {
           var vm = new SurveyTypeViewModel({
+            controller: _this.controller,
             layersVM: _this.layersVM,
             tokensVM: tokensVM,
             possibleAnswersVM: possibleAnswersVM,

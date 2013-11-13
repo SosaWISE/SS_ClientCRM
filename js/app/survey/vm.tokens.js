@@ -27,9 +27,9 @@ define('src/survey/vm.tokens', [
     var _this = this,
       cb = join.add();
 
-    dataservice.survey.getTokens({}, function(resp) {
-      if (resp.Code !== 0) {
-        return cb(resp);
+    dataservice.survey.tokens.read({}, null, function(err, resp) {
+      if (err) {
+        return cb(err);
       }
       resp.Value.forEach(function(token) {
         _this.tokenMap[token.TokenID] = token;

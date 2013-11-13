@@ -116,13 +116,12 @@ define('src/core/route', [
     return routeCtx;
   };
 
-  Route.prototype.createContext = function(path, cb) {
+  Route.prototype.createContext = function(pathOrRouteData, cb) {
     var disposed, route = this,
-      routeData = route.fromPath(path);
+      routeData = typeof(pathOrRouteData) === 'string' ? route.fromPath(pathOrRouteData) : pathOrRouteData;
     if (routeData) {
       return {
         route: route,
-        path: path,
         routeData: routeData,
         dispose: function() {
           disposed = true;

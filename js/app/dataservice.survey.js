@@ -1,20 +1,31 @@
 define('src/dataservice.survey', [
-  'src/util/utils',
   'src/core/dataservice.base',
   'src/config'
 ], function(
-  utils,
   DataserviceBase,
   config
 ) {
   "use strict";
 
-  function SurveyDataservice() {
-    SurveyDataservice.super_.call(this, 'survey', config.serviceDomain);
-  }
-  utils.inherits(SurveyDataservice, DataserviceBase);
+  return function() {
+    var surveyServiceDomain = config.serviceDomain + '/surveysrv',
+      result = {};
 
-  //@TODO: add methods
+    [
+      'tokens',
+      'possibleAnswers',
+      'surveyTypes',
+      'questionMeanings',
+      'surveys',
+      'surveyTranslations',
+      'questions',
+      'questionTranslations',
+      'questionMeaningTokenMaps',
+      'questionPossibleAnswerMaps',
+    ].forEach(function(collectionName) {
+        result[collectionName] = new DataserviceBase(collectionName, surveyServiceDomain);
+      });
 
-  return SurveyDataservice;
+    return result;
+  };
 });

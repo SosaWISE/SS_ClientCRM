@@ -12,7 +12,7 @@ define('src/bootstrapper', [
   'src/dataservice',
   'src/app'
 ], function(
-  $, ko, // main libs
+  jquery, ko, // main libs
   p1, p2, p3, //plugins
 
   config,
@@ -42,9 +42,9 @@ define('src/bootstrapper', [
       if (user) {
         // once there is a user, destroy the login forms (for security purposes)
         delete app.login;
-        $('#login-container').remove();
+        jquery('#login-container').remove();
         // incase it didn't get moved before the user was set
-        $('#loginform').remove();
+        jquery('#loginform').remove();
       }
     });
 

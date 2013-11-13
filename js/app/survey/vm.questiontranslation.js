@@ -81,9 +81,9 @@ define('src/survey/vm.questiontranslation', [
         notify.notify('warn', _this.qtData.errMsg(), 10);
         return cb();
       }
-      dataservice.survey.saveQuestionTranslation(_this.qtData.model, function(resp) {
-        if (resp.Code !== 0) {
-          notify.notify('error', resp.Message);
+      dataservice.survey.questionTranslations.save(_this.qtData.model, null, function(err, resp) {
+        if (err) {
+          notify.notify('error', err.Message);
         } else {
           _this.qtData.markClean(resp.Value);
           _this.clickEndEdit(true);

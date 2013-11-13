@@ -39,13 +39,13 @@ define('src/survey/vm.qpossibleanswermap.new', [
         notify.notify('warn', 'No possible answer selected', 10);
         return cb();
       }
-      dataservice.survey.saveQuestionPossibleAnswerMap({
+      dataservice.survey.questionPossibleAnswerMaps.save({
         QuestionId: _this.questionVM.model.QuestionID,
         PossibleAnswerId: selectedItem.item.possibleAnswer.PossibleAnswerID,
         IsDeleted: false,
-      }, function(resp) {
-        if (resp.Code !== 0) {
-          notify.notify('error', resp.Message);
+      }, null, function(err, resp) {
+        if (err) {
+          notify.notify('error', err.Message);
         } else {
           _this.questionVM.addPossibleAnswerMap(resp.Value);
           _this.layer.close();

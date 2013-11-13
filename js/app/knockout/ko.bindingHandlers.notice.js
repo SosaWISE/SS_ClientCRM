@@ -2,7 +2,7 @@ define('src/knockout/ko.bindingHandlers.notice', [
   'jquery',
   'ko'
 ], function(
-  $,
+  jquery,
   ko
 ) {
   "use strict";
@@ -11,7 +11,7 @@ define('src/knockout/ko.bindingHandlers.notice', [
     init: function(element, valueAccessor) {
       var value = valueAccessor();
 
-      element = $(element);
+      element = jquery(element);
 
       value.seconds.subscribe(function(seconds) {
         if (0 < seconds && seconds <= 5 && !element.hasClass('fade')) {

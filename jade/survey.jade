@@ -1,15 +1,14 @@
 div(class="survey")
-  div(class="layers", data-bind="template:{name:'tmpl-layers',data:layersVM}")
-
   div(class="head")
     ul(class="sv")
       li
         a(class="add-btn btn",data-bind="click:clickAddSurveyTranslation") Add
       <!-- ko foreach:translations -->
-      li(data-bind="click:click")
-        a(class="btn",data-bind="active:active")
+      li(data-bind="cmd:cmdToggle")
+        a(class="btn",data-bind="active:active,busy:cmdToggle.busy")
           span(data-bind="text:model.LocalizationCode")
       <!-- /ko -->
+    a(style="float:right;",data-bind="click:clickTakeSurvey") Test Survey
 
   div(class="content")
     div(data-bind="foreach:questions")
@@ -21,3 +20,5 @@ div(class="survey")
         li
           a(class="btn add-btn",data-bind="click:clickAddQuestion")
             span(data-bind="text:nextName")
+
+  div(class="layers", data-bind="template:{name:'tmpl-layers',data:layersVM}")

@@ -1,6 +1,8 @@
 define('spec/ui/browser', [
   'jquery'
-], function($) {
+], function(
+  jquery
+) {
   'use strict';
 
   var browser = {},
@@ -12,9 +14,9 @@ define('spec/ui/browser', [
   // make browser available on test page
   window.browser = browser;
 
-  browser.ready = function($addressBar, cb) {
+  browser.ready = function(addressBar, cb) {
     delete browser.ready; // can call ready only once
-    addressBar = $addressBar;
+    addressBar = addressBar;
     onReady = cb;
   };
   browser.init = function(win) {
@@ -64,7 +66,7 @@ define('spec/ui/browser', [
     return browser; // chaining
   };
   browser.click = function(element) {
-    expect($(element)).toBeVisible();
+    expect(jquery(element)).toBeVisible();
     var evt = new MouseEvent('click', {
       'view': testWindow,
       'bubbles': true,
@@ -74,8 +76,8 @@ define('spec/ui/browser', [
     return browser; // chaining
   };
   browser.setText = function(element, text) {
-    expect($(element)).toBeVisible();
-    $(element).focus();
+    expect(jquery(element)).toBeVisible();
+    jquery(element).focus();
     element.value = '';
     for (var i = 0; i < text.length; i++) {
       triggerKey(element, element.value.length, text[i]);
@@ -83,7 +85,7 @@ define('spec/ui/browser', [
     return browser; // chaining
   };
   browser.pressEnter = function(element) {
-    expect($(element)).toBeVisible();
+    expect(jquery(element)).toBeVisible();
     triggerKey(element, element.value.length, '\r');
     return browser; // chaining
   };
@@ -108,7 +110,7 @@ define('spec/ui/browser', [
       throw new Error('no element selected: ' + selector);
     }
     expect(el.constructor.name).toBe(ctor.name);
-    // el = $(el);
+    // el = jquery(el);
     return el;
   }
 

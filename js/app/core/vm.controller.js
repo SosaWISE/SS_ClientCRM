@@ -9,7 +9,7 @@ define('src/core/vm.controller', [
 ], function(
   notify,
   joiner,
-  $,
+  jquery,
   config,
   utils,
   ko,
@@ -37,6 +37,16 @@ define('src/core/vm.controller', [
       throw new Error('controller can only be associated with one route');
     }
     _this.route = route;
+  };
+  ControllerViewModel.prototype.getRoute = function() {
+    var _this = this,
+      result;
+    if (_this.route) {
+      result = _this.route;
+    } else {
+      result = _this.controller.getRoute();
+    }
+    return result;
   };
 
   // activate async
@@ -129,6 +139,7 @@ define('src/core/vm.controller', [
       activeChild(null);
     }
   };
+
   ControllerViewModel.prototype.load = function(routeData, cb) {
     var _this = this,
       join,
@@ -165,27 +176,22 @@ define('src/core/vm.controller', [
   ControllerViewModel.prototype.onLoad = function(routeData, join) {
     join.add()();
   };
+
+
   ControllerViewModel.prototype.getLastRouteData = function() {
-    var _this = this;
-    return _this.route.lastRouteData;
-  };
-  ControllerViewModel.prototype.goTo = function(routeData, allowHistory) {
-    var _this = this;
-    if (_this.parent) {
-      _this.parent.goTo(routeData, allowHistory);
-    } else {
-      _this.route.goTo(routeData, allowHistory);
-    }
-  };
-  ControllerViewModel.prototype.setRouteData = function(routeData) {
-    var _this = this;
-    if (_this.parent) {
-      _this.parent.setRouteData(routeData);
-    } else {
-      _this.route.setRouteData(routeData);
-    }
+    return this.getRoute().lastRouteData;
   };
 
+  ControllerViewModel.prototype.goTo = function(routeData, allowHistory) {
+    this.getRoute().goTo(routeData, allowHistory);
+  };
+  ControllerViewModel.prototype.setRouteData = function(routeData) {
+    this.getRoute().setRouteData(routeData);
+  };
+
+  ControllerViewModel.prototype.createRouteContext = function(pathOrRouteData, cb) {
+    return this.getRoute().createContext(pathOrRouteData, cb);
+  };
 
 
 
@@ -201,7 +207,7 @@ define('src/core/vm.controller', [
       parts.push(config.titlePostfix);
     }
 
-    $('title').text(parts.join(' '));
+    jquery('title').text(parts.join(' '));
   };
 
   return ControllerViewModel;

@@ -6,7 +6,7 @@
   'src/knockout/ko.bindingHandlers.notice',
   'src/knockout/ko.bindingHandlers.value'
 ], function(
-  $,
+  jquery,
   ko
 ) {
   "use strict";
@@ -22,7 +22,7 @@
     ko.bindingHandlers[name] = {
       update: function(element, valueAccessor) {
         var hasVal = unwrap(valueAccessor()),
-          el = $(element);
+          el = jquery(element);
         if (hasVal) {
           setTimeout(function() { // needed for browser transitions????
             el.addClass(cls);
@@ -42,7 +42,7 @@
   ko.bindingHandlers.toggle = {
     update: function(element, valueAccessor) {
       var obj = valueAccessor(),
-        el = $(element);
+        el = jquery(element);
       Object.keys(obj).forEach(function(cls) {
         var hasVal = unwrap(obj[cls]);
         if (hasVal) {
@@ -70,11 +70,11 @@
           func = func.execute;
         }
 
-        $(element).keyup(function(event) {
+        jquery(element).keyup(function(event) {
           if (event.keyCode === keyCode) {
             if (forceBlur) {
-              $(element).blur();
-              $(element).focus();
+              jquery(element).blur();
+              jquery(element).focus();
             }
             func.call(viewModel, viewModel, event);
           }
@@ -91,7 +91,7 @@
   //@NOTE: this only works one time
   ko.bindingHandlers.swapLoginFields = {
     init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      element = $(element);
+      element = jquery(element);
       var loginformEl = document.getElementById('loginform');
       // replace placeholders with the actual fields from hidden form
       element.find('.ph-loginform').replaceWith(loginformEl);
@@ -107,7 +107,7 @@
   ko.bindingHandlers.setClass = {
     update: function(element, valueAccessor) {
       var cls = unwrap(valueAccessor()),
-        el = $(element);
+        el = jquery(element);
       if (valueAccessor._prevCls) {
         el.removeClass(valueAccessor._prevCls);
       }
@@ -123,7 +123,7 @@
   ko.bindingHandlers.bgimg = {
     update: function(element, valueAccessor) {
       var url = unwrap(valueAccessor());
-      $(element).css({
+      jquery(element).css({
         "background-image": url ? ("url(" + url + ")") : "",
       });
     },
@@ -144,7 +144,7 @@
           size = "";
         }
 
-        $(element).css(name, size);
+        jquery(element).css(name, size);
       },
     };
   }
@@ -159,10 +159,10 @@
       valueAccessor = unwrap(valueAccessor());
       // http://stackoverflow.com/questions/90178/make-a-div-fill-the-remaining-screen-space
       // Element Height = Viewport height - element.offset.top - desired bottom margin
-      // $(element).height(element.offsetParent.offsetHeight - element.offsetTop);
+      // jquery(element).height(element.offsetParent.offsetHeight - element.offsetTop);
 
-      // element = $(element);
-      $(element).height($(element).parent().height() - element.offsetTop);
+      // element = jquery(element);
+      jquery(element).height(jquery(element).parent().height() - element.offsetTop);
     },
   };
 

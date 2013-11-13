@@ -67,9 +67,9 @@ define('src/survey/vm.surveytranslation.new', [
         notify.notify('warn', _this.stData.errMsg(), 7);
         return cb();
       }
-      dataservice.survey.saveSurveyTranslation(_this.stData.model, function(resp) {
-        if (resp.Code !== 0) {
-          notify.notify('error', resp.Message);
+      dataservice.survey.surveyTranslations.save(_this.stData.model, null, function(err, resp) {
+        if (err) {
+          notify.notify('error', err.Message);
         } else {
           _this.layer.close(resp.Value);
         }

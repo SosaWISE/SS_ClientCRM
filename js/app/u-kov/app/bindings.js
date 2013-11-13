@@ -4,7 +4,7 @@ define('src/u-kov/app/bindings', [
  'src/u-kov/app/ukov',
  'src/u-kov/app/ukov-collection'
 ], function(
-  $,
+  jquery,
   ko,
   ukov,
   UkovCollection
@@ -17,7 +17,7 @@ define('src/u-kov/app/bindings', [
     init: function(element, valueAccessor) {
       var prop = valueAccessor();
       // set prop to converted value when element loses focus
-      $(element).blur(function setProp() {
+      jquery(element).blur(function setProp() {
         var value = prop.getValue();
         if (!(value instanceof Error)) {
           prop(value);
@@ -57,10 +57,10 @@ define('src/u-kov/app/bindings', [
       cls = null;
     }
     if (ukovItem._ukovPrevCls) {
-      $(element).removeClass(ukovItem._ukovPrevCls);
+      jquery(element).removeClass(ukovItem._ukovPrevCls);
     }
     if (cls) {
-      $(element).addClass(cls);
+      jquery(element).addClass(cls);
     }
     ukovItem._ukovPrevCls = cls;
   }

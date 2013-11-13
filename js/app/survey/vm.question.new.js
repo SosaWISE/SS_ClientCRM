@@ -46,15 +46,15 @@ define('src/survey/vm.question.new', [
         notify.notify('warn', 'No question meaning selected', 10);
         return cb();
       }
-      dataservice.survey.saveQuestion({
+      dataservice.survey.questions.save({
         SurveyId: _this.surveyVM.model.SurveyID,
         QuestionMeaningId: selectedItem.item.vm.model.QuestionMeaningID,
         ParentId: (_this.parent) ? _this.parent.model.QuestionID : null,
         GroupOrder: _this.groupOrder,
         MapToTokenId: null,
-      }, function(resp) {
-        if (resp.Code !== 0) {
-          notify.notify('error', resp.Message);
+      }, null, function(err, resp) {
+        if (err) {
+          notify.notify('error', err.Message);
         } else {
           _this.layer.close(resp.Value);
         }

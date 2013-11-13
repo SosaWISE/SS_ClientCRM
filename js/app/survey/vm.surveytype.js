@@ -49,47 +49,45 @@ define('src/survey/vm.surveytype', [
 
   SurveyTypeViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this;
-    loadSurveys(_this, routeData, join);
-    loadQuestionMeaning(_this, routeData, join);
+    loadSurveys(_this, _this.id, routeData, join);
+    loadQuestionMeaning(_this, _this.id, routeData, join);
   };
 
-  function loadSurveys(_this, routeData, join) {
+  function loadSurveys(surveyTypeVM, surveyTypeID, routeData, join) {
     var cb = join.add();
-    dataservice.survey.getSurveys({
-      SurveyTypeID: _this.model.SurveyTypeID
-    }, function(resp) {
-      if (resp.Code !== 0) {
-        return cb(resp);
+    dataservice.survey.surveyTypes.read({
+      id: surveyTypeID,
+      link: 'surveys',
+    }, null, function(err, resp) {
+      if (err) {
+        return cb(err);
       }
       var list = resp.Value.map(function(model) {
-        var vm = createSurvey(_this, model);
-        // lazy loaded surveys
-        // vm.load(routeData, join.add());
+        var vm = createSurvey(surveyTypeVM, model);
+        // lazy load survey data // vm.load(routeData, join.add());
         return vm;
       });
-      _this.surveys(list);
+      surveyTypeVM.surveys(list);
       cb();
     });
   }
 
-  function loadQuestionMeaning(_this, routeData, join) {
+  function loadQuestionMeaning(surveyTypeVM, surveyTypeID, routeData, join) {
     var cb = join.add();
-    dataservice.survey.getQuestionMeanings({
-      SurveyTypeID: _this.model.SurveyTypeID
-    }, function(resp) {
-      if (resp.Code !== 0) {
-        return cb(resp);
+    dataservice.survey.surveyTypes.read({
+      id: surveyTypeID,
+      link: 'questionMeanings',
+    }, null, function(err, resp) {
+      if (err) {
+        return cb(err);
       }
       var list = resp.Value.map(function(model) {
-        var vm = new QuestionMeaningViewModel({
-          tokensVM: _this.tokensVM,
-          model: model,
-        });
-        _this.qmMap[model.QuestionMeaningID] = vm;
+        var vm = createQuestionMeaning(surveyTypeVM, model);
+        surveyTypeVM.qmMap[model.QuestionMeaningID] = vm;
         vm.load(routeData, join.add());
         return vm;
       });
-      _this.questionMeanings(list);
+      surveyTypeVM.questionMeanings(list);
       cb();
     });
   }
@@ -101,9 +99,7 @@ define('src/survey/vm.surveytype', [
     if (_this.qmMap[id]) {
       return;
     }
-    vm = new QuestionMeaningViewModel({
-      model: model,
-    });
+    vm = createQuestionMeaning(_this, model);
     _this.qmMap[id] = vm;
     _this.questionMeanings.push(vm);
     return vm;
@@ -119,8 +115,17 @@ define('src/survey/vm.surveytype', [
 
   function createSurvey(surveyTypeVM, model) {
     return new SurveyViewModel({
-      possibleAnswersVM: surveyTypeVM.possibleAnswersVM,
+      controller: surveyTypeVM.controller,
       surveyTypeVM: surveyTypeVM,
+      tokensVM: surveyTypeVM.tokensVM,
+      possibleAnswersVM: surveyTypeVM.possibleAnswersVM,
+      model: model,
+    });
+  }
+
+  function createQuestionMeaning(surveyTypeVM, model) {
+    return new QuestionMeaningViewModel({
+      tokensVM: surveyTypeVM.tokensVM,
       model: model,
     });
   }

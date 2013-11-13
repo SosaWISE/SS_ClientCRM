@@ -77,7 +77,9 @@ define('src/app', [
   });
 
   //
-  router.addRoute(app.panelMap.surveys, 'surveys', ':surveyid', {});
+  router.addRoute(app.panelMap.surveys, 'surveys', ':surveyid/:locale', {
+    locale: 'en',
+  });
   router.addRoute(app.panelMap.home, 'home', '', {});
   router.addRoute(app.panelMap.accounts, 'accounts', ':accountid/:action', {});
 

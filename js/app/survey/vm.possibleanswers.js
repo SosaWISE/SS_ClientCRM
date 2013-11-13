@@ -26,9 +26,9 @@ define('src/survey/vm.possibleanswers', [
     var _this = this,
       cb = join.add();
 
-    dataservice.survey.getPossibleAnswers({}, function(resp) {
-      if (resp.Code !== 0) {
-        return cb(resp);
+    dataservice.survey.possibleAnswers.read({}, null, function(err, resp) {
+      if (err) {
+        return cb(err);
       }
       resp.Value.forEach(function(item) {
         _this.paMap[item.PossibleAnswerID] = item;
