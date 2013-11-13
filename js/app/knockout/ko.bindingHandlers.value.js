@@ -10,9 +10,9 @@ define('src/knockout/ko.bindingHandlers.value', [
   var binding = ko.bindingHandlers.value,
     oldInit = binding.init;
 
-  binding.init = function(element, valueAccessor, allBindingsAccessor) {
+  binding.init = function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
     // call default
-    oldInit(element, valueAccessor, allBindingsAccessor);
+    oldInit(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
 
     var hasFocus = false;
 

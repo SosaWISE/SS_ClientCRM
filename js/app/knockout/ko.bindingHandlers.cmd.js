@@ -10,7 +10,7 @@ define('src/knockout/ko.bindingHandlers.cmd', [
   }
 
   ko.bindingHandlers.cmd = {
-    init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
       var value = valueAccessor(),
         events = {};
 
@@ -26,9 +26,9 @@ define('src/knockout/ko.bindingHandlers.cmd', [
       }
 
       // bind to events
-      ko.bindingHandlers.event.init(element, makeValueAccessor(events), allBindingsAccessor, viewModel);
+      ko.bindingHandlers.event.init(element, makeValueAccessor(events), allBindingsAccessor, viewModel, bindingContext);
     },
-    update: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
       var value = valueAccessor(),
         canExecute;
 
@@ -44,15 +44,15 @@ define('src/knockout/ko.bindingHandlers.cmd', [
       }
 
       // toggle 'busy' class
-      ko.bindingHandlers.busy.update(element, makeValueAccessor(!canExecute), allBindingsAccessor, viewModel);
+      ko.bindingHandlers.busy.update(element, makeValueAccessor(!canExecute), allBindingsAccessor, viewModel, bindingContext);
       // toggle 'disabled' class
-      ko.bindingHandlers.cssDisabled.update(element, makeValueAccessor(!canExecute), allBindingsAccessor, viewModel);
+      ko.bindingHandlers.cssDisabled.update(element, makeValueAccessor(!canExecute), allBindingsAccessor, viewModel, bindingContext);
 
       if (allBindingsAccessor().cmdNoDisabledAttr) {
         return;
       }
       // and set disabled attribute
-      ko.bindingHandlers.enable.update(element, makeValueAccessor(canExecute), allBindingsAccessor, viewModel);
+      ko.bindingHandlers.enable.update(element, makeValueAccessor(canExecute), allBindingsAccessor, viewModel, bindingContext);
       // for non input elements we need to manually set disabled to false
       if (canExecute && element.disabled) {
         element.disabled = false;
