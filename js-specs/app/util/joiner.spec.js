@@ -115,14 +115,14 @@ define('spec/app/util/joiner.spec', [
 
     describe('with an error', function() {
       it('should always return an error', function() {
-        var callbackErrs, callbackResults;
+        var callbackErr, callbackResults;
         join.add()('error', 'has error');
         join.add()(null, 'no error');
-        join.when(function(errs, results) {
-          callbackErrs = errs;
+        join.when(function(err, results) {
+          callbackErr = err;
           callbackResults = results;
         });
-        expect(callbackErrs).toEqual('error');
+        expect(callbackErr).toEqual('error');
         expect(callbackResults).toEqual(['has error']);
       });
 
@@ -130,17 +130,47 @@ define('spec/app/util/joiner.spec', [
         var add1 = join.add(),
           add2 = join.add(),
           add3 = join.add(),
-          callbackErrs, callbackResults;
+          callbackErr, callbackResults;
         add2('error', 'has error');
         add1(null, 'ignored1');
         add3(null, 'ignored2');
         join.add()(null, 'ignored3');
-        join.when(function(errs, results) {
-          callbackErrs = errs;
+        join.when(function(err, results) {
+          callbackErr = err;
           callbackResults = results;
         });
-        expect(callbackErrs).toEqual('error');
+        expect(callbackErr).toEqual('error');
         expect(callbackResults).toEqual([undefined, 'has error']);
+      });
+    });
+
+    describe('an `add` timeout', function() {
+
+      it('should occur after 30 seconds (by default)', function() {
+        jasmine.Clock.useMock();
+
+        var called = false;
+        join.add(); // callback never called
+        join.when(function() {
+          called = true;
+        });
+        jasmine.Clock.tick(1000 * 30);
+
+        expect(called).toBe(true);
+      });
+
+      it('should be treated as an error', function() {
+        jasmine.Clock.useMock();
+
+        var callbackErr;
+        join.add(); // callback never called
+        join.when(function(err) {
+          callbackErr = err;
+        });
+        jasmine.Clock.tick(1000 * 30);
+
+        expect(callbackErr.constructor.name).toBe(Error.name);
+        expect(callbackErr.message).toEqual('timeout error');
       });
     });
 

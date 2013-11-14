@@ -1,0 +1,10 @@
+div(class="layer")
+  //- ,style="width:90%;height:90%")
+  div(class="content")
+    div(style="float:right;cursor:pointer;",data-bind="click:clickCancel") Close
+    div(data-bind="with:survey")
+      div(data-bind="text:version")
+      div(data-bind="text:locale")
+      div(data-bind="foreach:questions")
+        //- start question recursion
+        div(data-bind="template:'tmpl-takequestion'")

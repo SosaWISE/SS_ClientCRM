@@ -8,6 +8,7 @@ define('src/util/joiner', [
   function Joiner() {
     var _this = this,
       disposed = false;
+    _this.timeout = 1000 * 30;
     _this._count = 0;
     _this._waiting = [];
     _this._results = [];
@@ -24,16 +25,17 @@ define('src/util/joiner', [
     };
   }
 
-  function noop() {}
+  function no_op() {}
   Joiner.prototype.add = function() {
     var _this = this,
-      waiting, results, addKey;
+      waiting, results, addKey,
+      timeout;
     if (_this.isDisposed()) {
       throw new Error('joiner is disposed');
     }
     if (_this._err) {
       // all further adds are ignored
-      return noop;
+      return no_op;
     }
 
     waiting = _this._waiting;
@@ -43,7 +45,8 @@ define('src/util/joiner', [
     // add addKey
     waiting.push(addKey);
 
-    return function(err, val) {
+    function cb(err, val) {
+      clearTimeout(timeout);
       var index = waiting.indexOf(addKey);
       if (index < 0) {
         // already called
@@ -63,7 +66,13 @@ define('src/util/joiner', [
       // remove addKey
       waiting.splice(index, 1);
       tryWhen(_this);
-    };
+    }
+
+    timeout = setTimeout(function() {
+      cb(new Error('timeout error'));
+    }, _this.timeout);
+
+    return cb;
   };
   Joiner.prototype.when = function(cb) {
     var _this = this;

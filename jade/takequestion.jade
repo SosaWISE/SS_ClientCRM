@@ -1,0 +1,15 @@
+table(class="question")
+  thead
+  tr
+    td(class="title")
+      h2(data-bind="text:name")
+    td(class="content")
+      div(class="md-html",data-bind="html:html")
+    td(class="answers")
+      div(style="white-space:nowrap;",data-bind="") answers go here...
+
+  tr
+    td
+    td
+      div(data-bind="foreach:questions")
+        div(data-bind="template:'tmpl-takequestion'")

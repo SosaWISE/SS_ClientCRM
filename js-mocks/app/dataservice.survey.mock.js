@@ -14,7 +14,10 @@ define('mock/app/dataservice.survey.mock', [
 
     function send(value, setter, cb, timeout) {
       var err, result;
-      if (!value) {
+      if (value) {
+        value = clone(value);
+      }
+      if (false && !value) {
         err = {
           Code: 12345,
           Message: 'No value',
@@ -24,13 +27,13 @@ define('mock/app/dataservice.survey.mock', [
         result = {
           Code: 0,
           Message: 'Success',
-          Value: clone(value),
+          Value: value,
         };
       }
 
       setTimeout(function() {
-        if (!err && typeof(setter) === 'function') {
-          setter(value);
+        if (!err && result && typeof(setter) === 'function') {
+          setter(result.Value);
         }
         cb(err, result);
       }, timeout || settings.timeout);

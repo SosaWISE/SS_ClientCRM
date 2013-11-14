@@ -85,12 +85,14 @@ define('spec/app/core/dataservice.base.spec', [
           requestUrl: 'requestUrl',
           httpVerb: "GET",
           data: null,
-          callback: function(responseData, context) {
-            callbackArgs = [responseData, context];
+          callback: function(errResp, responseData, context) {
+            callbackArgs = [errResp, responseData, context];
             called = true;
           },
         };
-        responseData = {};
+        responseData = {
+          Code: 0,
+        };
         xhr = {
           responseText: '{"name":"val"}'
         };
@@ -101,15 +103,18 @@ define('spec/app/core/dataservice.base.spec', [
       it('should call callback', function() {
         expect(called).toBe(true);
       });
-      it('should call callback with responseData as first parameter', function() {
-        expect(callbackArgs[0]).toBe(responseData);
+      it('should call callback with errResp as first parameter', function() {
+        expect(callbackArgs[0]).toBeUndefined();
       });
-      it('should call callback with context as second parameter', function() {
-        expect(callbackArgs[1]).toBe(context);
+      it('should call callback with responseData as second parameter', function() {
+        expect(callbackArgs[1]).toBe(responseData);
+      });
+      it('should call callback with context as third parameter', function() {
+        expect(callbackArgs[2]).toBe(context);
       });
       it('context should have response property', function() {
-        expect(callbackArgs[1].response).toBeDefined();
-        expect(callbackArgs[1].response.xhr).toBe(xhr);
+        expect(callbackArgs[2].response).toBeDefined();
+        expect(callbackArgs[2].response.xhr).toBe(xhr);
       });
     });
 
@@ -126,12 +131,14 @@ define('spec/app/core/dataservice.base.spec', [
           requestUrl: 'requestUrl',
           httpVerb: "GET",
           data: null,
-          callback: function(responseData, context) {
-            callbackArgs = [responseData, context];
+          callback: function(errResp, responseData, context) {
+            callbackArgs = [errResp, responseData, context];
             called = true;
           },
         };
-        responseData = {};
+        responseData = {
+          Code: 12345,
+        };
         xhr = {
           responseText: '{"name":"val"}'
         };
@@ -143,24 +150,27 @@ define('spec/app/core/dataservice.base.spec', [
       it('should call callback', function() {
         expect(called).toBe(true);
       });
-      it('should call callback with responseData as first parameter', function() {
+      it('should call callback with errResp as first parameter', function() {
         expect(callbackArgs[0]).toBeDefined();
       });
+      it('should call callback with responseData as second parameter', function() {
+        expect(callbackArgs[1]).toBeDefined();
+      });
       it('responseData should have `Code`, `Message` and `Value` properties', function() {
-        expect(callbackArgs[0].Code).toBeDefined();
-        expect(callbackArgs[0].Message).toBeDefined();
-        expect(callbackArgs[0].Value).toBeDefined();
+        expect(callbackArgs[1].Code).toBeDefined();
+        expect(callbackArgs[1].Message).toBeDefined();
+        expect(callbackArgs[1].Value).toBeDefined();
       });
       it('responseData should have "responseText" json parsed as `Value` property', function() {
-        expect(callbackArgs[0].Value).toBeDefined();
-        expect(callbackArgs[0].Value.name).toBe('val');
+        expect(callbackArgs[1].Value).toBeDefined();
+        expect(callbackArgs[1].Value.name).toBe('val');
       });
-      it('should call callback with context as second parameter', function() {
-        expect(callbackArgs[1]).toBe(context);
+      it('should call callback with context as third parameter', function() {
+        expect(callbackArgs[2]).toBe(context);
       });
       it('context should have `response` property', function() {
-        expect(callbackArgs[1].response).toBeDefined();
-        expect(callbackArgs[1].response.xhr).toBe(xhr);
+        expect(callbackArgs[2].response).toBeDefined();
+        expect(callbackArgs[2].response.xhr).toBe(xhr);
       });
     });
   });

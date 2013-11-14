@@ -1,4 +1,4 @@
 div(class="md-editor")
   //- 'input' updates textarea whenever the value changes (e.g.:paste,drop,etc.)
-  textarea(data-bind="value:input,valueUpdate:'input'")
-div(class="md-html",data-bind="html:output")
+  textarea(data-bind="ukov:input,value:input,valueUpdate:'input'")
+div(class="md-html black",data-bind="html:output")

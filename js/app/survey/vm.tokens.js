@@ -18,7 +18,6 @@ define('src/survey/vm.tokens', [
     TokensViewModel.super_.call(_this, options);
 
     _this.list = _this.childs;
-
     _this.tokenMap = {};
   }
   utils.inherits(TokensViewModel, ControllerViewModel);

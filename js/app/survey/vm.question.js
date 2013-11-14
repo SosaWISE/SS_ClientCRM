@@ -79,7 +79,7 @@ define('src/survey/vm.question', [
           // QuestionTranslationID: 0,
           SurveyTranslationId: surveyTranslationVM.model.SurveyTranslationID,
           QuestionId: questionId,
-          TextFormat: 'missing...',
+          TextFormat: '',
         });
       }
       results.push(vm);

@@ -1,13 +1,11 @@
 define('src/survey/vm.questiontranslation.editor', [
-  'src/util/strings',
-  'markdown',
+  'src/survey/surveyhelper',
   'ko',
   'src/core/notify',
   'src/util/utils',
   'src/core/vm.base',
 ], function(
-  strings,
-  markdown,
+  surveyhelper,
   ko,
   notify,
   utils,
@@ -28,13 +26,10 @@ define('src/survey/vm.questiontranslation.editor', [
 
   EditorQuestionTranslationViewModel.prototype.computeHtml = function() {
     //@TODO: format with real & mock tokens
-    var html,
-      params = [];
-    html = markdown.toHTML(this.input());
-    this.questionMeaningVM.tokenMaps().forEach(function(tokenMap) {
-      params.push(tokenMap.token.Token);
+    var tokenValues = this.questionMeaningVM.tokenMaps().map(function(tokenMap) {
+      return tokenMap.token.Token;
     });
-    return strings.aformat(html, params, '[missing param]');
+    return surveyhelper.formatQuestion(this.input(), tokenValues, '[missing param]');
   };
 
   return EditorQuestionTranslationViewModel;

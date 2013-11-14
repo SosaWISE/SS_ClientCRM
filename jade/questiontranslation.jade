@@ -6,7 +6,7 @@ div(class="locale")
   |:
 div(class="edit",data-bind="visible:!editorVM()")
   a(title="edit language",data-bind="click:clickEdit")
-    pre(data-bind="text:qtData.TextFormat")
+    pre(data-bind="text:qtData.TextFormat()||'[No Translation]'")
 div(data-bind="with:editorVM")
   div(data-bind="template:viewTmpl")
   div(class="actions")
