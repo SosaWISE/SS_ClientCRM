@@ -19,26 +19,25 @@ define('src/survey/vm.qmtokenmap', [
     _this.ensureProps(['tokensVM']);
 
     _this.token = _this.tokensVM.getToken(_this.model.TokenId);
-    _this.active(!_this.model.IsDeleted);
-
-    //
-    // events
-    //
-    _this.cmdToggle = ko.command(
-      function(cb) {
-        var model = _this.model;
-        model.IsDeleted = !model.IsDeleted;
-        dataservice.survey.questionMeaningTokenMaps.save(model, null, function(err, resp) {
-          if (err) {
-            notify.notify('warn', err.Message, 10);
-          } else {
-            _this.model = resp.Value;
-            _this.active(!_this.model.IsDeleted);
-          }
-          cb();
-        });
-      }
-    );
+    // _this.active(!_this.model.IsDeleted);
+    // //
+    // // events
+    // //
+    // _this.cmdToggle = ko.command(
+    //   function(cb) {
+    //     var model = _this.model;
+    //     model.IsDeleted = !model.IsDeleted;
+    //     dataservice.survey.questionMeaningTokenMaps.save(model, null, function(err, resp) {
+    //       if (err) {
+    //         notify.notify('warn', err.Message, 10);
+    //       } else {
+    //         _this.model = resp.Value;
+    //         _this.active(!_this.model.IsDeleted);
+    //       }
+    //       cb();
+    //     });
+    //   }
+    // );
   }
   utils.inherits(QMTokenMapViewModel, BaseViewModel);
 

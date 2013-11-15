@@ -69,7 +69,10 @@ define('src/util/joiner', [
     }
 
     timeout = setTimeout(function() {
-      cb(new Error('timeout error'));
+      cb({
+        // Code: ???,
+        Message: 'timeout error',
+      });
     }, _this.timeout);
 
     return cb;

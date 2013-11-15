@@ -5,8 +5,11 @@ div(class="layer",style="width:300px;height:250px")
   div(class="content")
     ul(class="edit-form")
       li
-        span(class="label") Possible Answer
+        span(class="label") Answer
         div(data-bind="template:{name:paComboVM.viewTmpl,data:paComboVM}")
+      li
+        span(class="label") Expands Sub Questions
+        div(data-bind="template:{name:expandsComboVM.viewTmpl,data:expandsComboVM}")
 
   div(class="actions")
     ul(class="sv")

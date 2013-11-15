@@ -11,9 +11,11 @@ table(class="question")
         li
           a(class="btn small add-btn",data-bind="click:$parent.surveyVM.clickAddToken") Add
         <!-- ko foreach:tokenMaps -->
-        li(data-bind="cmd:cmdToggle")
-          a(class="btn small",data-bind="active:active,busy:cmdToggle.busy")
-            span(data-bind="text:token.Token")
+        li
+          //- (data-bind="cmd:cmdToggle")
+          //- a(class="btn small",data-bind="active:active,busy:cmdToggle.busy")
+          span(data-bind="text:'{'+$index()+'}'+token.Token")
+          |&nbsp;&nbsp;
         <!-- /ko -->
       <!-- /ko -->
       div(style="color:black;") Possible Answers:
@@ -22,7 +24,8 @@ table(class="question")
           a(class="btn small add-btn",data-bind="click:surveyVM.clickAddPossibleAnswer") Add
         <!-- ko foreach:possibleAnswerMaps -->
         li(data-bind="cmd:cmdToggle")
-          a(class="btn small",data-bind="active:active,busy:cmdToggle.busy")
+          a(class="btn small",
+            data-bind="active:active,busy:cmdToggle.busy,attr:{title:active()?'shows sub questions':'sub questions hidden'}")
             span(data-bind="text:possibleAnswer.AnswerText")
         <!-- /ko -->
       <!-- ko foreach:translations -->

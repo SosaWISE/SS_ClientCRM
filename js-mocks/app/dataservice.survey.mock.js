@@ -237,7 +237,6 @@ define('mock/app/dataservice.survey.mock', [
       send(saveWithNoPKey(questionMeanings_Tokens_Map, {
         QuestionMeaningId: data.QuestionMeaningId,
         TokenId: data.TokenId,
-        IsDeleted: data.IsDeleted,
       }, function(list, value) {
         var index;
         list.some(function(item, i) {
@@ -255,7 +254,6 @@ define('mock/app/dataservice.survey.mock', [
         QuestionId: data.QuestionId,
         PossibleAnswerId: data.PossibleAnswerId,
         Expands: data.Expands,
-        IsDeleted: data.IsDeleted,
       }, function(list, value) {
         var index;
         list.some(function(item, i) {
@@ -399,7 +397,6 @@ define('mock/app/dataservice.survey.mock', [
       {
         QuestionMeaningId: '@FK(questionMeaning)',
         TokenId: '@FK(token)',
-        IsDeleted: false,
       }
     ],
   }).list;
@@ -464,7 +461,6 @@ define('mock/app/dataservice.survey.mock', [
         QuestionId: '@FK(question)',
         PossibleAnswerId: '@FK(possibleAnswer)',
         Expands: '@BOOL',
-        IsDeleted: false,
       }
     ],
   }).list;

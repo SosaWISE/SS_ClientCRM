@@ -23,6 +23,17 @@ define('src/survey/vm.qpossibleanswermap.new', [
     _this.paComboVM = new ComboViewModel();
     _this.paComboVM.setList(
       createComboList(_this.questionVM.possibleAnswerMaps(), _this.possibleAnswersVM.possibleAnswers()));
+    _this.expandsComboVM = new ComboViewModel();
+    _this.expandsComboVM.setList([
+      {
+        value: true,
+        text: 'true',
+      },
+      {
+        value: false,
+        text: 'false',
+      }
+    ]);
 
     //
     // events
@@ -42,7 +53,7 @@ define('src/survey/vm.qpossibleanswermap.new', [
       dataservice.survey.questionPossibleAnswerMaps.save({
         QuestionId: _this.questionVM.model.QuestionID,
         PossibleAnswerId: selectedItem.item.possibleAnswer.PossibleAnswerID,
-        IsDeleted: false,
+        Expands: _this.expandsComboVM.selectedItem().item.value,
       }, null, function(err, resp) {
         if (err) {
           notify.notify('error', err.Message);
