@@ -1,4 +1,4 @@
-table(class="question take-qduestion")
+table(class="question take-question",data-bind="toggle:{'complete':isComplete}")
   thead
   tr
     td(class="title")
@@ -19,4 +19,4 @@ table(class="question take-qduestion")
     td
     td(colspan="2")
       div(data-bind="foreach:questions")
-        div(data-bind="template:'tmpl-takequestion'")
+        div(class="relative",data-bind="template:'tmpl-takequestion'")

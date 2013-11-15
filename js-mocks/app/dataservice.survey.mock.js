@@ -367,7 +367,7 @@ define('mock/app/dataservice.survey.mock', [
     'list|2-2': [
       {
         SurveyTranslationID: '@INC(surveyTranslation)',
-        SurveyId: 1000,
+        SurveyId: 1,
         LocalizationCode: '@LOCALE',
       }
     ],
@@ -386,7 +386,7 @@ define('mock/app/dataservice.survey.mock', [
     'list|4-4': [
       {
         QuestionMeaningID: '@INC(questionMeaning)',
-        SurveyTypeId: 1000,
+        SurveyTypeId: 1,
         Name: '@TEXT(15,30)',
       }
     ],
@@ -439,7 +439,7 @@ define('mock/app/dataservice.survey.mock', [
     'list|1-1': [
       {
         QuestionTranslationID: '@INC(questionTranslation)',
-        SurveyTranslationId: 1000, //'@FK(surveyTranslation)',
+        SurveyTranslationId: 1, //'@FK(surveyTranslation)',
         QuestionId: '@FK(question)',
         TextFormat: '@TEXT(20,40)?',
       }

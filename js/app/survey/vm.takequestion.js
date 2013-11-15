@@ -1,10 +1,12 @@
 define('src/survey/vm.takequestion', [
+  'src/util/strings',
   'src/vm.combo',
   'ko',
   'src/core/notify',
   'src/util/utils',
   'src/core/vm.base',
 ], function(
+  strings,
   ComboViewModel,
   ko,
   notify,
@@ -22,10 +24,25 @@ define('src/survey/vm.takequestion', [
     _this.showSubs = ko.observable(false);
 
     _this.parent = ko.observable();
+    // computed observables
     _this.name = ko.computed({
       deferEvaluation: true,
       read: function() {
         return getName(_this.parent(), _this.GroupOrder);
+      },
+    });
+    _this.isComplete = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        // complete if children are complete
+        var subsComplete = true;
+        if (_this.showSubs() && _this.questions.length) {
+          subsComplete = _this.questions.every(function(q) {
+            return q.isComplete();
+          });
+        }
+        //@TODO: add answer validation
+        return strings.trim(_this.answer()) && subsComplete;
       },
     });
 

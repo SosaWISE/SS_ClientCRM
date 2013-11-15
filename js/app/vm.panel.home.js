@@ -17,19 +17,19 @@ define('src/vm.panel.home', [
 
   HomePanelViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this;
-    notify.notify('info', '/surveys/1000', 0, {
+    notify.notify('info', '/surveys/1', 0, {
       view: function() {
         _this.goTo({
           route: 'surveys',
-          surveyid: 1000,
+          surveyid: 1,
         });
       },
     });
-    notify.notify('info', '/surveys/1001', 0, {
+    notify.notify('info', '/surveys/2', 0, {
       view: function() {
         _this.goTo({
           route: 'surveys',
-          surveyid: 1001,
+          surveyid: 2,
         });
       },
     });

@@ -58,5 +58,14 @@ define('src/util/strings', [
     },
   };
 
+  strings.trim = function trim(text) {
+    if (text) {
+      text = (text + '').replace(/^\s+|\s+$/g, '');
+    } else if (text !== '') {
+      text = null;
+    }
+    return text;
+  };
+
   return strings;
 });
