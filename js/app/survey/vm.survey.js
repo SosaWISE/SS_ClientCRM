@@ -1,5 +1,5 @@
 define('src/survey/vm.survey', [
-  'src/survey/vm.takesurvey',
+  'src/survey/vm.takesurveytranslation',
   'src/util/joiner',
   'src/core/vm.layers',
   'src/survey/vm.qpossibleanswermap.new',
@@ -14,7 +14,7 @@ define('src/survey/vm.survey', [
   'src/core/vm.controller',
   'src/util/utils',
 ], function(
-  TakeSurveyViewModel,
+  TakeSurveyTranslationViewModel,
   joiner,
   LayersViewModel,
   NewQPossibleAnswerMapViewModel,
@@ -98,33 +98,13 @@ define('src/survey/vm.survey', [
       }));
     };
     _this.clickTakeSurvey = function() {
-      var vm = new TakeSurveyViewModel({
-        tokensVM: _this.tokensVM,
-        possibleAnswersVM: _this.possibleAnswersVM,
-        tokenData: {
-          CompanyName: 'CompanyName',
-          ADUserDisplayName: 'ADUserDisplayName',
-          PrimaryCustomer: {
-            Name: 'Bob',
-            LastName: 'Bobbins',
-          },
-          PremiseAddress: {
-            Street: '111 Technology Way',
-            City: 'Orem',
-            State: 'UT',
-            Zip: '84059',
-          },
-          SystemDetails: {
-            PremisePhone: 'PremisePhone',
-          },
-        },
-      });
-      vm.activate(_this.createRouteContext({
-        // route: 'surveys',
-        surveyid: _this.id,
-        locale: 'en',
+      _this.layersVM.show(new TakeSurveyTranslationViewModel({
+        surveyTranslationVMs: _this.translations(),
+        routeCtx: _this.createRouteContext({
+          surveyid: _this.id,
+          // locale: 'en',
+        }),
       }));
-      _this.layersVM.show(vm);
     };
   }
   utils.inherits(SurveyViewModel, ControllerViewModel);

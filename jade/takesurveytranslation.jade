@@ -1,0 +1,14 @@
+div(class="layer",style="width:300px;height:250px")
+  div(class="content")
+    span Take Survey Translation
+    ul(class="edit-form")
+      li
+        span(class="label") Localization Code
+        div(data-bind="template:{name:localeComboVM.viewTmpl,data:localeComboVM}")
+
+  div(class="actions")
+    ul(class="sv")
+      li
+        a(class="btn",data-bind="click:clickCancel") Cancel
+      li
+        a(class="btn",data-bind="click:clickTake") Take
