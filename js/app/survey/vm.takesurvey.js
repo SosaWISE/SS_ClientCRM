@@ -26,6 +26,7 @@ define('src/survey/vm.takesurvey', [
   function TakeSurveyViewModel(options) {
     var _this = this;
     TakeSurveyViewModel.super_.call(_this, options);
+    _this.ensureProps(['tokenData']);
 
     _this.survey = ko.observable();
 
@@ -83,23 +84,7 @@ define('src/survey/vm.takesurvey', [
       // console.log('survey', JSON.stringify(tempSurvey, null, '  '));
 
       //
-      _this.survey(createSurvey(tempSurvey, _this.possibleAnswersVM.paMap, _this.tokensVM.tokenMap, {
-        CompanyName: 'CompanyName',
-        ADUserDisplayName: 'ADUserDisplayName',
-        PrimaryCustomer: {
-          Name: 'Name',
-          LastName: 'LastName',
-        },
-        PremiseAddress: {
-          Street: 'Street',
-          City: 'City',
-          State: 'State',
-          Zip: 'Zip',
-        },
-        SystemDetails: {
-          PremisePhone: 'PremisePhone',
-        },
-      }));
+      _this.survey(createSurvey(tempSurvey, _this.possibleAnswersVM.paMap, _this.tokensVM.tokenMap, _this.tokenData));
     });
   };
 

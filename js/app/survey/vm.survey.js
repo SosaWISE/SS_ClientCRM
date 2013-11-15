@@ -101,6 +101,23 @@ define('src/survey/vm.survey', [
       var vm = new TakeSurveyViewModel({
         tokensVM: _this.tokensVM,
         possibleAnswersVM: _this.possibleAnswersVM,
+        tokenData: {
+          CompanyName: 'CompanyName',
+          ADUserDisplayName: 'ADUserDisplayName',
+          PrimaryCustomer: {
+            Name: 'Bob',
+            LastName: 'Bobbins',
+          },
+          PremiseAddress: {
+            Street: '111 Technology Way',
+            City: 'Orem',
+            State: 'UT',
+            Zip: '84059',
+          },
+          SystemDetails: {
+            PremisePhone: 'PremisePhone',
+          },
+        },
       });
       vm.activate(_this.createRouteContext({
         // route: 'surveys',

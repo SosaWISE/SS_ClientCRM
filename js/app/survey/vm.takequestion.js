@@ -65,7 +65,7 @@ define('src/survey/vm.takequestion', [
 
   function calcAnswerMode(num) {
     var result;
-    if (num > 1) {
+    if (num > 2) {
       result = 'combo';
     } else if (num > 0) {
       result = 'radiolist';
