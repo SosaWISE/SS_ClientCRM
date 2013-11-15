@@ -180,7 +180,7 @@ define('src/survey/vm.takesurvey', [
         ParentId: q.ParentId,
         GroupOrder: q.GroupOrder,
         questionPossibleAnswerMaps: q.questionPossibleAnswerMaps,
-        html: questionHtmlMap[q.QuestionID] || '[No Translation]',
+        html: questionHtmlMap[q.QuestionID] || '<strong>[No Translation]</strong>',
       });
 
       return vm;
