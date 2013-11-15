@@ -7,7 +7,8 @@ div(class="layer",style="width:300px;height:250px")
     ul(class="edit-form")
       li
         span(class="label") Version
-        input(type="text",data-bind="ukov:sData.Version,value:sData.Version,valueUpdate:'keyup'")
+        input(type="text",placeholder="1.0.0",
+          data-bind="ukov:sData.Version,value:sData.Version,valueUpdate:'keyup'")
 
   div(class="actions")
     ul(class="sv")

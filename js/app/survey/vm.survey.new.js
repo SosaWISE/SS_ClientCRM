@@ -1,4 +1,5 @@
 define('src/survey/vm.survey.new', [
+  'src/util/strings',
   'src/ukov',
   'src/dataservice',
   'ko',
@@ -6,6 +7,7 @@ define('src/survey/vm.survey.new', [
   'src/util/utils',
   'src/core/vm.base',
 ], function(
+  strings,
   ukov,
   dataservice,
   ko,
@@ -15,6 +17,8 @@ define('src/survey/vm.survey.new', [
 ) {
   'use strict';
 
+  var regx = /^[0-9]+.[0-9]+.[0-9]+$/;
+
   ukov.schema['survey-validate'] = {
     SurveyID: {},
     SurveyTypeId: {},
@@ -23,7 +27,9 @@ define('src/survey/vm.survey.new', [
       validators: [
         ukov.validators.isRequired('Version is required'),
         function(val) {
-          return val;
+          if (!regx.test(val)) {
+            return 'invalid version';
+          }
         },
       ],
     },
@@ -50,7 +56,11 @@ define('src/survey/vm.survey.new', [
       _this.layer.close();
     };
     _this.cmdAdd = ko.command(function(cb) {
-      _this.sData.Version.validate();
+      var version = _this.sData.Version;
+      version.validate();
+      if (version.isValid() && _this.surveyTypeVM.hasVersion(version())) {
+        version.errMsg(strings.format('A survey with version `{0}` already exists for {1}', version(), _this.surveyTypeVM.model.Name));
+      }
       _this.sData.update();
       if (!_this.sData.isValid()) {
         notify.notify('warn', _this.sData.errMsg(), 10);

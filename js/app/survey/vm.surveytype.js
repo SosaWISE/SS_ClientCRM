@@ -53,6 +53,14 @@ define('src/survey/vm.surveytype', [
     loadQuestionMeaning(_this, _this.id, routeData, join);
   };
 
+  SurveyTypeViewModel.prototype.hasVersion = function(version) {
+    // create case insensitive matcher
+    var regx = new RegExp('^' + version + '$', 'i');
+    return this.surveys().some(function(surveyVM) {
+      return regx.test(surveyVM.model.Version);
+    });
+  };
+
   function loadSurveys(surveyTypeVM, surveyTypeID, routeData, join) {
     var cb = join.add();
     dataservice.survey.surveyTypes.read({
