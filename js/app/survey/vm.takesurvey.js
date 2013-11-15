@@ -83,7 +83,7 @@ define('src/survey/vm.takesurvey', [
       // console.log('survey', JSON.stringify(tempSurvey, null, '  '));
 
       //
-      _this.survey(makeSurvey(tempSurvey, _this.tokensVM.tokenMap, {
+      _this.survey(createSurvey(tempSurvey, _this.possibleAnswersVM.paMap, _this.tokensVM.tokenMap, {
         CompanyName: 'CompanyName',
         ADUserDisplayName: 'ADUserDisplayName',
         PrimaryCustomer: {
@@ -107,11 +107,12 @@ define('src/survey/vm.takesurvey', [
     // do nothing
   };
 
-  function makeSurvey(tempSurvey, tokenMap, data) {
+  function createSurvey(tempSurvey, paMap, tokenMap, data) {
     var survey, questions;
 
-    questions = makeQuestions(
+    questions = createTakeQuestions(
       tempSurvey.questions,
+      paMap,
       tempSurvey.surveyType.questionMeanings,
       tempSurvey.surveyTranslation.questionTranslations,
       tokenMap,
@@ -127,7 +128,7 @@ define('src/survey/vm.takesurvey', [
     return survey;
   }
 
-  function makeQuestions(questions, meanings, translations, tokenMap, data) {
+  function createTakeQuestions(questions, paMap, meanings, translations, tokenMap, data) {
     var getTokenValue,
       meaningMap = {},
       questionTokenValuesMap = {},
@@ -170,10 +171,15 @@ define('src/survey/vm.takesurvey', [
     });
 
     return questions.map(function(q) {
+      q.questionPossibleAnswerMaps.forEach(function(qpa) {
+        qpa.text = paMap[qpa.PossibleAnswerId].AnswerText;
+      });
+
       var vm = new TakeQuestionViewModel({
         QuestionID: q.QuestionID,
         ParentId: q.ParentId,
         GroupOrder: q.GroupOrder,
+        questionPossibleAnswerMaps: q.questionPossibleAnswerMaps,
         html: questionHtmlMap[q.QuestionID] || '[No Translation]',
       });
 
@@ -282,7 +288,7 @@ define('src/survey/vm.takesurvey', [
 
   function loadQuestionPossibleAnswerMaps(questionID, setter, join) {
     var cb = join.add();
-    dataservice.survey.surveys.read({
+    dataservice.survey.questions.read({
       id: questionID,
       link: 'questionPossibleAnswerMaps',
     }, setter, cb);

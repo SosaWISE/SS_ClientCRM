@@ -463,7 +463,7 @@ define('mock/app/dataservice.survey.mock', [
       {
         QuestionId: '@FK(question)',
         PossibleAnswerId: '@FK(possibleAnswer)',
-        Expands: true,
+        Expands: '@BOOL',
         IsDeleted: false,
       }
     ],

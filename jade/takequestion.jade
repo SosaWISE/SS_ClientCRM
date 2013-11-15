@@ -1,4 +1,4 @@
-table(class="question")
+table(class="question take-qduestion")
   thead
   tr
     td(class="title")
@@ -6,10 +6,17 @@ table(class="question")
     td(class="content")
       div(class="md-html",data-bind="html:html")
     td(class="answers")
-      div(style="white-space:nowrap;",data-bind="") answers go here...
+      div(data-bind="if:answerMode==='radiolist'")
+        div(style="white-space:nowrap;",data-bind="foreach:questionPossibleAnswerMaps")
+          a(class="btn small",data-bind="click:$parent.clickAnswer,active:$parent.answer()===text,text:text")
+          |&nbsp;
+      div(data-bind="if:answerMode==='combo'")
+        div(style="min-width:75px;",data-bind="template:{name:comboVM.viewTmpl,data:comboVM}")
+      div(data-bind="if:answerMode==='text'")
+        input(type="text",data-bind="value:answer,valueUpdate:'keyup'")
 
-  tr
+  tr(data-bind="visible:showSubs")
     td
-    td
+    td(colspan="2")
       div(data-bind="foreach:questions")
         div(data-bind="template:'tmpl-takequestion'")
