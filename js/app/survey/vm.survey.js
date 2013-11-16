@@ -64,13 +64,17 @@ define('src/survey/vm.survey', [
     };
     _this.clickAddQuestion = function(parentVM) {
       var parent = (parentVM === _this) ? null : parentVM,
-        vm = new NewQuestionViewModel({
-          surveyVM: _this,
-          surveyTypeVM: _this.surveyTypeVM,
-          parent: parent,
-          nextName: parentVM.nextName(),
-          groupOrder: parentVM.nextGroupOrder(),
-        });
+        vm;
+      if (parent && parent.noAddSubQuestion()) {
+        return;
+      }
+      vm = new NewQuestionViewModel({
+        surveyVM: _this,
+        surveyTypeVM: _this.surveyTypeVM,
+        parent: parent,
+        nextName: parentVM.nextName(),
+        groupOrder: parentVM.nextGroupOrder(),
+      });
       _this.layersVM.show(vm, function(model) {
         if (!model) {
           return;

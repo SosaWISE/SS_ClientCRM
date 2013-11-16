@@ -31,8 +31,15 @@ define('src/survey/vm.question', [
     _this.questions = ko.observableArray();
     // computed observables
     _this.translations = ko.computed(_this.computeTranslations, _this);
-    _this.name = ko.computed(_this.computeName, _this);
-    _this.nextName = ko.computed(_this.computeNextName, _this);
+    _this.name = ko.computed(function() {
+      return getName(_this.parent(), _this.groupOrder());
+    });
+    _this.nextName = ko.computed(function() { // next child name
+      return getName(_this, _this.nextGroupOrder());
+    });
+    _this.noAddSubQuestion = ko.computed(function() {
+      return !_this.possibleAnswerMaps().length;
+    });
   }
   utils.inherits(QuestionViewModel, ControllerViewModel);
   QuestionViewModel.prototype.viewTmpl = 'tmpl-question';
@@ -86,30 +93,20 @@ define('src/survey/vm.question', [
     });
     return results;
   };
-  QuestionViewModel.prototype.computeName = function() {
-    var _this = this;
-    return getName(_this.parent(), _this.groupOrder());
-  };
-  QuestionViewModel.prototype.computeNextName = function() {
-    // next child name
-    var _this = this;
-    return getName(_this, _this.nextGroupOrder());
-  };
 
   QuestionViewModel.prototype.nextGroupOrder = function() {
     return this.questions().length;
+  };
+
+  QuestionViewModel.prototype.addPossibleAnswerMap = function(model) {
+    var _this = this;
+    _this.possibleAnswerMaps.push(createPossibleAnswerMap(_this.possibleAnswersVM, model));
   };
 
   function getName(parent, index) {
     var pName = parent ? parent.name() : '';
     return pName + (index + 1) + '.';
   }
-
-
-  QuestionViewModel.prototype.addPossibleAnswerMap = function(model) {
-    var _this = this;
-    _this.possibleAnswerMaps.push(createPossibleAnswerMap(_this.possibleAnswersVM, model));
-  };
 
   function createPossibleAnswerMap(possibleAnswersVM, model) {
     return new QPossibleAnswerMapViewModel({

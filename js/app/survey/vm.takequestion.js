@@ -20,7 +20,29 @@ define('src/survey/vm.takequestion', [
     TakeQuestionViewModel.super_.call(_this, options);
     _this.ensureProps([]);
 
-    _this.answer = ko.observable('');
+    _this.answerMode = calcAnswerMode(_this.questionPossibleAnswerMaps.length);
+    if (_this.answerMode === 'text') {
+      //@TODO: use MapToToken observable
+      // _this.ensureProps(['mapToTokenObservable']);
+      // _this.answer = ???;
+      _this.answer = ko.observable('');
+    } else {
+      _this.answer = ko.observable('');
+    }
+    switch (_this.answerMode) {
+      case 'radiolist':
+        break;
+      case 'combo':
+        _this.comboVM = new ComboViewModel();
+        _this.comboVM.selectedItem.subscribe(function(item) {
+          _this.clickAnswer(item.item);
+        });
+        _this.comboVM.setList(_this.questionPossibleAnswerMaps);
+        break;
+      case 'text':
+        break;
+    }
+
     _this.showSubs = ko.observable(false);
 
     _this.parent = ko.observable();
@@ -42,7 +64,11 @@ define('src/survey/vm.takequestion', [
           });
         }
         //@TODO: add answer validation
-        return strings.trim(_this.answer()) && subsComplete;
+        if (_this.answer.isValid) {
+          return strings.trim(_this.answer.isValid()) && subsComplete;
+        } else {
+          return strings.trim(_this.answer()) && subsComplete;
+        }
       },
     });
 
@@ -53,24 +79,6 @@ define('src/survey/vm.takequestion', [
       _this.answer(questionPossibleAnswerMap.text);
       _this.showSubs(questionPossibleAnswerMap.Expands);
     };
-
-    //
-    //
-    //
-    _this.answerMode = calcAnswerMode(_this.questionPossibleAnswerMaps.length);
-    switch (_this.answerMode) {
-      case 'radiolist':
-        break;
-      case 'combo':
-        _this.comboVM = new ComboViewModel();
-        _this.comboVM.selectedItem.subscribe(function(item) {
-          _this.clickAnswer(item.item);
-        });
-        _this.comboVM.setList(_this.questionPossibleAnswerMaps);
-        break;
-      case 'text':
-        break;
-    }
   }
   utils.inherits(TakeQuestionViewModel, BaseViewModel);
   TakeQuestionViewModel.prototype.viewTmpl = 'tmpl-question';

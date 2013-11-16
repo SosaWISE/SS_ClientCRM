@@ -42,17 +42,19 @@ define('src/knockout/ko.bindingHandlers.cmd', [
           canExecute = value[key].canExecute();
         });
       }
+      // make new valueAccessor
+      valueAccessor = makeValueAccessor(!canExecute);
 
       // toggle 'busy' class
-      ko.bindingHandlers.busy.update(element, makeValueAccessor(!canExecute), allBindingsAccessor, viewModel, bindingContext);
+      ko.bindingHandlers.busy.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
       // toggle 'disabled' class
-      ko.bindingHandlers.cssDisabled.update(element, makeValueAccessor(!canExecute), allBindingsAccessor, viewModel, bindingContext);
+      ko.bindingHandlers.cssDisabled.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
 
       if (allBindingsAccessor().cmdNoDisabledAttr) {
         return;
       }
       // and set disabled attribute
-      ko.bindingHandlers.enable.update(element, makeValueAccessor(canExecute), allBindingsAccessor, viewModel, bindingContext);
+      ko.bindingHandlers.disable.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
       // for non input elements we need to manually set disabled to false
       if (canExecute && element.disabled) {
         element.disabled = false;

@@ -209,12 +209,20 @@
     // width: 100%;
     cursor: pointer;
 
-    &:hover {
+    @disabledColor: #e8e8e8;
+    &.disabled {
+      cursor: default;
+      border-color: darken(@disabledColor, 40%);
+      background-color: @disabledColor;
+      color: darken(@disabledColor, 20%);
+    }
+
+    &:not(.disabled):hover {
       background-color: tint(@site-green, 20%);
       text-decoration: none;
     }
-    &:active,
-    &.active {
+    &:not(.disabled):active,
+    &:not(.disabled).active {
       .box-shadow(inset 0px 0px 8px rgba(0,0,0,0.5));
       background-color: shade(@site-green, 15%);
       color: rgba(255,255,255,0.75);
