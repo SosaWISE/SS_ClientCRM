@@ -1,6 +1,5 @@
 define('src/vm.panel.login', [
   'src/core/notify',
-  'src/util/strings',
   'ko',
   'src/util/utils',
   'src/core/vm.controller',
@@ -9,7 +8,6 @@ define('src/vm.panel.login', [
   'src/config'
 ], function(
   notify,
-  strings,
   ko,
   utils,
   ControllerViewModel,
@@ -46,15 +44,15 @@ define('src/vm.panel.login', [
     _this.cmdLogin = ko.command(
       function(cb) {
         setTimeout(function() {
-          dataservice.Customer.CustomerAuth({
-            SessionID: dataservice.Session.sessionID(),
+          dataservice.user.auth({
+            SessionID: dataservice.session.sessionID(),
             Username: _this.username(),
             Password: _this.password(),
             RememberMe: _this.rememberMe(),
-          }, function(resp) {
-            if (resp.Code !== 0) {
-              console.error(resp);
-              notify.warn('auth-failed', resp.Code, 6);
+          }, function(err, resp) {
+            if (err) {
+              console.error(err);
+              notify.notify('warn', err.Message, 10);
             } else {
               config.user(resp.Value);
               router.useDestPath();

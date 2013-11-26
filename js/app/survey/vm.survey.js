@@ -164,12 +164,16 @@ define('src/survey/vm.survey', [
       if (err) {
         return cb(err);
       }
-      var list = resp.Value.map(function(model) {
-        var vm = createSurveyTranslation(surveyVM, model);
-        // lazy load survey translation data // vm.load(routeData, join.add());
-        return vm;
-      });
-      surveyVM.translations(list);
+      if (resp.Value) {
+        var list = resp.Value.map(function(model) {
+          var vm = createSurveyTranslation(surveyVM, model);
+          // lazy load survey translation data // vm.load(routeData, join.add());
+          return vm;
+        });
+        surveyVM.translations(list);
+      } else {
+        surveyVM.translations([]);
+      }
       cb();
     });
   }

@@ -48,21 +48,17 @@ define('src/bootstrapper', [
       }
     });
 
-    // dataservice.Session.SessionStart(config.token, function(data) {
-    //   if (data.Code !== 0) {
-    //     console.error(data);
-    //   } else {
-
-    // start ko
-    ko.applyBindings(app, document.getElementById('main'));
-    // // if we are authenticated, this will log us in
-    // config.user(data.Value.AuthCustomer);
-    // use a dummy user for now
-    config.user({});
-    // start router
-    router.init();
-
-    //   }
-    // });
+    dataservice.session.start(config.token, function(err, resp) {
+      if (err) {
+        console.error(err);
+      } else {
+        // start ko
+        ko.applyBindings(app, document.getElementById('main'));
+        // if we are authenticated, this will log us in
+        config.user(resp.Value.AuthCustomer);
+        // start router
+        router.init();
+      }
+    });
   });
 });

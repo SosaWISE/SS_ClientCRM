@@ -9,22 +9,22 @@ define('src/dataservice.session', [
 ) {
   "use strict";
 
-  function DataserviceSession() {
-    DataserviceSession.super_.call(this, 'AuthSrv', config.serviceDomain);
+  function SessionDataservice() {
+    SessionDataservice.super_.call(this, 'AuthSrv', config.serviceDomain);
   }
-  utils.inherits(DataserviceSession, DataserviceBase);
+  utils.inherits(SessionDataservice, DataserviceBase);
 
   //
   // helper functions
   //
-  DataserviceSession.prototype.SessionStart = function(appToken, cb) {
+  SessionDataservice.prototype.start = function(appToken, cb) {
     this.post('SessionStart', {
       AppToken: appToken,
     }, null, cb);
   };
-  DataserviceSession.prototype.SessionTerminate = function(cb) {
+  SessionDataservice.prototype.terminate = function(cb) {
     this.post('SessionTerminate', null, null, cb);
   };
 
-  return DataserviceSession;
+  return SessionDataservice;
 });

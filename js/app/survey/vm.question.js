@@ -1,6 +1,5 @@
 define('src/survey/vm.question', [
   'src/survey/vm.qpossibleanswermap',
-  'src/survey/vm.questiontranslation',
   'src/dataservice',
   'ko',
   'src/core/notify',
@@ -8,7 +7,6 @@ define('src/survey/vm.question', [
   'src/core/vm.controller',
 ], function(
   QPossibleAnswerMapViewModel,
-  QuestionTranslationViewModel,
   dataservice,
   ko,
   notify,
@@ -55,41 +53,29 @@ define('src/survey/vm.question', [
       if (err) {
         return cb(err);
       }
-      var list = resp.Value.map(function(item) {
-        return createPossibleAnswerMap(_this.possibleAnswersVM, item);
-      });
-      _this.possibleAnswerMaps(list);
+      if (resp.Value) {
+        var list = resp.Value.map(function(item) {
+          return createPossibleAnswerMap(_this.possibleAnswersVM, item);
+        });
+        _this.possibleAnswerMaps(list);
+      } else {
+        _this.possibleAnswerMaps([]);
+      }
       cb();
     });
   };
 
   QuestionViewModel.prototype.computeTranslations = function() {
     var _this = this,
-      results = [],
-      questionId = _this.id;
+      results = [];
     _this.surveyVM.translations().forEach(function(surveyTranslationVM) {
-      var list = surveyTranslationVM.list(),
-        map = surveyTranslationVM.map,
-        vm;
-      // create map cache if there isn't one
-      if (!map) {
-        surveyTranslationVM.map = map = {};
-        list.forEach(function(model) {
-          map[model.QuestionId] = createQuestionTranslation(_this, surveyTranslationVM, model);
-        });
+      // update whenever list changes
+      surveyTranslationVM.list();
+      // get vm
+      var vm = surveyTranslationVM.getQuestionTranslationVM(_this);
+      if (vm) {
+        results.push(vm);
       }
-      // get question translation
-      vm = map[questionId];
-      // create empty question translation
-      if (!vm) {
-        map[questionId] = vm = createQuestionTranslation(_this, surveyTranslationVM, {
-          // QuestionTranslationID: 0,
-          SurveyTranslationId: surveyTranslationVM.model.SurveyTranslationID,
-          QuestionId: questionId,
-          TextFormat: '',
-        });
-      }
-      results.push(vm);
     });
     return results;
   };
@@ -111,14 +97,6 @@ define('src/survey/vm.question', [
   function createPossibleAnswerMap(possibleAnswersVM, model) {
     return new QPossibleAnswerMapViewModel({
       possibleAnswersVM: possibleAnswersVM,
-      model: model,
-    });
-  }
-
-  function createQuestionTranslation(questionVM, surveyTranslationVM, model) {
-    return new QuestionTranslationViewModel({
-      questionVM: questionVM,
-      surveyTranslationVM: surveyTranslationVM,
       model: model,
     });
   }

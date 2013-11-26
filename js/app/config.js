@@ -30,8 +30,8 @@ define('src/config', [
   // Property Defaults (overrideable)
   //
   set('useMocks', false);
-  set('token', 'SSE_MAIN_PORTAL');
-  set('serviceDomain', 'sse.services.cors');
+  set('token', 'SSE_CMS_CORS');
+  set('serviceDomain', 'sse.services.cmscors');
   set('titlePrefix', '');
   set('titlePostfix', '| CRM');
 

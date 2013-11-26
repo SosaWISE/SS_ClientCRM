@@ -36,10 +36,14 @@ define('src/survey/vm.questionmeaning', [
       if (err) {
         return cb(err);
       }
-      var list = resp.Value.map(function(item) {
-        return createTokenMap(_this.tokensVM, item);
-      });
-      _this.tokenMaps(list);
+      if (resp.Value) {
+        var list = resp.Value.map(function(item) {
+          return createTokenMap(_this.tokensVM, item);
+        });
+        _this.tokenMaps(list);
+      } else {
+        _this.tokenMaps([]);
+      }
       cb();
     });
   };
