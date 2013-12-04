@@ -81,7 +81,7 @@ define('src/survey/vm.question', [
   };
 
   QuestionViewModel.prototype.nextGroupOrder = function() {
-    return this.questions().length;
+    return this.questions().length + 1;
   };
 
   QuestionViewModel.prototype.addPossibleAnswerMap = function(model) {
@@ -91,7 +91,7 @@ define('src/survey/vm.question', [
 
   function getName(parent, index) {
     var pName = parent ? parent.name() : '';
-    return pName + (index + 1) + '.';
+    return pName + index + '.';
   }
 
   function createPossibleAnswerMap(possibleAnswersVM, model) {

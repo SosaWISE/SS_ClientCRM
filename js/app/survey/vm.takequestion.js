@@ -85,7 +85,7 @@ define('src/survey/vm.takequestion', [
 
   function getName(parent, index) {
     var pName = parent ? parent.name() : '';
-    return pName + (index + 1) + '.';
+    return pName + index + '.';
   }
 
   function calcAnswerMode(num) {

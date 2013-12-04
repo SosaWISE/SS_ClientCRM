@@ -27,14 +27,16 @@ define('src/survey/vm.possibleanswers', [
       cb = join.add();
 
     dataservice.survey.possibleAnswers.read({}, null, function(err, resp) {
-      if (err) {
-        return cb(err);
-      }
-      resp.Value.forEach(function(item) {
-        _this.paMap[item.PossibleAnswerID] = item;
-      });
-      _this.possibleAnswers(resp.Value);
-      cb();
+      utils.safeCallback(err, function() {
+        if (resp.Value) {
+          resp.Value.forEach(function(item) {
+            _this.paMap[item.PossibleAnswerID] = item;
+          });
+          _this.possibleAnswers(resp.Value);
+        } else {
+          _this.possibleAnswers([]);
+        }
+      }, cb);
     });
   };
 

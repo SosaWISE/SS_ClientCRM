@@ -85,6 +85,7 @@ define('src/survey/vm.questiontranslation', [
         if (err) {
           notify.notify('error', err.Message);
         } else {
+          _this.qtData.setVal(resp.Value);
           _this.qtData.markClean(resp.Value);
           _this.clickEndEdit(true);
         }

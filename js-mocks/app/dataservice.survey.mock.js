@@ -432,7 +432,7 @@ define('mock/app/dataservice.survey.mock', [
       var parentId = q.ParentId || 'null',
         count = countMap[parentId] || 1;
       countMap[parentId] = count + 1;
-      q.GroupOrder = count - 1;
+      q.GroupOrder = count;
     });
   })();
   questionTranslations = mockery.fromTemplate({

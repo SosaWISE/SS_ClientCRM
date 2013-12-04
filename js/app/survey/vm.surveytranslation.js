@@ -49,20 +49,22 @@ define('src/survey/vm.surveytranslation', [
       id: _this.id,
       link: 'questionTranslations',
     }, null, function(err, resp) {
-      if (err) {
-        return cb(err);
-      }
-      // clear cache
-      _this.vmMap = {};
-      //
-      var map = {};
-      _this.map = map;
-      resp.Value.forEach(function(model) {
-        map[model.QuestionId] = model;
-      });
-      //
-      _this.list(resp.Value);
-      cb();
+      utils.safeCallback(err, function() {
+        // clear cache
+        _this.vmMap = {};
+        //
+        var map = {};
+        _this.map = map;
+        if (resp.Value) {
+          resp.Value.forEach(function(model) {
+            map[model.QuestionId] = model;
+          });
+          //
+          _this.list(resp.Value);
+        } else {
+          _this.list([]);
+        }
+      }, cb);
     });
   };
 

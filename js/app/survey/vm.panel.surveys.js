@@ -62,23 +62,25 @@ define('src/survey/vm.panel.surveys', [
       }
       // wait until the dependencies have been loaded
       depJoin.when(function(err) {
-        if (err) {
-          return cb(err);
-        }
-        var list = resp.Value.map(function(model) {
-          var vm = new SurveyTypeViewModel({
-            controller: _this.controller,
-            layersVM: _this.layersVM,
-            tokensVM: tokensVM,
-            possibleAnswersVM: possibleAnswersVM,
-            model: model,
-          });
-          vm.load(routeData, join.add());
-          return vm;
-        });
-        _this.surveyTypes(list);
-        //
-        cb();
+        utils.safeCallback(err, function() {
+          if (resp.Value) {
+            var list = resp.Value.map(function(model) {
+              var vm = new SurveyTypeViewModel({
+                controller: _this.controller,
+                layersVM: _this.layersVM,
+                tokensVM: tokensVM,
+                possibleAnswersVM: possibleAnswersVM,
+                model: model,
+              });
+              vm.load(routeData, join.add());
+              return vm;
+            });
+            _this.surveyTypes(list);
+          } else {
+            //
+            _this.surveyTypes([]);
+          }
+        }, cb);
       });
     });
   };

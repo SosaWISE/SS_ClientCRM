@@ -59,7 +59,9 @@ define('src/survey/vm.survey', [
         }
         var vm = createSurveyTranslation(_this, model);
         _this.translations.push(vm);
-        vm.active(true);
+        if (!vm.active()) {
+          vm.cmdToggle.execute();
+        }
       });
     };
     _this.clickAddQuestion = function(parentVM) {
@@ -142,16 +144,18 @@ define('src/survey/vm.survey', [
       id: surveyID,
       link: 'questions',
     }, null, function(err, resp) {
-      if (err) {
-        return cb(err);
-      }
-      var list = resp.Value.map(function(item) {
-        var vm = createQuestion(surveyVM, null, item);
-        vm.load(routeData, join.add());
-        return vm;
-      });
-      surveyVM.questions(makeTree(list));
-      cb();
+      utils.safeCallback(err, function() {
+        if (resp.Value) {
+          var list = resp.Value.map(function(item) {
+            var vm = createQuestion(surveyVM, null, item);
+            vm.load(routeData, join.add());
+            return vm;
+          });
+          surveyVM.questions(makeTree(list));
+        } else {
+          surveyVM.questions([]);
+        }
+      }, cb);
     });
   }
 
@@ -161,20 +165,18 @@ define('src/survey/vm.survey', [
       id: surveyID,
       link: 'surveyTranslations',
     }, null, function(err, resp) {
-      if (err) {
-        return cb(err);
-      }
-      if (resp.Value) {
-        var list = resp.Value.map(function(model) {
-          var vm = createSurveyTranslation(surveyVM, model);
-          // lazy load survey translation data // vm.load(routeData, join.add());
-          return vm;
-        });
-        surveyVM.translations(list);
-      } else {
-        surveyVM.translations([]);
-      }
-      cb();
+      utils.safeCallback(err, function() {
+        if (resp.Value) {
+          var list = resp.Value.map(function(model) {
+            var vm = createSurveyTranslation(surveyVM, model);
+            // lazy load survey translation data // vm.load(routeData, join.add());
+            return vm;
+          });
+          surveyVM.translations(list);
+        } else {
+          surveyVM.translations([]);
+        }
+      }, cb);
     });
   }
 
@@ -191,11 +193,11 @@ define('src/survey/vm.survey', [
   };
 
   SurveyViewModel.prototype.computeNextName = function() {
-    return (this.nextGroupOrder() + 1) + '.';
+    return this.nextGroupOrder() + '.';
   };
 
   SurveyViewModel.prototype.nextGroupOrder = function() {
-    return this.questions().length;
+    return this.questions().length + 1;
   };
 
   function makeTree(list, parent) {

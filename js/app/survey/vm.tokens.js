@@ -27,14 +27,16 @@ define('src/survey/vm.tokens', [
       cb = join.add();
 
     dataservice.survey.tokens.read({}, null, function(err, resp) {
-      if (err) {
-        return cb(err);
-      }
-      resp.Value.forEach(function(token) {
-        _this.tokenMap[token.TokenID] = token;
-      });
-      _this.list(resp.Value);
-      cb();
+      utils.safeCallback(err, function() {
+        if (resp.Value) {
+          resp.Value.forEach(function(token) {
+            _this.tokenMap[token.TokenID] = token;
+          });
+          _this.list(resp.Value);
+        } else {
+          _this.list([]);
+        }
+      }, cb);
     });
   };
 
