@@ -17,23 +17,23 @@ define('src/survey/vm.surveytranslation.new', [
 ) {
   'use strict';
 
-  var localeRegx = /^[A-Z]{2}(?:-[A-Z]{2})?$/i;
-
-  ukov.schema['surveytranslation-validate'] = {
-    SurveyTranslationID: {},
-    SurveyId: {},
-    LocalizationCode: {
-      converter: ukov.converters.string(),
-      validators: [
-        ukov.validators.isRequired('Localization Code is required'),
-        function(val) {
-          if (!localeRegx.test(val)) {
-            return 'invalid localization code';
-          }
-        },
-      ],
-    },
-  };
+  var localeRegx = /^[A-Z]{2}(?:-[A-Z]{2})?$/i,
+    schema = {
+      _model: true,
+      SurveyTranslationID: {},
+      SurveyId: {},
+      LocalizationCode: {
+        converter: ukov.converters.string(),
+        validators: [
+          ukov.validators.isRequired('Localization Code is required'),
+          function(val) {
+            if (!localeRegx.test(val)) {
+              return 'invalid localization code';
+            }
+          },
+        ],
+      },
+    };
 
   function NewSurveyTranslationViewModel(options) {
     var _this = this;
@@ -41,11 +41,11 @@ define('src/survey/vm.surveytranslation.new', [
     _this.ensureProps(['surveyVM']);
 
     _this.focus = ko.observable(false);
-    _this.stData = ukov.wrapModel({
+    _this.stData = ukov.wrap({
       // SurveyTranslationID: 0,
       SurveyId: _this.surveyVM.model.SurveyID,
       LocalizationCode: '',
-    }, 'surveytranslation-validate', 'surveytranslation-validate-vm');
+    }, schema);
 
     //
     // events

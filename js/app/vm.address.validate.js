@@ -15,7 +15,8 @@ define('src/vm.address.validate', [
 ) {
   "use strict";
 
-  ukov.schema['address-validate'] = {
+  var schema = {
+    _model: true,
     DealerId: {},
     PostalCode: {
       validators: [
@@ -38,9 +39,9 @@ define('src/vm.address.validate', [
     ValidateAddressViewModel.super_.call(_this, options);
 
     _this.focus = ko.observable(false);
-    _this.addressData = ukov.wrapModel({
+    _this.addressData = ukov.wrap({
       DealerId: 1, // ?????
-    }, 'address-validate', 'address-validate-vm');
+    }, schema);
     _this.addressResult = ko.observable(null);
     _this.loaded = ko.observable(false);
 

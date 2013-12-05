@@ -15,7 +15,8 @@ define('src/survey/vm.questionmeaning.new', [
 ) {
   'use strict';
 
-  ukov.schema['questionmeaning-validate'] = {
+  var schema = {
+    _model: true,
     QuestionMeaningID: {},
     SurveyTypeId: {},
     Name: {
@@ -31,11 +32,11 @@ define('src/survey/vm.questionmeaning.new', [
     NewQuestionMeaningViewModel.super_.call(_this, options);
     _this.ensureProps(['surveyTypeVM']);
 
-    _this.qmData = ukov.wrapModel({
+    _this.qmData = ukov.wrap({
       // QuestionMeaningID: 0,
       SurveyTypeId: _this.surveyTypeVM.model.SurveyTypeID,
       Name: _this.name,
-    }, 'questionmeaning-validate', 'questionmeaning-validate-vm');
+    }, schema);
 
     //
     // events

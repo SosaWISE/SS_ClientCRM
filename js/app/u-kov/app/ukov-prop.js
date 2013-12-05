@@ -15,7 +15,10 @@ define('src/u-kov/app/ukov-prop', [
       write: function() {},
     });
 
-  function createUkovProp(updateParent, ukovModel, model, doc, key, initialValue) {
+  function createUkovProp(updateParent, ukovModel, model, doc, key) { //, initialValue) {
+    if (!ukovModel || !model) {
+      throw new Error('missing ukovModel or model for key: ' + key);
+    }
     var prop = ko.observable(null),
       currVal;
     ko.utils.extend(prop, fn);
@@ -38,13 +41,15 @@ define('src/u-kov/app/ukov-prop', [
     // set to current value
     currVal = prop.getValue();
     if (prop.doc.stringify) {
-      prop(currVal === null ? currVal : currVal + '');
+      prop(currVal == null ? currVal : currVal + '');
     } else {
       prop(currVal);
     }
+    prop.updateStoredValue();
+    prop.markClean();
 
     // get notified when the prop's value changes
-    prop.subscribe(function propValueChanged() { //val) {
+    prop.subscribe(function propValueChanged() {
       // set underlying store value
       var newValue = prop.updateStoredValue();
       // validate
@@ -53,35 +58,10 @@ define('src/u-kov/app/ukov-prop', [
       prop.isClean(prop.cleanVal() === newValue);
       // update model state
       updateParent();
-
-      // instead use a binding to set the prop value
-      // if ((prop.isValid() && !textEqual(newValue, val)) ||
-      //     (newValue === 0 && val === '')) {
-      //   prop(newValue);
-      // }
     });
-
-    // try to set initial value
-    if (initialValue !== undefined) {
-      if (prop.doc.stringify) {
-        prop(initialValue === null ? initialValue : initialValue + '');
-      } else {
-        prop(initialValue);
-      }
-      prop.markClean();
-    }
 
     return prop;
   }
-  // function textEqual(newValue, val) {
-  //   if (typeof newValue !== 'string') {
-  //     newValue = (newValue === null || newValue === undefined) ?
-  //       '' : newValue + '';
-  //   }
-  //   /* jshint eqeqeq:false */
-  //   return newValue == val;
-  // }
-
   fn.updateStoredValue = function() {
     var val = this.peek(),
       converter = this.doc.converter;
@@ -111,6 +91,7 @@ define('src/u-kov/app/ukov-prop', [
   fn.setVal = function(val) {
     this(val);
   };
+  fn.update = function() {};
   fn.validate = function() {
     if (!this.validateGroup()) {
       this.validateSingle();
@@ -172,5 +153,6 @@ define('src/u-kov/app/ukov-prop', [
 
   return {
     create: createUkovProp,
+    fn: fn,
   };
 });

@@ -17,34 +17,34 @@ define('src/survey/vm.survey.new', [
 ) {
   'use strict';
 
-  var regx = /^[0-9]+.[0-9]+.[0-9]+$/;
-
-  ukov.schema['survey-validate'] = {
-    SurveyID: {},
-    SurveyTypeId: {},
-    Version: {
-      converter: ukov.converters.string(),
-      validators: [
-        ukov.validators.isRequired('Version is required'),
-        function(val) {
-          if (!regx.test(val)) {
-            return 'invalid version';
-          }
-        },
-      ],
-    },
-  };
+  var regx = /^[0-9]+.[0-9]+.[0-9]+$/,
+    schema = {
+      _model: true,
+      SurveyID: {},
+      SurveyTypeId: {},
+      Version: {
+        converter: ukov.converters.string(),
+        validators: [
+          ukov.validators.isRequired('Version is required'),
+          function(val) {
+            if (!regx.test(val)) {
+              return 'invalid version';
+            }
+          },
+        ],
+      },
+    };
 
   function NewSurveyViewModel(options) {
     var _this = this;
     NewSurveyViewModel.super_.call(_this, options);
     _this.ensureProps(['surveyTypeVM']);
 
-    _this.sData = ukov.wrapModel({
+    _this.sData = ukov.wrap({
       // SurveyID: 0,
       SurveyTypeId: _this.surveyTypeVM.model.SurveyTypeID,
       Version: '',
-    }, 'survey-validate', 'survey-validate-vm');
+    }, schema);
 
     //
     // events

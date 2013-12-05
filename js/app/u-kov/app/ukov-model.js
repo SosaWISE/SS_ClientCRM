@@ -1,11 +1,7 @@
 define('src/u-kov/app/ukov-model', [
   'ko',
-  'src/u-kov/app/ukov-prop',
-  'src/u-kov/app/ukov-prop-array'
 ], function(
-  ko,
-  ukovProp,
-  ukovPropArray
+  ko
 ) {
   "use strict";
 
@@ -18,20 +14,24 @@ define('src/u-kov/app/ukov-model', [
     write: function() {},
   });
 
-  function UkovModel(updateParent, parentModel, model, doc, key) {
-    if (!model) {
+  function UkovModel(updateParent, parentModel, doc, key) {
+    this.model = parentModel[key];
+    if (!this.model) {
       throw new Error('missing model for key: ' + key);
     }
 
-    // _model is no longer needed
+    // excluded `_model` from enumerations
     delete doc._model;
+    Object.defineProperty(doc, '_model', {
+      value: true,
+      configurable: true, // makes it so `delete doc._model` doesn't throw
+    });
 
     // ensure update always has the correct scope
     this.update = this.update.bind(this);
 
     this.updateParent = updateParent;
     this.parentModel = parentModel;
-    this.model = model;
     this.doc = doc;
     this.key = key;
 
@@ -56,31 +56,8 @@ define('src/u-kov/app/ukov-model', [
     this.parentModel[this.key] = this.model;
     return this.model;
   };
-  UkovModel.prototype.createChild = function(key, initialValue) {
-    var prop, doc = this.doc[key],
-      model = this.model;
-
-    if (!model.hasOwnProperty(key)) {
-      // console.log('property `' + key + '` not on model. adding...');
-      // add property since it doesn't exist
-      if (doc._model) {
-        model[key] = {};
-      } else if (Array.isArray(doc)) {
-        model[key] = [];
-      } else {
-        model[key] = null;
-      }
-    }
-
-    initialValue = (initialValue !== undefined) ? initialValue : model[key];
-    if (doc._model) {
-      prop = new UkovModel(this.update, model, initialValue, doc, key);
-    } else if (Array.isArray(doc)) {
-      prop = ukovPropArray.create(this.update, this, initialValue, doc, key);
-    } else {
-      prop = ukovProp.create(this.update, this, model, doc, key, initialValue);
-    }
-    return prop;
+  UkovModel.prototype.createChild = function( /*index, initialValue*/ ) {
+    throw new Error('override me in ukov.js');
   };
   UkovModel.prototype.update = function(preventParentUpdate) {
     var prop, isClean = true,

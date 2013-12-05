@@ -15,7 +15,8 @@ define('src/vm.rep.find', [
 ) {
   "use strict";
 
-  ukov.schema['find-rep'] = {
+  var schema = {
+    _model: true,
     SalesRepID: {
       converter: ukov.converters.toUpper(),
       validators: [
@@ -39,7 +40,7 @@ define('src/vm.rep.find', [
     FindRepViewModel.super_.call(_this, options);
 
     _this.focusRepID = ko.observable(false);
-    _this.repData = ukov.wrapModel({}, 'find-rep', 'find-rep-vm');
+    _this.repData = ukov.wrap({}, schema);
     _this.loading = ko.observable(false);
     _this.loaded = ko.observable(false);
     _this.repResult = ko.observable(null);

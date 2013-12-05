@@ -17,7 +17,8 @@ define('src/survey/vm.questiontranslation', [
 ) {
   'use strict';
 
-  ukov.schema['questiontranslation-validate'] = {
+  var schema = {
+    _model: true,
     QuestionTranslationID: {},
     SurveyTranslationId: {},
     QuestionId: {},
@@ -48,7 +49,7 @@ define('src/survey/vm.questiontranslation', [
       },
     }, _this.surveyTranslationVM);
 
-    _this.qtData = ukov.wrapModel(_this.model, 'questiontranslation-validate', 'questiontranslation-validate-vm');
+    _this.qtData = ukov.wrap(_this.model, schema);
 
     delete _this.model;
 

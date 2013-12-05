@@ -22,114 +22,129 @@ define('src/u-kov/specs/ukov.spec', [
          'groupProp2',
         ],
         validators: [
-     function(val) {
+
+          function(val) {
             if (val.groupProp1 !== val.groupProp2) {
               return 'group props invalid';
             }
-     },
-    ]
+          },
+        ]
       };
 
       ukov = Ukov.create();
-      ukov.init({
-        'model1': {
-          'shouldCreateModel': {
-            _model: true,
-            'shouldCreatePropArray': [{}],
-            'shouldCreateProp': {},
-          },
+      ukov.schema.model1 = {
+        _model: true,
 
-          'passThrough': {
+        'shouldCreateModel': {
+          _model: true,
+          'shouldCreatePropArray': [{}],
+          'shouldCreateProp': {},
+        },
+
+        'passThrough': {
+          converter: function(val) {
+            return val;
+          },
+          validators: [
+
+            function(val) {
+              if (val === 2) {
+                return 'val is 2';
+              }
+            },
+            function(val) {
+              if (val === 3) {
+                return 'val is 3';
+              }
+            },
+          ]
+        },
+        'alwaysNumber': {
+          converter: function(val) {
+            return parseFloat(val) || 0;
+          },
+        },
+        'invalidIfFalsey': {
+          converter: function(val) {
+            if (!val) {
+              return new Error('val is falsey');
+            }
+            return val;
+          },
+        },
+        'alwaysUndefined': {
+          converter: function() {},
+        },
+        'invalidIfNotZero': {
+          validators: [
+
+            function(val) {
+              if (val !== 0) {
+                return 'val is not zero';
+              }
+            },
+          ]
+        },
+
+
+        'groupProp1': {
+          converter: function(val) {
+            return val;
+          },
+          validationGroup: validationGroup,
+        },
+        'groupProp2': {
+          converter: function(val) {
+            return val;
+          },
+          validationGroup: validationGroup,
+        },
+
+        'arrayProp': [
+          {
             converter: function(val) {
               return val;
             },
             validators: [
+
               function(val) {
-                if (val === 2) {
-                  return 'val is 2';
-                }
-              },
-              function(val) {
-                if (val === 3) {
-                  return 'val is 3';
+                // invalid if falsy
+                if (!val) {
+                  return 'val is falsy';
                 }
               },
             ]
-          },
-          'alwaysNumber': {
-            converter: function(val) {
-              return parseFloat(val) || 0;
-            },
-          },
-          'alwaysError': {
-            converter: function() {
-              return new Error('always an error');
-            },
-          },
-          'alwaysUndefined': {
-            converter: function() {},
-          },
+          }
+        ],
 
-
-          'groupProp1': {
+        'nestedObj': {
+          _model: true,
+          p1: {
             converter: function(val) {
               return val;
             },
-            validationGroup: validationGroup,
-          },
-          'groupProp2': {
-            converter: function(val) {
-              return val;
-            },
-            validationGroup: validationGroup,
-          },
-
-          'arrayProp': [
-            {
-              converter: function(val) {
-                return val;
-              },
-              validators: [
-                function(val) {
-                  // invalid if falsy
-                  if (!val) {
-                    return 'val is falsy';
-                  }
-                },
-              ]
-            }
-          ],
-
-          'nestedObj': {
+          }
+        },
+        'nestedObjectsInArray': [
+          {
             _model: true,
             p1: {
               converter: function(val) {
                 return val;
               },
-              validationGroup: validationGroup,
-            }
-          },
-          'nestedObjectsInArray': [
-            {
-              _model: true,
-              p1: {
-                converter: function(val) {
-                  return val;
-                },
-                validationGroup: validationGroup,
-              },
-              p2: {},
-            }
-          ],
-        }
-      });
+            },
+            p2: {},
+          }
+        ],
+      };
 
-      ukovModel = ukov.wrapModel({
+      ukovModel = ukov.wrap({
         noValidation: 'not validated',
         passThrough: 1,
         alwaysNumber: 2.2222,
-        alwaysError: 3,
+        invalidIfFalsey: '', // must be a string so that the converter gets called
         alwaysUndefined: 4,
+        invalidIfNotZero: 3, //start invalid
 
         groupProp1: 10,
         groupProp2: 10,
@@ -150,12 +165,22 @@ define('src/u-kov/specs/ukov.spec', [
             p2: '2p2',
           }
         ],
-      }, 'model1', 'collectionName');
+      }, 'model1');
     });
 
     describe('model', function() {
 
-      it('should start valid', function() {
+      it('should start validated', function() {
+        expect(ukovModel.invalidIfFalsey.isValid()).toBe(false);
+        expect(ukovModel.invalidIfNotZero.isValid()).toBe(false);
+        expect(ukovModel.isValid()).toBe(false);
+
+        // make model valid and clean
+        ukovModel.invalidIfFalsey('not falsey');
+        ukovModel.invalidIfFalsey.markClean('not falsey', true);
+        ukovModel.invalidIfNotZero(0);
+        ukovModel.invalidIfNotZero.markClean(0, true);
+        expect(ukovModel.invalidIfNotZero.isValid()).toBe(true);
         expect(ukovModel.isValid()).toBe(true);
       });
 
@@ -173,7 +198,7 @@ define('src/u-kov/specs/ukov.spec', [
         expect(ukovModel.shouldCreateModel.shouldCreateProp()).toBeNull();
       });
 
-      describe('props', function() {
+      describe('props converter', function() {
 
         it('with no schema should not be defined', function() {
           expect(ukovModel.noValidation).toBeUndefined();
@@ -182,27 +207,30 @@ define('src/u-kov/specs/ukov.spec', [
         it('should run validations when UkovModel is created', function() {
           expect(ukovModel.passThrough.isValid()).toBe(true);
           expect(ukovModel.alwaysNumber.isValid()).toBe(true);
-          // expect(ukovModel.alwaysError.isValid()).toBe(false); //@TODO: make this pass
+          expect(ukovModel.invalidIfFalsey.isValid()).toBe(false);
           expect(ukovModel.alwaysUndefined.isValid()).toBe(true);
+          expect(ukovModel.invalidIfNotZero.isValid()).toBe(false);
         });
         it('should set prop value when created', function() {
           expect(ukovModel.passThrough()).toBe(1);
           expect(ukovModel.alwaysNumber()).toBe(2.2222);
-          // expect(ukovModel.alwaysError()).toBe(3); //@TODO: make this pass
+          expect(ukovModel.invalidIfFalsey()).toBe('');
           expect(ukovModel.alwaysUndefined()).toBe(4);
+          expect(ukovModel.invalidIfNotZero()).toBe(3);
         });
 
 
-        it('should be invalid when converter returns instance of `Error`', function() {
+        it('when invalid the converter should return an instance of `Error`', function() {
           // manually null out error message
-          ukovModel.alwaysError.errMsg(null);
-          expect(ukovModel.alwaysError.isValid()).toBe(true);
-          ukovModel.alwaysError('some value');
-          expect(ukovModel.alwaysError.isValid()).toBe(false);
+          ukovModel.invalidIfFalsey.errMsg(null);
+          expect(ukovModel.invalidIfFalsey.isValid()).toBe(true);
+          ukovModel.invalidIfFalsey('truthy');
+          ukovModel.invalidIfFalsey('');
+          expect(ukovModel.invalidIfFalsey.isValid()).toBe(false);
         });
         it('should set value when invalid', function() {
-          ukovModel.alwaysError('not the start value');
-          expect(ukovModel.model.alwaysError instanceof Error).toBe(true);
+          ukovModel.invalidIfFalsey('');
+          expect(ukovModel.model.invalidIfFalsey instanceof Error).toBe(true);
         });
 
 
@@ -216,30 +244,38 @@ define('src/u-kov/specs/ukov.spec', [
 
 
         it('different group values should make all group props invalid', function() {
+          // make model valid and clean
+          ukovModel.invalidIfFalsey('not falsey');
+          ukovModel.invalidIfFalsey.markClean('not falsey', true);
+          ukovModel.invalidIfNotZero(0);
+          ukovModel.invalidIfNotZero.markClean(0, true);
+          expect(ukovModel.invalidIfNotZero.isValid()).toBe(true);
+
           ukovModel.groupProp1(11);
 
           expect(ukovModel.groupProp1.isValid()).toBe(false);
           expect(ukovModel.groupProp2.isValid()).toBe(false);
           // model
           expect(ukovModel.isValid()).toBe(false);
-          // collection
-          expect(ukov.ukovCollectionsMap.collectionName.isValid()).toBe(false);
 
           expect(ukovModel.model.groupProp1).toBe(11);
           expect(ukovModel.model.groupProp2).toBe(10);
         });
         it('equal group values should make all group props valid', function() {
+          // make model valid and clean
+          ukovModel.invalidIfFalsey('not falsey');
+          ukovModel.invalidIfFalsey.markClean('not falsey', true);
+          ukovModel.invalidIfNotZero(0);
+          ukovModel.invalidIfNotZero.markClean(0, true);
+          expect(ukovModel.invalidIfNotZero.isValid()).toBe(true);
+
           ukovModel.groupProp1(11);
-          expect(ukov.ukovCollectionsMap.collectionName.isValid()).toBe(false);
           ukovModel.groupProp2(11);
-          expect(ukov.ukovCollectionsMap.collectionName.isValid()).toBe(true);
 
           expect(ukovModel.groupProp1.isValid()).toBe(true);
           expect(ukovModel.groupProp2.isValid()).toBe(true);
           // model
           expect(ukovModel.isValid()).toBe(true);
-          // collection
-          expect(ukov.ukovCollectionsMap.collectionName.isValid()).toBe(true);
 
           expect(ukovModel.model.groupProp1).toBe(11);
           expect(ukovModel.model.groupProp2).toBe(11);
@@ -274,6 +310,13 @@ define('src/u-kov/specs/ukov.spec', [
         });
 
         it('should update the parent model when any item value changes', function() {
+          // make model valid and clean
+          ukovModel.invalidIfFalsey('not falsey');
+          ukovModel.invalidIfFalsey.markClean('not falsey', true);
+          ukovModel.invalidIfNotZero(0);
+          ukovModel.invalidIfNotZero.markClean(0, true);
+          expect(ukovModel.invalidIfNotZero.isValid()).toBe(true);
+
           var prop = ukovModel.arrayProp()[0];
           // test valid
           expect(prop.isValid()).toBe(true);
@@ -314,6 +357,13 @@ define('src/u-kov/specs/ukov.spec', [
         });
 
         it('should update isClean/isValid when props are removed', function() {
+          // make model valid and clean
+          ukovModel.invalidIfFalsey('not falsey');
+          ukovModel.invalidIfFalsey.markClean('not falsey', true);
+          ukovModel.invalidIfNotZero(0);
+          ukovModel.invalidIfNotZero.markClean(0, true);
+          expect(ukovModel.invalidIfNotZero.isValid()).toBe(true);
+
           var prop = ukovModel.arrayProp.createChild(ukovModel.arrayProp().length, 4);
           ukovModel.arrayProp.push(prop);
           prop(false);
@@ -358,6 +408,61 @@ define('src/u-kov/specs/ukov.spec', [
           expect(ukovModel.model.nestedObjectsInArray[1].p1).toBe('2p1');
           expect(ukovModel.model.nestedObjectsInArray[1].p2).toBe('2p2');
         });
+      });
+    });
+
+    describe('`wrap`', function() {
+      it('should accept a schema object', function() {
+        var schema = {
+          name: {
+            converter: function(val) {
+              return val;
+            },
+          },
+        };
+        expect(function() {
+          ukov.wrap({
+            name: 'bob',
+          }, schema);
+        }).not.toThrow();
+      });
+      it('should accept primitive types', function() {
+        var ukovProp = ukov.wrap('bob', {
+          converter: function(val) {
+            return val;
+          },
+          validators: [
+
+            function(val) {
+              if (val !== 'bob') {
+                return val + ' is not bob';
+              }
+            }
+          ]
+        });
+        expect(ukovProp.isValid()).toBe(true);
+        ukovProp('frank');
+        expect(ukovProp.isValid()).toBe(false);
+      });
+      it('should accept array types', function() {
+        var ukovPropArray = ukov.wrap(['bob', 'hank'], [
+          {
+            converter: function(val) {
+              return val;
+            },
+            validators: [
+
+              function(val) {
+                if (val !== 'bob') {
+                  return val + ' is not bob';
+                }
+              }
+            ]
+          }
+        ]);
+        expect(ukovPropArray.isValid()).toBe(false);
+        ukovPropArray()[1]('bob');
+        expect(ukovPropArray.isValid()).toBe(true);
       });
     });
   });

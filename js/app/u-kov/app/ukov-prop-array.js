@@ -1,11 +1,7 @@
 define('src/u-kov/app/ukov-prop-array', [
   'ko',
-  'src/u-kov/app/ukov-model',
-  'src/u-kov/app/ukov-prop'
 ], function(
-  ko,
-  UkovModel, // should be undefined since ukov-model requires this file
-  ukovProp
+  ko
 ) {
   "use strict";
   var fn = {},
@@ -19,6 +15,9 @@ define('src/u-kov/app/ukov-prop-array', [
     });
 
   function createUkovPropArray(updateParent, ukovModel, model, doc, key) {
+    if (!ukovModel || !model) {
+      throw new Error('missing ukovModel or model for key: ' + key);
+    }
     if (!doc[0]) {
       throw new Error('expected doc to be an array with atleast one item');
     }
@@ -34,7 +33,6 @@ define('src/u-kov/app/ukov-prop-array', [
     prop.ukovModel = ukovModel;
     prop.model = model;
     prop.doc = doc[0];
-    prop.docIsmodel = prop.doc._model; // save here since UkovModel will remove it from the doc
     prop.key = key;
 
     prop.isClean = doc.alwaysClean ? alwaysClean : ko.observable(true);
@@ -68,23 +66,8 @@ define('src/u-kov/app/ukov-prop-array', [
     this.ukovModel.model[this.key] = this.model;
     return this.model;
   };
-  fn.createChild = function(index, initialValue) {
-    var prop, doc = this.doc,
-      model = this.model;
-
-    initialValue = (initialValue !== undefined) ? initialValue : model[index];
-    if (this.docIsmodel) {
-      // lazy require to circumvent circular dependency issues
-      if (!UkovModel) {
-        UkovModel = require('src/u-kov/app/ukov-model');
-      }
-      prop = new UkovModel(this.update, model, initialValue, doc, index);
-    } else if (Array.isArray(doc)) {
-      prop = createUkovPropArray(this.update, this.ukovModel, initialValue, doc, index);
-    } else {
-      prop = ukovProp.create(this.update, this.ukovModel, model, doc, index, initialValue);
-    }
-    return prop;
+  fn.createChild = function( /*index, initialValue*/ ) {
+    throw new Error('override me in ukov.js');
   };
   fn.update = function(preventParentUpdate) {
     var errMsg, isClean = this.cleanLength === this().length;
@@ -144,5 +127,6 @@ define('src/u-kov/app/ukov-prop-array', [
 
   return {
     create: createUkovPropArray,
+    fn: fn,
   };
 });

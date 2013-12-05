@@ -16,7 +16,7 @@ define('src/u-kov/app/validators', [
     maxLength = 'Value is more than {0} letters',
     notPattern = 'Value does not match specified pattern',
     valRequired = 'Value is required',
-    passwordMsg = 'A password must be atleast 6 or more letters and contain at least one upper case letter, one lower case letter and one digit.',
+    passwordMsg = 'A password must be atleast {0} or more letters and contain at least one upper case letter, one lower case letter and one digit.',
 
     // 1 uppercase, 1 lowercase, and 1 number
     passwordRegex = /^(?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])\S+$/;
@@ -123,13 +123,15 @@ define('src/u-kov/app/validators', [
     };
   };
 
-  validators.isPassword = function(message) {
+  validators.isPassword = function(minLength, message) {
+    // ensure min length is 6 or greater
+    minLength = Math.max(minLength || 0, 6) || 6;
     message = message || passwordMsg;
     return function(val /*, model*/ ) {
       if (val == null) {
         return;
       }
-      if (!passwordRegex.test(val) || val.length < 6) {
+      if (!passwordRegex.test(val) || val.length < minLength) {
         return message;
       }
     };

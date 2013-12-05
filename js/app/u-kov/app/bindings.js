@@ -1,13 +1,9 @@
 define('src/u-kov/app/bindings', [
  'jquery',
  'ko',
- 'src/u-kov/app/ukov',
- 'src/u-kov/app/ukov-collection'
 ], function(
   jquery,
-  ko,
-  ukov,
-  UkovCollection
+  ko
 ) {
   "use strict";
 
@@ -26,19 +22,6 @@ define('src/u-kov/app/bindings', [
     },
     update: function(element, valueAccessor) {
       exports.updateElement(element, valueAccessor());
-    }
-  };
-  ko.bindingHandlers.ukovCollection = {
-    init: function(element, valueAccessor) {
-      var collectionName = valueAccessor(),
-        ukovCollection = ukov.ukovCollectionsMap[collectionName];
-
-      if (!ukovCollection) {
-        ukov.ukovCollectionsMap[collectionName] = ukovCollection = new UkovCollection();
-      }
-      ukovCollection.onChanged(function() {
-        exports.updateElement(element, ukovCollection);
-      });
     }
   };
 
