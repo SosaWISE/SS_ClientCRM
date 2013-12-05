@@ -77,19 +77,34 @@ define('src/u-kov/app/ukov-prop', [
   fn.getNameInGroup = function() {
     return this.doc.nameInGroup || this.key;
   };
-  fn.markClean = function(cleanVal, allowParentUpdate) {
-    var noVal = cleanVal === undefined,
-      thisVal = this.getValue();
-    cleanVal = (noVal ? thisVal : cleanVal);
-    this.cleanVal(cleanVal);
-    this.isClean(cleanVal === thisVal);
-
-    if (allowParentUpdate) {
-      this.updateParent();
-    }
-  };
   fn.setVal = function(val) {
     this(val);
+  };
+  fn.markClean = function(cleanVal, allowParentUpdate) {
+    var _this = this,
+      noVal = cleanVal === undefined,
+      thisVal = _this.getValue();
+    cleanVal = (noVal ? thisVal : cleanVal);
+    _this.cleanVal(cleanVal);
+    _this.isClean(cleanVal === thisVal);
+
+    if (allowParentUpdate) {
+      _this.updateParent();
+    }
+  };
+  fn.ignore = function(ignoreVal, allowParentUpdate) {
+    var _this = this;
+    if (arguments.length) {
+      if (ignoreVal) {
+        _this._ignore = true;
+      } else {
+        delete _this._ignore;
+      }
+      if (allowParentUpdate) {
+        _this.updateParent();
+      }
+    }
+    return !!_this._ignore;
   };
   fn.update = function() {};
   fn.validate = function() {

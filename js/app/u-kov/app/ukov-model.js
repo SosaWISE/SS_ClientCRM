@@ -59,17 +59,24 @@ define('src/u-kov/app/ukov-model', [
   UkovModel.prototype.createChild = function( /*index, initialValue*/ ) {
     throw new Error('override me in ukov.js');
   };
-  UkovModel.prototype.update = function(preventParentUpdate) {
-    var prop, isClean = true,
+  UkovModel.prototype.update = function(preventParentUpdate, drillDown) {
+    var item, isClean = true,
       errMsg;
     Object.keys(this.doc).some(function(key) {
-      prop = this[key];
+      item = this[key];
+      if (item.ignore()) {
+        return;
+      }
+      if (drillDown) {
+        item.update(true, drillDown);
+      }
+
       // error
       if (!errMsg) {
-        errMsg = prop.errMsg();
+        errMsg = item.errMsg();
       }
       // dirty
-      if (isClean && !prop.isClean()) {
+      if (isClean && !item.isClean()) {
         isClean = false;
       }
       // stop if errored and dirty
@@ -87,6 +94,18 @@ define('src/u-kov/app/ukov-model', [
     Object.keys(this.doc).forEach(function(key) {
       this[key].validate();
     }, this);
+  };
+  UkovModel.prototype.ignore = function(ignoreVal, allowParentUpdate) {
+    var _this = this;
+    if (arguments.length) {
+      if (ignoreVal) {
+        _this._ignore = true;
+      } else {
+        delete _this._ignore;
+      }
+      _this.update(!allowParentUpdate && _this.parentModel);
+    }
+    return !!_this._ignore;
   };
   UkovModel.prototype.markClean = function(cleanVal, allowParentUpdate) {
     cleanVal = cleanVal || {};

@@ -69,9 +69,16 @@ define('src/u-kov/app/ukov-prop-array', [
   fn.createChild = function( /*index, initialValue*/ ) {
     throw new Error('override me in ukov.js');
   };
-  fn.update = function(preventParentUpdate) {
+  fn.update = function(preventParentUpdate, drillDown) {
     var errMsg, isClean = this.cleanLength === this().length;
     this().forEach(function(item) {
+      if (item.ignore()) {
+        return;
+      }
+      if (drillDown) {
+        item.update(true, drillDown);
+      }
+
       if (!errMsg) {
         // only use first error
         errMsg = item.errMsg();
@@ -93,6 +100,18 @@ define('src/u-kov/app/ukov-prop-array', [
     this().forEach(function(item) {
       item.validate();
     });
+  };
+  fn.ignore = function(ignoreVal, allowParentUpdate) {
+    var _this = this;
+    if (arguments.length) {
+      if (ignoreVal) {
+        _this._ignore = true;
+      } else {
+        delete _this._ignore;
+      }
+      _this.update(!allowParentUpdate);
+    }
+    return !!_this._ignore;
   };
   fn.markClean = function(cleanArray, allowParentUpdate) {
     var hasCleanArray = cleanArray !== undefined;

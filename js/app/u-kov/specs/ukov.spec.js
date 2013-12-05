@@ -465,5 +465,46 @@ define('src/u-kov/specs/ukov.spec', [
         expect(ukovPropArray.isValid()).toBe(true);
       });
     });
+
+    describe('`ignore`', function() {
+      it('should exclude prop from parent updates', function() {
+        ukovModel.invalidIfFalsey.markClean('truthy', true);
+        ukovModel.invalidIfFalsey('change1');
+        ukovModel.invalidIfNotZero('change1');
+        // all should be dirty and invalid
+        expect(ukovModel.invalidIfFalsey.isClean()).toBe(false);
+        expect(ukovModel.invalidIfNotZero.isValid()).toBe(false);
+        expect(ukovModel.isClean()).toBe(false);
+        expect(ukovModel.isValid()).toBe(false);
+
+        ukovModel.invalidIfFalsey.ignore(true, true);
+        ukovModel.invalidIfNotZero.ignore(true, true);
+        // these should still be dirty and invalid
+        expect(ukovModel.invalidIfFalsey.isClean()).toBe(false);
+        expect(ukovModel.invalidIfNotZero.isValid()).toBe(false);
+        // model should be clean and valid
+        expect(ukovModel.isClean()).toBe(true);
+        expect(ukovModel.isValid()).toBe(true);
+
+        // change again
+        ukovModel.invalidIfFalsey('change2');
+        ukovModel.invalidIfNotZero('change2');
+        // these should still be dirty and invalid
+        expect(ukovModel.invalidIfFalsey.isClean()).toBe(false);
+        expect(ukovModel.invalidIfNotZero.isValid()).toBe(false);
+        // model should still be clean and valid
+        expect(ukovModel.isClean()).toBe(true);
+        expect(ukovModel.isValid()).toBe(true);
+
+
+        ukovModel.invalidIfFalsey.ignore(false, true);
+        ukovModel.invalidIfNotZero.ignore(false, true);
+        // should be back to how we started
+        expect(ukovModel.invalidIfFalsey.isClean()).toBe(false);
+        expect(ukovModel.invalidIfNotZero.isValid()).toBe(false);
+        expect(ukovModel.isClean()).toBe(false);
+        expect(ukovModel.isValid()).toBe(false);
+      });
+    });
   });
 });
