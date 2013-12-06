@@ -100,6 +100,8 @@ define('src/u-kov/app/ukov-prop', [
       } else {
         delete _this._ignore;
       }
+      // rerun validations
+      _this.validate();
       if (allowParentUpdate) {
         _this.updateParent();
       }
@@ -108,8 +110,12 @@ define('src/u-kov/app/ukov-prop', [
   };
   fn.update = function() {};
   fn.validate = function() {
-    if (!this.validateGroup()) {
-      this.validateSingle();
+    var _this = this;
+    if (_this._ignore) {
+      // mark as valid
+      _this.errMsg(null);
+    } else if (!_this.validateGroup()) {
+      _this.validateSingle();
     }
   };
   fn.validateSingle = function() {

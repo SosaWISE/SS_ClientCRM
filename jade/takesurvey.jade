@@ -1,10 +1,8 @@
-div(class="layer",style="")
-  //- ,style="width:90%;height:90%")
-  div(class="content")
-    div(class="btn",style="float:right;width:75px;",data-bind="click:clickCancel") Close
-    div(data-bind="with:survey")
-      div(data-bind="text:version")
-      div(data-bind="text:locale")
-      div(data-bind="foreach:questions")
-        //- start question recursion
-        div(class="relative",data-bind="template:'tmpl-takequestion'")
+div(class="content")
+  div(class="btn",style="float:right;width:75px;",data-bind="click:clickCancel") Close
+  div(data-bind="with:survey")
+    div(data-bind="text:version")
+    div(data-bind="text:locale")
+    div(data-bind="foreach:questions")
+      //- start question recursion
+      div(class="relative",data-bind="template:'tmpl-takequestion'")

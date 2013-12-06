@@ -15,7 +15,7 @@ ul(class="edit-form")
   li
     span(class="btn-bg", data-bind="cmd:cmdValidate") Validate Address
 
-div(data-bind="if:loaded", style="margin-left:20px;")
+div(data-bind="if:loaded")
   div(class="info", data-bind="with:addressResult")
       div(class="address", data-bind="text:StreetAddress")
       div(class="address", data-bind="text:StreetAddress2")
@@ -26,3 +26,6 @@ div(data-bind="if:loaded", style="margin-left:20px;")
         |&nbsp;
         span(data-bind="text:PostalCode")
       div(class="phone", data-bind="text:Phone")
+
+  div(class="actions", data-bind="if:clickNext")
+    span(class="btn-bg", data-bind="click:clickNext") Next

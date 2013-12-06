@@ -21,17 +21,23 @@ define('src/core/vm.layers', [
   utils.inherits(LayersViewModel, BaseViewModel);
   LayersViewModel.prototype.viewTmpl = 'tmpl-layers';
 
-  LayersViewModel.prototype.show = function(vm, onClose) {
-    return add(this, this.showLayers, vm, onClose);
+  LayersViewModel.prototype.show = function(viewModel, onClose) {
+    return add(this, this.showLayers, viewModel, onClose);
   };
-  LayersViewModel.prototype.alert = function(vm, onClose) {
-    return add(this, this.alertLayers, vm, onClose);
+  LayersViewModel.prototype.alert = function(viewModel, onClose) {
+    return add(this, this.alertLayers, viewModel, onClose);
   };
 
-  function add(layersVM, layers, vm, onClose) {
-    var layer = {
-      vm: vm,
+  function add(layersVM, layers, viewModel, onClose) {
+    var subscription, layer, prevVM;
+
+    layer = {
+      vm: ko.observable(null),
       close: function(result) {
+        if (subscription) {
+          subscription.dispose();
+          subscription = null;
+        }
         var index = layers.indexOf(layer);
         if (index > -1) {
           layers.splice(index, 1);
@@ -41,14 +47,28 @@ define('src/core/vm.layers', [
         }
       },
     };
+    layer.width = ko.computed(function() {
+      var vm = layer.vm();
+      return vm ? ko.unwrap(vm.width) : 0;
+    });
+    layer.height = ko.computed(function() {
+      var vm = layer.vm();
+      return vm ? ko.unwrap(vm.height) : 0;
+    });
 
-    vm.layersVM = layersVM;
-    vm.layer = layer;
-
+    subscription = layer.vm.subscribe(function(vm) {
+      if (prevVM) {
+        delete prevVM.layersVM;
+        delete prevVM.layer;
+        prevVM.active(false);
+      }
+      vm.layersVM = layersVM;
+      vm.layer = layer;
+      vm.active(true);
+      prevVM = vm;
+    });
+    layer.vm(viewModel);
     layers.push(layer);
-
-    // set the view model as active
-    vm.active(true);
 
     return layer;
   }

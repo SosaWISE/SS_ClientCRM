@@ -79,6 +79,8 @@ define('src/survey/vm.surveytranslation.new', [
   }
   utils.inherits(NewSurveyTranslationViewModel, BaseViewModel);
   NewSurveyTranslationViewModel.prototype.viewTmpl = 'tmpl-surveytranslation_new';
+  NewSurveyTranslationViewModel.prototype.width = 300;
+  NewSurveyTranslationViewModel.prototype.height = 250;
 
   NewSurveyTranslationViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
     var _this = this;

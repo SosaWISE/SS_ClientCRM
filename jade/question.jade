@@ -38,10 +38,9 @@ table(class="question")
   tr
     td
     td
-      div(class="actions")
+      div(class="question-actions")
         ul(class="sv")
           li
             a(class="btn add-btn",
-              data-bind="click:surveyVM.clickAddQuestion,cssDisabled:noAddSubQuestion,\
-attr:{title:noAddSubQuestion()?'add a possible answer first':'add sub question'}")
+              data-bind="click:surveyVM.clickAddQuestion,cssDisabled:noAddSubQuestion,attr:{title:noAddSubQuestion()?'add a possible answer first':'add sub question'}")
               span(data-bind="text:nextName")

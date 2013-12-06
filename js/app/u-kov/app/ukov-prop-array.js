@@ -72,11 +72,11 @@ define('src/u-kov/app/ukov-prop-array', [
   fn.update = function(preventParentUpdate, drillDown) {
     var errMsg, isClean = this.cleanLength === this().length;
     this().forEach(function(item) {
-      if (item.ignore()) {
-        return;
-      }
       if (drillDown) {
         item.update(true, drillDown);
+      }
+      if (item.ignore()) {
+        return;
       }
 
       if (!errMsg) {

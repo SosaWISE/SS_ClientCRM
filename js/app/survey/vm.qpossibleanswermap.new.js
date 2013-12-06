@@ -67,6 +67,8 @@ define('src/survey/vm.qpossibleanswermap.new', [
   }
   utils.inherits(NewQPossibleAnswerMapViewModel, BaseViewModel);
   NewQPossibleAnswerMapViewModel.prototype.viewTmpl = 'tmpl-qpossibleanswermap_new';
+  NewQPossibleAnswerMapViewModel.prototype.width = 300;
+  NewQPossibleAnswerMapViewModel.prototype.height = 250;
 
   function createComboList(tokenMaps, tokens) {
     var map = {},

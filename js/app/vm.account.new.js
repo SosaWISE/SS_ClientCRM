@@ -28,38 +28,23 @@ define('src/vm.account.new', [
 
     _this.findRepVM = new FindRepViewModel();
     _this.findRepVM.clickNext = function() {
-      setLayer(_this.validateAddressVM);
+      _this.layer.vm(_this.validateAddressVM);
     };
     _this.validateAddressVM = new ValidateAddressViewModel();
     _this.validateAddressVM.clickNext = function() {
-      alert('done');
+      _this.layer.vm(_this.findRepVM);
+      // alert('done');
     };
-
-
-    _this.layer = {
-      vm: ko.observable(null),
-      width: ko.observable(0),
-      height: ko.observable(0),
-      viewTmpl: 'tmpl-account_new_layer',
-      active: function(active) {
-        _this.layer.vm().active(active);
-      },
-    };
-
-    function setLayer(vm) {
-      _this.layer.vm(vm);
-      _this.layer.width(vm.width);
-      _this.layer.height(vm.height);
-      _this.layer.active(true);
-    }
-    setLayer(_this.findRepVM);
 
     _this.layersVM = new LayersViewModel();
-    _this.layersVM.show(_this.layer);
   }
   utils.inherits(NewAccountViewModel, ControllerViewModel);
   NewAccountViewModel.prototype.viewTmpl = 'tmpl-account_new';
 
+  NewAccountViewModel.prototype.onLoad = function( /*routeData, join*/ ) { // override me
+    var _this = this;
+    _this.layer = _this.layersVM.show(_this.findRepVM);
+  };
   NewAccountViewModel.prototype.onActivate = function() { // overrides base
     var _this = this,
       vm = _this.layer.vm();

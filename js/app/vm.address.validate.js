@@ -15,9 +15,17 @@ define('src/vm.address.validate', [
 ) {
   "use strict";
 
-  var schema = {
+  var schema,
+    max50 = ukov.validators.maxLength(50),
+    max40 = ukov.validators.maxLength(40),
+    max20 = ukov.validators.maxLength(20),
+    max4 = ukov.validators.maxLength(4),
+    max1 = ukov.validators.maxLength(1);
+
+  schema = {
     _model: true,
     DealerId: {},
+
     PostalCode: {
       validators: [
         ukov.validators.isRequired('Zip code is required'),
@@ -27,21 +35,110 @@ define('src/vm.address.validate', [
     StreetAddress: {
       validators: [
         ukov.validators.isRequired('Street address is required'),
+        max50,
       ],
+    },
+    StreetAddress2: {
+      validators: [max50],
     },
     Phone: {
       converter: ukov.converters.phone(),
     },
+
+    // Manual/Extensions
+    City: {
+      validators: [
+        ukov.validators.isRequired('City is required'),
+        max50,
+      ],
+    },
+    County: {
+      validators: [
+        ukov.validators.isRequired('County is required'),
+        max50,
+      ],
+    },
+    // State: {},
+    StateId: {
+      validators: [
+        ukov.validators.isRequired('State is required'),
+        max4,
+      ],
+    },
+    TimeZoneId: {
+      validators: [
+        ukov.validators.isRequired('Time zone is required'),
+        ukov.validators.isInt(),
+      ],
+    },
+    StreetNumber: { //House #
+      validators: [
+        ukov.validators.isRequired('House # is required'),
+        max40
+      ],
+    },
+    StreetName: {
+      validators: [
+        ukov.validators.isRequired('Street name is required'),
+        max50,
+      ],
+    },
+    PreDirectional: {
+      validators: [max20],
+    },
+    PostDirectional: {
+      validators: [max20],
+    },
+    StreetType: {
+      validators: [max20],
+    },
+    Extension: {
+      validators: [max50],
+    },
+    ExtensionNumber: {
+      validators: [max50],
+    },
+    CarrierRoute: {
+      validators: [max4],
+    },
+    DPVResponse: {
+      validators: [max1],
+    },
   };
+
+  function ignoreAddressExtensions(addrData, ignore) {
+    addrData.City.ignore(ignore);
+    addrData.County.ignore(ignore);
+    // addrData.State.ignore(ignore);
+    addrData.StateId.ignore(ignore);
+    addrData.TimeZoneId.ignore(ignore);
+    addrData.StreetNumber.ignore(ignore);
+    addrData.StreetName.ignore(ignore);
+    addrData.PreDirectional.ignore(ignore);
+    addrData.PostDirectional.ignore(ignore);
+    addrData.StreetType.ignore(ignore);
+    addrData.Extension.ignore(ignore);
+    addrData.ExtensionNumber.ignore(ignore);
+    addrData.CarrierRoute.ignore(ignore);
+    addrData.DPVResponse.ignore(ignore);
+    // update model
+    addrData.update(false, true);
+  }
+
 
   function ValidateAddressViewModel(options) {
     var _this = this;
     ValidateAddressViewModel.super_.call(_this, options);
 
-    _this.focus = ko.observable(false);
     _this.addressData = ukov.wrap({
       DealerId: 1, // ?????
     }, schema);
+    ignoreAddressExtensions(_this.addressData, true);
+
+    _this.width = ko.observable(300);
+    _this.height = ko.observable(450);
+
+    _this.focus = ko.observable(false);
     _this.addressResult = ko.observable(null);
     _this.loaded = ko.observable(false);
 
@@ -75,6 +172,10 @@ define('src/vm.address.validate', [
             _this.addressResult(resp.Value);
             _this.loaded(true);
           }
+          /////TESTING//////////////////////
+          _this.width(_this.width() + 10);
+          _this.height(_this.height() + 10);
+          /////TESTING//////////////////////
           cb();
         });
       }
@@ -84,8 +185,8 @@ define('src/vm.address.validate', [
   }
   utils.inherits(ValidateAddressViewModel, BaseViewModel);
   ValidateAddressViewModel.prototype.viewTmpl = 'tmpl-address_validate';
-  ValidateAddressViewModel.prototype.width = 300;
-  ValidateAddressViewModel.prototype.height = 450;
+  // ValidateAddressViewModel.prototype.width = 300;
+  // ValidateAddressViewModel.prototype.height = 450;
 
   ValidateAddressViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
     var _this = this;

@@ -19,3 +19,5 @@ div(class="rep-find")
       div(class="phone mobile", data-bind="text:phone")
       div(class="email", data-bind="text:email")
 
+    div(class="actions", data-bind="if:clickNext")
+      span(class="btn-bg", data-bind="click:clickNext") Next

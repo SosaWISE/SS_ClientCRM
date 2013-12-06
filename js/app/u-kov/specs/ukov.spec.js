@@ -479,9 +479,10 @@ define('src/u-kov/specs/ukov.spec', [
 
         ukovModel.invalidIfFalsey.ignore(true, true);
         ukovModel.invalidIfNotZero.ignore(true, true);
-        // these should still be dirty and invalid
+        // should still be dirty
         expect(ukovModel.invalidIfFalsey.isClean()).toBe(false);
-        expect(ukovModel.invalidIfNotZero.isValid()).toBe(false);
+        // should be invalid
+        expect(ukovModel.invalidIfNotZero.isValid()).toBe(true);
         // model should be clean and valid
         expect(ukovModel.isClean()).toBe(true);
         expect(ukovModel.isValid()).toBe(true);
@@ -489,9 +490,10 @@ define('src/u-kov/specs/ukov.spec', [
         // change again
         ukovModel.invalidIfFalsey('change2');
         ukovModel.invalidIfNotZero('change2');
-        // these should still be dirty and invalid
+        // should still be dirty
         expect(ukovModel.invalidIfFalsey.isClean()).toBe(false);
-        expect(ukovModel.invalidIfNotZero.isValid()).toBe(false);
+        // should be invalid
+        expect(ukovModel.invalidIfNotZero.isValid()).toBe(true);
         // model should still be clean and valid
         expect(ukovModel.isClean()).toBe(true);
         expect(ukovModel.isValid()).toBe(true);

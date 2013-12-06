@@ -64,6 +64,8 @@ define('src/survey/vm.takesurveytranslation', [
   }
   utils.inherits(TakeSurveyTranslationViewModel, BaseViewModel);
   TakeSurveyTranslationViewModel.prototype.viewTmpl = 'tmpl-takesurveytranslation';
+  TakeSurveyTranslationViewModel.prototype.width = 300;
+  TakeSurveyTranslationViewModel.prototype.height = 250;
 
   return TakeSurveyTranslationViewModel;
 });

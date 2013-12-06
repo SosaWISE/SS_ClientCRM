@@ -44,6 +44,8 @@ define('src/survey/vm.takesurvey', [
   }
   utils.inherits(TakeSurveyViewModel, ControllerViewModel);
   TakeSurveyViewModel.prototype.viewTmpl = 'tmpl-takesurvey';
+  TakeSurveyViewModel.prototype.width = '90%';
+  TakeSurveyViewModel.prototype.height = '90%';
 
   TakeSurveyViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this,

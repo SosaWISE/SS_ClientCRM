@@ -64,6 +64,8 @@ define('src/survey/vm.question.new', [
   }
   utils.inherits(NewQuestionViewModel, BaseViewModel);
   NewQuestionViewModel.prototype.viewTmpl = 'tmpl-question_new';
+  NewQuestionViewModel.prototype.width = 300;
+  NewQuestionViewModel.prototype.height = 250;
 
   NewQuestionViewModel.prototype.showAddNewMeaning = function(filterText) {
     var _this = this,

@@ -64,11 +64,11 @@ define('src/u-kov/app/ukov-model', [
       errMsg;
     Object.keys(this.doc).some(function(key) {
       item = this[key];
-      if (item.ignore()) {
-        return;
-      }
       if (drillDown) {
         item.update(true, drillDown);
+      }
+      if (item.ignore()) {
+        return;
       }
 
       // error
