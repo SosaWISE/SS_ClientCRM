@@ -1,6 +1,6 @@
 define('src/vm.address.validate', [
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.base',
   'ko',
   'src/ukov',

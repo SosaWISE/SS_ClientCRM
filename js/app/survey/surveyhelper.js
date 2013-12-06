@@ -1,9 +1,9 @@
 define('src/survey/surveyhelper', [
-  'src/util/strings',
+  'src/core/strings',
   'markdown',
   'ko',
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.base',
 ], function(
   strings,

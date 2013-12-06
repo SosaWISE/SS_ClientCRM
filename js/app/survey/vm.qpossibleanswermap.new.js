@@ -4,7 +4,7 @@ define('src/survey/vm.qpossibleanswermap.new', [
   'src/vm.combo',
   'src/core/notify',
   'src/core/vm.base',
-  'src/util/utils',
+  'src/core/utils',
 ], function(
   dataservice,
   ko,

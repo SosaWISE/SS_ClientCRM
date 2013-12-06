@@ -1,4 +1,4 @@
-define('src/util/querystring', [
+define('src/core/querystring', [
   'underscore'
 ], function(
   _und

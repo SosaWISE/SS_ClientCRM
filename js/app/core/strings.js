@@ -1,7 +1,7 @@
-define('src/util/strings', [
-  'src/util/utils',
+define('src/core/strings', [
+  'src/core/arrays',
 ], function(
-  utils
+  arrays
 ) {
   "use strict";
 
@@ -27,7 +27,7 @@ define('src/util/strings', [
     //           -with more arguments, this would also get slower, but, again, there shouldn't be very many args
 
     // since we want zero-based indexes and speed we'll choose the last one
-    return strings.aformat(format, utils.argsToArray(arguments, 1));
+    return strings.aformat(format, arrays.argsToArray(arguments, 1));
   };
   strings.aformat = function(format, argsArray, missingParamText) {
     var decorators = strings.decorators;
@@ -58,7 +58,7 @@ define('src/util/strings', [
     },
   };
 
-  strings.trim = function trim(text) {
+  strings.trim = function(text) {
     if (text) {
       text = (text + '').replace(/^\s+|\s+$/g, '');
     } else if (text !== '') {
@@ -66,6 +66,19 @@ define('src/util/strings', [
     }
     return text;
   };
+
+  // ?????
+  // // from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+  // strings.escapeRegExp = function(string) {
+  //   return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+  // };
+  // escapeRegExp: function(text) {
+  //   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  // },
+  // http://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
+  // function escapeRegExp(str) {
+  //   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+  // }
 
   return strings;
 });

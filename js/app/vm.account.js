@@ -1,6 +1,6 @@
 define('src/vm.account', [
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.controller',
   'ko'
 ], function(

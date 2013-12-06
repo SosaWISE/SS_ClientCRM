@@ -1,5 +1,5 @@
-define('spec/app/util/joiner.spec', [
-  'src/util/joiner'
+define('spec/app/core/joiner.spec', [
+  'src/core/joiner'
 ], function(joiner) {
   "use strict";
 
@@ -169,8 +169,9 @@ define('spec/app/util/joiner.spec', [
         });
         jasmine.Clock.tick(1000 * 30);
 
-        expect(callbackErr.constructor.name).toBe(Error.name);
-        expect(callbackErr.message).toEqual('timeout error');
+        expect(typeof(callbackErr)).toBe('object');
+        expect(callbackErr.Code).toBeDefined();
+        expect(callbackErr.Message).toBeDefined();
       });
     });
 

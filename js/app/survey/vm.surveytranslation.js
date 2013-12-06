@@ -1,6 +1,6 @@
 define('src/survey/vm.surveytranslation', [
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'ko',
   'src/core/vm.controller',
   'src/survey/vm.questiontranslation',

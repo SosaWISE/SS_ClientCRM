@@ -5,7 +5,7 @@ define('src/survey/vm.question.new', [
   'src/survey/vm.questionmeaning.new',
   'src/core/notify',
   'src/core/vm.base',
-  'src/util/utils',
+  'src/core/utils',
 ], function(
   dataservice,
   ko,

@@ -1,7 +1,7 @@
 define('src/core/harold', [
-  'src/util/utils'
+  'src/core/arrays'
 ], function(
-  utils
+  arrays
 ) {
   "use strict";
 
@@ -22,7 +22,7 @@ define('src/core/harold', [
     if (!fetcher) {
       throw new Error('no fetcher');
     }
-    return fetcher.cb.apply(fetcher.ctx, utils.argsToArray(arguments, 1));
+    return fetcher.cb.apply(fetcher.ctx, arrays.argsToArray(arguments, 1));
   };
   Harold.prototype.onFetch = function(eventName, context, callback) {
     if (!eventName || !context || !callback) {
@@ -50,9 +50,9 @@ define('src/core/harold', [
       args;
     if (eventListeners) {
       // create args array
-      args = utils.argsToArray(arguments, 1);
+      args = arrays.argsToArray(arguments, 1);
       // copy listeners
-      eventListeners = utils.argsToArray(eventListeners);
+      eventListeners = arrays.argsToArray(eventListeners);
       // send
       eventListeners.forEach(function(listener) {
         listener.cb.apply(listener.ctx, args);

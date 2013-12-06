@@ -1,6 +1,6 @@
 define('src/vm.combo', [
   'ko',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.base',
 ], function(
   ko,

@@ -1,7 +1,7 @@
 define('src/vm.panel.login', [
   'src/core/notify',
   'ko',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.controller',
   'src/dataservice',
   'src/core/router',

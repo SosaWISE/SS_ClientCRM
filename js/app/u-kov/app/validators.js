@@ -1,5 +1,5 @@
 define('src/u-kov/app/validators', [
-  'src/util/strings'
+  'src/core/strings'
 ], function(
   strings
 ) {

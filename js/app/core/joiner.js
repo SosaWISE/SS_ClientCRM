@@ -1,7 +1,7 @@
-define('src/util/joiner', [
- 'src/util/utils',
+define('src/core/joiner', [
+ 'src/core/arrays',
 ], function(
-  utils
+  arrays
 ) {
   "use strict";
 
@@ -55,7 +55,7 @@ define('src/util/joiner', [
 
       if (arguments.length > 2) {
         // exclude err value
-        val = utils.argsToArray(arguments, 1);
+        val = arrays.argsToArray(arguments, 1);
       }
 
       // add result values
@@ -70,7 +70,7 @@ define('src/util/joiner', [
 
     timeout = setTimeout(function() {
       cb({
-        // Code: ???,
+        Code: 1, // ???,
         Message: 'timeout error',
       });
     }, _this.timeout);

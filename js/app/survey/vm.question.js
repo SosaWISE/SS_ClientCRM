@@ -3,7 +3,7 @@ define('src/survey/vm.question', [
   'src/dataservice',
   'ko',
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.controller',
 ], function(
   QPossibleAnswerMapViewModel,

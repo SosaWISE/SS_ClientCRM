@@ -2,7 +2,7 @@ define('src/survey/vm.questiontranslation.editor', [
   'src/survey/surveyhelper',
   'ko',
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.base',
 ], function(
   surveyhelper,

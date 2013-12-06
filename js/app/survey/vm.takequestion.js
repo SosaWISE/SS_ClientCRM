@@ -1,9 +1,9 @@
 define('src/survey/vm.takequestion', [
-  'src/util/strings',
+  'src/core/strings',
   'src/vm.combo',
   'ko',
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.base',
 ], function(
   strings,

@@ -1,5 +1,5 @@
 define('src/dataservice.qualify', [
-  'src/util/utils',
+  'src/core/utils',
   'src/core/dataservice.base',
   'src/config'
 ], function(

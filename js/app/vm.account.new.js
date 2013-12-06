@@ -1,6 +1,6 @@
 define('src/vm.account.new', [
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.controller',
   'src/core/vm.layers',
   'src/vm.rep.find',

@@ -2,7 +2,7 @@ define('src/survey/vm.possibleanswers', [
   'src/dataservice',
   'ko',
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.controller',
 ], function(
   dataservice,

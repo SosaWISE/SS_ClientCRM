@@ -6,7 +6,7 @@ define('src/survey/vm.panel.surveys', [
   'ko',
   'src/dataservice',
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.controller',
 ], function(
   LayersViewModel,

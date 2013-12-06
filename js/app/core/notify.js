@@ -1,7 +1,7 @@
 define('src/core/notify', [
   'ko',
   'src/resources',
-  'src/util/strings'
+  'src/core/strings'
 ], function(
   ko,
   resources,

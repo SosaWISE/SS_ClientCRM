@@ -1,6 +1,6 @@
 define('src/survey/vm.survey', [
   'src/survey/vm.takesurveytranslation',
-  'src/util/joiner',
+  'src/core/joiner',
   'src/core/vm.layers',
   'src/survey/vm.qpossibleanswermap.new',
   'src/survey/vm.qmtokenmap.new',
@@ -12,7 +12,7 @@ define('src/survey/vm.survey', [
   'ko',
   'src/core/notify',
   'src/core/vm.controller',
-  'src/util/utils',
+  'src/core/utils',
 ], function(
   TakeSurveyTranslationViewModel,
   joiner,

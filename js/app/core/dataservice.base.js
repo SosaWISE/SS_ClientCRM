@@ -1,6 +1,6 @@
 define('src/core/dataservice.base', [
   'jquery',
-  'src/util/querystring'
+  'src/core/querystring'
 ], function(
   jquery,
   querystring

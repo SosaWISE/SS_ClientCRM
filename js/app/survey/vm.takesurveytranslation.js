@@ -1,7 +1,7 @@
 define('src/survey/vm.takesurveytranslation', [
   'src/vm.combo',
   'src/survey/vm.takesurvey',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.base',
 ], function(
   ComboViewModel,

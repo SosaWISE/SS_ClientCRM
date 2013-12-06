@@ -1,10 +1,10 @@
 define('src/survey/vm.survey.new', [
-  'src/util/strings',
+  'src/core/strings',
   'src/ukov',
   'src/dataservice',
   'ko',
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.base',
 ], function(
   strings,

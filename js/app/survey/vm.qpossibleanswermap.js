@@ -2,7 +2,7 @@ define('src/survey/vm.qpossibleanswermap', [
   'src/dataservice',
   'ko',
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.base',
 ], function(
   dataservice,

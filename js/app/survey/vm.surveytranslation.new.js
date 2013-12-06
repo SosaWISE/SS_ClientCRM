@@ -2,9 +2,9 @@ define('src/survey/vm.surveytranslation.new', [
   'src/ukov',
   'src/dataservice',
   'ko',
-  'src/util/strings',
+  'src/core/strings',
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.base',
 ], function(
   ukov,

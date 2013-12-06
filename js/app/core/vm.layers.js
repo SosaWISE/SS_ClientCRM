@@ -1,6 +1,6 @@
 define('src/core/vm.layers', [
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.base',
   'ko'
 ], function(

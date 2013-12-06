@@ -1,5 +1,5 @@
 define('src/u-kov/app/string-converters', [
-  'src/util/strings',
+  'src/core/strings',
   'moment'
 ], function(
   strings,

@@ -1,9 +1,9 @@
 define('src/core/vm.controller', [
   'src/core/notify',
-  'src/util/joiner',
+  'src/core/joiner',
   'jquery',
   'src/config',
-  'src/util/utils',
+  'src/core/utils',
   'ko',
   'src/core/vm.base',
 ], function(

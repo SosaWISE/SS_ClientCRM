@@ -4,7 +4,7 @@ define('src/survey/vm.questiontranslation', [
   'src/survey/vm.questiontranslation.editor',
   'ko',
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.base',
 ], function(
   ukov,

@@ -7,7 +7,7 @@ define('src/survey/vm.takesurvey', [
   'ko',
   'src/dataservice',
   'src/core/notify',
-  'src/util/utils',
+  'src/core/utils',
   'src/core/vm.controller',
 ], function(
   surveyhelper,
