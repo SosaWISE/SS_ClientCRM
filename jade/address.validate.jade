@@ -1,18 +1,79 @@
 h2(class="title") Premise Address
-ul(class="edit-form")
-  li
-    span(class="label") Zip code
-    input(type="text", placeholder="12345",
-      data-bind="hasfocus:focus,ukov:addressData.PostalCode,value:addressData.PostalCode,valueUpdate:'keyup',enter:cmdValidate")
-  li
-    span(class="label") Street Address
-    input(type="text", placeholder="55 W Main St",
-      data-bind="ukov:addressData.StreetAddress,value:addressData.StreetAddress,valueUpdate:'keyup',enter:cmdValidate")
-  li
-    span(class="label") Premise Phone
-    input(type="text", placeholder="(123) 123-1234",
-      data-bind="ukov:addressData.Phone,value:addressData.Phone,valueUpdate:'keyup',enter:cmdValidate")
-  li
+div(class="addr-form", data-bind="toggle:{'override':override}")
+  ul(class="edit-form",style="width:260px;")
+    li
+      span(class="label") Premise Phone
+      input(type="text", placeholder="(123) 123-1234",
+        data-bind="hasfocus:focus,ukov:addressData.Phone,value:addressData.Phone,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") Zip code
+      input(type="text", placeholder="12345",
+        data-bind="ukov:addressData.PostalCode,value:addressData.PostalCode,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") Street Address
+      input(type="text", placeholder="55 W Main St",
+        data-bind="ukov:addressData.StreetAddress,value:addressData.StreetAddress,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") Street Address 2
+      input(type="text", placeholder="#14",
+        data-bind="ukov:addressData.StreetAddress,value:addressData.StreetAddress,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") City
+      input(type="text", placeholder="Springfield",
+        data-bind="ukov:addressData.City,value:addressData.City,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") State (combobox)
+      input(type="text", placeholder="UT",
+        data-bind="ukov:addressData.StateId,value:addressData.StateId,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") County
+      input(type="text", placeholder="Grand",
+        data-bind="ukov:addressData.County,value:addressData.County,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") Time Zone (combobox)
+      input(type="text", placeholder="MST",
+        data-bind="ukov:addressData.TimeZoneId,value:addressData.TimeZoneId,valueUpdate:'keyup',enter:cmdValidate")
+    li
+  ul(class="edit-form",style="width:260px;position:absolute;top:0px;right:0px;",
+    data-bind="visible:override")
+    li
+      span(class="label") House #
+      input(type="text", placeholder="14",
+        data-bind="ukov:addressData.StreetNumber,value:addressData.StreetNumber,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") Street Name
+      input(type="text", placeholder="Main",
+        data-bind="ukov:addressData.StreetName,value:addressData.StreetName,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") Pre Directional (combobox)
+      input(type="text", placeholder="W",
+        data-bind="ukov:addressData.PreDirectional,value:addressData.PreDirectional,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") Post Directional (combobox)
+      input(type="text", placeholder="N",
+        data-bind="ukov:addressData.PostDirectional,value:addressData.PostDirectional,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") Street Type (combobox)
+      input(type="text", placeholder="Springfield",
+        data-bind="ukov:addressData.StreetType,value:addressData.StreetType,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") Extension
+      input(type="text", placeholder="",
+        data-bind="ukov:addressData.Extension,value:addressData.Extension,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") ExtensionNumber
+      input(type="text", placeholder="",
+        data-bind="ukov:addressData.ExtensionNumber,value:addressData.ExtensionNumber,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") Carrier #
+      input(type="text", placeholder="",
+        data-bind="ukov:addressData.CarrierRoute,value:addressData.CarrierRoute,valueUpdate:'keyup',enter:cmdValidate")
+    li
+      span(class="label") DPV Response
+      input(type="text", placeholder="",
+        data-bind="ukov:addressData.DPVResponse,value:addressData.DPVResponse,valueUpdate:'keyup',enter:cmdValidate")
+
+div(style="margin-bottom:20px;")
     span(class="btn-bg", data-bind="cmd:cmdValidate") Validate Address
 
 div(data-bind="if:loaded")

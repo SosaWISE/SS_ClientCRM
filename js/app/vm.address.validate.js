@@ -66,6 +66,7 @@ define('src/vm.address.validate', [
       ],
     },
     TimeZoneId: {
+      converter: ukov.converters.number(0),
       validators: [
         ukov.validators.isRequired('Time zone is required'),
         ukov.validators.isInt(),
@@ -106,41 +107,24 @@ define('src/vm.address.validate', [
     },
   };
 
-  function ignoreAddressExtensions(addrData, ignore) {
-    addrData.City.ignore(ignore);
-    addrData.County.ignore(ignore);
-    // addrData.State.ignore(ignore);
-    addrData.StateId.ignore(ignore);
-    addrData.TimeZoneId.ignore(ignore);
-    addrData.StreetNumber.ignore(ignore);
-    addrData.StreetName.ignore(ignore);
-    addrData.PreDirectional.ignore(ignore);
-    addrData.PostDirectional.ignore(ignore);
-    addrData.StreetType.ignore(ignore);
-    addrData.Extension.ignore(ignore);
-    addrData.ExtensionNumber.ignore(ignore);
-    addrData.CarrierRoute.ignore(ignore);
-    addrData.DPVResponse.ignore(ignore);
-    // update model
-    addrData.update(false, true);
-  }
-
 
   function ValidateAddressViewModel(options) {
     var _this = this;
     ValidateAddressViewModel.super_.call(_this, options);
 
+    _this.focus = ko.observable(false);
+    _this.addressResult = ko.observable(null);
+    _this.loaded = ko.observable(false);
+    _this.override = ko.observable(false);
+
     _this.addressData = ukov.wrap({
       DealerId: 1, // ?????
     }, schema);
-    ignoreAddressExtensions(_this.addressData, true);
 
     _this.width = ko.observable(300);
     _this.height = ko.observable(450);
 
-    _this.focus = ko.observable(false);
-    _this.addressResult = ko.observable(null);
-    _this.loaded = ko.observable(false);
+    _this.setManualOverride(false);
 
 
     /////TESTING//////////////////////
@@ -173,8 +157,9 @@ define('src/vm.address.validate', [
             _this.loaded(true);
           }
           /////TESTING//////////////////////
-          _this.width(_this.width() + 10);
-          _this.height(_this.height() + 10);
+          _this.setManualOverride(!_this.override());
+          // _this.width(_this.width() + 10);
+          // _this.height(_this.height() + 10);
           /////TESTING//////////////////////
           cb();
         });
@@ -195,6 +180,48 @@ define('src/vm.address.validate', [
     setTimeout(function() {
       _this.focus(true);
     }, 100);
+  };
+
+
+
+  ValidateAddressViewModel.prototype.setManualOverride = function(override) {
+    var _this = this,
+      addrData = _this.addressData,
+      ignore = !override;
+
+    _this.override(override);
+
+    // size
+    if (override) {
+      _this.width(600);
+      _this.height(865);
+    } else {
+      _this.width(300);
+      _this.height(530);
+    }
+
+
+    /////TESTING//////////////////////
+    ignore = true;
+    /////TESTING//////////////////////
+
+    // ignore fields
+    addrData.City.ignore(ignore);
+    addrData.County.ignore(ignore);
+    // addrData.State.ignore(ignore);
+    addrData.StateId.ignore(ignore);
+    addrData.TimeZoneId.ignore(ignore);
+    addrData.StreetNumber.ignore(ignore);
+    addrData.StreetName.ignore(ignore);
+    addrData.PreDirectional.ignore(ignore);
+    addrData.PostDirectional.ignore(ignore);
+    addrData.StreetType.ignore(ignore);
+    addrData.Extension.ignore(ignore);
+    addrData.ExtensionNumber.ignore(ignore);
+    addrData.CarrierRoute.ignore(ignore);
+    addrData.DPVResponse.ignore(ignore);
+    // update model
+    addrData.update(false, true);
   };
 
   return ValidateAddressViewModel;
