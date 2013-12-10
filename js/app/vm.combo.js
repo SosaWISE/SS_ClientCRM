@@ -67,20 +67,20 @@ define('src/vm.combo', [
     //
     // events
     //
-    _this.onHovering = function() {
-      _this.hovering = true;
+    _this.onClickingItem = function() {
+      _this.clickingItem = true;
     };
-    _this.offHovering = function() {
-      _this.hovering = false;
+    _this.offClickingItem = function() {
+      _this.clickingItem = false;
     };
     _this.clickTestClose = function() {
-      if (_this.hovering) {
+      if (_this.clickingItem) {
         return;
       }
       _this.clickClose();
     };
     _this.clickClose = function() {
-      _this.hovering = false;
+      _this.clickingItem = false;
       _this.isOpen(false);
     };
     _this.clickOpen = function() {
@@ -98,6 +98,10 @@ define('src/vm.combo', [
       console.log(evt.keyCode);
       if (!_this.isOpen()) {
         _this.isOpen(true);
+        switch (evt.keyCode) {
+          case 13: // enter key
+            return false; // don't re-close
+        }
       }
       switch (evt.keyCode) {
         default: return true;

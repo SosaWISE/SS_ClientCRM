@@ -1,11 +1,23 @@
 
 .form-error {
-  background-color:#ffc0c0 !important;
+  background-color: rgba(255,192,192,.9) !important;
+  &:focus {
+    background-color: rgba(255,192,192,1) !important;
+  }
 }
 .form-dirty {
-  background-color:#ffffc0 !important;
+  background-color: rgba(255,255,192,.9) !important;
+  &:focus {
+    background-color: rgba(255,255,192,1) !important;
+  }
 }
 
+// div.form-error {
+//   background-color: rgba(255,192,192,1) !important;
+// }
+// div.form-dirty {
+//   background-color: rgba(255,255,192,1) !important;
+// }
 
 
 .mixin-edit-btn(@content, @top, @left, @fontSize:28px) {
@@ -158,37 +170,39 @@
   }
 }
 
-ul.edit-form {
+.edit-form {
   // padding: 15px 15px 10px 15px;
 
   li {
     margin-bottom: 15px;
+  }
 
-    .label {
-      display: block;
-      text-transform: uppercase;
-      font-weight: 500;
-      margin-bottom: 3px;
-    }
-    input[type=text],
-    textarea {
-      .transition(.25s);
-      .border-radius(3px);
-      border: 0;
-      background: rgba(255,255,255,.9);
-      padding: 5px 7px;
-      margin: 0;
-      width: 100%;
-      outline: none;
-      resize: none;
+  .label {
+    display: block;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 3px;
+  }
+  input[type=text],
+  textarea {
+    .transition(.25s);
+    .border-radius(3px);
+    border: 0;
+    background: rgba(255,255,255,.9);
+    padding: 5px 7px;
+    margin: 0;
+    width: 100%;
+    outline: none;
+    resize: none;
 
-      &:focus {
-        background: rgba(255,255,255,1);
-      }
+    border: 1px solid transparent;
+    &:focus {
+      border: 1px solid black;
+      background: rgba(255,255,255,1);
     }
-    textarea {
-      font-size: 13px;
-    }
+  }
+  textarea {
+    font-size: 13px;
   }
 }
 

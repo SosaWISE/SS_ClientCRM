@@ -4,7 +4,7 @@ div(class="combo",data-bind="toggle:{'open':isOpen}")
     span(class="arrow")
   div(class="combo-list")
     input(type="text",data-bind="click:clickOpen,event:{focus:clickOpen,blur:clickTestClose,keydown:inputKeydown},select:selectInput,value:filterText,valueUpdate:'keyup'")
-    ul(data-bind="visible:isOpen,event:{mousemove:onHovering,mouseexit:offHovering}")
+    ul(data-bind="visible:isOpen,event:{mousedown:onClickingItem,mouseup:offClickingItem}")
       <!-- ko foreach:list -->
       li(data-bind="visible:matches,click:$parent.selectItem")
         div(data-bind="up:2,scrollMiddle:active,active:active")
