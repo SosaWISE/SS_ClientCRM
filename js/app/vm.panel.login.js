@@ -41,33 +41,31 @@ define('src/vm.panel.login', [
         index++;
       };
     })();
-    _this.cmdLogin = ko.command(
-      function(cb) {
-        setTimeout(function() {
-          dataservice.user.auth({
-            SessionID: dataservice.session.sessionID(),
-            Username: _this.username(),
-            Password: _this.password(),
-            RememberMe: _this.rememberMe(),
-          }, function(err, resp) {
-            if (err) {
-              console.error(err);
-              notify.notify('warn', err.Message, 10);
-            } else {
-              config.user(resp.Value);
-              router.useDestPath();
-            }
+    _this.cmdLogin = ko.command(function(cb) {
+      setTimeout(function() {
+        dataservice.user.auth({
+          SessionID: dataservice.session.sessionID(),
+          Username: _this.username(),
+          Password: _this.password(),
+          RememberMe: _this.rememberMe(),
+        }, function(err, resp) {
+          if (err) {
+            console.error(err);
+            notify.notify('warn', err.Message, 10);
+          } else {
+            config.user(resp.Value);
+            router.useDestPath();
+          }
 
-            cb();
-          });
-        }, 500); // the login call is too fast for development purposes...
+          cb();
+        });
+      }, 500); // the login call is too fast for development purposes...
 
-        // must return true so the form will be submitted and the
-        // browser will ask the user if the login info should be saved.
-        // basically tells knockout to not call event.preventDefault()
-        return true;
-      }
-    );
+      // must return true so the form will be submitted and the
+      // browser will ask the user if the login info should be saved.
+      // basically tells knockout to not call event.preventDefault()
+      return true;
+    });
   }
   utils.inherits(LoginViewModel, ControllerViewModel);
 

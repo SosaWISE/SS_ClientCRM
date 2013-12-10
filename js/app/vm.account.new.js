@@ -5,6 +5,7 @@ define('src/vm.account.new', [
   'src/core/vm.layers',
   'src/vm.rep.find',
   'src/vm.address.validate',
+  'src/account/vm.account.runcredit',
   'ko'
 ], function(
   notify,
@@ -13,6 +14,7 @@ define('src/vm.account.new', [
   LayersViewModel,
   FindRepViewModel,
   ValidateAddressViewModel,
+  RunCreditAccountViewModel,
   ko
 ) {
   "use strict";
@@ -32,6 +34,10 @@ define('src/vm.account.new', [
     };
     _this.validateAddressVM = new ValidateAddressViewModel();
     _this.validateAddressVM.clickNext = function() {
+      _this.layer.vm(_this.runCreditVM);
+    };
+    _this.runCreditVM = new RunCreditAccountViewModel();
+    _this.runCreditVM.clickNext = function() {
       _this.layer.vm(_this.findRepVM);
       // alert('done');
     };

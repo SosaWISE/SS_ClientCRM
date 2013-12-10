@@ -1,0 +1,38 @@
+h2(class="title") Premise Address
+div(class="addr-form", data-bind="toggle:{'override':override}")
+  ul(class="edit-form")
+    li
+      span(class="label") Prefix
+      input(type="text", placeholder="",
+        data-bind="ukov:accountData.Salutation,value:accountData.Salutation,valueUpdate:'keyup'")
+    li
+      span(class="label") FirstName
+      input(type="text", placeholder="",
+        data-bind="ukov:accountData.FirstName,value:accountData.FirstName,valueUpdate:'keyup'")
+    li
+      span(class="label") MiddleName
+      input(type="text", placeholder="",
+        data-bind="ukov:accountData.MiddleName,value:accountData.MiddleName,valueUpdate:'keyup'")
+    li
+      span(class="label") LastName
+      input(type="text", placeholder="",
+        data-bind="ukov:accountData.LastName,value:accountData.LastName,valueUpdate:'keyup'")
+    li
+      span(class="label") Suffix
+      input(type="text", placeholder="",
+        data-bind="ukov:accountData.Suffix,value:accountData.Suffix,valueUpdate:'keyup'")
+    li
+      span(class="label") Email
+      input(type="text", placeholder="",
+        data-bind="ukov:accountData.Email,value:accountData.Email,valueUpdate:'keyup'")
+    li
+      span(class="label") Social Security #
+      input(type="text", placeholder="",
+        data-bind="ukov:accountData.SSN,value:accountData.SSN,valueUpdate:'keyup'")
+    li
+      span(class="label") Date of Birth
+      input(type="text", placeholder="",
+        data-bind="ukov:accountData.DOB,value:accountData.DOB,valueUpdate:'keyup'")
+
+div(style="margin-bottom:20px;")
+    span(class="btn-bg", data-bind="cmd:cmdRun") Run Credit

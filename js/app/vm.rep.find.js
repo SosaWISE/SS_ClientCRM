@@ -52,29 +52,27 @@ define('src/vm.rep.find', [
     //
     // events
     //
-    _this.cmdFind = ko.command(
-      function(cb) {
-        _this.repData.SalesRepID.validate();
-        if (!_this.repData.SalesRepID.isValid()) {
-          notify.notify('warn', _this.repData.SalesRepID.errMsg(), 7);
-          return cb();
-        }
-
-        _this.loaded(false);
-        var model = _this.repData.getValue();
-        dataservice.qualify.salesRepRead(model, function(resp) {
-          if (resp.Code !== 0) {
-            notify.notify('warn', resp.Message, 10);
-            _this.focusRepID(true);
-          } else {
-            _this.repData.markClean(resp.Value, true);
-            _this.repResult(resp.Value);
-            _this.loaded(true);
-          }
-          cb();
-        });
+    _this.cmdFind = ko.command(function(cb) {
+      _this.repData.SalesRepID.validate();
+      if (!_this.repData.SalesRepID.isValid()) {
+        notify.notify('warn', _this.repData.SalesRepID.errMsg(), 7);
+        return cb();
       }
-    );
+
+      _this.loaded(false);
+      var model = _this.repData.getValue();
+      dataservice.qualify.salesRepRead(model, function(resp) {
+        if (resp.Code !== 0) {
+          notify.notify('warn', resp.Message, 10);
+          _this.focusRepID(true);
+        } else {
+          _this.repData.markClean(resp.Value, true);
+          _this.repResult(resp.Value);
+          _this.loaded(true);
+        }
+        cb();
+      });
+    });
 
     _this.loading = _this.cmdFind.busy;
   }

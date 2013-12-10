@@ -165,33 +165,31 @@ define('src/vm.address.validate', [
     //
     // events
     //
-    _this.cmdValidate = ko.command(
-      function(cb) {
-        _this.addressData.validate();
-        _this.addressData.update();
-        if (!_this.addressData.isValid()) {
-          notify.notify('warn', _this.addressData.errMsg(), 7);
-          return cb();
-        }
-
-        _this.loaded(false);
-        var model = _this.addressData.getValue();
-        dataservice.qualify.validateAddress(model, function(resp) {
-          if (resp.Code !== 0) {
-            notify.notify('warn', resp.Message, 10);
-          } else {
-            _this.addressData.markClean(model, true);
-            _this.addressResult(resp.Value);
-            _this.loaded(true);
-          }
-          /////TESTING//////////////////////
-          // _this.width(_this.width() + 10);
-          // _this.height(_this.height() + 10);
-          /////TESTING//////////////////////
-          cb();
-        });
+    _this.cmdValidate = ko.command(function(cb) {
+      _this.addressData.validate();
+      _this.addressData.update();
+      if (!_this.addressData.isValid()) {
+        notify.notify('warn', _this.addressData.errMsg(), 7);
+        return cb();
       }
-    );
+
+      _this.loaded(false);
+      var model = _this.addressData.getValue();
+      dataservice.qualify.validateAddress(model, function(resp) {
+        if (resp.Code !== 0) {
+          notify.notify('warn', resp.Message, 10);
+        } else {
+          _this.addressData.markClean(model, true);
+          _this.addressResult(resp.Value);
+          _this.loaded(true);
+        }
+        /////TESTING//////////////////////
+        // _this.width(_this.width() + 10);
+        // _this.height(_this.height() + 10);
+        /////TESTING//////////////////////
+        cb();
+      });
+    });
     _this.clickManual = function() {
       // _this.setManualOverride(true);
       /////TESTING//////////////////////

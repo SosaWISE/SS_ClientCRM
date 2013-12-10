@@ -17,9 +17,11 @@ define('src/u-kov/app/validators', [
     notPattern = 'Value does not match specified pattern',
     valRequired = 'Value is required',
     passwordMsg = 'A password must be atleast {0} or more letters and contain at least one upper case letter, one lower case letter and one digit.',
+    ssnMsg = 'A social security number must match this format: 123-12-1234.',
 
     // 1 uppercase, 1 lowercase, and 1 number
-    passwordRegex = /^(?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])\S+$/;
+    passwordRegex = /^(?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])\S+$/,
+    ssnExactRegx = /^(?!000)(?!666)[0-8]\d{2}[- ](?!00)\d{2}[- ](?!0000)\d{4}$/;
 
   validators.isString = function(message) {
     message = message || notString;
@@ -132,6 +134,18 @@ define('src/u-kov/app/validators', [
         return;
       }
       if (!passwordRegex.test(val) || val.length < minLength) {
+        return message;
+      }
+    };
+  };
+
+  validators.isSsn = function(message) {
+    message = message || ssnMsg;
+    return function(val /*, model*/ ) {
+      if (val == null) {
+        return;
+      }
+      if (!ssnExactRegx.test(val)) {
         return message;
       }
     };

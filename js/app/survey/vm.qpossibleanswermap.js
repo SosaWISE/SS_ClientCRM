@@ -23,21 +23,19 @@ define('src/survey/vm.qpossibleanswermap', [
     //
     // events
     //
-    _this.cmdToggle = ko.command(
-      function(cb) {
-        var model = _this.model;
-        model.Expands = !model.Expands;
-        dataservice.survey.questionPossibleAnswerMaps.save(model, null, function(err, resp) {
-          if (err) {
-            notify.notify('warn', err.Message);
-          } else {
-            _this.model = resp.Value;
-            _this.active(_this.model.Expands);
-          }
-          cb();
-        });
-      }
-    );
+    _this.cmdToggle = ko.command(function(cb) {
+      var model = _this.model;
+      model.Expands = !model.Expands;
+      dataservice.survey.questionPossibleAnswerMaps.save(model, null, function(err, resp) {
+        if (err) {
+          notify.notify('warn', err.Message);
+        } else {
+          _this.model = resp.Value;
+          _this.active(_this.model.Expands);
+        }
+        cb();
+      });
+    });
   }
   utils.inherits(QPossibleAnswerMapViewModel, BaseViewModel);
 
