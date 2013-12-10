@@ -125,23 +125,28 @@ define('src/vm.address.validate', [
 
     _this.stateComboVM = new ComboViewModel({
       selectedValue: _this.addressData.StateId,
-      list: _this.stateOptions
+      list: _this.stateOptions,
+      nullable: true,
     });
     _this.timeZoneComboVM = new ComboViewModel({
       selectedValue: _this.addressData.TimeZoneId,
-      list: _this.timeZoneOptions
+      list: _this.timeZoneOptions,
+      nullable: true,
     });
     _this.preDirectionalComboVM = new ComboViewModel({
       selectedValue: _this.addressData.PreDirectional,
-      list: _this.addressDirectionalTypeOptions
+      list: _this.addressDirectionalTypeOptions,
+      nullable: true,
     });
     _this.postDirectionalComboVM = new ComboViewModel({
       selectedValue: _this.addressData.PostDirectional,
-      list: _this.addressDirectionalTypeOptions
+      list: _this.addressDirectionalTypeOptions,
+      nullable: true,
     });
     _this.streetTypeComboVM = new ComboViewModel({
       selectedValue: _this.addressData.StreetType,
-      list: _this.streetTypeOptions
+      list: _this.streetTypeOptions,
+      nullable: true,
     });
 
     _this.width = ko.observable(300);

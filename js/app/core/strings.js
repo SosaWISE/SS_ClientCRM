@@ -67,11 +67,10 @@ define('src/core/strings', [
     return text;
   };
 
-  // ?????
-  // // from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
-  // strings.escapeRegExp = function(string) {
-  //   return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-  // };
+  // from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+  strings.escapeRegExp = function(string) {
+    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+  };
   // escapeRegExp: function(text) {
   //   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
   // },

@@ -1,9 +1,11 @@
 define('src/vm.combo', [
   'ko',
+  'src/core/strings',
   'src/core/utils',
   'src/core/vm.base',
 ], function(
   ko,
+  strings,
   utils,
   BaseViewModel
 ) {
@@ -15,7 +17,6 @@ define('src/vm.combo', [
   //@TODO:
   // on focus open (tab pressed)
   // on blur close (click elsewhere)
-  // on escap key press close
 
   function ComboViewModel(options) {
     var _this = this;
@@ -66,13 +67,24 @@ define('src/vm.combo', [
     //
     // events
     //
+    _this.onHovering = function() {
+      _this.hovering = true;
+    };
+    _this.offHovering = function() {
+      _this.hovering = false;
+    };
+    _this.clickTestClose = function() {
+      if (_this.hovering) {
+        return;
+      }
+      _this.clickClose();
+    };
     _this.clickClose = function() {
+      _this.hovering = false;
       _this.isOpen(false);
     };
-    _this.clickToggleOpen = function() {
-      if (_this.isOpen()) {
-        _this.clickClose();
-      } else {
+    _this.clickOpen = function() {
+      if (!_this.isOpen()) {
         // _this.filterText('');
         _this.isOpen(true);
         setTimeout(function() {
@@ -83,14 +95,19 @@ define('src/vm.combo', [
     };
     _this.inputKeydown = function(vm, evt) {
       var down;
+      console.log(evt.keyCode);
+      if (!_this.isOpen()) {
+        _this.isOpen(true);
+      }
       switch (evt.keyCode) {
         default: return true;
         case 27: // escape key
           _this.clickClose();
           return false;
         case 13: // enter key
+        case 9: // tab key
           _this.selectItem(_this.list()[_this.activeIndex]);
-          return false;
+          return evt.keyCode === 9;
         case 38: // up arrow key
           down = false;
           break;
@@ -100,17 +117,19 @@ define('src/vm.combo', [
       }
       _this.activateNext(down);
     };
-    _this.selectItem = function(item) {
-      if (item) {
-        item = item.item; // unwrap item
+    _this.selectItem = function(wrappedItem) {
+      if (wrappedItem) {
+        var item = wrappedItem.item;
         _this.selectedValue(item.value);
 
         _this.clickClose();
 
         if (item !== _this.list()[_this.activeIndex]) {
           _this.deactivateCurrent();
-          _this.activeIndex = _this.list().indexOf(item) - 1;
-          _this.activateNext(true);
+          if (item.value != null) {
+            _this.activeIndex = _this.list().indexOf(wrappedItem) - 1;
+            _this.activateNext(true);
+          }
         }
       }
     };
@@ -121,7 +140,7 @@ define('src/vm.combo', [
     };
 
     if (options && options.list) {
-      _this.setList(options.list);
+      _this.setList(options.list, options.nullable);
     } else {
       // start with nothing selected
       _this.selectedValue(null);
@@ -133,13 +152,20 @@ define('src/vm.combo', [
     value: null,
     text: '[Select One]',
   };
+  ComboViewModel.noneItem = {
+    value: null,
+    text: '[None]',
+  };
 
-  ComboViewModel.prototype.setList = function(list) {
+  ComboViewModel.prototype.setList = function(list, nullable) {
     var _this = this,
       wrapList = new Array(list.length);
     list.forEach(function(item, index) {
       wrapList[index] = wrapItem(item);
     });
+    if (nullable) {
+      wrapList.unshift(wrapItem(ComboViewModel.noneItem));
+    }
     _this.list(wrapList);
     filterList(_this.list(), _this.filterText());
 
@@ -193,6 +219,16 @@ define('src/vm.combo', [
     };
   }
 
+  // function indexOfItem(list, item) {
+  //   var index = -1;
+  //   list.some(function(wrappedItem, i) {
+  //     if (wrappedItem.item === item) {
+  //       index = i;
+  //       return true;
+  //     }
+  //   });
+  //   return index;
+  // }
   function findNextIndex(list, startIndex, down) {
     var index = startIndex,
       inc = (down) ? 1 : -1,
@@ -221,15 +257,16 @@ define('src/vm.combo', [
 
   function filterList(list, filterText) {
     var matches = getMatches(filterText),
-      regx = new RegExp(regxAnyLetter + matches.join(regxAnyLetter) + regxAnyLetter, 'i'),
-      letterRegxList = createLetterRegxList(matches);
-    list.forEach(function(val) {
-      if (regx.test(val.text)) {
-        val.html(makeHtml(letterRegxList, val.text));
-        val.matches(true);
+      regx, letterRegxList;
+    regx = createRegx(matches);
+    letterRegxList = createLetterRegxList(matches);
+    list.forEach(function(wrappedItem) {
+      if (regx.test(wrappedItem.text)) {
+        wrappedItem.html(makeHtml(letterRegxList, wrappedItem.text));
+        wrappedItem.matches(true);
       } else {
-        val.html(val.text);
-        val.matches(false);
+        wrappedItem.html(wrappedItem.text);
+        wrappedItem.matches(false);
       }
     });
   }
@@ -237,9 +274,14 @@ define('src/vm.combo', [
   function getMatches(filterText) {
     var matches = [];
     filterText.replace(charRegx, function(item, match) {
+      match = strings.escapeRegExp(match);
       matches.push(match);
     });
     return matches;
+  }
+
+  function createRegx(matches) {
+    return new RegExp(regxAnyLetter + matches.join(regxAnyLetter) + regxAnyLetter, 'i');
   }
 
   function createLetterRegxList(matches) {
