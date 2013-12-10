@@ -1,5 +1,7 @@
 div(class="combo")
-  div(class="cover",data-bind="text:selectedItem().text,click:clickToggleOpen")
+  div(class="cover",data-bind="click:clickToggleOpen,ukov:selectedValue,toggle:{'open':isOpen}")
+    span(data-bind="text:selectedItem().text")
+    span(class="arrow")
   div(class="combo-list",data-bind="visible:isOpen")
     input(type="text",data-bind="hasfocus:focusInput,select:selectInput,event:{keydown:inputKeydown},value:filterText,valueUpdate:'keyup'")
     ul

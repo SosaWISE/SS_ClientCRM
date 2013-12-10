@@ -1,9 +1,11 @@
 define('src/survey/vm.takesurveytranslation', [
+  'src/core/notify',
   'src/vm.combo',
   'src/survey/vm.takesurvey',
   'src/core/utils',
   'src/core/vm.base',
 ], function(
+  notify,
   ComboViewModel,
   TakeSurveyViewModel,
   utils,
@@ -16,14 +18,15 @@ define('src/survey/vm.takesurveytranslation', [
     TakeSurveyTranslationViewModel.super_.call(_this, options);
     _this.ensureProps(['surveyTranslationVMs', 'routeCtx']);
 
-    _this.localeComboVM = new ComboViewModel();
-    _this.localeComboVM.setList(_this.surveyTranslationVMs.map(function(surveyTranslationVM) {
-      var locale = surveyTranslationVM.model.LocalizationCode;
-      return {
-        locale: locale,
-        text: locale,
-      };
-    }));
+    _this.localeComboVM = new ComboViewModel({
+      list: _this.surveyTranslationVMs.map(function(surveyTranslationVM) {
+        var locale = surveyTranslationVM.model.LocalizationCode;
+        return {
+          value: locale,
+          text: locale,
+        };
+      })
+    });
 
     //
     // events
@@ -37,8 +40,13 @@ define('src/survey/vm.takesurveytranslation', [
       if (!_this.layersVM) {
         return;
       }
-      _this.routeCtx.routeData.locale = _this.localeComboVM.selectedItem().item.locale;
-      var vm = new TakeSurveyViewModel({
+      var vm, locale = _this.localeComboVM.selectedValue();
+      if (!locale) {
+        notify.notify('warn', 'No localization code selected', 10);
+        return;
+      }
+      _this.routeCtx.routeData.locale = locale;
+      vm = new TakeSurveyViewModel({
         tokenData: {
           CompanyName: 'CompanyName',
           ADUserDisplayName: 'ADUserDisplayName',

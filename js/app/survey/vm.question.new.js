@@ -22,8 +22,9 @@ define('src/survey/vm.question.new', [
     NewQuestionViewModel.super_.call(_this, options);
     _this.ensureProps(['surveyVM', 'surveyTypeVM']);
 
-    _this.qmComboVM = new ComboViewModel();
-    _this.qmComboVM.setList(createComboList(_this.surveyVM, _this.surveyTypeVM.questionMeanings()));
+    _this.qmComboVM = new ComboViewModel({
+      list: createComboList(_this.surveyVM, _this.surveyTypeVM.questionMeanings())
+    });
     _this.qmComboVM.actions([
       {
         text: 'Add New Meaning',
@@ -41,14 +42,14 @@ define('src/survey/vm.question.new', [
       _this.layer.close();
     };
     _this.cmdAdd = ko.command(function(cb) {
-      var selectedItem = _this.qmComboVM.selectedItem();
-      if (selectedItem === _this.qmComboVM.noItemSelected) {
+      var selectedValue = _this.qmComboVM.selectedValue();
+      if (!selectedValue) {
         notify.notify('warn', 'No question meaning selected', 10);
         return cb();
       }
       dataservice.survey.questions.save({
         SurveyId: _this.surveyVM.model.SurveyID,
-        QuestionMeaningId: selectedItem.item.vm.model.QuestionMeaningID,
+        QuestionMeaningId: selectedValue.model.QuestionMeaningID,
         ParentId: (_this.parent) ? _this.parent.model.QuestionID : null,
         GroupOrder: _this.groupOrder,
         MapToTokenId: null,
@@ -78,7 +79,7 @@ define('src/survey/vm.question.new', [
         return;
       }
       var item = _this.qmComboVM.addItem({
-        vm: _this.surveyTypeVM.addQuestionMeaning(model),
+        value: _this.surveyTypeVM.addQuestionMeaning(model),
         text: model.Name,
       });
       _this.qmComboVM.selectItem(item);
@@ -103,7 +104,7 @@ define('src/survey/vm.question.new', [
         return;
       }
       result.push({
-        vm: vm,
+        value: vm,
         text: vm.model.Name,
       });
     });

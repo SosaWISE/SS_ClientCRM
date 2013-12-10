@@ -12,16 +12,22 @@ define('src/vm.combo', [
   var charRegx = /([^\s]{1})/g,
     regxAnyLetter = '.*';
 
+  //@TODO:
+  // on focus open (tab pressed)
+  // on blur close (click elsewhere)
+  // on escap key press close
+
   function ComboViewModel(options) {
     var _this = this;
     ComboViewModel.super_.call(_this, options);
 
     _this.activeIndex = -1;
-    _this.noItemSelected = {
-      text: '[Select One]',
-    };
     _this.filterText = ko.observable('');
-    _this.selectedItem = ko.observable(_this.noItemSelected);
+    _this.selectedItem = ko.observable(ComboViewModel.noItemSelected);
+    if (!_this.selectedValue) {
+      _this.selectedValue = ko.observable();
+    }
+
     _this.list = ko.observableArray();
     _this.actions = ko.observableArray();
     _this.isOpen = ko.observable(false);
@@ -32,6 +38,29 @@ define('src/vm.combo', [
       filterList(_this.list(), filterText);
       _this.deactivateCurrent();
       _this.activateNext(true);
+    });
+
+    // whenever selectedValue changes
+    //    verify the value is in the list of items
+    //    update selectedItem
+    _this.selectedValue.subscribe(function(selectedValue) {
+      if (selectedValue != null) {
+        var item;
+        _this.list().some(function(wrappedItem) {
+          if (wrappedItem.item.value === selectedValue) {
+            item = wrappedItem.item;
+            return true;
+          }
+        });
+        if (item) {
+          _this.selectedItem(item);
+        } else {
+          console.log('selectedValue not in list:', selectedValue);
+          _this.selectedValue(null);
+        }
+      } else {
+        _this.selectedItem(ComboViewModel.noItemSelected);
+      }
     });
 
     //
@@ -73,7 +102,9 @@ define('src/vm.combo', [
     };
     _this.selectItem = function(item) {
       if (item) {
-        _this.selectedItem(item);
+        item = item.item; // unwrap item
+        _this.selectedValue(item.value);
+
         _this.clickClose();
 
         if (item !== _this.list()[_this.activeIndex]) {
@@ -88,9 +119,20 @@ define('src/vm.combo', [
       _this.clickClose();
       action.onClick(_this.filterText());
     };
+
+    if (options && options.list) {
+      _this.setList(options.list);
+    } else {
+      // start with nothing selected
+      _this.selectedValue(null);
+    }
   }
   utils.inherits(ComboViewModel, BaseViewModel);
   ComboViewModel.prototype.viewTmpl = 'tmpl-combo';
+  ComboViewModel.noItemSelected = {
+    value: null,
+    text: '[Select One]',
+  };
 
   ComboViewModel.prototype.setList = function(list) {
     var _this = this,
@@ -100,8 +142,10 @@ define('src/vm.combo', [
     });
     _this.list(wrapList);
     filterList(_this.list(), _this.filterText());
-    // select first visible item in the list
-    _this.selectedItem(wrapList[findNextIndex(wrapList, wrapList.length, true)] || _this.noItemSelected);
+
+    // reset selected value
+    _this.selectedValue(null);
+
     _this.deactivateCurrent();
   };
   ComboViewModel.prototype.addItem = function(item) {
@@ -134,7 +178,10 @@ define('src/vm.combo', [
   };
 
   function wrapItem(item) {
-    if (!item.text) {
+    if (!('value' in item)) {
+      throw new Error('no value field: ' + JSON.stringify(item));
+    }
+    if (!('text' in item)) {
       throw new Error('no text field: ' + JSON.stringify(item));
     }
     return {

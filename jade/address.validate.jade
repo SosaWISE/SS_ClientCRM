@@ -22,17 +22,15 @@ div(class="addr-form", data-bind="toggle:{'override':override}")
       input(type="text", placeholder="Springfield",
         data-bind="ukov:addressData.City,value:addressData.City,valueUpdate:'keyup',enter:cmdValidate")
     li
-      span(class="label") State (combobox)
-      input(type="text", placeholder="UT",
-        data-bind="ukov:addressData.StateId,value:addressData.StateId,valueUpdate:'keyup',enter:cmdValidate")
+      span(class="label") State
+      div(data-bind="template:{name:stateComboVM.viewTmpl,data:stateComboVM}")
     li
       span(class="label") County
       input(type="text", placeholder="Grand",
         data-bind="ukov:addressData.County,value:addressData.County,valueUpdate:'keyup',enter:cmdValidate")
     li
-      span(class="label") Time Zone (combobox)
-      input(type="text", placeholder="MST",
-        data-bind="ukov:addressData.TimeZoneId,value:addressData.TimeZoneId,valueUpdate:'keyup',enter:cmdValidate")
+      span(class="label") Time Zone
+      div(data-bind="template:{name:timeZoneComboVM.viewTmpl,data:timeZoneComboVM}")
     li
   ul(class="edit-form",style="width:260px;position:absolute;top:0px;right:0px;",
     data-bind="visible:override")
@@ -45,23 +43,20 @@ div(class="addr-form", data-bind="toggle:{'override':override}")
       input(type="text", placeholder="Main",
         data-bind="ukov:addressData.StreetName,value:addressData.StreetName,valueUpdate:'keyup',enter:cmdValidate")
     li
-      span(class="label") Pre Directional (combobox)
-      input(type="text", placeholder="W",
-        data-bind="ukov:addressData.PreDirectional,value:addressData.PreDirectional,valueUpdate:'keyup',enter:cmdValidate")
+      span(class="label") Pre Directional
+      div(data-bind="template:{name:preDirectionalComboVM.viewTmpl,data:preDirectionalComboVM}")
     li
-      span(class="label") Post Directional (combobox)
-      input(type="text", placeholder="N",
-        data-bind="ukov:addressData.PostDirectional,value:addressData.PostDirectional,valueUpdate:'keyup',enter:cmdValidate")
+      span(class="label") Post Directional
+      div(data-bind="template:{name:postDirectionalComboVM.viewTmpl,data:postDirectionalComboVM}")
     li
-      span(class="label") Street Type (combobox)
-      input(type="text", placeholder="Springfield",
-        data-bind="ukov:addressData.StreetType,value:addressData.StreetType,valueUpdate:'keyup',enter:cmdValidate")
+      span(class="label") Street Type
+      div(data-bind="template:{name:streetTypeComboVM.viewTmpl,data:streetTypeComboVM}")
     li
       span(class="label") Extension
       input(type="text", placeholder="",
         data-bind="ukov:addressData.Extension,value:addressData.Extension,valueUpdate:'keyup',enter:cmdValidate")
     li
-      span(class="label") ExtensionNumber
+      span(class="label") Extension #
       input(type="text", placeholder="",
         data-bind="ukov:addressData.ExtensionNumber,value:addressData.ExtensionNumber,valueUpdate:'keyup',enter:cmdValidate")
     li
@@ -77,16 +72,7 @@ div(style="margin-bottom:20px;")
     span(class="btn-bg", data-bind="cmd:cmdValidate") Validate Address
 
 div(data-bind="if:loaded")
-  div(class="info", data-bind="with:addressResult")
-      div(class="address", data-bind="text:StreetAddress")
-      div(class="address", data-bind="text:StreetAddress2")
-      div(class="address")
-        span(data-bind="text:City")
-        |,&nbsp;
-        span(data-bind="text:StateId")
-        |&nbsp;
-        span(data-bind="text:PostalCode")
-      div(class="phone", data-bind="text:Phone")
-
+  div(data-bind="template:{name:'tmpl-address',data:addressResult}")
   div(class="actions", data-bind="if:clickNext")
-    span(class="btn-bg", data-bind="click:clickNext") Next
+    //- span(class="btn-bg", data-bind="click:clickNext") Next
+    span(class="btn-bg", data-bind="click:clickManual") Manual

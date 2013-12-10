@@ -2,7 +2,7 @@ div(data-bind="if:cmdAdd.busy")
   div(class="spinner-wrap white", data-bind="template:'tmpl-spinner',active:true")
 
 div
-  h2(data-bind="text:surveyTypeVM.model.Name")
+  h2(class="title", data-bind="text:surveyTypeVM.model.Name")
   ul(class="edit-form")
     li
       span(class="label") Version

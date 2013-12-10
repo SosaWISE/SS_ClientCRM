@@ -32,9 +32,9 @@ define('src/u-kov/app/bindings', [
     }
     if (ukovItem.isSaving && ukovItem.isSaving()) {
       cls = 'form-saving';
-    } else if (!ukovItem.isValid()) {
+    } else if (ukovItem.isValid && !ukovItem.isValid()) {
       cls = 'form-error';
-    } else if (!ukovItem.isClean()) {
+    } else if (ukovItem.isClean && !ukovItem.isClean()) {
       cls = 'form-dirty';
     } else {
       cls = null;

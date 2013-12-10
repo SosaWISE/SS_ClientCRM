@@ -33,11 +33,12 @@ define('src/survey/vm.takequestion', [
       case 'radiolist':
         break;
       case 'combo':
-        _this.comboVM = new ComboViewModel();
-        _this.comboVM.selectedItem.subscribe(function(item) {
-          _this.clickAnswer(item.item);
+        _this.comboVM = new ComboViewModel({
+          list: _this.questionPossibleAnswerMaps
         });
-        _this.comboVM.setList(_this.questionPossibleAnswerMaps);
+        _this.comboVM.selectedItem.subscribe(function(item) {
+          _this.clickAnswer(item);
+        });
         break;
       case 'text':
         break;

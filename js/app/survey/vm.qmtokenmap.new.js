@@ -20,8 +20,9 @@ define('src/survey/vm.qmtokenmap.new', [
     NewQMTokenMapViewModel.super_.call(_this, options);
     _this.ensureProps(['questionMeaningVM', 'tokensVM']);
 
-    _this.tokenComboVM = new ComboViewModel();
-    _this.tokenComboVM.setList(createComboList(_this.questionMeaningVM.tokenMaps(), _this.tokensVM.list()));
+    _this.tokenComboVM = new ComboViewModel({
+      list: createComboList(_this.questionMeaningVM.tokenMaps(), _this.tokensVM.list())
+    });
 
     //
     // events
@@ -33,14 +34,14 @@ define('src/survey/vm.qmtokenmap.new', [
       _this.layer.close();
     };
     _this.cmdAdd = ko.command(function(cb) {
-      var selectedItem = _this.tokenComboVM.selectedItem();
-      if (selectedItem === _this.tokenComboVM.noItemSelected) {
+      var selectedValue = _this.tokenComboVM.selectedValue();
+      if (!selectedValue) {
         notify.notify('warn', 'No token selected', 10);
         return cb();
       }
       dataservice.survey.questionMeaningTokenMaps.save({
         QuestionMeaningId: _this.questionMeaningVM.model.QuestionMeaningID,
-        TokenId: selectedItem.item.token.TokenID,
+        TokenId: selectedValue.TokenID,
         IsDeleted: false,
       }, null, function(err, resp) {
         if (err) {
@@ -72,7 +73,7 @@ define('src/survey/vm.qmtokenmap.new', [
         return;
       }
       result.push({
-        token: token,
+        value: token,
         text: token.Token,
       });
     });

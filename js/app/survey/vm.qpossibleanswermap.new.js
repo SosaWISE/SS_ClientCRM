@@ -20,20 +20,22 @@ define('src/survey/vm.qpossibleanswermap.new', [
     NewQPossibleAnswerMapViewModel.super_.call(_this, options);
     _this.ensureProps(['questionVM', 'possibleAnswersVM']);
 
-    _this.paComboVM = new ComboViewModel();
-    _this.paComboVM.setList(
-      createComboList(_this.questionVM.possibleAnswerMaps(), _this.possibleAnswersVM.possibleAnswers()));
-    _this.expandsComboVM = new ComboViewModel();
-    _this.expandsComboVM.setList([
-      {
-        value: true,
-        text: 'true',
-      },
-      {
-        value: false,
-        text: 'false',
-      }
-    ]);
+    _this.paComboVM = new ComboViewModel({
+      list: createComboList(_this.questionVM.possibleAnswerMaps(), _this.possibleAnswersVM.possibleAnswers())
+    });
+    _this.expandsComboVM = new ComboViewModel({
+      list: [
+        {
+          value: true,
+          text: 'true',
+        },
+        {
+          value: false,
+          text: 'false',
+        }
+      ]
+    });
+    _this.expandsComboVM.selectedValue(false);
 
     //
     // events
@@ -45,15 +47,15 @@ define('src/survey/vm.qpossibleanswermap.new', [
       _this.layer.close();
     };
     _this.cmdAdd = ko.command(function(cb) {
-      var selectedItem = _this.paComboVM.selectedItem();
-      if (selectedItem === _this.paComboVM.noItemSelected) {
+      var possibleAnswer = _this.paComboVM.selectedValue();
+      if (!possibleAnswer) {
         notify.notify('warn', 'No possible answer selected', 10);
         return cb();
       }
       dataservice.survey.questionPossibleAnswerMaps.save({
         QuestionId: _this.questionVM.model.QuestionID,
-        PossibleAnswerId: selectedItem.item.possibleAnswer.PossibleAnswerID,
-        Expands: _this.expandsComboVM.selectedItem().item.value,
+        PossibleAnswerId: possibleAnswer.PossibleAnswerID,
+        Expands: _this.expandsComboVM.selectedValue(),
       }, null, function(err, resp) {
         if (err) {
           notify.notify('error', err.Message);
@@ -84,7 +86,7 @@ define('src/survey/vm.qpossibleanswermap.new', [
         return;
       }
       result.push({
-        possibleAnswer: pa,
+        value: pa,
         text: pa.AnswerText,
       });
     });

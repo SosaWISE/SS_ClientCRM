@@ -11,32 +11,40 @@ define('spec/app/vm.combo.spec', [
       c = new ComboViewModel();
       c.setList([
         {
+          value: 1,
           text: 'abcdef',
         },
         {
+          value: 2,
           text: 'bcdefa',
         },
         {
+          value: 3,
           text: 'cdefab',
         },
         {
+          value: 4,
           text: 'defabc',
         },
         {
+          value: 5,
           text: 'efabcd',
         },
         {
+          value: 6,
           text: 'fabcde',
         },
         {
+          value: 7,
           text: 'aBcdefabcdef',
         },
       ]);
       list = c.list();
     });
 
-    it('first item should be selected', function() {
-      expect(c.selectedItem()).toBe(list[0]);
+    it('should start with no item selected', function() {
+      expect(c.selectedItem()).toBe(ComboViewModel.noItemSelected);
+      expect(c.selectedValue()).toBe(null);
     });
 
     describe('filterText', function() {
