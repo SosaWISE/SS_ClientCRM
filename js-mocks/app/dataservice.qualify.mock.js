@@ -24,7 +24,7 @@ define('mock/app/dataservice.qualify.mock', [
           },
         });
 
-        cb(resp);
+        cb(null, resp);
       }, settings.timeout);
     };
     QualifyDataservice.prototype.validateAddress = function(data, cb) {
@@ -73,7 +73,7 @@ define('mock/app/dataservice.qualify.mock', [
           },
         });
 
-        cb(resp);
+        cb(null, resp);
       }, settings.timeout);
     };
   };
