@@ -83,8 +83,8 @@ define('src/vm.rep.find', [
   }
   utils.inherits(FindRepViewModel, BaseViewModel);
   FindRepViewModel.prototype.viewTmpl = 'tmpl-rep_find';
-  FindRepViewModel.prototype.width = 350;
-  FindRepViewModel.prototype.height = 300;
+  FindRepViewModel.prototype.width = 400;
+  FindRepViewModel.prototype.height = 350;
 
   FindRepViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
     var _this = this;

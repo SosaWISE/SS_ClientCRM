@@ -195,12 +195,15 @@ define('src/vm.address.validate', [
         cb();
       });
     });
-    _this.clickManual = function() {
+    _this.cmdManual = ko.command(function(cb) {
       // _this.setManualOverride(true);
       /////TESTING//////////////////////
       _this.setManualOverride(!_this.override());
       /////TESTING//////////////////////
-    };
+      cb();
+    }, function(busy) {
+      return !busy; // && ???;
+    });
 
     _this.loading = _this.cmdValidate.busy;
   }
