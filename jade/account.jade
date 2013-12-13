@@ -8,14 +8,14 @@ div(class="tab", data-bind="active:active")
   div(class="account", data-bind="toggle:{'show-editor':showEditor}")
     div(class="details", data-bind="toggle:{'hide-notes':hideNotes,'show-reps':showReps}")
       div(data-bind="text:title,click:clickToggleEditor")
-      div(class="col")
+      div(class="col col3")
         span(class="title") Contract
 
-        //- div(class="module")
+        //- div(class="section")
         //-   span(class="title") title goes here
         //-   div(class="contents") contents go here
 
-        div(class="module")
+        div(class="section")
           span(class="title") Contract Owner
           div(class="contents")
             div(class="info userinfo")
@@ -32,17 +32,17 @@ div(class="tab", data-bind="active:active")
               div(class="email") asosa@securitysciences.com
               div(class="credit-score")
                 span(class="excellent") Credit Score: TU Excellent
-        div(class="module empty")
+        div(class="section empty disabled")
           span(class="title") Shipping Address
-      div(class="col")
+      div(class="col col3")
         span(class="title") System
-        div(class="module empty enabled")
+        div(class="section empty ")
           span(class="title") Premise / Monitored Party
-        div(class="module empty")
+        div(class="section empty disabled")
           span(class="title") System Information
-      div(class="col")
+      div(class="col col3")
         span(class="title") Billing
-        div(class="module empty")
+        div(class="section empty disabled")
           span(class="title") Billing Information
 
     div(class="notes", data-bind="toggle:{'hide-notes':hideNotes}")

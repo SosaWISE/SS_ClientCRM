@@ -22,14 +22,15 @@ define('src/core/vm.controller', [
     ControllerViewModel.super_.call(_this, options);
 
     _this.loading = ko.observable(false);
+    _this.loaded = ko.observable(false);
     _this.activeChild = ko.observable(null);
 
     _this.childs = ko.observableArray();
     _this.deps = ko.observableArray();
   }
   utils.inherits(ControllerViewModel, BaseViewModel);
-  ControllerViewModel.prototype.routePart = 'route';
-  ControllerViewModel.prototype.defaultChild = null;
+  // ControllerViewModel.prototype.routePart = 'route';
+  // ControllerViewModel.prototype.defaultChild = null;
 
   ControllerViewModel.prototype.setRoute = function(route) {
     var _this = this;
@@ -78,7 +79,10 @@ define('src/core/vm.controller', [
       // try to use the default child
       child = _this.defaultChild;
     }
-    _this.activeChild(child);
+    // only set if different than current to prevent unnecessarily rebinding
+    if (_this.activeChild() !== child) {
+      _this.activeChild(child);
+    }
     if (child) {
       if (child.routePart) {
         routeData[child.routePart] = child.id;
@@ -133,10 +137,10 @@ define('src/core/vm.controller', [
   };
   ControllerViewModel.prototype.onDeactivate = function() {
     var _this = this,
-      activeChild = _this.activeChild;
-    if (activeChild()) {
-      activeChild().deactivate();
-      activeChild(null);
+      activeChild = _this.activeChild();
+    if (activeChild) {
+      activeChild.deactivate();
+      // don't set activeChild to null since it can make knockout unnecessarily rebind
     }
   };
 
@@ -145,7 +149,7 @@ define('src/core/vm.controller', [
       join,
       subscription;
 
-    if (_this._loaded) {
+    if (_this.loaded()) {
       // we're done here
       return cb();
     }
@@ -159,7 +163,7 @@ define('src/core/vm.controller', [
         if (errResp) {
           notify.notify('error', errResp.Message);
         }
-        _this._loaded = true;
+        _this.loaded(true);
         // setting this should call all subscriptions made below (if any)
         _this.loading(false);
         //
@@ -199,6 +203,9 @@ define('src/core/vm.controller', [
     var parts = [];
     if (config.titlePrefix) {
       parts.push(config.titlePrefix);
+    }
+    if (title) {
+      title = ko.unwrap(title);
     }
     if (title) {
       parts.push(title);

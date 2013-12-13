@@ -1,38 +1,44 @@
-h2(class="title") Premise Address
-div(class="addr-form", data-bind="toggle:{'override':override}")
-  ul(class="edit-form")
+h2(class="title") Run Credit
+div(class="runcredit-form", data-bind="toggle:{'override':override}")
+  ul(class="edit-form",style="width:260px;")
     li
       span(class="label") Prefix
-      input(type="text", placeholder="",
-        data-bind="ukov:accountData.Salutation,value:accountData.Salutation,valueUpdate:'keyup'")
+      input(type="text", placeholder="Mr.",
+        data-bind="ukov:customerData.Salutation,value:customerData.Salutation,valueUpdate:'keyup'")
     li
-      span(class="label") FirstName
+      span(class="label") First Name
       input(type="text", placeholder="",
-        data-bind="ukov:accountData.FirstName,value:accountData.FirstName,valueUpdate:'keyup'")
+        data-bind="ukov:customerData.FirstName,value:customerData.FirstName,valueUpdate:'keyup'")
     li
-      span(class="label") MiddleName
+      span(class="label") Middle Name
       input(type="text", placeholder="",
-        data-bind="ukov:accountData.MiddleName,value:accountData.MiddleName,valueUpdate:'keyup'")
+        data-bind="ukov:customerData.MiddleName,value:customerData.MiddleName,valueUpdate:'keyup'")
     li
-      span(class="label") LastName
+      span(class="label") Last Name
       input(type="text", placeholder="",
-        data-bind="ukov:accountData.LastName,value:accountData.LastName,valueUpdate:'keyup'")
+        data-bind="ukov:customerData.LastName,value:customerData.LastName,valueUpdate:'keyup'")
     li
       span(class="label") Suffix
-      input(type="text", placeholder="",
-        data-bind="ukov:accountData.Suffix,value:accountData.Suffix,valueUpdate:'keyup'")
+      input(type="text", placeholder="Jr.",
+        data-bind="ukov:customerData.Suffix,value:customerData.Suffix,valueUpdate:'keyup'")
+  ul(class="edit-form",style="width:260px;position:absolute;top:0px;right:0px;")
     li
       span(class="label") Email
       input(type="text", placeholder="",
-        data-bind="ukov:accountData.Email,value:accountData.Email,valueUpdate:'keyup'")
+        data-bind="ukov:customerData.Email,value:customerData.Email,valueUpdate:'keyup'")
     li
       span(class="label") Social Security #
-      input(type="text", placeholder="",
-        data-bind="ukov:accountData.SSN,value:accountData.SSN,valueUpdate:'keyup'")
+      input(type="text", placeholder="123-12-1234",
+        data-bind="ukov:customerData.SSN,value:customerData.SSN,valueUpdate:'keyup'")
     li
       span(class="label") Date of Birth
-      input(type="text", placeholder="",
-        data-bind="ukov:accountData.DOB,value:accountData.DOB,valueUpdate:'keyup'")
+      input(type="text", placeholder="12/31/1989",
+        data-bind="ukov:customerData.DOB,value:customerData.DOB,valueUpdate:'keyup'")
 
 div(style="margin-bottom:20px;")
     span(class="btn-bg", data-bind="cmd:cmdRun") Run Credit
+
+div(data-bind="if:loaded")
+  div(data-bind="template:{name:'tmpl-credit',data:creditResult}")
+  div(class="actions")
+    span(class="btn-bg", data-bind="click:clickClose") Ok

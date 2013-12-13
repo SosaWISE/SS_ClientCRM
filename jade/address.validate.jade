@@ -73,6 +73,6 @@ div(style="margin-bottom:20px;")
 
 div(data-bind="if:loaded")
   div(data-bind="template:{name:'tmpl-address',data:addressResult}")
-  div(class="actions", data-bind="if:clickNext")
+  div(class="actions")
     span(class="btn-bg", data-bind="click:clickManual") Manual
-    span(class="btn-bg", data-bind="click:clickNext") Next
+    span(class="btn-bg", data-bind="click:clickClose") Ok

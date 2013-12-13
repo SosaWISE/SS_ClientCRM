@@ -165,6 +165,11 @@ define('src/vm.address.validate', [
     //
     // events
     //
+    _this.clickClose = function() {
+      if (_this.layer) {
+        _this.layer.close(_this.addressResult());
+      }
+    };
     _this.cmdValidate = ko.command(function(cb) {
       _this.addressData.validate();
       _this.addressData.update();
@@ -175,8 +180,8 @@ define('src/vm.address.validate', [
 
       _this.loaded(false);
       var model = _this.addressData.getValue();
-      dataservice.qualify.validateAddress(model, function(resp) {
-        if (resp.Code !== 0) {
+      dataservice.qualify.validateAddress(model, function(err, resp) {
+        if (err) {
           notify.notify('warn', resp.Message, 10);
         } else {
           _this.addressData.markClean(model, true);

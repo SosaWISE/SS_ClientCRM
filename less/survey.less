@@ -3,19 +3,8 @@
   .survey-types {
     > ul {
       margin-left: 30px;
-
-      a {
-        padding: 5px;
-        display: block;
-
-        color: white;
-        &.active {
-          width: 100%;
-          .border-radius(5px 0px 0px 5px);
-          color: @site-green;
-          background-color: white;
-          font-weight: bold;
-        }
+      a.active {
+        color: @site-green;
       }
     }
 

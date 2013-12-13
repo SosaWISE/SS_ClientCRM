@@ -1,7 +1,9 @@
 define('src/u-kov/app/validators', [
-  'src/core/strings'
+  'src/core/strings',
+  'moment'
 ], function(
-  strings
+  strings,
+  moment
 ) {
   "use strict";
   /* jshint eqnull:true */
@@ -17,7 +19,8 @@ define('src/u-kov/app/validators', [
     notPattern = 'Value does not match specified pattern',
     valRequired = 'Value is required',
     passwordMsg = 'A password must be atleast {0} or more letters and contain at least one upper case letter, one lower case letter and one digit.',
-    ssnMsg = 'A social security number must match this format: 123-12-1234.',
+    ssnMsg = 'Invalid social security number. Expected format: 123-12-1234.',
+    minAgeMsg = 'Minimum age allowed in {0}',
 
     // 1 uppercase, 1 lowercase, and 1 number
     passwordRegex = /^(?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])\S+$/,
@@ -142,11 +145,41 @@ define('src/u-kov/app/validators', [
   validators.isSsn = function(message) {
     message = message || ssnMsg;
     return function(val /*, model*/ ) {
-      if (val == null) {
+      if (!val) {
         return;
       }
       if (!ssnExactRegx.test(val)) {
         return message;
+      }
+    };
+  };
+
+  // allow specs to manipulate time and space
+  validators.now = function(isLocal) {
+    if (isLocal) {
+      return moment();
+    } else {
+      return moment.utc();
+    }
+  };
+  validators.minAge = function(format, isLocal, min, message) {
+    message = message || minAgeMsg;
+    return function(bday /*, model*/ ) {
+      if (bday == null) {
+        return;
+      }
+
+      //parse bday
+      if (isLocal) {
+        bday = moment(bday, format);
+      } else {
+        bday = moment.utc(bday, format);
+      }
+
+      // get `now`, move back N years, and the person's birthday is all day
+      var cutOffDay = validators.now(isLocal).subtract('years', min).endOf('day');
+      if (bday.isAfter(cutOffDay)) {
+        return strings.format(message, min);
       }
     };
   };

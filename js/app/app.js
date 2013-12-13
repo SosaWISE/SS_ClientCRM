@@ -29,11 +29,13 @@ define('src/app', [
     });
   }
 
-  var app = {};
+  var app = {},
+    routePart = 'route';
 
   app.notify = notify;
 
   app.login = new LoginViewModel({
+    routePart: routePart,
     id: 'login',
     name: 'Secure Login',
     ico: null,
@@ -42,16 +44,19 @@ define('src/app', [
 
   app.panelMap = createMap(app.panels = [
     new HomePanelViewModel({
+      routePart: routePart,
       id: 'home',
       name: 'Home',
       ico: '&#8962;',
     }),
     new AccountsPanelViewModel({
+      routePart: routePart,
       id: 'accounts',
       name: 'Accounts',
       ico: '&#128101;',
     }),
     new SurveysPanelViewModel({
+      routePart: routePart,
       id: 'surveys',
       name: 'Surveys',
       ico: '&#128101;',
@@ -81,7 +86,7 @@ define('src/app', [
     locale: 'en',
   });
   router.addRoute(app.panelMap.home, 'home', '', {});
-  router.addRoute(app.panelMap.accounts, 'accounts', ':accountid/:action', {});
+  router.addRoute(app.panelMap.accounts, 'accounts', ':accountid/:step', {});
 
   return app;
 });

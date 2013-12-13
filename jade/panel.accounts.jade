@@ -1,4 +1,4 @@
-div(class="accounts")
+div(class="accounts",data-bind="if:loaded")
   ul(class="tabs cf")
     li(class="tab")
       a(data-bind="click:clickSearch,active:searchVM.active") Search
@@ -6,6 +6,8 @@ div(class="accounts")
     li(class="tab")
       a(data-bind="click:$parent.clickItem,active:active,text:title")
     <!-- /ko -->
+    li(class="tab")
+      a(data-bind="click:clickNew") +
   div
     div(data-bind="template:{name:searchVM.viewTmpl,data:searchVM}")
     <!-- ko foreach:list -->

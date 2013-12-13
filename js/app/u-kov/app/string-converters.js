@@ -69,6 +69,7 @@ define('src/u-kov/app/string-converters', [
   };
   converters.date = function(outputFormat, isLocal) {
     return function convDate(val) {
+      val = trim(val);
       if (!val) {
         return;
       }

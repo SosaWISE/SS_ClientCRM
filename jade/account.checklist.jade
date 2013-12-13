@@ -1,0 +1,14 @@
+div(class="tab", data-bind="active:active")
+  div(class="panel")
+    div(class="p-nav checklist")
+      br
+      ul
+        <!-- ko foreach:checklist -->
+        li(data-bind="")
+          a(data-bind="active:active")
+            span(data-bind="text:title")
+        <!-- /ko -->
+    div(class="p-module",data-bind="with:activeChild")
+      div(data-bind="template:viewTmpl")
+
+    div(class="layers", data-bind="template:{name:'tmpl-layers',data:layersVM}")

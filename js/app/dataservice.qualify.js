@@ -18,6 +18,10 @@ define('src/dataservice.qualify', [
   // helper functions
   //
 
+  QualifyDataservice.prototype.saveCustomer = function(data, cb) {
+    this.post('????', data, null, cb);
+  };
+
   //------------input-SalesRepParam-------------
   // SalesRepID                   string     (require)
   // SeasonId                     int        (require)

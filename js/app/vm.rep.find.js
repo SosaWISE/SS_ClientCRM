@@ -52,6 +52,11 @@ define('src/vm.rep.find', [
     //
     // events
     //
+    _this.clickClose = function() {
+      if (_this.layer) {
+        _this.layer.close(_this.repResult());
+      }
+    };
     _this.cmdFind = ko.command(function(cb) {
       _this.repData.SalesRepID.validate();
       if (!_this.repData.SalesRepID.isValid()) {
@@ -61,9 +66,9 @@ define('src/vm.rep.find', [
 
       _this.loaded(false);
       var model = _this.repData.getValue();
-      dataservice.qualify.salesRepRead(model, function(resp) {
-        if (resp.Code !== 0) {
-          notify.notify('warn', resp.Message, 10);
+      dataservice.qualify.salesRepRead(model, function(err, resp) {
+        if (err) {
+          notify.notify('warn', err.Message, 10);
           _this.focusRepID(true);
         } else {
           _this.repData.markClean(resp.Value, true);

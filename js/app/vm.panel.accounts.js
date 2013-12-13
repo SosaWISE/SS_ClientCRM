@@ -2,46 +2,27 @@ define('src/vm.panel.accounts', [
   'src/core/notify',
   'src/core/utils',
   'src/core/vm.controller',
-  'src/vm.account.search',
-  'src/vm.account.new',
-  'src/vm.account'
+  'src/account/vm.account.search',
+  'src/account/vm.account.checklist',
+  'src/account/vm.account'
 ], function(
   notify,
   utils,
   ControllerViewModel,
   SearchAccountViewModel,
-  NewAccountViewModel,
+  ChecklistAccountViewModel,
   AccountViewModel
 ) {
   "use strict";
 
-  var childRoutePart = 'accountid';
+  var childRoutePart = 'accountid',
+    newCount = 0;
 
   function AccountsPanelViewModel(options) {
     var _this = this;
     AccountsPanelViewModel.super_.call(_this, options);
 
-    // _this.childName = 'id';
-    // _this.defaultChild = 'search';
-    // _this.extraRouteData = ['action'];
-
-    _this.searchVM = new SearchAccountViewModel({
-      routePart: childRoutePart,
-      id: 'search',
-      title: 'Search',
-    });
-
     _this.list = _this.childs;
-    _this.list([
-      createAccountVM(100001, '100001'),
-      createAccountVM(100002, '100002'),
-      createAccountVM(100003, '100003'),
-      new NewAccountViewModel({
-        routePart: childRoutePart,
-        id: 'new',
-        title: '+',
-      }),
-    ]);
 
     //
     // events
@@ -54,8 +35,18 @@ define('src/vm.panel.accounts', [
     };
     _this.clickAddItem = function() {
       var vm = createAccountVM(0, 'New Account');
-      _this.list.splice(_this.list().length - 1, 0, vm);
-      // _this.list.push(vm);
+      _this.list.push(vm);
+      _this.selectItem(vm);
+    };
+    _this.clickNew = function() {
+      newCount++;
+      var vm = new ChecklistAccountViewModel({
+        controller: _this,
+        routePart: childRoutePart,
+        id: 'new' + newCount,
+        title: 'New ' + newCount,
+      });
+      _this.list.push(vm);
       _this.selectItem(vm);
     };
 
@@ -68,12 +59,25 @@ define('src/vm.panel.accounts', [
     var _this = this,
       id = routeData[childRoutePart],
       vm;
+
+    _this.searchVM = new SearchAccountViewModel({
+      routePart: childRoutePart,
+      id: 'search',
+      title: 'Search',
+    });
+
+    _this.list([
+      createAccountVM(100001, '100001'),
+      createAccountVM(100002, '100002'),
+      createAccountVM(100003, '100003'),
+    ]);
+
     /* jshint eqeqeq:false */
     if (id && parseInt(id, 10) == id) {
       vm = _this.findChild(routeData);
       if (!vm) {
         vm = createAccountVM(parseInt(id, 10), id);
-        _this.list.splice(_this.list().length - 1, 0, vm);
+        _this.list.push(vm);
       }
     }
     join.add()();
@@ -96,8 +100,8 @@ define('src/vm.panel.accounts', [
 
     if (vm instanceof SearchAccountViewModel) {
       id = "search";
-    } else if (vm instanceof NewAccountViewModel) {
-      id = "new";
+      // } else if (vm instanceof NewAccountViewModel) {
+      //   id = "new";
     } else {
       id = vm.id;
     }

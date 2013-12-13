@@ -9,15 +9,7 @@ div(class="rep-find")
       div(data-bind="template:{name:comboVM.viewTmpl,data:comboVM}")
 
   div(data-bind="if:loaded")
-    div(class="info repinfo", data-bind="with:repResult")
-      div(class="img-wrap")
-        div(class="img", data-bind="bgimg:img")
-      //- div(class="name", data-bind="text:SalesRepID")
-      div(class="name", data-bind="text:fullname")
-      div(class="season", data-bind="text:season")
-      div(class="office", data-bind="text:office")
-      div(class="phone mobile", data-bind="text:phone")
-      div(class="email", data-bind="text:email")
+    div(data-bind="template:{data:repResult,name:'tmpl-rep_info'}")
 
-    div(class="actions", data-bind="if:clickNext")
-      span(class="btn-bg", data-bind="click:clickNext") Next
+    div(class="actions")
+      span(class="btn-bg", data-bind="click:clickClose") Ok
