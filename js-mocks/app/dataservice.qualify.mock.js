@@ -59,35 +59,35 @@ define('mock/app/dataservice.qualify.mock', [
             DealerId: data.DealerId,
             // ValidationVendorId
             // AddressValidationStateId
-            StateId: 'UT',
+            StateId: data.StateId || 'UT',
             // CountryId
-            // TimeZoneId
+            TimeZoneId: data.TimeZoneId || 1,
             // AddressTypeId
             StreetAddress: (data.StreetAddress || '').toUpperCase(),
             StreetAddress2: (data.StreetAddress2 || '').toUpperCase(),
-            // StreetNumber
-            // StreetName
-            // StreetType
-            // PreDirectional
-            // PostDirectional
-            // Extension
-            // ExtensionNumber
-            // County
+            StreetNumber: data.StreetNumber || '123',
+            StreetName: data.StreetName || 'Street Name',
+            StreetType: data.StreetType || 'RD',
+            PreDirectional: data.PreDirectional || 'N',
+            PostDirectional: data.PostDirectional || 'W',
+            Extension: data.Extension,
+            ExtensionNumber: data.ExtensionNumber,
+            County: data.County || 'Grand County',
             // CountyCode
             // Urbanization
             // UrbanizationCode
-            City: 'Orem',
+            City: data.City || 'Orem',
             PostalCode: data.PostalCode,
-            // PlusFour
+            PlusFour: data.PlusFour || '1234',
             Phone: data.Phone,
             // DeliveryPoint
             // Latitude
             // Longitude
             // CongressionalDistric
             // DPV
-            // DPVResponse
+            DPVResponse: data.DPVResponse,
             // DPVFootnote
-            // CarrierRoute
+            CarrierRoute: data.CarrierRoute,
             // IsActive
             // IsDeleted
             // CreatedBy

@@ -1,14 +1,14 @@
 .info > {
-  .mobile:before {
+  .mobile:not(:empty):before {
     content: "M: ";
   }
-  .work:before {
+  .work:not(:empty):before {
     content: "W: ";
   }
-  .home:before {
+  .home:not(:empty):before {
     content: "H: ";
   }
-  .email:before {
+  .email:not(:empty):before {
     content: "E: ";
   }
   div {

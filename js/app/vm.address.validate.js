@@ -229,10 +229,10 @@ define('src/vm.address.validate', [
     // size
     if (override) {
       _this.width(600);
-      _this.height(865);
+      _this.height(905);
     } else {
       _this.width(300);
-      _this.height(530);
+      _this.height(570);
     }
 
 

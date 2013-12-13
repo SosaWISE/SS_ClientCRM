@@ -161,7 +161,7 @@ define('src/account/vm.account.runcredit', [
           }
           _this.creditResult(resp.Value);
           _this.loaded(true);
-          // cb();
+          cb();
         });
       });
     });
