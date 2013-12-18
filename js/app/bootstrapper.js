@@ -3,9 +3,9 @@ define('src/bootstrapper', [
   'jquery',
   'ko',
  // load plugins
-  'src/knockout/ko.debug.helpers',
-  'src/knockout/ko.command',
-  'src/knockout/ko.bindingHandlers.all',
+  'src/core/ko.debug.helpers',
+  'src/core/ko.command',
+  'src/core/ko.bindingHandlers.all',
 
   'src/core/jsonhelpers',
   'src/config',

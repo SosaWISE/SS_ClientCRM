@@ -1,4 +1,4 @@
-﻿define('src/knockout/ko.command', [
+﻿define('src/core/ko.command', [
   'ko'
 ], function(ko) {
   "use strict";

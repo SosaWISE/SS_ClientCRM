@@ -1,4 +1,4 @@
-define('src/knockout/ko.bindingHandlers.value', [
+define('src/core/ko.bindingHandlers.value', [
   'jquery',
   'ko'
 ], function(

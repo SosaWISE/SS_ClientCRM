@@ -1,4 +1,4 @@
-﻿define('src/knockout/ko.debug.helpers', [
+﻿define('src/core/ko.debug.helpers', [
   'ko'
 ], function(ko) {
   "use strict";
