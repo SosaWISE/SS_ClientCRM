@@ -1,4 +1,4 @@
-define('src/vm.combo', [
+define('src/core/vm.combo', [
   'ko',
   'src/core/strings',
   'src/core/utils',

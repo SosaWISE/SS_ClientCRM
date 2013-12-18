@@ -1,4 +1,5 @@
-define('spec/app/core/strings.spec', [
+/* global describe, it, expect */
+define('src/core/strings.spec', [
   'src/core/strings'
 ], function(strings) {
   "use strict";

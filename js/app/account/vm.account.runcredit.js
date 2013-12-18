@@ -1,5 +1,5 @@
 define('src/account/vm.account.runcredit', [
-  'src/vm.combo',
+  'src/core/vm.combo',
   'src/core/notify',
   'src/core/utils',
   'src/core/vm.base',

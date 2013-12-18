@@ -1,5 +1,5 @@
 // the mock factory
-define('mock/mockery', [
+define('lib/mockery', [
 ], function() {
   'use strict';
 

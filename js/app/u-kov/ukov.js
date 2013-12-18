@@ -1,7 +1,7 @@
-define('src/u-kov/app/ukov', [
- 'src/u-kov/app/ukov-model',
- 'src/u-kov/app/ukov-prop-array',
- 'src/u-kov/app/ukov-prop',
+define('src/u-kov/ukov', [
+ 'src/u-kov/ukov-model',
+ 'src/u-kov/ukov-prop-array',
+ 'src/u-kov/ukov-prop',
 ], function(
   UkovModel,
   ukovPropArray,

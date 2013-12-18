@@ -1,16 +1,16 @@
 define('src/core/vm.controller', [
+  'src/core/helpers',
   'src/core/notify',
   'src/core/joiner',
   'jquery',
-  'src/config',
   'src/core/utils',
   'ko',
   'src/core/vm.base',
 ], function(
+  helpers,
   notify,
   joiner,
   jquery,
-  config,
   utils,
   ko,
   BaseViewModel
@@ -21,8 +21,10 @@ define('src/core/vm.controller', [
     var _this = this;
     ControllerViewModel.super_.call(_this, options);
 
-    _this.loading = ko.observable(false);
-    _this.loaded = ko.observable(false);
+    _this.loader = helpers.onetimer();
+    _this.loading = _this.loader.loading;
+    _this.loaded = _this.loader.loaded;
+
     _this.activeChild = ko.observable(null);
 
     _this.childs = ko.observableArray();
@@ -146,35 +148,26 @@ define('src/core/vm.controller', [
 
   ControllerViewModel.prototype.load = function(routeData, cb) {
     var _this = this,
-      join,
-      subscription;
+      loader = _this.loader,
+      join;
 
-    if (_this.loaded()) {
-      // we're done here
-      return cb();
-    }
+    // call onLoad if it hasn't been called yet
+    if (!loader.loaded() && !loader.loading()) {
+      // add callback
+      loader(cb);
 
-    if (!_this.loading()) {
-      // load
-      _this.loading(true);
       join = joiner();
       _this.onLoad(routeData, join);
       join.when(function(errResp) {
         if (errResp) {
           notify.notify('error', errResp.Message);
         }
-        _this.loaded(true);
-        // setting this should call all subscriptions made below (if any)
-        _this.loading(false);
-        //
-        cb();
+        // tell the loader we're done
+        loader.loadCb();
       });
     } else {
-      // notify when we're done loading
-      subscription = _this.loading.subscribe(function() {
-        subscription.dispose();
-        cb();
-      });
+      // add callback
+      loader(cb);
     }
   };
   ControllerViewModel.prototype.onLoad = function(routeData, join) {
@@ -201,8 +194,8 @@ define('src/core/vm.controller', [
 
   ControllerViewModel.prototype.setTitle = function(title) {
     var parts = [];
-    if (config.titlePrefix) {
-      parts.push(config.titlePrefix);
+    if (ControllerViewModel.titlePrefix) {
+      parts.push(ControllerViewModel.titlePrefix);
     }
     if (title) {
       title = ko.unwrap(title);
@@ -210,8 +203,8 @@ define('src/core/vm.controller', [
     if (title) {
       parts.push(title);
     }
-    if (config.titlePostfix) {
-      parts.push(config.titlePostfix);
+    if (ControllerViewModel.titlePostfix) {
+      parts.push(ControllerViewModel.titlePostfix);
     }
 
     jquery('title').text(parts.join(' '));

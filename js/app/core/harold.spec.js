@@ -1,4 +1,5 @@
-define('spec/app/core/harold.spec', [
+/* global describe, it, expect, beforeEach */
+define('src/core/harold.spec', [
   'src/core/harold'
 ], function(
   harold

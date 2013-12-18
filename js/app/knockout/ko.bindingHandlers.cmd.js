@@ -1,6 +1,10 @@
 define('src/knockout/ko.bindingHandlers.cmd', [
+  'jquery',
   'ko'
-], function(ko) {
+], function(
+  jquery,
+  ko
+) {
   "use strict";
 
   function makeValueAccessor(value) {
@@ -15,37 +19,42 @@ define('src/knockout/ko.bindingHandlers.cmd', [
         events = {};
 
       if (ko.isCommand(value)) {
-        // bound to a command
         events.click = value.execute;
+      } else if (typeof(value) === 'function') {
+        events.click = value;
       } else {
-        // bound to an object with commands
-        // e.g.: { click: command1, change: command2 }
-        Object.keys(value).forEach(function(key) {
-          events[key] = value[key].execute;
-        });
+        console.log('value is not a command or a function', value);
+        return;
       }
 
+      events.keyup = function(vm, evt) {
+        switch (evt.keyCode) {
+          case 13: // enter
+          case 32: // space
+            // call click function
+            events.click.apply(this, arguments);
+            break;
+        }
+      };
+
       // bind to events
-      ko.bindingHandlers.event.init(element, makeValueAccessor(events), allBindingsAccessor, viewModel, bindingContext);
+      ko.bindingHandlers.event.init.call(this, element, makeValueAccessor(events), allBindingsAccessor, viewModel, bindingContext);
     },
     update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
       var value = valueAccessor(),
-        busy, canExecute;
+        canExecute, busy;
 
       if (ko.isCommand(value)) {
-        // bound to a command
         canExecute = value.canExecute();
         busy = value.busy();
-      } else {
-        // bound to an object with commands
-        // e.g.: { click: command1, change: command2 }
+      } else if (typeof(value) === 'function') {
         canExecute = true;
         busy = false;
-        Object.keys(value).some(function(key) {
-          canExecute &= value[key].canExecute();
-          busy |= value[key].busy();
-        });
+      } else {
+        console.log('value is not a command or a function', value);
+        return;
       }
+
       // make new valueAccessor
       valueAccessor = makeValueAccessor(!canExecute);
 

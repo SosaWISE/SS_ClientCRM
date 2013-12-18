@@ -1,4 +1,4 @@
-define('src/u-kov/app/string-converters', [
+define('src/u-kov/string-converters', [
   'src/core/strings',
   'moment'
 ], function(

@@ -7,16 +7,24 @@ define('src/bootstrapper', [
   'src/knockout/ko.command',
   'src/knockout/ko.bindingHandlers.all',
 
+  'src/core/jsonhelpers',
   'src/config',
+  'src/resources',
+  'src/core/notify',
   'src/core/router',
+  'src/core/vm.controller',
   'src/dataservice',
   'src/app'
 ], function(
   jquery, ko, // main libs
   p1, p2, p3, //plugins
 
+  jsonhelpers,
   config,
+  resources,
+  notify,
   router,
+  ControllerViewModel,
   dataservice,
   app
 ) {
@@ -24,6 +32,14 @@ define('src/bootstrapper', [
   console.log("Bootstrapping version: ", config.version);
   console.log("Application Token: " + config.token);
   console.log("CORS Domain: " + config.serviceDomain);
+
+  ControllerViewModel.titlePrefix = config.titlePrefix;
+  ControllerViewModel.titlePostfix = config.titlePostfix;
+  notify.resources = resources;
+  // overwrite jquery's parseJSON
+  jquery.parseJSON = function(data) {
+    JSON.parse(data, jsonhelpers.reviver);
+  };
 
   var deps = [];
   if (config.useMocks) {
@@ -57,7 +73,7 @@ define('src/bootstrapper', [
         // if we are authenticated, this will log us in
         config.user(resp.Value.AuthCustomer);
         // start router
-        router.init();
+        router.init(config.user);
       }
     });
   });

@@ -1,5 +1,6 @@
-define('spec/mockery.spec', [
-  'mock/mockery'
+/* global describe, it, expect, beforeEach, spyOn */
+define('lib/mockery.spec', [
+  'lib/mockery'
 ], function(mockery) {
   "use strict";
 

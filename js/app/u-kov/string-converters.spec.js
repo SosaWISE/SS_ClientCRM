@@ -1,6 +1,6 @@
 /*global describe,it,expect*/
-define('src/u-kov/specs/string-converters.spec', [
- 'src/u-kov/app/string-converters'
+define('src/u-kov/string-converters.spec', [
+ 'src/u-kov/string-converters'
 ], function(
   converters
 ) {

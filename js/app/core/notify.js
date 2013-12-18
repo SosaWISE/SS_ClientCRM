@@ -1,10 +1,8 @@
 define('src/core/notify', [
   'ko',
-  'src/resources',
   'src/core/strings'
 ], function(
   ko,
-  resources,
   strings
 ) {
   "use strict";
@@ -18,6 +16,7 @@ define('src/core/notify', [
       interval,
       seconds;
 
+    _this.resources = {};
     _this.type = type;
     _this.message = message;
     _this.actions = [];
@@ -114,7 +113,7 @@ define('src/core/notify', [
 
   Notifier.prototype.send = function(type, resKey, messageArgs, timeoutSec, actionsObj) {
     // lookup resource by key and replace {n} with messageArgs
-    var msg = strings.aformat(resources[resKey] || ('invalid resource key `' + resKey + '`'), messageArgs || []);
+    var msg = strings.aformat(this.resources[resKey] || ('invalid resource key `' + resKey + '`'), messageArgs || []);
     this.notify(type, msg, timeoutSec, actionsObj);
   };
   // add helper functions

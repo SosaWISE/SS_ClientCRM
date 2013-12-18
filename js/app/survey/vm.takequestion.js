@@ -1,6 +1,6 @@
 define('src/survey/vm.takequestion', [
   'src/core/strings',
-  'src/vm.combo',
+  'src/core/vm.combo',
   'ko',
   'src/core/notify',
   'src/core/utils',

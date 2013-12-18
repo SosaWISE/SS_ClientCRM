@@ -1,8 +1,8 @@
 define('src/u-kov/index', [
-  'src/u-kov/app/string-converters',
-  'src/u-kov/app/validators',
-  'src/u-kov/app/ukov',
-  'src/u-kov/app/bindings'
+  'src/u-kov/string-converters',
+  'src/u-kov/validators',
+  'src/u-kov/ukov',
+  'src/u-kov/bindings'
 ], function(
   converters,
   validators,

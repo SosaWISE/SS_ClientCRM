@@ -1,4 +1,4 @@
-define('src/u-kov/app/ukov-prop-array', [
+define('src/u-kov/ukov-prop-array', [
   'ko',
 ], function(
   ko

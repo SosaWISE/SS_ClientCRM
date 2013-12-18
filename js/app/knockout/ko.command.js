@@ -15,12 +15,20 @@
     function onComplete() {
       _cmd.busy(false);
     }
-    _cmd.execute = function() {
+    _cmd.execute = function(cb) {
       if (!can) {
+        if (typeof(cb) === 'function') {
+          cb();
+        }
         return;
       }
       _cmd.busy(true);
-      return execute.call(this, onComplete);
+      return execute.call(this, function() {
+        onComplete();
+        if (typeof(cb) === 'function') {
+          cb.apply(null, ko.utils.makeArray(arguments));
+        }
+      });
     };
 
     if (canExecute) {

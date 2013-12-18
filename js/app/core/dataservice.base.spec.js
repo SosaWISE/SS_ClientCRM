@@ -1,4 +1,5 @@
-define('spec/app/core/dataservice.base.spec', [
+/* global describe, it, expect, beforeEach, afterEach */
+define('src/core/dataservice.base.spec', [
   'src/core/dataservice.base'
 ], function(DataserviceBase) {
   "use strict";

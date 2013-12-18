@@ -1,3 +1,4 @@
+/* global describe, it, expect, waitsFor, runs */
 (function() {
   'use strict';
 
@@ -25,7 +26,7 @@
   });
 })();
 
-define('spec/lib/depends.spec', [
+define('lib/depends.spec', [
 ], function() {
   "use strict";
 

@@ -1,15 +1,16 @@
 define('src/core/router', [
   'jquery',
-  'src/core/route',
-  'src/config'
+  'src/core/route'
 ], function(
   jquery,
-  Route,
-  config
+  Route
 ) {
   "use strict";
 
+  function no_op() {}
+
   function Router() {
+    this.getUser = no_op;
     this.routeMap = {};
     this.routes = [];
     this.anonRoutes = [];
@@ -22,16 +23,21 @@ define('src/core/router', [
     return new Router();
   };
 
-  Router.prototype.init = function() {
+  Router.prototype.init = function(getUser) {
     var _this = this;
     // ,changeTimeout;
+
+    if (typeof(getUser) === 'function') {
+      // set getUser
+      _this.getUser = getUser;
+    }
 
     function changePath() {
       _this.goToPath(_this.getPath(), false);
     }
 
     // check the user is logged in
-    if (!config.user()) {
+    if (!_this.getUser()) {
       // save destination path
       this.destPath = this.getPath();
     }
@@ -86,7 +92,7 @@ define('src/core/router', [
 
   Router.prototype.goToPath = function(path, allowHistory) {
     var _this = this,
-      user = config.user(),
+      user = _this.getUser(),
       routes = user ? _this.routes : _this.anonRoutes,
       route;
 

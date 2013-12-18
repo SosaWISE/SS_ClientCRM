@@ -1,4 +1,5 @@
-define('spec/app/core/notify.spec', [
+/* global describe, it, expect, beforeEach, jasmine */
+define('src/core/notify.spec', [
   'src/core/notify',
   'ko'
 ], function(

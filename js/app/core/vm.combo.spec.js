@@ -1,5 +1,6 @@
-define('spec/app/vm.combo.spec', [
-  'src/vm.combo'
+/* global describe, it, expect, beforeEach */
+define('src/core/vm.combo.spec', [
+  'src/core/vm.combo'
 ], function(
   ComboViewModel
 ) {

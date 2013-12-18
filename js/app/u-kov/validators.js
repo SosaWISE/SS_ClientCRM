@@ -1,4 +1,4 @@
-define('src/u-kov/app/validators', [
+define('src/u-kov/validators', [
   'src/core/strings',
   'moment'
 ], function(

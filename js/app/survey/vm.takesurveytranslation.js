@@ -1,6 +1,6 @@
 define('src/survey/vm.takesurveytranslation', [
   'src/core/notify',
-  'src/vm.combo',
+  'src/core/vm.combo',
   'src/survey/vm.takesurvey',
   'src/core/utils',
   'src/core/vm.base',

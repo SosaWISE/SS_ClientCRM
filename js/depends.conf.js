@@ -3,6 +3,7 @@ window.require = {
     // app namespacing
     webconfig: '/webconfig',
     src: '/js/app',
+    lib: '/js/lib',
     spec: '/js-specs',
     mock: '/js-mocks',
 

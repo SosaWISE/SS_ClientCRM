@@ -1,7 +1,7 @@
 define('src/survey/vm.question.new', [
   'src/dataservice',
   'ko',
-  'src/vm.combo',
+  'src/core/vm.combo',
   'src/survey/vm.questionmeaning.new',
   'src/core/notify',
   'src/core/vm.base',

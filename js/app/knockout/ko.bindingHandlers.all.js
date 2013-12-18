@@ -207,6 +207,7 @@
     update: function(element, valueAccessor) {
       var observable = valueAccessor();
       if (observable()) {
+        element.focus();
         element.select();
         observable(false);
       }

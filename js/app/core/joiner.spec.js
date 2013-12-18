@@ -1,4 +1,5 @@
-define('spec/app/core/joiner.spec', [
+/* global describe, it, expect, beforeEach, jasmine */
+define('src/core/joiner.spec', [
   'src/core/joiner'
 ], function(joiner) {
   "use strict";

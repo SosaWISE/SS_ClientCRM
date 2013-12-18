@@ -1,25 +1,8 @@
-define('spec/index', [
-  'spec/runner',
-  'spec/lib/_all',
-  'src/u-kov/specs/_all',
-  'spec/app/_all',
-], function(
-  runner,
-  libSpecs,
-  ukovSpecs,
-  appSpecs
-) {
+require(['spec/runner'], function(runner) {
   "use strict";
   runner({}, [
-    // lib specs
-    libSpecs,
-    [
-      'spec/mockery.spec',
-    ],
-
-    // app specs
-    ukovSpecs,
-    appSpecs,
+    'lib/_all.spec',
+    'src/_all.spec',
   ], function() {
     console.log(' - specs loaded');
   });

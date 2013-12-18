@@ -1,8 +1,10 @@
 define('src/core/dataservice.base', [
   'jquery',
+  'src/core/jsonhelpers',
   'src/core/querystring'
 ], function(
   jquery,
+  jsonhelpers,
   querystring
 ) {
   "use strict";
@@ -30,12 +32,12 @@ define('src/core/dataservice.base', [
 
   //@NOTE: currently the webservice only supports POST and GET
 
-  DataserviceBase.prototype.post = function(path, data, setter, callback) {
-    this.ajax('POST', null, path, null, data, setter, callback);
-  };
-  DataserviceBase.prototype.get = function(path, queryObj, setter, callback) {
-    this.ajax('GET', null, path, queryObj, null, setter, callback);
-  };
+  // DataserviceBase.prototype.post = function(path, data, setter, callback) {
+  //   this.ajax('POST', null, path, null, data, setter, callback);
+  // };
+  // DataserviceBase.prototype.get = function(path, queryObj, setter, callback) {
+  //   this.ajax('GET', null, path, queryObj, null, setter, callback);
+  // };
 
   DataserviceBase.prototype.save = function(data, setter, callback) { // used to be `create`
     this.ajax('POST', null, null, null, data, setter, callback);
@@ -75,7 +77,7 @@ define('src/core/dataservice.base', [
       // Delete  - DELETE
       // Replace - PUT
       httpVerb: httpVerb,
-      data: (data && typeof(data) !== "string") ? JSON.stringify(data) : data,
+      data: (data && typeof(data) !== "string") ? JSON.stringify(data, jsonhelpers.replacer) : data,
 
       contentType: 'application/json',
       dataType: 'json',

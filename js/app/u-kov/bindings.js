@@ -1,4 +1,4 @@
-define('src/u-kov/app/bindings', [
+define('src/u-kov/bindings', [
  'jquery',
  'ko',
 ], function(

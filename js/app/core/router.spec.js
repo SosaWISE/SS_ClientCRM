@@ -1,4 +1,5 @@
-define('spec/app/core/router.spec', [
+/* global describe, it, expect */
+define('src/core/router.spec', [
   'src/core/router'
 ], function(router) {
   "use strict";
