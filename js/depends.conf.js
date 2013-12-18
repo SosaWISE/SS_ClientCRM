@@ -2,17 +2,17 @@ window.require = {
   paths: {
     // app namespacing
     webconfig: '/webconfig',
-    src: '/js/app',
-    lib: '/js/lib',
+    src: '/js',
+    lib: '/lib',
     spec: '/js-specs',
     mock: '/js-mocks',
 
     // external libs
-    jquery: '/js/lib/jquery-1.9.1',
-    ko: '/js/lib/knockout',
-    moment: '/js/lib/moment', // Used for Date object
-    underscore: '/js/lib/underscore', // Allows for excellent data manipulation like linq in C#.
-    markdown: '/js/lib/markdown',
+    jquery: '/lib/jquery-1.9.1',
+    ko: '/lib/knockout',
+    moment: '/lib/moment', // Used for Date object
+    underscore: '/lib/underscore', // Allows for excellent data manipulation like linq in C#.
+    markdown: '/lib/markdown',
   },
 
   // defines global names(exports). does NOT load/require them

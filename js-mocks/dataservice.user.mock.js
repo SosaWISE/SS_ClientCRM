@@ -1,5 +1,5 @@
-define('mock/app/dataservice.user.mock', [
-  'lib/mockery',
+define('mock/dataservice.user.mock', [
+  'src/core/mockery',
   'src/dataservice.user'
 ], function(
   mockery,

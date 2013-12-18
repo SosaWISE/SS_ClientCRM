@@ -14,27 +14,24 @@ module.exports = function(grunt) {
       app: {
         src: [
           // includes
-          'js/app/**/*.js',
+          'js/**/*.js',
 
-          '!**/harold.js',
           // excludes
-          '!**/specs/**',
-          '!**/*spec*.js',
-          '!**/static-server.js',
-          '!**/*grunt*.js'
+          '!js/depends.conf.js', '!js/core/depends.js',
+          '!js/**/*.spec.js',
         ],
         dest: 'build/app.js',
       },
       lib: {
         src: [
-          'js/lib/depends.js',
-          // 'js/lib/almond.js',
-          'js/lib/jquery*.js',
-          'js/lib/knockout.js',
-          'js/lib/moment.js',
-          'js/lib/underscore.js',
-          'js/lib/markdown.js',
-          'js/lib/definelibs.js',
+          'js/core/depends.js',
+          // 'lib/almond.js',
+          'lib/jquery*.js',
+          'lib/knockout.js',
+          'lib/moment.js',
+          'lib/underscore.js',
+          'lib/markdown.js',
+          'lib/definelibs.js',
         ],
         dest: 'build/lib.js',
       },

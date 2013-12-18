@@ -1,3 +1,4 @@
+/* global runs, waitsFor, expect */
 define('spec/ui/browser', [
   'jquery'
 ], function(
@@ -14,22 +15,22 @@ define('spec/ui/browser', [
   // make browser available on test page
   window.browser = browser;
 
-  browser.ready = function(addressBar, cb) {
+  browser.ready = function($addressBar, cb) {
     delete browser.ready; // can call ready only once
-    addressBar = addressBar;
+    addressBar = $addressBar;
     onReady = cb;
   };
   browser.init = function(win) {
     delete browser.init; // can call init only once
 
     if (!onReady) {
-      throw new Error('call `ready` with callback in test page first');
+      throw new Error('call `ready` with callback in container page first');
     }
     if (!win) {
-      throw new Error('test page window must base passed in');
+      throw new Error('test page window must be passed in');
     }
     if (win === window) {
-      throw new Error('`win` must be different than test page window');
+      throw new Error('test page window must be different than container window');
     }
     testWindow = win;
     document = win.document;

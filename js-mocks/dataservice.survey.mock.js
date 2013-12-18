@@ -1,6 +1,6 @@
-define('mock/app/dataservice.survey.mock', [
+define('mock/dataservice.survey.mock', [
   'src/dataservice',
-  'lib/mockery',
+  'src/core/mockery',
 ], function(
   dataservice,
   mockery

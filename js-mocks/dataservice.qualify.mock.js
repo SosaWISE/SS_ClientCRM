@@ -1,5 +1,5 @@
-define('mock/app/dataservice.qualify.mock', [
-  'lib/mockery',
+define('mock/dataservice.qualify.mock', [
+  'src/core/mockery',
   'src/dataservice.qualify'
 ], function(
   mockery,
