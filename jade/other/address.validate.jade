@@ -17,6 +17,7 @@ div(class="addr-form", data-bind="toggle:{'override':override}")
       span(class="label") Street Address 2
       input(type="text", placeholder="#14",
         data-bind="ukov:addressData.StreetAddress2,value:addressData.StreetAddress2,valueUpdate:'keyup',enter:cmdValidate")
+    <!-- ko if:override -->
     li
       span(class="label") City
       input(type="text", placeholder="Springfield",
@@ -32,6 +33,7 @@ div(class="addr-form", data-bind="toggle:{'override':override}")
       span(class="label") Time Zone
       div(data-bind="template:{name:timeZoneComboVM.viewTmpl,data:timeZoneComboVM}")
     li
+    <!-- /ko -->
   ul(class="edit-form",style="width:260px;position:absolute;top:0px;right:0px;",
     data-bind="visible:override")
     li
@@ -69,10 +71,10 @@ div(class="addr-form", data-bind="toggle:{'override':override}")
         data-bind="ukov:addressData.DPVResponse,value:addressData.DPVResponse,valueUpdate:'keyup',enter:cmdValidate")
 
 div(style="margin-bottom:20px;")
-    span(class="btn-bg", data-bind="cmd:cmdManual") Manual
-    span(class="btn-bg", data-bind="cmd:cmdValidate") Validate Address
+    span(class="btn-bg", tabindex="0", data-bind="cmd:cmdManual") Manual
+    span(class="btn-bg", tabindex="0", data-bind="cmd:cmdValidate") Validate Address
 
 div(data-bind="if:loaded")
   div(data-bind="template:{name:'tmpl-address',data:addressResult}")
   div(class="actions")
-    span(class="btn-bg", data-bind="click:clickClose") Ok
+    span(class="btn-bg", tabindex="0", data-bind="cmd:clickClose") Ok
