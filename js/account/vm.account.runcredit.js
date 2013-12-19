@@ -73,7 +73,7 @@ define('src/account/vm.account.runcredit', [
       validationGroup: validationGroup,
     },
     DOB: {
-      converter: ukov.converters.date('MM/DD/YYYY', false),
+      converter: ukov.converters.date(),
       validators: [
         ukov.validators.minAge('MM/DD/YYYY', false, 0, 'Can\'t run credit on the unborn'),
       ],
@@ -112,7 +112,8 @@ define('src/account/vm.account.runcredit', [
     /////TESTING//////////////////////
     _this.customerData.FirstName('Bob');
     _this.customerData.LastName('Bobbins');
-    _this.customerData.DOB('1-1-1');
+    // _this.customerData.DOB('1-1-1');
+    _this.customerData.DOB(new Date(Date.UTC(2001, 0, 1)));
     /////TESTING//////////////////////
 
     _this.width = ko.observable(600);

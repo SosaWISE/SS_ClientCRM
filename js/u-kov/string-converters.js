@@ -67,7 +67,7 @@ define('src/u-kov/string-converters', [
       }
     };
   };
-  converters.date = function(outputFormat, isLocal) {
+  converters.date = function(isLocal) {
     return function convDate(val) {
       val = trim(val);
       if (!val) {
@@ -106,14 +106,14 @@ define('src/u-kov/string-converters', [
 
 
       var day;
-      if (isLocal) {
-        day = moment(val);
-      } else {
-        day = moment.utc(val);
+      day = moment(val);
+      if (!isLocal) {
+        day.utc();
       }
+      day.startOf('day');
 
       if (day.isValid()) {
-        return day.format(outputFormat);
+        return day.toDate();
       } else {
         return new Error('invalid date');
       }

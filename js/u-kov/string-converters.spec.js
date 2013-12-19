@@ -95,24 +95,24 @@ define('src/u-kov/string-converters.spec', [
     });
 
     describe('date converter', function() {
-      var converter = converters.date('MM/DD/YYYY', false);
+      var converter = converters.date(false);
 
       it('should always return expected output when valid', function() {
-        var expected = '09/04/1982';
-        expect(converter(expected)).toBe(expected);
-        expect(converter('9/4/1982')).toBe(expected);
-        expect(converter('sep 4 1982')).toBe(expected);
-        expect(converter('Sep 4 1982')).toBe(expected);
-        expect(converter('4 sep 1982')).toBe(expected);
-        expect(converter('4 Sep 1982')).toBe(expected);
+        var expected = new Date(Date.UTC(1982, 8, 4));
+        expect(converter('09/04/1982')).toEqual(expected);
+        expect(converter('9/4/1982')).toEqual(expected);
+        expect(converter('sep 4 1982')).toEqual(expected);
+        expect(converter('Sep 4 1982')).toEqual(expected);
+        expect(converter('4 sep 1982')).toEqual(expected);
+        expect(converter('4 Sep 1982')).toEqual(expected);
       });
       it('should use 2000\'s when 49 and below is entered', function() {
-        expect(converter('Sep 4 49')).toBe('09/04/2049');
-        expect(converter('Sep 4 0')).toBe('09/04/2000');
+        expect(converter('Sep 4 49')).toEqual(new Date(Date.UTC(2049, 8, 4)));
+        expect(converter('Sep 4 0')).toEqual(new Date(Date.UTC(2000, 8, 4)));
       });
       it('should use 1900\'s when year 50 and up is entered', function() {
-        expect(converter('Sep 4 50')).toBe('09/04/1950');
-        expect(converter('Sep 4 99')).toBe('09/04/1999');
+        expect(converter('Sep 4 50')).toEqual(new Date(Date.UTC(1950, 8, 4)));
+        expect(converter('Sep 4 99')).toEqual(new Date(Date.UTC(1999, 8, 4)));
       });
 
       it('should return Error when invalid', function() {
