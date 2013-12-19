@@ -1,4 +1,5 @@
 define('src/survey/vm.survey', [
+  'src/core/treehelper',
   'src/survey/vm.takesurveytranslation',
   'src/core/joiner',
   'src/core/vm.layers',
@@ -14,6 +15,7 @@ define('src/survey/vm.survey', [
   'src/core/vm.controller',
   'src/core/utils',
 ], function(
+  treehelper,
   TakeSurveyTranslationViewModel,
   joiner,
   LayersViewModel,
@@ -81,7 +83,8 @@ define('src/survey/vm.survey', [
         if (!model) {
           return;
         }
-        var vm = createQuestion(_this, parent, model);
+        model.childs = [];
+        var vm = createQuestion(_this, model, parent);
         // make sure it is loaded
         vm.load({}, function(errResp) {
           if (errResp) {
@@ -146,12 +149,12 @@ define('src/survey/vm.survey', [
     }, null, function(err, resp) {
       utils.safeCallback(err, function() {
         if (resp.Value) {
-          var list = resp.Value.map(function(item) {
-            var vm = createQuestion(surveyVM, null, item);
+          var treeTrunk = treehelper.makeTree(resp.Value, 'QuestionID', 'ParentId', false, function(model, parentVM /*, parent*/ ) {
+            var vm = createQuestion(surveyVM, model, parentVM);
             vm.load(routeData, join.add());
             return vm;
           });
-          surveyVM.questions(makeTree(list));
+          surveyVM.questions(treeTrunk);
         } else {
           surveyVM.questions([]);
         }
@@ -200,29 +203,13 @@ define('src/survey/vm.survey', [
     return this.questions().length + 1;
   };
 
-  function makeTree(list, parent) {
-    var branch = [];
-    list.forEach(function(item) {
-      if (
-        (parent && item.model.ParentId === parent.model.QuestionID) ||
-        (!parent && item.model.ParentId == null)
-      ) {
-        item.parent(parent);
-        branch.push(item);
-        // start recursion
-        item.questions(makeTree(list, item));
-      }
-    });
-    return branch;
-  }
-
-  function createQuestion(surveyVM, parent, model) {
+  function createQuestion(surveyVM, model, parent) {
     return new QuestionViewModel({
       surveyVM: surveyVM,
       possibleAnswersVM: surveyVM.possibleAnswersVM,
       questionMeaningVM: surveyVM.surveyTypeVM.getQuestionMeaning(model.QuestionMeaningId),
-      parent: parent,
       model: model,
+      parent: parent,
     });
   }
 

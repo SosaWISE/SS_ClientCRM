@@ -19,14 +19,15 @@ define('src/survey/vm.question', [
     var _this = this;
     QuestionViewModel.super_.call(_this, options);
     _this.ensureProps(['surveyVM', 'possibleAnswersVM', 'questionMeaningVM']);
+    _this.ensureProps.call(_this.model, ['childs']);
 
     _this.id = _this.model.QuestionID;
     _this.possibleAnswerMaps = _this.childs;
 
     // observables
     _this.parent = ko.observable(_this.parent);
+    _this.questions = ko.observableArray(_this.model.childs);
     _this.groupOrder = ko.observable(_this.model.GroupOrder);
-    _this.questions = ko.observableArray();
     // computed observables
     _this.translations = ko.computed(_this.computeTranslations, _this);
     _this.name = ko.computed(function() {

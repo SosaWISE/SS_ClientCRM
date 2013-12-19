@@ -9,6 +9,7 @@ define('src/core/_all.spec', [
   'src/core/route.spec',
   'src/core/router.spec',
   'src/core/strings.spec',
+  'src/core/treehelper.spec',
   'src/core/vm.combo.spec',
 ], function() {
   'use strict';

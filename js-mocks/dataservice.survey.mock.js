@@ -412,19 +412,19 @@ define('mock/dataservice.survey.mock', [
         MapToTokenId: '@REF_INC(token)',
       }
     ],
-  }).list;
-  // .concat(mockery.fromTemplate({
-  //   'list|1-1': [
-  //     {
-  //       QuestionID: '@INC(question)',
-  //       SurveyId: '@REF_INC(survey)',
-  //       QuestionMeaningId: '@REF_INC(questionMeaning)',
-  //       ParentId: '@REF_INC(question)',
-  //       GroupOrder: null, //'@NUMBER(0,5)',
-  //       MapToTokenId: '@REF_INC(token)',
-  //     }
-  //   ],
-  // }).list);
+  }).list
+    .concat(mockery.fromTemplate({
+      'list|2-2': [
+        {
+          ParentId: '@REF_INC(question)',
+          QuestionID: '@INC(question)',
+          SurveyId: 1, //'@REF_INC(survey)',
+          QuestionMeaningId: '@REF_INC(questionMeaning)',
+          GroupOrder: null, //'@NUMBER(0,5)',
+          MapToTokenId: '@REF_INC(token)',
+        }
+      ],
+    }).list);
   // set correct GroupOrders
   (function() {
     var countMap = {};

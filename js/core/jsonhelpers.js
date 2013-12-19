@@ -1,4 +1,4 @@
-define('src/core/parsejson', [], function() {
+define('src/core/jsonhelpers', [], function() {
   "use strict";
 
   var isDateFieldRegex = /On$/;
