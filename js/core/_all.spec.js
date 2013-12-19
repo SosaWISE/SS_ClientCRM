@@ -1,8 +1,10 @@
 define('src/core/_all.spec', [
+  'src/core/depends.spec',
   'src/core/dataservice.base.spec',
   'src/core/harold.spec',
   'src/core/helpers.spec',
   'src/core/joiner.spec',
+  'src/core/mockery.spec',
   'src/core/notify.spec',
   'src/core/route.spec',
   'src/core/router.spec',
