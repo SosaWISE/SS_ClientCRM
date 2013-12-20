@@ -37,6 +37,11 @@ define('src/core/treehelper.spec', [
         parentId: 5,
         name: '1.2.1.',
       },
+      {
+        id: 7,
+        parentId: null,
+        name: '2.',
+      },
     ];
     tree = [
       {
@@ -77,7 +82,13 @@ define('src/core/treehelper.spec', [
             ],
           },
         ],
-      }
+      },
+      {
+        id: 7,
+        parentId: null,
+        name: '2.',
+        childs: [],
+      },
     ];
 
     it('should have a `walkTree` function', function() {
@@ -91,11 +102,11 @@ define('src/core/treehelper.spec', [
 
       it('should recursively walk items', function() {
         var expectedIds;
-        expectedIds = [1, 2, 3, 4, 5, 6];
+        expectedIds = [1, 2, 3, 4, 5, 6, 7];
         treehelper.walkTree(tree, function(item, parent) {
           // removes first item
           var id = expectedIds.shift();
-          if (id === 1) {
+          if (id === 1 || id === 7) {
             expect(parent).toBeNull();
           } else {
             expect(parent).toBeDefined();
@@ -109,21 +120,11 @@ define('src/core/treehelper.spec', [
     describe('makeTree', function() {
 
       it('should recursively nest items', function() {
-        var topLevelList = treehelper.makeTree(list, 'id', 'parentId', false, null);
+        var topLevelList = treehelper.makeTree(list, 'id', 'parentId');
         expect(topLevelList).toEqual(tree);
       });
 
       it('should recursively nest and map items', function() {
-        function mapFn(item, mappedParent, parent) {
-          if (mappedParent) {
-            expect(mappedParent.wrappedItem).toBe(parent, 'parent should be wrapped');
-          }
-          // wrap item
-          return {
-            wrappedItem: item,
-          };
-        }
-
         var list, tree, topLevelList;
         list = [
           {
@@ -157,9 +158,97 @@ define('src/core/treehelper.spec', [
           },
         ];
 
-        topLevelList = treehelper.makeTree(list, 'id', 'parentId', false, mapFn);
+        topLevelList = treehelper.makeTree(list, 'id', 'parentId', function mapFn(item, mappedParent, parent) {
+          if (mappedParent) {
+            expect(mappedParent.wrappedItem).toBe(parent, 'parent should be wrapped');
+          }
+          // wrap item
+          return {
+            wrappedItem: item,
+          };
+        });
         expect(topLevelList).toEqual(tree);
       });
+
+      it('should sort items', function() {
+        var tree, topLevelList;
+        tree = [
+          {
+            id: 7,
+            parentId: null,
+            name: '2.',
+            childs: [],
+          },
+          {
+            id: 1,
+            parentId: null,
+            name: '1.',
+            childs: [
+              {
+                id: 5,
+                parentId: 1,
+                name: '1.2.',
+                childs: [
+                  {
+                    id: 6,
+                    parentId: 5,
+                    name: '1.2.1.',
+                    childs: [],
+                  },
+                ],
+              },
+              {
+                id: 2,
+                parentId: 1,
+                name: '1.1.',
+                childs: [
+                  {
+                    id: 4,
+                    parentId: 2,
+                    name: '1.1.2.',
+                    childs: [],
+                  },
+                  {
+                    id: 3,
+                    parentId: 2,
+                    name: '1.1.1.',
+                    childs: [],
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
+        function sortFn(a, b) {
+          // order ids descending
+          a = a.id;
+          b = b.id;
+          if (a > b) {
+            return -1;
+          } else if (a < b) {
+            return 1;
+          }
+          return 0;
+        }
+
+        topLevelList = treehelper.makeTree(list, 'id', 'parentId', null, sortFn);
+        expect(topLevelList).toEqual(tree);
+        topLevelList = treehelper.makeTree(list, 'id', 'parentId', null, sortFn, true);
+        expect(topLevelList).toEqual(tree);
+      });
+
+      // it('post-sort should sort items after they are mapped', function() {
+      //   var calledSort = false;
+      //   treehelper.makeTree(list, 'id', 'parentId', function() {
+      //     return undefined;
+      //   }, function sortFn(a, b) {
+      //     expect(a).toBeDefined();
+      //     expect(b).toBeDefined();
+      //     return 0;
+      //   }, true);
+      //   expect(calledSort).toBe(true);
+      // });
     });
   });
 });

@@ -21,13 +21,19 @@ define('src/core/treehelper', [
     return item;
   }
 
-  function makeTree(list, idKey, parentIdKey, includeParentProp, mapFn) {
+  function makeTree(list, idKey, parentIdKey, mapFn, sortFn, postSort) {
     var treeTrunk = [],
       tempParents = [],
       tempChildsMap = {},
-      toVisitMap = {};
+      toVisitMap = {},
+      preSort;
     if (typeof(mapFn) !== 'function') {
       mapFn = passThrough;
+    }
+    if (typeof(sortFn) === 'function') {
+      preSort = !postSort;
+    } else {
+      preSort = postSort = false;
     }
 
     // prep before recursion
@@ -35,6 +41,10 @@ define('src/core/treehelper', [
       var parentId = item[parentIdKey],
         id = item[idKey],
         tempChilds;
+      if (!id) {
+        console.log('item has no id:', item);
+        return;
+      }
 
       // set childs
       item.childs = [];
@@ -49,7 +59,6 @@ define('src/core/treehelper', [
       } else {
         // add to temp parent list
         tempParents.push(item);
-        // treeTrunk.push(mapFn(item, null));
       }
 
       // map id to true(needs to be visited)
@@ -57,7 +66,7 @@ define('src/core/treehelper', [
     });
 
 
-    function walk(item, mappedParent, parent) {
+    function buildBranch(item, childList, mappedParent, parent) {
       var id = item[idKey],
         mappedItem, tempChilds;
       if (!toVisitMap[id]) {
@@ -71,24 +80,39 @@ define('src/core/treehelper', [
       // try to map temp childs
       tempChilds = tempChildsMap[id];
       if (tempChilds) {
+        // pre-sort childs
+        if (preSort) {
+          tempChilds.sort(sortFn);
+        }
         //@NOTE: item is now the parent
         tempChilds.forEach(function(child) {
-          child = walk(child, mappedItem, item);
-          if (child) {
-            item.childs.push(child);
-          }
+          // recursion happens here
+          buildBranch(child, item.childs, mappedItem, item);
         });
+        // post-sort childs
+        if (postSort) {
+          item.childs.sort(sortFn);
+        }
       }
-      // return mapped item
-      return mappedItem;
+
+      // add item to child list
+      childList.push(mappedItem);
+    }
+
+    // start recursion
+    // pre-sort parents
+    if (preSort) {
+      tempParents.sort(sortFn);
     }
     tempParents.forEach(function(item) {
-      item = walk(item, null, null);
-      if (item) {
-        treeTrunk.push(item);
+      buildBranch(item, treeTrunk, null, null);
+      // post-sort parents
+      if (postSort) {
+        treeTrunk.sort(sortFn);
       }
     });
 
+    // show which items aren't connected to the tree trunk
     Object.keys(toVisitMap).forEach(function(id) {
       console.log('disconnected id:', id);
     });
