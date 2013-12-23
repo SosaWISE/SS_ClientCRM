@@ -1,5 +1,4 @@
 define('src/core/_all.spec', [
-  'src/core/depends.spec',
   'src/core/dataservice.base.spec',
   'src/core/harold.spec',
   'src/core/helpers.spec',

@@ -15,6 +15,13 @@ define('src/u-kov/ukov-prop', [
       write: function() {},
     });
 
+  function areEqual(a, b) {
+    if (a instanceof Date && b instanceof Date) {
+      return a.getTime() === b.getTime();
+    }
+    return a === b;
+  }
+
   function createUkovProp(updateParent, ukovModel, model, doc, key) { //, initialValue) {
     if (!ukovModel || !model) {
       throw new Error('missing ukovModel or model for key: ' + key);
@@ -55,7 +62,7 @@ define('src/u-kov/ukov-prop', [
       // validate
       prop.validate();
       // set dirty state
-      prop.isClean(prop.cleanVal() === newValue);
+      prop.isClean(areEqual(prop.cleanVal(), newValue));
       // update model state
       updateParent();
     });
@@ -86,7 +93,7 @@ define('src/u-kov/ukov-prop', [
       thisVal = _this.getValue();
     cleanVal = (noVal ? thisVal : cleanVal);
     _this.cleanVal(cleanVal);
-    _this.isClean(cleanVal === thisVal);
+    _this.isClean(areEqual(cleanVal, thisVal));
 
     if (allowParentUpdate) {
       _this.updateParent();

@@ -32,12 +32,12 @@ define('src/core/dataservice.base', [
 
   //@NOTE: currently the webservice only supports POST and GET
 
-  // DataserviceBase.prototype.post = function(path, data, setter, callback) {
-  //   this.ajax('POST', null, path, null, data, setter, callback);
-  // };
-  // DataserviceBase.prototype.get = function(path, queryObj, setter, callback) {
-  //   this.ajax('GET', null, path, queryObj, null, setter, callback);
-  // };
+  DataserviceBase.prototype.post = function(path, data, setter, callback) {
+    this.ajax('POST', null, path, null, data, setter, callback);
+  };
+  DataserviceBase.prototype.get = function(path, queryObj, setter, callback) {
+    this.ajax('GET', null, path, queryObj, null, setter, callback);
+  };
 
   DataserviceBase.prototype.save = function(data, setter, callback) { // used to be `create`
     this.ajax('POST', null, null, null, data, setter, callback);

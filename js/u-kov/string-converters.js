@@ -10,15 +10,16 @@ define('src/u-kov/string-converters', [
   var converters = {},
     phoneRegx = /^\(?\b([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
     // these date regexps are pretty lax. they only perform part of the validation
-    dateRegxs = [
-      /^[0-9]{1,2}[- \/][0-9]{1,2}[- \/][0-9]{4}$/, // MM/DD/YYYY | MM-DD-YYYY | MM DD YYYY
-      /^\w+ [0-9]{1,2} [0-9]{4}$/, // MMM DD YYYY
-      /^[0-9]{1,2} \w+ [0-9]{4}$/, // DD MMM YYYY
+    // the space at the end makes it so it can match dates and datetimes
+    dateLongYearRegxs = [
+      /^([0-9]{1,2}[- \/][0-9]{1,2}[- \/][0-9]{4} )/, // MM/DD/YYYY | MM-DD-YYYY | MM DD YYYY
+      /^(\w+ [0-9]{1,2} [0-9]{4} )/, // MMM DD YYYY
+      /^([0-9]{1,2} \w+ [0-9]{4} )/, // DD MMM YYYY
     ],
-    shortYearRegxs = [
-      /^([0-9]{1,2}[- \/][0-9]{1,2}[- \/])([0-9]{1,2})$/, // MM/DD/YY | MM-DD-YY | MM DD YY
-      /^(\w+ [0-9]{1,2} )([0-9]{1,2})$/, // MMM DD YY
-      /^([0-9]{1,2} \w+ )([0-9]{1,2})$/, // DD MMM YY
+    dateShortYearRegxs = [
+      /^([0-9]{1,2}[- \/][0-9]{1,2}[- \/])([0-9]{1,2} )/, // MM/DD/YY | MM-DD-YY | MM DD YY
+      /^(\w+ [0-9]{1,2} )([0-9]{1,2} )/, // MMM DD YY
+      /^([0-9]{1,2} \w+ )([0-9]{1,2} )/, // DD MMM YY
     ];
 
   function trim(text) {
@@ -67,15 +68,18 @@ define('src/u-kov/string-converters', [
       }
     };
   };
-  converters.date = function(isLocal) {
+  converters.date = function() {
     return function convDate(val) {
       val = trim(val);
       if (!val) {
         return;
       }
 
-      dateRegxs = dateRegxs;
-      if (!dateRegxs.some(function(regx) {
+      var day;
+
+      // add space at end to match regxs
+      val += ' ';
+      if (!dateLongYearRegxs.some(function(regx) {
         return regx.test(val);
       })) {
         // didn't match any of the regular expressions
@@ -83,10 +87,10 @@ define('src/u-kov/string-converters', [
         // try to fixup years
         // chrome already does this, but firefox does not
         // just trying to make them behave the same
-        if (!shortYearRegxs.some(function(regx) {
+        if (!dateShortYearRegxs.some(function(regx) {
           var matches = regx.exec(val);
           if (matches) {
-            val = val.replace(regx, function(item, p1, year) {
+            val = val.replace(regx, function(fullMatch, p1, year) {
               year = parseInt(year, 10);
               if (year < 50) {
                 year += 2000;
@@ -103,19 +107,74 @@ define('src/u-kov/string-converters', [
         }
       }
 
-
-
-      var day;
-      day = moment(val);
-      if (!isLocal) {
-        day.utc();
-      }
-      day.startOf('day');
-
+      // date is always UTC
+      day = moment(val).utc().startOf('day');
       if (day.isValid()) {
         return day.toDate();
       } else {
         return new Error('invalid date');
+      }
+    };
+  };
+  converters.datetime = function() {
+    var dateConverter = converters.date(),
+      dateFormat = 'MM/DD/YYYY',
+      timeFormats = [
+      'hh:mm:ss.SSS A',
+      'hh:mm:ss A',
+      'hh:mm A'
+    ];
+    return function convDatetime(val) {
+      val = trim(val);
+      if (!val) {
+        return;
+      }
+
+      var day, replacementValue;
+
+      function replaceDate(regx) {
+        val = val.replace(regx, function(fullMatch) {
+          var dt = dateConverter(fullMatch);
+          if (dt instanceof Date) {
+            // date is UTC
+            replacementValue = moment.utc(dt).format(dateFormat) + ' ';
+            return replacementValue;
+          } else {
+            throw new Error('dt should always be a Date');
+          }
+        });
+      }
+
+      // add space at end to match regxs
+      val += ' ';
+      // parse date part the same as the date converter
+      if (!dateLongYearRegxs.some(function(regx) {
+        if (regx.test(val)) {
+          replaceDate(regx);
+          return true;
+        }
+      }) && !dateShortYearRegxs.some(function(regx) {
+        if (regx.test(val)) {
+          replaceDate(regx);
+          return true;
+        }
+      })) {
+        return new Error('invalid datetime');
+      }
+
+      // datetime is always Local
+      timeFormats.some(function(timeFormat) {
+        day = moment(val, dateFormat + ' ' + timeFormat);
+        return day.isValid();
+      });
+      if (!day.isValid() && replacementValue === val) {
+        // allow for only date
+        day = moment(val + '12:00 am', dateFormat + ' ' + 'hh:mm A');
+      }
+      if (day.isValid()) {
+        return day.toDate();
+      } else {
+        return new Error('invalid datetime');
       }
     };
   };

@@ -14,7 +14,7 @@ html
       div(style="display:none;", id="site-container")
         nav(class="primary")
           //- home
-          a(href="#" class="logo")
+          a(href="#", class="logo")
             span(class="ico")
             h1(class="txt") &nbsp;
 
@@ -40,16 +40,13 @@ html
       include ./jade/_all
 
     //- testing
-    script
-      parent.browser && parent.browser.init(window);
+    script parent.browser && parent.browser.init(window);
 
-    //- debug
+    //-
     script(src="/js/depends.conf.js")
-    script(src="/js/core/depends.js")
-
-    //- compiled
-    //- script(src="/build/lib.js")
-    //- script(src="/build/app.js")
-
-    script
-      require('src/bootstrapper');
+    if release
+      script(src="/lib.js")
+      script(src="/app.js")
+    else
+      script(src="/lib/depends.js")
+    script require('src/bootstrapper');

@@ -1,4 +1,4 @@
-/*global describe,it,expect*/
+/*global describe,it,expect,beforeEach*/
 define('src/u-kov/string-converters.spec', [
  'src/u-kov/string-converters'
 ], function(
@@ -7,6 +7,17 @@ define('src/u-kov/string-converters.spec', [
   "use strict";
 
   describe('String Converters:', function() {
+    beforeEach(function() {
+      this.addMatchers({
+        toBeDate: function(expected) {
+          if (this.actual instanceof Date && expected instanceof Date) {
+            return this.actual.getTime() === expected.getTime();
+          } else {
+            return false;
+          }
+        },
+      });
+    });
 
     describe('string converter', function() {
       var converter = converters.string();
@@ -95,24 +106,24 @@ define('src/u-kov/string-converters.spec', [
     });
 
     describe('date converter', function() {
-      var converter = converters.date(false);
+      var converter = converters.date();
 
       it('should always return expected output when valid', function() {
         var expected = new Date(Date.UTC(1982, 8, 4));
-        expect(converter('09/04/1982')).toEqual(expected);
-        expect(converter('9/4/1982')).toEqual(expected);
-        expect(converter('sep 4 1982')).toEqual(expected);
-        expect(converter('Sep 4 1982')).toEqual(expected);
-        expect(converter('4 sep 1982')).toEqual(expected);
-        expect(converter('4 Sep 1982')).toEqual(expected);
+        expect(converter('09/04/1982')).toBeDate(expected);
+        expect(converter('9/4/1982')).toBeDate(expected);
+        expect(converter('sep 4 1982')).toBeDate(expected);
+        expect(converter('Sep 4 1982')).toBeDate(expected);
+        expect(converter('4 sep 1982')).toBeDate(expected);
+        expect(converter('4 Sep 1982')).toBeDate(expected);
       });
       it('should use 2000\'s when 49 and below is entered', function() {
-        expect(converter('Sep 4 49')).toEqual(new Date(Date.UTC(2049, 8, 4)));
-        expect(converter('Sep 4 0')).toEqual(new Date(Date.UTC(2000, 8, 4)));
+        expect(converter('Sep 4 49')).toBeDate(new Date(Date.UTC(2049, 8, 4)));
+        expect(converter('Sep 4 0')).toBeDate(new Date(Date.UTC(2000, 8, 4)));
       });
       it('should use 1900\'s when year 50 and up is entered', function() {
-        expect(converter('Sep 4 50')).toEqual(new Date(Date.UTC(1950, 8, 4)));
-        expect(converter('Sep 4 99')).toEqual(new Date(Date.UTC(1999, 8, 4)));
+        expect(converter('Sep 4 50')).toBeDate(new Date(Date.UTC(1950, 8, 4)));
+        expect(converter('Sep 4 99')).toBeDate(new Date(Date.UTC(1999, 8, 4)));
       });
 
       it('should return Error when invalid', function() {
@@ -122,6 +133,40 @@ define('src/u-kov/string-converters.spec', [
       });
       it('should return Error when no day is specified', function() {
         expect(converter('Sep 1982') instanceof Error).toBe(true);
+      });
+    });
+
+    describe('datetime converter', function() {
+      var converter = converters.datetime();
+
+      it('should always return expected output when valid', function() {
+        var expected = new Date(1982, 8, 4, 11, 10, 9, 8);
+        expect(converter('09/04/1982 11:10:09.008 am')).toBeDate(expected);
+        expect(converter('9/4/1982 11:10:09.008 am')).toBeDate(expected);
+        expect(converter('9/4/1982 11:10:09 am')).toBeDate(new Date(1982, 8, 4, 11, 10, 9));
+        expect(converter('9/4/1982 11:10 am')).toBeDate(new Date(1982, 8, 4, 11, 10));
+        expect(converter('sep 4 1982 11:10:09.008 am')).toBeDate(expected);
+        expect(converter('Sep 4 1982 11:10:09.008 am')).toBeDate(expected);
+        expect(converter('4 sep 1982 11:10:09.008 am')).toBeDate(expected);
+        expect(converter('4 Sep 1982 11:10:09.008 am')).toBeDate(expected);
+        expect(converter('4 Sep 1982')).toBeDate(new Date(1982, 8, 4));
+      });
+      it('should use 2000\'s when 49 and below is entered', function() {
+        expect(converter('Sep 4 49 11:10 am')).toBeDate(new Date(2049, 8, 4, 11, 10));
+        expect(converter('Sep 4 0 11:10 am')).toBeDate(new Date(2000, 8, 4, 11, 10));
+      });
+      it('should use 1900\'s when year 50 and up is entered', function() {
+        expect(converter('Sep 4 50 11:10 am')).toBeDate(new Date(1950, 8, 4, 11, 10));
+        expect(converter('Sep 4 99 11:10 am')).toBeDate(new Date(1999, 8, 4, 11, 10));
+      });
+      it('should try to correct invalid time', function() {
+        expect(converter('09/04/1982 11:b10:09.008 am')).toBeDate(new Date(1982, 8, 4, 11, 10, 9, 8));
+      });
+
+      it('should return Error when invalid', function() {
+        var errName = Error.name;
+        expect(converter('09/04/1982 11:10:09.008').constructor.name).toBe(errName); // missing am/pm
+        expect(converter('09/04/1982 11 am').constructor.name).toBe(errName); // missing hours
       });
     });
   });

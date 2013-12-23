@@ -7,11 +7,7 @@ define('src/core/strings', [
 
   var strings = {},
     formatRegex = /\{([0-9]+)(?::([0-9A-Z]+))?\}/gi, // {0} or {0:decoratorName}
-    usdFormatter = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-    });
+    usdFormatter;
 
   // e.g.: strings.format('{0} {1}', 'bob', 'bobbins') === 'bob bobbins'
   strings.format = function(format /*, ...args*/ ) {
@@ -50,6 +46,13 @@ define('src/core/strings', [
 
   strings.decorators = {
     c: function(val) {
+      if (!usdFormatter) {
+        usdFormatter = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+          minimumFractionDigits: 2,
+        });
+      }
       return usdFormatter.format(val);
     },
     space: function(val) {
