@@ -11,8 +11,19 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
+    www: '../crm-www',
+
     clean: {
-      app: 'www/',
+      app: {
+        options: {
+          force: true, // force delete files outside the current working directory
+        },
+        src: [
+          // delete everything in build folder except webconfig.js
+          '<%= www %>/**/*',
+          '!<%= www %>/webconfig.js',
+        ]
+      }
     },
 
     copy: {
@@ -25,7 +36,7 @@ module.exports = function(grunt) {
               'stuff/fonts/*',
               'stuff/img/*',
             ],
-            dest: 'www/'
+            dest: '<%= www %>/'
           },
         ]
       },
@@ -40,7 +51,7 @@ module.exports = function(grunt) {
           // exclude specs
           '!app/**/*.spec.js',
         ],
-        dest: 'www/app.js',
+        dest: '<%= www %>/app.js',
       },
       lib: {
         src: [
@@ -54,7 +65,7 @@ module.exports = function(grunt) {
 
           'tparty/definelibs.js',
         ],
-        dest: 'www/lib.js',
+        dest: '<%= www %>/lib.js',
       },
     },
     uglify: {
@@ -63,8 +74,8 @@ module.exports = function(grunt) {
           mangle: false,
         },
         files: {
-          'www/app.min.js': ['www/app.js'],
-          'www/lib.min.js': ['www/lib.js'],
+          '<%= www %>/app.min.js': ['<%= www %>/app.js'],
+          '<%= www %>/lib.min.js': ['<%= www %>/lib.js'],
         }
       }
     },
@@ -76,7 +87,7 @@ module.exports = function(grunt) {
           },
         },
         files: {
-          'www/index.html': 'index.jade',
+          '<%= www %>/index.html': 'index.jade',
         },
       },
     },
@@ -86,7 +97,7 @@ module.exports = function(grunt) {
           cleancss: true,
         },
         files: {
-          'www/index.css': 'index.less',
+          '<%= www %>/index.css': 'index.less',
         },
       },
     },
