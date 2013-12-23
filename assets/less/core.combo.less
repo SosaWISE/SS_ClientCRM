@@ -1,0 +1,115 @@
+.combo {
+  text-align: left;
+  position: relative;
+  color: black;
+  font: 14px "Roboto", Helvetica, Arial, sans-serif;
+
+  .cover {
+    .border-radius(3px);
+    border: solid 1px transparent;
+    height: 31px;
+    background-color: white;
+    cursor: pointer;
+    padding: 5px 3px 3px 3px;
+    overflow: hidden;
+
+    .arrow {
+      position: absolute;
+      right: 10px;
+      top: 13px;
+
+      // http://css-tricks.com/snippets/css/css-triangle/
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid black;
+    }
+  }
+  .combo-list {
+    position: absolute;
+    width: 100%;
+
+    li.action {
+      height: 40px;
+      padding: 10px;
+    }
+  }
+
+  input[type=text] {
+    cursor: pointer;
+    position: absolute;
+    top: -31px;
+    height: 31px;
+
+    .transition(.25s);
+    .border-radius(3px);
+    padding: 5px 7px;
+    margin: 0;
+    width: 100%;
+    outline: none;
+    resize: none;
+
+    color: transparent;
+    background: rgba(255,255,255,0);
+    &:focus {
+      color: transparent;
+      background: rgba(255,255,255,0);
+    }
+  }
+
+  ul {
+    margin-top: 0px;
+    max-height: 175px;
+    overflow-x: auto;
+    background-color: #fff;
+    .border-radius(0px 0px 5px 5px);
+
+    li {
+      margin-bottom: 0px !important;
+      cursor: pointer;
+
+      div {
+        padding-top: 5px;
+        padding-right: 10px;
+        padding-bottom: 5px;
+        padding-left: 10px;
+
+        &.active {
+          background-color: #999;
+        }
+        &:hover {
+          background-color: #999;
+        }
+
+        a {
+          color: #333;
+        }
+      }
+    }
+  }
+
+  &.open {
+    .cover .arrow {
+      // switch arrow direction
+      border-top: 0px solid black;
+      border-bottom: 6px solid black;
+    }
+    .combo-list {
+      z-index: 100;
+    }
+    input[type=text] {
+      cursor: inherit;
+      position: relative;
+      top: 0;
+      opacity: 1;
+
+      color: black;
+      background: rgba(255,255,255,1);
+      :focus {
+        color: black;
+        background: rgba(255,255,255,1);
+      }
+    }
+  }
+}

@@ -1,70 +1,101 @@
 module.exports = function(grunt) {
-  "use strict";
+  'use strict';
 
-  grunt.loadNpmTasks('grunt-contrib-connect');
-  grunt.loadNpmTasks('grunt-contrib-jasmine');
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-jade');
+  grunt.loadNpmTasks('grunt-contrib-less');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    concat: {
-      options: {
-        // footer: 'require("bootstrapper");',
+
+    clean: {
+      app: 'www/',
+    },
+
+    copy: {
+      production: {
+        files: [
+          {
+            src: [
+              'depends.conf.js',
+              'logindummy.html',
+              'assets/fonts/*',
+              'assets/img/*',
+            ],
+            dest: 'www/'
+          },
+        ]
       },
+    },
+    concat: {
+      options: {},
       app: {
         src: [
           // includes
-          'js/**/*.js',
-
-          // excludes
-          '!js/depends.conf.js', '!js/core/depends.js',
-          '!js/**/*.spec.js',
+          'app/**/*.js',
+          'mock/**/*.js',
+          // exclude specs
+          '!app/**/*.spec.js',
         ],
-        dest: 'build/app.js',
+        dest: 'www/app.js',
       },
       lib: {
         src: [
-          'js/core/depends.js',
-          // 'lib/almond.js',
-          'lib/jquery*.js',
-          'lib/knockout.js',
-          'lib/moment.js',
-          'lib/underscore.js',
-          'lib/markdown.js',
-          'lib/definelibs.js',
+          'tparty/depends.js',
+
+          'tparty/jquery*.js',
+          'tparty/knockout.js',
+          'tparty/moment.js',
+          'tparty/underscore.js',
+          'tparty/markdown.js',
+
+          'tparty/definelibs.js',
         ],
-        dest: 'build/lib.js',
+        dest: 'www/lib.js',
       },
     },
-    connect: {
-      specs: {
+    uglify: {
+      production: {
         options: {
-          port: 54345,
-          base: './',
+          mangle: false,
+        },
+        files: {
+          'www/app.min.js': ['www/app.js'],
+          'www/lib.min.js': ['www/lib.js'],
+        }
+      }
+    },
+    jade: {
+      production: {
+        options: {
+          data: {
+            release: true,
+          },
+        },
+        files: {
+          'www/index.html': 'index.jade',
         },
       },
     },
-    jasmine: {
-      //@NOTE:  we're not using any of their generated files
-      //        we generated files, moved them, modified them and checked them in
-      browser: {
-        //src: [
-        //	'specs/allspecs.js',
-        //],
+    less: {
+      production: {
         options: {
-          host: 'http://localhost:54345/',
-          //helpers: 'specs/**/*.helper.js',
-          //specs: 'specs/**/*.spec.js',
-          template: 'specRunner.html',
-          outfile: 'specPhantomRunner.html', // copy of specRunner.html
-          keepRunner: false,
+          cleancss: true,
+        },
+        files: {
+          'www/index.css': 'index.less',
         },
       },
     },
   });
 
-  grunt.registerTask('test', [
-    'connect',
-    'jasmine',
+  grunt.registerTask('default', [
+    'copy',
+    'concat', 'uglify',
+    'jade',
+    'less',
   ]);
 };

@@ -35,18 +35,22 @@ html
 
       div(data-bind="template:{name:'tmpl-notices',data:notify}")
 
-    //- Insert templates here
+    //- templates
     div(style="display:none")
-      include ./jade/_all
+      include ./app/jade/_all.jade
+      include ./app/account/jade/_all.jade
+      include ./app/core/jade/_all.jade
+      include ./app/panels/jade/_all.jade
+      include ./app/survey/jade/_all.jade
 
     //- testing
     script parent.browser && parent.browser.init(window);
 
-    //-
-    script(src="/js/depends.conf.js")
-    if release
-      script(src="/lib.js")
-      script(src="/app.js")
+    //- js
+    script(src="depends.conf.js")
+    if !release
+      script(src="tparty/depends.js")
     else
-      script(src="/lib/depends.js")
+      script(src="lib.min.js")
+      script(src="app.min.js")
     script require('src/bootstrapper');

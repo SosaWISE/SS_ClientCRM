@@ -1,0 +1,83 @@
+.make-btn(@bgcolor, @color, @disabledColor, @radius:3px, @fontSize:14px) {
+  @white-gradient: rgba(255,255,255,0.05);
+  @black-gradient: rgba(0,0,0,0.05);
+
+  .user-select(none);
+  .border-radius(@radius);
+  .box-shadow(inset 0 1px 1px rgba(0,0,0,0.06), 0 1px 0 #fff;);
+  .bgi-gradient(@white-gradient, @black-gradient);
+
+  padding: 8px 10px;
+
+  cursor: pointer;
+  border: 1px solid darken(@bgcolor, 40%);
+  background-color: @bgcolor;
+  color: @color;
+
+  display: inline-block;
+  text-align: center;
+  text-shadow: 0 1px 0 #000;
+
+  font: @fontSize "Roboto",Helvetica,Arial,sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+
+  &:not(.disabled):active {
+    .box-shadow(inset 0 1px 2px rgba(0,0,0,0.5), 0 1px 0 #fff;);
+    .bgi-gradient(@black-gradient, @white-gradient);
+
+    padding: 9px 10px 7px 10px;
+  }
+  &:not(.disabled):hover {
+    background-color: lighten(@bgcolor, 3%);
+  }
+  &.disabled {
+    cursor: default;
+    border-color: darken(@disabledColor, 40%);
+    background-color: @disabledColor;
+    color: darken(@disabledColor, 20%);
+  }
+}
+
+
+.btn-blue {
+  .make-btn(@site-blue, #fff, #e8e8e8, 3px, 16px);
+  width: 100%;
+}
+.btn-bg {
+  // .make-btn(rgba(255,255,255,0.1), #fff, #e8e8e8, 3px);
+  .user-select(none);
+  .border-radius(3px);
+  .box-shadow(0px 1px 0px rgba(255,255,255,0.2), inset 0px 1px 0px rgba(255,255,255,0.2););
+  .bgi-gradient(rgba(255,255,255,0.04), rgba(0,0,0,0.04));
+  padding: 8px 18px 6px 18px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background-color: rgba(255,255,255,0.1);
+  color: white;
+  text-transform: uppercase;
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+  font-size: 13px;
+  // margin-bottom: 10px;
+  cursor: pointer;
+
+  width: 100%;
+  display: block;
+
+  &:hover {
+    background-color: rgba(255,255,255,0.15);
+  }
+  &:active {
+    .box-shadow(0px 1px 0px rgba(255,255,255,0.2), inset 0px 1px 2px rgba(0,0,0,0.5););
+    padding: 9px 18px 5px 18px;
+    background-color: rgba(0,0,0,0.15);
+    color: rgba(255,255,255,0.75);
+  }
+  &:focus {
+    background-color: rgba(0,0,0,0.15);
+    color: rgba(255,255,255,0.75);
+  }
+}
+
