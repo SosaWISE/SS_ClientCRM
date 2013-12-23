@@ -22,8 +22,8 @@ module.exports = function(grunt) {
             src: [
               'depends.conf.js',
               'logindummy.html',
-              'assets/fonts/*',
-              'assets/img/*',
+              'stuff/fonts/*',
+              'stuff/img/*',
             ],
             dest: 'www/'
           },
