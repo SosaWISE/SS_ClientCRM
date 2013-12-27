@@ -1,3 +1,4 @@
+/* Development depends configuration file */
 window.require = {
   paths: {
     // app namespacing

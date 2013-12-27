@@ -49,8 +49,11 @@ html
     //- js
     script(src="depends.conf.js")
     if !release
-      script(src="tparty/depends.js")
-    else
       script(src="lib.min.js")
       script(src="app.min.js")
+    else if debug
+      script(src="lib.js")
+      script(src="app.js")
+    else
+      script(src="tparty/depends.js")
     script require('src/bootstrapper');

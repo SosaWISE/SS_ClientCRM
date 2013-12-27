@@ -8,5 +8,11 @@ html
     script(src="/tparty/jasmine/reporter.js")
   body
     script(src="/depends.conf.js")
-    script(src="/tparty/depends.js")
-    script(src="/spec/index.js")
+    if release
+      script(src="/lib.js")
+      script(src="/app.js")
+      script(src="/spec.js")
+    else
+      script(src="/tparty/depends.js")
+      script(src="/spec/index.js")
+

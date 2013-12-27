@@ -20,8 +20,7 @@ module.exports = function(grunt) {
         },
         src: [
           // delete everything in build folder except webconfig.js
-          '<%= www %>/**/*',
-          '!<%= www %>/webconfig.js',
+          '<%= www %>/*', '!<%= www %>/webconfig.js',
         ]
       }
     },
@@ -31,29 +30,51 @@ module.exports = function(grunt) {
         files: [
           {
             src: [
-              'depends.conf.js',
               'logindummy.html',
               'stuff/fonts/*',
               'stuff/img/*',
+              // specs
+              'tparty/jasmine/*',
+              'tparty/depends.js',
             ],
             dest: '<%= www %>/'
+          },
+          {
+            src: 'depends-production.conf.js',
+            dest: '<%= www %>/depends.conf.js',
           },
         ]
       },
     },
     concat: {
       options: {},
+      // packages - include package folder js files but not specs
+      mock_pkg: {
+        src: ['mock/**/*.js', '!app/**/*.spec.js', ],
+        dest: '<%= www %>/mock.js',
+      },
+      core_pkg: {
+        src: ['app/core/**/*.js', '!app/core/**/*.spec.js', ],
+        dest: '<%= www %>/core.js',
+      },
+      ukov_pkg: {
+        src: ['app/u-kov/**/*.js', '!app/u-kov/**/*.spec.js', ],
+        dest: '<%= www %>/ukov.js',
+      },
+      // app without packages
       app: {
         src: [
-          // includes
+          // include app files
           'app/**/*.js',
-          'mock/**/*.js',
-          // exclude specs
+          // exclude specs and packages
           '!app/**/*.spec.js',
+          '!app/core/*',
+          '!app/u-kov/*',
         ],
         dest: '<%= www %>/app.js',
       },
-      lib: {
+      // third party libs
+      tparty: {
         src: [
           'tparty/depends.js',
 
@@ -66,6 +87,15 @@ module.exports = function(grunt) {
           'tparty/definelibs.js',
         ],
         dest: '<%= www %>/lib.js',
+      },
+      // specs
+      spec: {
+        src: [
+          'app/**/*.spec.js',
+          'spec/runner.js',
+          'spec/index.js',
+        ],
+        dest: '<%= www %>/spec.js',
       },
     },
     uglify: {
@@ -88,6 +118,7 @@ module.exports = function(grunt) {
         },
         files: {
           '<%= www %>/index.html': 'index.jade',
+          '<%= www %>/spec/index.html': 'spec/index.jade',
         },
       },
     },
@@ -105,7 +136,8 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', [
     'copy',
-    'concat', 'uglify',
+    'concat',
+    'uglify',
     'jade',
     'less',
   ]);

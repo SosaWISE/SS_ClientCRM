@@ -5,23 +5,39 @@
     dependantsMap = {},
     pendingDefineMap = {},
     jsonpCount = 0,
-    config = window.require || {};
+    config = window.require || {},
+    pkgs, requireCalled;
   // ensure certain properties exist
   config.paths = config.paths || {
     // default app namespacing
-    src: 'app',
-    spec: 'spec',
-    specui: 'specui',
-    mock: 'mock',
+    src: '/app',
+    spec: '/spec',
+    specui: '/specui',
+    mock: '/mock',
   };
   config.global = config.global || {};
+
+  config.pkgs = config.pkgs || {};
+
+  if (!config.pkgs) {
+    pkgs = [];
+  } else {
+    pkgs = Object.keys(config.pkgs).map(function(name) {
+      return {
+        // name: name,
+        parts: pathParts(name),
+        path: config.pkgs[name],
+      };
+    });
+    delete config.pkgs;
+  }
 
   // setTimeout(function() {
   //   console.log('dependantsMap', JSON.stringify(dependantsMap, null, '  '));
   // }, 1100);
 
   function define(name, deps, value) {
-    var mod, valueType = typeof(value);
+    var mod, pending, valueType = typeof(value);
 
     if (valueType === 'undefined') {
       throw new Error('missing value');
@@ -42,8 +58,25 @@
     }
     definedMap[name] = mod;
 
-    if (pendingDefineMap[name]) {
-      pendingDefineMap[name](mod);
+    pending = pendingDefineMap[name];
+    if (pending) {
+      pending(mod);
+    }
+
+    /* jshint onevar:false */
+    var pkg = findPackage(name);
+    if (pkg) {
+      if (!pkg.loaded && requireCalled) {
+        // only warn if `require` has been called since modules can be defined before loading scripts
+        console.warn('UNEXPECTED package module defined:', name);
+      } else {
+        // console.log('package module defined:', name);
+      }
+    } else if (!pending && requireCalled) {
+      // only warn if `require` has been called since modules can be defined before loading scripts
+      console.warn('UNEXPECTED module defined:', name);
+    } else {
+      // console.log('module defined:', name);
     }
   }
 
@@ -60,6 +93,8 @@
 
 
   function require(deps, cb) {
+    requireCalled = true;
+
     var notArray = !Array.isArray(deps);
     if (notArray) {
       deps = [deps];
@@ -140,9 +175,27 @@
     return resolvedDeps;
   }
 
+  function findPackage(name) {
+    var result,
+      parts = pathParts(name);
+    pkgs.some(function(pkg) {
+      if (pkg.parts.length > parts.length) {
+        return false;
+      }
+      // every package part should match path parts
+      if (pkg.parts.every(function(part, index) {
+        return part === parts[index];
+      })) {
+        result = pkg;
+        return true;
+      }
+    });
+    return result;
+  }
+
   function addPendingDefine(name, index, cb) {
     if (!pendingDefineMap[name]) {
-      var list = [];
+      var pkg, list = [];
       pendingDefineMap[name] = function(mod) {
         delete pendingDefineMap[name];
         resolveModule(mod, function(mod) {
@@ -153,15 +206,20 @@
       };
       pendingDefineMap[name].list = list;
 
-      loadModule(name, function() {
-        if (getModule(name)) {
-          return;
-        }
+      pkg = findPackage(name);
+      if (pkg) {
+        loadPackage(pkg);
+      } else {
+        loadModule(name, function() {
+          if (getModule(name)) {
+            return;
+          }
 
-        define(name, [], function() {
-          return window[config.global[name]];
+          define(name, [], function() {
+            return window[config.global[name]];
+          });
         });
-      });
+      }
     }
     pendingDefineMap[name].list.push(function(mod) {
       cb(mod, index);
@@ -193,8 +251,9 @@
             });
           }
         } catch (ex) {
-          console.error('DEPENDS ERROR: failed to init `' + mod.name + '` - ' + ex);
+          console.error('DEPENDS ERROR: failed to define `' + mod.name + '` - ' + ex);
         }
+
         if (mod.value === undefined) {
           // ensure the value has been set to something other than undefined
           mod.value = null;
@@ -210,14 +269,37 @@
     return true;
   }
 
+  function pathParts(name) {
+    return name.split('/');
+  }
+
   function toUrl(name) {
-    var parts = name.split('/'),
+    var parts = pathParts(name),
       pathPart = config.paths[parts[0]];
     if (pathPart) {
       parts[0] = pathPart;
       name = parts.join('/');
     }
     return name + '.js';
+  }
+
+  function loadScript(url, async, cb) {
+    onReady(function() {
+      var script = document.createElement('script');
+      if (cb) {
+        script.onload = cb;
+      }
+      script.async = async || false;
+      script.src = url;
+      document.body.appendChild(script);
+    });
+  }
+
+  function loadPackage(pkg) {
+    if (!pkg.loaded) {
+      pkg.loaded = true;
+      loadScript(pkg.path, false);
+    }
   }
 
   function loadModule(name, cb) {
@@ -232,13 +314,7 @@
       async = true;
     }
 
-    onReady(function() {
-      var script = document.createElement('script');
-      script.onload = cb;
-      script.async = async || false;
-      script.src = url;
-      document.body.appendChild(script);
-    });
+    loadScript(url, async, cb);
   }
 
   function onReady(cb) {
