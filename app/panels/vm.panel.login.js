@@ -1,4 +1,4 @@
-define('src/vm.panel.login', [
+define('src/panels/vm.panel.login', [
   'src/core/notify',
   'ko',
   'src/core/utils',

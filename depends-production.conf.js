@@ -4,6 +4,8 @@ window.require = {
     webconfig: '/webconfig',
   },
   pkgs: {
+    'src/account': '/account.js',
+    'src/survey': '/survey.js',
     'src/core': '/core.js',
     'src/u-kov': '/ukov.js',
     'mock': '/mock.js',

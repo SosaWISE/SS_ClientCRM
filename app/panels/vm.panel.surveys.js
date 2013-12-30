@@ -1,4 +1,4 @@
-define('src/survey/vm.panel.surveys', [
+define('src/panels/vm.panel.surveys', [
   'src/core/vm.layers',
   'src/survey/vm.tokens',
   'src/survey/vm.possibleanswers',

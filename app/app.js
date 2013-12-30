@@ -1,9 +1,9 @@
 define('src/app', [
   'src/core/router',
-  'src/vm.panel.login',
-  'src/vm.panel.home',
-  'src/vm.panel.accounts',
-  'src/survey/vm.panel.surveys',
+  'src/panels/vm.panel.login',
+  'src/panels/vm.panel.home',
+  'src/panels/vm.panel.accounts',
+  'src/panels/vm.panel.surveys',
   'src/core/notify'
 ], function(
   router,

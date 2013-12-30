@@ -49,17 +49,25 @@ module.exports = function(grunt) {
     concat: {
       options: {},
       // packages - include package folder js files but not specs
-      mock_pkg: {
-        src: ['mock/**/*.js', '!app/**/*.spec.js', ],
-        dest: '<%= www %>/mock.js',
+      account_pkg: {
+        src: ['app/account/**/*.js', '!app/account/**/*.spec.js', ],
+        dest: '<%= www %>/account.debug.js',
+      },
+      survey_pkg: {
+        src: ['app/survey/**/*.js', '!app/survey/**/*.spec.js', ],
+        dest: '<%= www %>/survey.debug.js',
       },
       core_pkg: {
         src: ['app/core/**/*.js', '!app/core/**/*.spec.js', ],
-        dest: '<%= www %>/core.js',
+        dest: '<%= www %>/core.debug.js',
       },
       ukov_pkg: {
         src: ['app/u-kov/**/*.js', '!app/u-kov/**/*.spec.js', ],
-        dest: '<%= www %>/ukov.js',
+        dest: '<%= www %>/ukov.debug.js',
+      },
+      mock_pkg: {
+        src: ['mock/**/*.js', '!app/**/*.spec.js', ],
+        dest: '<%= www %>/mock.debug.js',
       },
       // app without packages
       app: {
@@ -68,10 +76,12 @@ module.exports = function(grunt) {
           'app/**/*.js',
           // exclude specs and packages
           '!app/**/*.spec.js',
+          '!app/account/*',
+          '!app/survey/*',
           '!app/core/*',
           '!app/u-kov/*',
         ],
-        dest: '<%= www %>/app.js',
+        dest: '<%= www %>/app.debug.js',
       },
       // third party libs
       tparty: {
@@ -86,7 +96,7 @@ module.exports = function(grunt) {
 
           'tparty/definelibs.js',
         ],
-        dest: '<%= www %>/lib.js',
+        dest: '<%= www %>/lib.debug.js',
       },
       // specs
       spec: {
@@ -104,8 +114,14 @@ module.exports = function(grunt) {
           mangle: false,
         },
         files: {
-          '<%= www %>/app.min.js': ['<%= www %>/app.js'],
-          '<%= www %>/lib.min.js': ['<%= www %>/lib.js'],
+          '<%= www %>/account.js': ['<%= www %>/account.debug.js'],
+          '<%= www %>/survey.js': ['<%= www %>/survey.debug.js'],
+          '<%= www %>/core.js': ['<%= www %>/core.debug.js'],
+          '<%= www %>/ukov.js': ['<%= www %>/ukov.debug.js'],
+          '<%= www %>/mock.js': ['<%= www %>/mock.debug.js'],
+
+          '<%= www %>/app.js': ['<%= www %>/app.debug.js'],
+          '<%= www %>/lib.js': ['<%= www %>/lib.debug.js'],
         }
       }
     },

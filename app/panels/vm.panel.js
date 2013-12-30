@@ -1,4 +1,4 @@
-define('src/vm.panel', [
+define('src/panels/vm.panel', [
   'src/core/notify',
   'src/core/utils',
   'src/core/vm.controller',
