@@ -1,7 +1,7 @@
 !!! HTML5
 html
   head
-    title Security Sciences
+    title Nexsense
     meta(http-equiv='X-UA-Compatible', content='IE=Edge,chrome=1')
     meta(http-equiv='content-type', content='text/html; charset=utf-8')
     link(href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,300', rel='stylesheet', type='text/css')
@@ -48,7 +48,7 @@ html
 
     //- js
     script(src="depends.conf.js")
-    if !release
+    if release
       script(src="lib.min.js")
       script(src="app.min.js")
     else if debug
