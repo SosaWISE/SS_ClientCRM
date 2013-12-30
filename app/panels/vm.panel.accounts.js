@@ -22,7 +22,7 @@ define('src/panels/vm.panel.accounts', [
         var args = arguments;
         deps.SearchAccountViewModel = args[0];
         deps.ChecklistAccountViewModel = args[1];
-        deps.AccountInfoViewModel = args[2];
+        deps.InfoAccountViewModel = args[2];
         cb();
       });
     }),
@@ -125,7 +125,7 @@ define('src/panels/vm.panel.accounts', [
   };
 
   function createAccountVM(id, name) {
-    return new deps.AccountInfoViewModel({
+    return new deps.InfoAccountViewModel({
       routePart: childRoutePart,
       id: id,
       title: name,
