@@ -17,7 +17,7 @@ define('src/panels/vm.panel.accounts', [
       require([
         'src/account/vm.account.search',
         'src/account/vm.account.checklist',
-        'src/account/vm.accountinfo',
+        'src/account/vm.account.info',
       ], function() {
         var args = arguments;
         deps.SearchAccountViewModel = args[0];
