@@ -60,8 +60,6 @@ define('src/panels/vm.panel.accounts', [
       _this.list.push(vm);
       _this.selectItem(vm);
     };
-
-    _this.defaultChild = _this.searchVM;
   }
   utils.inherits(AccountsPanelViewModel, ControllerViewModel);
   // AccountsPanelViewModel.prototype.routePart = '';
@@ -78,6 +76,7 @@ define('src/panels/vm.panel.accounts', [
         id: 'search',
         title: 'Search',
       });
+      _this.defaultChild = _this.searchVM;
 
       _this.list([
         createAccountVM(100001, '100001'),
