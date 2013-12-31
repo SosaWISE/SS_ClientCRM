@@ -17,12 +17,12 @@ define('src/panels/vm.panel.accounts', [
       require([
         'src/account/vm.account.search',
         'src/account/vm.account.checklist',
-        'src/account/vm.account.info',
+        'src/account/vm.account',
       ], function() {
         var args = arguments;
         deps.SearchAccountViewModel = args[0];
         deps.ChecklistAccountViewModel = args[1];
-        deps.InfoAccountViewModel = args[2];
+        deps.AccountViewModel = args[2];
         cb();
       });
     }),
@@ -125,7 +125,7 @@ define('src/panels/vm.panel.accounts', [
   };
 
   function createAccountVM(id, name) {
-    return new deps.InfoAccountViewModel({
+    return new deps.AccountViewModel({
       routePart: childRoutePart,
       id: id,
       title: name,
