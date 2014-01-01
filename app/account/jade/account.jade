@@ -5,61 +5,107 @@ div(class="tab panel account", data-bind="active:active,toggle:{'hide-nav':hideN
   div(class="p-module details")
     span(data-bind="click:clickToggleNav") detail
 
-  div(class="notes")
-    span(class="title", data-bind="click:clickToggleNotes") Notes:
-    div(class="contents") contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here
-
   div(class="p-nav")
     div(class="toggle-btn", data-bind="click:clickToggleNav,toggle:{'closed':hideNav}")
       div(class="close") &#59229;
       div(class="open") &#59230;
 
-    div(class="section")
-      span(class="title") Contract Owner
+    div(class="contents-wrap")
       div(class="contents")
-        div(class="info userinfo")
-          div(class="img-wrap")
-            div(class="img", style="background-image:url(https://secure.gravatar.com/avatar/f47bda756ab7abfaeb7b5e1b59d5edc9?s=80&r=pg&d=https%3A%2F%2Fkanbanflow.com%2Fimg%2Fgd.png);")
-          div(class="name") Andres Sosa
-          div(class="address") 1573 N Technology Way
-          div(class="address") Suite 1100, Bldg A
-          div(class="address") Orem, UT 84057
-          div(class="separator")
-          div(class="phone mobile") (801) 822-9323
-          div(class="phone work") (801) 822-7862
-          div(class="phone home") (801) 226-7067
-          div(class="email") asosa@nexsense.com
-          div(class="credit-score excellent") Credit Score: TU Excellent
+        div(class="section")
+          span(class="title") Contract Owner
+          div(class="contents")
+            div(class="info userinfo")
+              div(class="img-wrap")
+                div(class="img", style="background-image:url(https://secure.gravatar.com/avatar/f47bda756ab7abfaeb7b5e1b59d5edc9?s=80&r=pg&d=https%3A%2F%2Fkanbanflow.com%2Fimg%2Fgd.png);")
+              div(class="name") Andres Sosa
+              div(class="address") 1573 N Technology Way
+              div(class="address") Suite 1100, Bldg A
+              div(class="address") Orem, UT 84057
+              div(class="separator")
+              div(class="phone mobile") (801) 822-9323
+              div(class="phone work") (801) 822-7862
+              div(class="phone home") (801) 226-7067
+              div(class="email") asosa@nexsense.com
+              div(class="credit-score excellent") Credit Score: TU Excellent
 
-    div(class="section")
-      span(class="title") Accounts
-      div(class="contents")
-        div(class="p-nav checklist")
-          br
-          ul
-            //- <!-- ko foreach:checklist -->
-            //- li(data-bind="")
-            //-   a(data-bind="active:active")
-            //-     span(data-bind="text:title")
-            //- <!-- /ko -->
-            li
-              a(class="active")
-                span S1
-            li
-              a
-                span S2
-            li
-              a
-                span LifeLock
-            li
-              a
-                span Numana
-            li
-              a
-                span Window Film
-            li
-              a
-                span Strike Plate
-            li
-              a
-                span Internet Security
+        div(class="section")
+          span(class="title") Accounts
+          div(class="contents")
+            ul(class="accounts")
+              //- <!-- ko foreach:checklist -->
+              //- li(data-bind="")
+              //-   a(data-bind="active:active")
+              //-     span(data-bind="text:title")
+              //- <!-- /ko -->
+              li
+                a(class="active")
+                  span(class="name") S1
+                  span(class="amount") $49.99
+                  //- span(class="amount") $39.99
+              li
+                a
+                  span(class="name") LifeLock
+                  span(class="amount") $0.00
+                  //- span(class="amount") $10.00
+              li
+                a
+                  span(class="name") S2
+                  span(class="amount") $49.99
+              li
+                a
+                  span(class="name") Numana
+                  span(class="amount") $59.99
+              li
+                a
+                  span(class="name") Window Film
+                  span(class="hasAcct")
+              li
+                a
+                  span(class="name") Strike Plate
+                  span(class="noAcct")
+              li
+                a
+                  span(class="name") Internet Security
+                  span(class="amount") $10.00
+              li
+                a(class="total")
+                  span(class="name") Total RMR
+                  span(class="amount") $169.97
+
+        div(class="section")
+          span(class="title") Payment History
+          div(class="contents")
+            ul(class="accounts")
+              li
+                a(class="active")
+                  span(class="name") ??
+                  span(class="amount")
+
+        div(class="section")
+          span(class="title") Aging
+          div(class="contents")
+            ul(class="accounts")
+              li
+                a(class="active")
+                  span(class="name") Current
+                  span(class="amount") $169.97
+                a
+                  span(class="name") 1 - 30
+                  span(class="amount") $0.00
+                a
+                  span(class="name") 31 - 60
+                  span(class="amount") $0.00
+                a
+                  span(class="name") 61 - 90
+                  span(class="amount") $0.00
+                a
+                  span(class="name") 91 - 120
+                  span(class="amount") $0.00
+                a
+                  span(class="name") &gt; 120
+                  span(class="amount") $0.00
+
+  div(class="notes")
+    span(class="title", data-bind="click:clickToggleNotes") Notes:
+    div(class="contents") contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here

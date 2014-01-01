@@ -425,10 +425,69 @@ div.tab {
           width: 80px;
           height: 80px;
         }
+        div {
+          .user-select(initial);
+        }
+      }
+
+      // http://stackoverflow.com/questions/16670931/hide-scroll-bar-but-still-being-able-to-scroll
+      > .contents-wrap {
+        position: absolute;
+        top: 0; right: 0; bottom: 0; left: 0;
+        overflow: hidden;
+        > .contents {
+          width: @navWidth + 15px; // hide scroll bar
+          overflow-y: scroll; // but still allow scrolling
+          overflow-x: hidden;
+          height: 100%;
+          padding-bottom: 50px;
+        }
+      }
+
+      ul.accounts {
+        a {
+          position: relative;
+
+          &.active {
+            color: @account-bg;
+          }
+          .name {
+            display: inline-block;
+            width: 75%;
+          }
+          .amount,
+          .hasAcct,
+          .noAcct {
+            display: inline-block;
+          }
+          .hasAcct:before,
+          .noAcct:before {
+            position: absolute;
+            top: -2px;
+            font-size: 1.8em;
+          }
+          .hasAcct:before {
+            content: '\2713'; // checkmark
+          }
+          .noAcct:before {
+            content: '\2717'; // x-mark
+          }
+        }
+        .total {
+          cursor: inherit;
+          font-weight: 500;
+          .amount {
+            border-top: 1px solid white;
+            padding-top: 5px;
+            border-bottom: 4px double white;
+            padding-bottom: 5px;
+            width: 25%;
+          }
+        }
       }
 
       .toggle-btn {
-        .box-shadow(inset 0 5px 5px -5px #000000, inset -5px 0 5px -5px #000000, inset 0 -5px 5px -5px #000000;);
+        .box-shadow(inset 0 5px 5px -5px #000000, inset -5px 0 5px -5px #000000, inset -2px -5px 5px -5px #000000;);
         position: absolute;
         top: 2px;
         right: -18px;
