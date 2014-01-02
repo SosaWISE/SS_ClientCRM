@@ -1,4 +1,4 @@
-define('src/account/vm.account', [
+define('src/account/vm.masteraccount', [
   'src/core/notify',
   'src/core/utils',
   'src/core/vm.controller',
@@ -11,9 +11,9 @@ define('src/account/vm.account', [
 ) {
   "use strict";
 
-  function AccountViewModel(options) {
+  function MasterAccountViewModel(options) {
     var _this = this;
-    AccountViewModel.super_.call(_this, options);
+    MasterAccountViewModel.super_.call(_this, options);
 
     _this.title = ko.observable(_this.title);
     _this.hideNotes = ko.observable(false);
@@ -29,10 +29,10 @@ define('src/account/vm.account', [
       _this.hideNav(!_this.hideNav());
     };
   }
-  utils.inherits(AccountViewModel, ControllerViewModel);
-  AccountViewModel.prototype.viewTmpl = 'tmpl-account';
+  utils.inherits(MasterAccountViewModel, ControllerViewModel);
+  MasterAccountViewModel.prototype.viewTmpl = 'tmpl-masteraccount';
 
-  AccountViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  MasterAccountViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var cb = join.add();
     setTimeout(function() {
       cb();
@@ -40,5 +40,5 @@ define('src/account/vm.account', [
     }, 0);
   };
 
-  return AccountViewModel;
+  return MasterAccountViewModel;
 });
