@@ -1,0 +1,16 @@
+div(class="combo",data-bind="toggle:{'open':isOpen}")
+  div(class="cover",data-bind="click:clickClose,ukov:selectedValue")
+    span(data-bind="text:selectedItem().text")
+    span(class="arrow")
+  div(class="combo-list")
+    input(type="text",data-bind="click:clickOpen,event:{blur:clickTestClose,keydown:inputKeydown},select:selectInput,value:filterText,valueUpdate:'keyup'")
+    ul(data-bind="visible:isOpen,event:{mousedown:onClickingItem,mouseup:offClickingItem}")
+      <!-- ko foreach:list -->
+      li(data-bind="visible:matches,click:$parent.selectItem")
+        div(data-bind="up:2,scrollMiddle:active,active:active")
+          a(data-bind="html:html")
+      <!-- /ko -->
+      <!-- ko foreach:actions -->
+      li(class="action",data-bind="click:$parent.clickAction")
+        a(class="btn",data-bind="text:text")
+      <!-- /ko -->
