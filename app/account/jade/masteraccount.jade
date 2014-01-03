@@ -2,13 +2,15 @@ div(class="tab panel account", data-bind="active:active,toggle:{'hide-nav':hideN
   div(data-bind="if:false")
     div(class="white", data-bind="template:'tmpl-spinner'")
 
-  div(class="p-module details")
-    span(data-bind="click:clickToggleNav") detail
+  //- div(class="p-module",data-bind="if:activeChild")
+  //-   div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild}")
+  div(class="p-module",data-bind="with:activeChild()")
+    div(data-bind="template:$data.viewTmpl")
 
   div(class="p-nav")
     div(class="toggle-btn", data-bind="click:clickToggleNav,toggle:{'closed':hideNav}")
-      div(class="close") &#59229;
-      div(class="open") &#59230;
+      div(class="close")
+      div(class="open")
 
     div(class="contents-wrap")
       div(class="contents")
@@ -30,55 +32,33 @@ div(class="tab panel account", data-bind="active:active,toggle:{'hide-nav':hideN
               div(class="credit-score excellent") Credit Score: TU Excellent
 
         div(class="section")
-          span(class="title") Accounts
+          div(class="title")
+            span Accounts
+            span(class="btn small add-btn") New
           div(class="contents")
             ul(class="accounts")
-              //- <!-- ko foreach:checklist -->
-              //- li(data-bind="")
-              //-   a(data-bind="active:active")
-              //-     span(data-bind="text:title")
-              //- <!-- /ko -->
+              <!-- ko foreach:accounts -->
               li
-                a(class="active")
-                  span(class="name") S1
-                  span(class="amount") $49.99
-                  //- span(class="amount") $39.99
-              li
-                a
-                  span(class="name") LifeLock
-                  span(class="amount") $0.00
-                  //- span(class="amount") $10.00
-              li
-                a
-                  span(class="name") S2
-                  span(class="amount") $49.99
-              li
-                a
-                  span(class="name") Numana
-                  span(class="amount") $59.99
-              li
-                a
-                  span(class="name") Window Film
+                a(data-bind="active:active,click:$parent.clickItem")
+                  span(class="name",data-bind="text:title")
+                  <!-- ko if:hasRmr -->
+                  span(class="amount",data-bind="currency:rmr")
+                  <!-- /ko -->
+                  <!-- ko ifnot:hasRmr -->
                   span(class="hasAcct")
-              li
-                a
-                  span(class="name") Strike Plate
-                  span(class="noAcct")
-              li
-                a
-                  span(class="name") Internet Security
-                  span(class="amount") $10.00
+                  <!-- /ko -->
+              <!-- /ko -->
               li
                 a(class="total")
                   span(class="name") Total RMR
-                  span(class="amount") $169.97
+                  span(class="amount",data-bind="currency:totalRmr")
 
         div(class="section")
           span(class="title") Payment History
           div(class="contents")
             ul(class="accounts")
               li
-                a(class="active")
+                a(class="")
                   span(class="name") ??
                   span(class="amount")
 
@@ -86,25 +66,17 @@ div(class="tab panel account", data-bind="active:active,toggle:{'hide-nav':hideN
           span(class="title") Aging
           div(class="contents")
             ul(class="accounts")
+              <!-- ko foreach:agings -->
               li
-                a(class="active")
-                  span(class="name") Current
-                  span(class="amount") $169.97
-                a
-                  span(class="name") 1 - 30
-                  span(class="amount") $0.00
-                a
-                  span(class="name") 31 - 60
-                  span(class="amount") $0.00
-                a
-                  span(class="name") 61 - 90
-                  span(class="amount") $0.00
-                a
-                  span(class="name") 91 - 120
-                  span(class="amount") $0.00
-                a
-                  span(class="name") &gt; 120
-                  span(class="amount") $0.00
+                a(data-bind="active:active")
+                  span(class="name",data-bind="text:title")
+                  span(class="amount",data-bind="currency:amount")
+              <!-- /ko -->
+              li
+                a(class="total")
+                  span(class="name") Total Pasted Due
+                  span(class="amount",data-bind="currency:totalAging")
+
 
   div(class="notes")
     span(class="title", data-bind="click:clickToggleNotes") Notes:

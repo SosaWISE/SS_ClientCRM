@@ -1,5 +1,8 @@
 define('src/core/utils', [
-], function() {
+  'src/core/jsonhelpers',
+], function(
+  jsonhelpers
+) {
   "use strict";
 
   return {
@@ -28,6 +31,14 @@ define('src/core/utils', [
         };
       } finally {
         cb(err);
+      }
+    },
+
+    clone: function(value) {
+      if (value == null) {
+        return value;
+      } else {
+        return JSON.parse(JSON.stringify(value, jsonhelpers.replacer), jsonhelpers.reviver);
       }
     },
 

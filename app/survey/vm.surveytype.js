@@ -127,7 +127,7 @@ define('src/survey/vm.surveytype', [
 
   function createSurvey(surveyTypeVM, model) {
     return new SurveyViewModel({
-      controller: surveyTypeVM.controller,
+      pcontroller: surveyTypeVM,
       surveyTypeVM: surveyTypeVM,
       tokensVM: surveyTypeVM.tokensVM,
       possibleAnswersVM: surveyTypeVM.possibleAnswersVM,

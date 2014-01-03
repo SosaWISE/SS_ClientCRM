@@ -48,12 +48,13 @@ define('src/panels/vm.panel.surveys', [
     // events
     //
     _this.clickSurvey = function(surveyVM) {
-      if (surveyVM.active()) {
-        return;
-      }
-      _this.goTo({
-        surveyid: surveyVM.id,
-      });
+      _this.setActiveChild(surveyVM);
+      // if (surveyVM.active()) {
+      //   return;
+      // }
+      // _this.goTo({
+      //   surveyid: surveyVM.id,
+      // });
     };
   }
   utils.inherits(SurveysPanelViewModel, ControllerViewModel);
@@ -81,7 +82,7 @@ define('src/panels/vm.panel.surveys', [
             if (resp.Value) {
               var list = resp.Value.map(function(model) {
                 var vm = new deps.SurveyTypeViewModel({
-                  controller: _this.controller,
+                  pcontroller: _this,
                   layersVM: _this.layersVM,
                   tokensVM: tokensVM,
                   possibleAnswersVM: possibleAnswersVM,

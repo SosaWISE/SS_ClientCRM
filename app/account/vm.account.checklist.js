@@ -36,15 +36,13 @@ define('src/account/vm.account.checklist', [
   ChecklistAccountViewModel.prototype.onLoad = function(routeData, join) {
     var _this = this;
 
-    _this.defaultChild = new QualifyAccountViewModel({
-      routePart: 'step',
-      id: 'qualify',
-      title: 'Qualify',
-      layersVM: _this.layersVM,
-    });
-
     _this.checklist([
-      _this.defaultChild,
+      new QualifyAccountViewModel({
+        routePart: 'step',
+        id: 'qualify',
+        title: 'Qualify',
+        layersVM: _this.layersVM,
+      }),
       {
         title: 'Pre Survey',
         complete: ko.observable(false),
@@ -87,6 +85,7 @@ define('src/account/vm.account.checklist', [
     }
 
     _this.goTo({
+      masterid: _this.id,
       accountid: _this.id,
       step: vm.id,
     });

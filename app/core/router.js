@@ -16,7 +16,7 @@ define('src/core/router', [
     this.anonRoutes = [];
 
     this.destPath = null;
-    this._prevRouteCtx = null;
+    this.currRouteCtx = null;
     this._ignoreCount = 0;
   }
   Router.prototype.create = function() {
@@ -96,12 +96,13 @@ define('src/core/router', [
       routes = user ? _this.routes : _this.anonRoutes,
       route;
 
-    if (_this._prevRouteCtx) {
+    if (_this.currRouteCtx) {
       //@TODO: store in app data???
       // StateKeys: {
       //   lastView: 'state.active-hash'
       // },
-      _this._prevRouteCtx.dispose();
+      _this.currRouteCtx.dispose();
+      _this.currRouteCtx = null;
     }
 
     // find the first route that matches the path
@@ -117,7 +118,7 @@ define('src/core/router', [
     // set path before the route is activated
     _this.setPath(path, allowHistory);
     // activate the route
-    _this._prevRouteCtx = route.activate(path, function onActivated(pathTaken) {
+    _this.currRouteCtx = route.activate(path, function onActivated(pathTaken) {
       if (pathTaken !== path) {
         // set pathTaken in address bar
         _this.setPath(pathTaken, false);

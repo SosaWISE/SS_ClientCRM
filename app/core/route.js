@@ -2,11 +2,11 @@ define('src/core/route', [
 ], function() {
   "use strict";
 
-  function Route(router, controller, name, regx, parts, defaultRouteData) {
-    controller.setRoute(this);
+  function Route(router, topController, name, regx, parts, defaultRouteData) {
+    topController.setRoute(this);
 
     this.router = router;
-    this.controller = controller;
+    this.topController = topController;
     this.name = name;
     this.regx = regx;
     this.parts = parts;
@@ -19,7 +19,7 @@ define('src/core/route', [
   // public static
   //
 
-  Route.create = function(router, controller, name, routePath, defaultRouteData) {
+  Route.create = function(router, topController, name, routePath, defaultRouteData) {
     // make regx and parts from routePath
     var regxParts = [],
       parts = [];
@@ -47,7 +47,7 @@ define('src/core/route', [
     // anchor match to end of string
     regxParts.push('$');
 
-    return new Route(router, controller, name, new RegExp(regxParts.join('')), parts, defaultRouteData);
+    return new Route(router, topController, name, new RegExp(regxParts.join('')), parts, defaultRouteData);
   };
 
 
@@ -108,34 +108,36 @@ define('src/core/route', [
     var _this = this,
       routeCtx = _this.createContext(path, cb);
     if (routeCtx) {
-      _this.lastRouteData = routeCtx.routeData;
       // the path matches this route so we can activate it
-      _this.controller.activate(routeCtx);
+      _this.topController.activate(routeCtx);
     }
     // undefined if this route has NOT been activated
     return routeCtx;
   };
 
   Route.prototype.createContext = function(pathOrRouteData, cb) {
-    var disposed, route = this,
-      routeData = typeof(pathOrRouteData) === 'string' ? route.fromPath(pathOrRouteData) : pathOrRouteData;
+    var _this = this,
+      disposed,
+      routeData = typeof(pathOrRouteData) === 'string' ? _this.fromPath(pathOrRouteData) : pathOrRouteData,
+      routeCtx;
     if (routeData) {
-      return {
-        route: route,
+      routeCtx = {
+        route: _this,
         routeData: routeData,
         dispose: function() {
           disposed = true;
-          route.controller.deactivate();
+          routeCtx.route.topController.deactivate();
         },
         active: function() {
           return !disposed;
         },
         done: function() {
           if (!disposed) {
-            cb(route.toPath(routeData));
+            cb(routeCtx.route.toPath(routeCtx.routeData));
           }
         },
       };
+      return routeCtx;
     }
   };
 
@@ -149,10 +151,27 @@ define('src/core/route', [
   Route.prototype.setRouteData = function(routeData) {
     var _this = this,
       route = lookupRoute(_this, routeData);
-    _this.lastRouteData = routeData;
     route.router.setPath(_this.toPath(routeData), false);
   };
 
+
+
+  Route.prototype.removeExtraRouteData = function(routeData, afterRoutePart) {
+    var _this = this,
+      remove = false;
+    if (afterRoutePart == null) {
+      return;
+    }
+    _this.parts.some(function(part) {
+      if (remove) {
+        // keep key order
+        routeData[part] = undefined;
+        // delete routeData[prop];
+      } else {
+        remove = (part === afterRoutePart);
+      }
+    });
+  };
 
   //
   // private statics
