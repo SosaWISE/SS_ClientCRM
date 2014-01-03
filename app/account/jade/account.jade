@@ -1,0 +1,3 @@
+div(data-bind="foreach:childs")
+  div(data-bind="text:id,click:$parent.clickItem,toggle:{bob:active}")
+  div(data-bind="template:$data.viewTmpl",style="margin-left:20px;")
