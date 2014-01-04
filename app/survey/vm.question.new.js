@@ -90,6 +90,7 @@ define('src/survey/vm.question.new', [
     var map = {},
       result = [];
 
+    // ** Build a map of existing questions
     (function addToMap(questions) {
       questions.forEach(function(vm) {
         map[vm.model.QuestionMeaningId] = true;
@@ -98,6 +99,7 @@ define('src/survey/vm.question.new', [
       });
     })(surveyVM.questions());
 
+    // ** loop through each question and only add the ones that do not exists.
     allQuestionMeanings.forEach(function(vm) {
       // don't add used tokens
       if (map[vm.model.QuestionMeaningID]) {

@@ -1,9 +1,11 @@
 define('src/account/vm.account', [
+  'src/account/vm.salesinfo',
   'src/core/notify',
   'src/core/utils',
   'src/core/vm.controller',
   'ko'
 ], function(
+  SalesInfoViewModel,
   notify,
   utils,
   ControllerViewModel,
@@ -34,13 +36,14 @@ define('src/account/vm.account', [
       cb = join.add();
     setTimeout(function() {
       //@TODO: load real account
-      cb(); // finish onload before adding childs so that the childs are lazy loaded
-      if (_this.depth < 4) {
-        _this.childs([
-          createAccount(_this, 1, 'S1', 49.99, true),
-          createAccount(_this, 6, 'S1', 49.99, true),
+      //if (_this.depth < 4) {
+      _this.childs([
+        // createAccount(_this, 1, 'S1', 49.99, true),
+        // createAccount(_this, 6, 'S1', 49.99, true),
+        salesInfoScreen(_this),
         ]);
-      }
+      //}
+      cb(); // finish onload before adding childs so that the childs are lazy loaded
     }, 0);
   };
   // AccountViewModel.prototype.selectItem = function(vm) {
@@ -55,18 +58,27 @@ define('src/account/vm.account', [
   //   _this.goTo(routeData);
   // };
 
-  function createAccount(parent, plus, title, rmr, hasRmr) {
-    var id = parent.id,
-      depth = parent.depth + 1;
-    id = id + plus;
-    return new AccountViewModel({
+  // function createAccount(parent, plus, title, rmr, hasRmr) {
+  //   var id = parent.id,
+  //     depth = parent.depth + 1;
+  //   id = id + plus;
+  //   return new AccountViewModel({
+  //     pcontroller: parent,
+  //     routePart: depth + '',
+  //     depth: depth,
+  //     id: id,
+  //     title: title + id,
+  //     rmr: rmr,
+  //     hasRmr: hasRmr,
+  //   });
+  // }
+
+  function salesInfoScreen(parent) {
+    var id = parent.id;
+
+    return new SalesInfoViewModel({
       pcontroller: parent,
-      routePart: depth + '',
-      depth: depth,
-      id: id,
-      title: title + id,
-      rmr: rmr,
-      hasRmr: hasRmr,
+      id: id
     });
   }
 
