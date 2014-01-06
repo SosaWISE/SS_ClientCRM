@@ -1,6 +1,6 @@
 define('mock/index', [
  'mock/dataservice.qualify.mock',
- //'mock/dataservice.session.mock',
+ 'mock/dataservice.session.mock',
  'mock/dataservice.survey.mock',
  'mock/dataservice.user.mock',
 ], function() {
