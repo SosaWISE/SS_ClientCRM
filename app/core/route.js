@@ -66,6 +66,7 @@ define('src/core/route', [
         return true;
       }
     });
+    return routeData;
   };
 
   Route.prototype.fromPath = function(path) {
@@ -124,16 +125,18 @@ define('src/core/route', [
       routeCtx = {
         route: _this,
         routeData: routeData,
-        dispose: function() {
+        dispose: function(deactivate) {
           disposed = true;
-          routeCtx.route.topController.deactivate();
+          if (deactivate) {
+            routeCtx.route.topController.deactivate();
+          }
         },
         active: function() {
           return !disposed;
         },
         done: function() {
           if (!disposed) {
-            cb(routeCtx.route.toPath(routeCtx.routeData));
+            cb(routeCtx.route.toPath(routeData));
           }
         },
       };
@@ -164,13 +167,12 @@ define('src/core/route', [
     }
     _this.parts.some(function(part) {
       if (remove) {
-        // keep key order
-        routeData[part] = undefined;
-        // delete routeData[prop];
+        delete routeData[part];
       } else {
         remove = (part === afterRoutePart);
       }
     });
+    return routeData;
   };
 
   //

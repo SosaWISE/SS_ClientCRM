@@ -31,30 +31,21 @@ define('src/panels/vm.panel.surveys', [
         deps.SurveyTypeViewModel = args[2];
         cb();
       });
-    });
+    }),
+    childRoutePart = 'surveyid';
 
   function SurveysPanelViewModel(options) {
     var _this = this;
     SurveysPanelViewModel.super_.call(_this, options);
 
-    _this.controller = _this;
-
     _this.surveyTypes = _this.childs;
-
     _this.layersVM = new LayersViewModel();
-
 
     //
     // events
     //
     _this.clickSurvey = function(surveyVM) {
-      _this.setActiveChild(surveyVM);
-      // if (surveyVM.active()) {
-      //   return;
-      // }
-      // _this.goTo({
-      //   surveyid: surveyVM.id,
-      // });
+      _this.selectChild(surveyVM);
     };
   }
   utils.inherits(SurveysPanelViewModel, ControllerViewModel);
@@ -83,6 +74,7 @@ define('src/panels/vm.panel.surveys', [
               var list = resp.Value.map(function(model) {
                 var vm = new deps.SurveyTypeViewModel({
                   pcontroller: _this,
+                  routePart: childRoutePart,
                   layersVM: _this.layersVM,
                   tokensVM: tokensVM,
                   possibleAnswersVM: possibleAnswersVM,

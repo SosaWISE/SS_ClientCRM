@@ -38,7 +38,7 @@ define('src/account/vm.account.checklist', [
 
     _this.checklist([
       new QualifyAccountViewModel({
-        routePart: 'step',
+        routePart: 'tab',
         id: 'qualify',
         title: 'Qualify',
         layersVM: _this.layersVM,
@@ -65,7 +65,7 @@ define('src/account/vm.account.checklist', [
   };
   ChecklistAccountViewModel.prototype.onActivate = function(routeCtx) { // overrides base
     var _this = this;
-    if (routeCtx.routeData.step) {
+    if (routeCtx.routeData.tab) {
       //@TODO: ensure the action is currently valid
     }
     // call base
@@ -87,7 +87,7 @@ define('src/account/vm.account.checklist', [
     _this.goTo({
       masterid: _this.id,
       accountid: _this.id,
-      step: vm.id,
+      tab: vm.id,
     });
   };
 

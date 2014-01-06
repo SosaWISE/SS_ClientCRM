@@ -27,8 +27,8 @@ define('src/core/route.spec', [
     it('should have `defaultRouteData` property', function() {
       expect(route.defaultRouteData).toBeDefined();
     });
-    it('should have `controller` property', function() {
-      expect(route.controller).toBeDefined();
+    it('should have `topController` property', function() {
+      expect(route.topController).toBeDefined();
     });
     it('should parse route path into `regx` and `parts` properties', function() {
       expect(route.regx).toBeDefined();

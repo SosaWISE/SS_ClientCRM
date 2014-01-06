@@ -33,25 +33,17 @@ define('src/account/vm.salesinfo', [
   SalesInfoViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this,
       cb = join.add();
-
-    //@TODO: load real account
     dataservice.salessummary.pointsystems.read({}, null, function(err, resp) {
-      if (err) {
-        notify.notify('error', err.Message);
-        return;
-      }
-
-      // ** Bind data
-      var map = resp.Value.map(function(item) {
-        return {
-          text: item.TemplateName,
-          value: item.InvoiceTemplateID
-        };
-      });
-      _this.psComboVM.setList(map);
-
-      cb();
-
+      utils.safeCallback(err, function() {
+        // ** Bind data
+        var map = resp.Value.map(function(item) {
+          return {
+            text: item.TemplateName,
+            value: item.InvoiceTemplateID
+          };
+        });
+        _this.psComboVM.setList(map);
+      }, cb);
     });
   };
 

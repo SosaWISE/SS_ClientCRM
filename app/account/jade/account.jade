@@ -1,3 +1,9 @@
-div(data-bind="foreach:childs")
-  div(data-bind="text:id,click:$parent.clickItem,toggle:{bob:active}")
-  div(data-bind="template:$data.viewTmpl",style="margin-left:20px;")
+ul(class="tabs cf")
+  <!-- ko foreach:childs -->
+  li(class="tab")
+    a(data-bind="click:$parent.clickItem,active:active,text:title")
+  <!-- /ko -->
+div(class="tab-wrap")
+  <!-- ko foreach:childs -->
+  div(class="tab", data-bind="template:viewTmpl,active:active")
+  <!-- /ko -->

@@ -96,15 +96,6 @@ define('src/core/router', [
       routes = user ? _this.routes : _this.anonRoutes,
       route;
 
-    if (_this.currRouteCtx) {
-      //@TODO: store in app data???
-      // StateKeys: {
-      //   lastView: 'state.active-hash'
-      // },
-      _this.currRouteCtx.dispose();
-      _this.currRouteCtx = null;
-    }
-
     // find the first route that matches the path
     route = findFirstRoute(routes, path);
     // check if a route was found
@@ -113,6 +104,17 @@ define('src/core/router', [
       route = routes[0];
       // make default path for route
       path = route.toPath(route.fromPath('/' + route.name));
+    }
+
+    if (_this.currRouteCtx) {
+      //@TODO: store in app data???
+      // StateKeys: {
+      //   lastView: 'state.active-hash'
+      // },
+
+      // deactivate current route if it doesn't match the new route
+      _this.currRouteCtx.dispose(_this.currRouteCtx.route !== route);
+      _this.currRouteCtx = null;
     }
 
     // set path before the route is activated

@@ -25,10 +25,8 @@ define('src/core/vm.controller', [
     _this.loading = _this.loader.loading;
     _this.loaded = _this.loader.loaded;
 
-    _this.activeChild = ko.observable(null);
-
     _this.childs = ko.observableArray();
-    _this.deps = ko.observableArray();
+    _this.activeChild = ko.observable(null);
   }
   utils.inherits(ControllerViewModel, BaseViewModel);
   // ControllerViewModel.prototype.routePart = 'route';
@@ -54,15 +52,12 @@ define('src/core/vm.controller', [
 
   // activate async
   ControllerViewModel.prototype.activate = function(routeCtx) {
-    var _this = this;
-    // ensure the routeCtx is active ?????
-    if (!routeCtx.active()) {
-      return;
-    }
+    var _this = this,
+      lastActiveChild = _this.activeChild();
+
     // immdediately set as active
     _this.active(true);
-    // store last routeCtx
-    _this._lastRouteCtx = routeCtx;
+    // store last route
     _this._lastRouteData = routeCtx.routeData;
     // load self
     _this.load(routeCtx.routeData, function() {
@@ -72,6 +67,14 @@ define('src/core/vm.controller', [
       }
       // active this controller
       _this.onActivate(routeCtx);
+      // deactivate old child if different from newly activated child
+      if (lastActiveChild && lastActiveChild !== _this.activeChild()) {
+        lastActiveChild.deactivate();
+      }
+      if (!_this.activeChild()) {
+        // we're done with activating
+        routeCtx.done();
+      }
     });
   };
   ControllerViewModel.prototype.onActivate = function(routeCtx) {
@@ -84,7 +87,7 @@ define('src/core/vm.controller', [
       // try to use the default child
       child = _this.defaultChild || _this.childs()[0];
     }
-    // only set if different than current to prevent unnecessarily rebinding
+    // only set if different than current
     if (_this.activeChild() !== child) {
       _this.activeChild(child);
     }
@@ -97,8 +100,6 @@ define('src/core/vm.controller', [
     } else {
       // no child
       _this.setTitle(_this.name || _this.pcontroller.name);
-      // we're done with activating
-      routeCtx.done();
     }
   };
   ControllerViewModel.prototype.findChild = function(routeData) {
@@ -119,25 +120,24 @@ define('src/core/vm.controller', [
   };
   ControllerViewModel.prototype.removeExtraRouteData = function(routeData) {
     var _this = this;
-    _this.getRoute().removeExtraRouteData(routeData, _this.routePart);
+    return _this.getRoute().removeExtraRouteData(routeData, _this.routePart);
   };
 
   // synchronous
   ControllerViewModel.prototype.deactivate = function() {
     var _this = this;
-
     _this.onDeactivate();
     _this.active(false);
-    // no longer need this
-    delete _this._lastRouteCtx;
   };
   ControllerViewModel.prototype.onDeactivate = function() {
     var _this = this,
       activeChild = _this.activeChild();
     if (activeChild) {
       activeChild.deactivate();
-      // don't set activeChild to null since it can make knockout unnecessarily rebind
-      _this.activeChild(null);
+      if (true) { //@TODO: real if statement
+        // only set activeChild to null when we want to unbind
+        _this.activeChild(null);
+      }
     }
   };
 
@@ -169,67 +169,45 @@ define('src/core/vm.controller', [
     join.add()();
   };
 
-  ControllerViewModel.prototype.getLastRouteData = function() {
-    var _this = this;
-    // clone it since we don't want anyone to modify it.
-    // it can be stored by multiple controllers and changing
-    // one controller shouldn't change all the others
-    return utils.clone(_this._lastRouteData);
-    // if (_this._lastRouteCtx) {
-    //   return utils.clone(_this._lastRouteCtx.routeData);
-    // }
-  };
-  // ControllerViewModel.prototype.goTo = function(routeData, allowHistory) {
-  //   var _this = this;
-  //   if (_this.routePart == null) {
-  //     throw new Error('no routePart');
-  //   }
-  //   if (_this.id == null) {
-  //     throw new Error('no id');
-  //   }
-  //   routeData[_this.routePart] = _this.id;
-  //   if (_this.route) {
-  //     _this.route.goTo(routeData, allowHistory);
-  //   } else {
-  //     _this.pcontroller.goTo(routeData, allowHistory);
-  //   }
-  // };
 
-  // starts from this controller, deactivates current child, and activates new child
-  ControllerViewModel.prototype.setActiveChild = function(child) {
-    var _this = this,
-      routeCtx = _this._lastRouteCtx,
-      routeData = routeCtx.routeData;
-
-    if (!_this.active()) {
-      console.warn('only call setActiveChild when controller is active');
-      return;
-    }
-    if (!routeCtx.active()) {
-      throw new Error('routeCtx is not active');
-    }
-    if (child && _this.activeChild() === child) {
-      return;
-    }
-
-    // deactivate
-    _this.onDeactivate();
-
-    routeData = _this.getLastRouteData() || utils.clone(routeData);
-    _this._lastRouteData = routeData;
-    // reactivate
-    if (child) {
-      routeData[child.routePart] = child.id;
-      routeCtx.routeData = routeData;
-      _this.activate(routeCtx);
-    }
-  };
-  // starts from top controller, deactivate old route, and activates this route
   ControllerViewModel.prototype.goTo = function(routeData, allowHistory) {
     var _this = this;
     _this.getRoute().goTo(routeData, allowHistory);
   };
+  ControllerViewModel.prototype.selectChild = function(vm) {
+    var _this = this;
+    _this.goTo(vm.getRouteData());
+  };
 
+  function applyRouteData(controller, routeData) {
+    if (!controller.routePart) {
+      throw new Error('no routePart');
+    }
+    if (!controller.id) {
+      throw new Error('no id');
+    }
+
+    if (controller.route) {
+      routeData.route = controller.route.name;
+    } else {
+      applyRouteData(controller.pcontroller, routeData);
+    }
+    routeData[controller.routePart] = controller.id;
+  }
+  ControllerViewModel.prototype.getRouteData = function() {
+    var _this = this,
+      routeData;
+    if (_this._lastRouteData) {
+      // clone it since we don't want anyone to modify it.
+      // it can be stored by multiple controllers and changing
+      // one controller shouldn't change all the others
+      routeData = utils.clone(_this._lastRouteData);
+    } else {
+      routeData = {};
+    }
+    applyRouteData(_this, routeData);
+    return routeData;
+  };
 
 
   ControllerViewModel.prototype.createRouteContext = function(pathOrRouteData, cb) {

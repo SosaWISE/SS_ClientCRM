@@ -41,15 +41,15 @@ define('src/panels/vm.panel.accounts', [
     // events
     //
     _this.clickSearch = function() {
-      _this.setActiveChild(_this.searchVM);
+      _this.selectChild(_this.searchVM);
     };
     _this.clickItem = function(vm) {
-      _this.setActiveChild(vm);
+      _this.selectChild(vm);
     };
     _this.clickAddItem = function() {
       var vm = createAccountVM(0, 'New Account');
       _this.list.push(vm);
-      _this.setActiveChild(vm);
+      _this.selectChild(vm);
     };
     _this.clickNew = function() {
       newCount++;
@@ -60,7 +60,7 @@ define('src/panels/vm.panel.accounts', [
         title: 'New ' + newCount,
       });
       _this.list.push(vm);
-      _this.setActiveChild(vm);
+      _this.selectChild(vm);
     };
   }
   utils.inherits(AccountsPanelViewModel, ControllerViewModel);
@@ -115,28 +115,6 @@ define('src/panels/vm.panel.accounts', [
     }
     return result;
   };
-
-  // AccountsPanelViewModel.prototype.selectItem = function(vm) {
-  //   var _this = this,
-  //     routeData = vm.getLastRouteData(),
-  //     id;
-
-  //   if (!routeData) {
-  //     if (vm instanceof deps.SearchAccountViewModel) {
-  //       id = "search";
-  //       // } else if (vm instanceof NewAccountViewModel) {
-  //       //   id = "new";
-  //     } else {
-  //       id = vm.id;
-  //     }
-  //     routeData = {
-  //       route: _this.id,
-  //       masterid: id,
-  //     };
-  //   }
-
-  //   _this.goTo(routeData);
-  // };
 
   function createAccountVM(pcontroller, id, name) {
     return new deps.MasterAccountViewModel({

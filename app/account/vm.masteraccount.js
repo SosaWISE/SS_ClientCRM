@@ -13,12 +13,15 @@ define('src/account/vm.masteraccount', [
 ) {
   "use strict";
 
-  var childRoutePart = 'accountid';
+  var childRoutePart = 'accountid',
+    count = 0;
 
   function MasterAccountViewModel(options) {
     var _this = this;
     MasterAccountViewModel.super_.call(_this, options);
     _this.ensureProps(['id', 'title']);
+
+    _this.__count = count++;
 
     _this.title = ko.observable(_this.title);
     _this.hideNotes = ko.observable(false);
@@ -54,7 +57,7 @@ define('src/account/vm.masteraccount', [
       _this.hideNav(!_this.hideNav());
     };
     _this.clickItem = function(vm) {
-      _this.setActiveChild(vm);
+      _this.selectChild(vm);
     };
   }
   utils.inherits(MasterAccountViewModel, ControllerViewModel);
@@ -86,13 +89,6 @@ define('src/account/vm.masteraccount', [
       cb();
     }, 0);
   };
-  // MasterAccountViewModel.prototype.selectItem = function(vm) {
-  //   var _this = this;
-  //   _this.goTo(vm.getLastRouteData() || {
-  //     masterid: _this.id,
-  //     accountid: vm.id,
-  //   });
-  // };
 
   function createAccount(pcontroller, id, title, rmr, hasRmr) {
     return new AccountViewModel({

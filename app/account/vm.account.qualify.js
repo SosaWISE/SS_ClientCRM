@@ -85,11 +85,11 @@ define('src/account/vm.account.qualify', [
     var _this = this;
     _this.cmdFindRep.execute();
   };
-  QualifyAccountViewModel.prototype.onActivate = function(routeCtx) { // overrides base
+  QualifyAccountViewModel.prototype.onActivate = function( /*routeCtx*/ ) { // overrides base
     var _this = this;
     _this.setLayerActive(true);
-    // this should be the last controller to be activated
-    routeCtx.done();
+    // // this should be the last controller to be activated
+    // routeCtx.done();
   };
   QualifyAccountViewModel.prototype.onDeactivate = function() { // overrides base
     var _this = this;

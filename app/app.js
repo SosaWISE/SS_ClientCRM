@@ -68,9 +68,7 @@ define('src/app', [
     if (panelVM.active()) {
       return;
     }
-    panelVM.goTo(panelVM.getLastRouteData() || {
-      route: panelVM.id,
-    }, true);
+    panelVM.goTo(panelVM.getRouteData(), true);
   };
 
 
@@ -86,7 +84,7 @@ define('src/app', [
     locale: 'en',
   });
   router.addRoute(app.panelMap.home, 'home', '', {});
-  router.addRoute(app.panelMap.accounts, 'accounts', ':masterid/:accountid/:1/:2/:3/:4/:5', {});
+  router.addRoute(app.panelMap.accounts, 'accounts', ':masterid/:accountid/:tab', {});
 
   return app;
 });
