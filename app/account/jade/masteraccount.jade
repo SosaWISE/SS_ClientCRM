@@ -4,8 +4,8 @@ div(class="tab panel account", data-bind="active:active,toggle:{'hide-nav':hideN
 
   //- div(class="p-module",data-bind="if:activeChild")
   //-   div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild}")
-  div(class="p-module",data-bind="with:activeChild()")
-    div(data-bind="template:$data.viewTmpl")
+  div(class="p-module",data-bind="if:activeChild()")
+    div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}")
 
   div(class="p-nav")
     div(class="toggle-btn", data-bind="click:clickToggleNav,toggle:{'closed':hideNav}")
@@ -45,7 +45,7 @@ div(class="tab panel account", data-bind="active:active,toggle:{'hide-nav':hideN
                   span(class="amount",data-bind="currency:rmr")
                   <!-- /ko -->
                   <!-- ko ifnot:hasRmr -->
-                  span(class="hasAcct")
+                  span(class="nUnits",data-bind="text:units")
                   <!-- /ko -->
               <!-- /ko -->
               li

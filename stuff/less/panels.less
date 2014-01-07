@@ -56,13 +56,17 @@ ul.tabs {
     bottom:0;
     left:0;
 
-    & {
-      opacity: 0;
-      visibility: hidden;
-    }
+    // // animate transition
+    // opacity: 0;
+    // visibility: hidden;
+    // &.active {
+    //   opacity: 1;
+    //   visibility: visible;
+    // }
+    // transition without animation
+    display: none;
     &.active {
-      opacity: 1;
-      visibility: visible;
+      display: block;
     }
   }
   left:0;

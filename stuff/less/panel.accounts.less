@@ -75,12 +75,18 @@ div.tab {
   bottom:0;
   left:0;
 
-  .transition(.5s);
-  opacity: 0;
-  visibility: hidden;
+  // // animate transition
+  // .transition(.5s);
+  // opacity: 0;
+  // visibility: hidden;
+  // &.active {
+  //   opacity: 1;
+  //   visibility: visible;
+  // }
+  // transition without animation
+  display: none;
   &.active {
-    opacity: 1;
-    visibility: visible;
+    display: block;
   }
 }
 
@@ -521,23 +527,21 @@ div.tab {
           .name {
             display: inline-block;
             width: 75%;
+            // padding-right: 10px;
           }
           .amount,
-          .hasAcct,
-          .noAcct {
+          .nUnits {
             display: inline-block;
+            width: 23%;
+            position: relative;
+            text-align: right;
           }
-          .hasAcct:before,
-          .noAcct:before {
+          .nUnits:before {
             position: absolute;
-            top: -2px;
+            top: -8px;
+            left: -4px;
             font-size: 1.8em;
-          }
-          .hasAcct:before {
             content: '\2713'; // checkmark
-          }
-          .noAcct:before {
-            content: '\2717'; // x-mark
           }
         }
         .total {
