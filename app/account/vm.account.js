@@ -13,19 +13,15 @@ define('src/account/vm.account', [
 ) {
   "use strict";
 
-  var count = 0;
-
   function AccountViewModel(options) {
     var _this = this;
     AccountViewModel.super_.call(_this, options);
     _this.ensureProps(['id', 'title']);
 
-    _this.__count = count++;
-
-    _this.testimg = ko.observable('http://lorempixel.com/480/360/');
     _this.title = ko.observable(_this.title);
     _this.rmr = ko.observable(_this.rmr);
-    _this.hasRmr = ko.observable(_this.hasRmr);
+    _this.hasRmr = ko.observable(_this.rmr() != null);
+    _this.units = ko.observable(_this.units);
 
     _this.depth = _this.depth || 0;
     _this.clickItem = function(vm) {

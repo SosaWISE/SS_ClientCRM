@@ -1,10 +1,12 @@
 define('src/account/vm.masteraccount', [
+  'src/dataservice',
   'src/account/vm.account',
   'src/core/notify',
   'src/core/utils',
   'src/core/vm.controller',
   'ko'
 ], function(
+  dataservice,
   AccountViewModel,
   notify,
   utils,
@@ -13,15 +15,12 @@ define('src/account/vm.masteraccount', [
 ) {
   "use strict";
 
-  var childRoutePart = 'accountid',
-    count = 0;
+  var childRoutePart = 'accountid';
 
   function MasterAccountViewModel(options) {
     var _this = this;
     MasterAccountViewModel.super_.call(_this, options);
     _this.ensureProps(['id', 'title']);
-
-    _this.__count = count++;
 
     _this.title = ko.observable(_this.title);
     _this.hideNotes = ko.observable(false);
@@ -31,7 +30,7 @@ define('src/account/vm.masteraccount', [
     _this.agings = ko.observableArray();
     // override childs array from ControllerViewModel
     _this.childs = ko.computed(function() {
-      return _this.accounts().concat(_this.agings());
+      return _this.accounts(); //.concat(_this.agings());
     });
     _this.totalRmr = ko.computed(function() {
       return _this.accounts().reduce(function(total, acct) {
@@ -65,44 +64,51 @@ define('src/account/vm.masteraccount', [
 
   MasterAccountViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this,
-      cb = join.add();
-    setTimeout(function() {
-      //@TODO: load real data
-      _this.accounts([
-        createAccount(_this, 101000, 'S1', 49.99, true),
-        createAccount(_this, 101010, 'LifeLock', 0, true),
-        createAccount(_this, 101020, 'S2', 49.99, true),
-        createAccount(_this, 101030, 'Numana', 59.99, true),
-        createAccount(_this, 101040, 'Window Film', null, false),
-        createAccount(_this, 101050, 'Strike Plate', null, false),
-        createAccount(_this, 101060, 'Internet Security', 10.00, true),
-      ]);
-      _this.agings([
-        createAging('Current', 169.97),
-        createAging('1 - 30', 0),
-        createAging('31 - 60', 0),
-        createAging('61 - 90', 0),
-        createAging('91 - 120', 0),
-        createAging('> 120', 0),
-      ]);
+      billingInfoCB = join.add();
 
-      cb();
-    }, 0);
+    //@TODO: load real aging data
+    _this.agings([
+      createAging(_this, 'AgingID-1', 'Current', 169.97),
+      createAging(_this, 'AgingID-2', '1 - 30', 0),
+      createAging(_this, 'AgingID-3', '31 - 60', 0),
+      createAging(_this, 'AgingID-4', '61 - 90', 0),
+      createAging(_this, 'AgingID-5', '91 - 120', 0),
+      createAging(_this, 'AgingID-6', '> 120', 0),
+    ]);
+
+    dataservice.accountingengine.billingInfoSummary.read({
+      id: _this.id,
+      link: 'CMFID',
+    }, null, function(err, resp) {
+      utils.safeCallback(err, function() {
+        if (resp.Value) {
+          var list = resp.Value.map(function(acct) {
+            return createAccount(_this, acct.AccountId, acct.AccountName, acct.AmountDue, acct.NumberOfUnites);
+          });
+          _this.accounts(list);
+        } else {
+          _this.accounts([]);
+        }
+      }, billingInfoCB);
+    });
   };
 
-  function createAccount(pcontroller, id, title, rmr, hasRmr) {
+  function createAccount(pcontroller, id, title, rmr, units) {
     return new AccountViewModel({
       pcontroller: pcontroller,
       routePart: childRoutePart,
       id: id,
       title: title,
       rmr: rmr,
-      hasRmr: hasRmr,
+      units: units,
     });
   }
 
-  function createAging(title, amount) {
+  function createAging(pcontroller, id, title, amount) {
     return new ControllerViewModel({
+      pcontroller: pcontroller,
+      routePart: childRoutePart,
+      id: id,
       title: title,
       amount: amount,
     });

@@ -3,13 +3,15 @@ define('src/dataservice', [
   'src/dataservice.session',
   'src/dataservice.qualify',
   'src/dataservice.survey',
-  'src/dataservice.salessummary'
+  'src/dataservice.salessummary',
+  'src/dataservice.accountingengine',
 ], function(
   UserDataservice,
   SessionDataservice,
   QualifyDataservice,
   createSurveyDataservices,
-  createSalesSummaryDataservices
+  createSalesSummaryDataservices,
+  createAccountingEngineDataservices
 ) {
   "use strict";
   return {
@@ -17,6 +19,7 @@ define('src/dataservice', [
     session: new SessionDataservice(),
     qualify: new QualifyDataservice(),
     survey: createSurveyDataservices(),
-    salessummary: createSalesSummaryDataservices()
+    salessummary: createSalesSummaryDataservices(),
+    accountingengine: createAccountingEngineDataservices(),
   };
 });
