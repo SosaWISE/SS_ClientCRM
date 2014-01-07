@@ -1,7 +1,10 @@
 div(class="sales-info")
-	div(class="title") Sales Info Screen
-	span System Type Information
-	br A. Is this a 6.5 or 8 Point system?
-	div(data-bind="template:{name:psComboVM.viewTmpl,data:psComboVM}")
-
+  div(class="title") Sales Info Screen
+  span(class="subHeader") System Type Information
+  br 
+  span(class="ssiQuestion") A. Is this a 6.5 or 8 Point system?
+  div(data-bind="template:{name:psComboVM.viewTmpl,data:psComboVM}")
+  span(class="subHeader") Monitoring And Service Information
+  br
+  span(class="ssiQuestion") B. Is the activation fee  $XX.XX?
 
