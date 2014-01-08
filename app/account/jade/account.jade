@@ -2,6 +2,8 @@ table(class="tab-wrap")
   tr
     td(class="tab-header")
       ul(class="tabs cf")
+        //-HACK to not be convered up by toggle-btn
+        li(class="tab under-toggle-btn")
         <!-- ko foreach:childs -->
         li(class="tab")
           a(data-bind="click:$parent.clickItem,active:active,text:title")

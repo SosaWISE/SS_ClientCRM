@@ -34,10 +34,14 @@ define('src/account/vm.salesinfo', [
   SalesInfoViewModel.prototype.viewTmpl = 'tmpl-salesinfo';
 
   SalesInfoViewModel.prototype.onLoad = function(routeData, join) { // overrides base
-    // ** Init
-    var _this = this,
-      cb = join.add();
+    var _this = this;
+    load_pointsystems(_this, join.add());
+    load_cellulartypes(_this, join.add());
+    load_vendoralarmcompacakges(_this, join.add());
+    load_contractlengthsget(_this, 1, join.add());
+  };
 
+  function load_pointsystems(_this, cb) {
     // ** Pull pointsystems
     dataservice.salessummary.pointsystems.read({}, null, function(err, resp) {
       utils.safeCallback(err, function() {
@@ -51,7 +55,9 @@ define('src/account/vm.salesinfo', [
         _this.psComboVM.setList(map);
       }, cb);
     });
+  }
 
+  function load_cellulartypes(_this, cb) {
     // ** Pull Cellular Types
     dataservice.salessummary.cellulartypes.read({}, null, function(err, resp) {
       utils.safeCallback(err, function() {
@@ -62,12 +68,14 @@ define('src/account/vm.salesinfo', [
             value: item.CellularTypeID
           };
         });
-        this.ctComboVM.setList(map);
+        _this.ctComboVM.setList(map);
       }, cb);
     });
+  }
 
+  function load_vendoralarmcompacakges(_this, cb) {
     // ** Pull alarm.com packages
-    dataservice.salessummary.vendoralarmcompacakges.read({}, function(err, resp) {
+    dataservice.salessummary.vendoralarmcompacakges.read({}, null, function(err, resp) {
       utils.safeCallback(err, function() {
         // ** Bind Data
         var map = resp.Value.map(function(item) {
@@ -76,12 +84,16 @@ define('src/account/vm.salesinfo', [
             value: item.AlarmComPackageID
           };
         });
-        this.apckComboVM.setList(map);
+        _this.apckComboVM.setList(map);
       }, cb);
     });
+  }
 
+  function load_contractlengthsget(_this, id, cb) {
     // ** Contract Length
-    dataservice.salessummary.contractlengthsget.read({}, function(err, resp) {
+    dataservice.salessummary.contractlengthsget.read({
+      id: id,
+    }, null, function(err, resp) {
       utils.safeCallback(err, function() {
         // Bind data
         var map = resp.Value.map(function(item) {
@@ -90,10 +102,10 @@ define('src/account/vm.salesinfo', [
             value: item.ContractTemplateID
           };
         });
-        this.clComboVM.setList(map);
+        _this.clComboVM.setList(map);
       }, cb);
     });
-  };
+  }
 
   return SalesInfoViewModel;
 });

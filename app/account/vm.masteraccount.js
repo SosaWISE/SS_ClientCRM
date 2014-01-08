@@ -33,6 +33,7 @@ define('src/account/vm.masteraccount', [
     _this.title = ko.observable(_this.title);
     _this.hideNotes = ko.observable(false);
     _this.hideNav = ko.observable(false);
+    _this.hideNav(true);
 
     _this.accounts = ko.observableArray();
     _this.agings = ko.observableArray();
