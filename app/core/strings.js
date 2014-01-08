@@ -47,11 +47,20 @@ define('src/core/strings', [
   strings.decorators = {
     c: function(val) {
       if (!usdFormatter) {
-        usdFormatter = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-          minimumFractionDigits: 2,
-        });
+        if (window.Intl) {
+          usdFormatter = new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 2,
+          });
+        } else {
+          //@TODO: replace this fake usdFormatter
+          usdFormatter = {
+            format: function(v) {
+              return '$' + v;
+            },
+          };
+        }
       }
       return usdFormatter.format(val);
     },

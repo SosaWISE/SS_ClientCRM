@@ -25,13 +25,13 @@
         var hasVal = unwrap(valueAccessor()),
           el = jquery(element);
         if (hasVal) {
-          setTimeout(function() { // needed for browser transitions????
-            el.addClass(cls);
-          }, 0);
+          // setTimeout(function() { // needed for browser transitions????
+          el.addClass(cls);
+          // }, 0);
         } else {
-          setTimeout(function() {
-            el.removeClass(cls);
-          }, 0);
+          // setTimeout(function() {
+          el.removeClass(cls);
+          // }, 0);
         }
       },
     };
@@ -47,13 +47,13 @@
       Object.keys(obj).forEach(function(cls) {
         var hasVal = unwrap(obj[cls]);
         if (hasVal) {
-          setTimeout(function() { // needed for browser transitions
-            el.addClass(cls);
-          }, 0);
+          // setTimeout(function() { // needed for browser transitions
+          el.addClass(cls);
+          // }, 0);
         } else {
-          setTimeout(function() {
-            el.removeClass(cls);
-          }, 0);
+          // setTimeout(function() {
+          el.removeClass(cls);
+          // }, 0);
         }
       });
     },
@@ -153,19 +153,20 @@
   createSizeHandler('height');
 
 
-  // fillheight
-  //---------------------------
-  ko.bindingHandlers.fillheight = {
-    update: function(element, valueAccessor) {
-      valueAccessor = unwrap(valueAccessor());
-      // http://stackoverflow.com/questions/90178/make-a-div-fill-the-remaining-screen-space
-      // Element Height = Viewport height - element.offset.top - desired bottom margin
-      // jquery(element).height(element.offsetParent.offsetHeight - element.offsetTop);
-
-      // element = jquery(element);
-      jquery(element).height(jquery(element).parent().height() - element.offsetTop);
-    },
-  };
+  //@NOTE: instead use the table approach used by the OP, since no javascript is needed
+  // // fillheight
+  // //---------------------------
+  // ko.bindingHandlers.fillheight = {
+  //   update: function(element, valueAccessor) {
+  //     valueAccessor = unwrap(valueAccessor());
+  //     // http://stackoverflow.com/questions/90178/make-a-div-fill-the-remaining-screen-space
+  //     // Element Height = Viewport height - element.offset.top - desired bottom margin
+  //     // jquery(element).height(element.offsetParent.offsetHeight - element.offsetTop);
+  //
+  //     // element = jquery(element);
+  //     jquery(element).height(jquery(element).parent().height() - element.offsetTop);
+  //   },
+  // };
 
 
   // scroll element into view

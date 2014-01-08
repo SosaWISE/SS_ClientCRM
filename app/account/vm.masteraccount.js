@@ -15,7 +15,15 @@ define('src/account/vm.masteraccount', [
 ) {
   "use strict";
 
-  var childRoutePart = 'accountid';
+  var childRoutePart = 'id',
+    agings = [
+      'Current',
+      '1 to 30',
+      '31 to 60',
+      '61 to 90',
+      '91 to 120',
+      '> 120',
+    ];
 
   function MasterAccountViewModel(options) {
     var _this = this;
@@ -30,7 +38,7 @@ define('src/account/vm.masteraccount', [
     _this.agings = ko.observableArray();
     // override childs array from ControllerViewModel
     _this.childs = ko.computed(function() {
-      return _this.accounts(); //.concat(_this.agings());
+      return _this.accounts().concat(_this.agings());
     });
     _this.totalRmr = ko.computed(function() {
       return _this.accounts().reduce(function(total, acct) {
@@ -64,17 +72,8 @@ define('src/account/vm.masteraccount', [
 
   MasterAccountViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this,
+      agingCB = join.add(),
       billingInfoCB = join.add();
-
-    //@TODO: load real aging data
-    _this.agings([
-      createAging(_this, 'AgingID-1', 'Current', 169.97),
-      createAging(_this, 'AgingID-2', '1 - 30', 0),
-      createAging(_this, 'AgingID-3', '31 - 60', 0),
-      createAging(_this, 'AgingID-4', '61 - 90', 0),
-      createAging(_this, 'AgingID-5', '91 - 120', 0),
-      createAging(_this, 'AgingID-6', '> 120', 0),
-    ]);
 
     dataservice.accountingengine.billingInfoSummary.read({
       id: _this.id,
@@ -91,6 +90,27 @@ define('src/account/vm.masteraccount', [
         }
       }, billingInfoCB);
     });
+
+    dataservice.accountingengine.aging.read({
+      id: _this.id,
+    }, null, function(err, resp) {
+      utils.safeCallback(err, function() {
+        if (resp.Value) {
+          var list, map = {};
+          // make map for easy lookup
+          resp.Value.forEach(function(aging) {
+            map[aging.Age] = aging.Value;
+          });
+          // create view models in the expected order
+          list = agings.map(function(name, index) {
+            return createAging(_this, index, name, map[name]);
+          });
+          _this.agings(list);
+        } else {
+          _this.agings([]);
+        }
+      }, agingCB);
+    });
   };
 
   function createAccount(pcontroller, id, title, rmr, units) {
@@ -104,11 +124,12 @@ define('src/account/vm.masteraccount', [
     });
   }
 
-  function createAging(pcontroller, id, title, amount) {
+  function createAging(pcontroller, index, title, amount) {
     return new ControllerViewModel({
       pcontroller: pcontroller,
       routePart: childRoutePart,
-      id: id,
+      id: 'age' + index,
+      index: index,
       title: title,
       amount: amount,
     });

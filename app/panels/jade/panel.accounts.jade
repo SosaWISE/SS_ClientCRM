@@ -1,15 +1,20 @@
 div(class="accounts",data-bind="if:loaded")
-  ul(class="tabs cf")
-    li(class="tab")
-      a(data-bind="click:clickSearch,active:searchVM.active") Search
-    <!-- ko foreach:list -->
-    li(class="tab")
-      a(data-bind="click:$parent.clickItem,active:active,text:title")
-    <!-- /ko -->
-    li(class="tab")
-      a(data-bind="click:clickNew") +
-  div
-    div(data-bind="template:{name:searchVM.viewTmpl,data:searchVM}")
-    <!-- ko foreach:list -->
-    div(data-bind="template:viewTmpl")
-    <!-- /ko -->
+  table(class="tab-wrap")
+    tr
+      td(class="tab-header")
+        ul(class="tabs cf")
+          li(class="tab")
+            a(data-bind="click:clickSearch,active:searchVM.active") Search
+          <!-- ko foreach:list -->
+          li(class="tab")
+            a(data-bind="click:$parent.clickItem,active:active,text:title")
+          <!-- /ko -->
+          li(class="tab")
+            a(data-bind="click:clickNew") +
+    tr
+      td(class="tab-body")
+        div(class="tab-contents")
+          div(class="tab", data-bind="template:{name:searchVM.viewTmpl,data:searchVM},active:active")
+          <!-- ko foreach:list -->
+          div(class="tab", data-bind="template:viewTmpl,active:active")
+          <!-- /ko -->

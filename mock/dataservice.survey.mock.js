@@ -283,8 +283,7 @@ define('mock/dataservice.survey.mock', [
   (function() {
     // mockery.random = Math.random;
 
-    var tokenCount = 0,
-      tokenValues = [
+    mockery.addModulusValueFunc('SV_TOKEN', [
       'CompanyName',
       'ADUserDisplayName',
 
@@ -297,41 +296,21 @@ define('mock/dataservice.survey.mock', [
       'PremiseAddress.Zip',
 
       'SystemDetails.PremisePhone',
-    ],
-      paCount = 0,
-      paValues = [
+    ]);
+    mockery.addModulusValueFunc('SV_PA', [
       'yes',
       'no',
       'maybe',
-    ],
-      localeCount = 0,
-      localeValues = [
+    ]);
+    mockery.addModulusValueFunc('LOCALE', [
       'en',
       'it',
-    ],
-      stCount = 0,
-      stValues = [
+    ]);
+    mockery.addModulusValueFunc('SV_TYPE', [
       'Pre Survey',
       'Post Survey',
       'Some Survey',
-    ];
-
-    function modulusValue(count, values) {
-      return values[count % values.length];
-    }
-
-    mockery.fn.SV_TOKEN = function() {
-      return modulusValue(tokenCount++, tokenValues);
-    };
-    mockery.fn.SV_PA = function() {
-      return modulusValue(paCount++, paValues);
-    };
-    mockery.fn.LOCALE = function() {
-      return modulusValue(localeCount++, localeValues);
-    };
-    mockery.fn.SV_TYPE = function() {
-      return modulusValue(stCount++, stValues);
-    };
+    ]);
   })();
 
   // data used in mock function

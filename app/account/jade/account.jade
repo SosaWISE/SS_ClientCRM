@@ -1,9 +1,14 @@
-ul(class="tabs cf")
-  <!-- ko foreach:childs -->
-  li(class="tab")
-    a(data-bind="click:$parent.clickItem,active:active,text:title")
-  <!-- /ko -->
-div(class="tab-wrap")
-  <!-- ko foreach:childs -->
-  div(class="tab", data-bind="template:viewTmpl,active:active")
-  <!-- /ko -->
+table(class="tab-wrap")
+  tr
+    td(class="tab-header")
+      ul(class="tabs cf")
+        <!-- ko foreach:childs -->
+        li(class="tab")
+          a(data-bind="click:$parent.clickItem,active:active,text:title")
+        <!-- /ko -->
+  tr
+    td(class="tab-body")
+      div(class="tab-contents")
+        <!-- ko foreach:childs -->
+        div(class="tab scrollable", data-bind="template:viewTmpl,active:active")
+        <!-- /ko -->

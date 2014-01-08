@@ -16,6 +16,11 @@ define('src/core/mockery', [
     NUMBER: function(cache, min, max) {
       return randomFromRange(min, max, 0, 10);
     },
+    MONEY: function(cache, min, max) {
+      min = (min) ? parseInt(min, 10) : 1;
+      max = (max) ? parseInt(max, 10) : 100;
+      return randomFromRange(min * 100, max * 100, 100, 10000) / 100;
+    },
     INC: function(cache, key) {
       var val = incMap[key];
       if (val) {
@@ -321,6 +326,15 @@ define('src/core/mockery', [
   mockery.padLeft = padLeft;
   mockery.padRight = padRight;
   mockery.incModulus = incModulus;
+  mockery.addModulusValueFunc = function(name, values) {
+    if (mockery.fn[name]) {
+      throw new Error(name + ' already exists on mockery.fn');
+    }
+    var count = 0;
+    mockery.fn[name] = function() {
+      return values[count++ % values.length];
+    };
+  };
 
   return mockery;
 });

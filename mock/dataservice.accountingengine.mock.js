@@ -61,6 +61,15 @@ define('mock/dataservice.accountingengine.mock', [
       return result;
     }
 
+    dataservice.accountingengine.aging.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = filterListBy(agings, 'CMFID', id);
+          break;
+      }
+      send(result, setter, cb);
+    };
     dataservice.accountingengine.billingInfoSummary.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
@@ -81,91 +90,86 @@ define('mock/dataservice.accountingengine.mock', [
   (function() {
     // mockery.random = Math.random;
 
-    var acctNameCount = 0,
-      acctNameValues = [
-        'Main Home Security System',
-        'Vacation Home Security System',
-        'FWI Firewall',
-        'Henry Tracker',
-        'Life Lock Service',
-        'Nu Manna ',
-        'Strike Plate',
-        'Window Film',
-      ],
-      acctDescCount = 0,
-      acctDescValues = [
-        'This is the house where my family lives.  Here we do all our stuf.',
-        'This home we like to go to when winter comes around.',
-        'This is the firewall that protects our family from porn.',
-        'This tracks Henry everywhere he goes',
-        'This is my free life lock service',
-        'This is my Nu Manna food storage plan',
-        'Secures my doors',
-        'Protects my windows',
-      ],
-      amountDueCount = 0,
-      amountDueValues = [
-        39.94,
-        32.95,
-        14.99,
-        10,
-        0,
-        59.95,
-        null,
-        null,
-      ],
-      dueDateCount = 0,
-      dueDateValues = [
-        '2014-01-15T00:00:00',
-        '2014-01-15T00:00:00',
-        '2014-01-05T00:00:00',
-        '2014-01-05T00:00:00',
-        '2014-01-05T00:00:00',
-        '2014-01-10T00:00:00',
-        null,
-        null,
-      ],
-      numberOfUnitesCount = 0,
-      numberOfUnitesValues = [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        1,
-        4,
-      ];
-
-    function modulusValue(count, values) {
-      return values[count % values.length];
-    }
-
-    mockery.fn.ACCT_NAME = function() {
-      return modulusValue(acctNameCount++, acctNameValues);
-    };
-    mockery.fn.ACCT_DESC = function() {
-      return modulusValue(acctDescCount++, acctDescValues);
-    };
-    mockery.fn.DUE = function() {
-      return modulusValue(amountDueCount++, amountDueValues);
-    };
-    mockery.fn.DUEDATE = function() {
-      return modulusValue(dueDateCount++, dueDateValues);
-    };
-    mockery.fn.NUNITS = function() {
-      return modulusValue(numberOfUnitesCount++, numberOfUnitesValues);
-    };
+    mockery.addModulusValueFunc('ACCT_NAME', [
+      'Main Home Security System',
+      'Vacation Home Security System',
+      'FWI Firewall',
+      'Henry Tracker',
+      'Life Lock Service',
+      'Nu Manna ',
+      'Strike Plate',
+      'Window Film',
+    ]);
+    mockery.addModulusValueFunc('ACCT_DESC', [
+      'This is the house where my family lives.  Here we do all our stuf.',
+      'This home we like to go to when winter comes around.',
+      'This is the firewall that protects our family from porn.',
+      'This tracks Henry everywhere he goes',
+      'This is my free life lock service',
+      'This is my Nu Manna food storage plan',
+      'Secures my doors',
+      'Protects my windows',
+    ]);
+    mockery.addModulusValueFunc('DUE', [
+      39.94,
+      32.95,
+      14.99,
+      10,
+      0,
+      59.95,
+      null,
+      null,
+    ]);
+    mockery.addModulusValueFunc('DUEDATE', [
+      '2014-01-15T00:00:00',
+      '2014-01-15T00:00:00',
+      '2014-01-05T00:00:00',
+      '2014-01-05T00:00:00',
+      '2014-01-05T00:00:00',
+      '2014-01-10T00:00:00',
+      null,
+      null,
+    ]);
+    mockery.addModulusValueFunc('NUNITS', [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      1,
+      4,
+    ]);
+    mockery.addModulusValueFunc('AGING', [
+      'Current',
+      '1 to 30',
+      '31 to 60',
+      '61 to 90',
+      '91 to 120',
+      '> 120',
+    ]);
   })();
 
   // data used in mock function
-  var billingInfoSummarys;
+  var agings,
+    billingInfoSummarys;
+
+  agings = mockery.fromTemplate({
+    // multiples of 6
+    'list|6-6': [
+      {
+        CMFID: 3000001,
+        Age: '@AGING',
+        Value: '@MONEY(0,60)',
+      }
+    ]
+  }).list;
 
   billingInfoSummarys = mockery.fromTemplate({
     'list|8-8': [
       {
         SummaryID: '@INC(summary)',
-        CustomerMasterFileId: 100001,
+        CustomerMasterFileId: 3000001,
         AccountId: '@INC(account)',
         AccountName: '@ACCT_NAME',
         AccountDesc: '@ACCT_DESC',

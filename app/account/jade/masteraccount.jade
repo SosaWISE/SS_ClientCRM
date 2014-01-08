@@ -1,4 +1,4 @@
-div(class="tab panel account", data-bind="active:active,toggle:{'hide-nav':hideNav,'hide-notes':hideNotes}")
+div(class="panel account", data-bind="active:active,toggle:{'hide-nav':hideNav,'hide-notes':hideNotes}")
   div(data-bind="if:false")
     div(class="white", data-bind="template:'tmpl-spinner'")
 
@@ -42,7 +42,7 @@ div(class="tab panel account", data-bind="active:active,toggle:{'hide-nav':hideN
                 a(data-bind="active:active,click:$parent.clickItem")
                   span(class="name",data-bind="text:title")
                   <!-- ko if:hasRmr -->
-                  span(class="amount",data-bind="currency:rmr")
+                  span(class="amount",data-bind="currencyHtml:rmr")
                   <!-- /ko -->
                   <!-- ko ifnot:hasRmr -->
                   span(class="nUnits",data-bind="text:units")
@@ -51,7 +51,7 @@ div(class="tab panel account", data-bind="active:active,toggle:{'hide-nav':hideN
               li
                 a(class="total")
                   span(class="name") Total RMR
-                  span(class="amount",data-bind="currency:totalRmr")
+                  span(class="amount",data-bind="currencyHtml:totalRmr")
 
         div(class="section")
           span(class="title") Payment History
@@ -68,14 +68,14 @@ div(class="tab panel account", data-bind="active:active,toggle:{'hide-nav':hideN
             ul(class="accounts")
               <!-- ko foreach:agings -->
               li
-                a(data-bind="active:active")
+                a(data-bind="active:active,click:$parent.clickItem")
                   span(class="name",data-bind="text:title")
-                  span(class="amount",data-bind="currency:amount")
+                  span(class="amount",data-bind="currencyHtml:amount")
               <!-- /ko -->
               li
                 a(class="total")
                   span(class="name") Total Pasted Due
-                  span(class="amount",data-bind="currency:totalAging")
+                  span(class="amount",data-bind="currencyHtml:totalAging")
 
 
   div(class="notes")

@@ -84,7 +84,7 @@ define('src/app', [
     locale: 'en',
   });
   router.addRoute(app.panelMap.home, 'home', '', {});
-  router.addRoute(app.panelMap.accounts, 'accounts', ':masterid/:accountid/:tab', {});
+  router.addRoute(app.panelMap.accounts, 'accounts', ':masterid/:id/:tab', {});
 
   return app;
 });

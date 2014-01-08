@@ -1,57 +1,56 @@
-div(class="tab", data-bind="active:active")
-  //- div(data-bind="if:true")
-    div(class="white", data-bind="template:'tmpl-spinner'")
+//- div(data-bind="if:true")
+  div(class="white", data-bind="template:'tmpl-spinner'")
 
-  div(class="account-info-editor", data-bind="toggle:{'show-editor':showEditor}")
-    //- span account editor
+div(class="account-info-editor", data-bind="toggle:{'show-editor':showEditor}")
+  //- span account editor
 
-  div(class="account-info", data-bind="toggle:{'show-editor':showEditor}")
-    div(class="details", data-bind="toggle:{'hide-notes':hideNotes,'show-reps':showReps}")
-      div(data-bind="text:title,click:clickToggleEditor")
-      div(class="col col3")
-        span(class="title") Contract
+div(class="account-info", data-bind="toggle:{'show-editor':showEditor}")
+  div(class="details", data-bind="toggle:{'hide-notes':hideNotes,'show-reps':showReps}")
+    div(data-bind="text:title,click:clickToggleEditor")
+    div(class="col col3")
+      span(class="title") Contract
 
-        //- div(class="section")
-        //-   span(class="title") title goes here
-        //-   div(class="contents") contents go here
+      //- div(class="section")
+      //-   span(class="title") title goes here
+      //-   div(class="contents") contents go here
 
-        div(class="section")
-          span(class="title") Contract Owner
-          div(class="contents")
-            div(class="info userinfo")
-              div(class="img-wrap")
-                div(class="img", style="background-image:url(https://secure.gravatar.com/avatar/f47bda756ab7abfaeb7b5e1b59d5edc9?s=80&r=pg&d=https%3A%2F%2Fkanbanflow.com%2Fimg%2Fgd.png);")
-              div(class="name") Andres Sosa
-              div(class="address") 1573 N Technology Way
-              div(class="address") Suite 1100, Bldg A
-              div(class="address") Orem, UT 84057
-              br
-              div(class="phone mobile") (801) 822-9323
-              div(class="phone work") (801) 822-7862
-              div(class="phone home") (801) 226-7067
-              div(class="email") asosa@nexsense.com
-              div(class="credit-score")
-                span(class="excellent") Credit Score: TU Excellent
-        div(class="section empty disabled")
-          span(class="title") Shipping Address
-      div(class="col col3")
-        span(class="title") System
-        div(class="section empty ")
-          span(class="title") Premise / Monitored Party
-        div(class="section empty disabled")
-          span(class="title") System Information
-      div(class="col col3")
-        span(class="title") Billing
-        div(class="section empty disabled")
-          span(class="title") Billing Information
+      div(class="section")
+        span(class="title") Contract Owner
+        div(class="contents")
+          div(class="info userinfo")
+            div(class="img-wrap")
+              div(class="img", style="background-image:url(https://secure.gravatar.com/avatar/f47bda756ab7abfaeb7b5e1b59d5edc9?s=80&r=pg&d=https%3A%2F%2Fkanbanflow.com%2Fimg%2Fgd.png);")
+            div(class="name") Andres Sosa
+            div(class="address") 1573 N Technology Way
+            div(class="address") Suite 1100, Bldg A
+            div(class="address") Orem, UT 84057
+            br
+            div(class="phone mobile") (801) 822-9323
+            div(class="phone work") (801) 822-7862
+            div(class="phone home") (801) 226-7067
+            div(class="email") asosa@nexsense.com
+            div(class="credit-score")
+              span(class="excellent") Credit Score: TU Excellent
+      div(class="section empty disabled")
+        span(class="title") Shipping Address
+    div(class="col col3")
+      span(class="title") System
+      div(class="section empty ")
+        span(class="title") Premise / Monitored Party
+      div(class="section empty disabled")
+        span(class="title") System Information
+    div(class="col col3")
+      span(class="title") Billing
+      div(class="section empty disabled")
+        span(class="title") Billing Information
 
-    div(class="notes", data-bind="toggle:{'hide-notes':hideNotes}")
-      span(class="title", data-bind="click:clickToggleNotes") Notes & History:
-      div(class="contents") contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here
+  div(class="notes", data-bind="toggle:{'hide-notes':hideNotes}")
+    span(class="title", data-bind="click:clickToggleNotes") Notes & History:
+    div(class="contents") contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here contents go here
 
-    div(class="rep", data-bind="toggle:{'hide-notes':hideNotes,'show-reps':showReps}")
-      div(class="vertical-title")
-        span(class="title", data-bind="click:clickToggleReps") &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          //- Sales Reps & Technicians
-      div(class="contents")
-        //- span contents go here
+  div(class="rep", data-bind="toggle:{'hide-notes':hideNotes,'show-reps':showReps}")
+    div(class="vertical-title")
+      span(class="title", data-bind="click:clickToggleReps") &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        //- Sales Reps & Technicians
+    div(class="contents")
+      //- span contents go here
