@@ -1,10 +1,73 @@
 div(class="sales-info")
-  div(class="title") Sales Info Screen
-  span(class="subHeader") System Type Information
-  br 
-  span(class="ssiQuestion") A. Is this a 6.5 or 8 Point system?
-  div(data-bind="template:{name:psComboVM.viewTmpl,data:psComboVM}")
-  span(class="subHeader") Monitoring And Service Information
-  br
-  span(class="ssiQuestion") B. Is the activation fee  $XX.XX?
-
+  div(class="ssiInvoice")
+    table(class="tblInvoice")
+      tr(class="trInvoiceHdr")
+        th(class="thInvoice") Description 
+        th(class="thInvoice") Price
+        th(class="thInvoice") Points
+        th(class="thInvoice") Total
+        th(class="thInvoice") Del
+      tr(class="trInvoice")
+        td(class="tdInvoice") Simon XT (234422)
+        td(class="tdInvoice") $189.99
+        td(class="tdInvoice") 4.0
+        td(class="tdInvoice")
+          a Del
+      tr(class="trInvoiceAlt")
+        td(class="tdInvoiceAlt") Free Panel (234422)
+        td(class="tdInvoiceAlt") ($189.99)
+        td(class="tdInvoiceAlt") (4.0)
+        td(class="tdInvoiceAlt")
+          a Del
+  div(class="ssiVars") 
+    span(class="title") Sales Info Screen
+    span(class="subHeader") System Type Information
+    br 
+    span(class="ssiQuestion") A. Is this a 6.5 or 8 Point system?
+    div(data-bind="template:{name:psComboVM.viewTmpl,data:psComboVM}")
+    span(class="subHeader") Monitoring And Service Information
+    br
+    span(class="ssiQuestion") B. Is the activation fee  $XX.XX?
+    input(type="text",class="inputField",name="activationFee")
+    br
+    span(class="ssiQuestion") C. Is Activation over 3 months?
+    input(type="checkbox",class="inputField",name="over3Months")
+    br
+    span(class="ssiQuestion") D. What is the cell type?
+    div(data-bind="template:{name:ctComboVM.viewTmpl,data:ctComboVM}")
+    br
+    span(class="ssiQuestion") E. Which Alarm.com package are we going with?
+    div(data-bind="template:{name:apckComboVM.viewTmpl,data:apckComboVM}")
+    span(class="subHeader") Monthly Monitoring
+    br
+    span(class="ssiQuestion") F. Will the monthly monitoring rate be?
+    input(type="text",class="inputField",name="mmr")
+    br
+    span(class="ssiQuestion") G. What is the contract length?
+    div(data-bind="template:{name:clComboVM.viewTmpl,data:clComboVM}")
+    span(class="subHeader") Frequently Installed Equipment
+    table(class="tblEqpmt")
+      tr(class="trEqpmtHdr")
+        th(class="thEqpmtHdr") Item
+        th(class="thEqpmtHdr") Description
+        th(class="thEqpmtHdr") Price
+        th(class="thEqpmtHdr") Points
+        th(class="thEqpmtHdr") Add/Del
+      tr(class="trEqpmt")
+        td(class="tdEqpmt") Simon XT (23422)
+        td(class="tdEqpmt") Simon XT Panel
+        td(class="tdEqpmt") $198.99
+        td(class="tdEqpmt") 4.0
+        td(class="tdEqpmt") Add / Del
+      tr(class="trEqpmtAlt")
+        td(class="tdEqpmt") Lynix (22232)
+        td(class="tdEqpmt") Lynix Panel
+        td(class="tdEqpmt") $158.99
+        td(class="tdEqpmt") 4.0
+        td(class="tdEqpmt") Add / Del
+      tr(class="trEqpmt")
+        td(class="tdEqpmt") AlarmCom (123320)
+        td(class="tdEqpmt") Alarm.com Board
+        td(class="tdEqpmt") $198.99
+        td(class="tdEqpmt") 2.0
+        td(class="tdEqpmt") Add / Del
