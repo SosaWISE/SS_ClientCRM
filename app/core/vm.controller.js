@@ -72,6 +72,7 @@ define('src/core/vm.controller', [
         lastActiveChild.deactivate();
       }
       if (!_this.activeChild()) {
+        _this.setTitle();
         // we're done with activating
         routeCtx.done();
       }
@@ -95,11 +96,7 @@ define('src/core/vm.controller', [
       if (child.routePart) {
         routeData[child.routePart] = child.id;
       }
-      // _this.setTitle(child.name || _this.name);
       child.activate(routeCtx);
-    } else {
-      // no child
-      _this.setTitle(_this.name || _this.pcontroller.name);
     }
   };
   ControllerViewModel.prototype.findChild = function(routeData) {
@@ -216,13 +213,20 @@ define('src/core/vm.controller', [
 
 
 
-  ControllerViewModel.prototype.setTitle = function(title) {
-    var parts = [];
+  ControllerViewModel.prototype.setTitle = function() {
+    var parts = [],
+      title,
+      controller = this;
     if (ControllerViewModel.titlePrefix) {
       parts.push(ControllerViewModel.titlePrefix);
     }
-    if (title) {
-      title = ko.unwrap(title);
+
+    while (!title && controller) {
+      title = ko.unwrap(controller.title);
+      if (!title) {
+        // go up to parent controller
+        controller = controller.pcontroller;
+      }
     }
     if (title) {
       parts.push(title);

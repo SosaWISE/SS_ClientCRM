@@ -67,6 +67,7 @@
     }
   }
 }
+
 div.tab {
   overflow: hidden;
   position: absolute;
@@ -87,6 +88,44 @@ div.tab {
   display: none;
   &.active {
     display: block;
+  }
+}
+
+//@NOTE: using a table so that the tabs can dynamically wrap around
+// http://stackoverflow.com/questions/90178/make-a-div-fill-the-remaining-screen-space
+table.tab-wrap {
+  height:100%;
+  width:100%;
+  // tbody tr > td.tab-header {}
+  tbody tr > td.tab-body {
+    height:100%;
+    > div.tab-contents {
+      overflow:hidden;
+      position:relative;
+      height:100%;
+      > div.tab {
+        overflow: hidden;
+        position: absolute;
+        top:0; right:0; bottom:0; left:0;
+        &.scrollable {
+          overflow: auto;
+        }
+
+        // // animate transition
+        // .transition(.5s);
+        // opacity: 0;
+        // visibility: hidden;
+        // &.active {
+        //   opacity: 1;
+        //   visibility: visible;
+        // }
+        // transition without animation
+        display: none;
+        &.active {
+          display: block;
+        }
+      }
+    }
   }
 }
 
@@ -208,7 +247,7 @@ div.tab {
         font-size: 1.3em;
         font-weight: 500;
         overflow: hidden;
-        text-transform: uppercase;
+        // text-transform: uppercase;
         text-align: center;
         display: block;
       }

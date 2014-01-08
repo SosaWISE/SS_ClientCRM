@@ -13,6 +13,8 @@ define('src/account/vm.account', [
 ) {
   "use strict";
 
+  var childRoutePart = 'tab';
+
   function AccountViewModel(options) {
     var _this = this;
     AccountViewModel.super_.call(_this, options);
@@ -36,20 +38,38 @@ define('src/account/vm.account', [
       cb = join.add();
     setTimeout(function() {
       _this.childs([
-        salesInfoScreen(_this, _this.id + 1),
-        salesInfoScreen(_this, _this.id + 2),
+        salesInfoScreen(_this, 'Sales Info/Inventory'),
+        createFauxController(_this, 'Account Summary'),
+        createFauxController(_this, 'Signal History'),
+        createFauxController(_this, 'Inventory'),
+        createFauxController(_this, 'Contract Approval'),
+        createFauxController(_this, 'Setup Checklist'),
       ]);
       cb();
     }, 0);
   };
 
-  function salesInfoScreen(pcontroller, id) {
+  function salesInfoScreen(pcontroller, title) {
     return new SalesInfoViewModel({
       pcontroller: pcontroller,
-      routePart: 'tab',
-      id: id,
-      title: 'Sales Info',
+      routePart: childRoutePart,
+      id: titleToId(title),
+      title: title,
     });
+  }
+
+  function createFauxController(pcontroller, title) {
+    return new ControllerViewModel({
+      pcontroller: pcontroller,
+      routePart: childRoutePart,
+      id: titleToId(title),
+      title: title,
+      viewTmpl: 'tmpl-temptitle',
+    });
+  }
+
+  function titleToId(title) {
+    return title.toLowerCase().replace(/\s+/g, '').replace(/\//g, '-');
   }
 
   return AccountViewModel;

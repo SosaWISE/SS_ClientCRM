@@ -19,7 +19,7 @@ define('src/panels/vm.panel', [
     join = join;
   };
   PanelViewModel.prototype.onActivate = function() { // overrides base
-    this.setTitle(this.name);
+
   };
 
   return PanelViewModel;

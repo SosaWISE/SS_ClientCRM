@@ -82,15 +82,15 @@ define('src/panels/vm.panel.accounts', [
       _this.defaultChild = _this.searchVM;
 
       _this.list([
-        createAccountVM(_this, 100001, '100001'),
+        createAccountVM(_this, 3000001, '3000001'),
         new deps.InfoAccountViewModel({
           pcontroller: _this,
           routePart: childRoutePart,
-          id: 100002,
-          title: '100002',
-          name: '100002',
+          id: 3000002,
+          title: '3000002',
+          name: '3000002',
         }),
-        createAccountVM(_this, 100003, '100003'),
+        createAccountVM(_this, 3000003, '3000003'),
       ]);
 
       /* jshint eqeqeq:false */

@@ -79,7 +79,6 @@ define('src/panels/vm.panel.login', [
   };
   LoginViewModel.prototype.onActivate = function(routeData) {
     routeData.action = 'login';
-    this.setTitle(this.title());
   };
 
   return LoginViewModel;

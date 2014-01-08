@@ -43,7 +43,7 @@ define('src/panels/vm.panel.home', [
     join.add()();
   };
   HomePanelViewModel.prototype.onActivate = function() { // overrides base
-    this.setTitle(this.name);
+
   };
   HomePanelViewModel.prototype.onDeactivate = function() { // overrides base
 

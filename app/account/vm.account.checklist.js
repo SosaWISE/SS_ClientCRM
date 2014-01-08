@@ -86,7 +86,7 @@ define('src/account/vm.account.checklist', [
 
     _this.goTo({
       masterid: _this.id,
-      accountid: _this.id,
+      id: _this.id,
       tab: vm.id,
     });
   };

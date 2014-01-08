@@ -1,4 +1,4 @@
-define('src/dataservice.accountingengine', [
+define('src/dataservice.maincore', [
   'src/core/dataservice.base',
   'src/config'
 ], function(
@@ -8,12 +8,15 @@ define('src/dataservice.accountingengine', [
   "use strict";
 
   return function() {
-    var serviceDomain = config.serviceDomain + '/accountingenginesrv',
+    var serviceDomain = config.serviceDomain + '/maincoresrv',
       result = {};
 
     [
-      'aging',
-      'billingInfoSummary',
+      'departments',
+      'note',
+      'notecategory1',
+      'notecategory2',
+      'notetypes',
     ].forEach(function(collectionName) {
         result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
       });
