@@ -1,34 +1,8 @@
 div(class="sales-info")
-  div(class="ssiInvoice",style="\
-      position:absolute;\
-      top:0;right:0;bottom:0;left:515px;\
-    ")
-    table(class="tblInvoice")
-      tr(class="trInvoiceHdr")
-        th(class="thInvoice") Description
-        th(class="thInvoice") Price
-        th(class="thInvoice") Points
-        th(class="thInvoice") Total
-        th(class="thInvoice") Del
-      tr(class="trInvoice")
-        td(class="tdInvoice") Simon XT (234422)
-        td(class="tdInvoice") $189.99
-        td(class="tdInvoice") 4.0
-        td(class="tdInvoice")
-          a Del
-      tr(class="trInvoiceAlt")
-        td(class="tdInvoiceAlt") Free Panel (234422)
-        td(class="tdInvoiceAlt") ($189.99)
-        td(class="tdInvoiceAlt") (4.0)
-        td(class="tdInvoiceAlt")
-          a Del
-  div(class="ssiVars",style="\
-      position:absolute;\
-      top:0;width:515px;bottom:0;left:0;\
-    ")
+  div(class="ssiVars")
     span(class="title") Sales Info Screen
 
-    table
+    table(class="tblVars")
       colgroup
         col(style="width:15px;")
         col(style="width:300px;")
@@ -117,4 +91,23 @@ div(class="sales-info")
     table(class="table-test")
       colgroup
         col
-
+  div(class="ssiInvoice")
+    table(class="tblInvoice")
+      tr(class="trInvoiceHdr")
+        th(class="thInvoice") Description
+        th(class="thInvoice") Price
+        th(class="thInvoice") Points
+        th(class="thInvoice") Total
+        th(class="thInvoice") Del
+      tr(class="trInvoice")
+        td(class="tdInvoice") Simon XT (234422)
+        td(class="tdInvoice") $189.99
+        td(class="tdInvoice") 4.0
+        td(class="tdInvoice")
+          a Del
+      tr(class="trInvoiceAlt")
+        td(class="tdInvoiceAlt") Free Panel (234422)
+        td(class="tdInvoiceAlt") ($189.99)
+        td(class="tdInvoiceAlt") (4.0)
+        td(class="tdInvoiceAlt")
+          a Del
