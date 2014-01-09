@@ -1,9 +1,10 @@
 div(class="combo",data-bind="toggle:{'open':isOpen}")
   div(class="cover",data-bind="click:clickClose,ukov:selectedValue")
-    span(data-bind="text:selectedItem().text")
+    span(data-bind="text:selected().text")
     span(class="arrow")
   div(class="combo-list")
-    input(type="text",data-bind="click:clickOpen,event:{blur:clickTestClose,keydown:inputKeydown},select:selectInput,value:filterText,valueUpdate:'keyup'")
+    input(type="text",
+      data-bind="click:clickOpen,event:{blur:clickTestClose,keydown:inputKeydown},select:selectInput,deselect:deselectInput,value:filterText,valueUpdate:'keyup'")
     ul(data-bind="visible:isOpen,event:{mousedown:onClickingItem,mouseup:offClickingItem}")
       <!-- ko foreach:list -->
       li(data-bind="visible:matches,click:$parent.selectItem")

@@ -20,10 +20,31 @@ define('src/account/vm.salesinfo', [
     SalesInfoViewModel.super_.call(_this, options);
 
     // ** Fields
-    _this.psComboVM = new ComboViewModel();
-    _this.ctComboVM = new ComboViewModel();
-    _this.apckComboVM = new ComboViewModel();
-    _this.clComboVM = new ComboViewModel();
+    _this.psComboVM = new ComboViewModel({
+      fields: {
+        text: 'TemplateName',
+        value: 'InvoiceTemplateID',
+      }
+    });
+    _this.ctComboVM = new ComboViewModel({
+      nullable: true,
+      fields: {
+        text: 'CellularTypeName',
+        value: 'CellularTypeID',
+      }
+    });
+    _this.apckComboVM = new ComboViewModel({
+      fields: {
+        text: 'PackageName',
+        value: 'AlarmComPackageID',
+      }
+    });
+    _this.clComboVM = new ComboViewModel({
+      fields: {
+        text: 'ContractName',
+        value: 'ContractTemplateID',
+      }
+    });
     _this.title = ko.observable(_this.title);
 
     _this.psComboVM.selectedValue.subscribe(function(value) {
@@ -35,20 +56,9 @@ define('src/account/vm.salesinfo', [
           notify.notify('error', err.Message);
           return;
         }
-        if (_this.psComboVM.selectedValue() !== value) {
-          // don't set if different than the current selected value
-          return;
-        }
-        try {
-          var list = resp.Value.map(function(item) {
-            return {
-              text: item.ContractName,
-              value: item.ContractTemplateID
-            };
-          });
-          _this.clComboVM.setList(list);
-        } catch (ex) {
-          notify.notify('error', ex.message);
+        if (_this.psComboVM.selectedValue() === value) {
+          // only set if same as current selected value
+          _this.clComboVM.setList(resp.Value);
         }
       });
     });
@@ -72,13 +82,7 @@ define('src/account/vm.salesinfo', [
     dataservice.salessummary.pointsystems.read({}, null, function(err, resp) {
       utils.safeCallback(err, function() {
         // ** Bind data
-        var list = resp.Value.map(function(item) {
-          return {
-            text: item.TemplateName,
-            value: item.InvoiceTemplateID
-          };
-        });
-        _this.psComboVM.setList(list);
+        _this.psComboVM.setList(resp.Value);
         _this.psComboVM.selectItem(_this.psComboVM.list()[0]);
       }, cb);
     });
@@ -89,13 +93,7 @@ define('src/account/vm.salesinfo', [
     dataservice.salessummary.cellulartypes.read({}, null, function(err, resp) {
       utils.safeCallback(err, function() {
         // ** Bind data
-        var list = resp.Value.map(function(item) {
-          return {
-            text: item.CellularTypeName,
-            value: item.CellularTypeID
-          };
-        });
-        _this.ctComboVM.setList(list);
+        _this.ctComboVM.setList(resp.Value);
       }, cb);
     });
   }
@@ -105,13 +103,7 @@ define('src/account/vm.salesinfo', [
     dataservice.salessummary.vendoralarmcompacakges.read({}, null, function(err, resp) {
       utils.safeCallback(err, function() {
         // ** Bind Data
-        var list = resp.Value.map(function(item) {
-          return {
-            text: item.PackageName,
-            value: item.AlarmComPackageID
-          };
-        });
-        _this.apckComboVM.setList(list);
+        _this.apckComboVM.setList(resp.Value);
       }, cb);
     });
   }

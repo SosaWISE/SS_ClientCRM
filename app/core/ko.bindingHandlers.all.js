@@ -215,5 +215,16 @@
       }
     },
   };
+  // deselect element
+  //---------------------------
+  ko.bindingHandlers.deselect = {
+    update: function(element, valueAccessor) {
+      var observable = valueAccessor();
+      if (observable()) {
+        element.selectionEnd = element.selectionStart;
+        observable(false);
+      }
+    },
+  };
 
 });

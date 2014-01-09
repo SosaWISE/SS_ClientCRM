@@ -1,4 +1,4 @@
-define('mock/dataservice.accountingengine.mock', [
+define('mock/dataservice.salessummary.mock', [
   'src/dataservice',
   'src/core/mockery',
 ], function(
@@ -61,7 +61,7 @@ define('mock/dataservice.accountingengine.mock', [
     //   return result;
     // }
 
-    dataservice.accountingengine.pointsystems.read = function(params, setter, cb) {
+    dataservice.salessummary.pointsystems.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:
@@ -70,7 +70,7 @@ define('mock/dataservice.accountingengine.mock', [
       }
       send(result, setter, cb);
     };
-    dataservice.accountingengine.cellulartypes.read = function(params, setter, cb) {
+    dataservice.salessummary.cellulartypes.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:
@@ -79,7 +79,7 @@ define('mock/dataservice.accountingengine.mock', [
       }
       send(result, setter, cb);
     };
-    dataservice.accountingengine.vendoralarmcompacakges.read = function(params, setter, cb) {
+    dataservice.salessummary.vendoralarmcompacakges.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:
@@ -88,7 +88,7 @@ define('mock/dataservice.accountingengine.mock', [
       }
       send(result, setter, cb);
     };
-    dataservice.accountingengine.contractlengthsget.read = function(params, setter, cb) {
+    dataservice.salessummary.contractlengthsget.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:

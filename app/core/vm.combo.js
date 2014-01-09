@@ -12,7 +12,11 @@ define('src/core/vm.combo', [
   "use strict";
 
   var charRegx = /([^\s]{1})/g,
-    regxAnyLetter = '.*';
+    regxAnyLetter = '.*',
+    defaultFields = {
+      value: 'value',
+      text: 'text',
+    };
 
   //@TODO:
   // on focus open (tab pressed)
@@ -22,9 +26,14 @@ define('src/core/vm.combo', [
     var _this = this;
     ComboViewModel.super_.call(_this, options);
 
+    // ensure fields property exists
+    _this.fields = _this.fields || {};
+    _this.fields.value = _this.fields.value || 'value';
+    _this.fields.text = _this.fields.text || 'text';
+
     _this.activeIndex = -1;
     _this.filterText = ko.observable('');
-    _this.selectedItem = ko.observable(ComboViewModel.noItemSelected);
+    _this.selected = ko.observable(ComboViewModel.noItemSelected);
     if (!_this.selectedValue) {
       _this.selectedValue = ko.observable();
     }
@@ -34,6 +43,7 @@ define('src/core/vm.combo', [
     _this.isOpen = ko.observable(false);
     _this.focusInput = ko.observable(false);
     _this.selectInput = ko.observable(false);
+    _this.deselectInput = ko.observable(false);
 
     _this.filterText.subscribe(function(filterText) {
       filterList(_this.list(), filterText);
@@ -43,24 +53,35 @@ define('src/core/vm.combo', [
 
     // whenever selectedValue changes
     //    verify the value is in the list of items
-    //    update selectedItem
+    //    update selected
     _this.selectedValue.subscribe(function(selectedValue) {
       if (selectedValue != null) {
-        var item;
-        _this.list().some(function(wrappedItem) {
-          if (wrappedItem.item.value === selectedValue) {
-            item = wrappedItem.item;
+        var wrappedItem;
+        _this.list().some(function(listItem) {
+          if (listItem.value === selectedValue) {
+            wrappedItem = listItem;
             return true;
           }
         });
-        if (item) {
-          _this.selectedItem(item);
+        if (wrappedItem) {
+          _this.selected(wrappedItem);
+
+          if (wrappedItem.item !== _this.list()[_this.activeIndex]) {
+            _this.deactivateCurrent();
+            if (wrappedItem.value != null) {
+              _this.activeIndex = _this.list().indexOf(wrappedItem) - 1;
+              _this.activateNext(true);
+            }
+          }
         } else {
           console.log('selectedValue not in list:', selectedValue);
+          //@NOTE: this will call this function again
+          // and set `selected` to `noItemSelected`
           _this.selectedValue(null);
         }
       } else {
-        _this.selectedItem(ComboViewModel.noItemSelected);
+        _this.selected(ComboViewModel.noItemSelected);
+        _this.deactivateCurrent();
       }
     });
 
@@ -82,6 +103,7 @@ define('src/core/vm.combo', [
     _this.clickClose = function() {
       _this.clickingItem = false;
       _this.isOpen(false);
+      _this.deselectInput(true);
     };
     _this.clickOpen = function() {
       if (!_this.isOpen()) {
@@ -94,48 +116,57 @@ define('src/core/vm.combo', [
       }
     };
     _this.inputKeydown = function(vm, evt) {
-      var down;
-      console.log(evt.keyCode);
+      var keyCode = evt.keyCode;
+      console.log(keyCode);
       if (!_this.isOpen()) {
+        // ignore keys
+        switch (keyCode) {
+          case 16: // shift
+          case 17: // ctrl
+          case 18: // alt
+          case 27: // escape
+          case 9: // tab
+            return true; // do default action
+        }
+
         _this.isOpen(true);
-        switch (evt.keyCode) {
-          case 13: // enter key
-            return false; // don't re-close
+        _this.focusInput(true);
+        _this.selectInput(true);
+
+        // only open and don't do other actions below
+        switch (keyCode) {
+          case 13: // enter
+          case 38: // up arrow
+          case 40: // down arrow
+            return false; // prevent default action
         }
       }
-      switch (evt.keyCode) {
+
+      switch (keyCode) {
         default: return true;
-        case 27: // escape key
+        case 27: // escape
           _this.clickClose();
           return false;
-        case 13: // enter key
-        case 9: // tab key
+        case 13: // enter
+        case 9: // tab
           _this.selectItem(_this.list()[_this.activeIndex]);
-          return evt.keyCode === 9;
-        case 38: // up arrow key
-          down = false;
-          break;
-        case 40: // down arrow key
-          down = true;
-          break;
+          return keyCode === 9; // for tab key do default action
+        case 38: // up arrow
+          _this.activateNext(false);
+          return false;
+        case 40: // down arrow
+          _this.activateNext(true);
+          return false;
       }
-      _this.activateNext(down);
+      return true; // do default action
     };
     _this.selectItem = function(wrappedItem) {
       if (wrappedItem) {
-        var item = wrappedItem.item;
-        _this.selectedValue(item.value);
-
-        _this.clickClose();
-
-        if (item !== _this.list()[_this.activeIndex]) {
-          _this.deactivateCurrent();
-          if (item.value != null) {
-            _this.activeIndex = _this.list().indexOf(wrappedItem) - 1;
-            _this.activateNext(true);
-          }
-        }
+        _this.selectedValue(wrappedItem.value);
+      } else {
+        _this.selectedValue(null);
       }
+      _this.clickClose();
     };
 
     _this.clickAction = function(action) {
@@ -144,7 +175,7 @@ define('src/core/vm.combo', [
     };
 
     if (options && options.list) {
-      _this.setList(options.list, options.nullable);
+      _this.setList(options.list);
     } else {
       // start with nothing selected
       _this.selectedValue(null);
@@ -152,35 +183,33 @@ define('src/core/vm.combo', [
   }
   utils.inherits(ComboViewModel, BaseViewModel);
   ComboViewModel.prototype.viewTmpl = 'tmpl-combo';
-  ComboViewModel.noItemSelected = {
-    value: null,
-    text: '[Select One]',
-  };
-  ComboViewModel.noneItem = {
-    value: null,
-    text: '[None]',
-  };
 
-  ComboViewModel.prototype.setList = function(list, nullable) {
+  ComboViewModel.prototype.selectFirst = function() {
+    var _this = this;
+    _this.selectItem(_this.list()[0]);
+  };
+  ComboViewModel.prototype.setList = function(list) {
+    list = list || [];
     var _this = this,
       wrapList = new Array(list.length);
+
     list.forEach(function(item, index) {
-      wrapList[index] = wrapItem(item);
+      wrapList[index] = wrapItem(item, _this.fields);
     });
-    if (nullable) {
-      wrapList.unshift(wrapItem(ComboViewModel.noneItem));
+    if (_this.nullable) {
+      wrapList.unshift(ComboViewModel.noneItem);
     }
     _this.list(wrapList);
     filterList(_this.list(), _this.filterText());
 
     // reset selected value
     _this.selectedValue(null);
-
     _this.deactivateCurrent();
   };
   ComboViewModel.prototype.addItem = function(item) {
-    item = wrapItem(item);
-    this.list.push(item);
+    var _this = this;
+    item = wrapItem(item, _this.fields);
+    _this.list.push(item);
     return item;
   };
 
@@ -207,21 +236,31 @@ define('src/core/vm.combo', [
     }
   };
 
-  function wrapItem(item) {
-    if (!('value' in item)) {
-      throw new Error('no value field: ' + JSON.stringify(item));
+  function wrapItem(item, fields) {
+    if (!(fields.value in item)) {
+      throw new Error('no ' + fields.value + ' field: ' + JSON.stringify(item));
     }
-    if (!('text' in item)) {
-      throw new Error('no text field: ' + JSON.stringify(item));
+    if (!(fields.text in item)) {
+      throw new Error('no ' + fields.text + ' field: ' + JSON.stringify(item));
     }
     return {
       item: item,
-      text: item.text,
-      html: ko.observable(item.text),
+      text: item[fields.text],
+      value: item[fields.value],
+      html: ko.observable(item[fields.text]),
       matches: ko.observable(false),
       active: ko.observable(false),
     };
   }
+
+  ComboViewModel.noItemSelected = wrapItem({
+    value: null,
+    text: '[Select One]',
+  }, defaultFields);
+  ComboViewModel.noneItem = wrapItem({
+    value: null,
+    text: '[None]',
+  }, defaultFields);
 
   // function indexOfItem(list, item) {
   //   var index = -1;
