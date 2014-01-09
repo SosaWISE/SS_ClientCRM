@@ -18,7 +18,7 @@ define('src/survey/vm.questionmeaning', [
   function QuestionMeaningViewModel(options) {
     var _this = this;
     QuestionMeaningViewModel.super_.call(_this, options);
-    _this.ensureProps(['tokensVM']);
+    ControllerViewModel.ensureProps(this, ['tokensVM']);
 
     _this.tokenMaps = _this.childs;
   }

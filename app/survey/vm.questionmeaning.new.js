@@ -30,7 +30,7 @@ define('src/survey/vm.questionmeaning.new', [
   function NewQuestionMeaningViewModel(options) {
     var _this = this;
     NewQuestionMeaningViewModel.super_.call(_this, options);
-    _this.ensureProps(['surveyTypeVM']);
+    BaseViewModel.ensureProps(this, ['surveyTypeVM']);
 
     _this.qmData = ukov.wrap({
       // QuestionMeaningID: 0,

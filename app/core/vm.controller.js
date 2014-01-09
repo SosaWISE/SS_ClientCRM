@@ -21,14 +21,13 @@ define('src/core/vm.controller', [
     var _this = this;
     ControllerViewModel.super_.call(_this, options);
 
-    _this.loader = helpers.onetimer();
-    _this.loading = _this.loader.loading;
-    _this.loaded = _this.loader.loaded;
+    _this.initMixinLoad();
 
     _this.childs = ko.observableArray();
     _this.activeChild = ko.observable(null);
   }
   utils.inherits(ControllerViewModel, BaseViewModel);
+  ControllerViewModel.ensureProps = BaseViewModel.ensureProps;
   // ControllerViewModel.prototype.routePart = 'route';
   // ControllerViewModel.prototype.defaultChild = null;
 
@@ -137,35 +136,6 @@ define('src/core/vm.controller', [
       }
     }
   };
-
-  ControllerViewModel.prototype.load = function(routeData, cb) {
-    var _this = this,
-      loader = _this.loader,
-      join;
-
-    // call onLoad if it hasn't been called yet
-    if (!loader.loaded() && !loader.loading()) {
-      // add callback
-      loader(cb);
-
-      join = joiner();
-      _this.onLoad(routeData, join);
-      join.when(function(errResp) {
-        if (errResp) {
-          notify.notify('error', errResp.Message);
-        }
-        // tell the loader we're done
-        loader.loadCb();
-      });
-    } else {
-      // add callback
-      loader(cb);
-    }
-  };
-  ControllerViewModel.prototype.onLoad = function(routeData, join) {
-    join.add()();
-  };
-
 
   ControllerViewModel.prototype.goTo = function(routeData, allowHistory) {
     var _this = this;

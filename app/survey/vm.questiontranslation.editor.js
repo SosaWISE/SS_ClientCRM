@@ -16,7 +16,7 @@ define('src/survey/vm.questiontranslation.editor', [
   function EditorQuestionTranslationViewModel(options) {
     var _this = this;
     EditorQuestionTranslationViewModel.super_.call(_this, options);
-    _this.ensureProps(['questionMeaningVM', 'input']);
+    BaseViewModel.ensureProps(this, ['questionMeaningVM', 'input']);
 
     // _this.input = should be passed in
     _this.output = ko.computed(_this.computeHtml, _this);

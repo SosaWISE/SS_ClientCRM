@@ -102,8 +102,10 @@ define('src/core/vm.combo', [
     };
     _this.clickClose = function() {
       _this.clickingItem = false;
-      _this.isOpen(false);
-      _this.deselectInput(true);
+      if (_this.isOpen()) {
+        _this.isOpen(false);
+        _this.deselectInput(true);
+      }
     };
     _this.clickOpen = function() {
       if (!_this.isOpen()) {

@@ -36,7 +36,7 @@ define('src/survey/vm.survey', [
   function SurveyViewModel(options) {
     var _this = this;
     SurveyViewModel.super_.call(_this, options);
-    _this.ensureProps(['model', 'surveyTypeVM', 'tokensVM', 'possibleAnswersVM']);
+    ControllerViewModel.ensureProps(this, ['model', 'surveyTypeVM', 'tokensVM', 'possibleAnswersVM']);
 
     _this.title = ko.observable(_this.surveyTypeVM.model.Name + ' ' + _this.model.Version);
     _this.id = _this.model.SurveyID;
@@ -112,6 +112,8 @@ define('src/survey/vm.survey', [
         routeCtx: _this.createRouteContext({
           surveyid: _this.id,
           // locale: 'en',
+        }, function() {
+
         }),
       }));
     };

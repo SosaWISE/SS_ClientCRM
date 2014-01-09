@@ -18,8 +18,8 @@ define('src/survey/vm.question', [
   function QuestionViewModel(options) {
     var _this = this;
     QuestionViewModel.super_.call(_this, options);
-    _this.ensureProps(['surveyVM', 'possibleAnswersVM', 'questionMeaningVM']);
-    _this.ensureProps.call(_this.model, ['childs']);
+    ControllerViewModel.ensureProps(_this, ['surveyVM', 'possibleAnswersVM', 'questionMeaningVM']);
+    ControllerViewModel.ensureProps(_this.model, ['childs']);
 
     _this.id = _this.model.QuestionID;
     _this.possibleAnswerMaps = _this.childs;

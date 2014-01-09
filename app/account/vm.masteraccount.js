@@ -28,7 +28,7 @@ define('src/account/vm.masteraccount', [
   function MasterAccountViewModel(options) {
     var _this = this;
     MasterAccountViewModel.super_.call(_this, options);
-    _this.ensureProps(['id', 'title']);
+    ControllerViewModel.ensureProps(this, ['id', 'title']);
 
     _this.title = ko.observable(_this.title);
     _this.hideNotes = ko.observable(false);

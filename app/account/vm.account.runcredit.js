@@ -91,7 +91,7 @@ define('src/account/vm.account.runcredit', [
   function RunCreditAccountViewModel(options) {
     var _this = this;
     RunCreditAccountViewModel.super_.call(_this, options);
-    _this.ensureProps(['addressId']);
+    BaseViewModel.ensureProps(this, ['addressId']);
 
     _this.focus = ko.observable(false);
     _this.creditResult = ko.observable(null);

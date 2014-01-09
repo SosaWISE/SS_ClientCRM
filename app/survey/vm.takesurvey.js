@@ -26,7 +26,7 @@ define('src/survey/vm.takesurvey', [
   function TakeSurveyViewModel(options) {
     var _this = this;
     TakeSurveyViewModel.super_.call(_this, options);
-    _this.ensureProps(['tokenData']);
+    ControllerViewModel.ensureProps(this, ['tokenData']);
 
     _this.survey = ko.observable();
 

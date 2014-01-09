@@ -18,7 +18,7 @@ define('src/account/vm.account', [
   function AccountViewModel(options) {
     var _this = this;
     AccountViewModel.super_.call(_this, options);
-    _this.ensureProps(['id', 'title']);
+    ControllerViewModel.ensureProps(_this, ['id', 'title']);
 
     _this.title = ko.observable(_this.title);
     _this.rmr = ko.observable(_this.rmr);

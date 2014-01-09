@@ -22,7 +22,7 @@ define('src/survey/vm.surveytype', [
   function SurveyTypeViewModel(options) {
     var _this = this;
     SurveyTypeViewModel.super_.call(_this, options);
-    _this.ensureProps(['layersVM', 'tokensVM', 'possibleAnswersVM']);
+    ControllerViewModel.ensureProps(this, ['layersVM', 'tokensVM', 'possibleAnswersVM']);
 
     _this.id = _this.model.SurveyTypeID;
     _this.surveys = _this.childs;

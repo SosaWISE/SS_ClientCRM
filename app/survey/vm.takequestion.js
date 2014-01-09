@@ -18,12 +18,12 @@ define('src/survey/vm.takequestion', [
   function TakeQuestionViewModel(options) {
     var _this = this;
     TakeQuestionViewModel.super_.call(_this, options);
-    _this.ensureProps([]);
+    BaseViewModel.ensureProps(this, []);
 
     _this.answerMode = calcAnswerMode(_this.questionPossibleAnswerMaps.length);
     if (_this.answerMode === 'text') {
       //@TODO: use MapToToken observable
-      // _this.ensureProps(['mapToTokenObservable']);
+      // BaseViewModel.ensureProps(this, ['mapToTokenObservable']);
       // _this.answer = ???;
       _this.answer = ko.observable('');
     } else {

@@ -20,7 +20,7 @@ define('src/account/vm.account.qualify', [
   function QualifyAccountViewModel(options) {
     var _this = this;
     QualifyAccountViewModel.super_.call(_this, options);
-    _this.ensureProps(['layersVM']);
+    ControllerViewModel.ensureProps(this, ['layersVM']);
 
     _this.title = ko.observable(_this.title);
     _this.hideNotes = ko.observable(false);

@@ -18,7 +18,7 @@ define('src/survey/vm.qpossibleanswermap.new', [
   function NewQPossibleAnswerMapViewModel(options) {
     var _this = this;
     NewQPossibleAnswerMapViewModel.super_.call(_this, options);
-    _this.ensureProps(['questionVM', 'possibleAnswersVM']);
+    BaseViewModel.ensureProps(this, ['questionVM', 'possibleAnswersVM']);
 
     _this.paComboVM = new ComboViewModel({
       list: createComboList(_this.questionVM.possibleAnswerMaps(), _this.possibleAnswersVM.possibleAnswers())
