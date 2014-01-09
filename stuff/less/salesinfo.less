@@ -5,6 +5,12 @@
   width: 100%;
 
   // ** Inner elements
+  .center {
+    text-align: center;
+  }
+  .right {
+    text-align: right;
+  }
   div.ssiVars {
     // ** Properties
     float: left;
@@ -56,12 +62,6 @@
             text-decoration: none;
           }
         }
-        .center {
-          text-align: center;
-        }
-        .right {
-          text-align: right;
-        }
 
         tr.trEqpmt,
         tr.trEqpmtAlt {
@@ -76,14 +76,26 @@
   div.ssiInvoice {
     // Style
     float: left;
-    background-color: #00FF00;
+    //background-color: #00FF00;
     padding: 0 10px;
     width: 65%;
     min-height: 500px;
 
     // Inner Elements
+    div.ssiAddEqpmt {
+      background-color: #0E4B8F;
+      display: inline-block;
+      padding: 3px;
+      &:hover { background-color: #4170A5; }
+
+      a {
+        color: white;
+        text-decoration: none;
+      }
+    }
     table.tblInvoice {
       // ** Properties
+      border: 1px solid white;
       background: #fff;
       width: 100%;
 
@@ -93,17 +105,42 @@
         color: white;
       }
       tr.trInvoiceHdr {
-        background-color: gray;
+        background-color: #0E4B8F;
+        height: 24px;
 
         th.thInvoice {
-            font-weight: bold;
-            padding: 0 5px;
-            border-right: 1px solid white;
-            border-bottom: 1px solid white;
+          font-weight: bold;
+          padding: 0 5px;
+          border-right: 1px solid white;
+          border-bottom: 1px solid white;
         }
-        tr.trInvoice,
-        tr.trInvoiceAlt {
-          background-color: gray;
+      }
+      tr.trInvoice,
+      tr.trInvoiceAlt {
+        background-color: #84B6EE;
+      }
+      tr.trInvoiceFtr {
+        background-color: #0E4B8F;
+      }
+      tr.trInvoiceAlt {
+        background-color: #5DA1EE;
+      }
+      td.tdInvoiceFtr,
+      td.tdInvoice,
+      td.tdInvoiceAlt {
+        padding: 0 5px;
+        border-right: 1px solid white;
+        border-bottom: 1px solid white;
+
+        // ** Inner elements
+        a{
+          color: white;
+          text-decoration: none;
+
+          &:hover {
+            font-weight: bold;
+            text-decoration: underline;
+          }
         }
       }
     }

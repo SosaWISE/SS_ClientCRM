@@ -95,22 +95,55 @@ div(class="sales-info")
       colgroup
         col
   div(class="ssiInvoice")
+    div(class="ssiAddEqpmt")
+      a(href="#") Add By Part #
     table(class="tblInvoice")
-      tr(class="trInvoiceHdr")
-        th(class="thInvoice") Description
-        th(class="thInvoice") Price
-        th(class="thInvoice") Points
-        th(class="thInvoice") Total
-        th(class="thInvoice") Del
-      tr(class="trInvoice")
-        td(class="tdInvoice") Simon XT (234422)
-        td(class="tdInvoice") $189.99
-        td(class="tdInvoice") 4.0
-        td(class="tdInvoice")
-          a Del
-      tr(class="trInvoiceAlt")
-        td(class="tdInvoiceAlt") Free Panel (234422)
-        td(class="tdInvoiceAlt") ($189.99)
-        td(class="tdInvoiceAlt") (4.0)
-        td(class="tdInvoiceAlt")
-          a Del
+      thead
+        tr(class="trInvoiceHdr")
+          th(class="thInvoice") Description
+          th(class="thInvoice center") Price
+          th(class="thInvoice center") Points
+          th(class="thInvoice center") Total
+          th(class="thInvoice center") Action
+      tbody
+        tr(class="trInvoice")
+          td(class="tdInvoice") Simon XT (234422)
+          td(class="tdInvoice right") $189.99
+          td(class="tdInvoice right") 4.0
+          td(class="tdInvoice right") $189.99
+          td(class="tdInvoice center")
+            a(href="#") Del
+        tr(class="trInvoiceAlt")
+          td(class="tdInvoiceAlt") Free Panel (234422)
+          td(class="tdInvoiceAlt right") ($189.99)
+          td(class="tdInvoiceAlt right") (4.0)
+          td(class="tdInvoiceAlt right") $189.99
+          td(class="tdInvoiceAlt center")
+            a(href="#") Del
+        tr(class="trInvoice")
+          td(class="tdInvoice") Simon XT (234422)
+          td(class="tdInvoice right") $189.99
+          td(class="tdInvoice right") 4.0
+          td(class="tdInvoice right") $189.99
+          td(class="tdInvoice center")
+            a(href="#") Del
+        tr(class="trInvoiceAlt")
+          td(class="tdInvoiceAlt") Free Panel (234422)
+          td(class="tdInvoiceAlt right") ($189.99)
+          td(class="tdInvoiceAlt right") (4.0)
+          td(class="tdInvoiceAlt right") $189.99
+          td(class="tdInvoiceAlt center")
+            a(href="#") Del
+      tfoot
+        tr(class="trInvoiceFtr")
+          td(class="tdInvoiceFtr right",colspan="3") Points Given:
+          td(class="tdInvoiceFtr right") 6.5
+          td(class="tdInvoiceFtr")
+        tr(class="trInvoiceFtr")
+          td(class="tdInvoiceFtr right",colspan="3") Points Available:
+          td(class="tdInvoiceFtr right") 0.0
+          td(class="tdInvoiceFtr")
+        tr(class="trInvoiceFtr")
+          td(class="tdInvoiceFtr right",colspan="3") Total:
+          td(class="tdInvoiceFtr right") $365.90
+          td(class="tdInvoiceFtr")
