@@ -1,17 +1,19 @@
 define('src/account/vm.masteraccount', [
+  'src/account/vm.notes',
   'src/dataservice',
   'src/account/vm.account',
+  'ko',
   'src/core/notify',
   'src/core/utils',
   'src/core/vm.controller',
-  'ko'
 ], function(
+  NotesViewModel,
   dataservice,
   AccountViewModel,
+  ko,
   notify,
   utils,
-  ControllerViewModel,
-  ko
+  ControllerViewModel
 ) {
   "use strict";
 
@@ -54,6 +56,8 @@ define('src/account/vm.masteraccount', [
         return total + aging.amount;
       }, 0);
     });
+
+    _this.notesVM = new NotesViewModel();
 
     //
     // events

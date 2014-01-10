@@ -15,6 +15,7 @@ window.require = {
     moment: '/tparty/moment', // Used for Date object
     underscore: '/tparty/underscore', // Allows for excellent data manipulation like linq in C#.
     markdown: '/tparty/markdown',
+    slick: '/tparty/slick-dev',
   },
 
   // defines global names(exports). does NOT load/require them

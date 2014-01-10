@@ -11,5 +11,6 @@ window.require = {
     'mock': '/mock.js',
     'spec': '/spec.js',
     // specui: '/specui.js',
+    'slick': '/slick.js',
   },
 };

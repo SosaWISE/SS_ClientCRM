@@ -1,4 +1,5 @@
 define('src/account/vm.salesinfo', [
+  'src/core/vm.slickgrid',
   'src/dataservice',
   'src/core/notify',
   'src/core/utils',
@@ -6,6 +7,7 @@ define('src/account/vm.salesinfo', [
   'ko',
   'src/core/vm.combo',
 ], function(
+  SlickGridViewModel,
   dataservice,
   notify,
   utils,

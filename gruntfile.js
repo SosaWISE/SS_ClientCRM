@@ -88,7 +88,7 @@ module.exports = function(grunt) {
         src: [
           'tparty/depends.js',
 
-          'tparty/jquery*.js',
+          'tparty/jquery-*.js',
           'tparty/knockout.js',
           'tparty/moment.js',
           'tparty/underscore.js',
@@ -97,6 +97,15 @@ module.exports = function(grunt) {
           'tparty/definelibs.js',
         ],
         dest: '<%= www %>/lib.debug.js',
+      },
+      slick: {
+        src: [
+          'tparty/jquery.event.drag-*.js',
+          'tparty/slick.core.js',
+          'tparty/slick.grid.js',
+          'tparty/slick-production.js',
+        ],
+        dest: '<%= www %>/slick.debug.js',
       },
       // specs
       spec: {
@@ -122,6 +131,7 @@ module.exports = function(grunt) {
 
           '<%= www %>/app.js': ['<%= www %>/app.debug.js'],
           '<%= www %>/lib.js': ['<%= www %>/lib.debug.js'],
+          '<%= www %>/slick.js': ['<%= www %>/slick.debug.js'],
         }
       }
     },
