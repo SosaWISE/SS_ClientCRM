@@ -22,7 +22,7 @@ div(class="sales-info")
           td B.
           td
             |Is the activation fee&nbsp;
-            span $XX.XX
+            span(data-bind="currency:activationFee")
             |&nbsp;?
           td
             input(type="text",class="inputField",name="activationFee")

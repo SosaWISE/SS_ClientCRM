@@ -22,6 +22,7 @@ define('src/account/vm.salesinfo', [
     SalesInfoViewModel.super_.call(_this, options);
 
     // ** Fields
+    _this.activationFee = ko.observable();
     _this.psComboVM = new ComboViewModel({
       fields: {
         text: 'TemplateName',
@@ -74,10 +75,16 @@ define('src/account/vm.salesinfo', [
 
   SalesInfoViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this;
+    load_activationFee(_this, join.add());
     load_pointsystems(_this, join.add());
     load_cellulartypes(_this, join.add());
     load_vendoralarmcompacakges(_this, join.add());
   };
+
+  function load_activationFee(_this, cb) {
+    _this.activationFee(199.00);
+    cb();
+  }
 
   function load_pointsystems(_this, cb) {
     // ** Pull pointsystems
