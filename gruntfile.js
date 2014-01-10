@@ -61,6 +61,15 @@ module.exports = function(grunt) {
         src: ['app/core/**/*.js', '!app/core/**/*.spec.js', ],
         dest: '<%= www %>/core.debug.js',
       },
+      slick: {
+        src: [
+          'tparty/jquery.event.drag-*.js',
+          'tparty/slick.core.js',
+          'tparty/slick.grid.js',
+          'tparty/slick-production.js',
+        ],
+        dest: '<%= www %>/slick.debug.js',
+      },
       ukov_pkg: {
         src: ['app/u-kov/**/*.js', '!app/u-kov/**/*.spec.js', ],
         dest: '<%= www %>/ukov.debug.js',
@@ -98,15 +107,6 @@ module.exports = function(grunt) {
         ],
         dest: '<%= www %>/lib.debug.js',
       },
-      slick: {
-        src: [
-          'tparty/jquery.event.drag-*.js',
-          'tparty/slick.core.js',
-          'tparty/slick.grid.js',
-          'tparty/slick-production.js',
-        ],
-        dest: '<%= www %>/slick.debug.js',
-      },
       // specs
       spec: {
         src: [
@@ -126,12 +126,12 @@ module.exports = function(grunt) {
           '<%= www %>/account.js': ['<%= www %>/account.debug.js'],
           '<%= www %>/survey.js': ['<%= www %>/survey.debug.js'],
           '<%= www %>/core.js': ['<%= www %>/core.debug.js'],
+          '<%= www %>/slick.js': ['<%= www %>/slick.debug.js'],
           '<%= www %>/ukov.js': ['<%= www %>/ukov.debug.js'],
           '<%= www %>/mock.js': ['<%= www %>/mock.debug.js'],
 
           '<%= www %>/app.js': ['<%= www %>/app.debug.js'],
           '<%= www %>/lib.js': ['<%= www %>/lib.debug.js'],
-          '<%= www %>/slick.js': ['<%= www %>/slick.debug.js'],
         }
       }
     },
