@@ -16,7 +16,7 @@ define('src/account/vm.notes', [
   function NotesViewModel(options) {
     var _this = this;
     NotesViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(this, []);
+    BaseViewModel.ensureProps(_this, []);
 
     _this.initMixinLoad();
 

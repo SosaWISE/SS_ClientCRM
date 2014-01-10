@@ -20,7 +20,7 @@ define('src/survey/vm.question.new', [
   function NewQuestionViewModel(options) {
     var _this = this;
     NewQuestionViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(this, ['surveyVM', 'surveyTypeVM']);
+    BaseViewModel.ensureProps(_this, ['surveyVM', 'surveyTypeVM']);
 
     _this.qmComboVM = new ComboViewModel({
       list: createComboList(_this.surveyVM, _this.surveyTypeVM.questionMeanings())

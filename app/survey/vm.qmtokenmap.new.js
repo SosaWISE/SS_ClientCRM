@@ -18,7 +18,7 @@ define('src/survey/vm.qmtokenmap.new', [
   function NewQMTokenMapViewModel(options) {
     var _this = this;
     NewQMTokenMapViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(this, ['questionMeaningVM', 'tokensVM']);
+    BaseViewModel.ensureProps(_this, ['questionMeaningVM', 'tokensVM']);
 
     _this.tokenComboVM = new ComboViewModel({
       list: createComboList(_this.questionMeaningVM.tokenMaps(), _this.tokensVM.list())

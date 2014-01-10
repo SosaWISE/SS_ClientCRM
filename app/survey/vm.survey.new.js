@@ -38,7 +38,7 @@ define('src/survey/vm.survey.new', [
   function NewSurveyViewModel(options) {
     var _this = this;
     NewSurveyViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(this, ['surveyTypeVM']);
+    BaseViewModel.ensureProps(_this, ['surveyTypeVM']);
 
     _this.sData = ukov.wrap({
       // SurveyID: 0,

@@ -36,7 +36,7 @@ define('src/survey/vm.survey', [
   function SurveyViewModel(options) {
     var _this = this;
     SurveyViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(this, ['model', 'surveyTypeVM', 'tokensVM', 'possibleAnswersVM']);
+    ControllerViewModel.ensureProps(_this, ['model', 'surveyTypeVM', 'tokensVM', 'possibleAnswersVM']);
 
     _this.title = ko.observable(_this.surveyTypeVM.model.Name + ' ' + _this.model.Version);
     _this.id = _this.model.SurveyID;

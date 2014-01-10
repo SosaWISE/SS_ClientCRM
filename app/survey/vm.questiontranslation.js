@@ -33,7 +33,7 @@ define('src/survey/vm.questiontranslation', [
   function QuestionTranslationViewModel(options) {
     var _this = this;
     QuestionTranslationViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(this, ['surveyTranslationVM', 'questionVM']);
+    BaseViewModel.ensureProps(_this, ['surveyTranslationVM', 'questionVM']);
 
     _this.LocalizationCode = _this.surveyTranslationVM.model.LocalizationCode;
 

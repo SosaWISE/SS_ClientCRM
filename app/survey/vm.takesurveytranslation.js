@@ -16,7 +16,7 @@ define('src/survey/vm.takesurveytranslation', [
   function TakeSurveyTranslationViewModel(options) {
     var _this = this;
     TakeSurveyTranslationViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(this, ['surveyTranslationVMs', 'routeCtx']);
+    BaseViewModel.ensureProps(_this, ['surveyTranslationVMs', 'routeCtx']);
 
     _this.localeComboVM = new ComboViewModel({
       list: _this.surveyTranslationVMs.map(function(surveyTranslationVM) {

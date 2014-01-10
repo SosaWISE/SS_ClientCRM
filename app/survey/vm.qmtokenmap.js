@@ -16,7 +16,7 @@ define('src/survey/vm.qmtokenmap', [
   function QMTokenMapViewModel(options) {
     var _this = this;
     QMTokenMapViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(this, ['tokensVM']);
+    BaseViewModel.ensureProps(_this, ['tokensVM']);
 
     _this.token = _this.tokensVM.getToken(_this.model.TokenId);
     // _this.active(!_this.model.IsDeleted);

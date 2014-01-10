@@ -38,7 +38,7 @@ define('src/survey/vm.surveytranslation.new', [
   function NewSurveyTranslationViewModel(options) {
     var _this = this;
     NewSurveyTranslationViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(this, ['surveyVM']);
+    BaseViewModel.ensureProps(_this, ['surveyVM']);
 
     _this.focus = ko.observable(false);
     _this.stData = ukov.wrap({
