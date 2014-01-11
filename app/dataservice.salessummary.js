@@ -20,6 +20,7 @@ define('src/dataservice.salessummary', [
       'vendoralarmcompacakges',
       'equipmentbypointsget',
       'contractlengthsget',
+      'frequentlyinstalledequipmentget',
     ].forEach(function(collectionName) {
         result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
       });

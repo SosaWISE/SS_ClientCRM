@@ -134,6 +134,7 @@ define('src/account/vm.salesinfo', [
     load_pointsystems(_this, join.add());
     load_cellulartypes(_this, join.add());
     load_vendoralarmcompacakges(_this, join.add());
+    load_frequentlyInstalledEquipment(_this, join.add());
   };
 
   function load_activationFee(_this, cb) {
@@ -168,6 +169,16 @@ define('src/account/vm.salesinfo', [
       utils.safeCallback(err, function() {
         // ** Bind Data
         _this.apckComboVM.setList(resp.Value);
+      }, cb);
+    });
+  }
+
+  function load_frequentlyInstalledEquipment(_this, cb) {
+    // ** Pull data
+    dataservice.salessummary.frequentlyInstalledEquipment.read({}, null, function(err, resp) {
+      utils.safeCallback(err, function() {
+        // ** Bind data to table
+
       }, cb);
     });
   }
