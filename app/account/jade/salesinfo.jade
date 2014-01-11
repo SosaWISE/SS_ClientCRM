@@ -1,7 +1,6 @@
 div(class="sales-info")
   div(class="ssiVars")
     div(class="title") Sales Info
-
     table(class="tblVars")
       colgroup
         col(style="width:15px;")
@@ -60,7 +59,7 @@ div(class="sales-info")
 
         tr
           td(colspan="3",class="subHeader") Frequently Installed Equipment
-        tr
+        //- tr
           td(colspan="3")
             table(class="tblEqpmt")
               tr(class="trEqpmtHdr")
@@ -90,6 +89,10 @@ div(class="sales-info")
                 td(class="tdEqpmt center") 2.0
                 td(class="tdEqpmt center")
                   a(href="#") Add
+        tr
+          td(colspan="3")
+            //- div(style="width:500px;")
+            div(class="slickgrid",data-bind="slickgrid:frequentGrid",style="width:400px;height:200px;")
 
     table(class="table-test")
       colgroup

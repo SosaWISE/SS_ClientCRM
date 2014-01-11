@@ -61,12 +61,15 @@ module.exports = function(grunt) {
         src: ['app/core/**/*.js', '!app/core/**/*.spec.js', ],
         dest: '<%= www %>/core.debug.js',
       },
-      slick: {
+      slick_pkg: {
         src: [
+          // third party libs
           'tparty/jquery.event.drag-*.js',
           'tparty/slick.core.js',
           'tparty/slick.grid.js',
           'tparty/slick-production.js',
+          // actual package
+          'app/slick/**/*.js', '!app/slick/**/*.spec.js',
         ],
         dest: '<%= www %>/slick.debug.js',
       },
@@ -88,6 +91,7 @@ module.exports = function(grunt) {
           '!app/account/*',
           '!app/survey/*',
           '!app/core/*',
+          '!app/slick/*',
           '!app/u-kov/*',
         ],
         dest: '<%= www %>/app.debug.js',

@@ -2,7 +2,6 @@
   'jquery',
   'ko',
   // include other handlers
-  'src/core/ko.bindingHandlers.cmd',
   'src/core/ko.bindingHandlers.formatters',
   'src/core/ko.bindingHandlers.notice',
   'src/core/ko.bindingHandlers.value',

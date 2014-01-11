@@ -5,6 +5,8 @@ define('src/core/utils', [
 ) {
   "use strict";
 
+  function no_op() {}
+
   return {
 
     inherits: function(ctor, superCtor) {
@@ -20,6 +22,7 @@ define('src/core/utils', [
     },
 
     safeCallback: function(err, action, cb) {
+      cb = cb || no_op;
       if (err) {
         return cb(err);
       }

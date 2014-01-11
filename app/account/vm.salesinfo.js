@@ -1,5 +1,6 @@
 define('src/account/vm.salesinfo', [
-  'src/core/vm.slickgrid',
+  'src/slick/buttonscolumn',
+  'src/slick/vm.slickgrid',
   'src/dataservice',
   'src/core/notify',
   'src/core/utils',
@@ -7,6 +8,7 @@ define('src/account/vm.salesinfo', [
   'ko',
   'src/core/vm.combo',
 ], function(
+  ButtonsColumn,
   SlickGridViewModel,
   dataservice,
   notify,
@@ -50,19 +52,72 @@ define('src/account/vm.salesinfo', [
     });
     _this.title = ko.observable(_this.title);
 
-    _this.psComboVM.selectedValue.subscribe(function(value) {
+    _this.frequentGrid = new SlickGridViewModel({
+      options: {
+        enableColumnReorder: false,
+        rowHeight: 27,
+      },
+      columns: [
+        {
+          id: 'item',
+          name: 'Item',
+          field: 'Item',
+        },
+        {
+          id: 'description',
+          name: 'Description',
+          field: 'Description',
+        },
+        {
+          id: 'price',
+          name: 'Price',
+          field: 'Price',
+          formatter: SlickGridViewModel.formatters.currency,
+        },
+        {
+          id: 'points',
+          name: 'Points',
+          field: 'Points',
+          formatter: SlickGridViewModel.formatters.likecurrency,
+        },
+        new ButtonsColumn({
+          id: 'actions',
+          name: 'Actions',
+          buttons: [
+            {
+              text: 'Add',
+              fn: function(item) {
+                alert('add ' + JSON.stringify(item));
+              },
+            },
+          ]
+        }),
+      ],
+    });
+    while (_this.frequentGrid.list().length < 9) {
+      _this.frequentGrid.list().push({
+        Item: 'Item ' + _this.frequentGrid.list().length,
+        Description: 'Description ' + _this.frequentGrid.list().length,
+        Price: _this.frequentGrid.list().length * -1.23,
+        Points: _this.frequentGrid.list().length - 4,
+      });
+    }
+
+    _this.psComboVM.selectedValue.subscribe(function(psValue) {
       _this.clComboVM.setList([]);
       dataservice.salessummary.contractlengthsget.read({
-        id: value,
+        id: psValue,
       }, null, function(err, resp) {
-        if (err) {
-          notify.notify('error', err.Message);
-          return;
-        }
-        if (_this.psComboVM.selectedValue() === value) {
-          // only set if same as current selected value
-          _this.clComboVM.setList(resp.Value);
-        }
+        utils.safeCallback(err, function() {
+          // only set cl if same as current selected psValue
+          if (_this.psComboVM.selectedValue() === psValue) {
+            _this.clComboVM.setList(resp.Value);
+          }
+        }, function(err) {
+          if (err) {
+            notify.notify('error', err.Message);
+          }
+        });
       });
     });
 
