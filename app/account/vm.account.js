@@ -40,6 +40,7 @@ define('src/account/vm.account', [
       _this.childs([
         salesInfoScreen(_this, 'Sales Info/Inventory'),
         createFauxController(_this, 'Account Summary'),
+        createFauxController(_this, 'EMC/Equipment'),
         createFauxController(_this, 'Signal History'),
         createFauxController(_this, 'Inventory'),
         createFauxController(_this, 'Contract Approval'),
