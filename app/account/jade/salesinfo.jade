@@ -20,12 +20,12 @@ div(class="sales-info")
                 span(data-bind="currency:activationFee")
                 |?
               div(class="answer")
-                input(type="text",class="inputField",name="activationFee")
+                input(type="text",class="inputField",name="activationFeeActual",data-bind="value: activationFeeActual")
             div(class="line")
               div(class="letter") C.
               div(class="question") Is Activation over 3 months?
               div(class="answer")
-                input(type="checkbox",class="inputField",name="over3Months")
+                input(type="checkbox",class="inputField",name="over3Months",data-bind="checked:over3Months,click:over3MonthsAction")
             div(class="line")
               div(class="letter") D.
               div(class="question") What is the cell type?
@@ -42,10 +42,10 @@ div(class="sales-info")
               div(class="letter") F.
               div(class="question")
                 |Will the monthly monitoring rate be&nbsp;
-                span ___
+                span(data-bind="currency:monthlyMonitoringRate")
                 |?
               div(class="answer")
-                input(type="text",class="inputField",name="mmr")
+                input(type="text",class="inputField",name="mmr",data-bind="value:monthlyMonitoringRateActual")
             div(class="line")
               div(class="letter") G.
               div(class="question") What is the contract length?

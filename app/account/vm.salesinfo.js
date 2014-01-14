@@ -25,6 +25,14 @@ define('src/account/vm.salesinfo', [
 
     // ** Fields
     _this.activationFee = ko.observable();
+    _this.activationFeeActual = ko.observable();
+    _this.over3Months = ko.observable(false);
+    _this.over3MonthsAction = function() {
+      console.log("Activation over 3 months: ", _this.over3Months());
+      return true;
+    };
+    _this.monthlyMonitoringRate = ko.observable();
+    _this.monthlyMonitoringRateActual = ko.observable();
     _this.psComboVM = new ComboViewModel({
       fields: {
         text: 'TemplateName',
@@ -193,6 +201,12 @@ define('src/account/vm.salesinfo', [
         });
       });
     });
+    _this.activationFeeActual.subscribe(function(newValue) {
+      console.log("New Activation Fee: ", newValue);
+    });
+    _this.monthlyMonitoringRate.subscribe(function(newValue) {
+      console.log("MMR: ", newValue);
+    });
 
     //
     // events
@@ -204,6 +218,7 @@ define('src/account/vm.salesinfo', [
   SalesInfoViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this;
     load_activationFee(_this, join.add());
+    load_monthlyMonitoringRate(_this, join.add());
     load_pointsystems(_this.psComboVM, join.add());
     load_cellulartypes(_this.ctComboVM, join.add());
     load_vendoralarmcompacakges(_this.apckComboVM, join.add());
@@ -212,6 +227,13 @@ define('src/account/vm.salesinfo', [
 
   function load_activationFee(_this, cb) {
     _this.activationFee(199.00);
+    _this.activationFeeActual(199.00);
+    cb();
+  }
+
+  function load_monthlyMonitoringRate(_this, cb) {
+    _this.monthlyMonitoringRate(39.95);
+    _this.monthlyMonitoringRateActual(39.95);
     cb();
   }
 
