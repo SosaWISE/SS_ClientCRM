@@ -38,7 +38,7 @@ define('src/account/vm.account', [
       cb = join.add();
     setTimeout(function() {
       _this.childs([
-        salesInfoScreen(_this, 'Sales Info/Inventory'),
+        salesInfoScreen(_this, 'Sales Info'),
         createFauxController(_this, 'Account Summary'),
         createFauxController(_this, 'EMC/Equipment'),
         createFauxController(_this, 'Signal History'),

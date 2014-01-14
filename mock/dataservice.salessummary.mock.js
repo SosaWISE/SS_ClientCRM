@@ -97,6 +97,15 @@ define('mock/dataservice.salessummary.mock', [
       }
       send(result, setter, cb);
     };
+    dataservice.salessummary.frequentlyinstalledequipmentget.read = function(params, setter, cb) {
+      var result;
+      switch (params.link || null) {
+        case null:
+          result = frequentlyinstalledequipmentget;
+          break;
+      }
+      send(result, setter, cb);
+    };
   }
 
   (function() {
@@ -114,7 +123,8 @@ define('mock/dataservice.salessummary.mock', [
     cellulartypes,
     vendoralarmcompacakges,
     // equipmentbypointsget,
-    contractlengthsget;
+    contractlengthsget,
+    frequentlyinstalledequipmentget;
 
   pointsystems = [
     {
@@ -210,6 +220,93 @@ define('mock/dataservice.salessummary.mock', [
       "CreatedOn": "2014-01-08T14:03:02.9517605-07:00",
       "CreatedBy": "",
       "DEX_ROW_TS": "1900-01-01T00:00:00"
+    }
+  ];
+
+  frequentlyinstalledequipmentget = [
+    {
+      "ItemID": "EQPM_INVT126",
+      "ItemTypeId": "EQPM_INVT",
+      "TaxOptionId": "TAX",
+      "ItemFKID": "126",
+      "ItemSKU": "GEC-13553 ",
+      "ItemDesc": "HARDWIRE & WIRELESS TAKEOVER TRANSFORMER ",
+      "Price": 0,
+      "Cost": 0,
+      "SystemPoints": 0,
+      "IsCatalogItem": true,
+      "IsActive": true,
+      "IsDeleted": false
+    },
+    {
+      "ItemID": "EQPM_INVT128",
+      "ItemTypeId": "EQPM_INVT",
+      "TaxOptionId": "TAX",
+      "ItemFKID": "128",
+      "ItemSKU": "GEC-TX4014012 ",
+      "ItemDesc": "KEYCHAIN REMOTE ",
+      "Price": 0,
+      "Cost": 0,
+      "SystemPoints": 1,
+      "IsCatalogItem": true,
+      "IsActive": true,
+      "IsDeleted": false
+    },
+    {
+      "ItemID": "EQPM_INVT131",
+      "ItemTypeId": "EQPM_INVT",
+      "TaxOptionId": "TAX",
+      "ItemFKID": "131",
+      "ItemSKU": "GEC-6080795R ",
+      "ItemDesc": "MOTION ",
+      "Price": 0,
+      "Cost": 0,
+      "SystemPoints": 2,
+      "IsCatalogItem": true,
+      "IsActive": true,
+      "IsDeleted": false
+    },
+    {
+      "ItemID": "EQPM_INVT132",
+      "ItemTypeId": "EQPM_INVT",
+      "TaxOptionId": "TAX",
+      "ItemFKID": "132",
+      "ItemSKU": "GEC-6063995ROD ",
+      "ItemDesc": "OUTDOOR MOTION ",
+      "Price": 0,
+      "Cost": 0,
+      "SystemPoints": 2,
+      "IsCatalogItem": true,
+      "IsActive": true,
+      "IsDeleted": false
+    },
+    {
+      "ItemID": "EQPM_INVT133",
+      "ItemTypeId": "EQPM_INVT",
+      "TaxOptionId": "TAX",
+      "ItemFKID": "133",
+      "ItemSKU": "GEC-TX1510011 ",
+      "ItemDesc": "RECESSED DOOR/WINDOW ",
+      "Price": 0,
+      "Cost": 0,
+      "SystemPoints": 1,
+      "IsCatalogItem": true,
+      "IsActive": true,
+      "IsDeleted": false
+    },
+    {
+      "ItemID": "EQPM_INVT139",
+      "ItemTypeId": "EQPM_INVT",
+      "TaxOptionId": "TAX",
+      "ItemFKID": "139",
+      "ItemSKU": "GEC-60899 ",
+      "ItemDesc": "SIMONXT TRANSFORMER ",
+      "Price": 0,
+      "Cost": 0,
+      "SystemPoints": 0,
+      "IsCatalogItem": true,
+      "IsActive": true,
+      "IsDeleted": false
     }
   ];
 

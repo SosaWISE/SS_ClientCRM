@@ -1,9 +1,11 @@
 .sales-info {
+  @middle:470px;
+  @pad: 10px;
+
   // ** Properties
   color: #6c6c6c;
-  display: inline-block;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top:0;right:0;bottom:0;left:0;
 
   // ** Inner elements
   .center {
@@ -14,9 +16,8 @@
   }
   div.ssiVars {
     // ** Properties
-    float: left;
-    padding-right: 5px;
-    width: 35%;
+    position: absolute;
+    top:0;width:@middle;bottom:0;left:@pad;
 
     // ** Inner Elements
     div.title {
@@ -25,62 +26,85 @@
       font-weight: bold;
       text-align: center;
     }
-    table.tblVars {
-      // ** Properties
-      width: 100%;
+    // table.tblVars {
+    //   // ** Properties
+    //   width: 100%;
 
-      // ** Inner Elements
-      td{
-        // color: white;
+    //   // ** Inner Elements
+    //   td{
+    //     // color: white;
+    //   }
+    //   td.subHeader {
+    //     font-weight: bold;
+    //     padding: 5px 0;
+    //   }
+    //   table.tblEqpmt {
+    //     // ** Properties
+    //     width: 100%;
+    //     border: 1px solid white;
+    //
+    //     // ** Inner Elements
+    //     tr.trEqpmtHdr {
+    //       background-color: gray;
+    //     }
+    //     th.thEqpmtHdr {
+    //       font-weight: bold;
+    //       padding: 0 5px;
+    //       border-right: 1px solid white;
+    //       border-bottom: 1px solid white;
+    //     }
+    //     td.tdEqpmt {
+    //       padding: 0 5px;
+    //       border-right: 1px solid white;
+    //       border-bottom: 1px solid white;
+    //
+    //       // ** Inner Elements
+    //       a{
+    //         color: white;
+    //         text-decoration: none;
+    //       }
+    //     }
+    //
+    //     tr.trEqpmt,
+    //     tr.trEqpmtAlt {
+    //       background-color: blue;
+    //     }
+    //     tr.trEqpmtAlt {
+    //       background-color: rgba(0, 0, 255, 0.12);
+    //     }
+    //   }
+    // }
+
+    .vars {
+      @letterWidth:15px;
+      @answerWidth:200px;
+
+      width: @middle;
+      .subHeader {
       }
-      td.subHeader {
-        font-weight: bold;
-        padding: 5px 0;
+      .letter,
+      .question {
+        vertical-align: top;
+        display:inline-block;
+        line-height: 25px;
       }
-      table.tblEqpmt {
-        // ** Properties
-        width: 100%;
-        border: 1px solid white;
-
-        // ** Inner Elements
-        tr.trEqpmtHdr {
-          background-color: gray;
-        }
-        th.thEqpmtHdr {
-          font-weight: bold;
-          padding: 0 5px;
-          border-right: 1px solid white;
-          border-bottom: 1px solid white;
-        }
-        td.tdEqpmt {
-          padding: 0 5px;
-          border-right: 1px solid white;
-          border-bottom: 1px solid white;
-
-          // ** Inner Elements
-          a{
-            color: white;
-            text-decoration: none;
-          }
-        }
-
-        tr.trEqpmt,
-        tr.trEqpmtAlt {
-          background-color: blue;
-        }
-        tr.trEqpmtAlt {
-          background-color: rgba(0, 0, 255, 0.12);
-        }
+      .letter {
+        width:@letterWidth;
+      }
+      .question {
+        width:@middle - @letterWidth - @answerWidth;
+        padding-right: 2px;
+      }
+      .answer {
+        display:inline-block;
+        width:@answerWidth;
       }
     }
   }
   div.ssiInvoice {
     // Style
-    float: left;
-    //background-color: #00FF00;
-    padding: 0 10px;
-    width: 65%;
-    min-height: 500px;
+    position: absolute;
+    top:0;right:@pad;bottom:0;left:@middle + (@pad * 2);
 
     // ** Inner Elements
     div.title {
@@ -100,56 +124,81 @@
         text-decoration: none;
       }
     }
-    table.tblInvoice {
-      // ** Properties
-      border: 1px solid white;
-      background: #fff;
-      width: 100%;
 
-      // ** Inner Elements
-      td,
-      th{
-        color: white;
-      }
-      tr.trInvoiceHdr {
-        background-color: #0E4B8F;
-        height: 24px;
+    .slickgrid {
+      bottom:100px;
+    }
 
-        th.thInvoice {
-          font-weight: bold;
-          padding: 0 5px;
-          border-right: 1px solid white;
-          border-bottom: 1px solid white;
-        }
-      }
-      tr.trInvoice,
-      tr.trInvoiceAlt {
-        background-color: #84B6EE;
-      }
-      tr.trInvoiceFtr {
-        background-color: #0E4B8F;
-      }
-      tr.trInvoiceAlt {
-        background-color: #5DA1EE;
-      }
-      td.tdInvoiceFtr,
-      td.tdInvoice,
-      td.tdInvoiceAlt {
-        padding: 0 5px;
-        border-right: 1px solid white;
-        border-bottom: 1px solid white;
+    .totals {
+      position:absolute;
+      height:100px;
+      right:70px;
+      bottom:0;
 
-        // ** Inner elements
-        a{
-          color: white;
-          text-decoration: none;
-
-          &:hover {
-            font-weight: bold;
-            text-decoration: underline;
-          }
-        }
+      .name,
+      .value {
+        display:inline-block;
+        text-align:right;
+      }
+      .name {
+        width:200px;
+      }
+      .value {
+        width:90px;
       }
     }
+
+    // table.tblInvoice {
+    //   // ** Properties
+    //   border: 1px solid white;
+    //   background: #fff;
+    //   width: 80%;
+    //   // display: none;
+    //
+    //   // ** Inner Elements
+    //   td,
+    //   th{
+    //     color: white;
+    //   }
+    //   tr.trInvoiceHdr {
+    //     background-color: #0E4B8F;
+    //     height: 24px;
+    //
+    //     th.thInvoice {
+    //       font-weight: bold;
+    //       padding: 0 5px;
+    //       border-right: 1px solid white;
+    //       border-bottom: 1px solid white;
+    //     }
+    //   }
+    //   tr.trInvoice,
+    //   tr.trInvoiceAlt {
+    //     background-color: #84B6EE;
+    //   }
+    //   tr.trInvoiceFtr {
+    //     background-color: #0E4B8F;
+    //   }
+    //   tr.trInvoiceAlt {
+    //     background-color: #5DA1EE;
+    //   }
+    //   td.tdInvoiceFtr,
+    //   td.tdInvoice,
+    //   td.tdInvoiceAlt {
+    //     padding: 0 5px;
+    //     border-right: 1px solid white;
+    //     border-bottom: 1px solid white;
+    //
+    //     // ** Inner elements
+    //     a{
+    //       color: white;
+    //       text-decoration: none;
+    //
+    //       &:hover {
+    //         font-weight: bold;
+    //         text-decoration: underline;
+    //       }
+    //     }
+    //   }
+    // }
   }
 }

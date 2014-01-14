@@ -1,7 +1,7 @@
 div(class="accounts",data-bind="if:loaded")
-  table(class="tab-wrap")
+  table(class="fh-wrap")
     tr
-      td(class="tab-header")
+      td(class="fh-header")
         ul(class="tabs cf")
           li(class="tab")
             a(data-bind="click:clickSearch,active:searchVM.active") Search
@@ -12,7 +12,7 @@ div(class="accounts",data-bind="if:loaded")
           li(class="tab")
             a(data-bind="click:clickNew") +
     tr
-      td(class="tab-body")
+      td(class="fh-body")
         div(class="tab-contents")
           div(class="tab", data-bind="template:{name:searchVM.viewTmpl,data:searchVM},active:active")
           <!-- ko foreach:list -->
