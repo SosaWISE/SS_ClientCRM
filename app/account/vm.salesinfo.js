@@ -225,6 +225,8 @@ define('src/account/vm.salesinfo', [
     load_frequentlyinstalledequipmentget(_this.frequentGrid, join.add());
   };
 
+  function refreshInvoice(){}
+
   function load_activationFee(_this, cb) {
     _this.activationFee(199.00);
     _this.activationFeeActual(199.00);
