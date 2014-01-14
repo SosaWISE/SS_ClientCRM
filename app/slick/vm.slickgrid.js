@@ -61,7 +61,12 @@ define('src/slick/vm.slickgrid', [
         grid.render();
       }
     };
-    _this.list.subscribe(_this.updateGrid);
+    _this.list.subscribe(function(list) {
+      var grid = _this.grid;
+      if (grid) {
+        grid.setData(list, true);
+      }
+    });
 
     _this.active = ko.observable(false);
   }
