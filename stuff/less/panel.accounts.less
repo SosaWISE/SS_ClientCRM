@@ -91,13 +91,14 @@ div.tab {
   }
 }
 
+// fill height
 //@NOTE: using a table so that the tabs can dynamically wrap around
 // http://stackoverflow.com/questions/90178/make-a-div-fill-the-remaining-screen-space
-table.tab-wrap {
+table.fh-wrap {
   height:100%;
   width:100%;
-  // tbody tr > td.tab-header {}
-  tbody tr > td.tab-body {
+  // tbody tr > td.fh-header {}
+  tbody tr > td.fh-body {
     height:100%;
     > div.tab-contents {
       overflow:hidden;

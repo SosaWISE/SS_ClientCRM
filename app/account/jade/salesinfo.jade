@@ -1,153 +1,82 @@
 div(class="sales-info")
   div(class="ssiVars")
-    div(class="title") Sales Info
-    table(class="tblVars")
-      colgroup
-        col(style="width:15px;")
-        col(style="width:300px;")
-        col(style="width:200px;")
-      tbody
-        tr
-          td(colspan="3",class="subHeader") System Type Information
-        tr
-          td A.
-          td Is this a 6.5 or 8 Point system?
-          td
-            div(data-bind="template:{name:psComboVM.viewTmpl,data:psComboVM}")
+    table(class="fh-wrap")
+      tr
+        td(class="fh-header")
+          div(class="title") Sales Info
+          div(class="vars")
+            div(class="subHeader") System Type Information
+            div(class="line")
+              div(class="letter") A.
+              div(class="question") Is this a 6.5 or 8 Point system?
+              div(class="answer")
+                div(data-bind="template:{name:psComboVM.viewTmpl,data:psComboVM}")
 
-        tr
-          td(colspan="3",class="subHeader") Monitoring And Service Information
-        tr
-          td B.
-          td
-            |Is the activation fee&nbsp;
-            span(data-bind="currency:activationFee")
-            |&nbsp;?
-          td
-            input(type="text",class="inputField",name="activationFee")
-        tr
-          td C.
-          td Is Activation over 3 months?
-          td
-            input(type="checkbox",class="inputField",name="over3Months")
-        tr
-          td D.
-          td What is the cell type?
-          td
-            div(data-bind="template:{name:ctComboVM.viewTmpl,data:ctComboVM}")
-        tr
-          td E.
-          td Which Alarm.com package are we going with?
-          td
-            div(data-bind="template:{name:apckComboVM.viewTmpl,data:apckComboVM}")
+            div(class="subHeader") Monitoring And Service Information
+            div(class="line")
+              div(class="letter") B.
+              div(class="question")
+                |Is the activation fee&nbsp;
+                span(data-bind="currency:activationFee")
+                |?
+              div(class="answer")
+                input(type="text",class="inputField",name="activationFee")
+            div(class="line")
+              div(class="letter") C.
+              div(class="question") Is Activation over 3 months?
+              div(class="answer")
+                input(type="checkbox",class="inputField",name="over3Months")
+            div(class="line")
+              div(class="letter") D.
+              div(class="question") What is the cell type?
+              div(class="answer")
+                div(data-bind="template:{name:ctComboVM.viewTmpl,data:ctComboVM}")
+            div(class="line")
+              div(class="letter") E.
+              div(class="question") Which Alarm.com package are we going with?
+              div(class="answer")
+                div(data-bind="template:{name:apckComboVM.viewTmpl,data:apckComboVM}")
 
-        tr
-          td(colspan="3",class="subHeader") Monthly Monitoring
-        tr
-          td F.
-          td
-            |Will the monthly monitoring rate be&nbsp;
-            span ___
-            |&nbsp;?
-          td
-            input(type="text",class="inputField",name="mmr")
-        tr
-          td G.
-          td What is the contract length?
-          td
-            div(data-bind="template:{name:clComboVM.viewTmpl,data:clComboVM}")
+            div(class="subHeader") Monthly Monitoring
+            div(class="line")
+              div(class="letter") F.
+              div(class="question")
+                |Will the monthly monitoring rate be&nbsp;
+                span ___
+                |?
+              div(class="answer")
+                input(type="text",class="inputField",name="mmr")
+            div(class="line")
+              div(class="letter") G.
+              div(class="question") What is the contract length?
+              div(class="answer")
+                div(data-bind="template:{name:clComboVM.viewTmpl,data:clComboVM}")
 
-        tr
-          td(colspan="3",class="subHeader") Frequently Installed Equipment
-        //- tr
-          td(colspan="3")
-            table(class="tblEqpmt")
-              tr(class="trEqpmtHdr")
-                th(class="thEqpmtHdr") Item
-                th(class="thEqpmtHdr") Description
-                th(class="thEqpmtHdr center") Price
-                th(class="thEqpmtHdr center") Points
-                th(class="thEqpmtHdr center") Action
-              tr(class="trEqpmt")
-                td(class="tdEqpmt") Simon XT (23422)
-                td(class="tdEqpmt") Simon XT Panel
-                td(class="tdEqpmt right") $198.99
-                td(class="tdEqpmt center") 4.0
-                td(class="tdEqpmt center")
-                  a(href="#") Add
-              tr(class="trEqpmtAlt")
-                td(class="tdEqpmt") Lynix (22232)
-                td(class="tdEqpmt") Lynix Panel
-                td(class="tdEqpmt right") $158.99
-                td(class="tdEqpmt center") 4.0
-                td(class="tdEqpmt center")
-                  a(href="#") Add
-              tr(class="trEqpmt")
-                td(class="tdEqpmt") AlarmCom (123320)
-                td(class="tdEqpmt") Alarm.com Board
-                td(class="tdEqpmt right") $198.99
-                td(class="tdEqpmt center") 2.0
-                td(class="tdEqpmt center")
-                  a(href="#") Add
-        tr
-          td(colspan="3")
-            //- div(style="width:500px;")
-            div(class="slickgrid",data-bind="slickgrid:frequentGrid",style="width:400px;height:200px;")
+            div(class="subHeader") Frequently Installed Equipment
+      tr
+        td(class="fh-body")
+          div(class="tab-contents")
+            div(class="slickgrid",data-bind="slickgrid:frequentGrid")
 
-    table(class="table-test")
-      colgroup
-        col
   div(class="ssiInvoice")
-    div(class="title") Inventory
-    div(class="ssiAddEqpmt")
-      a(href="#") Add By Part #
-    table(class="tblInvoice")
-      thead
-        tr(class="trInvoiceHdr")
-          th(class="thInvoice") Description
-          th(class="thInvoice center") Price
-          th(class="thInvoice center") Points
-          th(class="thInvoice center") Total
-          th(class="thInvoice center") Action
-      tbody
-        tr(class="trInvoice")
-          td(class="tdInvoice") Simon XT (234422)
-          td(class="tdInvoice right") $189.99
-          td(class="tdInvoice right") 4.0
-          td(class="tdInvoice right") $189.99
-          td(class="tdInvoice center")
-            a(href="#") Del
-        tr(class="trInvoiceAlt")
-          td(class="tdInvoiceAlt") Free Panel (234422)
-          td(class="tdInvoiceAlt right") ($189.99)
-          td(class="tdInvoiceAlt right") (4.0)
-          td(class="tdInvoiceAlt right") $189.99
-          td(class="tdInvoiceAlt center")
-            a(href="#") Del
-        tr(class="trInvoice")
-          td(class="tdInvoice") Simon XT (234422)
-          td(class="tdInvoice right") $189.99
-          td(class="tdInvoice right") 4.0
-          td(class="tdInvoice right") $189.99
-          td(class="tdInvoice center")
-            a(href="#") Del
-        tr(class="trInvoiceAlt")
-          td(class="tdInvoiceAlt") Free Panel (234422)
-          td(class="tdInvoiceAlt right") ($189.99)
-          td(class="tdInvoiceAlt right") (4.0)
-          td(class="tdInvoiceAlt right") $189.99
-          td(class="tdInvoiceAlt center")
-            a(href="#") Del
-      tfoot
-        tr(class="trInvoiceFtr")
-          td(class="tdInvoiceFtr right",colspan="3") Points Given:
-          td(class="tdInvoiceFtr right") 6.5
-          td(class="tdInvoiceFtr")
-        tr(class="trInvoiceFtr")
-          td(class="tdInvoiceFtr right",colspan="3") Points Available:
-          td(class="tdInvoiceFtr right") 0.0
-          td(class="tdInvoiceFtr")
-        tr(class="trInvoiceFtr")
-          td(class="tdInvoiceFtr right",colspan="3") Total:
-          td(class="tdInvoiceFtr right") $365.90
-          td(class="tdInvoiceFtr")
+    table(class="fh-wrap")
+      tr
+        td(class="fh-header")
+          div(class="title") Inventory
+          div(class="ssiAddEqpmt")
+            a(href="#") Add By Part #
+      tr
+        td(class="fh-body")
+          div(class="tab-contents")
+            div(class="slickgrid",
+              data-bind="slickgrid:partsGrid")
+            div(class="totals")
+              div
+                div(class="name") Points Given:
+                div(class="value") 6.5
+              div
+                div(class="name") Points Available:
+                div(class="value") 0.0
+              div
+                div(class="name") Total:
+                div(class="value") $365.90

@@ -1,12 +1,16 @@
 define('src/slick/vm.slickgrid', [
   'slick',
+  'jquery',
   'ko',
+  'src/core/onresize',
   'src/core/strings',
   'src/core/utils',
   'src/core/vm.base',
 ], function(
   Slick,
+  jquery,
   ko,
+  onresize,
   strings,
   utils,
   BaseViewModel
@@ -17,6 +21,12 @@ define('src/slick/vm.slickgrid', [
     init: function(element, valueAccessor) {
       var gridVM = valueAccessor();
       gridVM.onBound(element);
+
+      // get notified when the element is disposed
+      ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+        var gridVM = valueAccessor();
+        gridVM.unBound(element);
+      });
     },
   };
 
@@ -43,14 +53,15 @@ define('src/slick/vm.slickgrid', [
 
     _this.options = _this.options || {};
     _this.list = ko.observableArray(_this.list);
-    _this.list.subscribe(function() {
+    _this.updateGrid = function() {
       var grid = _this.grid;
       if (grid) {
-        // update visuals
-        grid.resizeCanvas(); // important when a scrollbar first appears
+        // update grid layout
+        grid.resizeCanvas();
         grid.render();
       }
-    });
+    };
+    _this.list.subscribe(_this.updateGrid);
 
     _this.active = ko.observable(false);
   }
@@ -60,22 +71,35 @@ define('src/slick/vm.slickgrid', [
     // create a new grid everytime this view model is bound/rebound
     var _this = this;
     if (_this.grid) {
-      _this.grid.destroy();
-      _this.grid = null;
+      console.warn('grid is already bound');
+      _this.unBound();
     }
     setTimeout(function() {
       _this.grid = new Slick.Grid(element, _this.list(), _this.columns, _this.options);
       _this.plugins.forEach(function(plugin) {
         _this.grid.registerPlugin(plugin);
       });
+      onresize(_this.grid.getContainerNode(), _this.updateGrid);
     }, 0);
+  };
+  SlickGridViewModel.prototype.unBound = function(element) {
+    var _this = this,
+      container;
+    if (_this.grid) {
+      container = _this.grid.getContainerNode();
+      if (element && element !== container) {
+        console.warn('unBound element doesn\'t match grid container', container, element);
+      }
+      _this.grid.destroy();
+      _this.grid = null;
+    }
   };
 
   SlickGridViewModel.formatters = {
-    currency: function YesNoFormatter(row, cell, value /*, columnDef, dataContext*/ ) {
+    currency: function(row, cell, value /*, columnDef, dataContext*/ ) {
       return strings.decorators.c(value);
     },
-    likecurrency: function YesNoFormatter(row, cell, value /*, columnDef, dataContext*/ ) {
+    likecurrency: function(row, cell, value /*, columnDef, dataContext*/ ) {
       return strings.decorators.c(value).replace('$', '');
     },
   };

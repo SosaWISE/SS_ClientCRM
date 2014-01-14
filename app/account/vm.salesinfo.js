@@ -55,29 +55,30 @@ define('src/account/vm.salesinfo', [
     _this.frequentGrid = new SlickGridViewModel({
       options: {
         enableColumnReorder: false,
+        forceFitColumns: true,
         rowHeight: 27,
       },
       columns: [
         {
           id: 'item',
           name: 'Item',
-          field: 'Item',
+          field: 'ItemSKU',
         },
         {
           id: 'description',
           name: 'Description',
-          field: 'Description',
+          field: 'ItemDesc',
         },
         {
           id: 'price',
           name: 'Price',
-          field: 'Price',
+          field: 'Cost',
           formatter: SlickGridViewModel.formatters.currency,
         },
         {
           id: 'points',
           name: 'Points',
-          field: 'Points',
+          field: 'SystemPoints',
           formatter: SlickGridViewModel.formatters.likecurrency,
         },
         new ButtonsColumn({
@@ -94,14 +95,86 @@ define('src/account/vm.salesinfo', [
         }),
       ],
     });
-    while (_this.frequentGrid.list().length < 9) {
-      _this.frequentGrid.list().push({
-        Item: 'Item ' + _this.frequentGrid.list().length,
-        Description: 'Description ' + _this.frequentGrid.list().length,
-        Price: _this.frequentGrid.list().length * -1.23,
-        Points: _this.frequentGrid.list().length - 4,
-      });
-    }
+    // while (_this.frequentGrid.list().length < 19) {
+    //   _this.frequentGrid.list().push({
+    //     ItemSKU: 'Item ' + _this.frequentGrid.list().length,
+    //     ItemDesc: 'Description ' + _this.frequentGrid.list().length,
+    //     Cost: _this.frequentGrid.list().length * -1.23,
+    //     SystemPoints: _this.frequentGrid.list().length - 4,
+    //   });
+    // }
+
+    _this.partsGrid = new SlickGridViewModel({
+      options: {
+        enableColumnReorder: false,
+        forceFitColumns: true,
+        rowHeight: 27,
+      },
+      columns: [
+        {
+          id: 'description',
+          name: 'Description',
+          field: 'ItemDesc',
+          width: 200,
+        },
+        {
+          id: 'price',
+          name: 'Price',
+          field: 'Cost',
+          formatter: SlickGridViewModel.formatters.currency,
+        },
+        {
+          id: 'points',
+          name: 'Points',
+          field: 'SystemPoints',
+          formatter: SlickGridViewModel.formatters.likecurrency,
+        },
+        {
+          id: 'total',
+          name: 'Total',
+          field: 'Total',
+          formatter: SlickGridViewModel.formatters.currency,
+        },
+        new ButtonsColumn({
+          id: 'actions',
+          name: 'Actions',
+          buttons: [
+            {
+              text: 'Del',
+              fn: function(item) {
+                alert('delete ' + JSON.stringify(item));
+              },
+            },
+          ]
+        }),
+      ],
+      list: [
+        {
+          ItemDesc: 'Simon XT (234422)',
+          Cost: 189.99,
+          SystemPoints: 4.0,
+          Total: 189.99,
+        },
+        {
+          ItemDesc: 'Free Panel (234422)',
+          Cost: -189.99,
+          SystemPoints: -4.0,
+          Total: 189.99,
+        },
+        {
+          ItemDesc: 'Simon XT (234422)',
+          Cost: 189.99,
+          SystemPoints: 4.0,
+          Total: 189.99,
+        },
+        {
+          ItemDesc: 'Free Panel (234422)',
+          Cost: -189.99,
+          SystemPoints: -4.0,
+          Total: 189.99,
+        },
+      ],
+    });
 
     _this.psComboVM.selectedValue.subscribe(function(psValue) {
       _this.clComboVM.setList([]);
@@ -131,10 +204,10 @@ define('src/account/vm.salesinfo', [
   SalesInfoViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this;
     load_activationFee(_this, join.add());
-    load_pointsystems(_this, join.add());
-    load_cellulartypes(_this, join.add());
-    load_vendoralarmcompacakges(_this, join.add());
-    load_frequentlyInstalledEquipment(_this, join.add());
+    load_pointsystems(_this.psComboVM, join.add());
+    load_cellulartypes(_this.ctComboVM, join.add());
+    load_vendoralarmcompacakges(_this.apckComboVM, join.add());
+    load_frequentlyinstalledequipmentget(_this.frequentGrid, join.add());
   };
 
   function load_activationFee(_this, cb) {
@@ -142,43 +215,43 @@ define('src/account/vm.salesinfo', [
     cb();
   }
 
-  function load_pointsystems(_this, cb) {
+  function load_pointsystems(comboVM, cb) {
     // ** Pull pointsystems
     dataservice.salessummary.pointsystems.read({}, null, function(err, resp) {
       utils.safeCallback(err, function() {
         // ** Bind data
-        _this.psComboVM.setList(resp.Value);
-        _this.psComboVM.selectItem(_this.psComboVM.list()[0]);
+        comboVM.setList(resp.Value);
+        comboVM.selectItem(comboVM.list()[0]);
       }, cb);
     });
   }
 
-  function load_cellulartypes(_this, cb) {
+  function load_cellulartypes(comboVM, cb) {
     // ** Pull Cellular Types
     dataservice.salessummary.cellulartypes.read({}, null, function(err, resp) {
       utils.safeCallback(err, function() {
         // ** Bind data
-        _this.ctComboVM.setList(resp.Value);
+        comboVM.setList(resp.Value);
       }, cb);
     });
   }
 
-  function load_vendoralarmcompacakges(_this, cb) {
+  function load_vendoralarmcompacakges(comboVM, cb) {
     // ** Pull alarm.com packages
     dataservice.salessummary.vendoralarmcompacakges.read({}, null, function(err, resp) {
       utils.safeCallback(err, function() {
         // ** Bind Data
-        _this.apckComboVM.setList(resp.Value);
+        comboVM.setList(resp.Value);
       }, cb);
     });
   }
 
-  function load_frequentlyInstalledEquipment(_this, cb) {
+  function load_frequentlyinstalledequipmentget(gridVM, cb) {
     // ** Pull data
-    dataservice.salessummary.frequentlyInstalledEquipment.read({}, null, function(err, resp) {
+    dataservice.salessummary.frequentlyinstalledequipmentget.read({}, null, function(err, resp) {
       utils.safeCallback(err, function() {
         // ** Bind data to table
-
+        gridVM.list(resp.Value || []);
       }, cb);
     });
   }
