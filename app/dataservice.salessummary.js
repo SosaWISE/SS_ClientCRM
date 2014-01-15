@@ -21,6 +21,7 @@ define('src/dataservice.salessummary', [
       'equipmentbypointsget',
       'contractlengthsget',
       'frequentlyinstalledequipmentget',
+      'invoicerefresh'
     ].forEach(function(collectionName) {
         result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
       });

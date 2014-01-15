@@ -1,6 +1,7 @@
 define('src/account/vm.salesinfo', [
   'src/slick/buttonscolumn',
   'src/slick/vm.slickgrid',
+  'src/ukov',
   'src/dataservice',
   'src/core/notify',
   'src/core/utils',
@@ -10,6 +11,7 @@ define('src/account/vm.salesinfo', [
 ], function(
   ButtonsColumn,
   SlickGridViewModel,
+  ukov,
   dataservice,
   notify,
   utils,
@@ -20,7 +22,23 @@ define('src/account/vm.salesinfo', [
   "use strict";
 
   function SalesInfoViewModel(options) {
-    var _this = this;
+    var _this = this,
+      regx = /^[0-9]+.[0-9][0-9]$/,
+      schema = {
+        moddel: true,
+        ActivationFee: {},
+        ActivationFeeActual: {
+          converter: ukov.converters.string(),
+          validators: [
+            ukov.validators.isRequired('Activation Fee is Required'),
+            function(val) {
+              if (!regx.test(val)) {
+                return "Invalid value for activation fee.";
+              }
+            }
+          ]
+        }
+      };
     SalesInfoViewModel.super_.call(_this, options);
 
     // ** Fields
@@ -203,10 +221,32 @@ define('src/account/vm.salesinfo', [
     });
     _this.activationFeeActual.subscribe(function(newValue) {
       console.log("New Activation Fee: ", newValue);
+      refreshInvoice();
     });
     _this.monthlyMonitoringRate.subscribe(function(newValue) {
       console.log("MMR: ", newValue);
     });
+
+
+    function refreshInvoice() {
+      /** Initialize. */
+      _this.sData = ukov.wrap({
+        ActivationFee: _this.activationFee(),
+        ActivationFeeActual: _this.activationFeeActual(),
+        MonthlyMonitoringRate: _this.monthlyMonitoringRate(),
+        MonthlyMonitoringRateActual: _this.monthlyMonitoringRateActual(),
+        AlarmComPackage: _this.apckComboVM(),
+        Over3Months: _this.over3Months(),
+      }, schema);
+
+      dataservice.salessummary.invoicerefresh.save(_this.sData.model, null, function(err, resp) {
+        if (err) {
+          notify.notify('error', err.Message);
+        } else {
+          console.log("Response: ", resp);
+        }
+      });
+    }
 
     //
     // events
@@ -224,8 +264,6 @@ define('src/account/vm.salesinfo', [
     load_vendoralarmcompacakges(_this.apckComboVM, join.add());
     load_frequentlyinstalledequipmentget(_this.frequentGrid, join.add());
   };
-
-  function refreshInvoice(){}
 
   function load_activationFee(_this, cb) {
     _this.activationFee(199.00);
