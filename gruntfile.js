@@ -67,6 +67,7 @@ module.exports = function(grunt) {
           'tparty/jquery.event.drag-*.js',
           'tparty/slick.core.js',
           'tparty/slick.grid.js',
+          'tparty/slick.rowselectionmodel',
           'tparty/slick-production.js',
           // actual package
           'app/slick/**/*.js', '!app/slick/**/*.spec.js',

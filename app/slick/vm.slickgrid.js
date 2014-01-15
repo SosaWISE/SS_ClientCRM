@@ -40,8 +40,9 @@ define('src/slick/vm.slickgrid', [
     //	 field: 'Column1',
     // }]
 
-    // find plugins in columns
-    _this.plugins = [];
+    _this.plugins = _this.plugins || [];
+
+    // find more plugins in columns
     _this.columns.forEach(function(col, index) {
       // test if column is a plugin
       if (typeof(col.init) === 'function' && typeof(col.getColumnDefinition) === 'function') {
@@ -65,6 +66,7 @@ define('src/slick/vm.slickgrid', [
       var grid = _this.grid;
       if (grid) {
         grid.setData(list, true);
+        _this.updateGrid();
       }
     });
 
@@ -81,6 +83,9 @@ define('src/slick/vm.slickgrid', [
     }
     setTimeout(function() {
       _this.grid = new Slick.Grid(element, _this.list(), _this.columns, _this.options);
+      _this.grid.setSelectionModel(new Slick.RowSelectionModel({
+        // selectActiveRow: false
+      }));
       _this.plugins.forEach(function(plugin) {
         _this.grid.registerPlugin(plugin);
       });

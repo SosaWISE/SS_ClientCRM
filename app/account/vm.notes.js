@@ -1,4 +1,6 @@
 define('src/account/vm.notes', [
+  'src/slick/rowevent',
+  'src/slick/vm.slickgrid',
   'src/ukov',
   'ko',
   'src/core/vm.combo',
@@ -8,6 +10,8 @@ define('src/account/vm.notes', [
   'src/core/utils',
   'src/core/vm.base',
 ], function(
+  RowEvent,
+  SlickGridViewModel,
   ukov,
   ko,
   ComboViewModel,
@@ -106,6 +110,58 @@ define('src/account/vm.notes', [
       },
     });
 
+
+    _this.notesGvm = new SlickGridViewModel({
+      options: {
+        enableColumnReorder: false,
+        forceFitColumns: true,
+        rowHeight: 27 * 2,
+      },
+      plugins: [
+        new RowEvent({
+          eventName: 'onDblClick',
+          fn: function(item) {
+            notify.notify('info', item.Note, 5);
+          },
+        }),
+      ],
+      columns: [
+        {
+          id: 'CreatedOn',
+          name: 'Date',
+          field: 'CreatedOn',
+          width: 40,
+          cssClass: 'wrap-cell',
+        },
+        {
+          id: 'CreatedBy',
+          name: 'User',
+          field: 'CreatedBy',
+          width: 30,
+        },
+        {
+          id: 'NoteCategory1Id',
+          name: 'Primary Reason ID',
+          field: 'NoteCategory1Id',
+          width: 30,
+        },
+        {
+          id: 'NoteCategory2Id',
+          name: 'Secondary Reason',
+          field: 'NoteCategory2Id',
+          width: 30,
+        },
+        {
+          id: 'Note',
+          name: 'Note',
+          field: 'Note',
+          width: 300,
+          cssClass: 'wrap-cell',
+          title: 'Note',
+        },
+      ],
+    });
+
     //
     // events
     //
@@ -170,8 +226,9 @@ define('src/account/vm.notes', [
 
   NotesViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this;
-    createNote(_this.data, join.add());
     load_departments(_this.departmentsCvm, join.add());
+    load_notes(_this.id, _this.notesGvm, join.add());
+    createNote(_this.data, join.add());
   };
 
   function createNote(ukovData, cb) {
@@ -213,6 +270,18 @@ define('src/account/vm.notes', [
       utils.safeCallback(err, function() {
         cvm.setList(resp.Value);
         cvm.selectItem(cvm.list()[0]);
+      }, cb);
+    });
+  }
+
+  function load_notes(id, gvm, cb) {
+    gvm.list([]);
+    dataservice.maincore.note.read({
+      id: id,
+      link: 'cmfid',
+    }, null, function(err, resp) {
+      utils.safeCallback(err, function() {
+        gvm.list(resp.Value || []);
       }, cb);
     });
   }
