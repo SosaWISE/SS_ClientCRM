@@ -1,2 +1,62 @@
-div(class="tab", data-bind="active:active")
-  div Search Accounts
+div(class="acct-search")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+        div(class="search-form")
+          ul(class="edit-form cf")
+            li
+              span(class="label") Account #
+              input(type="text", placeholder="",
+                data-bind="hasfocus:focus,ukov:data.AccountId,value:data.AccountId,valueUpdate:'keyup'")
+            li
+              span(class="label") Case #
+              input(type="text", placeholder="",
+                data-bind="ukov:data.CaseId,value:data.CaseId,valueUpdate:'keyup'")
+            li
+              span(class="label") First Name
+              input(type="text", placeholder="",
+                data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup'")
+            li
+              span(class="label") Last Name
+              input(type="text", placeholder="",
+                data-bind="ukov:data.LastName,value:data.LastName,valueUpdate:'keyup'")
+            li
+              span(class="label") DOB
+              input(type="text", placeholder="",
+                data-bind="ukov:data.DOB,value:data.DOB,valueUpdate:'keyup'")
+            li
+              span(class="label") Phone
+              input(type="text", placeholder="",
+                data-bind="ukov:data.Phone,value:data.Phone,valueUpdate:'keyup'")
+            li
+              span(class="label") CSID
+              input(type="text", placeholder="",
+                data-bind="ukov:data.CSID,value:data.CSID,valueUpdate:'keyup'")
+            li
+              span(class="label") Email
+              input(type="text", placeholder="",
+                data-bind="ukov:data.Email,value:data.Email,valueUpdate:'keyup'")
+            li
+              span(class="label") Address
+              input(type="text", placeholder="",
+                data-bind="ukov:data.Address,value:data.Address,valueUpdate:'keyup'")
+            li
+              span(class="label") City
+              input(type="text", placeholder="",
+                data-bind="ukov:data.City,value:data.City,valueUpdate:'keyup'")
+            li
+              span(class="label") State
+              input(type="text", placeholder="",
+                data-bind="ukov:data.State,value:data.State,valueUpdate:'keyup'")
+            li
+              span(class="label") Zip
+              input(type="text", placeholder="",
+                data-bind="ukov:data.Zip,value:data.Zip,valueUpdate:'keyup'")
+        div(class="actions")
+          a(class="btn",tabindex="0") Search
+          a(class="btn",tabindex="0") Clear
+    tr
+      td(class="fh-body")
+        div(class="fh-contents")
+          div(class="slickgrid",style="background:white;margin:10px;color:black",
+            data-bind="slickgrid:searchGvm")

@@ -22,19 +22,22 @@ define('src/vm.address.validate', [
     max40 = ukov.validators.maxLength(40),
     max20 = ukov.validators.maxLength(20),
     max4 = ukov.validators.maxLength(4),
-    max1 = ukov.validators.maxLength(1);
+    max1 = ukov.validators.maxLength(1),
+    strConverter = ukov.converters.string();
 
   schema = {
     _model: true,
     DealerId: {},
 
     PostalCode: {
+      converter: strConverter,
       validators: [
         ukov.validators.isRequired('Zip code is required'),
-        ukov.validators.isPattern(/^[0-9]{5}$/, 'invalid Zip code. expected format: 12345'),
+        ukov.validators.isZipCode(),
       ],
     },
     StreetAddress: {
+      converter: strConverter,
       validators: [
         ukov.validators.isRequired('Street address is required'),
         max50,
@@ -49,12 +52,14 @@ define('src/vm.address.validate', [
 
     // Manual/Extensions
     City: {
+      converter: strConverter,
       validators: [
         ukov.validators.isRequired('City is required'),
         max50,
       ],
     },
     County: {
+      converter: strConverter,
       validators: [
         ukov.validators.isRequired('County is required'),
         max50,
@@ -75,36 +80,45 @@ define('src/vm.address.validate', [
       ],
     },
     StreetNumber: { //House #
+      converter: strConverter,
       validators: [
         ukov.validators.isRequired('House # is required'),
         max40
       ],
     },
     StreetName: {
+      converter: strConverter,
       validators: [
         ukov.validators.isRequired('Street name is required'),
         max50,
       ],
     },
     PreDirectional: {
+      converter: strConverter,
       validators: [max20],
     },
     PostDirectional: {
+      converter: strConverter,
       validators: [max20],
     },
     StreetType: {
+      converter: strConverter,
       validators: [max20],
     },
     Extension: {
+      converter: strConverter,
       validators: [max50],
     },
     ExtensionNumber: {
+      converter: strConverter,
       validators: [max50],
     },
     CarrierRoute: {
+      converter: strConverter,
       validators: [max4],
     },
     DPVResponse: {
+      converter: strConverter,
       validators: [max1],
     },
   };

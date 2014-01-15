@@ -65,6 +65,10 @@ define('src/app', [
   setTemplate(app.panels, 'viewTmpl', 'panel_');
 
   app.clickPanel = function(panelVM) {
+    if (panelVM === app) {
+      panelVM = app.panelMap.home;
+    }
+
     if (panelVM.active()) {
       return;
     }
@@ -81,10 +85,10 @@ define('src/app', [
 
   //
   router.addRoute(app.panelMap.accounts, 'accounts', ':masterid/:id/:tab', {});
+  router.addRoute(app.panelMap.home, 'home', '', {});
   router.addRoute(app.panelMap.surveys, 'surveys', ':surveyid/:locale', {
     locale: 'en',
   });
-  router.addRoute(app.panelMap.home, 'home', '', {});
 
   return app;
 });

@@ -21,10 +21,15 @@ define('src/u-kov/validators', [
     passwordMsg = 'A password must be atleast {0} or more letters and contain at least one upper case letter, one lower case letter and one digit.',
     ssnMsg = 'Invalid social security number. Expected format: 123-12-1234.',
     minAgeMsg = 'Minimum age allowed in {0}',
+    emailMsg = 'Invalid email',
+    zipMsg = 'Invalid postal code. Expected format: 12345',
 
     // 1 uppercase, 1 lowercase, and 1 number
     passwordRegex = /^(?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])\S+$/,
-    ssnExactRegx = /^(?!000)(?!666)[0-8]\d{2}[- ](?!00)\d{2}[- ](?!0000)\d{4}$/;
+    ssnExactRegx = /^(?!000)(?!666)[0-8]\d{2}[- ](?!00)\d{2}[- ](?!0000)\d{4}$/,
+
+    relaxedEmailRegx = /^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+(?:\.[A-Z0-9.-]+)?\b$/i,
+    zipRegx = /^[0-9]{5}$/;
 
   validators.isString = function(message) {
     message = message || notString;
@@ -180,6 +185,29 @@ define('src/u-kov/validators', [
       var cutOffDay = validators.now(isLocal).subtract('years', min).endOf('day');
       if (bday.isAfter(cutOffDay)) {
         return strings.format(message, min);
+      }
+    };
+  };
+
+  validators.isEmail = function(message) {
+    message = message || emailMsg;
+    return function(val /*, model*/ ) {
+      if (!val) {
+        return;
+      }
+      if (!relaxedEmailRegx.test(val)) {
+        return message;
+      }
+    };
+  };
+  validators.isZipCode = function(message) {
+    message = message || zipMsg;
+    return function(val /*, model*/ ) {
+      if (!val) {
+        return;
+      }
+      if (!zipRegx.test(val)) {
+        return message;
       }
     };
   };

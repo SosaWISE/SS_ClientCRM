@@ -82,10 +82,15 @@ define('src/core/vm.controller', [
       routeData = routeCtx.routeData,
       child = _this.findChild(routeData);
     if (!child) {
-      // no child found
-      _this.removeExtraRouteData(routeData);
-      // try to use the default child
-      child = _this.defaultChild || _this.childs()[0];
+      if (_this._prevChild && typeof(routeData[_this._prevChild.routePart]) === 'undefined') {
+        //
+        child = _this._prevChild;
+      } else {
+        // no child found
+        _this.removeExtraRouteData(routeData);
+        // try to use the default child
+        child = _this.defaultChild || _this.childs()[0];
+      }
     }
     // only set if different than current
     if (_this.activeChild() !== child) {
@@ -97,6 +102,7 @@ define('src/core/vm.controller', [
       }
       child.activate(routeCtx);
     }
+    _this._prevChild = child;
   };
   ControllerViewModel.prototype.findChild = function(routeData) {
     var _this = this,

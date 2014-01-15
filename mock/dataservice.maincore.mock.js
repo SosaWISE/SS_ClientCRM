@@ -250,7 +250,7 @@ define('mock/dataservice.maincore.mock', [
         LeadId: null,
         NoteCategory1Id: 1,
         NoteCategory2Id: null,
-        Note: 'Master account accessed 10. Master account accessed 09. Master account accessed 08. Master account accessed 07. Master account accessed 06. ' +
+        Note: 'Master account accessed 10. Master account accessed 09.\nMaster account accessed 08. Master account accessed 07. Master account accessed 06. ' +
           'Master account accessed 05. Master account accessed 04. Master account accessed 03. Master account accessed 02. Master account accessed 01.',
         CreatedBy: 'acls',
         CreatedOn: '2012-07-02T23:22:20.693',

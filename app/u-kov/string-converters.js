@@ -181,9 +181,14 @@ define('src/u-kov/string-converters', [
   converters.phone = function(outputFormat) {
     outputFormat = outputFormat || '({0}) {1}-{2}';
     return function convPhone(val) {
+      val = trim(val);
+      if (!val) {
+        return;
+      }
+
       var matches = phoneRegx.exec(val);
       if (!matches) {
-        return new Error('invalid phone number. expected format: ' + strings.format(outputFormat, '123', '123', '1234'));
+        return new Error('Invalid phone number. Expected format: ' + strings.format(outputFormat, '123', '123', '1234'));
       } else {
         return strings.format(outputFormat, matches[1], matches[2], matches[3]);
       }

@@ -14,7 +14,11 @@ div(class="accounts",data-bind="if:loaded")
     tr
       td(class="fh-body")
         div(class="fh-contents")
-          div(class="tab", data-bind="template:{name:searchVM.viewTmpl,data:searchVM},active:active")
+          <!-- ko if:searchVM.loaded()&&searchVM.active() -->
+          div(class="tab", data-bind="template:{name:searchVM.viewTmpl,data:searchVM},active:searchVM.active")
+          <!-- /ko -->
           <!-- ko foreach:list -->
+          <!-- ko if:active -->
           div(class="tab", data-bind="template:viewTmpl,active:active")
+          <!-- /ko -->
           <!-- /ko -->

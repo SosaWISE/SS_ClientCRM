@@ -51,9 +51,9 @@ define('src/account/vm.notes', [
     },
     Note: {
       converter: strConverter,
-      validators: [
-        ukov.validators.isRequired('Note is required'),
-      ],
+      // validators: [
+      //   ukov.validators.isRequired('Note is required'),
+      // ],
     },
   };
   schemaNote = {
@@ -75,7 +75,7 @@ define('src/account/vm.notes', [
       // NoteID: 0,
       NoteTypeId: 'AUTO_GEN',
       CustomerMasterFileId: _this.id,
-      Note: 'Opened account',
+      Note: '',
     }, schema);
     _this.data.NoteCategory1IdCvm = new ComboViewModel({
       selectedValue: _this.data.NoteCategory1Id,
@@ -169,7 +169,10 @@ define('src/account/vm.notes', [
       appendNote(_this.note, _this.data, cb);
     });
     _this.cmdAppendClose = ko.command(function(cb) {
-      _this.cmdAppend.execute(function() {
+      _this.cmdAppend.execute(function(err) {
+        if (err) {
+          return cb();
+        }
         alert('@TODO: close account');
         cb();
       });
@@ -242,13 +245,13 @@ define('src/account/vm.notes', [
   }
 
   function appendNote(note, ukovData, cb) {
-    if (!note.isValid()) {
-      notify.notify('warn', note.errMsg(), 7);
-      return cb();
-    }
     if (!ukovData.isValid()) {
       notify.notify('warn', ukovData.errMsg(), 7);
-      return cb();
+      return cb(ukovData.errMsg());
+    }
+    if (!note.isValid()) {
+      notify.notify('warn', note.errMsg(), 7);
+      return cb(note.errMsg());
     }
 
     var model = ukovData.getValue();
