@@ -2,8 +2,8 @@ define('mock/dataservice.maincore.mock', [
   'src/dataservice',
   'src/core/mockery',
 ], function(
-  dataservice //,
-  // mockery
+  dataservice,
+  mockery
 ) {
   "use strict";
 
@@ -39,11 +39,11 @@ define('mock/dataservice.maincore.mock', [
       }, timeout || settings.timeout);
     }
 
-    // function filterListBy(list, propName, id) {
-    //   return list.filter(function(item) {
-    //     return item[propName] === id;
-    //   });
-    // }
+    function filterListBy(list, propName, id) {
+      return list.filter(function(item) {
+        return item[propName] === id;
+      });
+    }
 
     function findSingleBy(list, propName, id) {
       return list.filter(function(item) {
@@ -61,7 +61,7 @@ define('mock/dataservice.maincore.mock', [
       return result;
     }
 
-    dataservice.accountingengine.departments.read = function(params, setter, cb) {
+    dataservice.maincore.departments.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -70,25 +70,33 @@ define('mock/dataservice.maincore.mock', [
       }
       send(result, setter, cb);
     };
-    dataservice.accountingengine.notecategory1.read = function(params, setter, cb) {
-      var result;
+    dataservice.maincore.notecategory1.read = function(params, setter, cb) {
+      var result, id = params.id;
       switch (params.link || null) {
         case null:
           result = noteCategorys1;
           break;
-      }
-      send(result, setter, cb);
-    };
-    dataservice.accountingengine.notecategory2.read = function(params, setter, cb) {
-      var result;
-      switch (params.link || null) {
-        case null:
-          result = noteCategorys2;
+        case 'departmentid':
+          result =
+            noteCategorys1;
+          filterListBy(noteCategorys1, 'departmentid???', id); // ????????????????????????
           break;
       }
       send(result, setter, cb);
     };
-    dataservice.accountingengine.note.read = function(params, setter, cb) {
+    dataservice.maincore.notecategory2.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = noteCategorys2;
+          break;
+        case 'category1id':
+          result = filterListBy(noteCategorys2, 'NoteCategory1Id', id);
+          break;
+      }
+      send(result, setter, cb);
+    };
+    dataservice.maincore.note.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -97,7 +105,7 @@ define('mock/dataservice.maincore.mock', [
       }
       send(result, setter, cb);
     };
-    dataservice.accountingengine.notetypes.read = function(params, setter, cb) {
+    dataservice.maincore.notetypes.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -106,6 +114,49 @@ define('mock/dataservice.maincore.mock', [
       }
       send(result, setter, cb);
     };
+
+
+
+
+
+
+    dataservice.maincore.note.save = function(data, setter, cb) {
+      send(createOrUpdate(notes, 'NoteID', '@INC(note)', {
+        NoteID: data.NoteID,
+        NoteTypeId: data.NoteTypeId,
+        CustomerMasterFileId: data.CustomerMasterFileId,
+        CustomerId: data.CustomerId || null,
+        LeadId: data.LeadId || null,
+        NoteCategory1Id: data.NoteCategory1Id || null,
+        NoteCategory2Id: data.NoteCategory2Id || null,
+        Note: data.Note,
+        CreatedBy: data.CreatedBy || null,
+        // CreatedOn: data.CreatedOn,
+      }), setter, cb);
+    };
+
+    function createOrUpdate(list, idName, idTemplate, newValue) {
+      var id = newValue[idName],
+        index;
+      if (id > 0) {
+        if (!list.some(function(item, i) {
+          if (item[idName] === id) {
+            index = i;
+            return true;
+          }
+        })) {
+          throw new Error('invalid id. id not in list.');
+        }
+
+        // replace old value with new value
+        list.splice(index, 1, newValue);
+      } else {
+        newValue[idName] = mockery.fromTemplate(idTemplate);
+        // add new value
+        list.push(newValue);
+      }
+      return newValue;
+    }
   }
 
   (function() {
@@ -147,38 +198,61 @@ define('mock/dataservice.maincore.mock', [
     },
   ];
 
-  noteCategorys1 = [];
+  noteCategorys1 = [
+    {
+      NoteCategory1ID: 1,
+      Category: 'Cat 1',
+      Description: 'Cat 1 Description',
+    },
+    {
+      NoteCategory1ID: 2,
+      Category: 'Cat 2',
+      Description: 'Cat 2 Description',
+    },
+  ];
   noteCategorys2 = [
+    {
+      NoteCategory2ID: 1,
+      NoteCategory1Id: 1,
+      Category: 'Cat 1.1',
+      Description: 'Cat 1.1 Description',
+    },
+    {
+      NoteCategory2ID: 2,
+      NoteCategory1Id: 1,
+      Category: 'Cat 1.2',
+      Description: 'Cat 1.2 Description',
+    },
     {
       NoteCategory2ID: 3,
       NoteCategory1Id: 2,
-      Category: 'Access Via Search',
-      Description: 'Opened from a search screen',
-      CreatedBy: 'SYSTEM',
-      CreatedOn: '2012-05-04T08:14:36.517'
+      Category: 'Cat 2.1',
+      Description: 'Cat 2.1 Description',
     },
     {
       NoteCategory2ID: 4,
       NoteCategory1Id: 2,
-      Category: 'Access Via Link',
-      Description: 'Opened from a link',
-      CreatedBy: 'SYSTEM',
-      CreatedOn: '2012-05-04T08:14:41.027'
+      Category: 'Cat 2.2',
+      Description: 'Cat 2.2 Description',
     },
   ];
 
-  notes = [
-    {
-      NoteID: 278,
-      NoteTypeId: 'STANDARD',
-      CustomerMasterFileId: 3000001,
-      CustomerId: 100172,
-      LeadId: 1000046,
-      NoteCategory1Id: 3,
-      NoteCategory2Id: 6,
-      Note: 'Account was accessed via a search from this integration test. And we updated the note'
-    },
-  ];
+  notes = mockery.fromTemplate({
+    'list|1-1': [
+      {
+        NoteID: '@INC(note)',
+        NoteTypeId: 'AUTO_GEN',
+        CustomerMasterFileId: 3000001,
+        CustomerId: null,
+        LeadId: null,
+        NoteCategory1Id: 1,
+        NoteCategory2Id: null,
+        Note: 'Master account accessed...',
+        CreatedBy: 'acls',
+        // CreatedOn: '',
+      }
+    ]
+  }).list;
 
   noteTypes = [
     {

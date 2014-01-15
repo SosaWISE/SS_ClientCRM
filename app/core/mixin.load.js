@@ -16,6 +16,7 @@ define('src/core/mixin.load', [
     _this.loader = helpers.onetimer();
     _this.loading = _this.loader.loading;
     _this.loaded = _this.loader.loaded;
+    _this.loadErr = _this.loader.loadErr;
   }
 
   function load(routeData, cb) {
@@ -41,7 +42,7 @@ define('src/core/mixin.load', [
           notify.notify('error', errResp.Message);
         }
         // tell the loader we're done
-        loader.loadCb();
+        loader.loadCb(errResp);
       });
     } else {
       // add callback to list of waiting callbacks

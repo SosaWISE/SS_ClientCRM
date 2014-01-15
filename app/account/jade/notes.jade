@@ -1,11 +1,29 @@
 div(class="current")
-  div
-    span Department
-    span box
-  div
-    span Primary
-    span box
-  div
-    span Secondary
-    span box
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+        div
+          div(class="input")
+            div(class="value",data-bind="template:{name:departmentsCvm.viewTmpl,data:departmentsCvm}")
+        div
+          div(class="input")
+            div(class="value",data-bind="template:{name:data.NoteCategory1IdCvm.viewTmpl,data:data.NoteCategory1IdCvm}")
+          div(class="input")
+            div(class="value",data-bind="template:{name:data.NoteCategory2IdCvm.viewTmpl,data:data.NoteCategory2IdCvm}")
+        pre(class="text",
+          data-bind="text:data.Note")
+    tr
+      td(class="fh-body")
+        div(class="fh-contents")
+          textarea(class="text",
+            data-bind="ukov:note,value:note,valueUpdate:'input'")
+          div(class="actions")
+            ul
+              li
+                a(class="btn small",tabindex="0",
+                  data-bind="cmd:cmdAppend") Append
+              li
+                a(class="btn small",tabindex="0",
+                  data-bind="cmd:cmdAppendClose") Append & Close
+
 div(class="history")

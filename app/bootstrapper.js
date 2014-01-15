@@ -51,6 +51,7 @@ define('src/bootstrapper', [
     if (mock) {
       mock({
         // timeout: 1000 * 2,
+        // timeout: 500,
       });
     }
 

@@ -13,7 +13,7 @@ div(class="accounts",data-bind="if:loaded")
             a(data-bind="click:clickNew") +
     tr
       td(class="fh-body")
-        div(class="tab-contents")
+        div(class="fh-contents")
           div(class="tab", data-bind="template:{name:searchVM.viewTmpl,data:searchVM},active:active")
           <!-- ko foreach:list -->
           div(class="tab", data-bind="template:viewTmpl,active:active")

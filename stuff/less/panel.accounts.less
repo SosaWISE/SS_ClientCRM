@@ -100,10 +100,11 @@ table.fh-wrap {
   // tbody tr > td.fh-header {}
   tbody tr > td.fh-body {
     height:100%;
-    > div.tab-contents {
+    > div.fh-contents {
       overflow:hidden;
       position:relative;
       height:100%;
+
       > div.tab {
         overflow: hidden;
         position: absolute;
@@ -446,13 +447,14 @@ table.fh-wrap {
 
 
   .btn {
+    @bg-color: @account-bg;
     .user-select(none);
     .border-radius(3px);
     .box-shadow(0px 1px 0px rgba(255,255,255,0.2), inset 0px 1px 0px rgba(255,255,255,0.2););
     .bgi-gradient(rgba(255,255,255,0.04), rgba(0,0,0,0.04));
     padding: 6px 18px;
     border: 1px solid rgba(0, 0, 0, 0.2);
-    background-color: tint(@account-bg, 10%);
+    background-color: tint(@bg-color, 10%);
     color: white;
     font-weight: 500;
     text-align: center;
@@ -471,14 +473,17 @@ table.fh-wrap {
     }
 
     &:not(.disabled):hover {
-      background-color: tint(@account-bg, 20%);
+      background-color: tint(@bg-color, 20%);
       text-decoration: none;
     }
     &:not(.disabled):active,
     &:not(.disabled).active {
       .box-shadow(inset 0px 0px 8px rgba(0,0,0,0.5));
-      background-color: shade(@account-bg, 15%);
+      background-color: shade(@bg-color, 15%);
       color: rgba(255,255,255,0.75);
+    }
+    &:not(.disabled):focus {
+      background-color: shade(@bg-color, 15%);
     }
 
     &.small {
@@ -651,17 +656,83 @@ table.fh-wrap {
       background-color: #fff;
       color: #6c6c6c;
       .title {
-        margin-left: 20px;
+        position: absolute;
+        left:0;top:2px;right:0;height:@notesTabHeight;
+        padding-left: 20px;
         cursor: pointer;
+
+        &:hover {
+          background-color: #e0e0e0;
+        }
       }
       .contents {
         overflow-y: auto;
         position: absolute;
-        left: 0px;
-        top: @notesTabHeight;
-        right: 0px;
-        bottom: 0px;
-        padding: 5px;
+        left:0;top:0;right:0;bottom:0;
+
+        .current {
+          position: absolute;
+          left:0;top:@notesTabHeight+2px;right:60%;bottom:0;
+          padding: 0px 5px 5px 5px;
+          overflow: auto;
+
+          div.input {
+            display: inline-block;
+            width: 50%;
+            .value {
+              display: inline-block;
+              margin-right: 5px;
+              width: 100%;
+            }
+          }
+
+          pre.text {
+            max-height: 100px;
+            overflow: auto;
+          }
+          textarea.text {
+            width: 100%;
+            height: 100%;
+            resize: none;
+            border-color: #999;
+
+            // make each button translucent when the text area is focused
+            // and the button container isn't being hovered over
+            &:focus+.actions:not(:hover) a {
+              opacity: 0.5;
+            }
+          }
+          .actions {
+            position: absolute;
+            right: 2px;
+            bottom: 5px;
+            left: 0px;
+
+            ul {
+              float: right;
+
+              list-style: none;
+              padding: 0;
+              margin: 0;
+              border: 0 solid transparent;
+              li {
+                list-style: none;
+                float: left;
+                margin: 0 1px 0 0;
+                padding: 0;
+                &:last-child {
+                  margin-right: 0;
+                }
+              }
+            }
+          }
+        }
+
+        .history {
+          position: absolute;
+          left:40%;top:@notesTabHeight+2px;right:0;bottom:0;
+          padding: 5px;
+        }
       }
     }
 

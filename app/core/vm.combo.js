@@ -16,11 +16,8 @@ define('src/core/vm.combo', [
     defaultFields = {
       value: 'value',
       text: 'text',
-    };
-
-  //@TODO:
-  // on focus open (tab pressed)
-  // on blur close (click elsewhere)
+    },
+    defaultNoItemSelected, defaultNoneItem;
 
   function ComboViewModel(options) {
     var _this = this;
@@ -31,9 +28,26 @@ define('src/core/vm.combo', [
     _this.fields.value = _this.fields.value || 'value';
     _this.fields.text = _this.fields.text || 'text';
 
+    if (_this.noItemSelectedText) {
+      _this.noItemSelected = wrapItem({
+        value: null,
+        text: _this.noItemSelectedText,
+      }, defaultFields);
+    } else {
+      _this.noItemSelected = defaultNoItemSelected;
+    }
+    if (_this.noneItemText) {
+      _this.noneItem = wrapItem({
+        value: null,
+        text: _this.noneItemText,
+      }, defaultFields);
+    } else {
+      _this.noneItem = defaultNoneItem;
+    }
+
     _this.activeIndex = -1;
     _this.filterText = ko.observable('');
-    _this.selected = ko.observable(ComboViewModel.noItemSelected);
+    _this.selected = ko.observable(_this.noItemSelected);
     if (!_this.selectedValue) {
       _this.selectedValue = ko.observable();
     }
@@ -80,7 +94,7 @@ define('src/core/vm.combo', [
           _this.selectedValue(null);
         }
       } else {
-        _this.selected(ComboViewModel.noItemSelected);
+        _this.selected(_this.noItemSelected);
         _this.deactivateCurrent();
       }
     });
@@ -128,6 +142,7 @@ define('src/core/vm.combo', [
           case 18: // alt
           case 27: // escape
           case 9: // tab
+          case 91: // windows
             return true; // do default action
         }
 
@@ -199,7 +214,7 @@ define('src/core/vm.combo', [
       wrapList[index] = wrapItem(item, _this.fields);
     });
     if (_this.nullable) {
-      wrapList.unshift(ComboViewModel.noneItem);
+      wrapList.unshift(_this.noneItem);
     }
     _this.list(wrapList);
     filterList(_this.list(), _this.filterText());
@@ -255,11 +270,11 @@ define('src/core/vm.combo', [
     };
   }
 
-  ComboViewModel.noItemSelected = wrapItem({
+  defaultNoItemSelected = wrapItem({
     value: null,
     text: '[Select One]',
   }, defaultFields);
-  ComboViewModel.noneItem = wrapItem({
+  defaultNoneItem = wrapItem({
     value: null,
     text: '[None]',
   }, defaultFields);

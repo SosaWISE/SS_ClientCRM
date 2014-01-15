@@ -18,7 +18,7 @@ define('src/account/vm.masteraccount', [
   "use strict";
 
   var childRoutePart = 'id',
-    agings = [
+    agingList = [
       'Current',
       '1 to 30',
       '31 to 60',
@@ -57,7 +57,9 @@ define('src/account/vm.masteraccount', [
       }, 0);
     });
 
-    _this.notesVM = new NotesViewModel();
+    _this.notesVM = new NotesViewModel({
+      id: _this.id,
+    });
 
     //
     // events
@@ -77,27 +79,45 @@ define('src/account/vm.masteraccount', [
 
   MasterAccountViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this,
-      agingCB = join.add(),
-      billingInfoCB = join.add();
+      cb = join.add();
 
+    _this.notesVM.load(routeData, function(err) {
+      if (!err) {
+        load_billingInfoSummary(_this, _this.id, _this.accounts, join.add());
+        load_aging(_this, _this.id, _this.agings, join.add());
+      }
+      cb(err);
+    });
+
+    join.when(function(err) {
+      if (err) {
+        //@TODO: mark _this as failed to load
+        // ?? show dialog saying this view model needed to be reloaded ??
+      }
+    });
+  };
+
+  function load_billingInfoSummary(pcontroller, masterId, accounts, cb) {
     dataservice.accountingengine.billingInfoSummary.read({
-      id: _this.id,
+      id: masterId,
       link: 'CMFID',
     }, null, function(err, resp) {
       utils.safeCallback(err, function() {
         if (resp.Value) {
           var list = resp.Value.map(function(acct) {
-            return createAccount(_this, acct.AccountId, acct.AccountName, acct.AmountDue, acct.NumberOfUnites);
+            return createAccount(pcontroller, acct.AccountId, acct.AccountName, acct.AmountDue, acct.NumberOfUnites);
           });
-          _this.accounts(list);
+          accounts(list);
         } else {
-          _this.accounts([]);
+          accounts([]);
         }
-      }, billingInfoCB);
+      }, cb);
     });
+  }
 
+  function load_aging(pcontroller, masterId, agings, cb) {
     dataservice.accountingengine.aging.read({
-      id: _this.id,
+      id: masterId,
     }, null, function(err, resp) {
       utils.safeCallback(err, function() {
         if (resp.Value) {
@@ -107,16 +127,16 @@ define('src/account/vm.masteraccount', [
             map[aging.Age] = aging.Value;
           });
           // create view models in the expected order
-          list = agings.map(function(name, index) {
-            return createAging(_this, index, name, map[name]);
+          list = agingList.map(function(name, index) {
+            return createAging(pcontroller, index, name, map[name]);
           });
-          _this.agings(list);
+          agings(list);
         } else {
-          _this.agings([]);
+          agings([]);
         }
-      }, agingCB);
+      }, cb);
     });
-  };
+  }
 
   function createAccount(pcontroller, id, title, rmr, units) {
     return new AccountViewModel({

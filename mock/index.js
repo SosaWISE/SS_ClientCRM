@@ -1,5 +1,6 @@
 define('mock/index', [
   'mock/dataservice.accountingengine.mock',
+  'mock/dataservice.maincore.mock',
   'mock/dataservice.qualify.mock',
   'mock/dataservice.salessummary.mock',
   'mock/dataservice.session.mock',

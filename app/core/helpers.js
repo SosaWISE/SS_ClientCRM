@@ -8,16 +8,11 @@ define('src/core/helpers', [
   var obj;
 
   obj = {
-
-    // onetime: function(fn) {
-    //   var onetime = obj.createOnetimer(fn);
-    //   onetime();
-    //   return;
-    // },
     onetimer: function(load) {
       var callbacks = [],
         loaded = ko.observable(false),
-        loading = ko.observable(false);
+        loading = ko.observable(false),
+        loadErr = ko.observable(false);
 
       function once(cb) {
         if (loaded()) {
@@ -38,22 +33,24 @@ define('src/core/helpers', [
         }
       }
 
-      function loadCb() {
+      function loadCb(err) {
         if (!loading()) {
           console.log('onetimer: loadCb called but wasn\'t loading');
           return;
         }
         loading(false);
         loaded(true);
+        loadErr(err);
 
         callbacks.forEach(function(cb) {
-          cb();
+          cb(err);
         });
         return true;
       }
       once.loadCb = loadCb;
       once.loaded = loaded;
       once.loading = loading;
+      once.loadErr = loadErr;
       return once;
     },
   };

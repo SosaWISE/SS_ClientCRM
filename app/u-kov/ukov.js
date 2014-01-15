@@ -74,7 +74,7 @@ define('src/u-kov/ukov', [
     if (!doc) {
       throw new Error('no doc for `' + docArg + '`');
     }
-    if (!model) {
+    if (model == null) {
       throw new Error('missing model for doc: ' + docArg);
     }
 
