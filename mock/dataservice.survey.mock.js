@@ -384,7 +384,7 @@ define('mock/dataservice.survey.mock', [
     'list|1-1': [
       {
         QuestionID: '@INC(question)',
-        SurveyId: '@REF_INC(survey)',
+        SurveyId: 1, //'@REF_INC(survey)',
         QuestionMeaningId: '@REF_INC(questionMeaning)',
         ParentId: null,
         GroupOrder: null, //'@NUMBER(0,5)',
