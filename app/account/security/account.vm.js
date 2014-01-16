@@ -1,11 +1,15 @@
-define('src/account/vm.account', [
-  'src/account/vm.salesinfo',
+define('src/account/security/account.vm', [
+  'src/account/security/salesinfo.vm',
+  'src/account/security/summary.vm',
+  'src/account/security/inventory.vm',
   'src/core/notify',
   'src/core/utils',
   'src/core/vm.controller',
   'ko'
 ], function(
   SalesInfoViewModel,
+  SummaryViewModel,
+  InventoryViewModel,
   notify,
   utils,
   ControllerViewModel,
@@ -31,7 +35,7 @@ define('src/account/vm.account', [
     };
   }
   utils.inherits(AccountViewModel, ControllerViewModel);
-  AccountViewModel.prototype.viewTmpl = 'tmpl-account';
+  AccountViewModel.prototype.viewTmpl = 'tmpl-security-account';
 
   AccountViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this,
@@ -39,10 +43,10 @@ define('src/account/vm.account', [
     setTimeout(function() {
       _this.childs([
         salesInfoScreen(_this, 'Sales Info'),
-        createFauxController(_this, 'Account Summary'),
+        createSummary(_this, 'Account Summary'),
         createFauxController(_this, 'EMC/Equipment'),
         createFauxController(_this, 'Signal History'),
-        createFauxController(_this, 'Inventory'),
+        createInventory(_this, 'Inventory'),
         createFauxController(_this, 'Contract Approval'),
         createFauxController(_this, 'Setup Checklist'),
       ]);
@@ -52,6 +56,24 @@ define('src/account/vm.account', [
 
   function salesInfoScreen(pcontroller, title) {
     return new SalesInfoViewModel({
+      pcontroller: pcontroller,
+      routePart: childRoutePart,
+      id: titleToId(title),
+      title: title,
+    });
+  }
+
+  function createInventory(pcontroller, title) {
+    return new InventoryViewModel({
+      pcontroller: pcontroller,
+      routePart: childRoutePart,
+      id: titleToId(title),
+      title: title,
+    });
+  }
+
+  function createSummary(pcontroller, title) {
+    return new SummaryViewModel({
       pcontroller: pcontroller,
       routePart: childRoutePart,
       id: titleToId(title),

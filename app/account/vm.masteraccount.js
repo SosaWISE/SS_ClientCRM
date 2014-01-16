@@ -1,7 +1,7 @@
 define('src/account/vm.masteraccount', [
   'src/account/vm.notes',
   'src/dataservice',
-  'src/account/vm.account',
+  'src/account/security/account.vm',
   'ko',
   'src/core/notify',
   'src/core/utils',

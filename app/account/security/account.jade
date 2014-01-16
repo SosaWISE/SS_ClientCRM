@@ -12,5 +12,10 @@ table(class="fh-wrap")
     td(class="fh-body")
       div(class="fh-contents")
         <!-- ko foreach:childs -->
+        <!-- ko if:loaded -->
         div(class="tab scrollable", data-bind="template:viewTmpl,active:active")
+        <!-- /ko -->
+        <!-- ko if:active()&&!loaded() -->
+        div(class="black", data-bind="template:'tmpl-spinner'")
+        <!-- /ko -->
         <!-- /ko -->

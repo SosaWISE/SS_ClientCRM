@@ -81,3 +81,66 @@
   }
 }
 
+
+
+.btn {
+  // @bg-color: @site-green;
+  // background-color: tint(@bg-color, 10%);
+  .user-select(none);
+  .border-radius(3px);
+  .box-shadow(0px 1px 0px rgba(255,255,255,0.2), inset 0px 1px 0px rgba(255,255,255,0.2););
+  .bgi-gradient(rgba(255,255,255,0.04), rgba(0,0,0,0.04));
+  padding: 6px 18px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  color: white;
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+  font-size: 13px;
+  margin-bottom: 10px;
+  // width: 100%;
+  cursor: pointer;
+
+  // @disabledColor: #e8e8e8;
+  &.disabled {
+    // border-color: darken(@disabledColor, 40%);
+    // background-color: @disabledColor;
+    // color: darken(@disabledColor, 20%);
+    cursor: default;
+  }
+
+  &:not(.disabled):hover {
+    // background-color: tint(@bg-color, 20%);
+    text-decoration: none;
+  }
+  &:not(.disabled):active,
+  &:not(.disabled).active {
+    // background-color: shade(@bg-color, 15%);
+    .box-shadow(inset 0px 0px 8px rgba(0,0,0,0.5));
+    color: rgba(255,255,255,0.75);
+  }
+  &:not(.disabled):focus {
+    // background-color: shade(@bg-color, 15%);
+  }
+
+  &.small {
+    font-size: 0.9em;
+    padding: 3px 10px;
+  }
+}
+.add-btn {
+  margin-right: 10px;
+  padding-left: 36px;
+  position: relative;
+  &:before {
+    .mixin-edit-btn("\e016", 7px, -2px, 16px);
+  }
+
+  &.small {
+    padding: 3px 10px 3px 28px;
+    position: relative;
+    &:before {
+      .mixin-edit-btn("\e016", 5px, -2px, 13px);
+    }
+  }
+}

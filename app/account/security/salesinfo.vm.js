@@ -1,4 +1,4 @@
-define('src/account/vm.salesinfo', [
+define('src/account/security/salesinfo.vm', [
   'src/slick/buttonscolumn',
   'src/slick/vm.slickgrid',
   'src/ukov',
@@ -235,7 +235,7 @@ define('src/account/vm.salesinfo', [
         ActivationFeeActual: _this.activationFeeActual(),
         MonthlyMonitoringRate: _this.monthlyMonitoringRate(),
         MonthlyMonitoringRateActual: _this.monthlyMonitoringRateActual(),
-        AlarmComPackage: _this.apckComboVM(),
+        AlarmComPackage: _this.apckComboVM.selectedValue(),
         Over3Months: _this.over3Months(),
       }, schema);
 
@@ -253,7 +253,7 @@ define('src/account/vm.salesinfo', [
     //
   }
   utils.inherits(SalesInfoViewModel, ControllerViewModel);
-  SalesInfoViewModel.prototype.viewTmpl = 'tmpl-salesinfo';
+  SalesInfoViewModel.prototype.viewTmpl = 'tmpl-security-salesinfo';
 
   SalesInfoViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this;
