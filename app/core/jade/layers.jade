@@ -1,12 +1,13 @@
-<!-- ko foreach:showLayers -->
-div(class="layer-table")
-  div(class="layer-cell")
-    div(class="layer", data-bind="width:width,height:height")
-      div(class="content", data-bind="template:{name:vm().viewTmpl,data:vm}")
-<!-- /ko -->
-<!-- ko foreach:alertLayers -->
-div(class="layer-table")
-  div(class="layer-cell")
-    div(class="layer", data-bind="width:width,height:height")
-      div(class="content", data-bind="template:{name:vm().viewTmpl,data:vm}")
-<!-- /ko -->
+div(data-bind="preventFocusUnderLayer:1")
+  <!-- ko foreach:showLayers -->
+  div(class="layer-table")
+    div(class="layer-cell")
+      div(class="layer", data-bind="width:width,height:height")
+        div(class="content", data-bind="template:{name:vm().viewTmpl,data:vm}")
+  <!-- /ko -->
+  <!-- ko foreach:alertLayers -->
+  div(class="layer-table")
+    div(class="layer-cell")
+      div(class="layer", data-bind="width:width,height:height")
+        div(class="content", data-bind="template:{name:vm().viewTmpl,data:vm}")
+  <!-- /ko -->

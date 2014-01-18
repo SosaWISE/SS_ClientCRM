@@ -1,10 +1,12 @@
 define('src/account/security/summary.vm', [
- 'src/account/security/emcontacts.gvm',
+  'src/account/security/emcontacts.vm',
+  'src/core/vm.layers',
   'src/core/notify',
   'src/core/utils',
   'src/core/vm.controller',
 ], function(
-  EmContactsGridViewModel,
+  EmContactsViewModel,
+  LayersViewModel,
   notify,
   utils,
   ControllerViewModel
@@ -15,7 +17,11 @@ define('src/account/security/summary.vm', [
     var _this = this;
     SummaryViewModel.super_.call(_this, options);
 
-    _this.ecGvm = new EmContactsGridViewModel();
+    _this.layersVm = new LayersViewModel();
+
+    _this.emcontactsVm = new EmContactsViewModel({
+      layersVm: _this.layersVm,
+    });
 
     //
     // events

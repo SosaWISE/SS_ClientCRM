@@ -9,9 +9,8 @@ div
       input(type="text",placeholder="1.0.0",
         data-bind="ukov:sData.Version,value:sData.Version,valueUpdate:'keyup'")
 
-div(class="actions")
-  ul(class="sv")
-    li
-      a(class="btn",data-bind="click:clickCancel") Cancel
-    li
-      a(class="btn",data-bind="cmd:cmdAdd") Add
+ul(class="actions")
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:cmdAdd") Add

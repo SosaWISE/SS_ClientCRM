@@ -90,5 +90,17 @@ define('src/app', [
     locale: 'en',
   });
 
+  window.onerror = function(message, url, line, column, err) {
+    var text = [];
+    text.push('Line ' + line + ', Column ' + column);
+    text.push('Url: ' + url);
+    text.push('');
+    text.push('Message: ' + message);
+    text.push('');
+    // err = err;
+    text.push('StackTrace: ' + err.stack);
+    alert(text.join('\n'));
+  };
+
   return app;
 });

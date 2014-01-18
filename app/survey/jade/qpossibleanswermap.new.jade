@@ -9,9 +9,8 @@ ul(class="edit-form")
     span(class="label") Expands Sub Questions
     div(data-bind="template:{name:expandsComboVM.viewTmpl,data:expandsComboVM}")
 
-div(class="actions")
-  ul(class="sv")
-    li
-      a(class="btn",data-bind="click:clickCancel") Cancel
-    li
-      a(class="btn",data-bind="cmd:cmdAdd") Add Possible Answer
+ul(class="actions")
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:cmdAdd") Add Possible Answer

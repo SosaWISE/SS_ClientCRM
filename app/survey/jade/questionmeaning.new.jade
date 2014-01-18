@@ -6,9 +6,8 @@ ul(class="edit-form")
     span(class="label") Question Meaning
     input(type="text",data-bind="ukov:qmData.Name,value:qmData.Name,valueUpdate:'keyup'")
 
-div(class="actions")
-  ul(class="sv")
-    li
-      a(class="btn",data-bind="click:clickCancel") Cancel
-    li
-      a(class="btn",data-bind="cmd:cmdAdd") Add Meaning
+ul(class="actions")
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:cmdAdd") Add Meaning

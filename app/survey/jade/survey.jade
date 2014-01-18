@@ -21,4 +21,4 @@ div(class="survey")
           a(class="btn add-btn",data-bind="click:clickAddQuestion")
             span(data-bind="text:nextName")
 
-  div(class="layers", data-bind="template:{name:'tmpl-layers',data:layersVM}")
+  div(class="layers", data-bind="template:{name:layersVM.viewTmpl,data:layersVM}")

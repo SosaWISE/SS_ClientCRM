@@ -1,9 +1,11 @@
 define('src/account/security/emcontacts.vm', [
+  'src/account/security/emcontacteditor.vm',
   'src/account/security/emcontacts.gvm',
   'src/core/notify',
   'src/core/utils',
   'src/core/vm.controller',
 ], function(
+  EmContactEditorViewModel,
   EmContactsGridViewModel,
   notify,
   utils,
@@ -14,26 +16,29 @@ define('src/account/security/emcontacts.vm', [
   function EmContactsViewModel(options) {
     var _this = this;
     EmContactsViewModel.super_.call(_this, options);
+    ControllerViewModel.ensureProps(_this, ['layersVm']);
 
     _this.gvm = new EmContactsGridViewModel();
 
     //
     // events
     //
-    _this.clickAddByBarcode = function() {
-      alert('@TODO: add by barcode');
+    _this.clickAddContact = function() {
+      _this.layersVm.show(new EmContactEditorViewModel(), function(model) {
+        if (!model) {
+          return;
+        }
+        _this.gvm.list.push(model);
+      });
     };
-    _this.clickAddByPart = function() {
-      alert('@TODO: add by part #');
+    _this.clickEditContact = function() {
+      alert('@TODO: edit contact');
     };
-    _this.clickAddExistingEquipment = function() {
-      alert('@TODO: add existing equipment');
+    _this.clickDeleteContact = function() {
+      alert('@TODO: delete contact');
     };
-    _this.clickEditEquipment = function() {
-      alert('@TODO: edit equipment');
-    };
-    _this.clickRemoveEquipment = function() {
-      alert('@TODO: remove equipment');
+    _this.clickReorderContacts = function() {
+      alert('@TODO: reorder contacts');
     };
   }
   utils.inherits(EmContactsViewModel, ControllerViewModel);

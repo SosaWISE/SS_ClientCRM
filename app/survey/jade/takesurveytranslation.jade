@@ -5,9 +5,8 @@ div
       span(class="label") Localization Code
       div(data-bind="template:{name:localeComboVM.viewTmpl,data:localeComboVM}")
 
-div(class="actions")
-  ul(class="sv")
-    li
-      a(class="btn",data-bind="click:clickCancel") Cancel
-    li
-      a(class="btn",data-bind="click:clickTake") Take
+ul(class="actions")
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:clickTake") Take

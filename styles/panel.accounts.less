@@ -728,6 +728,9 @@ table.fh-wrap {
       }
       > .notes {
         bottom: @notesTabHeight - @notesHeight;
+        .contents {
+          display: none;
+        }
       }
     }
 
@@ -780,7 +783,8 @@ table.fh-wrap {
 }
 
 .acct-summary {
-  padding: 0px 10px;
+  position: absolute;
+  left:10px;top:0px;right:10px;bottom:0px;
   .slickgrid {
     bottom: 10px;
   }
@@ -822,5 +826,22 @@ table.fh-wrap {
         white-space: nowrap;
       }
     }
+  }
+}
+
+.acct-emcontacteditor {
+  overflow: hidden;
+
+  .edit-form.limit-width,
+  div.limit-width,
+  input[type=text].limit-width {
+    width:250px;
+    display:inline-block;
+    vertical-align:top;
+  }
+  .edit-form.right-side,
+  div.right-side,
+  input[type=text].right-side {
+    margin-left:10px;
   }
 }

@@ -20,4 +20,4 @@ div(class="panel")
     div(data-bind="with:activeChild")
       div(data-bind="template:viewTmpl")
 
-  div(class="layers", data-bind="template:{name:'tmpl-layers',data:layersVM}")
+  div(class="layers", data-bind="template:{name:layersVM.viewTmpl,data:layersVM}")

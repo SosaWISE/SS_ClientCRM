@@ -8,9 +8,8 @@ ul(class="edit-form")
     input(type="text",placeholder="en-US",
       data-bind="hasfocus:focus,ukov:stData.LocalizationCode,value:stData.LocalizationCode,valueUpdate:'keyup'")
 
-div(class="actions")
-  ul(class="sv")
-    li
-      a(class="btn",data-bind="click:clickCancel") Cancel
-    li
-      a(class="btn",data-bind="cmd:cmdAdd") Add Translation
+ul(class="actions")
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:cmdAdd") Add Translation

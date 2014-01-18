@@ -138,8 +138,9 @@
       update: function(element, valueAccessor) {
         var size = ko.utils.unwrapObservable(valueAccessor());
         if (size) {
-          size += "";
-          size = size.match(/%$/) ? size : size + "px";
+          if (typeof(size) === 'number') {
+            size = size + "px";
+          }
         } else {
           size = "";
         }

@@ -2,7 +2,10 @@ div(class="acct-summary")
   table(class="fh-wrap")
     tr
       td(class="fh-header")
+        div(style="height:300px;",
+          data-bind="template:{name:emcontactsVm.viewTmpl,data:emcontactsVm}")
     tr
       td(class="fh-body")
         div(class="fh-contents")
-          div(class="slickgrid",data-bind="slickgrid:ecGvm")
+
+div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

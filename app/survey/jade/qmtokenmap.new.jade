@@ -7,9 +7,8 @@ ul(class="edit-form")
     span(class="label") Token
     div(data-bind="template:{name:tokenComboVM.viewTmpl,data:tokenComboVM}")
 
-div(class="actions")
-  ul(class="sv")
-    li
-      a(class="btn",data-bind="click:clickCancel") Cancel
-    li
-      a(class="btn",data-bind="cmd:cmdAdd") Add Token
+ul(class="actions")
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:cmdAdd") Add Token

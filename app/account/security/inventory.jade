@@ -4,15 +4,15 @@ div(class="acct-inventory")
       td(class="fh-header")
         ul(class="actions cf")
           li
-            a(class="btn small add-btn",data-bind="click:clickAddByBarcode") Add By Barcode
+            a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickAddByBarcode") Add By Barcode
           li
-            a(class="btn small add-btn",data-bind="click:clickAddByPart") Add By Part
+            a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickAddByPart") Add By Part
           li
-            a(class="btn small add-btn",data-bind="click:clickAddExistingEquipment") Add Existing Equipment
+            a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickAddExistingEquipment") Add Existing Equipment
           li
-            a(class="btn small add-btn",data-bind="click:clickEditEquipment") Edit Equipment
+            a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickEditEquipment") Edit Equipment
           li
-            a(class="btn small add-btn",data-bind="click:clickRemoveEquipment") Remove Equipment
+            a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickRemoveEquipment") Remove Equipment
         div
           |Total Points:
           span(data-bind="text:gvm.totalPoints")

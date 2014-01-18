@@ -1,4 +1,5 @@
 .layers .layer-table {
+  z-index: 1; // put above slickgrid
   position: absolute;
   display: table;
   width: 100%;
@@ -8,6 +9,9 @@
   &:last-child {
     background-color: rgba(0,0,0, 0.2);
   }
+  // &:not(:last-child) {
+  //   display: none;
+  // }
 
   .layer-cell {
     display: table-cell;
@@ -30,14 +34,14 @@
 
       .content {
         padding: 20px;
-        .actions {
-          position: absolute;
-          bottom: 20px;
-          width: 100%;
-          padding: 0px 40px 0px 0px; // .content padding for right and left
-          margin: 0px;
-          ul {
-            float: right;
+
+        .actions ul,
+        ul.actions {
+          text-align: right;
+          display: block;
+          li {
+            display: inline-block;
+            padding: 10px 0px 10px 5px;
           }
         }
       }
