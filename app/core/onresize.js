@@ -66,8 +66,8 @@ define('src/core/onresize', [
       return;
     }
 
-    var x = 0,
-      y = 0,
+    var x = -1,
+      y = -1,
       sensorEl,
       firstEl, firstChildStyle,
       lastEl, lastChildStyle,
