@@ -68,9 +68,7 @@ define('src/panels/vm.panel.accounts', [
 
   AccountsPanelViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this,
-      id = routeData[childRoutePart],
-      cb = join.add(),
-      vm;
+      cb = join.add();
 
     ensureDeps(function() {
       _this.searchVM = new deps.SearchAccountViewModel({
@@ -81,6 +79,7 @@ define('src/panels/vm.panel.accounts', [
       });
       _this.defaultChild = _this.searchVM;
 
+      ////////////////TESTING//////////////////////////////////
       _this.list([
         createAccountVM(_this, 3000001, '3000001'),
         new deps.InfoAccountViewModel({
@@ -92,26 +91,28 @@ define('src/panels/vm.panel.accounts', [
         }),
         createAccountVM(_this, 3000003, '3000003'),
       ]);
+      ////////////////TESTING//////////////////////////////////
 
-      /* jshint eqeqeq:false */
-      if (id && parseInt(id, 10) == id) {
-        vm = _this.findChild(routeData);
-        if (!vm) {
-          vm = createAccountVM(_this, parseInt(id, 10), id + '');
-          _this.list.push(vm);
-        }
-      }
       cb();
     });
   };
 
   AccountsPanelViewModel.prototype.findChild = function(routeData) {
     var _this = this,
-      result;
+      result, id;
     if (routeData[_this.searchVM.routePart] === _this.searchVM.id) {
       result = _this.searchVM;
     } else {
       result = AccountsPanelViewModel.super_.prototype.findChild.call(_this, routeData);
+      if (!result) {
+        // create child and add to list
+        id = routeData[childRoutePart];
+        /* jshint eqeqeq:false */
+        if (typeof(id) !== 'undefined' && parseInt(id, 10) == id) {
+          result = createAccountVM(_this, parseInt(id, 10), id + '');
+          _this.list.push(result);
+        }
+      }
     }
     return result;
   };
