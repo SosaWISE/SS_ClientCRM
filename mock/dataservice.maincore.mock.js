@@ -96,7 +96,7 @@ define('mock/dataservice.maincore.mock', [
       }
       send(result, setter, cb);
     };
-    dataservice.maincore.note.read = function(params, setter, cb) {
+    dataservice.maincore.notes.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -123,7 +123,7 @@ define('mock/dataservice.maincore.mock', [
 
 
 
-    dataservice.maincore.note.save = function(data, setter, cb) {
+    dataservice.maincore.notes.save = function(data, setter, cb) {
       send(createOrUpdate(notes, 'NoteID', '@INC(note)', {
         NoteID: data.NoteID,
         NoteTypeId: data.NoteTypeId,
