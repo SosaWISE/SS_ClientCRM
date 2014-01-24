@@ -5,6 +5,7 @@ define('src/core/_all.spec', [
   'src/core/joiner.spec',
   'src/core/mockery.spec',
   'src/core/notify.spec',
+  'src/core/relativesort.spec',
   'src/core/route.spec',
   'src/core/router.spec',
   'src/core/strings.spec',
