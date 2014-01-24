@@ -4,7 +4,7 @@ define('src/account/security/account.vm', [
   'src/account/security/inventory.vm',
   'src/core/notify',
   'src/core/utils',
-  'src/core/vm.controller',
+  'src/core/controller.vm',
   'ko'
 ], function(
   SalesInfoViewModel,

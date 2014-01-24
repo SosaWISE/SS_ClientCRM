@@ -1,9 +1,9 @@
 define('src/account/security/summary.vm', [
   'src/account/security/emcontacts.vm',
-  'src/core/vm.layers',
+  'src/core/layers.vm',
   'src/core/notify',
   'src/core/utils',
-  'src/core/vm.controller',
+  'src/core/controller.vm',
 ], function(
   EmContactsViewModel,
   LayersViewModel,

@@ -12,7 +12,7 @@ define('src/bootstrapper', [
   'src/resources',
   'src/core/notify',
   'src/core/router',
-  'src/core/vm.controller',
+  'src/core/controller.vm',
   'src/dataservice',
   'src/app'
 ], function(

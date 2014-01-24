@@ -1,13 +1,13 @@
 define('src/account/security/salesinfo.vm', [
   'src/slick/buttonscolumn',
-  'src/slick/vm.slickgrid',
+  'src/slick/slickgrid.vm',
   'src/ukov',
   'src/dataservice',
   'src/core/notify',
   'src/core/utils',
-  'src/core/vm.controller',
+  'src/core/controller.vm',
   'ko',
-  'src/core/vm.combo',
+  'src/core/combo.vm',
 ], function(
   ButtonsColumn,
   SlickGridViewModel,

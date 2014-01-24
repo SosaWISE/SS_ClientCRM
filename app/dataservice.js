@@ -1,11 +1,11 @@
 define('src/dataservice', [
-  'src/dataservice.user',
-  'src/dataservice.session',
-  'src/dataservice.qualify',
-  'src/dataservice.survey',
-  'src/dataservice.salessummary',
-  'src/dataservice.accountingengine',
-  'src/dataservice.maincore',
+  'src/dataservices/user',
+  'src/dataservices/session',
+  'src/dataservices/qualify',
+  'src/dataservices/survey',
+  'src/dataservices/salessummary',
+  'src/dataservices/accountingengine',
+  'src/dataservices/maincore',
 ], function(
   UserDataservice,
   SessionDataservice,

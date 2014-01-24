@@ -1,6 +1,6 @@
 define('src/account/security/emcontacts.gvm', [
   'src/slick/rowevent',
-  'src/slick/vm.slickgrid',
+  'src/slick/slickgrid.vm',
   'src/core/utils',
 ], function(
   RowEvent,

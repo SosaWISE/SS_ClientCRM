@@ -1,11 +1,11 @@
 define('mock/index', [
-  'mock/dataservice.accountingengine.mock',
-  'mock/dataservice.maincore.mock',
-  'mock/dataservice.qualify.mock',
-  'mock/dataservice.salessummary.mock',
-  'mock/dataservice.session.mock',
-  'mock/dataservice.survey.mock',
-  'mock/dataservice.user.mock',
+  'mock/dataservices/accountingengine.mock',
+  'mock/dataservices/maincore.mock',
+  'mock/dataservices/qualify.mock',
+  'mock/dataservices/salessummary.mock',
+  'mock/dataservices/session.mock',
+  'mock/dataservices/survey.mock',
+  'mock/dataservices/user.mock',
 ], function() {
   "use strict";
 
