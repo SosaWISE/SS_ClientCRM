@@ -236,7 +236,7 @@ define('src/account/vm.notes', [
 
   function createNote(ukovData, cb) {
     var model = ukovData.getValue();
-    dataservice.maincore.note.save(model, null, function(err, resp) {
+    dataservice.maincore.notes.save(model, null, function(err, resp) {
       utils.safeCallback(err, function() {
         ukovData.setVal(resp.Value);
         ukovData.markClean(resp.Value);
@@ -260,7 +260,7 @@ define('src/account/vm.notes', [
 
     note('');
 
-    dataservice.maincore.note.save(model, null, function(err, resp) {
+    dataservice.maincore.notes.save(model, null, function(err, resp) {
       utils.safeCallback(err, function() {
         ukovData.setVal(resp.Value);
         ukovData.markClean(resp.Value);
@@ -279,7 +279,7 @@ define('src/account/vm.notes', [
 
   function load_notes(id, gvm, cb) {
     gvm.list([]);
-    dataservice.maincore.note.read({
+    dataservice.maincore.notes.read({
       id: id,
       link: 'cmfid',
     }, null, function(err, resp) {

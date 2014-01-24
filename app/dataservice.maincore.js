@@ -13,7 +13,7 @@ define('src/dataservice.maincore', [
 
     [
       'departments',
-      'note',
+      'notes',
       'notecategory1',
       'notecategory2',
       'notetypes',
