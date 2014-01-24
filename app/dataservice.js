@@ -6,6 +6,7 @@ define('src/dataservice', [
   'src/dataservice.salessummary',
   'src/dataservice.accountingengine',
   'src/dataservice.maincore',
+  'src/scrum/scrumservice',
 ], function(
   UserDataservice,
   SessionDataservice,
@@ -13,7 +14,8 @@ define('src/dataservice', [
   createSurveyDataservices,
   createSalesSummaryDataservices,
   createAccountingEngineDataservices,
-  createMainCoreDataservices
+  createMainCoreDataservices,
+  createScrumService
 ) {
   "use strict";
   return {
@@ -24,5 +26,6 @@ define('src/dataservice', [
     salessummary: createSalesSummaryDataservices(),
     accountingengine: createAccountingEngineDataservices(),
     maincore: createMainCoreDataservices(),
+    scrum: createScrumService(),
   };
 });

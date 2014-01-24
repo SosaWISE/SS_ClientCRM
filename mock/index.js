@@ -6,6 +6,7 @@ define('mock/index', [
   'mock/dataservice.session.mock',
   'mock/dataservice.survey.mock',
   'mock/dataservice.user.mock',
+  'mock/scrum/scrumservice.mock',
 ], function() {
   "use strict";
 
