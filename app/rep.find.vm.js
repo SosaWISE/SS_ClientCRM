@@ -35,27 +35,6 @@ define('src/rep.find.vm', [
     email: {},
   };
 
-  // AddressID: 0,
-  // DealerId: 0,
-  // Address: null,
-  // Address2: null,
-  // City: null,
-  // State: null,
-  // PostalCode: null,
-  // County: null,
-  // PhoneNumber: null,
-  // Latitude: 0,
-  // Longitude: 0,
-  // Validated: false,
-  // SalesRepId: null,
-  // SeasonId: 0,
-  // TeamLocationId: 0,
-  // IsActive: false,
-  // ModifiedOn: '0001-01-01T00:00:00',
-  // ModifiedBy: null,
-  // CreatedOn: '0001-01-01T00:00:00',
-  // CreatedBy: null
-
   function RepFindViewModel(options) {
     var _this = this;
     RepFindViewModel.super_.call(_this, options);
