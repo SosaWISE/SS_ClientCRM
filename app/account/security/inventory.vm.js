@@ -2,7 +2,7 @@ define('src/account/security/inventory.vm', [
   'src/account/security/inventory.gvm',
   'src/core/notify',
   'src/core/utils',
-  'src/core/vm.controller',
+  'src/core/controller.vm',
 ], function(
   InventoryGridViewModel,
   notify,

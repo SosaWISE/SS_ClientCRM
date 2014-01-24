@@ -1,8 +1,8 @@
 define('src/account/security/emcontacteditor.vm', [
-  'src/core/vm.combo',
+  'src/core/combo.vm',
   'src/core/notify',
   'src/core/utils',
-  'src/core/vm.base',
+  'src/core/base.vm',
   'ko',
   'src/ukov',
 ], function(

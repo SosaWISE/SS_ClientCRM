@@ -4,7 +4,7 @@ define('src/survey/surveyhelper', [
   'ko',
   'src/core/notify',
   'src/core/utils',
-  'src/core/vm.base',
+  'src/core/base.vm',
 ], function(
   strings,
   markdown

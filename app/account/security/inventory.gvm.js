@@ -1,7 +1,7 @@
 define('src/account/security/inventory.gvm', [
   'ko',
   'src/slick/rowevent',
-  'src/slick/vm.slickgrid',
+  'src/slick/slickgrid.vm',
   'src/core/utils',
 ], function(
   ko,

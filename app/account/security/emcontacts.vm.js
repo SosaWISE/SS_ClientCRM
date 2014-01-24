@@ -3,7 +3,7 @@ define('src/account/security/emcontacts.vm', [
   'src/account/security/emcontacts.gvm',
   'src/core/notify',
   'src/core/utils',
-  'src/core/vm.controller',
+  'src/core/controller.vm',
 ], function(
   EmContactEditorViewModel,
   EmContactsGridViewModel,

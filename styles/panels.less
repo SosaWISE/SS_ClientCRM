@@ -73,6 +73,11 @@ ul.tabs {
   padding: 0px;
 
   .panel {
+    position: absolute;
+    top:0;right:0;bottom:0;left:0;
+    &.scrollable {
+      overflow: auto;
+    }
 
     > .p-nav {
       .box-shadow(inset -4px 0 6px -5px #000);
