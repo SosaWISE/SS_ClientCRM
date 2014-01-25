@@ -50,11 +50,11 @@ define('src/scrum/scrumrepo', [
           },
         },
         {
+          values: options ? options.stepValues : null,
           field: 'TaskStepId',
           sorter: function(a, b) {
-            //@TODO: return -1, 0, or 1
-            a = b;
-            return 0;
+            // ascending
+            return b.id - a.id;
           },
         },
         {
@@ -68,11 +68,7 @@ define('src/scrum/scrumrepo', [
         },
       ],
     });
-
-    _this.storys = _this.storyRepo.list;
-    _this.tasks = _this.taskRepo.list;
   }
-  // utils.inherits(ScrumRepo, {});
 
   ScrumRepo.prototype.updateStory = function(story) {
     var _this = this,
@@ -86,10 +82,10 @@ define('src/scrum/scrumrepo', [
         taskRepo.update(task);
       });
     } else if (!taskRepo.structureMap[story.ID]) {
-      taskRepo.structureMap[story.ID] = Repository.createObj();
+      taskRepo.structureMap[story.ID] = Repository.createObj(story.ID);
     }
-    // set tasks to internal recursive observable array
-    story.Tasks = taskRepo.structureMap[story.ID];
+    // set Steps to internal recursive observable array
+    story.Steps = taskRepo.structureMap[story.ID].list;
 
     // do actual update
     storyRepo.update(story);

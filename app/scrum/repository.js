@@ -29,7 +29,7 @@ define('src/scrum/repository', [
     _this.structureMap = {};
   }
 
-  Repository.prototype.update = function(item, silent) {
+  Repository.prototype.update = function(item) {
     var _this = this,
       reversedMetadata = _this.reversedMetadata,
       map = _this.map,
@@ -63,10 +63,6 @@ define('src/scrum/repository', [
     map[id] = item;
     list = structureMap[item.mapId].list;
     insert(list, item, _this.sorter);
-
-    if (!silent) {
-      //@TODO: notify
-    }
   };
 
   function reverseArray(list) {
@@ -114,19 +110,28 @@ define('src/scrum/repository', [
 
     var metadata, i = reversedMetadata.length,
       mapId = '',
-      obj, fieldValue;
-    while (i--) {
-      metadata = reversedMetadata[i];
-      fieldValue = item[metadata.field];
-      mapId = appendField(mapId, fieldValue);
+      obj, id;
 
-      obj = map[mapId];
+    function addObj(id) {
+      var tempMapId = appendField(mapId, id),
+        obj = map[tempMapId];
       if (!obj) {
         // create if not found
-        map[mapId] = obj = createObj(fieldValue);
+        map[tempMapId] = obj = createObj(id);
         insert(parentList, obj, metadata.sorter);
       }
+      return obj;
+    }
 
+    while (i--) {
+      metadata = reversedMetadata[i];
+      id = item[metadata.field];
+      // add start values
+      if (Array.isArray(metadata.values)) {
+        metadata.values.forEach(addObj);
+      }
+      obj = addObj(id);
+      mapId = appendField(mapId, id);
       // set new parent list
       parentList = obj.list;
     }
@@ -135,14 +140,27 @@ define('src/scrum/repository', [
   function createObj(id) {
     return {
       id: id,
+      getItem: function() {
+        //@TODO: lookup item by id...
+      },
       list: ko.observableArray(),
     };
   }
 
   function insert(list, item, sorter) {
-    sorter = sorter;
-    //@TODO: insert in correct order
-    list.push(item);
+    // list.push(item);
+    // return;
+
+    if (!list().some(function(b, index) {
+      if (sorter(item, b) > 0) {
+        // insert item
+        list.splice(index, 0, item);
+        return true;
+      }
+    })) {
+      // add to end
+      list.push(item);
+    }
   }
 
   //

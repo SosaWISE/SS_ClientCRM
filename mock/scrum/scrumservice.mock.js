@@ -298,12 +298,12 @@ define('mock/scrum/scrumservice.mock', [
   }).list;
 
   tasks = mockery.fromTemplate({
-    'list|10-10': [
+    'list|40-40': [
       {
         ID: '@INC(storys)',
         StoryId: '@REF_INC(storys)',
         TaskStepId: '@REF_INC(tasksteps)',
-        PersonId: '@INC_NULLABLE(persons)',
+        PersonId: '@REF_INC(persons)',
         Name: '@TEXT(15,20)',
         Hours: '@NUMBER(1,4)',
         IsDeleted: false,

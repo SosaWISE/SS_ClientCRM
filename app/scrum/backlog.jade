@@ -1,6 +1,10 @@
-//- slickgrid
-  Columns: Name, Points, Owner
-  Name Column: 'Scope.Name: Story.Name'
-  foreach Scope in Backlog
-    foreach Story in Scope
-
+div(class="scrum-backlog")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+        | Backlog
+    tr
+      td(class="fh-body")
+        div(class="fh-contents")
+          div(class="slickgrid",
+            data-bind="slickgrid:gvm")

@@ -19,12 +19,14 @@ define('src/panels/accounts.panel.vm', [
         'src/account/account.search.vm',
         'src/account/account.checklist.vm',
         'src/account/account.info.vm',
+        'src/scrum/scrum.panel.vm',
       ], function() {
         var args = arguments;
         deps.MasterAccountViewModel = args[0];
         deps.AccountSearchViewModel = args[1];
         deps.AccountChecklistViewModel = args[2];
         deps.AccountInfoViewModel = args[3];
+        deps.ScrumPanelViewModel = args[4];
         cb();
       });
     }),
@@ -90,12 +92,12 @@ define('src/panels/accounts.panel.vm', [
           name: '3000002',
         }),
         createAccountVM(_this, 3000003, '3000003'),
-        new deps.AccountInfoViewModel({
+        new deps.ScrumPanelViewModel({
           pcontroller: _this,
           routePart: childRoutePart,
-          id: 123,
-          title: '123',
-          name: '123',
+          id: 2,
+          title: '2',
+          name: '2',
         }),
       ]);
       ////////////////TESTING//////////////////////////////////

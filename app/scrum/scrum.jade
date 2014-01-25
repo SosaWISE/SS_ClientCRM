@@ -1,0 +1,17 @@
+div(class="scrum",data-bind="if:loaded")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+        ul(class="tabs cf")
+          <!-- ko foreach:list -->
+          li(class="tab")
+            a(data-bind="click:$parent.clickItem,active:active,text:title")
+          <!-- /ko -->
+    tr
+      td(class="fh-body")
+        div(class="fh-contents")
+          <!-- ko foreach:list -->
+          <!-- ko if:active -->
+          div(class="tab scrollable", data-bind="template:viewTmpl,active:active")
+          <!-- /ko -->
+          <!-- /ko -->
