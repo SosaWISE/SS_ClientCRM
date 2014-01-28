@@ -43,6 +43,7 @@ define('src/account/security/salesinfo.vm', [
 
     // ** Fields
     _this.activationFee = ko.observable();
+    _this.activationFeeItemId = '';
     _this.activationFeeActual = ko.observable();
     _this.over3Months = ko.observable(false);
     _this.over3MonthsAction = function() {
@@ -50,6 +51,7 @@ define('src/account/security/salesinfo.vm', [
       return true;
     };
     _this.monthlyMonitoringRate = ko.observable();
+    _this.monthlyMonitoringRateItemId = '';
     _this.monthlyMonitoringRateActual = ko.observable();
     _this.psComboVM = new ComboViewModel({
       fields: {
@@ -231,9 +233,12 @@ define('src/account/security/salesinfo.vm', [
     function refreshInvoice() {
       /** Initialize. */
       _this.sData = ukov.wrap({
+        AccountId: _this.msAccountId,
         ActivationFee: _this.activationFee(),
+        ActivationFeeItemId: _this.activationFeeItemId,
         ActivationFeeActual: _this.activationFeeActual(),
         MonthlyMonitoringRate: _this.monthlyMonitoringRate(),
+        MonthlyMonitoringRateItemId: _this.monthlyMonitoringRateItemId,
         MonthlyMonitoringRateActual: _this.monthlyMonitoringRateActual(),
         AlarmComPackage: _this.apckComboVM.selectedValue(),
         Over3Months: _this.over3Months(),
@@ -256,14 +261,40 @@ define('src/account/security/salesinfo.vm', [
   SalesInfoViewModel.prototype.viewTmpl = 'tmpl-security-salesinfo';
 
   SalesInfoViewModel.prototype.onLoad = function(routeData, join) { // overrides base
-    var _this = this;
-    load_activationFee(_this, join.add());
-    load_monthlyMonitoringRate(_this, join.add());
+    var _this = this,
+      cb = join.add();
+    _this.msAccountId = routeData.id;
+
+    load_invoice(_this, function() {
+      load_activationFee(_this, join.add());
+      load_monthlyMonitoringRate(_this, join.add());
+      load_vendoralarmcompacakges(_this.apckComboVM, join.add());
+      cb();
+    });
+
     load_pointsystems(_this.psComboVM, join.add());
     load_cellulartypes(_this.ctComboVM, join.add());
-    load_vendoralarmcompacakges(_this.apckComboVM, join.add());
     load_frequentlyinstalledequipmentget(_this.frequentGrid, join.add());
   };
+
+  function load_invoice(_this, cb) {
+    dataservice.salessummary.invoicemsisntalls.read({
+      id: _this.msAccountId,
+      link: 'accountid'
+    }, null, function(err, resp) {
+      if (err) {
+        return cb(err);
+      }
+      if (resp.Value) {
+        _this.invoiceID = resp.Value.InvoiceID;
+        _this.activationFee(resp.Value.ActivationFee);
+        _this.activationFeeItemId = resp.Value.ActivationFeeItemId;
+        _this.monthlyMonitoringRate(resp.Value.MonthlyMonitoringRate);
+        _this.monthlyMonitoringRateItemId = resp.Value.MonthlyMonitoringRateItemId;
+      }
+      cb();
+    });
+  }
 
   function load_activationFee(_this, cb) {
     _this.activationFee(199.00);

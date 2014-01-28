@@ -20,7 +20,8 @@ define('src/dataservices/salessummary', [
       'equipmentbypointsget',
       'contractlengthsget',
       'frequentlyinstalledequipmentget',
-      'invoicerefresh'
+      'invoicerefresh',
+      'invoicemsisntalls'
     ].forEach(function(collectionName) {
         result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
       });
