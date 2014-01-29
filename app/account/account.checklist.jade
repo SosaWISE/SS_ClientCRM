@@ -1,13 +1,11 @@
-div(class="panel scrollable")
+div(class="acct-qualify panel scrollable")
   div(class="p-nav checklist")
-    br
-    ul
-      <!-- ko foreach:checklist -->
-      li(data-bind="")
-        a(data-bind="active:active")
+    h2 Account Setup Checklist
+    ul(data-bind="foreach:checklist")
+      li
+        a(data-bind="click:$parent.clickItem,active:active")
           span(data-bind="text:title")
-      <!-- /ko -->
   div(class="p-module",data-bind="with:activeChild")
     div(data-bind="template:viewTmpl")
 
-  div(class="layers", data-bind="template:{name:layersVM.viewTmpl,data:layersVM}")
+  div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

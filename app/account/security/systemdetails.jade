@@ -1,0 +1,18 @@
+div(class="acct-systemdetails")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+        div(class="col")
+          div(class="section",data-bind="cmd:cmdFindRep,toggle:{empty:!repModel()}")
+            span(class="title") Technician
+            div(class="contents",data-bind="if:repModel")
+              div(data-bind="template:{data:repModel,name:'tmpl-rep_info'}")
+
+        div(style="height:300px;",
+          data-bind="template:{name:emcontactsVm.viewTmpl,data:emcontactsVm}")
+    tr
+      td(class="fh-body")
+        div(class="fh-contents")
+
+  div(data-bind="if:active()&&!loaded()")
+    div(class="spinner-wrap black", data-bind="template:'tmpl-spinner'")

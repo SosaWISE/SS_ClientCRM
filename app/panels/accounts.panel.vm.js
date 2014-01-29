@@ -56,8 +56,8 @@ define('src/panels/accounts.panel.vm', [
       var vm = new deps.AccountChecklistViewModel({
         pcontroller: _this,
         routePart: childRoutePart,
-        id: 'new' + newCount,
-        title: 'New ' + newCount,
+        id: 'qualify' + newCount,
+        title: 'Qualify ' + newCount,
       });
       _this.list.push(vm);
       _this.selectChild(vm);

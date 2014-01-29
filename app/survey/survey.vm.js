@@ -109,12 +109,10 @@ define('src/survey/survey.vm', [
     _this.clickTakeSurvey = function() {
       _this.layersVM.show(new TakeSurveyTranslationViewModel({
         surveyTranslationVMs: _this.translations(),
-        routeCtx: _this.createRouteContext({
+        routeData: {
           surveyid: _this.id,
           // locale: 'en',
-        }, function() {
-
-        }),
+        },
       }));
     };
   }

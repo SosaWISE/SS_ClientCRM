@@ -158,6 +158,16 @@ define('mock/dataservices/survey.mock', [
       send(result, setter, cb);
     };
 
+    dataservice.survey.results.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = findSingleOrAll(surveyResults, 'ResultID', id);
+          break;
+      }
+      send(result, setter, cb);
+    };
+
 
 
 
@@ -323,7 +333,8 @@ define('mock/dataservices/survey.mock', [
     questions,
     questionTranslations,
     possibleAnswers,
-    questions_PossibleAnswers_Map;
+    questions_PossibleAnswers_Map,
+    surveyResults;
 
   surveyTypes = mockery.fromTemplate({
     'list|3-3': [
@@ -385,22 +396,22 @@ define('mock/dataservices/survey.mock', [
       {
         QuestionID: '@INC(question)',
         SurveyId: 1, //'@REF_INC(survey)',
-        QuestionMeaningId: '@REF_INC(questionMeaning)',
+        QuestionMeaningId: '@FK(questionMeaning)',
         ParentId: null,
         GroupOrder: null, //'@NUMBER(0,5)',
-        MapToTokenId: '@REF_INC(token)',
+        MapToTokenId: '@FK(token)',
       }
     ],
   }).list
     .concat(mockery.fromTemplate({
       'list|2-2': [
         {
-          ParentId: '@REF_INC(question)',
+          ParentId: '@FK(question)',
           QuestionID: '@INC(question)',
           SurveyId: 1, //'@REF_INC(survey)',
-          QuestionMeaningId: '@REF_INC(questionMeaning)',
+          QuestionMeaningId: '@FK(questionMeaning)',
           GroupOrder: null, //'@NUMBER(0,5)',
-          MapToTokenId: '@REF_INC(token)',
+          MapToTokenId: '@FK(token)',
         }
       ],
     }).list);
@@ -439,10 +450,53 @@ define('mock/dataservices/survey.mock', [
       {
         QuestionId: '@FK(question)',
         PossibleAnswerId: '@FK(possibleAnswer)',
-        Expands: '@BOOL',
+        Expands: true, //'@BOOL',
       }
     ],
   }).list;
+
+  // surveyResults = mockery.fromTemplate({
+  //   'list|1-1': [
+  //     {
+  //       ResultID: 1,
+  //       SurveyId: 1,
+  //       'Answers|3-3': [
+  //         {
+  //           AnswerID: '@FK(question)',
+  //           ResultId: 1,
+  //           QuestionId: '@FK(question)',
+  //           AnswerText: '@SV_PA',
+  //         }
+  //       ],
+  //     }
+  //   ],
+  // }).list;
+  surveyResults = [
+    {
+      ResultID: 1,
+      SurveyId: 1,
+      'Answers': [
+        {
+          AnswerID: 1,
+          ResultId: 1,
+          QuestionId: 1,
+          AnswerText: 'yes',
+        },
+        {
+          AnswerID: 2,
+          ResultId: 1,
+          QuestionId: 2,
+          AnswerText: 'no',
+        },
+        {
+          AnswerID: 3,
+          ResultId: 1,
+          QuestionId: 3,
+          AnswerText: 'answer text!!',
+        },
+      ],
+    }
+  ];
 
   return mock;
 });

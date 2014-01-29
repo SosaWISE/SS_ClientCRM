@@ -51,7 +51,8 @@ define('src/survey/takesurvey.vm', [
     var _this = this,
       id = parseInt(routeData.surveyid, 10),
       locale = routeData.locale,
-      tempSurveyType, tempSurvey;
+      resultid = routeData.resultid,
+      tempSurveyType, tempSurvey, tempResult;
 
     if (!id || !locale) {
       return join.add()({ // Code: ???,
@@ -67,6 +68,12 @@ define('src/survey/takesurvey.vm', [
       tempSurvey = val;
     }, join);
 
+    if (resultid) {
+      loadResult(resultid, function(val) {
+        tempResult = val;
+      }, join);
+    }
+
     // ensure tokens and PAs are loaded
     _this.tokensVM.load(routeData, join.add());
     _this.possibleAnswersVM.load(routeData, join.add());
@@ -78,6 +85,7 @@ define('src/survey/takesurvey.vm', [
       }
 
       tempSurvey.surveyType = tempSurveyType;
+      tempSurvey.surveyResult = tempResult;
 
       // console.log('tokens', JSON.stringify(_this.tokensVM.childs(), null, '  '));
       // console.log('surveyType', tempSurvey.surveyType);
@@ -103,7 +111,8 @@ define('src/survey/takesurvey.vm', [
       tempSurvey.surveyType.questionMeanings,
       tempSurvey.surveyTranslation.questionTranslations,
       tokenMap,
-      data
+      data,
+      tempSurvey.surveyResult
     );
 
     survey = {
@@ -115,11 +124,12 @@ define('src/survey/takesurvey.vm', [
     return survey;
   }
 
-  function createTakeQuestions(questions, paMap, meanings, translations, tokenMap, data) {
+  function createTakeQuestions(questions, paMap, meanings, translations, tokenMap, data, surveyResult) {
     var getTokenValue,
       meaningMap = {},
       questionTokenValuesMap = {},
-      questionHtmlMap = {};
+      questionHtmlMap = {},
+      answerTextMap = {};
 
     getTokenValue = underscore.memoize(function(token) {
       var parts = token.split('.'),
@@ -157,6 +167,13 @@ define('src/survey/takesurvey.vm', [
       );
     });
 
+    if (surveyResult) {
+      // answerTextMap
+      surveyResult.Answers.forEach(function(answer) {
+        answerTextMap[answer.QuestionId] = answer.AnswerText;
+      });
+    }
+
     return questions.map(function(q) {
       q.questionPossibleAnswerMaps.forEach(function(qpa) {
         qpa.text = paMap[qpa.PossibleAnswerId].AnswerText;
@@ -168,6 +185,7 @@ define('src/survey/takesurvey.vm', [
         GroupOrder: q.GroupOrder,
         questionPossibleAnswerMaps: q.questionPossibleAnswerMaps,
         html: questionHtmlMap[q.QuestionID] || '<strong>[No Translation]</strong>',
+        answerText: answerTextMap[q.QuestionID],
       });
 
       return vm;
@@ -312,6 +330,15 @@ define('src/survey/takesurvey.vm', [
       id: surveyTranslationID,
       link: 'questionTranslations',
     }, setter, cb);
+  }
+
+  function loadResult(resultid, setter, join) {
+    var cb = join.add();
+    dataservice.survey.results.read({
+      id: resultid
+    }, setter, function(err, resp) {
+      cb(err, resp);
+    });
   }
 
   return TakeSurveyViewModel;

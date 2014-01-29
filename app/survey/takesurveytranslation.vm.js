@@ -16,7 +16,7 @@ define('src/survey/takesurveytranslation.vm', [
   function TakeSurveyTranslationViewModel(options) {
     var _this = this;
     TakeSurveyTranslationViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, ['surveyTranslationVMs', 'routeCtx']);
+    BaseViewModel.ensureProps(_this, ['surveyTranslationVMs', 'routeData']);
 
     _this.localeComboVM = new ComboViewModel({
       list: _this.surveyTranslationVMs.map(function(surveyTranslationVM) {
@@ -45,7 +45,7 @@ define('src/survey/takesurveytranslation.vm', [
         notify.notify('warn', 'No localization code selected', 10);
         return;
       }
-      _this.routeCtx.routeData.locale = locale;
+      _this.routeData.locale = locale;
       vm = new TakeSurveyViewModel({
         tokenData: {
           CompanyName: 'CompanyName',
@@ -65,7 +65,9 @@ define('src/survey/takesurveytranslation.vm', [
           },
         },
       });
-      vm.activate(_this.routeCtx);
+      vm.load(_this.routeData, function() {
+        //
+      });
       _this.layersVM.show(vm);
       // _this.clickCancel();
     };
