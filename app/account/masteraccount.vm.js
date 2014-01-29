@@ -17,8 +17,7 @@ define('src/account/masteraccount.vm', [
 ) {
   "use strict";
 
-  var childRoutePart = 'id',
-    agingList = [
+  var agingList = [
       'Current',
       '1 to 30',
       '31 to 60',
@@ -141,7 +140,6 @@ define('src/account/masteraccount.vm', [
   function createAccount(pcontroller, id, title, rmr, units) {
     return new AccountViewModel({
       pcontroller: pcontroller,
-      routePart: childRoutePart,
       id: id,
       title: title,
       rmr: rmr,
@@ -152,7 +150,6 @@ define('src/account/masteraccount.vm', [
   function createAging(pcontroller, index, title, amount) {
     return new ControllerViewModel({
       pcontroller: pcontroller,
-      routePart: childRoutePart,
       id: 'age' + index,
       index: index,
       title: title,

@@ -17,8 +17,6 @@ define('src/account/security/account.vm', [
 ) {
   "use strict";
 
-  var childRoutePart = 'tab';
-
   function AccountViewModel(options) {
     var _this = this;
     AccountViewModel.super_.call(_this, options);
@@ -56,7 +54,6 @@ define('src/account/security/account.vm', [
   function createAccountChecklist(pcontroller, title) {
     return new AccountChecklistViewModel({
       pcontroller: pcontroller,
-      routePart: childRoutePart,
       id: 'checklist',
       title: title,
     });
@@ -65,7 +62,6 @@ define('src/account/security/account.vm', [
   function createInventory(pcontroller, title) {
     return new InventoryViewModel({
       pcontroller: pcontroller,
-      routePart: childRoutePart,
       id: titleToId(title),
       title: title,
     });
@@ -74,7 +70,6 @@ define('src/account/security/account.vm', [
   function createSummary(pcontroller, title) {
     return new SummaryViewModel({
       pcontroller: pcontroller,
-      routePart: childRoutePart,
       id: titleToId(title),
       title: title,
     });
@@ -83,7 +78,6 @@ define('src/account/security/account.vm', [
   function createFauxController(pcontroller, title) {
     return new ControllerViewModel({
       pcontroller: pcontroller,
-      routePart: childRoutePart,
       id: titleToId(title),
       title: title,
       viewTmpl: 'tmpl-temptitle',
