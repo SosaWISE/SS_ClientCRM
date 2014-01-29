@@ -22,6 +22,7 @@ define('src/dataservices/survey', [
       'questionTranslations',
       'questionMeaningTokenMaps',
       'questionPossibleAnswerMaps',
+      'results',
     ].forEach(function(collectionName) {
         result[collectionName] = new DataserviceBase(collectionName, surveyServiceDomain);
       });

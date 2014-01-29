@@ -12,11 +12,14 @@ div(class="acct-survey")
     tr
       td(class="fh-body")
         div(class="fh-contents",data-bind="if:activeChild")
-          div(class="title") Questions
           div(class="survey")
             div(data-bind="with:activeChild().survey")
-              div(data-bind="text:version")
-              div(data-bind="text:locale")
+              span(data-bind="text:locale")
+              |&nbsp;
+              span(data-bind="text:version")
+              |&nbsp;
+              span(class="title") Questions
+
               div(data-bind="foreach:questions")
                 //- start question recursion
                 div(class="relative",data-bind="template:'tmpl-takequestion'")

@@ -79,6 +79,7 @@ define('src/account/security/survey.gvm', [
         id: (_this.list().length + 1),
         surveyid: (_this.list().length + 1),
         locale: 'en',
+        resultid: (_this.list().length + 1),
 
 
         CreatedBy: 'CreatedBy ' + (_this.list().length + 1),

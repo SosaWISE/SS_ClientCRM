@@ -1,4 +1,4 @@
-table(class="question take-question",data-bind="toggle:{'complete':isComplete}")
+table(class="question takequestion",data-bind="toggle:{'complete':isComplete}")
   thead
   tr
     td(class="title")
@@ -6,12 +6,14 @@ table(class="question take-question",data-bind="toggle:{'complete':isComplete}")
     td(class="content")
       div(class="md-html",data-bind="html:html")
     td(class="answers")
+      div(data-bind="if:answerMode==='answered'")
+        span(data-bind="text:answer")
       div(data-bind="if:answerMode==='radiolist'")
         div(style="white-space:nowrap;",data-bind="foreach:questionPossibleAnswerMaps")
           a(class="btn small",data-bind="click:$parent.clickAnswer,active:$parent.answer()===text,text:text")
           |&nbsp;
       div(data-bind="if:answerMode==='combo'")
-        div(style="min-width:75px;",data-bind="template:{name:comboVM.viewTmpl,data:comboVM}")
+        div(style="min-width:75px;",data-bind="template:{name:cvm.viewTmpl,data:cvm}")
       div(data-bind="if:answerMode==='text'")
         input(type="text",data-bind="value:answer,valueUpdate:'keyup'")
 

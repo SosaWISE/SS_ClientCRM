@@ -44,6 +44,7 @@ define('src/account/security/survey.vm', [
           vm.load({
             surveyid: item.surveyid,
             locale: item.locale,
+            resultid: item.resultid,
           }, function() {
             //
           });
