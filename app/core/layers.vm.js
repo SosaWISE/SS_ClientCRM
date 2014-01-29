@@ -38,7 +38,7 @@ define('src/core/layers.vm', [
           // close the top layer
           viewModel.closeTop();
         }
-      }, true);
+      }, false); // give someone a chance to cancel this event
 
       //      .layer        container
       element.parentElement.parentElement.addEventListener("focus", function(evt) {
@@ -143,7 +143,7 @@ define('src/core/layers.vm', [
         delete prevVM.layer;
         prevVM.active(false);
       }
-      layers.vmVM = layersVM;
+      vm.layersVM = layersVM;
       vm.layer = layer;
       vm.active(true);
       prevVM = vm;

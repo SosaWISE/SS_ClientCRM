@@ -35,10 +35,10 @@ define('src/slick/rowevent', [
       }
 
       // call function
-      _options.fn(_grid.getDataItem(cell.row), e);
-
-      e.stopPropagation();
-      e.stopImmediatePropagation();
+      if (!_options.fn(_grid.getDataItem(cell.row), e)) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+      }
     }
   }
 

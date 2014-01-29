@@ -1,0 +1,23 @@
+div(class="acct-survey")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+        ul(class="actions left cf")
+          li
+            a(class="btn small",tabindex="0",data-bind="cmd:clickSave") Save
+          li
+            a(class="btn small",tabindex="0",data-bind="cmd:clickRetakeLastSurvey") Retake Last Survey
+        div(class="grid-wrap")
+          div(class="slickgrid",data-bind="slickgrid:gvm")
+    tr
+      td(class="fh-body")
+        div(class="fh-contents",data-bind="if:activeChild")
+          div(class="title") Questions
+          div(class="survey")
+            div(data-bind="with:activeChild().survey")
+              div(data-bind="text:version")
+              div(data-bind="text:locale")
+              div(data-bind="foreach:questions")
+                //- start question recursion
+                div(class="relative",data-bind="template:'tmpl-takequestion'")
+

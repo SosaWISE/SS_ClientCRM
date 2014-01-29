@@ -1,80 +1,81 @@
-h2(class="title") Premise Address
-div(class="addr-form", data-bind="toggle:{'override':override}")
-  ul(class="edit-form",style="width:260px;")
-    li
-      span(class="label") Premise Phone
-      input(type="text", placeholder="(123) 123-1234",
-        data-bind="hasfocus:focus,ukov:addressData.Phone,value:addressData.Phone,valueUpdate:'keyup',enter:cmdValidate")
-    li
-      span(class="label") Zip code
-      input(type="text", placeholder="12345",
-        data-bind="ukov:addressData.PostalCode,value:addressData.PostalCode,valueUpdate:'keyup',enter:cmdValidate")
-    li
-      span(class="label") Street Address
-      input(type="text", placeholder="55 W Main St",
-        data-bind="ukov:addressData.StreetAddress,value:addressData.StreetAddress,valueUpdate:'keyup',enter:cmdValidate")
-    li
-      span(class="label") Street Address 2
-      input(type="text", placeholder="#14",
-        data-bind="ukov:addressData.StreetAddress2,value:addressData.StreetAddress2,valueUpdate:'keyup',enter:cmdValidate")
-    <!-- ko if:override -->
-    li
-      span(class="label") City
-      input(type="text", placeholder="Springfield",
-        data-bind="ukov:addressData.City,value:addressData.City,valueUpdate:'keyup',enter:cmdValidate")
-    li
-      span(class="label") State
-      div(data-bind="template:{name:stateComboVM.viewTmpl,data:stateComboVM}")
-    li
-      span(class="label") County
-      input(type="text", placeholder="Grand",
-        data-bind="ukov:addressData.County,value:addressData.County,valueUpdate:'keyup',enter:cmdValidate")
-    li
-      span(class="label") Time Zone
-      div(data-bind="template:{name:timeZoneComboVM.viewTmpl,data:timeZoneComboVM}")
-    li
-    <!-- /ko -->
-  ul(class="edit-form",style="width:260px;position:absolute;top:0px;right:0px;",
-    data-bind="visible:override")
-    li
-      span(class="label") House #
-      input(type="text", placeholder="14",
-        data-bind="ukov:addressData.StreetNumber,value:addressData.StreetNumber,valueUpdate:'keyup',enter:cmdValidate")
-    li
-      span(class="label") Street Name
-      input(type="text", placeholder="Main",
-        data-bind="ukov:addressData.StreetName,value:addressData.StreetName,valueUpdate:'keyup',enter:cmdValidate")
-    li
-      span(class="label") Pre Directional
-      div(data-bind="template:{name:preDirectionalComboVM.viewTmpl,data:preDirectionalComboVM}")
-    li
-      span(class="label") Post Directional
-      div(data-bind="template:{name:postDirectionalComboVM.viewTmpl,data:postDirectionalComboVM}")
-    li
-      span(class="label") Street Type
-      div(data-bind="template:{name:streetTypeComboVM.viewTmpl,data:streetTypeComboVM}")
-    li
-      span(class="label") Extension
-      input(type="text", placeholder="",
-        data-bind="ukov:addressData.Extension,value:addressData.Extension,valueUpdate:'keyup',enter:cmdValidate")
-    li
-      span(class="label") Extension #
-      input(type="text", placeholder="",
-        data-bind="ukov:addressData.ExtensionNumber,value:addressData.ExtensionNumber,valueUpdate:'keyup',enter:cmdValidate")
-    li
-      span(class="label") Carrier #
-      input(type="text", placeholder="",
-        data-bind="ukov:addressData.CarrierRoute,value:addressData.CarrierRoute,valueUpdate:'keyup',enter:cmdValidate")
-    li
-      span(class="label") DPV Response
-      input(type="text", placeholder="",
-        data-bind="ukov:addressData.DPVResponse,value:addressData.DPVResponse,valueUpdate:'keyup',enter:cmdValidate")
+div(class="addr-validate")
+  h2(class="title") Premise Address
+  div(class="addr-form-wrap")
+    div(class="addr-form")
+      ul(class="edit-form")
+        li
+          span(class="label") Premise Phone
+          input(type="text", placeholder="(123) 123-1234",
+            data-bind="hasfocus:focus,ukov:data.Phone,value:data.Phone,valueUpdate:'keyup',enter:cmdValidate")
+        li
+          span(class="label") Zip code
+          input(type="text", placeholder="12345",
+            data-bind="ukov:data.PostalCode,value:data.PostalCode,valueUpdate:'keyup',enter:cmdValidate")
+        li
+          span(class="label") Street Address
+          input(type="text", placeholder="55 W Main St",
+            data-bind="ukov:data.StreetAddress,value:data.StreetAddress,valueUpdate:'keyup',enter:cmdValidate")
+        li
+          span(class="label") Street Address 2
+          input(type="text", placeholder="#14",
+            data-bind="ukov:data.StreetAddress2,value:data.StreetAddress2,valueUpdate:'keyup',enter:cmdValidate")
+        <!-- ko if:override -->
+        li
+          span(class="label") City
+          input(type="text", placeholder="Springfield",
+            data-bind="ukov:data.City,value:data.City,valueUpdate:'keyup',enter:cmdValidate")
+        li
+          span(class="label") State
+          div(data-bind="template:{name:data.StateCvm.viewTmpl,data:data.StateCvm}")
+        li
+          span(class="label") County
+          input(type="text", placeholder="Grand",
+            data-bind="ukov:data.County,value:data.County,valueUpdate:'keyup',enter:cmdValidate")
+        li
+          span(class="label") Time Zone
+          div(data-bind="template:{name:data.TimeZoneCvm.viewTmpl,data:data.TimeZoneCvm}")
+        li
+        <!-- /ko -->
+      ul(class="edit-form right-side",data-bind="visible:override")
+        li
+          span(class="label") House #
+          input(type="text", placeholder="14",
+            data-bind="ukov:data.StreetNumber,value:data.StreetNumber,valueUpdate:'keyup',enter:cmdValidate")
+        li
+          span(class="label") Street Name
+          input(type="text", placeholder="Main",
+            data-bind="ukov:data.StreetName,value:data.StreetName,valueUpdate:'keyup',enter:cmdValidate")
+        li
+          span(class="label") Pre Directional
+          div(data-bind="template:{name:data.PreDirectionalCvm.viewTmpl,data:data.PreDirectionalCvm}")
+        li
+          span(class="label") Post Directional
+          div(data-bind="template:{name:data.PostDirectionalCvm.viewTmpl,data:data.PostDirectionalCvm}")
+        li
+          span(class="label") Street Type
+          div(data-bind="template:{name:data.StreetTypeCvm.viewTmpl,data:data.StreetTypeCvm}")
+        li
+          span(class="label") Extension
+          input(type="text", placeholder="",
+            data-bind="ukov:data.Extension,value:data.Extension,valueUpdate:'keyup',enter:cmdValidate")
+        li
+          span(class="label") Extension #
+          input(type="text", placeholder="",
+            data-bind="ukov:data.ExtensionNumber,value:data.ExtensionNumber,valueUpdate:'keyup',enter:cmdValidate")
+        li
+          span(class="label") Carrier #
+          input(type="text", placeholder="",
+            data-bind="ukov:data.CarrierRoute,value:data.CarrierRoute,valueUpdate:'keyup',enter:cmdValidate")
+        li
+          span(class="label") DPV Response
+          input(type="text", placeholder="",
+            data-bind="ukov:data.DPVResponse,value:data.DPVResponse,valueUpdate:'keyup',enter:cmdValidate")
 
-div(style="margin-bottom:20px;")
-    span(class="btn-bg", tabindex="0", data-bind="cmd:cmdManual") Manual
+  div
     span(class="btn-bg", tabindex="0", data-bind="cmd:cmdValidate") Validate Address
+    span(class="btn-bg", tabindex="0", data-bind="cmd:cmdManual") Manual
 
-div(data-bind="if:loaded")
-  div(data-bind="template:{name:'tmpl-address',data:addressResult}")
-  div(class="actions")
-    span(class="btn-bg", tabindex="0", data-bind="cmd:clickClose") Ok
+  div(class="result",data-bind="if:result")
+    div(data-bind="template:{name:'tmpl-address',data:result}")
+    div(class="actions")
+      span(class="btn-bg", tabindex="0", data-bind="cmd:clickClose") Ok

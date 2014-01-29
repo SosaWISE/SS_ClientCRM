@@ -20,7 +20,7 @@ define('src/account/account.qualify.vm', [
   function AccountQualifyViewModel(options) {
     var _this = this;
     AccountQualifyViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['layersVM']);
+    ControllerViewModel.ensureProps(_this, ['layersVm']);
 
     _this.title = ko.observable(_this.title);
     _this.hideNotes = ko.observable(false);
@@ -41,7 +41,7 @@ define('src/account/account.qualify.vm', [
       if (_this.layer) {
         return;
       }
-      _this.layer = _this.layersVM.show(new Ctor(options), function onClose(result) {
+      _this.layer = _this.layersVm.show(new Ctor(options), function onClose(result) {
         _this.layer = null;
         if (result) {
           _this.step(_this.step() + 1);
