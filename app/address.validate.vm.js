@@ -29,6 +29,12 @@ define('src/address.validate.vm', [
     _model: true,
     DealerId: {},
 
+    SeasonId: {},
+
+    SalesRepId: {},
+
+    TeamLocationId: {},
+
     PostalCode: {
       converter: strConverter,
       validators: [
@@ -46,7 +52,7 @@ define('src/address.validate.vm', [
     StreetAddress2: {
       validators: [max50],
     },
-    Phone: {
+    PhoneNumber: {
       converter: ukov.converters.phone(),
     },
 
@@ -129,51 +135,54 @@ define('src/address.validate.vm', [
     AddressValidateViewModel.super_.call(_this, options);
 
     _this.focus = ko.observable(false);
-    _this.addressResult = ko.observable(null);
-    _this.loaded = ko.observable(false);
+    _this.result = ko.observable(null);
     _this.override = ko.observable(false);
 
-    _this.addressData = ukov.wrap({
-      DealerId: 1, // ?????
+    _this.data = ukov.wrap({
+      DealerId: 5000, // ?????
     }, schema);
 
-    _this.stateComboVM = new ComboViewModel({
-      selectedValue: _this.addressData.StateId,
+    _this.data.StateCvm = new ComboViewModel({
+      selectedValue: _this.data.StateId,
       list: _this.stateOptions,
       nullable: true,
     });
-    _this.timeZoneComboVM = new ComboViewModel({
-      selectedValue: _this.addressData.TimeZoneId,
+    _this.data.TimeZoneCvm = new ComboViewModel({
+      selectedValue: _this.data.TimeZoneId,
       list: _this.timeZoneOptions,
       nullable: true,
     });
-    _this.preDirectionalComboVM = new ComboViewModel({
-      selectedValue: _this.addressData.PreDirectional,
+    _this.data.PreDirectionalCvm = new ComboViewModel({
+      selectedValue: _this.data.PreDirectional,
       list: _this.addressDirectionalTypeOptions,
       nullable: true,
     });
-    _this.postDirectionalComboVM = new ComboViewModel({
-      selectedValue: _this.addressData.PostDirectional,
+    _this.data.PostDirectionalCvm = new ComboViewModel({
+      selectedValue: _this.data.PostDirectional,
       list: _this.addressDirectionalTypeOptions,
       nullable: true,
     });
-    _this.streetTypeComboVM = new ComboViewModel({
-      selectedValue: _this.addressData.StreetType,
+    _this.data.StreetTypeCvm = new ComboViewModel({
+      selectedValue: _this.data.StreetType,
       list: _this.streetTypeOptions,
       nullable: true,
     });
 
-    _this.width = ko.observable(300);
-    _this.height = ko.observable(450);
-
+    _this.width = ko.observable(0);
+    _this.height = ko.observable('auto');
     _this.setManualOverride(false);
 
 
     /////TESTING//////////////////////
-    _this.addressData.PostalCode('84057');
-    _this.addressData.StreetAddress('1517 N 1335 W');
-    _this.addressData.Phone('801 822 1234');
-    _this.addressData.Phone(_this.addressData.model.Phone);
+    _this.data.SeasonId(1);
+    _this.data.SalesRepId('SOSA001');
+    _this.data.TeamLocationId(1);
+    _this.data.PostalCode('84057');
+    _this.data.StreetAddress('1517 N 1335 W');
+    _this.data.PhoneNumber('801 822 1234');
+    _this.data.PhoneNumber(_this.data.model.PhoneNumber);
+    _this.data.City('OREM');
+    _this.data.StateId('UT');
     /////TESTING//////////////////////
 
     //
@@ -181,33 +190,29 @@ define('src/address.validate.vm', [
     //
     _this.clickClose = function() {
       if (_this.layer) {
-        _this.layer.close(_this.addressResult());
+        _this.layer.close(_this.result());
       }
     };
     _this.cmdValidate = ko.command(function(cb) {
-      _this.addressData.validate();
-      _this.addressData.update();
-      if (!_this.addressData.isValid()) {
-        notify.notify('warn', _this.addressData.errMsg(), 7);
+      _this.data.validate();
+      _this.data.update();
+      if (!_this.data.isValid()) {
+        notify.notify('warn', _this.data.errMsg(), 7);
         return cb();
       }
 
-      _this.loaded(false);
-      var model = _this.addressData.getValue();
-      dataservice.qualify.validateAddress(model, function(err, resp) {
+      var model = _this.data.getValue();
+      dataservice.qualify.addressValidation.post(null, model, null, function(err, resp) {
         if (err) {
           notify.notify('warn', resp.Message, 10);
         } else {
-          _this.addressData.markClean(model, true);
-          _this.addressResult(resp.Value);
-          _this.loaded(true);
+          _this.data.markClean(model, true);
+          _this.result(resp.Value);
         }
-        /////TESTING//////////////////////
-        // _this.width(_this.width() + 10);
-        // _this.height(_this.height() + 10);
-        /////TESTING//////////////////////
         cb();
       });
+    }, function(busy) {
+      return !busy && !_this.data.isClean();
     });
     _this.cmdManual = ko.command(function(cb) {
       // _this.setManualOverride(true);
@@ -216,7 +221,7 @@ define('src/address.validate.vm', [
       /////TESTING//////////////////////
       cb();
     }, function(busy) {
-      return !busy; // && ???;
+      return !busy && _this.result() && !_this.result().Validated;
     });
 
     _this.loading = _this.cmdValidate.busy;
@@ -235,18 +240,16 @@ define('src/address.validate.vm', [
 
   AddressValidateViewModel.prototype.setManualOverride = function(override) {
     var _this = this,
-      addrData = _this.addressData,
+      addrData = _this.data,
       ignore = !override;
 
     _this.override(override);
 
     // size
     if (override) {
-      _this.width(600);
-      _this.height(905);
+      _this.width(570);
     } else {
       _this.width(300);
-      _this.height(570);
     }
 
 

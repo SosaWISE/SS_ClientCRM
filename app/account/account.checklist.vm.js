@@ -1,4 +1,8 @@
 define('src/account/account.checklist.vm', [
+  'src/account/security/survey.vm',
+  'src/account/security/systemdetails.vm',
+  'src/account/security/industrynums.vm',
+  'src/account/security/salesinfo.vm',
   'src/core/layers.vm',
   'src/account/account.qualify.vm',
   'src/core/notify',
@@ -6,6 +10,10 @@ define('src/account/account.checklist.vm', [
   'src/core/controller.vm',
   'ko',
 ], function(
+  SurveyViewModel,
+  SystemDetailsViewModel,
+  IndustryViewModel,
+  SalesInfoViewModel,
   LayersViewModel,
   AccountQualifyViewModel,
   notify,
@@ -21,11 +29,14 @@ define('src/account/account.checklist.vm', [
 
     _this.checklist = _this.childs;
 
-    _this.layersVM = new LayersViewModel();
+    _this.layersVm = new LayersViewModel();
 
     //
     // events
     //
+    _this.clickItem = function(vm) {
+      _this.selectChild(vm);
+    };
     // _this.cmd = ko.command(function(cb) {
     //   cb();
     // });
@@ -38,24 +49,57 @@ define('src/account/account.checklist.vm', [
 
     _this.checklist([
       new AccountQualifyViewModel({
-        routePart: 'tab',
+        pcontroller: _this,
         id: 'qualify',
-        title: 'Qualify',
-        layersVM: _this.layersVM,
+        title: 'Qualify Customer',
+        layersVm: _this.layersVm,
+      }),
+      new SalesInfoViewModel({
+        pcontroller: _this,
+        id: 'salesinfo',
+        title: 'Sales Info',
+      }),
+      new SurveyViewModel({
+        pcontroller: _this,
+        id: 'presurvey',
+        title: 'Pre Survey',
+      }),
+      new IndustryViewModel({
+        pcontroller: _this,
+        id: 'industrynums',
+        title: 'Industry #\'s',
+      }),
+      new SystemDetailsViewModel({
+        pcontroller: _this,
+        id: 'systemdetails',
+        title: 'System Details',
+        layersVm: _this.layersVm,
       }),
       {
-        title: 'Pre Survey',
-        complete: ko.observable(false),
+        title: 'System Test',
+        // title: 'Signal/TwoWay Check',
+        active: ko.observable(false),
+      },
+      // {
+      //   title: 'Tech Inspection',
+      //   active: ko.observable(false),
+      // },
+      new SurveyViewModel({
+        pcontroller: _this,
+        id: 'techinspection',
+        title: 'Tech Inspection',
+      }),
+      new SurveyViewModel({
+        pcontroller: _this,
+        id: 'postsurvey',
+        title: 'Post Survey',
+      }),
+      {
+        title: 'Initial Payment',
         active: ko.observable(false),
       },
       {
-        title: 'Industry #\'s',
-        complete: ko.observable(false),
-        active: ko.observable(false),
-      },
-      {
-        title: 'etc.',
-        complete: ko.observable(false),
+        title: 'Submit Account Online',
         active: ko.observable(false),
       },
     ]);
@@ -75,20 +119,6 @@ define('src/account/account.checklist.vm', [
     // setTimeout(function() {
     //   _this.focus(true);
     // }, 100);
-  };
-
-  AccountChecklistViewModel.prototype.selectItem = function(vm) {
-    var _this = this;
-    _this.onDeactivate();
-    if (_this.activeChild() !== vm) {
-      _this.activeChild(vm);
-    }
-
-    _this.goTo({
-      masterid: _this.id,
-      id: _this.id,
-      tab: vm.id,
-    });
   };
 
   return AccountChecklistViewModel;

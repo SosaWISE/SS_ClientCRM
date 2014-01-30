@@ -1,5 +1,5 @@
 define('src/account/security/account.vm', [
-  'src/account/security/salesinfo.vm',
+  'src/account/account.checklist.vm',
   'src/account/security/summary.vm',
   'src/account/security/inventory.vm',
   'src/core/notify',
@@ -7,7 +7,7 @@ define('src/account/security/account.vm', [
   'src/core/controller.vm',
   'ko'
 ], function(
-  SalesInfoViewModel,
+  AccountChecklistViewModel,
   SummaryViewModel,
   InventoryViewModel,
   notify,
@@ -16,8 +16,6 @@ define('src/account/security/account.vm', [
   ko
 ) {
   "use strict";
-
-  var childRoutePart = 'tab';
 
   function AccountViewModel(options) {
     var _this = this;
@@ -42,23 +40,21 @@ define('src/account/security/account.vm', [
       cb = join.add();
     setTimeout(function() {
       _this.childs([
-        salesInfoScreen(_this, 'Sales Info'),
         createSummary(_this, 'Account Summary'),
         createFauxController(_this, 'EMC/Equipment'),
         createFauxController(_this, 'Signal History'),
         createInventory(_this, 'Inventory'),
         createFauxController(_this, 'Contract Approval'),
-        createFauxController(_this, 'Setup Checklist'),
+        createAccountChecklist(_this, 'Setup Checklist'),
       ]);
       cb();
     }, 0);
   };
 
-  function salesInfoScreen(pcontroller, title) {
-    return new SalesInfoViewModel({
+  function createAccountChecklist(pcontroller, title) {
+    return new AccountChecklistViewModel({
       pcontroller: pcontroller,
-      routePart: childRoutePart,
-      id: titleToId(title),
+      id: 'checklist',
       title: title,
     });
   }
@@ -66,7 +62,6 @@ define('src/account/security/account.vm', [
   function createInventory(pcontroller, title) {
     return new InventoryViewModel({
       pcontroller: pcontroller,
-      routePart: childRoutePart,
       id: titleToId(title),
       title: title,
     });
@@ -75,7 +70,6 @@ define('src/account/security/account.vm', [
   function createSummary(pcontroller, title) {
     return new SummaryViewModel({
       pcontroller: pcontroller,
-      routePart: childRoutePart,
       id: titleToId(title),
       title: title,
     });
@@ -84,7 +78,6 @@ define('src/account/security/account.vm', [
   function createFauxController(pcontroller, title) {
     return new ControllerViewModel({
       pcontroller: pcontroller,
-      routePart: childRoutePart,
       id: titleToId(title),
       title: title,
       viewTmpl: 'tmpl-temptitle',

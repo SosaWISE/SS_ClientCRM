@@ -16,11 +16,10 @@
   .layer-cell {
     display: table-cell;
     vertical-align: middle;
-    color: white;
 
     .layer {
-      margin-left: auto;
-      margin-right: auto;
+      color: white;
+      margin: 5px auto;
       .transition(width 0.25s, height 0.25s;);
 
       position: relative;
@@ -32,7 +31,7 @@
       height: 98%;
       // overflow: hidden;
 
-      .content {
+      > .content {
         padding: 20px;
 
         .actions ul,

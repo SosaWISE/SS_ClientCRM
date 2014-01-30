@@ -150,18 +150,24 @@ table.fh-wrap {
 .accounts {
   @tranSec: .25s;
 
-  .checklist {
-    > ul {
+  ul.actions.left {
+    list-style: none;
+    padding: 10px 0px 0px 7px;
+    margin: 0;
+    border: 0 solid transparent;
+    li {
+      float: left;
+
+      list-style: none;
+      margin: 0 4px 10px 0;
+      padding: 0;
+
       a {
-        &.active {
-          color: @account-bg;
-        }
-        &.disabled {
-          opacity: 0.5;
-        }
+        white-space: nowrap;
       }
     }
   }
+
 
   .credit-result {
     display:table;
@@ -225,7 +231,7 @@ table.fh-wrap {
     }
 
     background-color: #fff;
-    color: #6c6c6c;
+    // color: #6c6c6c;
 
     .details {
       overflow: auto;
@@ -240,109 +246,6 @@ table.fh-wrap {
       }
       &.show-reps {
         right: 300px;
-      }
-    }
-
-    .col {
-      padding-left: 20px;
-      > .title {
-        font-size: 1.3em;
-        font-weight: 500;
-        overflow: hidden;
-        // text-transform: uppercase;
-        text-align: center;
-        display: block;
-      }
-    }
-    .col3 {
-      float:left;
-      width: 33%;
-    }
-
-    .section {
-      // overflow: hidden;
-      position: relative;
-      width: 100%;
-      margin-top: 20px;
-
-      > .title {
-        font-size: 1.2em;
-        font-weight: 500;
-        overflow: hidden;
-        // text-transform: uppercase;
-      }
-      .contents {
-        overflow: hidden;
-        color: #222;
-        .border-radius(5px);
-        padding: 10px;
-        .box-shadow(2px 2px 10px -2px rgba(0, 0, 0, 0.7));
-
-        .userinfo {
-          min-height: 85px;
-          .img {
-            width: 80px;
-            height: 80px;
-          }
-        }
-
-        .credit-score {
-          width: 100%;
-          text-align: center;
-          font-weight: 500;
-          padding: 5px;
-
-          > span {
-            padding: 5px 10px 5px 10px;
-            margin-left: auto;
-            margin-right: auto;
-            .border-radius(5px);
-          }
-
-          .excellent {
-            background-color: green;
-          }
-        }
-      }
-
-      &.empty {
-        .user-select(none);
-        overflow: hidden;
-        .border-radius(25px);
-        border-width: 4px;
-        border-style: dashed;
-        border-color: #6c6c6c;
-        display:table;
-        height: 150px;
-        text-align: center;
-        .transition(opacity .25s;);
-        opacity: 0.2;
-        &:not(.disabled) {
-          opacity: 0.7;
-          &:hover {
-            opacity: 1;
-          }
-          .title:after {
-            content: "\e01b";
-            font-family: 'Nexsense';
-            width: 32px;
-            height: 32px;
-            font-size: 16px;
-            text-align: center;
-            margin-left: 5px;
-          }
-          cursor: pointer;
-        }
-        .title {
-          display:table-cell;
-          vertical-align: middle;
-          font-size: 1.2em;
-          font-weight: 500;
-          text-transform: none;
-        }
-        .contents {
-          display: none;
-        }
       }
     }
 
@@ -387,7 +290,7 @@ table.fh-wrap {
         bottom: 20px;
       }
 
-      color: #fff;
+      // color: #fff;
 
       .vertical-title {
         .transform(rotate(90deg));
@@ -420,42 +323,194 @@ table.fh-wrap {
     }
   }
 
+  .acct-qualify {
 
-  .addr-form {
-    position:relative;
-    overflow:hidden;
+    > .p-nav {
+      background-color: white;
+      color: @account-bg;
+      ul {
+        a {
+          padding-left: 30px;
+          color: inherit;
+          &.active {
+            color: inherit;
+            // top, bottom, left
+            .box-shadow(inset 0 5px 5px -5px #444, inset 0px -5px 5px -5px #444, inset 5px 0px 5px -5px #444;);
+          }
+          &.disabled > span {
+            opacity: 0.5;
+          }
 
-    transition: height 0.25s;
-    height: 265px;
-    &.override {
-      overflow:visible;
-      height: 600px;
+          position: relative;
+          &:before {
+            position: absolute;
+            top: -2px;
+            left: 6px;
+            font-size: 1.8em;
+            content: '\2713';
+          }
+          &:not(.done):before {
+            color: rgba(0,0,0, 0.15);
+          }
+        }
+      }
+
+      h2 {
+        padding: 10px 0px 5px 25px;
+      }
+    }
+
+    .rep-find {
+    }
+
+    .addr-validate {
+      .addr-form-wrap {
+        width:100%;
+        overflow-x:hidden;
+      }
+      .addr-form {
+        width:530px;
+
+        .edit-form {
+          width:260px;
+          display:inline-block;
+          vertical-align:top;
+          &.right-side {
+            margin-left:10px;
+          }
+        }
+      }
+      .result {
+        min-height:150px;
+        .info {
+          margin-top:10px;
+          margin-bottom:10px;
+        }
+      }
+    }
+
+    .runcredit-form {
+      position:relative;
+      overflow:hidden;
+
+      // transition: height 0.25s;
+      // height: 265px;
+      // &.override {
+      //   overflow:visible;
+      //   height: 600px;
+      // }
     }
   }
 
-  .runcredit-form {
-    position:relative;
-    overflow:hidden;
 
-    // transition: height 0.25s;
-    // height: 265px;
-    // &.override {
-    //   overflow:visible;
-    //   height: 600px;
-    // }
+
+
+  .col {
+    padding-left: 20px;
+    > .title {
+      font-size: 1.3em;
+      font-weight: 500;
+      overflow: hidden;
+      // text-transform: uppercase;
+      text-align: center;
+      display: block;
+    }
+    &.col3 {
+      float:left;
+      width: 33%;
+    }
+
+    .section {
+      // overflow: hidden;
+      position: relative;
+      width: 100%;
+      margin-top: 20px;
+
+      > .title {
+        font-size: 1.2em;
+        font-weight: 500;
+        overflow: hidden;
+        // text-transform: uppercase;
+      }
+      .contents {
+        overflow: hidden;
+        // color: #222;
+        .border-radius(5px);
+        padding: 10px;
+        .box-shadow(2px 2px 10px -2px rgba(0, 0, 0, 0.7));
+
+        .userinfo {
+          min-height: 85px;
+          .img {
+            width: 80px;
+            height: 80px;
+          }
+        }
+
+        .credit-score {
+          width: 100%;
+          text-align: center;
+          font-weight: 500;
+          padding: 5px;
+
+          > span {
+            padding: 5px 10px 5px 10px;
+            margin-left: auto;
+            margin-right: auto;
+            .border-radius(5px);
+          }
+
+          .excellent {
+            background-color: green;
+          }
+        }
+      }
+
+      &.empty {
+        .user-select(none);
+        overflow: hidden;
+        .border-radius(25px);
+        border-width: 4px;
+        border-style: dashed;
+        // border-color: #6c6c6c;
+        display:table;
+        height: 150px;
+        text-align: center;
+        .transition(opacity .25s;);
+        opacity: 0.2;
+        &:not(.disabled) {
+          opacity: 0.7;
+          &:hover {
+            opacity: 1;
+          }
+          .title:after {
+            content: "\e01b";
+            font-family: 'Nexsense';
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+            text-align: center;
+            margin-left: 5px;
+          }
+          cursor: pointer;
+        }
+        .title {
+          display:table-cell;
+          vertical-align: middle;
+          font-size: 1.2em;
+          font-weight: 500;
+          text-transform: none;
+        }
+        .contents {
+          display: none;
+        }
+      }
+    }
   }
-
 
   .btn {
     @bg-color: @account-bg;
     background-color: tint(@bg-color, 10%);
-
-    @disabledColor: #e8e8e8;
-    &.disabled {
-      border-color: darken(@disabledColor, 40%);
-      background-color: @disabledColor;
-      color: darken(@disabledColor, 20%);
-    }
 
     &:not(.disabled):hover {
       background-color: tint(@bg-color, 20%);
@@ -467,6 +522,11 @@ table.fh-wrap {
     &:not(.disabled):focus {
       background-color: shade(@bg-color, 15%);
     }
+
+    &.disabled {
+      background-color: lighten(@bg-color, 10%);
+      .opacity(0.6);
+    }
   }
 
 
@@ -475,7 +535,7 @@ table.fh-wrap {
     @notesHeight: 300px;
     @notesTabHeight: 20px;
 
-    color: white;
+    // color: white;
 
     > .p-nav {
       // overwrite p-nav defaults
@@ -489,13 +549,15 @@ table.fh-wrap {
       .title {
         font-size: 1.2em;
         font-weight: 500;
-        overflow: hidden;
+        overflow-y: hidden;
         display: block;
         border-bottom: 1px solid white;
         margin: 10px 10px 5px 10px;
         position: relative;
+        height: 26px;
 
         .add-btn {
+          margin-top: 2px;
           margin-right: 10px;
           padding-left: 36px;
           position: absolute;
@@ -609,7 +671,7 @@ table.fh-wrap {
       .transition(left @tranSec, bottom @tranSec;);
 
       background-color: #fff;
-      color: #6c6c6c;
+      // color: #6c6c6c;
       // padding: 20px;
 
       .tabs {
@@ -631,7 +693,7 @@ table.fh-wrap {
 
       .box-shadow(inset -4px 5px 5px -5px #000000);
       background-color: #fff;
-      color: #6c6c6c;
+      // color: #6c6c6c;
       .title {
         position: absolute;
         left:0;top:2px;right:0;height:@notesTabHeight;
@@ -674,8 +736,8 @@ table.fh-wrap {
             border-color: #999;
 
             // make each button translucent when the text area is focused
-            // and the button container isn't being hovered over
-            &:focus+.actions:not(:hover) a {
+            // and the button isn't being hovered over
+            &:focus+.actions a:not(:hover) {
               opacity: 0.5;
             }
           }
@@ -782,27 +844,12 @@ table.fh-wrap {
   }
 }
 
+
 .acct-summary {
   position: absolute;
   left:10px;top:0px;right:10px;bottom:0px;
   .slickgrid {
     bottom: 10px;
-  }
-  ul.actions {
-    list-style: none;
-    padding: 10px 0px 0px 7px;
-    margin: 0;
-    border: 0 solid transparent;
-    li {
-      list-style: none;
-      float: left;
-      margin: 0 4px 10px 0;
-      padding: 0;
-
-      a {
-        white-space: nowrap;
-      }
-    }
   }
 }
 
@@ -810,22 +857,6 @@ table.fh-wrap {
   padding: 0px 10px;
   .slickgrid {
     bottom: 10px;
-  }
-  ul.actions {
-    list-style: none;
-    padding: 10px 0px 0px 7px;
-    margin: 0;
-    border: 0 solid transparent;
-    li {
-      list-style: none;
-      float: left;
-      margin: 0 4px 10px 0;
-      padding: 0;
-
-      a {
-        white-space: nowrap;
-      }
-    }
   }
 }
 
@@ -841,5 +872,23 @@ table.fh-wrap {
   div.right-side,
   input[type=text].right-side {
     margin-left:10px;
+  }
+}
+
+.acct-systemdetails {
+  padding: 0px 10px;
+
+  .col {
+    padding: 0px;
+    margin-bottom: 10px
+  }
+}
+
+.acct-survey {
+  padding: 0px 10px;
+
+  .grid-wrap {
+    height:100px;
+    position:relative;
   }
 }

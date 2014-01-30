@@ -18,8 +18,6 @@ define('src/scrum/scrum.panel.vm', [
   "use strict";
   //@TODO: move to panels folder
 
-  var childRoutePart = 'id';
-
   function ScrumPanelViewModel(options) {
     var _this = this;
     ScrumPanelViewModel.super_.call(_this, options);
@@ -54,21 +52,18 @@ define('src/scrum/scrum.panel.vm', [
         _this.list([
           new BacklogViewModel({
             pcontroller: _this,
-            routePart: childRoutePart,
             id: 'backlog',
             title: 'Backlog',
             repo: _this.repo,
           }),
           new PlanningViewModel({
             pcontroller: _this,
-            routePart: childRoutePart,
             id: 'plan',
             title: 'Story Board',
             repo: _this.repo,
           }),
           new TrackingViewModel({
             pcontroller: _this,
-            routePart: childRoutePart,
             id: 'track',
             title: 'Task Board',
             repo: _this.repo,

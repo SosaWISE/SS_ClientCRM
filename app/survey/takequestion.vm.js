@@ -20,33 +20,9 @@ define('src/survey/takequestion.vm', [
     TakeQuestionViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, []);
 
-    _this.answerMode = calcAnswerMode(_this.questionPossibleAnswerMaps.length);
-    if (_this.answerMode === 'text') {
-      //@TODO: use MapToToken observable
-      // BaseViewModel.ensureProps(_this, ['mapToTokenObservable']);
-      // _this.answer = ???;
-      _this.answer = ko.observable('');
-    } else {
-      _this.answer = ko.observable('');
-    }
-    switch (_this.answerMode) {
-      case 'radiolist':
-        break;
-      case 'combo':
-        _this.comboVM = new ComboViewModel({
-          list: _this.questionPossibleAnswerMaps
-        });
-        _this.comboVM.selectedItem.subscribe(function(item) {
-          _this.clickAnswer(item);
-        });
-        break;
-      case 'text':
-        break;
-    }
-
     _this.showSubs = ko.observable(false);
-
     _this.parent = ko.observable();
+
     // computed observables
     _this.name = ko.computed({
       deferEvaluation: true,
@@ -80,9 +56,55 @@ define('src/survey/takequestion.vm', [
       _this.answer(questionPossibleAnswerMap.text);
       _this.showSubs(questionPossibleAnswerMap.Expands);
     };
+
+    //
+    if (_this.answerText) {
+      _this.answer = ko.observable('');
+      _this.answerMode = "answered";
+      if (_this.questionPossibleAnswerMaps.length) {
+        if (!_this.questionPossibleAnswerMaps.some(function(paMap) {
+          if (paMap.text === _this.answerText) {
+            _this.clickAnswer(paMap);
+            return true;
+          }
+        })) {
+          throw new Error('`' + _this.answerText + '` not found in list of possible answers');
+        }
+      } else {
+        _this.answer(_this.answerText);
+      }
+    } else {
+      _this.answerMode = calcAnswerMode(_this.questionPossibleAnswerMaps.length);
+      if (_this.answerMode === 'text') {
+        //@TODO: use MapToToken observable
+        // BaseViewModel.ensureProps(_this, ['mapToTokenObservable']);
+        // _this.answer = ???;
+        _this.answer = ko.observable('');
+      } else {
+        _this.answer = ko.observable('');
+      }
+      switch (_this.answerMode) {
+        case 'radiolist':
+          break;
+        case 'combo':
+          _this.cvm = new ComboViewModel({
+            fields: {
+              text: 'text',
+              value: 'text',
+            },
+            list: _this.questionPossibleAnswerMaps
+          });
+          _this.cvm.selected.subscribe(function(selected) {
+            _this.clickAnswer(selected.item);
+          });
+          break;
+        case 'text':
+          break;
+      }
+    }
   }
   utils.inherits(TakeQuestionViewModel, BaseViewModel);
-  TakeQuestionViewModel.prototype.viewTmpl = 'tmpl-question';
+  TakeQuestionViewModel.prototype.viewTmpl = 'tmpl-takequestion';
 
   function getName(parent, index) {
     var pName = parent ? parent.name() : '';

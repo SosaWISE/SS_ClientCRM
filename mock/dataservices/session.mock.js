@@ -15,11 +15,11 @@ define('mock/dataservices/session.mock', [
           Message: '',
           Value: {
             // logged in
-            AuthCustomer: {
+            AuthUser: {
               boh: '???',
             },
             // // logged out
-            // AuthCustomer: null,
+            // AuthUser: null,
           },
         });
         cb(null, resp);

@@ -3,15 +3,21 @@ define('src/core/route', [
   "use strict";
 
   function Route(router, topController, name, regx, parts, defaultRouteData) {
-    topController.setRoute(this);
+    var _this = this;
+    topController.setRoute(_this);
 
-    this.router = router;
-    this.topController = topController;
-    this.name = name;
-    this.regx = regx;
-    this.parts = parts;
-    this.defaultRouteData = defaultRouteData || {};
-    this.defaultRouteData.route = name;
+    _this.router = router;
+    _this.topController = topController;
+    _this.name = name;
+    _this.regx = regx;
+    _this.parts = parts;
+    _this.defaultRouteData = defaultRouteData || {};
+    _this.defaultRouteData.route = name;
+
+    _this.partsIndexMap = {};
+    _this.parts.forEach(function(part, index) {
+      _this.partsIndexMap[part] = index;
+    });
   }
 
 
@@ -174,6 +180,17 @@ define('src/core/route', [
     });
     return routeData;
   };
+
+  Route.prototype.getNextPart = function(routePart) {
+    var _this = this,
+      index = _this.partsIndexMap[routePart] + 1;
+    if (index) {
+      return _this.parts[index];
+    } else {
+      console.warn('invalid routePart:', routePart);
+    }
+  };
+
 
   //
   // private statics

@@ -30,7 +30,6 @@ define('src/panels/accounts.panel.vm', [
         cb();
       });
     }),
-    childRoutePart = 'masterid',
     newCount = 0;
 
   function AccountsPanelViewModel(options) {
@@ -57,9 +56,8 @@ define('src/panels/accounts.panel.vm', [
       newCount++;
       var vm = new deps.AccountChecklistViewModel({
         pcontroller: _this,
-        routePart: childRoutePart,
-        id: 'new' + newCount,
-        title: 'New ' + newCount,
+        id: 'qualify' + newCount,
+        title: 'Qualify ' + newCount,
       });
       _this.list.push(vm);
       _this.selectChild(vm);
@@ -75,7 +73,6 @@ define('src/panels/accounts.panel.vm', [
     ensureDeps(function() {
       _this.searchVM = new deps.AccountSearchViewModel({
         pcontroller: _this,
-        routePart: childRoutePart,
         id: 'search',
         title: 'Search',
       });
@@ -86,7 +83,6 @@ define('src/panels/accounts.panel.vm', [
         createAccountVM(_this, 3000001, '3000001'),
         new deps.AccountInfoViewModel({
           pcontroller: _this,
-          routePart: childRoutePart,
           id: 3000002,
           title: '3000002',
           name: '3000002',
@@ -94,7 +90,6 @@ define('src/panels/accounts.panel.vm', [
         createAccountVM(_this, 3000003, '3000003'),
         new deps.ScrumPanelViewModel({
           pcontroller: _this,
-          routePart: childRoutePart,
           id: 2,
           title: '2',
           name: '2',
@@ -114,10 +109,11 @@ define('src/panels/accounts.panel.vm', [
     } else {
       result = AccountsPanelViewModel.super_.prototype.findChild.call(_this, routeData);
       if (!result) {
-        // create child and add to list
-        id = routeData[childRoutePart];
+        // get child id
+        id = routeData[_this.getChildRoutePart()];
         /* jshint eqeqeq:false */
         if (typeof(id) !== 'undefined' && parseInt(id, 10) == id) {
+          // create child and add to list
           result = createAccountVM(_this, parseInt(id, 10), id + '');
           _this.list.push(result);
         }
@@ -129,7 +125,6 @@ define('src/panels/accounts.panel.vm', [
   function createAccountVM(pcontroller, id, name) {
     return new deps.MasterAccountViewModel({
       pcontroller: pcontroller,
-      routePart: childRoutePart,
       id: id,
       title: name,
       name: name,

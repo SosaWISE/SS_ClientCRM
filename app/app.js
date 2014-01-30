@@ -84,9 +84,9 @@ define('src/app', [
   });
 
   //
-  router.addRoute(app.panelMap.accounts, 'accounts', ':masterid/:id/:tab', {});
+  router.addRoute(app.panelMap.accounts, 'accounts', ':masterid/:id/:tab/:p1', {});
   router.addRoute(app.panelMap.home, 'home', '', {});
-  router.addRoute(app.panelMap.surveys, 'surveys', ':surveyid/:locale', {
+  router.addRoute(app.panelMap.surveys, 'surveys', ':surveytypeid/:surveyid/:locale', {
     locale: 'en',
   });
 

@@ -31,8 +31,7 @@ define('src/panels/surveys.panel.vm', [
         deps.SurveyTypeViewModel = args[2];
         cb();
       });
-    }),
-    childRoutePart = 'surveyid';
+    });
 
   function SurveysPanelViewModel(options) {
     var _this = this;
@@ -74,7 +73,6 @@ define('src/panels/surveys.panel.vm', [
               var list = resp.Value.map(function(model) {
                 var vm = new deps.SurveyTypeViewModel({
                   pcontroller: _this,
-                  routePart: childRoutePart,
                   layersVM: _this.layersVM,
                   tokensVM: tokensVM,
                   possibleAnswersVM: possibleAnswersVM,
@@ -92,19 +90,6 @@ define('src/panels/surveys.panel.vm', [
         });
       });
     });
-  };
-
-  SurveysPanelViewModel.prototype.findChild = function(routeData) {
-    var _this = this,
-      result;
-    _this.surveyTypes().some(function(surveyTypeVM) {
-      // use whichever survey type finds a child
-      if (surveyTypeVM.findChild(routeData)) {
-        result = surveyTypeVM;
-        return true;
-      }
-    });
-    return result;
   };
 
   return SurveysPanelViewModel;

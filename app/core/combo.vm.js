@@ -163,7 +163,8 @@ define('src/core/combo.vm', [
         default: return true;
         case 27: // escape
           _this.clickClose();
-          return false;
+          evt.stopPropagation(); // cancel bubble
+          return false; // prevent default action
         case 13: // enter
         case 9: // tab
           _this.selectItem(_this.list()[_this.activeIndex]);

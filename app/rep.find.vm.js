@@ -20,8 +20,8 @@ define('src/rep.find.vm', [
     SalesRepID: {
       converter: ukov.converters.toUpper(),
       validators: [
-        ukov.validators.isRequired('Rep ID is required'),
-        ukov.validators.isPattern(/^[a-z]{4}[0-9]{3}$/i, 'invalid Rep ID. expected format: NAME001'),
+        ukov.validators.isRequired('Company ID is required'),
+        ukov.validators.isPattern(/^[a-z]{4}[0-9]{3}$/i, 'invalid Company ID. expected format: NAME001'),
       ],
     },
     // SeasonId: {},
@@ -39,7 +39,8 @@ define('src/rep.find.vm', [
     var _this = this;
     RepFindViewModel.super_.call(_this, options);
 
-    _this.focusRepID = ko.observable(false);
+    _this.title = _this.title || 'Sales Rep';
+    _this.focusFirst = ko.observable(false);
     _this.repData = ukov.wrap({}, schema);
     _this.loading = ko.observable(false);
     _this.loaded = ko.observable(false);
@@ -65,35 +66,45 @@ define('src/rep.find.vm', [
       }
 
       _this.loaded(false);
-      var model = _this.repData.getValue();
-      dataservice.qualify.salesRepRead(model, function(err, resp) {
-        if (err) {
-          notify.notify('warn', err.Message, 10);
-          _this.focusRepID(true);
-        } else {
-          _this.repData.markClean(resp.Value, true);
-          _this.repResult(resp.Value);
-          _this.loaded(true);
-        }
-        cb();
-      });
+      //var model = _this.repData.getValue();
+      dataservice.qualify.salesrep.read({
+          id: _this.repData.getValue().SalesRepID
+        }, null,
+        function(err, resp) {
+          if (err) {
+            notify.notify('warn', err.Message, 10);
+            _this.focusFirst(true);
+          } else {
+            _this.repData.markClean(resp.Value, true);
+            _this.repResult({
+              img: resp.Value.ImagePath,
+              fullname: resp.Value.FirstName + ' ' + resp.Value.LastName,
+              season: resp.Value.Seasons[0].SeasonName,
+              office: '[Not Set Yet]',
+              phone: resp.Value.PhoneCell,
+              email: resp.Value.Email
+            });
+            _this.loaded(true);
+          }
+          cb();
+        });
     });
 
     _this.loading = _this.cmdFind.busy;
+
+    _this.active.subscribe(function(active) {
+      if (active) {
+        // this timeout makes it possible to focus the rep id
+        setTimeout(function() {
+          _this.focusFirst(true);
+        }, 100);
+      }
+    });
   }
   utils.inherits(RepFindViewModel, BaseViewModel);
   RepFindViewModel.prototype.viewTmpl = 'tmpl-rep_find';
   RepFindViewModel.prototype.width = 400;
-  RepFindViewModel.prototype.height = 350;
-
-  RepFindViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
-    var _this = this;
-
-    // this timeout makes it possible to focus the rep id
-    setTimeout(function() {
-      _this.focusRepID(true);
-    }, 100);
-  };
+  RepFindViewModel.prototype.height = 'auto';
 
   return RepFindViewModel;
 });

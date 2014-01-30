@@ -72,7 +72,7 @@ define('src/bootstrapper', [
         // start ko
         ko.applyBindings(app, document.getElementById('main'));
         // if we are authenticated, this will log us in
-        config.user(resp.Value.AuthCustomer);
+        config.user(resp.Value.AuthUser);
         // start router
         router.init(config.user);
       }

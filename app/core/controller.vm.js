@@ -21,6 +21,13 @@ define('src/core/controller.vm', [
     var _this = this;
     ControllerViewModel.super_.call(_this, options);
 
+    if (_this.pcontroller) {
+      // cache route
+      _this.route = _this.route || _this.pcontroller.getRoute();
+      // cache routePart
+      _this.routePart = _this.routePart || _this.pcontroller.getChildRoutePart();
+    }
+
     _this.initMixinLoad();
 
     _this.childs = ko.observableArray();
@@ -48,6 +55,11 @@ define('src/core/controller.vm', [
     }
     return result;
   };
+  ControllerViewModel.prototype.getChildRoutePart = function() {
+    var _this = this;
+    return _this.getRoute().getNextPart(_this.routePart);
+  };
+
 
   // activate async
   ControllerViewModel.prototype.activate = function(routeCtx) {
@@ -160,10 +172,11 @@ define('src/core/controller.vm', [
       throw new Error('no id');
     }
 
-    if (controller.route) {
-      routeData.route = controller.route.name;
-    } else {
+    if (controller.pcontroller) {
+      // recursively walk parent controllers
       applyRouteData(controller.pcontroller, routeData);
+    } else {
+      routeData.route = controller.route.name;
     }
     routeData[controller.routePart] = controller.id;
   }
