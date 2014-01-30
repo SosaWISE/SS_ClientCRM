@@ -66,18 +66,28 @@ define('src/rep.find.vm', [
       }
 
       _this.loaded(false);
-      var model = _this.repData.getValue();
-      dataservice.qualify.salesRepRead(model, function(err, resp) {
-        if (err) {
-          notify.notify('warn', err.Message, 10);
-          _this.focusFirst(true);
-        } else {
-          _this.repData.markClean(resp.Value, true);
-          _this.repResult(resp.Value);
-          _this.loaded(true);
-        }
-        cb();
-      });
+      //var model = _this.repData.getValue();
+      dataservice.qualify.salesrep.read({
+          id: _this.repData.getValue().SalesRepID
+        }, null,
+        function(err, resp) {
+          if (err) {
+            notify.notify('warn', err.Message, 10);
+            _this.focusFirst(true);
+          } else {
+            _this.repData.markClean(resp.Value, true);
+            _this.repResult({
+              img: resp.Value.ImagePath,
+              fullname: resp.Value.FirstName + ' ' + resp.Value.LastName,
+              season: resp.Value.Seasons[0].SeasonName,
+              office: '[Not Set Yet]',
+              phone: resp.Value.PhoneCell,
+              email: resp.Value.Email
+            });
+            _this.loaded(true);
+          }
+          cb();
+        });
     });
 
     _this.loading = _this.cmdFind.busy;

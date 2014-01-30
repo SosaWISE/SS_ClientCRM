@@ -42,12 +42,13 @@ define('src/account/security/salesinfo.vm', [
     SalesInfoViewModel.super_.call(_this, options);
 
     // ** Fields
+    _this.finishedLoading = false;
     _this.activationFee = ko.observable();
     _this.activationFeeItemId = '';
     _this.activationFeeActual = ko.observable();
     _this.over3Months = ko.observable(false);
     _this.over3MonthsAction = function() {
-      console.log("Activation over 3 months: ", _this.over3Months());
+      //console.log("Activation over 3 months: ", _this.over3Months());
       return true;
     };
     _this.monthlyMonitoringRate = ko.observable();
@@ -160,7 +161,7 @@ define('src/account/security/salesinfo.vm', [
         {
           id: 'total',
           name: 'Total',
-          field: 'Total',
+          field: 'RetailPrice',
           formatter: SlickGridViewModel.formatters.currency,
         },
         new ButtonsColumn({
@@ -221,37 +222,44 @@ define('src/account/security/salesinfo.vm', [
         });
       });
     });
+
     _this.activationFeeActual.subscribe(function(newValue) {
       console.log("New Activation Fee: ", newValue);
-      refreshInvoice();
+      _this.refreshInvoice();
     });
-    _this.monthlyMonitoringRate.subscribe(function(newValue) {
+    _this.monthlyMonitoringRateActual.subscribe(function(newValue) {
       console.log("MMR: ", newValue);
+      _this.refreshInvoice();
     });
 
 
-    function refreshInvoice() {
-      /** Initialize. */
-      _this.sData = ukov.wrap({
-        AccountId: _this.msAccountId,
-        ActivationFee: _this.activationFee(),
-        ActivationFeeItemId: _this.activationFeeItemId,
-        ActivationFeeActual: _this.activationFeeActual(),
-        MonthlyMonitoringRate: _this.monthlyMonitoringRate(),
-        MonthlyMonitoringRateItemId: _this.monthlyMonitoringRateItemId,
-        MonthlyMonitoringRateActual: _this.monthlyMonitoringRateActual(),
-        AlarmComPackage: _this.apckComboVM.selectedValue(),
-        Over3Months: _this.over3Months(),
-      }, schema);
+    _this.refreshInvoice = function() {
+      /** Check that the form has loaded. */
+      if (_this.finishedLoading) {
+        /** Initialize. */
+        _this.sData = ukov.wrap({
+          InvoiceID: _this.invoiceID,
+          AccountId: _this.msAccountId,
+          ActivationFee: _this.activationFee(),
+          ActivationFeeItemId: _this.activationFeeItemId,
+          ActivationFeeActual: _this.activationFeeActual(),
+          MonthlyMonitoringRate: _this.monthlyMonitoringRate(),
+          MonthlyMonitoringRateItemId: _this.monthlyMonitoringRateItemId,
+          MonthlyMonitoringRateActual: _this.monthlyMonitoringRateActual(),
+          AlarmComPackage: _this.apckComboVM.selectedValue(),
+          Over3Months: _this.over3Months(),
+        }, schema);
 
-      dataservice.salessummary.invoicerefresh.save(_this.sData.model, null, function(err, resp) {
-        if (err) {
-          notify.notify('error', err.Message);
-        } else {
-          console.log("Response: ", resp);
-        }
-      });
-    }
+        dataservice.salessummary.invoicerefresh.save(_this.sData.model.root, null, function(err, resp) {
+          if (err) {
+            notify.notify('error', err.Message);
+          } else {
+            console.log("Response: ", resp);
+            _this.partsGrid.list(resp.Value.Items);
+          }
+        });
+      }
+    };
 
     //
     // events
@@ -266,15 +274,16 @@ define('src/account/security/salesinfo.vm', [
     _this.msAccountId = routeData.id;
 
     load_invoice(_this, function() {
-      load_activationFee(_this, join.add());
-      load_monthlyMonitoringRate(_this, join.add());
       load_vendoralarmcompacakges(_this.apckComboVM, join.add());
+      load_pointsystems(_this.psComboVM, join.add());
+      load_cellulartypes(_this.ctComboVM, join.add());
+      load_frequentlyinstalledequipmentget(_this.frequentGrid, join.add());
+
+      /** Refresh the invoice. */
+      _this.refreshInvoice();
+
       cb();
     });
-
-    load_pointsystems(_this.psComboVM, join.add());
-    load_cellulartypes(_this.ctComboVM, join.add());
-    load_frequentlyinstalledequipmentget(_this.frequentGrid, join.add());
   };
 
   function load_invoice(_this, cb) {
@@ -286,26 +295,20 @@ define('src/account/security/salesinfo.vm', [
         return cb(err);
       }
       if (resp.Value) {
+        console.log(resp.Value);
         _this.invoiceID = resp.Value.InvoiceID;
         _this.activationFee(resp.Value.ActivationFee);
+        _this.activationFeeActual(resp.Value.ActivationFeeActual);
         _this.activationFeeItemId = resp.Value.ActivationFeeItemId;
         _this.monthlyMonitoringRate(resp.Value.MonthlyMonitoringRate);
+        _this.monthlyMonitoringRateActual(resp.Value.MonthlyMonitoringRateActual);
         _this.monthlyMonitoringRateItemId = resp.Value.MonthlyMonitoringRateItemId;
+
+        /** Allow for refreshing. */
+        _this.finishedLoading = true;
       }
       cb();
     });
-  }
-
-  function load_activationFee(_this, cb) {
-    _this.activationFee(199.00);
-    _this.activationFeeActual(199.00);
-    cb();
-  }
-
-  function load_monthlyMonitoringRate(_this, cb) {
-    _this.monthlyMonitoringRate(39.95);
-    _this.monthlyMonitoringRateActual(39.95);
-    cb();
   }
 
   function load_pointsystems(comboVM, cb) {

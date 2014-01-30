@@ -29,6 +29,12 @@ define('src/address.validate.vm', [
     _model: true,
     DealerId: {},
 
+    SeasonId: {},
+
+    SalesRepId: {},
+
+    TeamLocationId: {},
+
     PostalCode: {
       converter: strConverter,
       validators: [
@@ -46,7 +52,7 @@ define('src/address.validate.vm', [
     StreetAddress2: {
       validators: [max50],
     },
-    Phone: {
+    PhoneNumber: {
       converter: ukov.converters.phone(),
     },
 
@@ -133,7 +139,7 @@ define('src/address.validate.vm', [
     _this.override = ko.observable(false);
 
     _this.data = ukov.wrap({
-      DealerId: 1, // ?????
+      DealerId: 5000, // ?????
     }, schema);
 
     _this.data.StateCvm = new ComboViewModel({
@@ -168,10 +174,15 @@ define('src/address.validate.vm', [
 
 
     /////TESTING//////////////////////
+    _this.data.SeasonId(1);
+    _this.data.SalesRepId('SOSA001');
+    _this.data.TeamLocationId(1);
     _this.data.PostalCode('84057');
     _this.data.StreetAddress('1517 N 1335 W');
-    _this.data.Phone('801 822 1234');
-    _this.data.Phone(_this.data.model.Phone);
+    _this.data.PhoneNumber('801 822 1234');
+    _this.data.PhoneNumber(_this.data.model.PhoneNumber);
+    _this.data.City('OREM');
+    _this.data.StateId('UT');
     /////TESTING//////////////////////
 
     //
@@ -191,7 +202,7 @@ define('src/address.validate.vm', [
       }
 
       var model = _this.data.getValue();
-      dataservice.qualify.validateAddress(model, function(err, resp) {
+      dataservice.qualify.addressValidation.post(null, model, null, function(err, resp) {
         if (err) {
           notify.notify('warn', resp.Message, 10);
         } else {
