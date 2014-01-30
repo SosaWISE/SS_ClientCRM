@@ -27,8 +27,6 @@ define('src/account/account.checklist.vm', [
     var _this = this;
     AccountChecklistViewModel.super_.call(_this, options);
 
-    _this.childRoutePart = (_this.routePart === 'masterid') ? 'id' : 'sub';
-
     _this.checklist = _this.childs;
 
     _this.layersVm = new LayersViewModel();
@@ -52,47 +50,47 @@ define('src/account/account.checklist.vm', [
     _this.checklist([
       new AccountQualifyViewModel({
         pcontroller: _this,
-        routePart: _this.childRoutePart,
         id: 'qualify',
         title: 'Qualify Customer',
         layersVm: _this.layersVm,
       }),
       new SalesInfoViewModel({
         pcontroller: _this,
-        routePart: _this.childRoutePart,
         id: 'salesinfo',
         title: 'Sales Info',
       }),
       new SurveyViewModel({
         pcontroller: _this,
-        routePart: _this.childRoutePart,
         id: 'presurvey',
         title: 'Pre Survey',
       }),
       new IndustryViewModel({
         pcontroller: _this,
-        routePart: _this.childRoutePart,
         id: 'industrynums',
         title: 'Industry #\'s',
       }),
       new SystemDetailsViewModel({
         pcontroller: _this,
-        routePart: _this.childRoutePart,
         id: 'systemdetails',
         title: 'System Details',
         layersVm: _this.layersVm,
       }),
       {
-        title: 'Signal/TwoWay Check',
+        title: 'System Test',
+        // title: 'Signal/TwoWay Check',
         active: ko.observable(false),
       },
-      {
-        title: 'Tech Inspection',
-        active: ko.observable(false),
-      },
+      // {
+      //   title: 'Tech Inspection',
+      //   active: ko.observable(false),
+      // },
       new SurveyViewModel({
         pcontroller: _this,
-        routePart: _this.childRoutePart,
+        id: 'techinspection',
+        title: 'Tech Inspection',
+      }),
+      new SurveyViewModel({
+        pcontroller: _this,
         id: 'postsurvey',
         title: 'Post Survey',
       }),
