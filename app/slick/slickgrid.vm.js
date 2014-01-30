@@ -53,7 +53,6 @@ define('src/slick/slickgrid.vm', [
     });
 
     _this.options = _this.options || {};
-    _this.list = ko.observableArray(_this.list);
     _this.updateGrid = function() {
       var grid = _this.grid;
       if (grid) {
@@ -62,13 +61,35 @@ define('src/slick/slickgrid.vm', [
         grid.render();
       }
     };
-    _this.list.subscribe(function(list) {
-      var grid = _this.grid;
-      if (grid) {
-        grid.setData(list, true);
-        _this.updateGrid();
-      }
-    });
+    if (_this.dataView) {
+      // data view passed in
+      _this.list = ko.observable(_this.dataView);
+      // Make the grid respond to DataView change events.
+      _this.dataView.onRowCountChanged.subscribe(function( /*e, args*/ ) {
+        var grid = _this.grid;
+        if (grid) {
+          grid.updateRowCount();
+          grid.render();
+        }
+      });
+      _this.dataView.onRowsChanged.subscribe(function(e, args) {
+        var grid = _this.grid;
+        if (grid) {
+          grid.invalidateRows(args.rows);
+          grid.render();
+        }
+      });
+    } else {
+      // either list was passed in or an array will be set at some point
+      _this.list = ko.observableArray(_this.list);
+      _this.list.subscribe(function(list) {
+        var grid = _this.grid;
+        if (grid) {
+          grid.setData(list, true);
+          _this.updateGrid();
+        }
+      });
+    }
 
     _this.active = ko.observable(false);
   }

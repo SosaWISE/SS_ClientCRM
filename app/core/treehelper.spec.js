@@ -1,4 +1,4 @@
-/* global describe, it, expect */
+/* global describe, beforeEach, it, expect */
 define('src/core/treehelper.spec', [
   'src/core/treehelper',
 ], function(treehelper) {
@@ -6,90 +6,92 @@ define('src/core/treehelper.spec', [
 
   describe('treehelper', function() {
     var list, tree;
-    list = [
-      {
-        id: 1,
-        parentId: null,
-        name: '1.',
-      },
-      {
-        id: 2,
-        parentId: 1,
-        name: '1.1.',
-      },
-      {
-        id: 3,
-        parentId: 2,
-        name: '1.1.1.',
-      },
-      {
-        id: 4,
-        parentId: 2,
-        name: '1.1.2.',
-      },
-      {
-        id: 5,
-        parentId: 1,
-        name: '1.2.',
-      },
-      {
-        id: 6,
-        parentId: 5,
-        name: '1.2.1.',
-      },
-      {
-        id: 7,
-        parentId: null,
-        name: '2.',
-      },
-    ];
-    tree = [
-      {
-        id: 1,
-        parentId: null,
-        name: '1.',
-        childs: [
-          {
-            id: 2,
-            parentId: 1,
-            name: '1.1.',
-            childs: [
-              {
-                id: 3,
-                parentId: 2,
-                name: '1.1.1.',
-                childs: [],
-              },
-              {
-                id: 4,
-                parentId: 2,
-                name: '1.1.2.',
-                childs: [],
-              },
-            ],
-          },
-          {
-            id: 5,
-            parentId: 1,
-            name: '1.2.',
-            childs: [
-              {
-                id: 6,
-                parentId: 5,
-                name: '1.2.1.',
-                childs: [],
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: 7,
-        parentId: null,
-        name: '2.',
-        childs: [],
-      },
-    ];
+    beforeEach(function() {
+      list = [
+        {
+          id: 1,
+          parentId: null,
+          name: '1.',
+        },
+        {
+          id: 2,
+          parentId: 1,
+          name: '1.1.',
+        },
+        {
+          id: 3,
+          parentId: 2,
+          name: '1.1.1.',
+        },
+        {
+          id: 4,
+          parentId: 2,
+          name: '1.1.2.',
+        },
+        {
+          id: 5,
+          parentId: 1,
+          name: '1.2.',
+        },
+        {
+          id: 6,
+          parentId: 5,
+          name: '1.2.1.',
+        },
+        {
+          id: 7,
+          parentId: null,
+          name: '2.',
+        },
+      ];
+      tree = [
+        {
+          id: 1,
+          parentId: null,
+          name: '1.',
+          childs: [
+            {
+              id: 2,
+              parentId: 1,
+              name: '1.1.',
+              childs: [
+                {
+                  id: 3,
+                  parentId: 2,
+                  name: '1.1.1.',
+                  childs: [],
+                },
+                {
+                  id: 4,
+                  parentId: 2,
+                  name: '1.1.2.',
+                  childs: [],
+                },
+              ],
+            },
+            {
+              id: 5,
+              parentId: 1,
+              name: '1.2.',
+              childs: [
+                {
+                  id: 6,
+                  parentId: 5,
+                  name: '1.2.1.',
+                  childs: [],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: 7,
+          parentId: null,
+          name: '2.',
+          childs: [],
+        },
+      ];
+    });
 
     it('should have a `walkTree` function', function() {
       expect(typeof treehelper.walkTree).toBe('function');
@@ -170,55 +172,57 @@ define('src/core/treehelper.spec', [
         expect(topLevelList).toEqual(tree);
       });
 
-      it('should sort items', function() {
-        var tree, topLevelList;
-        tree = [
-          {
-            id: 7,
-            parentId: null,
-            name: '2.',
-            childs: [],
-          },
-          {
-            id: 1,
-            parentId: null,
-            name: '1.',
-            childs: [
-              {
-                id: 5,
-                parentId: 1,
-                name: '1.2.',
-                childs: [
-                  {
-                    id: 6,
-                    parentId: 5,
-                    name: '1.2.1.',
-                    childs: [],
-                  },
-                ],
-              },
-              {
-                id: 2,
-                parentId: 1,
-                name: '1.1.',
-                childs: [
-                  {
-                    id: 4,
-                    parentId: 2,
-                    name: '1.1.2.',
-                    childs: [],
-                  },
-                  {
-                    id: 3,
-                    parentId: 2,
-                    name: '1.1.1.',
-                    childs: [],
-                  },
-                ],
-              },
-            ],
-          },
-        ];
+      describe('with sort', function() {
+
+        beforeEach(function() {
+          tree = [
+            {
+              id: 7,
+              parentId: null,
+              name: '2.',
+              childs: [],
+            },
+            {
+              id: 1,
+              parentId: null,
+              name: '1.',
+              childs: [
+                {
+                  id: 5,
+                  parentId: 1,
+                  name: '1.2.',
+                  childs: [
+                    {
+                      id: 6,
+                      parentId: 5,
+                      name: '1.2.1.',
+                      childs: [],
+                    },
+                  ],
+                },
+                {
+                  id: 2,
+                  parentId: 1,
+                  name: '1.1.',
+                  childs: [
+                    {
+                      id: 4,
+                      parentId: 2,
+                      name: '1.1.2.',
+                      childs: [],
+                    },
+                    {
+                      id: 3,
+                      parentId: 2,
+                      name: '1.1.1.',
+                      childs: [],
+                    },
+                  ],
+                },
+              ],
+            },
+          ];
+        });
 
         function sortFn(a, b) {
           // order ids descending
@@ -232,10 +236,15 @@ define('src/core/treehelper.spec', [
           return 0;
         }
 
-        topLevelList = treehelper.makeTree(list, 'id', 'parentId', null, sortFn);
-        expect(topLevelList).toEqual(tree);
-        topLevelList = treehelper.makeTree(list, 'id', 'parentId', null, sortFn, true);
-        expect(topLevelList).toEqual(tree);
+        it('should sort items before', function() {
+          var topLevelList = treehelper.makeTree(list, 'id', 'parentId', null, sortFn);
+          expect(topLevelList).toEqual(tree);
+        });
+
+        it('should sort items after', function() {
+          var topLevelList = treehelper.makeTree(list, 'id', 'parentId', null, sortFn, true);
+          expect(topLevelList).toEqual(tree);
+        });
       });
 
       // it('post-sort should sort items after they are mapped', function() {

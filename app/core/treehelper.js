@@ -21,7 +21,7 @@ define('src/core/treehelper', [
     return item;
   }
 
-  function makeTree(list, idKey, parentIdKey, mapFn, sortFn, postSort) {
+  function makeTree(list, idKey, parentIdKey, mapFn, sortFn, postSort, detachedList) {
     var treeTrunk = [],
       tempParents = [],
       tempChildsMap = {},
@@ -47,7 +47,7 @@ define('src/core/treehelper', [
       }
 
       // set childs
-      item.childs = [];
+      item.childs = item.childs || [];
 
       if (parentId) {
         // map parentId to temp childs list
@@ -61,12 +61,12 @@ define('src/core/treehelper', [
         tempParents.push(item);
       }
 
-      // map id to true(needs to be visited)
-      toVisitMap[id] = true;
+      // map id to item
+      toVisitMap[id] = item;
     });
 
 
-    function buildBranch(item, childList, mappedParent, parent) {
+    function buildBranch(item, parentChilds, mappedParent, parent) {
       var id = item[idKey],
         mappedItem, tempChilds;
       if (!toVisitMap[id]) {
@@ -95,8 +95,8 @@ define('src/core/treehelper', [
         }
       }
 
-      // add item to child list
-      childList.push(mappedItem);
+      // add item to parent childs
+      parentChilds.push(mappedItem);
     }
 
     // start recursion
@@ -112,10 +112,14 @@ define('src/core/treehelper', [
       }
     });
 
-    // show which items aren't connected to the tree trunk
-    Object.keys(toVisitMap).forEach(function(id) {
-      console.log('disconnected id:', id);
-    });
+
+    if (detachedList) {
+      // show which items aren't connected to the tree trunk
+      Object.keys(toVisitMap).forEach(function(id) {
+        console.log('detached id:', id);
+        detachedList.push(toVisitMap[id]);
+      });
+    }
 
     return treeTrunk;
   }

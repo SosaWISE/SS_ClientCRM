@@ -1,8 +1,10 @@
 define('src/scrum/backlog.vm', [
+  'src/dataservice',
   'src/scrum/backlog.gvm',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  dataservice,
   BacklogGridViewModel,
   utils,
   ControllerViewModel
@@ -22,6 +24,41 @@ define('src/scrum/backlog.vm', [
   }
   utils.inherits(BacklogViewModel, ControllerViewModel);
   BacklogViewModel.prototype.viewTmpl = 'tmpl-scrum_backlog';
+
+  BacklogViewModel.prototype.onLoad = function(routeData, join) {
+    var _this = this,
+      scopes, storys;
+
+    load_scopes(function(val) {
+      scopes = val;
+    }, join);
+    load_storys(function(val) {
+      storys = val;
+    }, join);
+
+    join.when(function(err) {
+      if (!err) {
+        _this.gvm.init(scopes, storys);
+      }
+    });
+  };
+
+  function load_scopes(setter, join) {
+    var cb = join.add();
+    dataservice.scrum.scopes.read({}, setter, function(err, resp) {
+      cb(err, resp);
+    });
+  }
+
+  function load_storys(setter, join) {
+    var cb = join.add();
+    dataservice.scrum.storys.read({
+      id: 'null',
+      link: 'bysprint'
+    }, setter, function(err, resp) {
+      cb(err, resp);
+    });
+  }
 
 
   return BacklogViewModel;

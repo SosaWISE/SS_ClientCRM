@@ -104,6 +104,9 @@ define('mock/scrum/scrumservice.mock', [
           result = findSingleOrAll(storys, 'ID', id);
           break;
         case 'bysprint':
+          if (id === 'null') {
+            id = null;
+          }
           result = filterListBy(storys, 'SprintId', id);
           break;
       }
@@ -148,7 +151,7 @@ define('mock/scrum/scrumservice.mock', [
         ID: data.ID,
         StoryTypeId: data.StoryTypeId,
         SprintId: data.SprintId,
-        ScopeId: data.ScopeId,
+        ParentId: data.ParentId,
         PersonId: data.PersonId,
         Name: data.Name,
         Description: data.Description,
@@ -208,9 +211,14 @@ define('mock/scrum/scrumservice.mock', [
       new Date(2013, 1, 30),
       new Date(2013, 2, 13),
     ]);
-    mockery.addModulusValueFunc('SCOPE_NAME', [
-      'Equipment Screen',
-      'Emergency Contacts',
+    mockery.addModulusValueFunc('SCOPE_PNAME', [
+      'Web client',
+      'Web server',
+    ]);
+    mockery.addModulusValueFunc('SCOPE_CNAME', [
+      'Panel',
+      'Actions',
+      'Tests',
     ]);
     mockery.addModulusValueFunc('STORY_TYPE', [
       'Story',
@@ -257,11 +265,22 @@ define('mock/scrum/scrumservice.mock', [
   scopes = mockery.fromTemplate({
     'list|2-2': [
       {
+        ParentId: null,
         ID: '@INC(scopes)',
-        Name: '@SCOPE_NAME',
+        Name: '@SCOPE_PNAME',
+        SortOrder: 0,
       },
     ],
-  }).list;
+  }).list.concat(mockery.fromTemplate({
+    'list|5-5': [
+      {
+        ParentId: '@REF_INC(scopes)',
+        ID: '@INC(scopes)',
+        Name: '@SCOPE_CNAME',
+        SortOrder: 0,
+      },
+    ],
+  }).list);
 
   storytypes = mockery.fromTemplate({
     'list|2-2': [
@@ -282,11 +301,29 @@ define('mock/scrum/scrumservice.mock', [
         Name: '@TEXT(20,30)',
         Description: '@TEXT(50,80)',
         Points: '@STORY_POINTS',
+        SortOrder: 0,
         IsDeleted: false,
         Version: 1,
       },
     ],
-  }).list;
+  }).list.concat(mockery.fromTemplate({
+    // backlog storys
+    'list|10-10': [
+      {
+        ID: '@INC(storys)',
+        StoryTypeId: '@REF_INC(storytypes)',
+        SprintId: null,
+        PersonId: null,
+        ScopeId: '@FK(scopes)',
+        Name: '@TEXT(20,30)',
+        Description: '@TEXT(50,80)',
+        Points: '@STORY_POINTS',
+        SortOrder: 0,
+        IsDeleted: false,
+        Version: 1,
+      },
+    ],
+  }).list);
 
   tasksteps = mockery.fromTemplate({
     'list|3-3': [

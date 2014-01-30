@@ -1,8 +1,10 @@
 define('src/scrum/backlog.gvm', [
+  'src/scrum/backlogdata',
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/core/utils',
 ], function(
+  BacklogData,
   RowEvent,
   SlickGridViewModel,
   utils
@@ -11,6 +13,7 @@ define('src/scrum/backlog.gvm', [
 
   function BacklogGridViewModel() {
     var _this = this;
+    _this.bd = new BacklogData();
     BacklogGridViewModel.super_.call(_this, {
       options: {
         enableColumnReorder: false,
@@ -25,36 +28,16 @@ define('src/scrum/backlog.gvm', [
           },
         }),
       ],
-      columns: [
-        {
-          // foreach Scope in Backlog
-          //   foreach Story in Scope
-          //     Name Column: 'Scope.Name: Story.Name'
-          id: 'Name',
-          name: 'Name',
-          field: 'Name',
-        },
-        {
-          id: 'Points',
-          name: 'Points',
-          field: 'Points',
-        },
-        {
-          id: 'Owner',
-          name: 'Owner',
-          field: 'Owner',
-        },
-      ],
+      dataView: _this.bd,
+      columns: _this.bd.columns,
     });
-    while (_this.list().length < 2) {
-      _this.list().push({
-        Name: 'Name ' + (_this.list().length + 1),
-        Points: 'Points ' + (_this.list().length + 1),
-        Owner: 'Owner ' + (_this.list().length + 1),
-      });
-    }
   }
   utils.inherits(BacklogGridViewModel, SlickGridViewModel);
+
+  BacklogGridViewModel.prototype.init = function(scopes, storys) {
+    var _this = this;
+    _this.bd.init(scopes, storys);
+  };
 
   return BacklogGridViewModel;
 });
