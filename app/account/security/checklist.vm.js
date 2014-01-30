@@ -1,4 +1,4 @@
-define('src/account/account.checklist.vm', [
+define('src/account/security/checklist.vm', [
   'src/account/security/survey.vm',
   'src/account/security/systemdetails.vm',
   'src/account/security/industrynums.vm',
@@ -23,9 +23,9 @@ define('src/account/account.checklist.vm', [
 ) {
   "use strict";
 
-  function AccountChecklistViewModel(options) {
+  function ChecklistViewModel(options) {
     var _this = this;
-    AccountChecklistViewModel.super_.call(_this, options);
+    ChecklistViewModel.super_.call(_this, options);
 
     _this.checklist = _this.childs;
 
@@ -41,10 +41,10 @@ define('src/account/account.checklist.vm', [
     //   cb();
     // });
   }
-  utils.inherits(AccountChecklistViewModel, ControllerViewModel);
-  AccountChecklistViewModel.prototype.viewTmpl = 'tmpl-account_checklist';
+  utils.inherits(ChecklistViewModel, ControllerViewModel);
+  ChecklistViewModel.prototype.viewTmpl = 'tmpl-security-checklist';
 
-  AccountChecklistViewModel.prototype.onLoad = function(routeData, join) {
+  ChecklistViewModel.prototype.onLoad = function(routeData, join) {
     var _this = this;
 
     _this.checklist([
@@ -107,13 +107,13 @@ define('src/account/account.checklist.vm', [
 
     join.add()();
   };
-  AccountChecklistViewModel.prototype.onActivate = function(routeCtx) { // overrides base
+  ChecklistViewModel.prototype.onActivate = function(routeCtx) { // overrides base
     var _this = this;
     if (routeCtx.routeData.tab) {
       //@TODO: ensure the action is currently valid
     }
     // call base
-    AccountChecklistViewModel.super_.prototype.onActivate.call(_this, routeCtx);
+    ChecklistViewModel.super_.prototype.onActivate.call(_this, routeCtx);
 
     // // this timeout makes it possible to focus the input
     // setTimeout(function() {
@@ -121,5 +121,5 @@ define('src/account/account.checklist.vm', [
     // }, 100);
   };
 
-  return AccountChecklistViewModel;
+  return ChecklistViewModel;
 });

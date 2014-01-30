@@ -1,5 +1,5 @@
 define('src/account/security/account.vm', [
-  'src/account/account.checklist.vm',
+  'src/account/security/checklist.vm',
   'src/account/security/summary.vm',
   'src/account/security/inventory.vm',
   'src/core/notify',
@@ -7,7 +7,7 @@ define('src/account/security/account.vm', [
   'src/core/controller.vm',
   'ko'
 ], function(
-  AccountChecklistViewModel,
+  ChecklistViewModel,
   SummaryViewModel,
   InventoryViewModel,
   notify,
@@ -52,7 +52,7 @@ define('src/account/security/account.vm', [
   };
 
   function createAccountChecklist(pcontroller, title) {
-    return new AccountChecklistViewModel({
+    return new ChecklistViewModel({
       pcontroller: pcontroller,
       id: 'checklist',
       title: title,

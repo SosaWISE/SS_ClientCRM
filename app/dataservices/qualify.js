@@ -14,7 +14,8 @@ define('src/dataservices/qualify', [
     [
       'salesrep',
       'technician',
-      'addressValidation'
+      'addressValidation',
+      'runcredit',
     ].forEach(function(collectionName) {
         result[collectionName] = new DataserviceBase(collectionName, surveyServiceDomain);
       });

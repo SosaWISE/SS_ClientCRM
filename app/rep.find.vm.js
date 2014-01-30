@@ -26,13 +26,6 @@ define('src/rep.find.vm', [
     },
     // SeasonId: {},
     // TeamLocationId: {},
-
-    img: {},
-    fullname: {},
-    season: {},
-    office: {},
-    phone: {},
-    email: {},
   };
 
   function RepFindViewModel(options) {
@@ -41,7 +34,9 @@ define('src/rep.find.vm', [
 
     _this.title = _this.title || 'Sales Rep';
     _this.focusFirst = ko.observable(false);
-    _this.repData = ukov.wrap({}, schema);
+    _this.repData = ukov.wrap({
+      SalesRepID: '',
+    }, schema);
     _this.loading = ko.observable(false);
     _this.loaded = ko.observable(false);
     _this.repResult = ko.observable(null);
@@ -59,35 +54,27 @@ define('src/rep.find.vm', [
       }
     };
     _this.cmdFind = ko.command(function(cb) {
-      _this.repData.SalesRepID.validate();
-      if (!_this.repData.SalesRepID.isValid()) {
-        notify.notify('warn', _this.repData.SalesRepID.errMsg(), 7);
+      _this.repData.validate();
+      if (!_this.repData.isValid()) {
+        notify.notify('warn', _this.repData.errMsg(), 7);
         return cb();
       }
 
       _this.loaded(false);
-      //var model = _this.repData.getValue();
+      var model = _this.repData.getValue();
       dataservice.qualify.salesrep.read({
-          id: _this.repData.getValue().SalesRepID
-        }, null,
-        function(err, resp) {
-          if (err) {
-            notify.notify('warn', err.Message, 10);
-            _this.focusFirst(true);
-          } else {
-            _this.repData.markClean(resp.Value, true);
-            _this.repResult({
-              img: resp.Value.ImagePath,
-              fullname: resp.Value.FirstName + ' ' + resp.Value.LastName,
-              season: resp.Value.Seasons[0].SeasonName,
-              office: '[Not Set Yet]',
-              phone: resp.Value.PhoneCell,
-              email: resp.Value.Email
-            });
-            _this.loaded(true);
-          }
-          cb();
-        });
+        id: model.SalesRepID
+      }, null, function(err, resp) {
+        if (err) {
+          notify.notify('warn', err.Message, 10);
+          _this.focusFirst(true);
+        } else {
+          _this.repData.markClean(resp.Value, true);
+          _this.repResult(resp.Value);
+          _this.loaded(true);
+        }
+        cb();
+      });
     });
 
     _this.loading = _this.cmdFind.busy;

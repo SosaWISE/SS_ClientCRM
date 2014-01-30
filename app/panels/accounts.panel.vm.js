@@ -17,13 +17,13 @@ define('src/panels/accounts.panel.vm', [
       require([
         'src/account/masteraccount.vm',
         'src/account/account.search.vm',
-        'src/account/account.checklist.vm',
+        'src/account/security/checklist.vm',
         'src/account/account.info.vm',
       ], function() {
         var args = arguments;
         deps.MasterAccountViewModel = args[0];
         deps.AccountSearchViewModel = args[1];
-        deps.AccountChecklistViewModel = args[2];
+        deps.ChecklistViewModel = args[2];
         deps.AccountInfoViewModel = args[3];
         cb();
       });
@@ -52,7 +52,7 @@ define('src/panels/accounts.panel.vm', [
     };
     _this.clickNew = function() {
       newCount++;
-      var vm = new deps.AccountChecklistViewModel({
+      var vm = new deps.ChecklistViewModel({
         pcontroller: _this,
         id: 'qualify' + newCount,
         title: 'Qualify ' + newCount,

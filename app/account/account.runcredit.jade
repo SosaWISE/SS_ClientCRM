@@ -4,36 +4,36 @@ div(class="runcredit-form", data-bind="toggle:{'override':override}")
     li
       span(class="label") Prefix
       input(type="text", placeholder="Mr.",
-        data-bind="ukov:customerData.Salutation,value:customerData.Salutation,valueUpdate:'keyup'")
+        data-bind="ukov:data.Salutation,value:data.Salutation,valueUpdate:'keyup'")
     li
       span(class="label") First Name
       input(type="text", placeholder="",
-        data-bind="ukov:customerData.FirstName,value:customerData.FirstName,valueUpdate:'keyup'")
+        data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup'")
     li
       span(class="label") Middle Name
       input(type="text", placeholder="",
-        data-bind="ukov:customerData.MiddleName,value:customerData.MiddleName,valueUpdate:'keyup'")
+        data-bind="ukov:data.MiddleName,value:data.MiddleName,valueUpdate:'keyup'")
     li
       span(class="label") Last Name
       input(type="text", placeholder="",
-        data-bind="ukov:customerData.LastName,value:customerData.LastName,valueUpdate:'keyup'")
+        data-bind="ukov:data.LastName,value:data.LastName,valueUpdate:'keyup'")
     li
       span(class="label") Suffix
       input(type="text", placeholder="Jr.",
-        data-bind="ukov:customerData.Suffix,value:customerData.Suffix,valueUpdate:'keyup'")
+        data-bind="ukov:data.Suffix,value:data.Suffix,valueUpdate:'keyup'")
   ul(class="edit-form",style="width:260px;position:absolute;top:0px;right:0px;")
     li
       span(class="label") Email
       input(type="text", placeholder="",
-        data-bind="ukov:customerData.Email,value:customerData.Email,valueUpdate:'keyup'")
+        data-bind="ukov:data.Email,value:data.Email,valueUpdate:'keyup'")
     li
       span(class="label") Social Security #
       input(type="text", placeholder="123-12-1234",
-        data-bind="ukov:customerData.SSN,value:customerData.SSN,valueUpdate:'keyup'")
+        data-bind="ukov:data.SSN,value:data.SSN,valueUpdate:'keyup'")
     li
       span(class="label") Date of Birth
       input(type="text", placeholder="12/31/1989",
-        data-bind="ukov:customerData.DOB,datevalue:customerData.DOB,valueUpdate:'keyup'")
+        data-bind="ukov:data.DOB,datevalue:data.DOB,valueUpdate:'keyup'")
 
 div(style="margin-bottom:20px;")
     span(class="btn-bg", tabindex="0", data-bind="cmd:cmdRun") Run Credit

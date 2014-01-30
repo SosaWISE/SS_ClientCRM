@@ -38,6 +38,12 @@ define('src/account/account.runcredit.vm', [
   schema = {
     _model: true,
 
+    AddressId: {
+      converters: ukov.converters.number(0),
+      validators: [
+        ukov.validators.isRequired('AddressId is required'),
+      ],
+    },
     Salutation: {
       converter: strConverter,
       validators: [max50],
@@ -98,7 +104,8 @@ define('src/account/account.runcredit.vm', [
     _this.loaded = ko.observable(false);
     _this.override = ko.observable(false);
 
-    _this.customerData = ukov.wrap({
+    _this.data = ukov.wrap({
+      AddressId: _this.addressId,
       Salutation: '',
       FirstName: '',
       MiddleName: '',
@@ -110,14 +117,14 @@ define('src/account/account.runcredit.vm', [
     }, schema);
 
     /////TESTING//////////////////////
-    _this.customerData.FirstName('Bob');
-    _this.customerData.LastName('Bobbins');
-    // _this.customerData.DOB('1-1-1');
-    _this.customerData.DOB(new Date(Date.UTC(2001, 0, 1)));
+    _this.data.FirstName('Bob');
+    _this.data.LastName('Bobbins');
+    // _this.data.DOB('1-1-1');
+    _this.data.DOB(new Date(Date.UTC(2001, 0, 1)));
     /////TESTING//////////////////////
 
     _this.width = ko.observable(600);
-    _this.height = ko.observable(600);
+    _this.height = ko.observable('auto');
 
     //
     // events
@@ -127,7 +134,7 @@ define('src/account/account.runcredit.vm', [
         var result;
         if (_this.creditResult()) {
           result = {
-            customer: _this.customerData.model,
+            customer: _this.data.model,
             creditResult: _this.creditResult(),
           };
         }
@@ -135,35 +142,24 @@ define('src/account/account.runcredit.vm', [
       }
     };
     _this.cmdRun = ko.command(function(cb) {
-      _this.customerData.validate();
-      _this.customerData.update();
-      if (!_this.customerData.isValid()) {
-        notify.notify('warn', _this.customerData.errMsg(), 7);
+      _this.data.validate();
+      _this.data.update();
+      if (!_this.data.isValid()) {
+        notify.notify('warn', _this.data.errMsg(), 7);
         return cb();
       }
 
       _this.loaded(false);
-      var model = _this.customerData.getValue();
-      dataservice.qualify.saveCustomer(model, function(err, resp) {
+      var model = _this.data.getValue();
+      _this.data.markClean(model, true);
+      dataservice.qualify.runcredit.post(null, model, null, function(err, resp) {
         if (err) {
           notify.notify('warn', resp.Message, 10);
           return cb();
         }
-        model = resp.Value;
-        _this.customerData.markClean(model, true);
-
-        dataservice.qualify.runCredit({
-          LeadId: model.LeadId,
-          AddressId: _this.addressId,
-        }, function(err, resp) {
-          if (err) {
-            notify.notify('warn', resp.Message, 10);
-            return cb();
-          }
-          _this.creditResult(resp.Value);
-          _this.loaded(true);
-          cb();
-        });
+        _this.creditResult(resp.Value);
+        _this.loaded(true);
+        cb();
       });
     });
 
