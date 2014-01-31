@@ -1,9 +1,11 @@
 define('src/scrum/backlog.vm', [
+  'src/scrum/backlogdata',
   'src/dataservice',
   'src/scrum/backlog.gvm',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  BacklogData,
   dataservice,
   BacklogGridViewModel,
   utils,
@@ -16,7 +18,10 @@ define('src/scrum/backlog.vm', [
     BacklogViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['repo']);
 
-    _this.gvm = new BacklogGridViewModel();
+    _this.bd = new BacklogData();
+    _this.gvm = new BacklogGridViewModel({
+      bd: _this.bd,
+    });
 
     //
     // events
@@ -38,7 +43,7 @@ define('src/scrum/backlog.vm', [
 
     join.when(function(err) {
       if (!err) {
-        _this.gvm.init(scopes, storys);
+        _this.bd.init(scopes, storys);
       }
     });
   };

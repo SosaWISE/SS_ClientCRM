@@ -6,4 +6,9 @@ div(class="scrum-backlog")
     tr
       td(class="fh-body")
         div(class="fh-contents")
-          div(class="slickgrid",data-bind="slickgrid:gvm")
+          //- div(class="slickgrid",data-bind="slickgrid:gvm")
+
+          div(data-bind="with:bd")
+            <!-- ko foreach:childs -->
+            div(data-bind="template:{name:viewTmpl}")
+            <!-- /ko -->

@@ -13,9 +13,9 @@ define('src/scrum/backlogdata', [
 
   function makeId(item) {
     if (isStory(item)) {
-      return 'St' + item.ID;
+      return 'US' + item.ID;
     } else {
-      return 'Sc' + item.ID;
+      return 'E' + item.ID;
     }
   }
 
@@ -23,7 +23,7 @@ define('src/scrum/backlogdata', [
     if (isStory(item)) {
       return new StoryViewModel();
     } else {
-      return new ScopeViewModel();
+      return new EpicViewModel();
     }
   }
 
@@ -37,7 +37,7 @@ define('src/scrum/backlogdata', [
 
 
 
-  function ScopeViewModel() {
+  function EpicViewModel() {
     var _this = this;
 
     _this.parentId = null;
@@ -62,9 +62,10 @@ define('src/scrum/backlogdata', [
     });
     _this.childs = ko.observableArray();
   }
-  ScopeViewModel.prototype.update = function(item) {
+  EpicViewModel.prototype.viewTmpl = 'tmpl-scrum_epic';
+  EpicViewModel.prototype.update = function(item) {
     var _this = this,
-      isScope = !isStory(item),
+      isEpic = !isStory(item),
       id = makeId(item),
       parentId = item.ParentId;
 
@@ -72,7 +73,7 @@ define('src/scrum/backlogdata', [
       console.warn('mismatching id\'s');
       return;
     }
-    if (!isScope) {
+    if (!isEpic) {
       console.warn('item cannot be a story');
       return;
     }
@@ -81,7 +82,7 @@ define('src/scrum/backlogdata', [
       return;
     }
 
-    _this.parentId = parentId ? ('Sc' + parentId) : null;
+    _this.parentId = parentId ? ('E' + parentId) : null;
     _this.id = id;
     _this.name = item.Name;
     // _this.sortOrder = item.SortOrder;
@@ -100,17 +101,18 @@ define('src/scrum/backlogdata', [
       return 1;
     };
   }
+  StoryViewModel.prototype.viewTmpl = 'tmpl-scrum_story';
   StoryViewModel.prototype.update = function(item) {
     var _this = this,
-      isScope = !isStory(item),
+      isEpic = !isStory(item),
       id = makeId(item),
-      parentId = item.ScopeId;
+      parentId = item.EpicId;
 
     if (_this.id && _this.id !== id) {
       console.warn('mismatching id\'s');
       return;
     }
-    if (isScope) {
+    if (isEpic) {
       console.warn('item must be a story');
       return;
     }
@@ -119,7 +121,7 @@ define('src/scrum/backlogdata', [
       return;
     }
 
-    _this.parentId = parentId ? ('Sc' + parentId) : null;
+    _this.parentId = parentId ? ('E' + parentId) : null;
     _this.id = id;
     _this.name = item.Name;
     _this.version = item.Version;
@@ -239,7 +241,7 @@ define('src/scrum/backlogdata', [
 
 
 
-  BacklogData.prototype.init = function(scopes, storys) {
+  BacklogData.prototype.init = function(epics, storys) {
     var _this = this,
       idToVmMap = _this.idToVmMap,
       childs, list, detachedList = [],
@@ -251,13 +253,13 @@ define('src/scrum/backlogdata', [
     }
     _this._init = true;
 
-    // add scopes and storys to map
+    // add epics and storys to map
     function updateList(list) {
       list.forEach(function(item) {
         _this.update(item);
       });
     }
-    updateList(scopes);
+    updateList(epics);
     updateList(storys);
 
     // turn map back into a list
@@ -265,7 +267,7 @@ define('src/scrum/backlogdata', [
       return idToVmMap[key];
     });
 
-    // sort scopes and storys
+    // sort epics and storys
     list.sort(sorter);
     // wrap them and create tree
     childs = treehelper.makeTree(list, 'id', 'parentId', null, null, null, detachedList);
@@ -311,7 +313,7 @@ define('src/scrum/backlogdata', [
     }
   }
 
-  // function createScopeHolder(item, idMap) {
+  // function createEpicHolder(item, idMap) {
   //   var result = {
   //     item: item,
   //     id: item.ID,

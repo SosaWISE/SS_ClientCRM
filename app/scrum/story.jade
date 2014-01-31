@@ -1,0 +1,14 @@
+div(class="bl-item-wrap")
+  div(class="bl-item")
+    div(class="first")
+      span(class="drag-hdl")
+    div(class="name")
+      span(class="title",data-bind="text:name")
+    div(class="last")
+      span(class="pts",data-bind="text:points")
+      span(class="owner") ???
+
+  div(class="tasks",data-bind="foreach:childs")
+    div(class="task-wrap")
+      div(class="task")
+        span(data-bind="text:Name")

@@ -8,6 +8,63 @@
     position: absolute;
     // top:0;right:0;bottom:0;left:0;
     top:10px;right:10px;bottom:10px;left:10px;
+
+    .bl-item-wrap {
+      padding-left: 20px;
+    }
+    .bl-item {
+      padding: 0px;
+      margin-bottom: 3px;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      // .box-shadow(0px 1px 0px rgba(255,255,255,0.2), inset 0px 1px 0px rgba(255,255,255,0.2););
+      .border-radius(5px);
+    }
+
+    .first,
+    .name,
+    .last {
+      display:table-cell;
+      span {
+        display:inline-block;
+        vertical-align: top;
+      }
+    }
+    .first {
+      padding: 0px 3px;
+      .drag-hdl {
+        // width: 20px;
+        text-align: center;
+        cursor: url(/stuff/img/cursor-grab-up.cur), default;
+        height: 100%;
+        &:before {
+          font-family: entypo;
+          font-size: 16;
+          content: '\2630';
+        }
+      }
+    }
+    .name {
+      width: 100%;
+      span {
+        margin-right: 10px;
+      }
+    }
+    .last {
+      width: 170px;
+      white-space:nowrap;
+
+      // .pts,
+      // .owner {
+      //   display:inline-block;
+      // }
+
+      .pts {
+        width: 80px;
+      }
+      .owner {
+        width: 80px;
+      }
+    }
   }
 
   .scrum-plan {
@@ -41,15 +98,25 @@
       }
     }
 
+    .tasks-wrap {
+      // background: red;
+      display: table;
+      width: 100%;
+
+      height: 30px; //@NOTE: really the min-height
+    }
     .tasks {
-      min-height: 30px;
-      background: tan;
+      display: table-row;
 
       .step {
-        vertical-align: top;
-        display:inline-block;
+        // background: blue;
+        display: table-cell;
         width: 33.33%;
-        // height: 100%;
+
+        min-height: 100px;
+        height: 100%;
+
+        vertical-align: top;
         padding: 5px 0px 0px 5px;
 
         .task-wrap {

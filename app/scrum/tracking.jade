@@ -11,20 +11,21 @@ div(class="scrum-track",data-bind="if:sprint")
       span(class="owner") Bob
 
     //- Steps
-    div(class="tasks",data-bind="foreach:Steps")
-      div(class="step")
-        //- Persons
-        <!-- ko foreach:list -->
-        //- Tasks
-        <!-- ko foreach:list -->
-        //- Task
-        div(class="task-wrap")
-          div(class="task")
-            div
-              span(data-bind="cmd:$parents[4].clickLeft") left
-              span(data-bind="cmd:$parents[4].clickRight") right
-            span(data-bind="text:Name")
-        <!-- /ko -->
-        <!-- /ko -->
+    div(class="tasks-wrap")
+      div(class="tasks",data-bind="foreach:Steps")
+        div(class="step")
+          //- Persons
+          <!-- ko foreach:list -->
+          //- Tasks
+          <!-- ko foreach:list -->
+          //- Task
+          div(class="task-wrap")
+            div(class="task")
+              div
+                span(data-bind="cmd:$parents[4].clickLeft") left
+                span(data-bind="cmd:$parents[4].clickRight") right
+              span(data-bind="text:Name")
+          <!-- /ko -->
+          <!-- /ko -->
   <!-- /ko -->
   <!-- /ko -->

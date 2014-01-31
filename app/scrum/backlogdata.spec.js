@@ -13,9 +13,9 @@ define('src/scrum/backlogdata.spec', [
   "use strict";
 
   describe('BacklogData', function() {
-    var scopes, storys, bd;
+    var epics, storys, bd;
     beforeEach(function() {
-      scopes = [
+      epics = [
         {
           ParentId: null,
           ID: 1,
@@ -34,35 +34,35 @@ define('src/scrum/backlogdata.spec', [
       ];
       storys = [
         {
-          ScopeId: 3,
+          EpicId: 3,
           ID: 1,
           Name: "Name 1",
           Version: 1,
           Points: 0.5,
         },
         {
-          ScopeId: 1,
+          EpicId: 1,
           ID: 2,
           Name: "Name 2",
           Version: 1,
           Points: 13,
         },
         {
-          ScopeId: 2,
+          EpicId: 2,
           ID: 3,
           Name: "Name 3",
           Version: 1,
           Points: 2,
         },
         {
-          ScopeId: 1,
+          EpicId: 1,
           ID: 4,
           Name: "Name 4",
           Version: 1,
           Points: 2,
         },
         {
-          ScopeId: 3,
+          EpicId: 3,
           ID: 5,
           Name: "Name 5",
           Version: 1,
@@ -71,7 +71,7 @@ define('src/scrum/backlogdata.spec', [
       ];
 
       bd = new BacklogData();
-      bd.init(scopes, storys);
+      bd.init(epics, storys);
     });
 
     describe('getItem', function() {
@@ -80,29 +80,29 @@ define('src/scrum/backlogdata.spec', [
         expect(toJson(bd.childs)).toEqual([
           {
             parentId: null,
-            id: 'Sc1',
+            id: 'E1',
             name: "Web client",
             points: 16.5,
             length: 6,
             childs: [
               {
-                parentId: 'Sc1',
-                id: 'Sc3',
+                parentId: 'E1',
+                id: 'E3',
                 name: "Panel",
                 points: 1.5,
                 length: 3,
                 childs: [
                   {
-                    parentId: 'Sc3',
-                    id: 'St1',
+                    parentId: 'E3',
+                    id: 'US1',
                     name: "Name 1",
                     version: 1,
                     points: 0.5,
                     childs: [],
                   },
                   {
-                    parentId: 'Sc3',
-                    id: 'St5',
+                    parentId: 'E3',
+                    id: 'US5',
                     name: "Name 5",
                     version: 1,
                     points: 1,
@@ -111,16 +111,16 @@ define('src/scrum/backlogdata.spec', [
                 ],
               },
               {
-                parentId: 'Sc1',
-                id: 'St2',
+                parentId: 'E1',
+                id: 'US2',
                 name: "Name 2",
                 version: 1,
                 points: 13,
                 childs: [],
               },
               {
-                parentId: 'Sc1',
-                id: 'St4',
+                parentId: 'E1',
+                id: 'US4',
                 name: "Name 4",
                 version: 1,
                 points: 2,
@@ -130,14 +130,14 @@ define('src/scrum/backlogdata.spec', [
           },
           {
             parentId: null,
-            id: 'Sc2',
+            id: 'E2',
             name: "Web server",
             points: 2,
             length: 2,
             childs: [
               {
-                parentId: 'Sc2',
-                id: 'St3',
+                parentId: 'E2',
+                id: 'US3',
                 name: "Name 3",
                 version: 1,
                 points: 2,
@@ -154,14 +154,14 @@ define('src/scrum/backlogdata.spec', [
         expect(function() {
           bd.getItem(-1);
         }).toThrow();
-        expect(bd.getItem(0).id).toBe('Sc1');
-        expect(bd.getItem(1).id).toBe('Sc3');
-        expect(bd.getItem(2).id).toBe('St1');
-        expect(bd.getItem(3).id).toBe('St5');
-        expect(bd.getItem(4).id).toBe('St2');
-        expect(bd.getItem(5).id).toBe('St4');
-        expect(bd.getItem(6).id).toBe('Sc2');
-        expect(bd.getItem(7).id).toBe('St3');
+        expect(bd.getItem(0).id).toBe('E1');
+        expect(bd.getItem(1).id).toBe('E3');
+        expect(bd.getItem(2).id).toBe('US1');
+        expect(bd.getItem(3).id).toBe('US5');
+        expect(bd.getItem(4).id).toBe('US2');
+        expect(bd.getItem(5).id).toBe('US4');
+        expect(bd.getItem(6).id).toBe('E2');
+        expect(bd.getItem(7).id).toBe('US3');
         expect(function() {
           bd.getItem(8);
         }).toThrow();
@@ -171,7 +171,15 @@ define('src/scrum/backlogdata.spec', [
 
   function toJson(item) {
     item = ko.toJS(item);
-    return JSON.parse(JSON.stringify(item));
+    return JSON.parse(JSON.stringify(item, [
+      'parentId',
+      'id',
+      'name',
+      'version',
+      'points',
+      'length',
+      'childs',
+    ]));
   }
 
   // function trimItem(item) {

@@ -315,7 +315,7 @@ define('mock/scrum/scrumservice.mock', [
         SprintId: null,
         PersonId: null,
         ScopeId: '@FK(scopes)',
-        Name: '@TEXT(20,30)',
+        Name: '@TEXT(20,150)',
         Description: '@TEXT(50,80)',
         Points: '@STORY_POINTS',
         SortOrder: 0,

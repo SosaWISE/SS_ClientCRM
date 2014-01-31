@@ -1,0 +1,13 @@
+div(class="bl-item-wrap")
+  div(class="bl-item")
+    div(class="first")
+      span(class="drag-hdl")
+    div(class="name")
+      span(class="title",data-bind="text:name")
+    div(class="last")
+      span(class="pts",data-bind="text:points")
+      span(class="owner") ???
+
+  <!-- ko foreach:childs -->
+  div(data-bind="template:{name:viewTmpl}")
+  <!-- /ko -->
