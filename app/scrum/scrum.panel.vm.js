@@ -1,4 +1,5 @@
 define('src/scrum/scrum.panel.vm', [
+  'src/core/ko.bindingHandlers.jquery.ui',
   'src/dataservice',
   'src/scrum/scrumrepo',
   'src/scrum/backlog.vm',
@@ -7,6 +8,7 @@ define('src/scrum/scrum.panel.vm', [
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  jquery_ui,
   dataservice,
   ScrumRepo,
   BacklogViewModel,

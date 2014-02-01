@@ -1,10 +1,8 @@
 define('src/scrum/backlogdata', [
-  'slick',
   'src/core/treehelper',
   'src/core/notify',
   'ko',
 ], function(
-  Slick,
   treehelper,
   notify,
   ko
@@ -19,11 +17,15 @@ define('src/scrum/backlogdata', [
     }
   }
 
-  function makeVm(item) {
+  function makeParentId(parentId) {
+    return parentId ? ('E' + parentId) : null;
+  }
+
+  function makeVm(bd, item) {
     if (isStory(item)) {
-      return new StoryViewModel();
+      return new StoryViewModel(bd, item);
     } else {
-      return new EpicViewModel();
+      return new EpicViewModel(bd, item);
     }
   }
 
@@ -36,13 +38,23 @@ define('src/scrum/backlogdata', [
   }
 
 
+  // function BacklogItem() {
+  // }
 
-  function EpicViewModel() {
+
+  function EpicViewModel(bd, item) {
     var _this = this;
 
-    _this.parentId = null;
-    _this.id = null;
-    _this.name = null;
+    if (isStory(item)) {
+      throw new Error('item must be an epic');
+    }
+
+    _this.bd = bd;
+    _this.parentId = makeParentId(item.ParentId);
+    _this.id = makeId(item);
+    _this.name = item.Name;
+    _this.version = item.Version || 0;
+    _this.sortOrder = item.SortOrder || 0;
 
     _this.points = ko.computed({
       deferEvaluation: true,
@@ -64,69 +76,122 @@ define('src/scrum/backlogdata', [
   }
   EpicViewModel.prototype.viewTmpl = 'tmpl-scrum_epic';
   EpicViewModel.prototype.update = function(item) {
+    if (isStory(item)) {
+      throw new Error('item must be an epic');
+    }
     var _this = this,
-      isEpic = !isStory(item),
       id = makeId(item),
-      parentId = item.ParentId;
-
+      parent;
     if (_this.id && _this.id !== id) {
-      console.warn('mismatching id\'s');
-      return;
-    }
-    if (!isEpic) {
-      console.warn('item cannot be a story');
-      return;
-    }
-    if (_this.version && _this.version > item.Version) {
-      console.warn('current version is greater than new Version');
-      return;
+      throw new Error('mismatching id\'s');
     }
 
-    _this.parentId = parentId ? ('E' + parentId) : null;
-    _this.id = id;
+    if (_this.version && _this.version > item.Version) {
+      console.log('current version is greater than new Version');
+      return false;
+    }
+
+    // remove from parent
+    parent = _this.getParent();
+    if (parent) {
+      parent.removeChild(_this);
+    }
+
+    // update data
+    _this.parentId = makeParentId(item.ParentId);
     _this.name = item.Name;
-    // _this.sortOrder = item.SortOrder;
+    _this.version = item.Version || 0;
+    _this.sortOrder = item.SortOrder || 0;
+
+    // add to parent as child in correct order
+    parent = _this.getParent();
+    if (parent) {
+      parent.addChild(_this);
+      return true;
+    } else {
+      return false;
+    }
+  };
+  EpicViewModel.prototype.getParent = function() {
+    var _this = this,
+      parentId = _this.parentId,
+      bd = _this.bd;
+    if (parentId) {
+      return bd.idToVmMap[parentId];
+    } else {
+      return bd;
+    }
+  };
+  EpicViewModel.prototype.removeChild = function(vm) {
+    var _this = this;
+    return !!_this.childs.remove(vm).length;
+  };
+  EpicViewModel.prototype.addChild = function(vm) {
+    var _this = this;
+    insert(_this.childs, vm, sorter);
   };
 
-  function StoryViewModel() {
+  function StoryViewModel(bd, item) {
     var _this = this;
 
-    _this.parentId = null;
-    _this.id = null;
-    _this.name = null;
-    _this.version = null;
+    if (!isStory(item)) {
+      throw new Error('item must be a story');
+    }
 
-    _this.points = ko.observable(0);
+    _this.bd = bd;
+    _this.parentId = makeParentId(item.EpicId);
+    _this.id = makeId(item);
+    _this.name = item.Name;
+    _this.version = item.Version;
+    _this.sortOrder = item.SortOrder || 0;
+
+    _this.points = ko.observable(item.Points);
     _this.length = function() {
       return 1;
     };
   }
+  StoryViewModel.prototype.childs = true; // hack to stop treehelper from creating a childs array
   StoryViewModel.prototype.viewTmpl = 'tmpl-scrum_story';
   StoryViewModel.prototype.update = function(item) {
+    if (!isStory(item)) {
+      throw new Error('item must be a story');
+    }
     var _this = this,
-      isEpic = !isStory(item),
-      id = makeId(item),
-      parentId = item.EpicId;
-
+      id = makeId(item);
     if (_this.id && _this.id !== id) {
-      console.warn('mismatching id\'s');
-      return;
-    }
-    if (isEpic) {
-      console.warn('item must be a story');
-      return;
-    }
-    if (_this.version && _this.version > item.Version) {
-      console.warn('current version is greater than new Version');
-      return;
+      throw new Error('mismatching id\'s');
     }
 
-    _this.parentId = parentId ? ('E' + parentId) : null;
-    _this.id = id;
+    if (_this.version && _this.version > item.Version) {
+      console.log('current version is greater than new Version');
+      return false;
+    }
+
+    // remove from parent
+    _this.getParent().removeChild(_this);
+
+    // update data
+    _this.parentId = makeParentId(item.EpicId);
     _this.name = item.Name;
-    _this.version = item.Version;
-    // _this.sortOrder = item.SortOrder;
+    _this.version = item.Version || 0;
+    _this.sortOrder = item.SortOrder || 0;
+
     _this.points(item.Points);
+
+    // add to parent as child in correct order
+    _this.getParent().addChild(_this);
+
+    return true;
+  };
+  StoryViewModel.prototype.getParent = function() {
+    var _this = this;
+    return _this.bd.idToVmMap[_this.parentId];
+  };
+  StoryViewModel.prototype.removeChild = function() {
+    throw new Error('not supported');
+  };
+  StoryViewModel.prototype.addChild = function() {
+    throw new Error('not supported');
   };
 
 
@@ -136,7 +201,7 @@ define('src/scrum/backlogdata', [
       ko.utils.extend(_this, options);
     }
 
-    _this._init = false;
+    _this._initialized = false;
     _this.idToVmMap = {};
     _this.length = ko.computed({
       deferEvaluation: true,
@@ -170,29 +235,60 @@ define('src/scrum/backlogdata', [
         // editor: Slick.Editors.Text
       },
     ];
-
-    _this.onRowCountChanged = new Slick.Event();
-    _this.onRowsChanged = new Slick.Event();
   }
+  BacklogData.prototype.removeChild = function(vm) {
+    var _this = this;
+    return !!_this.childs.remove(vm).length;
+  };
+  BacklogData.prototype.addChild = function(vm) {
+    var _this = this;
+    insert(_this.childs, vm, sorter);
+  };
 
-  BacklogData.prototype.update = function(item) {
+  BacklogData.prototype.updateItem = function(item) {
     var _this = this,
-      id = makeId(item),
       idToVmMap = _this.idToVmMap,
-      vm;
+      vm = makeVm(_this, item),
+      currVm = idToVmMap[vm.id],
+      added = false;
 
-    vm = idToVmMap[id];
-    if (!vm) {
-      idToVmMap[id] = vm = makeVm(item);
+    if (_this._initialized) {
+      if (currVm) {
+        if (currVm.version <= vm.version) {
+          vm = currVm;
+        } else {
+          console.log('current version is greater than new version');
+          return added;
+        }
+      }
+
+      added = vm.update(item);
+      if (!currVm && added) {
+        idToVmMap[vm.id] = vm;
+      }
+    } else if (!currVm || currVm.version <= vm.version) {
+      // just add to map since it's not yet initialized
+      idToVmMap[vm.id] = vm;
+      added = true;
     }
-    vm.update(item);
-    //@TODO:
-    //  invalidate row
-    //  move to new parent
-
-    if (_this._init) {
-
+    return added;
+  };
+  BacklogData.prototype.removeItem = function(item) {
+    if (!isStory(item)) {
+      throw new Error('only storys can be removed');
     }
+
+    var _this = this,
+      idToVmMap = _this.idToVmMap,
+      id = makeId(item),
+      currVm = idToVmMap[id];
+
+    if (!currVm) {
+      return false;
+    }
+
+    delete idToVmMap[id];
+    return currVm.getParent().removeChild(currVm);
   };
 
   function findItemAtIndex(item, indexObj) {
@@ -219,8 +315,6 @@ define('src/scrum/backlogdata', [
     });
     return result;
   }
-
-
   BacklogData.prototype.getLength = function() {
     var _this = this;
     return _this.length();
@@ -244,23 +338,27 @@ define('src/scrum/backlogdata', [
   BacklogData.prototype.init = function(epics, storys) {
     var _this = this,
       idToVmMap = _this.idToVmMap,
-      childs, list, detachedList = [],
-      countBefore, diff;
+      childs, list, detachedList = [];
 
-    if (_this._init) {
-      console.warn('already initialized');
-      return;
+    if (_this._initialized) {
+      throw new Error('already initialized');
     }
-    _this._init = true;
+    _this._initialized = true;
 
     // add epics and storys to map
-    function updateList(list) {
+    function setList(list) {
       list.forEach(function(item) {
-        _this.update(item);
+        var vm = makeVm(_this, item),
+          currVm = idToVmMap[vm.id];
+        // There's a small chance that the item could have been updated in the time it takes
+        // to get all thebacklog items, so we're just making sure we have the latest version.
+        if (!currVm || currVm.version <= vm.version) {
+          idToVmMap[vm.id] = vm;
+        }
       });
     }
-    updateList(epics);
-    updateList(storys);
+    setList(epics);
+    setList(storys);
 
     // turn map back into a list
     list = Object.keys(idToVmMap).map(function(key) {
@@ -270,31 +368,16 @@ define('src/scrum/backlogdata', [
     // sort epics and storys
     list.sort(sorter);
     // wrap them and create tree
-    childs = treehelper.makeTree(list, 'id', 'parentId', null, null, null, detachedList);
+    childs = treehelper.makeTree(list, 'id', 'parentId', function(item, parent) {
+      // set parent (use backlog as parent if it's null)
+      item.parent = parent || _this;
+      return item;
+    }, null, null, detachedList);
     detachedList.forEach(function(item) {
       insert(childs, item, sorter);
     });
 
     _this.childs(childs);
-
-
-    countBefore = 0;
-    diff = [];
-    list.some(function(item, index) {
-      diff.push(index);
-      // return true;
-    });
-    if (countBefore !== _this.length()) {
-      _this.onRowCountChanged.notify({
-        previous: countBefore,
-        current: _this.length(),
-      }, null, _this);
-    }
-    if (diff.length > 0) {
-      _this.onRowsChanged.notify({
-        rows: diff,
-      }, null, _this);
-    }
   };
 
   function insert(list, item, sorter) {

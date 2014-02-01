@@ -19,9 +19,9 @@ define('src/scrum/backlog.vm', [
     ControllerViewModel.ensureProps(_this, ['repo']);
 
     _this.bd = new BacklogData();
-    _this.gvm = new BacklogGridViewModel({
-      bd: _this.bd,
-    });
+    // _this.gvm = new BacklogGridViewModel({
+    //   bd: _this.bd,
+    // });
 
     //
     // events
@@ -64,7 +64,6 @@ define('src/scrum/backlog.vm', [
       cb(err, resp);
     });
   }
-
 
   return BacklogViewModel;
 });
