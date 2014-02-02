@@ -1,13 +1,17 @@
 define('src/scrum/backlogdata', [
+  'src/core/relativesort',
   'src/core/treehelper',
   'src/core/notify',
   'ko',
 ], function(
+  RelativeSort,
   treehelper,
   notify,
   ko
 ) {
   "use strict";
+
+  var rsort = new RelativeSort();
 
   function makeId(item) {
     if (isStory(item)) {
@@ -130,6 +134,55 @@ define('src/scrum/backlogdata', [
     var _this = this;
     insert(_this.childs, vm, sorter);
   };
+  EpicViewModel.prototype.onDropSibling = function(vm) {
+    var _this = this,
+      nextSibling;
+
+    // remove from parent
+    vm.getParent().removeChild(vm);
+
+    // update data
+    // set parentId
+    vm.parentId = _this.parentId;
+    // change sortOrder
+    nextSibling = _this.findNextSibling();
+    vm.sortOrder = rsort.getIntSort(_this.sortOrder, nextSibling ? nextSibling.sortOrder : null);
+
+    // add to parent as child in correct order
+    vm.getParent().addChild(vm);
+
+    // save
+    //@TODO: save
+  };
+  EpicViewModel.prototype.findNextSibling = function() {
+    var _this = this,
+      list = _this.getParent().childs(),
+      result;
+    list.some(function(item, index) {
+      if (_this === item) {
+        result = list[index + 1];
+        return true;
+      }
+    });
+    return result;
+  };
+  EpicViewModel.prototype.onDropChild = function(vm) {
+    var _this = this;
+
+    // remove from parent
+    vm.getParent().removeChild(vm);
+
+    // set parentId
+    vm.parentId = _this.id;
+    // change sortOrder
+    vm.sortOrder = 1; //@HACK: temp hack
+
+    // add to parent as child in correct order
+    vm.getParent().addChild(vm);
+
+    // save
+    //@TODO: save
+  };
 
   function StoryViewModel(bd, item) {
     var _this = this;
@@ -184,14 +237,52 @@ define('src/scrum/backlogdata', [
     return true;
   };
   StoryViewModel.prototype.getParent = function() {
-    var _this = this;
-    return _this.bd.idToVmMap[_this.parentId];
+    var _this = this,
+      parentId = _this.parentId,
+      bd = _this.bd;
+    if (parentId) {
+      return bd.idToVmMap[parentId];
+    } else {
+      return bd;
+    }
   };
   StoryViewModel.prototype.removeChild = function() {
     throw new Error('not supported');
   };
   StoryViewModel.prototype.addChild = function() {
     throw new Error('not supported');
+  };
+  StoryViewModel.prototype.onDropSibling = function(vm) {
+    var _this = this,
+      nextSibling;
+
+    // remove from parent
+    vm.getParent().removeChild(vm);
+
+    // update data
+    // set parentId
+    vm.parentId = _this.parentId;
+    // change sortOrder
+    nextSibling = _this.findNextSibling();
+    vm.sortOrder = rsort.getIntSort(_this.sortOrder, nextSibling ? nextSibling.sortOrder : null);
+
+    // add to parent as child in correct order
+    vm.getParent().addChild(vm);
+
+    // save
+    //@TODO: save
+  };
+  StoryViewModel.prototype.findNextSibling = function() {
+    var _this = this,
+      list = _this.getParent().childs(),
+      result;
+    list.some(function(item, index) {
+      if (_this === item) {
+        result = list[index + 1];
+        return true;
+      }
+    });
+    return result;
   };
 
 

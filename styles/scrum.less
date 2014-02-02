@@ -12,12 +12,31 @@
     .bl-item-wrap {
       padding-left: 20px;
     }
+
     .bl-item {
       padding: 0px;
-      margin-bottom: 3px;
       border: 1px solid rgba(0, 0, 0, 0.2);
       // .box-shadow(0px 1px 0px rgba(255,255,255,0.2), inset 0px 1px 0px rgba(255,255,255,0.2););
       .border-radius(5px);
+
+      background: #FFF;
+      &.epic {
+        background: yellow;
+      }
+
+      &.drop-accept {
+        .box-shadow(inset 0px 0px 3px #444);
+      }
+    }
+
+    .bl-item-sibling {
+      margin-left: 15px;
+      height: 3px;
+      // background: yellow;
+
+      &.drop-accept {
+        background: #bbb;
+      }
     }
 
     .first,
@@ -31,11 +50,9 @@
     }
     .first {
       padding: 0px 3px;
+      vertical-align: middle;
       .drag-hdl {
-        // width: 20px;
-        text-align: center;
         cursor: url(/stuff/img/cursor-grab-up.cur), default;
-        height: 100%;
         &:before {
           font-family: entypo;
           font-size: 16;
