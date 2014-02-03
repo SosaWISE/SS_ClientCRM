@@ -1,5 +1,5 @@
 define('src/account/security/systemdetails.vm', [
-  'src/rep.find.vm',
+  'src/account/default/rep.find.vm',
   'src/account/security/emcontacts.vm',
   'ko',
   'src/core/utils',

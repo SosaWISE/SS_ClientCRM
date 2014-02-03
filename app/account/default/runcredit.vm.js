@@ -1,4 +1,4 @@
-define('src/account/account.runcredit.vm', [
+define('src/account/default/runcredit.vm', [
   'src/core/combo.vm',
   'src/core/notify',
   'src/core/utils',
@@ -94,9 +94,9 @@ define('src/account/account.runcredit.vm', [
   };
 
 
-  function AccountRunCreditViewModel(options) {
+  function RunCreditViewModel(options) {
     var _this = this;
-    AccountRunCreditViewModel.super_.call(_this, options);
+    RunCreditViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, ['addressId']);
 
     _this.focus = ko.observable(false);
@@ -165,10 +165,10 @@ define('src/account/account.runcredit.vm', [
 
     _this.loading = _this.cmdRun.busy;
   }
-  utils.inherits(AccountRunCreditViewModel, BaseViewModel);
-  AccountRunCreditViewModel.prototype.viewTmpl = 'tmpl-account_runcredit';
+  utils.inherits(RunCreditViewModel, BaseViewModel);
+  RunCreditViewModel.prototype.viewTmpl = 'tmpl-acct-default-runcredit';
 
-  AccountRunCreditViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
+  RunCreditViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
     var _this = this;
 
     // this timeout makes it possible to focus the input
@@ -177,5 +177,5 @@ define('src/account/account.runcredit.vm', [
     }, 100);
   };
 
-  return AccountRunCreditViewModel;
+  return RunCreditViewModel;
 });

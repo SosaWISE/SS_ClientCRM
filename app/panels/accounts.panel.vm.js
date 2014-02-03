@@ -15,10 +15,10 @@ define('src/panels/accounts.panel.vm', [
   var deps = {},
     ensureDeps = helpers.onetimer(function loadDeps(cb) {
       require([
-        'src/account/masteraccount.vm',
-        'src/account/account.search.vm',
+        'src/account/default/masteraccount.vm',
+        'src/account/default/search.vm',
         'src/account/security/checklist.vm',
-        'src/account/account.info.vm',
+        'src/account/security/account.info.vm',
       ], function() {
         var args = arguments;
         deps.MasterAccountViewModel = args[0];

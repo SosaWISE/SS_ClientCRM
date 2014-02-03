@@ -1,4 +1,4 @@
-define('src/address.validate.vm', [
+define('src/account/default/address.validate.vm', [
   'src/core/combo.vm',
   'src/core/notify',
   'src/core/utils',
@@ -227,7 +227,7 @@ define('src/address.validate.vm', [
     _this.loading = _this.cmdValidate.busy;
   }
   utils.inherits(AddressValidateViewModel, BaseViewModel);
-  AddressValidateViewModel.prototype.viewTmpl = 'tmpl-address_validate';
+  AddressValidateViewModel.prototype.viewTmpl = 'tmpl-acct-default-address_validate';
 
   AddressValidateViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
     var _this = this;

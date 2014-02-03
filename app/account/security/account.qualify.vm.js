@@ -1,10 +1,10 @@
-define('src/account/account.qualify.vm', [
+define('src/account/security/account.qualify.vm', [
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
-  'src/rep.find.vm',
-  'src/address.validate.vm',
-  'src/account/account.runcredit.vm',
+  'src/account/default/rep.find.vm',
+  'src/account/default/address.validate.vm',
+  'src/account/default/runcredit.vm',
   'ko'
 ], function(
   notify,
@@ -79,7 +79,7 @@ define('src/account/account.qualify.vm', [
     });
   }
   utils.inherits(AccountQualifyViewModel, ControllerViewModel);
-  AccountQualifyViewModel.prototype.viewTmpl = 'tmpl-account_qualify';
+  AccountQualifyViewModel.prototype.viewTmpl = 'tmpl-security-account_qualify';
 
   AccountQualifyViewModel.prototype.onLoad = function( /*routeData, join*/ ) { // override me
     var _this = this;

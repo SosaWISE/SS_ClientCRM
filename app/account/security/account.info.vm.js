@@ -1,4 +1,4 @@
-define('src/account/account.info.vm', [
+define('src/account/security/account.info.vm', [
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
@@ -34,7 +34,7 @@ define('src/account/account.info.vm', [
     };
   }
   utils.inherits(AccountInfoViewModel, ControllerViewModel);
-  AccountInfoViewModel.prototype.viewTmpl = 'tmpl-account_info';
+  AccountInfoViewModel.prototype.viewTmpl = 'tmpl-security-account_info';
 
   AccountInfoViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var cb = join.add();

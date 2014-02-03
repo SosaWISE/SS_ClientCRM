@@ -6,7 +6,7 @@ div(class="acct-systemdetails")
           div(class="section",data-bind="cmd:cmdFindRep,toggle:{empty:!repModel()}")
             span(class="title") Technician
             div(class="contents",data-bind="if:repModel")
-              div(data-bind="template:{data:repModel,name:'tmpl-rep_info'}")
+              div(data-bind="template:{data:repModel,name:'tmpl-acct-default-rep_info'}")
 
         div(style="height:300px;",
           data-bind="template:{name:emcontactsVm.viewTmpl,data:emcontactsVm}")

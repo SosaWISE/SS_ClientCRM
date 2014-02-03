@@ -1,4 +1,4 @@
-define('src/account/notes.vm', [
+define('src/account/default/notes.vm', [
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/ukov',
@@ -225,7 +225,7 @@ define('src/account/notes.vm', [
     });
   }
   utils.inherits(NotesViewModel, BaseViewModel);
-  NotesViewModel.prototype.viewTmpl = 'tmpl-notes';
+  NotesViewModel.prototype.viewTmpl = 'tmpl-acct-default-notes';
 
   NotesViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this;

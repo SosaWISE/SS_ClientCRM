@@ -1,5 +1,5 @@
-define('src/account/masteraccount.vm', [
-  'src/account/notes.vm',
+define('src/account/default/masteraccount.vm', [
+  'src/account/default/notes.vm',
   'src/dataservice',
   'src/account/security/account.vm',
   'ko',
@@ -74,7 +74,7 @@ define('src/account/masteraccount.vm', [
     };
   }
   utils.inherits(MasterAccountViewModel, ControllerViewModel);
-  MasterAccountViewModel.prototype.viewTmpl = 'tmpl-masteraccount';
+  MasterAccountViewModel.prototype.viewTmpl = 'tmpl-acct-default-masteraccount';
 
   MasterAccountViewModel.prototype.onLoad = function(routeData, join) { // overrides base
     var _this = this,

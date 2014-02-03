@@ -1,4 +1,4 @@
-define('src/rep.find.vm', [
+define('src/account/default/rep.find.vm', [
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
@@ -89,7 +89,7 @@ define('src/rep.find.vm', [
     });
   }
   utils.inherits(RepFindViewModel, BaseViewModel);
-  RepFindViewModel.prototype.viewTmpl = 'tmpl-rep_find';
+  RepFindViewModel.prototype.viewTmpl = 'tmpl-acct-default-rep_find';
   RepFindViewModel.prototype.width = 400;
   RepFindViewModel.prototype.height = 'auto';
 

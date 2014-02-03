@@ -1,4 +1,4 @@
-define('src/account/account.search.vm', [
+define('src/account/default/search.vm', [
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/ukov',
@@ -73,9 +73,9 @@ define('src/account/account.search.vm', [
     },
   };
 
-  function AccountSearchViewModel(options) {
+  function SearchViewModel(options) {
     var _this = this;
-    AccountSearchViewModel.super_.call(_this, options);
+    SearchViewModel.super_.call(_this, options);
 
     _this.title = ko.observable(_this.title);
 
@@ -172,8 +172,8 @@ define('src/account/account.search.vm', [
       count++;
     };
   }
-  utils.inherits(AccountSearchViewModel, ControllerViewModel);
-  AccountSearchViewModel.prototype.viewTmpl = 'tmpl-account_search';
+  utils.inherits(SearchViewModel, ControllerViewModel);
+  SearchViewModel.prototype.viewTmpl = 'tmpl-acct-default-search';
 
-  return AccountSearchViewModel;
+  return SearchViewModel;
 });
