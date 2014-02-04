@@ -68,7 +68,7 @@ define('src/account/default/notes.vm', [
     NotesViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, ['id']);
 
-    _this.initMixinLoad();
+    _this.mixinLoad();
 
     _this.note = ukov.wrap('', schemaNote);
     _this.data = ukov.wrap({

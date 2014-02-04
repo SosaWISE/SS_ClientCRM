@@ -38,7 +38,9 @@ define('src/panels/surveys.panel.vm', [
     SurveysPanelViewModel.super_.call(_this, options);
 
     _this.surveyTypes = _this.childs;
-    _this.layersVM = new LayersViewModel();
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
+    });
 
     //
     // events
@@ -73,7 +75,7 @@ define('src/panels/surveys.panel.vm', [
               var list = resp.Value.map(function(model) {
                 var vm = new deps.SurveyTypeViewModel({
                   pcontroller: _this,
-                  layersVM: _this.layersVM,
+                  layersVm: _this.layersVm,
                   tokensVM: tokensVM,
                   possibleAnswersVM: possibleAnswersVM,
                   model: model,

@@ -74,7 +74,7 @@ define('src/survey/question.new.vm', [
         surveyTypeVM: _this.surveyTypeVM,
         name: filterText,
       });
-    _this.layersVM.show(vm, function(model) {
+    _this.layersVm.show(vm, function(model) {
       if (!model) {
         return;
       }

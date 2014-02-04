@@ -29,7 +29,9 @@ define('src/account/security/checklist.vm', [
 
     _this.checklist = _this.childs;
 
-    _this.layersVm = new LayersViewModel();
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
+    });
 
     //
     // events
