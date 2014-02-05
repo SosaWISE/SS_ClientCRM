@@ -1,5 +1,5 @@
 define('src/core/base.vm', [
-  'src/core/mixin.load',
+  'src/core/mixinLoad',
   'ko'
 ], function(
   mixinLoad,

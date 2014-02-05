@@ -6,7 +6,6 @@ define('src/u-kov/validators', [
   moment
 ) {
   "use strict";
-  /* jshint eqnull:true */
 
   var validators = {},
     notString = 'Value is not a string',

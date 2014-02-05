@@ -1,0 +1,17 @@
+div(class="payby-eft")
+  ul(class="edit-form")
+    li
+      span(class="label") Account Type
+      div(data-bind="template:{name:data.AccountTypeCvm.viewTmpl,data:data.AccountTypeCvm}")
+    li
+      span(class="label") Account Number
+      input(type="text", placeholder="",
+        data-bind="ukov:data.AccountNumber,value:data.AccountNumber,valueUpdate:'keyup'")
+    li
+      span(class="label") Routing Number
+      input(type="text", placeholder="",
+        data-bind="ukov:data.RoutingNumber,value:data.RoutingNumber,valueUpdate:'keyup'")
+    li
+      span(class="label") Name on Account
+      input(type="text", placeholder="",
+        data-bind="ukov:data.NameOnAccount,value:data.NameOnAccount,valueUpdate:'keyup'")
