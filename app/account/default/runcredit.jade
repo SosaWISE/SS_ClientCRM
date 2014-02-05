@@ -34,11 +34,14 @@ div(class="runcredit-form", data-bind="toggle:{'override':override}")
       span(class="label") Date of Birth
       input(type="text", placeholder="12/31/1989",
         data-bind="ukov:data.DOB,datevalue:data.DOB,valueUpdate:'keyup'")
+    li
+      span(class="label") Language
+      div(data-bind="template:{name:laComboVM.viewTmpl,data:laComboVM}")
 
 div(style="margin-bottom:20px;")
     span(class="btn-bg", tabindex="0", data-bind="cmd:cmdRun") Run Credit
 
 div(data-bind="if:loaded")
-  div(data-bind="template:{name:'tmpl-credit',data:creditResult}")
+  div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult}")
   div(class="actions")
     span(class="btn-bg", tabindex="0", data-bind="cmd:clickClose") Ok

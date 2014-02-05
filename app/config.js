@@ -34,6 +34,7 @@ define('src/config', [
   set('serviceDomain', 'sse.services.cmscors');
   set('titlePrefix', '');
   set('titlePostfix', '| CRM');
+  set('leadSourceId', 1);
 
   return config;
 });

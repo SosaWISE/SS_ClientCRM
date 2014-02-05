@@ -1,12 +1,12 @@
-div(class="credit-result")
+div(data-bind="crg:CreditGroup" class="credit-result")
   div
     span(class="title") STATUS:
     wbr
-    span ??????????
+    span(data-bind="text:IsHit")
   div
     span(class="title") Group:
     wbr
-    span GGGGGG
+    span(data-bind="text:CreditGroup")
   div
     span(class="title") Bureau:
     wbr

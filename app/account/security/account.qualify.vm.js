@@ -72,6 +72,7 @@ define('src/account/security/account.qualify.vm', [
         }
       }, null, {
         addressId: _this.addressModel().AddressID,
+        repModel: _this.repModel()
       });
       cb();
     }, function(busy) {

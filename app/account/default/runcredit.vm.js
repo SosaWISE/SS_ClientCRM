@@ -1,23 +1,61 @@
 define('src/account/default/runcredit.vm', [
+  'src/config',
   'src/core/combo.vm',
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
+  'jquery',
   'ko',
   'src/ukov',
   'src/dataservice'
 ], function(
+  config,
   ComboViewModel,
   notify,
   utils,
   BaseViewModel,
+  jquery,
   ko,
   ukov,
   dataservice
 ) {
   "use strict";
 
+  // -- Credit Score Group
+  ko.bindingHandlers.crg = {
+    //init: function(element, valueAccessor) {},
+    update: function(element, valueAccessor) {
+      var cls,
+        creditGroup = valueAccessor();
+      if (!creditGroup) {
+        throw new Error('no crObj');
+      }
+      switch (creditGroup) {
+        case "Excellent":
+          cls = "excellent";
+          break;
+        case "Good":
+          cls = "good";
+          break;
+        case "Sub":
+          cls = "sub";
+          break;
+        case "Poor":
+          cls = "poor";
+          break;
+        default:
+          cls = "blank";
+          break;
+      }
+      if (cls) {
+        jquery(element).addClass(cls);
+      }
+    }
+  };
+
   var schema,
+    max20 = ukov.validators.maxLength(20),
+    max25 = ukov.validators.maxLength(25),
     max50 = ukov.validators.maxLength(50),
     max256 = ukov.validators.maxLength(256),
     strConverter = ukov.converters.string(),
@@ -37,7 +75,18 @@ define('src/account/default/runcredit.vm', [
 
   schema = {
     _model: true,
+    LeadSourceId: {},
+    TeamLocationId: {},
+    SeasonId: {},
 
+    SalesRepId: {
+      converter: strConverter,
+      validators: [max25],
+    },
+    LocalizationID: {
+      converter: strConverter,
+      validators: [max20],
+    },
     AddressId: {
       converters: ukov.converters.number(0),
       validators: [
@@ -98,14 +147,19 @@ define('src/account/default/runcredit.vm', [
     var _this = this;
     RunCreditViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, ['addressId']);
+    _this.mixinLoad();
 
     _this.focus = ko.observable(false);
     _this.creditResult = ko.observable(null);
     _this.loaded = ko.observable(false);
     _this.override = ko.observable(false);
-
     _this.data = ukov.wrap({
+      LocalizationID: '',
+      LeadSourceId: config.leadSourceId,
       AddressId: _this.addressId,
+      SalesRepId: _this.repModel.CompanyID,
+      TeamLocationId: _this.repModel.TeamLocationId,
+      SeasonId: _this.repModel.Seasons[0].SeasonID,
       Salutation: '',
       FirstName: '',
       MiddleName: '',
@@ -116,11 +170,20 @@ define('src/account/default/runcredit.vm', [
       Email: '',
     }, schema);
 
+    _this.laComboVM = new ComboViewModel({
+      selectedValue: _this.data.LocalizationID,
+      fields: {
+        text: 'LocalizationName',
+        value: 'LocalizationID',
+      }
+    });
+
     /////TESTING//////////////////////
     _this.data.FirstName('Bob');
     _this.data.LastName('Bobbins');
     // _this.data.DOB('1-1-1');
     _this.data.DOB(new Date(Date.UTC(2001, 0, 1)));
+    _this.data.Email('Bob.Bobbins@some.com');
     /////TESTING//////////////////////
 
     _this.width = ko.observable(600);
@@ -176,6 +239,22 @@ define('src/account/default/runcredit.vm', [
       _this.focus(true);
     }, 100);
   };
+
+  RunCreditViewModel.prototype.onLoad = function(routeData, join) {
+    var _this = this,
+      cb = join.add();
+
+    load_localization(_this.laComboVM, cb);
+  };
+
+  function load_localization(comboVM, cb) {
+    dataservice.maincore.localizations.read({}, null, function(err, resp) {
+      utils.safeCallback(err, function() {
+        comboVM.setList(resp.Value);
+        comboVM.selectItem(comboVM.list()[0]);
+      }, cb);
+    });
+  }
 
   return RunCreditViewModel;
 });
