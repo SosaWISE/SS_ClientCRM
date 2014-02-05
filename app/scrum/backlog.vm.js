@@ -1,13 +1,11 @@
 define('src/scrum/backlog.vm', [
   'src/scrum/backlogdata',
   'src/dataservice',
-  'src/scrum/backlog.gvm',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
   BacklogData,
   dataservice,
-  BacklogGridViewModel,
   utils,
   ControllerViewModel
 ) {
@@ -19,9 +17,6 @@ define('src/scrum/backlog.vm', [
     ControllerViewModel.ensureProps(_this, ['repo']);
 
     _this.bd = new BacklogData();
-    // _this.gvm = new BacklogGridViewModel({
-    //   bd: _this.bd,
-    // });
 
     //
     // events
@@ -32,23 +27,33 @@ define('src/scrum/backlog.vm', [
 
   BacklogViewModel.prototype.onLoad = function(routeData, join) {
     var _this = this,
-      scopes, storys;
+      epics, storys;
 
-    load_scopes(function(val) {
-      scopes = val;
+    load_epics(function(val) {
+      epics = val;
     }, join);
     load_storys(function(val) {
       storys = val;
     }, join);
 
     join.when(function(err) {
-      if (!err) {
-        _this.bd.init(scopes, storys);
+      if (err) {
+        return;
       }
+      _this.bd.init([
+        {
+          type: 'epic',
+          list: epics,
+        },
+        {
+          type: 'story',
+          list: storys,
+        }
+      ]);
     });
   };
 
-  function load_scopes(setter, join) {
+  function load_epics(setter, join) {
     var cb = join.add();
     dataservice.scrum.scopes.read({}, setter, function(err, resp) {
       cb(err, resp);

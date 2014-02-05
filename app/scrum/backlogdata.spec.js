@@ -71,105 +71,114 @@ define('src/scrum/backlogdata.spec', [
       ];
 
       bd = new BacklogData();
-      bd.init(epics, storys);
+      bd.init([
+        {
+          type: 'epic',
+          list: epics,
+        },
+        {
+          type: 'story',
+          list: storys,
+        }
+      ]);
     });
 
     describe('init', function() {
       it('should throw it has already been called', function() {
         expect(function() {
-          bd.init([], []);
+          bd.init([]);
         }).toThrow();
       });
       it('should build tree', function() {
-        var id, item, parent;
+        var sid, item, parent;
 
-        id = 'Backlog';
+        sid = 'Backlog';
         item = bd;
-        expect(item.childs().length).toBe(2, id + ' childs');
-        expect(item.length()).toBe(8, id + ' length');
-        expect(Object.keys(item.idToVmMap).length).toBe(8, id + ' map length');
+        expect(item.childs().length).toBe(2, sid + ' childs');
+        expect(item.length()).toBe(8, sid + ' length');
+        expect(Object.keys(item.sidToVmMap).length).toBe(8, sid + ' map length');
 
         parent = bd;
-        id = 'E1';
+        sid = 'E1';
         item = parent.childs()[0];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBeNull();
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBeNull();
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(16.5, id + ' points');
-        expect(item.childs().length).toBe(3, id + ' childs');
-        expect(item.length()).toBe(6, id + ' length');
+        expect(item.points()).toBe(16.5, sid + ' points');
+        expect(item.childs().length).toBe(3, sid + ' childs');
+        expect(item.length()).toBe(6, sid + ' length');
 
         parent = bd.childs()[0];
-        id = 'E3';
+        sid = 'E3';
         item = parent.childs()[0];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBe('E1');
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBe('E1');
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(1.5, id + ' points');
-        expect(item.childs().length).toBe(2, id + ' childs');
-        expect(item.length()).toBe(3, id + ' length');
-        id = 'US2';
+        expect(item.points()).toBe(1.5, sid + ' points');
+        expect(item.childs().length).toBe(2, sid + ' childs');
+        expect(item.length()).toBe(3, sid + ' length');
+        sid = 'US2';
         item = parent.childs()[1];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBe('E1');
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBe('E1');
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(13, id + ' points');
-        expect(item.childs).toBe(true, id + ' childs');
-        expect(item.length()).toBe(1, id + ' length');
-        id = 'US4';
+        expect(item.points()).toBe(13, sid + ' points');
+        expect(item.childs).toBe(true, sid + ' childs');
+        expect(item.length()).toBe(1, sid + ' length');
+        sid = 'US4';
         item = parent.childs()[2];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBe('E1');
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBe('E1');
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(2, id + ' points');
-        expect(item.childs).toBe(true, id + ' childs');
-        expect(item.length()).toBe(1, id + ' length');
+        expect(item.points()).toBe(2, sid + ' points');
+        expect(item.childs).toBe(true, sid + ' childs');
+        expect(item.length()).toBe(1, sid + ' length');
 
         parent = bd.childs()[0].childs()[0];
-        id = 'US1';
+        sid = 'US1';
         item = parent.childs()[0];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBe('E3');
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBe('E3');
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(0.5, id + ' points');
-        expect(item.childs).toBe(true, id + ' childs');
-        expect(item.length()).toBe(1, id + ' length');
-        id = 'US5';
+        expect(item.points()).toBe(0.5, sid + ' points');
+        expect(item.childs).toBe(true, sid + ' childs');
+        expect(item.length()).toBe(1, sid + ' length');
+        sid = 'US5';
         item = bd.childs()[0].childs()[0].childs()[1];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBe('E3');
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBe('E3');
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(1, id + ' points');
-        expect(item.childs).toBe(true, id + ' childs');
-        expect(item.length()).toBe(1, id + ' length');
+        expect(item.points()).toBe(1, sid + ' points');
+        expect(item.childs).toBe(true, sid + ' childs');
+        expect(item.length()).toBe(1, sid + ' length');
 
 
 
         parent = bd;
-        id = 'E2';
+        sid = 'E2';
         item = parent.childs()[1];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBeNull();
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBeNull();
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(2, id + ' points');
-        expect(item.childs().length).toBe(1, id + ' childs');
-        expect(item.length()).toBe(2, id + ' length');
+        expect(item.points()).toBe(2, sid + ' points');
+        expect(item.childs().length).toBe(1, sid + ' childs');
+        expect(item.length()).toBe(2, sid + ' length');
 
         parent = bd.childs()[1];
-        id = 'US3';
+        sid = 'US3';
         item = parent.childs()[0];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBe('E2');
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBe('E2');
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(2, id + ' points');
-        expect(item.childs).toBe(true, id + ' childs');
-        expect(item.length()).toBe(1, id + ' length');
+        expect(item.points()).toBe(2, sid + ' points');
+        expect(item.childs).toBe(true, sid + ' childs');
+        expect(item.length()).toBe(1, sid + ' length');
       });
     });
 
     describe('updateItem', function() {
       it('should update backlog item and all parents', function() {
-        var parent, id, item;
+        var parent, sid, item;
 
         // update story
         bd.updateItem({
@@ -179,97 +188,97 @@ define('src/scrum/backlogdata.spec', [
           Version: 2,
           Points: 1, // changed points
           SortOrder: -1, // keep it as the first item
-        });
+        }, 'story');
 
-        id = 'Backlog';
+        sid = 'Backlog';
         item = bd;
-        expect(item.childs().length).toBe(2, id + ' childs');
-        expect(item.length()).toBe(8, id + ' length');
-        expect(Object.keys(item.idToVmMap).length).toBe(8, id + ' map length');
+        expect(item.childs().length).toBe(2, sid + ' childs');
+        expect(item.length()).toBe(8, sid + ' length');
+        expect(Object.keys(item.sidToVmMap).length).toBe(8, sid + ' map length');
 
         parent = bd;
-        id = 'E1';
+        sid = 'E1';
         item = parent.childs()[0];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBeNull();
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBeNull();
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(17, id + ' points');
-        expect(item.childs().length).toBe(3, id + ' childs');
-        expect(item.length()).toBe(6, id + ' length');
+        expect(item.points()).toBe(17, sid + ' points');
+        expect(item.childs().length).toBe(3, sid + ' childs');
+        expect(item.length()).toBe(6, sid + ' length');
 
         parent = bd.childs()[0];
-        id = 'E3';
+        sid = 'E3';
         item = parent.childs()[0];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBe('E1');
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBe('E1');
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(2, id + ' points');
-        expect(item.childs().length).toBe(2, id + ' childs');
-        expect(item.length()).toBe(3, id + ' length');
+        expect(item.points()).toBe(2, sid + ' points');
+        expect(item.childs().length).toBe(2, sid + ' childs');
+        expect(item.length()).toBe(3, sid + ' length');
 
         parent = bd.childs()[0].childs()[0];
-        id = 'US1';
+        sid = 'US1';
         item = parent.childs()[0];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBe('E3');
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBe('E3');
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(1, id + ' points');
-        expect(item.childs).toBe(true, id + ' childs');
-        expect(item.length()).toBe(1, id + ' length');
+        expect(item.points()).toBe(1, sid + ' points');
+        expect(item.childs).toBe(true, sid + ' childs');
+        expect(item.length()).toBe(1, sid + ' length');
       });
       it('should add backlog items to top level', function() {
         bd.updateItem({
           ParentId: null,
           ID: 4,
           Name: "Epic 4",
-        });
+        }, 'epic');
 
-        var parent, id, item;
+        var parent, sid, item;
 
-        id = 'Backlog';
+        sid = 'Backlog';
         item = bd;
-        expect(item.childs().length).toBe(3, id + ' childs');
-        expect(item.length()).toBe(9, id + ' length');
-        expect(Object.keys(item.idToVmMap).length).toBe(9, id + ' map length');
+        expect(item.childs().length).toBe(3, sid + ' childs');
+        expect(item.length()).toBe(9, sid + ' length');
+        expect(Object.keys(item.sidToVmMap).length).toBe(9, sid + ' map length');
 
         parent = bd;
-        id = 'E4';
+        sid = 'E4';
         item = parent.childs()[2];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBeNull();
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBeNull();
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(0, id + ' points');
-        expect(item.childs().length).toBe(0, id + ' childs');
+        expect(item.points()).toBe(0, sid + ' points');
+        expect(item.childs().length).toBe(0, sid + ' childs');
       });
       it('should add sub backlog items', function() {
-        var parent, id, item;
+        var parent, sid, item;
 
         // update epic
         bd.updateItem({
           ParentId: 2,
           ID: 4,
           Name: "Epic 4",
-        });
+        }, 'epic');
 
-        id = 'Backlog';
+        sid = 'Backlog';
         item = bd;
-        expect(item.childs().length).toBe(2, id + ' childs');
-        expect(item.length()).toBe(9, id + ' length');
-        expect(Object.keys(item.idToVmMap).length).toBe(9, id + ' map length');
+        expect(item.childs().length).toBe(2, sid + ' childs');
+        expect(item.length()).toBe(9, sid + ' length');
+        expect(Object.keys(item.sidToVmMap).length).toBe(9, sid + ' map length');
 
-        id = 'E2';
+        sid = 'E2';
         parent = bd.childs()[1];
-        expect(parent.id).toBe(id);
-        expect(parent.points()).toBe(2, id + ' points');
-        expect(parent.childs().length).toBe(2, id + ' childs');
+        expect(parent.sid).toBe(sid);
+        expect(parent.points()).toBe(2, sid + ' points');
+        expect(parent.childs().length).toBe(2, sid + ' childs');
 
-        id = 'E4';
+        sid = 'E4';
         item = parent.childs()[1];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBe('E2');
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBe('E2');
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(0, id + ' points');
-        expect(item.childs().length).toBe(0, id + ' childs');
+        expect(item.points()).toBe(0, sid + ' points');
+        expect(item.childs().length).toBe(0, sid + ' childs');
 
         // update story
         bd.updateItem({
@@ -278,43 +287,43 @@ define('src/scrum/backlogdata.spec', [
           Name: "Story 6",
           Version: 1,
           Points: 3,
-        });
+        }, 'story');
 
-        id = 'E4';
+        sid = 'E4';
         item = parent.childs()[1];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBe('E2');
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBe('E2');
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(3, id + ' points');
-        expect(item.childs().length).toBe(1, id + ' childs');
+        expect(item.points()).toBe(3, sid + ' points');
+        expect(item.childs().length).toBe(1, sid + ' childs');
 
         parent = item;
-        id = 'US6';
+        sid = 'US6';
         item = parent.childs()[0];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBe('E4');
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBe('E4');
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(3, id + ' points');
-        expect(item.childs).toBe(true, id + ' childs');
+        expect(item.points()).toBe(3, sid + ' points');
+        expect(item.childs).toBe(true, sid + ' childs');
       });
       it('shouldn\'t add items when the parent doesn\'t exist', function() {
-        var id, item;
+        var sid, item;
 
         // update epic
         bd.updateItem({
           ParentId: 200,
           ID: 4,
           Name: "Epic 4",
-        });
+        }, 'epic');
 
-        id = 'Backlog';
+        sid = 'Backlog';
         item = bd;
-        expect(item.childs().length).toBe(2, id + ' childs');
-        expect(item.length()).toBe(8, id + ' length');
-        expect(Object.keys(item.idToVmMap).length).toBe(8, id + ' map length');
+        expect(item.childs().length).toBe(2, sid + ' childs');
+        expect(item.length()).toBe(8, sid + ' length');
+        expect(Object.keys(item.sidToVmMap).length).toBe(8, sid + ' map length');
       });
       it('should move backlog items to another parent', function() {
-        var parent, id, item;
+        var parent, sid, item;
 
         // update story
         bd.updateItem({
@@ -324,71 +333,71 @@ define('src/scrum/backlogdata.spec', [
           Version: 2,
           Points: 0.5,
           SortOrder: -1, // make it the first item
-        });
+        }, 'story');
 
-        id = 'Backlog';
+        sid = 'Backlog';
         item = bd;
-        expect(item.childs().length).toBe(2, id + ' childs');
-        expect(item.length()).toBe(8, id + ' length');
-        expect(Object.keys(item.idToVmMap).length).toBe(8, id + ' map length');
+        expect(item.childs().length).toBe(2, sid + ' childs');
+        expect(item.length()).toBe(8, sid + ' length');
+        expect(Object.keys(item.sidToVmMap).length).toBe(8, sid + ' map length');
 
         // old parents
         parent = bd;
-        id = 'E1';
+        sid = 'E1';
         item = parent.childs()[0];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBeNull();
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBeNull();
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(16, id + ' points');
-        expect(item.childs().length).toBe(3, id + ' childs');
+        expect(item.points()).toBe(16, sid + ' points');
+        expect(item.childs().length).toBe(3, sid + ' childs');
 
         parent = bd.childs()[0];
-        id = 'E3';
+        sid = 'E3';
         item = parent.childs()[0];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBe('E1');
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBe('E1');
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(1, id + ' points');
-        expect(item.childs().length).toBe(1, id + ' childs');
+        expect(item.points()).toBe(1, sid + ' points');
+        expect(item.childs().length).toBe(1, sid + ' childs');
 
         // new parent
         parent = bd;
-        id = 'E2';
+        sid = 'E2';
         item = parent.childs()[1];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBeNull();
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBeNull();
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(2.5, id + ' points');
-        expect(item.childs().length).toBe(2, id + ' childs');
+        expect(item.points()).toBe(2.5, sid + ' points');
+        expect(item.childs().length).toBe(2, sid + ' childs');
 
         parent = bd.childs()[1];
-        id = 'US1';
+        sid = 'US1';
         item = parent.childs()[0];
-        expect(item.id).toBe(id);
-        expect(item.parentId).toBe('E2');
+        expect(item.sid).toBe(sid);
+        expect(item.parentSid).toBe('E2');
         expect(item.getParent()).toBe(parent);
-        expect(item.points()).toBe(0.5, id + ' points');
-        expect(item.childs).toBe(true, id + ' childs');
+        expect(item.points()).toBe(0.5, sid + ' points');
+        expect(item.childs).toBe(true, sid + ' childs');
       });
     });
     describe('removeItem', function() {
       it('should remove leaf backlog items (eg: storys)', function() {
-        var parent, id, item, removed;
+        var parent, sid, item, removed;
 
         // update story
         removed = bd.removeItem({
           ID: 1,
           Version: 2,
           Points: 1,
-        });
+        }, 'story');
 
         expect(removed).toBe(true);
 
-        id = 'Backlog';
+        sid = 'Backlog';
         item = bd;
-        expect(item.childs().length).toBe(2, id + ' childs');
-        expect(item.length()).toBe(7, id + ' length');
-        expect(Object.keys(item.idToVmMap).length).toBe(7, id + ' map length');
+        expect(item.childs().length).toBe(2, sid + ' childs');
+        expect(item.length()).toBe(7, sid + ' length');
+        expect(Object.keys(item.sidToVmMap).length).toBe(7, sid + ' map length');
 
         parent = bd;
       });
@@ -399,31 +408,18 @@ define('src/scrum/backlogdata.spec', [
         expect(function() {
           bd.getItem(-1);
         }).toThrow();
-        expect(bd.getItem(0).id).toBe('E1');
-        expect(bd.getItem(1).id).toBe('E3');
-        expect(bd.getItem(2).id).toBe('US1');
-        expect(bd.getItem(3).id).toBe('US5');
-        expect(bd.getItem(4).id).toBe('US2');
-        expect(bd.getItem(5).id).toBe('US4');
-        expect(bd.getItem(6).id).toBe('E2');
-        expect(bd.getItem(7).id).toBe('US3');
+        expect(bd.getItem(0).sid).toBe('E1');
+        expect(bd.getItem(1).sid).toBe('E3');
+        expect(bd.getItem(2).sid).toBe('US1');
+        expect(bd.getItem(3).sid).toBe('US5');
+        expect(bd.getItem(4).sid).toBe('US2');
+        expect(bd.getItem(5).sid).toBe('US4');
+        expect(bd.getItem(6).sid).toBe('E2');
+        expect(bd.getItem(7).sid).toBe('US3');
         expect(function() {
           bd.getItem(8);
         }).toThrow();
       });
     });
   });
-
-  // function toJson(item) {
-  //   item = ko.toJS(item);
-  //   return JSON.parse(JSON.stringify(item, [
-  //     'parentId',
-  //     'id',
-  //     'name',
-  //     'version',
-  //     'points',
-  //     'length',
-  //     'childs',
-  //   ]));
-  // }
 });

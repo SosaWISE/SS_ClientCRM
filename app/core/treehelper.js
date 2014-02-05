@@ -21,7 +21,7 @@ define('src/core/treehelper', [
     return item;
   }
 
-  function makeTree(list, idKey, parentIdKey, mapFn, sortFn, postSort, detachedList) {
+  function makeTree(list, idKey, parentIdKey, mapFn, sortFn, postSort, orphans) {
     var treeTrunk = [],
       tempParents = [],
       tempChildsMap = {},
@@ -113,11 +113,11 @@ define('src/core/treehelper', [
     });
 
 
-    if (detachedList) {
+    if (orphans) {
       // show which items aren't connected to the tree trunk
       Object.keys(toVisitMap).forEach(function(id) {
         console.log('detached id:', id);
-        detachedList.push(toVisitMap[id]);
+        orphans.push(toVisitMap[id]);
       });
     }
 

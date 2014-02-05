@@ -9,6 +9,13 @@
     // top:0;right:0;bottom:0;left:0;
     top:10px;right:10px;bottom:10px;left:10px;
 
+    .epic .bl-item {
+      background: yellow;
+    }
+    .story .bl-item {
+      background: #fff;
+    }
+
     .bl-item-wrap {
       padding-left: 20px;
     }
@@ -20,9 +27,6 @@
       .border-radius(5px);
 
       background: #FFF;
-      &.epic {
-        background: yellow;
-      }
 
       &.drop-accept {
         .box-shadow(inset 0px 0px 3px #444);
@@ -50,7 +54,7 @@
     }
     .first {
       padding: 0px 3px;
-      vertical-align: middle;
+      vertical-align: top;
       .drag-hdl {
         cursor: url(/stuff/img/cursor-grab-up.cur), default;
         &:before {
@@ -62,8 +66,12 @@
     }
     .name {
       width: 100%;
+      padding-right: 10px;
       span {
-        margin-right: 10px;
+        display: block;
+      }
+      .description {
+        font-size: 0.8em;
       }
     }
     .last {
@@ -94,9 +102,10 @@
     top:0;right:0;bottom:0;left:0;
 
     .story {
-      color: white;
-      background: gray;
       padding: 5px;
+      border: solid 1px gray;
+      border-left: 0px;
+      border-right: 0px;
 
       .title,
       .pts,
@@ -145,7 +154,7 @@
         .task {
           height: 80px;
           border: solid 1px gray;
-          .border-radius(3px);
+          .border-radius(5px);
           padding: 2px;
         }
       }

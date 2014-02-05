@@ -1,15 +1,15 @@
-div
+div(class="epic bl-drag-item",data-bind="drag:{}")
+  div(class="bl-item-sibling",data-bind="drop:{accept:'.bl-drag-item',onDropName:'onDropSibling'}")
+
   div(class="bl-item-wrap")
-    div(class="epic bl-item",data-bind="drag:{},drop:{accept:'.bl-item',onDropName:'onDropChild'}")
+    div(class="bl-item",data-bind="drop:{accept:'.bl-drag-item',onDropName:'onDropChild'}")
       div(class="first")
         span(class="drag-hdl")
       div(class="name")
-        span(class="title",data-bind="text:name")
+        span(class="title",data-bind="text:item.Name")
       div(class="last")
         span(class="pts",data-bind="text:points")
         span(class="owner") ???
-
-  div(class="bl-item-sibling",data-bind="drop:{accept:'.bl-item',onDropName:'onDropSibling'}")
 
   div(class="bl-item-wrap")
     <!-- ko foreach:childs -->

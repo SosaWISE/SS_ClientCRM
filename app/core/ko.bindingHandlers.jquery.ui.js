@@ -31,11 +31,11 @@ define('src/core/ko.bindingHandlers.jquery.ui', [
       onOutName = getField(dropOptions, 'onOutName', 'onOut');
 
       el.droppable({
-        tolerance: getField(dropOptions, 'tolerance', 'intersect'),
+        tolerance: getField(dropOptions, 'tolerance', 'pointer'),
         greedy: getField(dropOptions, 'greedy', true),
         // activeClass: 'drop-item',
         hoverClass: getField(dropOptions, 'hoverClass', 'drop-accept'),
-        accept: getField(dropOptions, 'accept', '.bl-item'),
+        accept: getField(dropOptions, 'accept', '.bl-drag-item'),
         drop: function(ev, ui) {
           var dropVm = ko.dataFor(ev.toElement);
           if (dropVm && viewModel[onDropName]) {
@@ -88,13 +88,13 @@ define('src/core/ko.bindingHandlers.jquery.ui', [
         // snap: true,
         // snapMode: 'outer',
         // snapTolerance: 5,
-        distance: 10,
+        distance: 1,
         handle: '.drag-hdl',
         start: function(evt, ui) {
-          // prevent dropping on self
-          el.droppable({
-            disabled: true,
-          });
+          // // prevent dropping on self
+          // el.droppable({
+          //   disabled: true,
+          // });
 
           ui.helper.addClass(dragClass);
           if (viewModel.onDragStart) {
@@ -107,9 +107,9 @@ define('src/core/ko.bindingHandlers.jquery.ui', [
           ui.helper.data('startposition', ui.helper.position());
         },
         stop: function( /*evt, ui*/ ) {
-          el.droppable({
-            disabled: false,
-          });
+          // el.droppable({
+          //   disabled: false,
+          // });
 
           // var accepted = ui.helper.data('drop-accepted'),
           //   options = {

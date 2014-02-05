@@ -3,93 +3,102 @@ define('src/scrum/backlogdata', [
   'src/core/treehelper',
   'src/core/notify',
   'ko',
+  'src/core/utils',
 ], function(
   RelativeSort,
   treehelper,
   notify,
-  ko
+  ko,
+  utils
 ) {
   "use strict";
 
   var rsort = new RelativeSort();
 
-  function makeId(item) {
-    if (isStory(item)) {
-      return 'US' + item.ID;
-    } else {
-      return 'E' + item.ID;
-    }
-  }
-
-  function makeParentId(parentId) {
-    return parentId ? ('E' + parentId) : null;
-  }
-
-  function makeVm(bd, item) {
-    if (isStory(item)) {
-      return new StoryViewModel(bd, item);
-    } else {
-      return new EpicViewModel(bd, item);
-    }
-  }
-
-  function isStory(item) {
-    return item.hasOwnProperty('Points');
+  function returnOne() {
+    return 1;
   }
 
   function sorter(a, b) {
-    return b.sortOrder - a.sortOrder;
+    return a.sortOrder - b.sortOrder;
   }
 
-
-  // function BacklogItem() {
-  // }
-
-
-  function EpicViewModel(bd, item) {
-    var _this = this;
-
-    if (isStory(item)) {
-      throw new Error('item must be an epic');
+  function insert(list, item, sorter) {
+    // assumes the list is currently in order
+    if (!list().some(function(b, index) {
+      if (sorter(item, b) < 0) {
+        // insert item
+        list.splice(index, 0, item);
+        return true;
+      }
+    })) {
+      // add to end
+      list.push(item);
     }
+  }
 
-    _this.bd = bd;
-    _this.parentId = makeParentId(item.ParentId);
-    _this.id = makeId(item);
-    _this.name = item.Name;
+  function makeItemSid(item, type) {
+    var prefix;
+    switch (type) {
+      case 'epic':
+        prefix = 'E';
+        break;
+      case 'story':
+        prefix = 'US';
+        break;
+      case 'task':
+        prefix = 'T';
+        break;
+      default:
+        throw new Error('unsupported type: ' + type);
+    }
+    return prefix + item.ID;
+  }
+
+  function BaseItemViewModel(container, item, type, level) {
+    var _this = this;
+    _this.container = container;
+    _this.item = item;
+    _this.type = type;
+    _this.level = level;
+    _this.viewTmpl = 'tmpl-scrum_' + type;
+    _this.sid = makeItemSid(item, type);
+    _this.parentSid = _this.makeParentSid();
     _this.version = item.Version || 0;
     _this.sortOrder = item.SortOrder || 0;
-
-    _this.points = ko.computed({
-      deferEvaluation: true,
-      read: function() {
-        return _this.childs().reduce(function(current, value) {
-          return current + value.points();
-        }, 0);
-      },
-    });
-    _this.length = ko.computed({
-      deferEvaluation: true,
-      read: function() {
-        return _this.childs().reduce(function(current, value) {
-          return current + value.length();
-        }, 1);
-      },
-    });
-    _this.childs = ko.observableArray();
+    _this.length = returnOne;
   }
-  EpicViewModel.prototype.viewTmpl = 'tmpl-scrum_epic';
-  EpicViewModel.prototype.update = function(item) {
-    if (isStory(item)) {
-      throw new Error('item must be an epic');
-    }
+  BaseItemViewModel.prototype.childs = true; // hack to stop treehelper from creating a childs array
+  BaseItemViewModel.prototype.makeParentSid = function() {
     var _this = this,
-      id = makeId(item),
-      parent;
-    if (_this.id && _this.id !== id) {
-      throw new Error('mismatching id\'s');
+      item = _this.item,
+      parentId, prefix;
+    switch (_this.type) {
+      case 'epic':
+        parentId = item.ParentId;
+        prefix = 'E';
+        break;
+      case 'story':
+        if (_this.level !== 0) {
+          parentId = item.EpicId;
+          prefix = 'E';
+        }
+        break;
+      case 'task':
+        parentId = item.StoryId;
+        prefix = 'US';
+        break;
+      default:
+        throw new Error('unsupported type: ' + _this.type);
     }
-
+    return parentId ? (prefix + parentId) : null;
+  };
+  BaseItemViewModel.prototype.update = function(item) {
+    var _this = this,
+      parent, sid = makeItemSid(item, _this.type);
+    if (_this.sid && _this.sid !== sid) {
+      throw new Error('mismatching sid\'s');
+    }
     if (_this.version && _this.version > item.Version) {
       console.log('current version is greater than new Version');
       return false;
@@ -102,10 +111,13 @@ define('src/scrum/backlogdata', [
     }
 
     // update data
-    _this.parentId = makeParentId(item.ParentId);
-    _this.name = item.Name;
+    _this.item = item;
+    _this.parentSid = _this.makeParentSid();
     _this.version = item.Version || 0;
     _this.sortOrder = item.SortOrder || 0;
+
+    //
+    _this.onUpdate(item);
 
     // add to parent as child in correct order
     parent = _this.getParent();
@@ -116,37 +128,38 @@ define('src/scrum/backlogdata', [
       return false;
     }
   };
-  EpicViewModel.prototype.getParent = function() {
+  BaseItemViewModel.prototype.onUpdate = function() {};
+  BaseItemViewModel.prototype.getParent = function() {
     var _this = this,
-      parentId = _this.parentId,
-      bd = _this.bd;
-    if (parentId) {
-      return bd.idToVmMap[parentId];
+      parentSid = _this.parentSid,
+      container = _this.container;
+    if (parentSid) {
+      return container.sidToVmMap[parentSid];
     } else {
-      return bd;
+      return container;
     }
   };
-  EpicViewModel.prototype.removeChild = function(vm) {
+  BaseItemViewModel.prototype.removeChild = function(vm) {
     var _this = this;
     return !!_this.childs.remove(vm).length;
   };
-  EpicViewModel.prototype.addChild = function(vm) {
+  BaseItemViewModel.prototype.addChild = function(vm) {
     var _this = this;
     insert(_this.childs, vm, sorter);
   };
-  EpicViewModel.prototype.onDropSibling = function(vm) {
+  BaseItemViewModel.prototype.onDropSibling = function(vm) {
     var _this = this,
-      nextSibling;
+      prevSibling;
 
     // remove from parent
     vm.getParent().removeChild(vm);
 
     // update data
-    // set parentId
-    vm.parentId = _this.parentId;
+    // set parentSid
+    vm.parentSid = _this.parentSid;
     // change sortOrder
-    nextSibling = _this.findNextSibling();
-    vm.sortOrder = rsort.getIntSort(_this.sortOrder, nextSibling ? nextSibling.sortOrder : null);
+    prevSibling = _this.getPrevSibling();
+    vm.sortOrder = rsort.getIntSort(prevSibling ? prevSibling.sortOrder : null, _this.sortOrder);
 
     // add to parent as child in correct order
     vm.getParent().addChild(vm);
@@ -154,28 +167,30 @@ define('src/scrum/backlogdata', [
     // save
     //@TODO: save
   };
-  EpicViewModel.prototype.findNextSibling = function() {
+  BaseItemViewModel.prototype.getPrevSibling = function() {
     var _this = this,
       list = _this.getParent().childs(),
       result;
     list.some(function(item, index) {
       if (_this === item) {
-        result = list[index + 1];
+        result = list[index - 1];
         return true;
       }
     });
     return result;
   };
-  EpicViewModel.prototype.onDropChild = function(vm) {
-    var _this = this;
+  BaseItemViewModel.prototype.onDropChild = function(vm) {
+    var _this = this,
+      lastChild;
 
     // remove from parent
     vm.getParent().removeChild(vm);
 
-    // set parentId
-    vm.parentId = _this.id;
+    // set parentSid
+    vm.parentSid = _this.sid;
     // change sortOrder
-    vm.sortOrder = 1; //@HACK: temp hack
+    lastChild = _this.getLastChild();
+    vm.sortOrder = rsort.getIntSort(lastChild ? lastChild.sortOrder : null, null);
 
     // add to parent as child in correct order
     vm.getParent().addChild(vm);
@@ -183,117 +198,62 @@ define('src/scrum/backlogdata', [
     // save
     //@TODO: save
   };
+  BaseItemViewModel.prototype.getLastChild = function() {
+    var _this = this,
+      list = _this.childs();
+    return list[list.length - 1];
+  };
 
-  function StoryViewModel(bd, item) {
+  function EpicViewModel(container, item, type, level) {
     var _this = this;
+    if (type !== 'epic') {
+      throw new Error('item must be an epic');
+    }
+    EpicViewModel.super_.call(_this, container, item, type, level);
 
-    if (!isStory(item)) {
+    _this.length = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        return _this.childs().reduce(function(current, value) {
+          return current + value.length();
+        }, 1);
+      },
+    });
+
+    _this.points = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        return _this.childs().reduce(function(current, value) {
+          return current + value.points();
+        }, 0);
+      },
+    });
+    _this.childs = ko.observableArray();
+  }
+  utils.inherits(EpicViewModel, BaseItemViewModel);
+  // EpicViewModel.prototype.onUpdate = function(item) {};
+
+  function StoryViewModel(container, item, type, level) {
+    var _this = this;
+    if (type !== 'story') {
       throw new Error('item must be a story');
     }
-
-    _this.bd = bd;
-    _this.parentId = makeParentId(item.EpicId);
-    _this.id = makeId(item);
-    _this.name = item.Name;
-    _this.version = item.Version;
-    _this.sortOrder = item.SortOrder || 0;
+    StoryViewModel.super_.call(_this, container, item, type, level);
 
     _this.points = ko.observable(item.Points);
-    _this.length = function() {
-      return 1;
-    };
   }
-  StoryViewModel.prototype.childs = true; // hack to stop treehelper from creating a childs array
-  StoryViewModel.prototype.viewTmpl = 'tmpl-scrum_story';
-  StoryViewModel.prototype.update = function(item) {
-    if (!isStory(item)) {
-      throw new Error('item must be a story');
-    }
-    var _this = this,
-      id = makeId(item);
-    if (_this.id && _this.id !== id) {
-      throw new Error('mismatching id\'s');
-    }
-
-    if (_this.version && _this.version > item.Version) {
-      console.log('current version is greater than new Version');
-      return false;
-    }
-
-    // remove from parent
-    _this.getParent().removeChild(_this);
-
-    // update data
-    _this.parentId = makeParentId(item.EpicId);
-    _this.name = item.Name;
-    _this.version = item.Version || 0;
-    _this.sortOrder = item.SortOrder || 0;
-
-    _this.points(item.Points);
-
-    // add to parent as child in correct order
-    _this.getParent().addChild(_this);
-
-    return true;
-  };
-  StoryViewModel.prototype.getParent = function() {
-    var _this = this,
-      parentId = _this.parentId,
-      bd = _this.bd;
-    if (parentId) {
-      return bd.idToVmMap[parentId];
-    } else {
-      return bd;
-    }
-  };
-  StoryViewModel.prototype.removeChild = function() {
-    throw new Error('not supported');
-  };
-  StoryViewModel.prototype.addChild = function() {
-    throw new Error('not supported');
-  };
-  StoryViewModel.prototype.onDropSibling = function(vm) {
-    var _this = this,
-      nextSibling;
-
-    // remove from parent
-    vm.getParent().removeChild(vm);
-
-    // update data
-    // set parentId
-    vm.parentId = _this.parentId;
-    // change sortOrder
-    nextSibling = _this.findNextSibling();
-    vm.sortOrder = rsort.getIntSort(_this.sortOrder, nextSibling ? nextSibling.sortOrder : null);
-
-    // add to parent as child in correct order
-    vm.getParent().addChild(vm);
-
-    // save
-    //@TODO: save
-  };
-  StoryViewModel.prototype.findNextSibling = function() {
-    var _this = this,
-      list = _this.getParent().childs(),
-      result;
-    list.some(function(item, index) {
-      if (_this === item) {
-        result = list[index + 1];
-        return true;
-      }
-    });
-    return result;
-  };
-
-
-  function BacklogData(options) {
+  utils.inherits(StoryViewModel, BaseItemViewModel);
+  StoryViewModel.prototype.onUpdate = function(item) {
     var _this = this;
-    if (options) {
-      ko.utils.extend(_this, options);
-    }
+    _this.points(item.Points);
+  };
+
+  function BacklogData() {
+    var _this = this;
+    // EpicViewModel.super_.call(_this, null, null, 'backlog');
 
     _this._initialized = false;
-    _this.idToVmMap = {};
+    _this.sidToVmMap = {};
     _this.length = ko.computed({
       deferEvaluation: true,
       read: function() {
@@ -303,44 +263,16 @@ define('src/scrum/backlogdata', [
       },
     });
     _this.childs = ko.observableArray();
-
-    _this.columns = [
-      {
-        id: "name",
-        name: "Name",
-        field: "name",
-        // width: 70,
-        // minWidth: 50,
-        cssClass: "cell-name",
-        // sortable: true,
-        // editor: Slick.Editors.Text
-      },
-      {
-        id: "points",
-        name: "Points",
-        field: "points",
-        width: 70,
-        minWidth: 50,
-        cssClass: "cell-points",
-        // sortable: true,
-        // editor: Slick.Editors.Text
-      },
-    ];
   }
-  BacklogData.prototype.removeChild = function(vm) {
-    var _this = this;
-    return !!_this.childs.remove(vm).length;
-  };
-  BacklogData.prototype.addChild = function(vm) {
-    var _this = this;
-    insert(_this.childs, vm, sorter);
-  };
+  utils.inherits(BacklogData, BaseItemViewModel);
+  BacklogData.prototype.removeChild = BaseItemViewModel.prototype.removeChild;
+  BacklogData.prototype.addChild = BaseItemViewModel.prototype.addChild;
 
-  BacklogData.prototype.updateItem = function(item) {
+  BacklogData.prototype.updateItem = function(item, type) {
     var _this = this,
-      idToVmMap = _this.idToVmMap,
-      vm = makeVm(_this, item),
-      currVm = idToVmMap[vm.id],
+      sidToVmMap = _this.sidToVmMap,
+      vm = _this.makeVm(item, type),
+      currVm = sidToVmMap[vm.sid],
       added = false;
 
     if (_this._initialized) {
@@ -355,31 +287,94 @@ define('src/scrum/backlogdata', [
 
       added = vm.update(item);
       if (!currVm && added) {
-        idToVmMap[vm.id] = vm;
+        sidToVmMap[vm.sid] = vm;
       }
     } else if (!currVm || currVm.version <= vm.version) {
       // just add to map since it's not yet initialized
-      idToVmMap[vm.id] = vm;
+      sidToVmMap[vm.sid] = vm;
       added = true;
     }
     return added;
   };
-  BacklogData.prototype.removeItem = function(item) {
-    if (!isStory(item)) {
+  BacklogData.prototype.removeItem = function(item, type) {
+    if (type !== 'story') {
       throw new Error('only storys can be removed');
     }
 
     var _this = this,
-      idToVmMap = _this.idToVmMap,
-      id = makeId(item),
-      currVm = idToVmMap[id];
+      sidToVmMap = _this.sidToVmMap,
+      sid = makeItemSid(item, type),
+      currVm = sidToVmMap[sid];
 
     if (!currVm) {
       return false;
     }
 
-    delete idToVmMap[id];
+    delete sidToVmMap[sid];
     return currVm.getParent().removeChild(currVm);
+  };
+
+  BacklogData.prototype.makeVm = function(item, type) {
+    var _this = this,
+      level = _this.typeToLevelMap[type],
+      Ctor;
+    switch (type) {
+      case 'epic':
+        Ctor = EpicViewModel;
+        break;
+      case 'story':
+        Ctor = StoryViewModel;
+        break;
+      case 'task':
+        // Ctor = TaskViewModel;
+        break;
+      default:
+        throw new Error('unsupported type: ' + type);
+    }
+    return new Ctor(_this, item, type, level);
+  };
+  BacklogData.prototype.init = function(typeLevels) {
+    var _this = this,
+      sidToVmMap = _this.sidToVmMap,
+      childs, list, orphans = [];
+
+    if (_this._initialized) {
+      throw new Error('already initialized');
+    }
+    _this._initialized = true;
+
+    _this.typeToLevelMap = {};
+    typeLevels.forEach(function(obj, level) {
+      _this.typeToLevelMap[obj.type] = level;
+    });
+
+    // add epics, storys, and tasks to map
+    typeLevels.forEach(function(obj) {
+      obj.list.forEach(function(item) {
+        var vm = _this.makeVm(item, obj.type),
+          currVm = sidToVmMap[vm.sid];
+        // There's a small chance that the item could have been updated in the time it takes
+        // to get all the items, so we're just making sure we have the latest version.
+        if (!currVm || currVm.version <= vm.version) {
+          sidToVmMap[vm.sid] = vm;
+        }
+      });
+    });
+
+    // turn map back into a list
+    list = Object.keys(sidToVmMap).map(function(key) {
+      return sidToVmMap[key];
+    });
+
+    // sort epics and storys
+    list.sort(sorter);
+    // wrap them and create tree
+    childs = treehelper.makeTree(list, 'sid', 'parentSid', null, null, null, orphans);
+    orphans.forEach(function(item) {
+      insert(childs, item, sorter);
+    });
+
+    _this.childs(childs);
   };
 
   function findItemAtIndex(item, indexObj) {
@@ -406,10 +401,6 @@ define('src/scrum/backlogdata', [
     });
     return result;
   }
-  BacklogData.prototype.getLength = function() {
-    var _this = this;
-    return _this.length();
-  };
   BacklogData.prototype.getItem = function(index) {
     var _this = this;
     if (index < 0 || _this.length() <= index) {
@@ -419,117 +410,6 @@ define('src/scrum/backlogdata', [
       index: index + 1
     });
   };
-  BacklogData.prototype.getItemMetadata = function( /*index*/ ) {
-    var _this = this;
-    return _this.columns;
-  };
-
-
-
-  BacklogData.prototype.init = function(epics, storys) {
-    var _this = this,
-      idToVmMap = _this.idToVmMap,
-      childs, list, detachedList = [];
-
-    if (_this._initialized) {
-      throw new Error('already initialized');
-    }
-    _this._initialized = true;
-
-    // add epics and storys to map
-    function setList(list) {
-      list.forEach(function(item) {
-        var vm = makeVm(_this, item),
-          currVm = idToVmMap[vm.id];
-        // There's a small chance that the item could have been updated in the time it takes
-        // to get all thebacklog items, so we're just making sure we have the latest version.
-        if (!currVm || currVm.version <= vm.version) {
-          idToVmMap[vm.id] = vm;
-        }
-      });
-    }
-    setList(epics);
-    setList(storys);
-
-    // turn map back into a list
-    list = Object.keys(idToVmMap).map(function(key) {
-      return idToVmMap[key];
-    });
-
-    // sort epics and storys
-    list.sort(sorter);
-    // wrap them and create tree
-    childs = treehelper.makeTree(list, 'id', 'parentId', function(item, parent) {
-      // set parent (use backlog as parent if it's null)
-      item.parent = parent || _this;
-      return item;
-    }, null, null, detachedList);
-    detachedList.forEach(function(item) {
-      insert(childs, item, sorter);
-    });
-
-    _this.childs(childs);
-  };
-
-  function insert(list, item, sorter) {
-    // list.push(item);
-    // return;
-
-    if (!list().some(function(b, index) {
-      if (sorter(item, b) > 0) {
-        // insert item
-        list.splice(index, 0, item);
-        return true;
-      }
-    })) {
-      // add to end
-      list.push(item);
-    }
-  }
-
-  // function createEpicHolder(item, idMap) {
-  //   var result = {
-  //     item: item,
-  //     id: item.ID,
-  //     childs: ko.observable(item.childs),
-  //     points: ko.computed({
-  //       deferEvaluation: true,
-  //       read: function() {
-  //         return this.childs().reduce(function(current, value) {
-  //           return current + value.points();
-  //         }, 0);
-  //       },
-  //     }),
-  //   };
-  //
-  //   Object.defineProperty(result, "item", {
-  //     get: function() {
-  //       return idMap[item.ID];
-  //     },
-  //     // set: function(val) { },
-  //   });
-  //
-  //   // // overwrite `childs` set in treehelper
-  //   // item.childs = result.childs;
-  //
-  //   return result;
-  // }
-  //
-  // function createStoryHolder(item, idMap) {
-  //   var result = {
-  //     // item: item,
-  //     points: ko.observable(item.Points),
-  //   };
-  //
-  //   Object.defineProperty(result, "item", {
-  //     get: function() {
-  //       return idMap[item.ID];
-  //     },
-  //     // set: function(val) { },
-  //   });
-  //
-  //   return result;
-  // }
 
   return BacklogData;
 });
