@@ -1,4 +1,4 @@
-define('src/core/mixin.load', [
+define('src/core/mixinLoad', [
   'src/core/helpers',
   'src/core/joiner',
   'src/core/notify',
@@ -51,9 +51,5 @@ define('src/core/mixin.load', [
     }
   }
 
-  // parameter can be _this or prototype
-  return function mixin_load(_this) {
-    _this.mixinLoad = mixinLoad;
-    return _this;
-  };
+  return mixinLoad;
 });

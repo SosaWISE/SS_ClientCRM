@@ -904,3 +904,33 @@ table.fh-wrap {
     position:relative;
   }
 }
+
+
+
+.payby {
+  display: table;
+  width: 100%;
+
+  .payby-item {
+    display: table-cell;
+    width: 33.33%;
+    height: 100%;
+    padding: 0px 5px;
+
+    border: 1px solid transparent;
+    &.selected {
+      border-color: #fff;
+      .border-radius(5px);
+    }
+  }
+  .payby-eft {
+    .month {
+      width: 64%;
+      display: inline-block;
+    }
+    .year {
+      width: 34%;
+      float: right;
+    }
+  }
+}

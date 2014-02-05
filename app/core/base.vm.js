@@ -1,8 +1,8 @@
 define('src/core/base.vm', [
-  'src/core/mixin.load',
+  'src/core/mixinLoad',
   'ko'
 ], function(
-  mixin_load,
+  mixinLoad,
   ko
 ) {
   "use strict";
@@ -20,11 +20,8 @@ define('src/core/base.vm', [
     _this.active = ko.observable(false);
   }
 
-  //
-  // mixins:
-  //
-  // load function
-  mixin_load(BaseViewModel.prototype);
+  // set function that adds load functionality
+  BaseViewModel.prototype.mixinLoad = mixinLoad;
 
 
   BaseViewModel.prototype.name = null;

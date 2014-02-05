@@ -1,4 +1,5 @@
 define('src/account/security/checklist.vm', [
+  'src/account/default/initialpayment.vm',
   'src/account/security/survey.vm',
   'src/account/security/systemdetails.vm',
   'src/account/security/industrynums.vm',
@@ -10,6 +11,7 @@ define('src/account/security/checklist.vm', [
   'src/core/controller.vm',
   'ko',
 ], function(
+  InitialPaymentViewModel,
   SurveyViewModel,
   SystemDetailsViewModel,
   IndustryViewModel,
@@ -96,10 +98,12 @@ define('src/account/security/checklist.vm', [
         id: 'postsurvey',
         title: 'Post Survey',
       }),
-      {
+      new InitialPaymentViewModel({
+        pcontroller: _this,
+        id: 'initialpayment',
         title: 'Initial Payment',
-        active: ko.observable(false),
-      },
+        layersVm: _this.layersVm,
+      }),
       {
         title: 'Submit Account Online',
         active: ko.observable(false),

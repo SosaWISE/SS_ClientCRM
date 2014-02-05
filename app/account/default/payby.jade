@@ -1,0 +1,4 @@
+div(class="payby",data-bind="foreach:list")
+  div(class="payby-item",data-bind="toggle:{selected:selected}")
+    h2(class="title",data-bind="cmd:$parent.clickMethod,text:title")
+    div(data-bind="template:viewTmpl")

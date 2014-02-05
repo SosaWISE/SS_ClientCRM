@@ -1,0 +1,23 @@
+div(class="payby-eft")
+  ul(class="edit-form")
+    li
+      span(class="label") Card Type
+      div(data-bind="template:{name:data.CardTypeCvm.viewTmpl,data:data.CardTypeCvm}")
+    li
+      span(class="label") Card Number
+      input(type="text", placeholder="",
+        data-bind="ukov:data.CardNumber,value:data.CardNumber,valueUpdate:'keyup'")
+    li
+      span(class="label") Expiration
+      div(class="month",data-bind="template:{name:data.ExpirationMonthCvm.viewTmpl,data:data.ExpirationMonthCvm}")
+      div(class="year",data-bind="template:{name:data.ExpirationYearCvm.viewTmpl,data:data.ExpirationYearCvm}")
+    li
+      span(class="label") Card Security Code
+      //- (CSC/CCV/CVV/CVC) ??? https://en.wikipedia.org/wiki/Card_security_code
+      input(type="text", placeholder="",
+        data-bind="ukov:data.VerificationValue,value:data.VerificationValue,valueUpdate:'keyup'")
+      span(data-bind="text:cvvMsg")
+    li
+      span(class="label") Name on Card
+      input(type="text", placeholder="",
+        data-bind="ukov:data.NameOnCard,value:data.NameOnCard,valueUpdate:'keyup'")

@@ -1,7 +1,9 @@
 define('src/u-kov/string-converters', [
+  'src/core/ccardhelper',
   'src/core/strings',
   'moment'
 ], function(
+  ccardhelper,
   strings,
   moment
 ) {
@@ -191,6 +193,23 @@ define('src/u-kov/string-converters', [
         return new Error('Invalid phone number. Expected format: ' + strings.format(outputFormat, '123', '123', '1234'));
       } else {
         return strings.format(outputFormat, matches[1], matches[2], matches[3]);
+      }
+    };
+  };
+
+
+  converters.ccard = function() {
+    return function convCCard(val) {
+      val = trim(val);
+      if (!val) {
+        return;
+      }
+
+      val = val.replace(/[^\d]/g, '');
+      if (13 < val.length && val.length < 17 && ccardhelper.luhnTest(val)) {
+        return val;
+      } else {
+        return new Error('Invalid credit card number');
       }
     };
   };

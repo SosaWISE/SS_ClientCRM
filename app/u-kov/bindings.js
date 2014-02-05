@@ -26,7 +26,7 @@ define('src/u-kov/bindings', [
   };
 
   function updateElement(element, ukovItem) {
-    var cls;
+    var cls, title = '';
     if (!ukovItem) {
       throw new Error('no ukovItem');
     }
@@ -34,16 +34,22 @@ define('src/u-kov/bindings', [
       cls = 'form-saving';
     } else if (ukovItem.isValid && !ukovItem.isValid()) {
       cls = 'form-error';
+      title = 'Error: ' + ukovItem.errMsg();
     } else if (ukovItem.isClean && !ukovItem.isClean()) {
       cls = 'form-dirty';
     } else {
       cls = null;
     }
+
+    element = jquery(element);
+    //
+    element.attr('title', title);
+    //
     if (ukovItem._ukovPrevCls) {
-      jquery(element).removeClass(ukovItem._ukovPrevCls);
+      element.removeClass(ukovItem._ukovPrevCls);
     }
     if (cls) {
-      jquery(element).addClass(cls);
+      element.addClass(cls);
     }
     ukovItem._ukovPrevCls = cls;
   }
