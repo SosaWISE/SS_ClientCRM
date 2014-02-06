@@ -57,7 +57,7 @@ define('mock/dataservices/qualify.mock', [
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(salesreps, 'SalesRepID', id);
+          result = findSingleOrAll(salesreps, 'CompanyID', id);
           break;
       }
       send(0, result, setter, cb);
@@ -69,10 +69,10 @@ define('mock/dataservices/qualify.mock', [
       send(0, mockery.fromTemplate({
         AddressID: '@INC(addresss)',
         DealerId: data.DealerId,
-        Address: (data.StreetAddress || '').toUpperCase(),
-        Address2: (data.StreetAddress2 || '').toUpperCase(),
+        StreetAddress: (data.StreetAddress || '').toUpperCase(),
+        StreetAddress2: (data.StreetAddress2 || '').toUpperCase(),
         City: data.City || 'Orem',
-        State: data.State || 'UT',
+        StateId: data.State || 'UT',
         PostalCode: data.PostalCode,
         County: data.County || 'Grand County',
         PhoneNumber: data.PhoneNumber,
@@ -82,6 +82,7 @@ define('mock/dataservices/qualify.mock', [
         SalesRepId: data.SalesRepId,
         SeasonId: data.SeasonId,
         TeamLocationId: data.TeamLocationId,
+        TimeZoneId: data.TimeZoneId || 1,
 
         // IsActive: false,
         // ModifiedOn: '0001-01-01T00:00:00',
@@ -96,7 +97,6 @@ define('mock/dataservices/qualify.mock', [
         // // ValidationVendorId
         // // AddressValidationStateId
         // // CountryId
-        // TimeZoneId: data.TimeZoneId || 1,
         // // AddressTypeId
         // PlusFour: data.PlusFour || '1234',
         // StreetNumber: data.StreetNumber || '123',
@@ -191,8 +191,7 @@ define('mock/dataservices/qualify.mock', [
   salesreps = mockery.fromTemplate({
     'list|3-3': [
       {
-        SalesRepID: '@COMPANYID',
-        // CompanyID: '@COMPANYID',
+        CompanyID: '@COMPANYID',
         ImagePath: '@IMG(100,100,people)',
         FirstName: '@MNAME',
         LastName: '@LASTNAME',

@@ -24,25 +24,39 @@ define('src/account/default/initialpayment.vm', [
     InitialPaymentViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
-    _this.paymentMethod = ko.observable();
+    _this.initialPaymentMethod = ko.observable();
+    _this.recurringSame = ko.observable(true);
+    _this.recurringPaymentMethod = ko.observable();
+    _this.addressSame = ko.observable(true);
+    _this.address = ko.observable();
 
 
     //
     // events
     //
-    _this.cmdPaymentMethod = ko.command(function(cb) {
+    _this.clickPaymentMethod = function() {
       var vm = _this.paybyVm;
       if (!vm) {
         _this.paybyVm = vm = new PayByViewModel();
       }
       _this.layersVm.show(vm, function onClose(result) {
         if (result) {
-          _this.paymentMethod(result);
+          _this.initialPaymentMethod(result);
         }
       });
-
-      cb();
-    });
+    };
+    _this.clickRecurringPaymentMethod = function() {
+      var vm = _this.recurringPaybyVm;
+      if (!vm) {
+        _this.recurringPaybyVm = vm = new PayByViewModel();
+      }
+      _this.layersVm.show(vm, function onClose(result) {
+        if (result) {
+          _this.recurringPaymentMethod(result);
+        }
+      });
+    };
+    _this.clickAddress = function() {};
 
     _this.cmdRunPayment = ko.command(function(cb) {
       cb();

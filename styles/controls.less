@@ -134,6 +134,32 @@
     padding: 3px 10px;
   }
 }
+
+.checkbox {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+
+  > .btn {
+    font-size: 0.9em;
+    padding: 3px 12px;
+    margin-right: 5px;
+
+    &:before {
+      .opacity(0);
+      content: '\2713';
+      font-size: 28px;
+      position: absolute;
+      top: -10px;
+      left: 2px;
+    }
+  }
+  > .btn.active:before {
+    .opacity(1);
+    color: #fff;
+  }
+}
+
 .add-btn {
   margin-right: 10px;
   padding-left: 36px;

@@ -5,17 +5,32 @@ div(class="initialpayment")
       span(class="title") Initial Payment Breakdown
       //- div(class="contents",data-bind="with:repModel")
         div(data-bind="template:viewTmpl")
-    div(class="section",data-bind="cmd:cmdPaymentMethod,toggle:{empty:!paymentMethod()}")
+    div(class="section",data-bind="cmd:clickPaymentMethod,toggle:{empty:!initialPaymentMethod()}")
       span(class="title") Initial Payment Method
-      div(class="contents",data-bind="with:paymentMethod")
-        div(data-bind="template:viewTmpl")
-    //- div(class="section",data-bind="cmd:cmdCustomer,toggle:{empty:!customerModel()}")
-      span(class="title") Recurring Payment Method
-      div(class="contents",data-bind="with:customerModel()&&creditModel()")
-        div(data-bind="template:viewTmpl")
-    //- div(class="section",data-bind="cmd:cmdCustomer,toggle:{empty:!customerModel()}")
-      span(class="title") Billing Address
-      div(class="contents",data-bind="with:customerModel()&&creditModel()")
-        div(data-bind="template:viewTmpl")
+      div(class="contents",data-bind="with:initialPaymentMethod")
+        div(data-bind="template:'tmpl-account-default-payment_method'")
+    div
+      br
+      br
+      div(class="checkbox",data-bind="cmd:function(){recurringSame(!recurringSame())}")
+        a(class="btn small",data-bind="active:recurringSame")
+        span Recurring Payment same as Initial Payment
+      div(class="section",data-bind="visible:!recurringSame(),cmd:clickRecurringPaymentMethod,toggle:{empty:!recurringPaymentMethod()}")
+        span(class="title") Recurring Payment Method
+        div(class="contents",data-bind="with:recurringPaymentMethod")
+          div(data-bind="template:'tmpl-account-default-payment_method'")
+    div
+      br
+      br
+      div(class="checkbox",data-bind="cmd:function(){addressSame(!addressSame())}")
+        a(class="btn small",data-bind="active:addressSame")
+        span Billing Address same as Premise Address
+      div(class="section",data-bind="visible:!addressSame(),cmd:clickAddress,toggle:{empty:!address()}")
+        span(class="title") Billing Address
+        div(class="contents",data-bind="with:address()")
+          div(data-bind="template:viewTmpl")
 
+  br
+  br
+  br
   span(class="btn small",tabindex="0",data-bind="cmd:cmdRunPayment") Run Payment

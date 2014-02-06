@@ -1,4 +1,5 @@
 define('src/account/default/payby.eft.vm', [
+  'src/core/paymenthelper',
   'ko',
   'src/ukov',
   'src/core/combo.vm',
@@ -6,6 +7,7 @@ define('src/account/default/payby.eft.vm', [
   'src/core/base.vm',
   'src/core/utils',
 ], function(
+  paymenthelper,
   ko,
   ukov,
   ComboViewModel,
@@ -24,15 +26,22 @@ define('src/account/default/payby.eft.vm', [
       ],
     },
     AccountNumber: {
-      // converter: ukov.converters.toUpper(),
+      converter: ukov.converters.string(),
+      // converter: ukov.converters.numText(),
       validators: [
         ukov.validators.isRequired('Account number is required'),
+        // ukov.validators.isInLengthRange(4, 17, 'Account number must be between {0} and {1} characters long'),
       ],
     },
     RoutingNumber: {
-      // converter: ukov.converters.toUpper(),
+      converter: ukov.converters.numText(),
       validators: [
         ukov.validators.isRequired('Routing number is required'),
+        function(val) {
+          if (!paymenthelper.isValidRoutingNum(val)) {
+            return 'Invalid routing number';
+          }
+        },
       ],
     },
     NameOnAccount: {
@@ -58,6 +67,10 @@ define('src/account/default/payby.eft.vm', [
     _this.data.AccountTypeCvm = new ComboViewModel({
       selectedValue: _this.data.AccountTypeId,
       list: _this.accountTypeOptions,
+      fields: {
+        value: 'BankAccountTypeID',
+        text: 'AccountType',
+      }
     });
 
     _this.selected = ko.observable();
@@ -72,10 +85,8 @@ define('src/account/default/payby.eft.vm', [
 
   PayByEftViewModel.prototype.setSelected = function(selected) {
     var _this = this;
-    _this.selected(selected);
-    // update model
     _this.data.ignore(!selected);
-    _this.data.update(false, true);
+    _this.selected(selected);
   };
 
   PayByEftViewModel.prototype.onLoad = function(routeData, join) { // overrides base
@@ -90,8 +101,12 @@ define('src/account/default/payby.eft.vm', [
 
   PayByEftViewModel.prototype.accountTypeOptions = [
     {
-      value: 1,
-      text: ''
+      BankAccountTypeID: 1,
+      AccountType: 'Checking',
+    },
+    {
+      BankAccountTypeID: 2,
+      AccountType: 'Saving',
     },
   ];
 

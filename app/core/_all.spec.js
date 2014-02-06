@@ -1,5 +1,5 @@
 define('src/core/_all.spec', [
-  'src/core/ccardhelper.spec',
+  'src/core/paymenthelper.spec',
   'src/core/dataservice.base.spec',
   'src/core/harold.spec',
   'src/core/helpers.spec',

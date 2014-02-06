@@ -1,9 +1,9 @@
 define('src/u-kov/string-converters', [
-  'src/core/ccardhelper',
+  'src/core/paymenthelper',
   'src/core/strings',
   'moment'
 ], function(
-  ccardhelper,
+  paymenthelper,
   strings,
   moment
 ) {
@@ -206,11 +206,20 @@ define('src/u-kov/string-converters', [
       }
 
       val = val.replace(/[^\d]/g, '');
-      if (13 < val.length && val.length < 17 && ccardhelper.luhnTest(val)) {
+      if (13 < val.length && val.length < 17 && paymenthelper.luhnTest(val)) {
         return val;
       } else {
-        return new Error('Invalid credit card number');
+        return new Error('Invalid number text');
       }
+    };
+  };
+  converters.numText = function() {
+    return function convNumText(val) {
+      val = trim(val);
+      if (!val) {
+        return;
+      }
+      return val.replace(/[^\d]/g, '');
     };
   };
 

@@ -1,4 +1,4 @@
-define('src/core/ccardhelper', [
+define('src/core/paymenthelper', [
   'moment',
 ], function(
   moment
@@ -36,7 +36,7 @@ define('src/core/ccardhelper', [
     }, 0);
   }
 
-  function computeChecksum(total) {
+  function mod10Checksum(total) {
     if (total < 0) {
       return -1;
     }
@@ -55,14 +55,14 @@ define('src/core/ccardhelper', [
     str = str.substr(0, splitIndex);
     // calculate luhn sum and its checksum and
     // then compare that to the expected checksum
-    result = computeChecksum(luhnSum(str)) === checksum;
+    result = mod10Checksum(luhnSum(str)) === checksum;
     return result;
   }
 
   function addLuhnChecksum(str) {
     str = String(str);
 
-    var checksum = computeChecksum(luhnSum(str));
+    var checksum = mod10Checksum(luhnSum(str));
     if (checksum < 0) {
       return str;
     }
@@ -73,51 +73,26 @@ define('src/core/ccardhelper', [
   //
   //
   function isValidCreditCard(name, str) {
-    var result = false,
-      data = ccData[name];
-    if (data) {
-      if (data.prefixes.some(function(prefix) {
-        return str.substr(0, prefix.length) === prefix;
-      })) {
-        return luhnTest(str);
-      }
-    }
-    return result;
+    var data = ccData[name];
+    return data && data.regx.test(str) && luhnTest(str);
   }
+  // Regular expressions obtained from RegexBuddy's library
   ccData = {
     amex: {
       name: 'American Express',
-      digits: 15,
-      prefixes: [
-        '34',
-        '37',
-      ],
+      regx: /^3[47][0-9]{13}$/,
     },
     visa: {
       name: 'Visa',
-      digits: 16,
-      prefixes: [
-        '4',
-      ],
+      regx: /^4[0-9]{12}(?:[0-9]{3})?$/,
     },
     mastercard: {
       name: 'MasterCard',
-      digits: 16,
-      prefixes: [
-        '51',
-        '52',
-        '53',
-        '54',
-        '55',
-      ],
+      regx: /^5[1-5][0-9]{14}$/,
     },
     discover: {
       name: 'Discover',
-      digits: 16,
-      prefixes: [
-        '6011',
-        '65',
-      ],
+      regx: /^6(?:011|5[0-9][0-9])[0-9]{12}$/,
     },
   };
 
@@ -156,12 +131,41 @@ define('src/core/ccardhelper', [
     return result;
   }
 
+  function isValidExpiration(year, month, now) {
+    var dt = moment([year, month]).endOf('month');
+    now = moment(now);
+    return now.isBefore(dt);
+  }
+
+  //
+  //
+  //
+  function isValidRoutingNum(str) {
+    // convert string to array
+    var d = str.split('').map(Number),
+      checksum,
+      result = false;
+    if (d.length === 9) {
+      checksum = (
+        7 * (d[0] + d[3] + d[6]) +
+        3 * (d[1] + d[4] + d[7]) +
+        9 * (d[2] + d[5])
+      ) % 10;
+      result = d[8] === checksum;
+    }
+    return result;
+  }
+
   return {
+    luhnSum: luhnSum,
+    mod10Checksum: mod10Checksum,
     luhnTest: luhnTest,
     addLuhnChecksum: addLuhnChecksum,
     ccData: ccData,
     isValidCreditCard: isValidCreditCard,
     getExpirationMonths: getExpirationMonths,
     getExpirationYears: getExpirationYears,
+    isValidExpiration: isValidExpiration,
+    isValidRoutingNum: isValidRoutingNum,
   };
 });

@@ -30,16 +30,35 @@ define('src/account/default/payby.vm', [
       new PayByEftViewModel(),
       new PayByInvoiceViewModel(),
     ];
+    _this.selectedVm = ko.observable();
 
     //
     // events
     //
     _this.clickMethod = function(vm) {
-      _this.list.forEach(function(vm) {
-        vm.setSelected(false);
-      });
+      var selectedVm = _this.selectedVm();
+      if (selectedVm) {
+        selectedVm.setSelected(false);
+      }
       vm.setSelected(true);
+      _this.selectedVm(vm);
     };
+    _this.clickMethod(_this.list[0]); // select first in list
+    _this.cmdSave = ko.command(function(cb) {
+      var selectedVm = _this.selectedVm();
+      if (!selectedVm.data.isValid()) {
+        notify.notify('warn', selectedVm.data.errMsg(), 7);
+        cb();
+        return;
+      }
+
+      if (_this.layer) {
+        _this.layer.close(selectedVm.data.getValue());
+      }
+
+      cb();
+    });
+
   }
   utils.inherits(PayByViewModel, BaseViewModel);
   PayByViewModel.prototype.viewTmpl = 'tmpl-acct-default-payby';

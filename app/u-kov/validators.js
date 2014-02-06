@@ -15,6 +15,7 @@ define('src/u-kov/validators', [
     // , notDate = 'Value is not a date',
     notInRange = 'Value is not between {0} and {1}',
     maxLength = 'Value is more than {0} letters',
+    notInLengthRange = 'Value is not between {0} and {1} letters',
     notPattern = 'Value does not match specified pattern',
     valRequired = 'Value is required',
     passwordMsg = 'A password must be atleast {0} or more letters and contain at least one upper case letter, one lower case letter and one digit.',
@@ -108,6 +109,17 @@ define('src/u-kov/validators', [
       }
       if (max < val.length) {
         return strings.format(message, max);
+      }
+    };
+  };
+  validators.isInLengthRange = function(min, max, message) {
+    message = message || notInLengthRange;
+    return function(val) {
+      if (val == null) {
+        return;
+      }
+      if (val.length < min || max < val.length) {
+        return strings.format(message, min, max);
       }
     };
   };

@@ -906,21 +906,47 @@ table.fh-wrap {
 }
 
 
-
+.initialpayment {
+  padding-right: 20px;
+}
 .payby {
-  display: table;
-  width: 100%;
 
+  .section {
+    > .title {
+      display: block;
+      border-bottom: 1px solid @account-bg;
+    }
+  }
+
+  .payby-items {
+    display: table;
+    width: 100%;
+  }
   .payby-item {
     display: table-cell;
     width: 33.33%;
     height: 100%;
     padding: 0px 5px;
 
+    .title {
+      .user-select(none);
+      cursor: pointer;
+      &:before {
+        content: '';
+        margin-right: 5px;
+      }
+    }
+
     border: 1px solid transparent;
+    .opacity(0.5);
     &.selected {
       border-color: #fff;
       .border-radius(5px);
+      .opacity(1);
+
+      .title:before {
+        content: '\2713';
+      }
     }
   }
   .payby-eft {
@@ -932,5 +958,14 @@ table.fh-wrap {
       width: 34%;
       float: right;
     }
+    .csc {
+      display: inline-block;
+      width: 60px;
+      margin-right: 5px;
+    }
+  }
+
+  div.actions {
+    margin-top: 20px;
   }
 }

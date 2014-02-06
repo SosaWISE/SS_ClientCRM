@@ -16,7 +16,7 @@ define('src/account/default/payby.invoice.vm', [
   var schema = {
     _model: true,
     CheckNumber: {
-      // converter: ukov.converters.toUpper(),
+      converter: ukov.converters.numText(),
       validators: [
         ukov.validators.isRequired('Check number is required'),
       ],
@@ -41,10 +41,8 @@ define('src/account/default/payby.invoice.vm', [
 
   PayByInvoiceViewModel.prototype.setSelected = function(selected) {
     var _this = this;
-    _this.selected(selected);
-    // update model
     _this.data.ignore(!selected);
-    _this.data.update(false, true);
+    _this.selected(selected);
   };
 
   return PayByInvoiceViewModel;
