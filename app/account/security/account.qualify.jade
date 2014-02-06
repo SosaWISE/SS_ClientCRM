@@ -11,5 +11,5 @@ div(class="account-info")
     div(class="section",data-bind="cmd:cmdCustomer,toggle:{empty:!customerModel()}")
       span(class="title") Customer
       div(class="contents",data-bind="if:customerModel()&&creditModel()")
-        div(data-bind="template:{name:'tmpl-credit',data:creditModel}")
-        div(data-bind="template:{name:'tmpl-customer',data:customerModel}")
+        div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditModel}")
+        div(data-bind="template:{name:'tmpl-acct-default-customer',data:customerModel}")

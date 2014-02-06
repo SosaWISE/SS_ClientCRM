@@ -52,6 +52,22 @@ define('src/account/default/runcredit.vm', [
       }
     }
   };
+  // -- Credit Score Status
+  ko.bindingHandlers.crs = {
+    update: function(element, valueAccessor) {
+      var newText,
+        creditStatus = valueAccessor();
+      if (!creditStatus) {
+        throw new Error('no Credit Status value was passed.');
+      }
+      if (creditStatus) {
+        newText = 'Report Found';
+      } else {
+        newText = 'Report Not Found';
+      }
+      jquery(element).html(newText);
+    }
+  };
 
   var schema,
     max20 = ukov.validators.maxLength(20),

@@ -59,7 +59,9 @@ define('src/account/security/account.qualify.vm', [
       return !busy && _this.step() === 0;
     });
     _this.cmdAddress = ko.command(function(cb) {
-      showLayer(AddressValidateViewModel, _this.addressModel, _this.cmdCustomer);
+      showLayer(AddressValidateViewModel, _this.addressModel, _this.cmdCustomer, {
+        repModel: _this.repModel()
+      });
       cb();
     }, function(busy) {
       return !busy && _this.step() === 1;
