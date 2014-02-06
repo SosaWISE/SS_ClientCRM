@@ -1,1 +1,40 @@
-div(data-bind="text:JSON.stringify($data)")
+div
+  div(data-bind="if:$data.hasOwnProperty('CardTypeId')")
+    ul(class="payment-method")
+      li
+        span(class="name") Card Type:
+        span(class="value",data-bind="cardTypeId:CardTypeId")
+      li
+        span(class="name") Card Number:
+        span(class="value",data-bind="text:CardNumber")
+      li
+        span(class="name") Security Code:
+        span(class="value",data-bind="text:VerificationValue")
+      li
+        span(class="name") Expiration:
+        span(class="value",data-bind="text:Expiration")
+      li
+        span(class="name") Name on Card:
+        span(class="value",data-bind="text:NameOnCard")
+
+  div(data-bind="if:$data.hasOwnProperty('AccountTypeId')")
+    ul(class="payment-method")
+      li
+        span(class="name") Account Type:
+        span(class="value",data-bind="accountTypeId:AccountTypeId")
+      li
+        span(class="name") Account Number:
+        span(class="value",data-bind="text:AccountNumber")
+      li
+        span(class="name") Routing Number:
+        span(class="value",data-bind="text:RoutingNumber")
+      li
+        span(class="name") Name on Account:
+        span(class="value",data-bind="text:NameOnAccount")
+
+  div(data-bind="if:$data.hasOwnProperty('CheckNumber')")
+    ul(class="payment-method")
+      li
+        span(class="name") Check Number
+        span(class="value",data-bind="text:CheckNumber")
+

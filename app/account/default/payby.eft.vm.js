@@ -17,7 +17,34 @@ define('src/account/default/payby.eft.vm', [
 ) {
   "use strict";
 
-  var schema = {
+  ko.bindingHandlers.accountTypeId = {
+    init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      // pass through to `text` binding
+      ko.bindingHandlers.text.init(element, valueAccessor, allBindings, viewModel, bindingContext);
+    },
+    update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      var id = valueAccessor();
+
+      function newValueAccessor() {
+        var result;
+        accountTypeOptions.some(function(item) {
+          if (item.BankAccountTypeID === id) {
+            result = item.AccountType;
+            return true;
+          }
+        });
+        return result;
+      }
+      // call `text`
+      ko.bindingHandlers.text.update(element, newValueAccessor, allBindings, viewModel, bindingContext);
+    },
+  };
+
+
+  var schema,
+    accountTypeOptions;
+
+  schema = {
     _model: true,
     AccountTypeId: {
       // converter: ukov.converters.toUpper(),
@@ -66,7 +93,7 @@ define('src/account/default/payby.eft.vm', [
     }, schema);
     _this.data.AccountTypeCvm = new ComboViewModel({
       selectedValue: _this.data.AccountTypeId,
-      list: _this.accountTypeOptions,
+      list: accountTypeOptions,
       fields: {
         value: 'BankAccountTypeID',
         text: 'AccountType',
@@ -99,14 +126,14 @@ define('src/account/default/payby.eft.vm', [
     }, 0);
   };
 
-  PayByEftViewModel.prototype.accountTypeOptions = [
+  accountTypeOptions = [
     {
       BankAccountTypeID: 1,
       AccountType: 'Checking',
     },
     {
       BankAccountTypeID: 2,
-      AccountType: 'Saving',
+      AccountType: 'Savings',
     },
   ];
 

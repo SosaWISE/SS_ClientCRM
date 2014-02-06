@@ -908,6 +908,52 @@ table.fh-wrap {
 
 .initialpayment {
   padding-right: 20px;
+  .checkbox {
+    margin-top: 30px;
+  }
+  div.actions {
+    margin-top: 20px;
+    margin-left: 20px;
+  }
+
+  ul.breakdown {
+    width: 200px;
+    .name,
+    .amount {
+      display: inline-block;
+    }
+    .name {
+      width: 75%;
+    }
+    .amount {
+      width: 25%;
+      text-align: right;
+    }
+
+    .subtotal-group,
+    .total-group {
+      margin-top: 2px;
+      padding-top: 2px;
+      border-top: 1px solid @account-bg;
+    }
+    .total-group .amount {
+      border-bottom: 4px double @account-bg;
+    }
+  }
+
+  ul.payment-method {
+    .name,
+    .value {
+      display: inline-block;
+    }
+    .name {
+      width: 120px;
+      text-align: right;
+    }
+    .value {
+      margin-left: 10px;
+    }
+  }
 }
 .payby {
 

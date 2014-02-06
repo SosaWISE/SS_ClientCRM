@@ -24,6 +24,15 @@ define('src/account/default/initialpayment.vm', [
     InitialPaymentViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
+    _this.breakdown = ko.observable({
+      ActivationFee: 1,
+      Monitoring: 2,
+      SalesUpgrades: 3,
+      TechUpgrades: 4,
+      Subtotal: 10,
+      Taxes: 0.7,
+      Total: 10.7,
+    });
     _this.initialPaymentMethod = ko.observable();
     _this.recurringSame = ko.observable(true);
     _this.recurringPaymentMethod = ko.observable();

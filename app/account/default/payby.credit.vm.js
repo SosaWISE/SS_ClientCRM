@@ -17,10 +17,35 @@ define('src/account/default/payby.credit.vm', [
 ) {
   "use strict";
 
+  ko.bindingHandlers.cardTypeId = {
+    init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      // pass through to `text` binding
+      ko.bindingHandlers.text.init(element, valueAccessor, allBindings, viewModel, bindingContext);
+    },
+    update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      var id = valueAccessor();
+
+      function newValueAccessor() {
+        var result;
+        cardTypeOptions.some(function(item) {
+          if (item.CreditCardTypeID === id) {
+            result = item.CardType;
+            return true;
+          }
+        });
+        return result;
+      }
+      // call `text`
+      ko.bindingHandlers.text.update(element, newValueAccessor, allBindings, viewModel, bindingContext);
+    },
+  };
+
+
   var schema,
     cardTypeIdToNameMap,
     cardValidationGroup,
-    expirationValidationGroup;
+    expirationValidationGroup,
+    cardTypeOptions;
 
   cardTypeIdToNameMap = {
     1: 'visa',
@@ -89,6 +114,7 @@ define('src/account/default/payby.credit.vm', [
         },
       ],
     },
+    Expiration: {},
     ExpirationMonth: {
       // converter: ukov.converters.toUpper(),
       validationGroup: expirationValidationGroup,
@@ -127,7 +153,7 @@ define('src/account/default/payby.credit.vm', [
     }, schema);
     _this.data.CardTypeCvm = new ComboViewModel({
       selectedValue: _this.data.CardTypeId,
-      list: _this.cardTypeOptions,
+      list: cardTypeOptions,
       fields: {
         value: 'CreditCardTypeID',
         text: 'CardType',
@@ -143,6 +169,10 @@ define('src/account/default/payby.credit.vm', [
       list: paymenthelper.getExpirationYears(),
       noItemSelectedText: 'Year',
     });
+    // this feels like a HACK...
+    _this.data.Expiration.getValue = function() {
+      return (_this.data.ExpirationMonth.getValue() + 1) + '/' + _this.data.ExpirationYear.getValue();
+    };
 
     _this.cvvMsg = ko.computed({
       deferEvaluation: true,
@@ -173,7 +203,7 @@ define('src/account/default/payby.credit.vm', [
     _this.selected(selected);
   };
 
-  PayByCreditViewModel.prototype.cardTypeOptions = [
+  cardTypeOptions = [
     {
       CreditCardTypeID: 1,
       CardType: 'Visa',
