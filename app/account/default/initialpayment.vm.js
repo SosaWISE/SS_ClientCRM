@@ -107,7 +107,7 @@ define('src/account/default/initialpayment.vm', [
   utils.inherits(InitialPaymentViewModel, ControllerViewModel);
   InitialPaymentViewModel.prototype.viewTmpl = 'tmpl-acct-default-initialpayment';
 
-  InitialPaymentViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  InitialPaymentViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
     setTimeout(function() {

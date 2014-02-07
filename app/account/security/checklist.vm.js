@@ -48,7 +48,7 @@ define('src/account/security/checklist.vm', [
   utils.inherits(ChecklistViewModel, ControllerViewModel);
   ChecklistViewModel.prototype.viewTmpl = 'tmpl-security-checklist';
 
-  ChecklistViewModel.prototype.onLoad = function(routeData, join) {
+  ChecklistViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
 
     _this.checklist([

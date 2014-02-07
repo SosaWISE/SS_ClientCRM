@@ -225,7 +225,7 @@ define('src/account/default/notes.vm', [
   utils.inherits(NotesViewModel, BaseViewModel);
   NotesViewModel.prototype.viewTmpl = 'tmpl-acct-default-notes';
 
-  NotesViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  NotesViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
     load_departments(_this.departmentsCvm, join.add());
     load_notes(_this.id, _this.notesGvm, join.add());

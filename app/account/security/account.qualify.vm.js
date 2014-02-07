@@ -80,11 +80,26 @@ define('src/account/security/account.qualify.vm', [
     }, function(busy) {
       return !busy && _this.step() === 2;
     });
+
+    _this.cmdCreateAccount = ko.command(function(cb) {
+      var routeData, extraData;
+      routeData = {
+        masterid: 555555,
+        id: 4444444,
+        tab: 'checklist',
+        p1: 'salesinfo',
+      };
+      extraData = {
+        checklist: _this.pcontroller,
+      };
+      _this.goTo(routeData, extraData);
+      cb();
+    });
   }
   utils.inherits(AccountQualifyViewModel, ControllerViewModel);
   AccountQualifyViewModel.prototype.viewTmpl = 'tmpl-security-account_qualify';
 
-  AccountQualifyViewModel.prototype.onLoad = function( /*routeData, join*/ ) { // override me
+  AccountQualifyViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // override me
     var _this = this;
     _this.cmdFindRep.execute();
   };

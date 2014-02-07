@@ -88,7 +88,7 @@ define('src/survey/survey.vm', [
         model.childs = [];
         var vm = createQuestion(_this, model, parent);
         // make sure it is loaded
-        vm.load({}, function(errResp) {
+        vm.load({}, null, function(errResp) {
           if (errResp) {
             return notify.notify('error', errResp.Message);
           }
@@ -122,7 +122,7 @@ define('src/survey/survey.vm', [
   SurveyViewModel.prototype.routePart = 'surveyid';
   SurveyViewModel.prototype.viewTmpl = 'tmpl-survey';
 
-  SurveyViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  SurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
     loadQuestions(_this, _this.id, routeData, join);
@@ -153,7 +153,7 @@ define('src/survey/survey.vm', [
         if (resp.Value) {
           var treeTrunk = treehelper.makeTree(resp.Value, 'QuestionID', 'ParentId', function(model, parentVM /*, parent*/ ) {
             var vm = createQuestion(surveyVM, model, parentVM);
-            vm.load(routeData, join.add());
+            vm.load(routeData, null, join.add());
             return vm;
           });
           surveyVM.questions(treeTrunk);
@@ -174,7 +174,7 @@ define('src/survey/survey.vm', [
         if (resp.Value) {
           var list = resp.Value.map(function(model) {
             var vm = createSurveyTranslation(surveyVM, model);
-            // lazy load survey translation data // vm.load(routeData, join.add());
+            // lazy load survey translation data // vm.load(routeData, null, join.add());
             return vm;
           });
           surveyVM.translations(list);

@@ -47,7 +47,7 @@ define('src/survey/takesurvey.vm', [
   TakeSurveyViewModel.prototype.width = '90%';
   TakeSurveyViewModel.prototype.height = '90%';
 
-  TakeSurveyViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  TakeSurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       id = parseInt(routeData.surveyid, 10),
       locale = routeData.locale,
@@ -75,8 +75,8 @@ define('src/survey/takesurvey.vm', [
     }
 
     // ensure tokens and PAs are loaded
-    _this.tokensVM.load(routeData, join.add());
-    _this.possibleAnswersVM.load(routeData, join.add());
+    _this.tokensVM.load(routeData, null, join.add());
+    _this.possibleAnswersVM.load(routeData, null, join.add());
 
     join.when(function(err) {
       if (err) {

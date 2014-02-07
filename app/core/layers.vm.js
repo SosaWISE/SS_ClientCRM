@@ -142,7 +142,7 @@ define('src/core/layers.vm', [
     });
 
     subscription = layer.vm.subscribe(function(vm) {
-      var ctx = createContext(vm, routeData || layersVm.controller.getRouteData(), function() {
+      var ctx = createContext(vm, routeData || layersVm.controller.getRouteData(), null, function() {
         console.log('activated layer');
       });
 
@@ -165,12 +165,13 @@ define('src/core/layers.vm', [
   }
 
   // mimic how the router works
-  function createContext(vm, routeData, cb) {
+  function createContext(vm, routeData, extraData, cb) {
     var disposed,
       routeCtx;
     if (routeData) {
       routeCtx = {
         routeData: routeData,
+        extraData: extraData,
         dispose: function() {
           disposed = true;
           delete vm.layersVm;

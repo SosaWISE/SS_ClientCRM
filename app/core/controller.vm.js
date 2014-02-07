@@ -71,7 +71,7 @@ define('src/core/controller.vm', [
     // store last route
     _this._lastRouteData = routeCtx.routeData;
     // load self
-    _this.load(routeCtx.routeData, function() {
+    _this.load(routeCtx.routeData, null, function() {
       // check if routeCtx is still active
       if (!routeCtx.active()) {
         return;
@@ -150,31 +150,32 @@ define('src/core/controller.vm', [
     }
   };
 
-  ControllerViewModel.prototype.goTo = function(routeData, allowHistory) {
+  ControllerViewModel.prototype.goTo = function(routeData, extraData, allowHistory) {
     var _this = this;
-    _this.getRoute().goTo(routeData, allowHistory);
+    _this.getRoute().goTo(routeData, extraData, allowHistory);
   };
   ControllerViewModel.prototype.selectChild = function(vm) {
     var _this = this;
     _this.goTo(vm.getRouteData());
   };
 
-  function applyRouteData(controller, routeData) {
-    if (!controller.routePart) {
+  ControllerViewModel.prototype.applyRouteData = function(routeData) {
+    var _this = this;
+    if (!_this.routePart) {
       throw new Error('no routePart');
     }
-    if (!controller.id) {
+    if (!_this.id) {
       throw new Error('no id');
     }
 
-    if (controller.pcontroller) {
+    if (_this.pcontroller) {
       // recursively walk parent controllers
-      applyRouteData(controller.pcontroller, routeData);
+      _this.pcontroller.applyRouteData(routeData);
     } else {
-      routeData.route = controller.route.name;
+      routeData.route = _this.route.name;
     }
-    routeData[controller.routePart] = controller.id;
-  }
+    routeData[_this.routePart] = _this.id;
+  };
   ControllerViewModel.prototype.getRouteData = function() {
     var _this = this,
       routeData;
@@ -186,13 +187,13 @@ define('src/core/controller.vm', [
     } else {
       routeData = {};
     }
-    applyRouteData(_this, routeData);
+    _this.applyRouteData(routeData);
     return routeData;
   };
 
 
-  ControllerViewModel.prototype.createRouteContext = function(pathOrRouteData, cb) {
-    return this.getRoute().createContext(pathOrRouteData, cb);
+  ControllerViewModel.prototype.createRouteContext = function(pathOrRouteData, extraData, cb) {
+    return this.getRoute().createContext(pathOrRouteData, extraData, cb);
   };
 
 

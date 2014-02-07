@@ -18,7 +18,7 @@ define('src/account/security/industrynums.vm', [
   utils.inherits(IndustryViewModel, ControllerViewModel);
   IndustryViewModel.prototype.viewTmpl = 'tmpl-security-industrynums';
 
-  IndustryViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  IndustryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
     setTimeout(function() {

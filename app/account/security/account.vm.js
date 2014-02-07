@@ -35,7 +35,7 @@ define('src/account/security/account.vm', [
   utils.inherits(AccountViewModel, ControllerViewModel);
   AccountViewModel.prototype.viewTmpl = 'tmpl-security-account';
 
-  AccountViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  AccountViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
     setTimeout(function() {
@@ -45,7 +45,7 @@ define('src/account/security/account.vm', [
         createFauxController(_this, 'Signal History'),
         createInventory(_this, 'Inventory'),
         createFauxController(_this, 'Contract Approval'),
-        createAccountChecklist(_this, 'Setup Checklist'),
+        (extraData && extraData.checklist) ? extraData.checklist : createAccountChecklist(_this, 'Setup Checklist'),
       ]);
       cb();
     }, 0);

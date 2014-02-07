@@ -36,7 +36,7 @@ define('src/account/security/account.info.vm', [
   utils.inherits(AccountInfoViewModel, ControllerViewModel);
   AccountInfoViewModel.prototype.viewTmpl = 'tmpl-security-account_info';
 
-  AccountInfoViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  AccountInfoViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var cb = join.add();
     setTimeout(function() {
       cb();

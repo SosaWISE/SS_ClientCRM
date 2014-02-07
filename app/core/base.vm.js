@@ -40,7 +40,7 @@ define('src/core/base.vm', [
   };
 
   // this will be over written if mixinLoad is called
-  BaseViewModel.prototype.load = function(routeData, cb) {
+  BaseViewModel.prototype.load = function(routeData, extraData, cb) {
     cb();
   };
   // activate can be async or synchronous depending
@@ -53,7 +53,7 @@ define('src/core/base.vm', [
     // store last route
     _this._lastRouteData = routeCtx.routeData;
     // load self
-    _this.load(routeCtx.routeData, function() {
+    _this.load(routeCtx.routeData, null, function() {
       // check if routeCtx is still active
       if (!routeCtx.active()) {
         return;

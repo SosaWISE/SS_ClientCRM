@@ -116,7 +116,7 @@ define('src/account/default/payby.eft.vm', [
     _this.selected(selected);
   };
 
-  PayByEftViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  PayByEftViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
     setTimeout(function() {

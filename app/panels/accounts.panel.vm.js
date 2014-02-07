@@ -64,7 +64,7 @@ define('src/panels/accounts.panel.vm', [
   utils.inherits(AccountsPanelViewModel, ControllerViewModel);
   // AccountsPanelViewModel.prototype.routePart = '';
 
-  AccountsPanelViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  AccountsPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
 

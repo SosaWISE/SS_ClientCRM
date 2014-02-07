@@ -256,7 +256,7 @@ define('src/account/default/runcredit.vm', [
     }, 100);
   };
 
-  RunCreditViewModel.prototype.onLoad = function(routeData, join) {
+  RunCreditViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this,
       cb = join.add();
 

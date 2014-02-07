@@ -76,11 +76,11 @@ define('src/account/default/masteraccount.vm', [
   utils.inherits(MasterAccountViewModel, ControllerViewModel);
   MasterAccountViewModel.prototype.viewTmpl = 'tmpl-acct-default-masteraccount';
 
-  MasterAccountViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  MasterAccountViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
 
-    _this.notesVM.load(routeData, function(err) {
+    _this.notesVM.load(routeData, null, function(err) {
       if (!err) {
         load_billingInfoSummary(_this, _this.id, _this.accounts, join.add());
         load_aging(_this, _this.id, _this.agings, join.add());

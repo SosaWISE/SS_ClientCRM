@@ -111,9 +111,9 @@ define('src/core/route', [
     // merge parts into path
     return pathParts.join('/');
   };
-  Route.prototype.activate = function(path, cb) {
+  Route.prototype.activate = function(path, extraData, cb) {
     var _this = this,
-      routeCtx = _this.createContext(path, cb);
+      routeCtx = _this.createContext(path, extraData, cb);
     if (routeCtx) {
       // the path matches this route so we can activate it
       _this.topController.activate(routeCtx);
@@ -122,7 +122,7 @@ define('src/core/route', [
     return routeCtx;
   };
 
-  Route.prototype.createContext = function(pathOrRouteData, cb) {
+  Route.prototype.createContext = function(pathOrRouteData, extraData, cb) {
     var _this = this,
       disposed,
       routeData = typeof(pathOrRouteData) === 'string' ? _this.fromPath(pathOrRouteData) : pathOrRouteData,
@@ -131,6 +131,7 @@ define('src/core/route', [
       routeCtx = {
         route: _this,
         routeData: routeData,
+        extraData: extraData,
         dispose: function(deactivate) {
           disposed = true;
           if (deactivate) {
@@ -151,10 +152,10 @@ define('src/core/route', [
   };
 
   // runs route activation process
-  Route.prototype.goTo = function(routeData, allowHistory) {
+  Route.prototype.goTo = function(routeData, extraData, allowHistory) {
     var _this = this,
       route = lookupRoute(_this, routeData);
-    route.router.goTo(route.name, routeData, allowHistory);
+    route.router.goTo(route.name, routeData, extraData, allowHistory);
   };
   // only changes url in address bar
   Route.prototype.setRouteData = function(routeData) {

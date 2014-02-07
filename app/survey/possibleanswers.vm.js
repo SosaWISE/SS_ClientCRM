@@ -22,7 +22,7 @@ define('src/survey/possibleanswers.vm', [
   }
   utils.inherits(PossibleAnswersViewModel, ControllerViewModel);
 
-  PossibleAnswersViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  PossibleAnswersViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
 

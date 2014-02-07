@@ -47,7 +47,7 @@ define('src/survey/surveytype.vm', [
   SurveyTypeViewModel.prototype.routePart = null;
   // SurveyTypeViewModel.prototype.viewTmpl = 'tmpl-surveytype';
 
-  SurveyTypeViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  SurveyTypeViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
     loadSurveys(_this, _this.id, routeData, join);
     loadQuestionMeaning(_this, _this.id, routeData, join);
@@ -71,7 +71,7 @@ define('src/survey/surveytype.vm', [
         if (resp.Value) {
           var list = resp.Value.map(function(model) {
             var vm = createSurvey(surveyTypeVM, model);
-            // lazy load survey data // vm.load(routeData, join.add());
+            // lazy load survey data // vm.load(routeData, null, join.add());
             return vm;
           });
           surveyTypeVM.surveys(list);
@@ -93,7 +93,7 @@ define('src/survey/surveytype.vm', [
           var list = resp.Value.map(function(model) {
             var vm = createQuestionMeaning(surveyTypeVM, model);
             surveyTypeVM.qmMap[model.QuestionMeaningID] = vm;
-            vm.load(routeData, join.add());
+            vm.load(routeData, null, join.add());
             return vm;
           });
           surveyTypeVM.questionMeanings(list);

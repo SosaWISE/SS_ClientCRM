@@ -43,7 +43,7 @@ define('src/survey/question.vm', [
   utils.inherits(QuestionViewModel, ControllerViewModel);
   QuestionViewModel.prototype.viewTmpl = 'tmpl-question';
 
-  QuestionViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  QuestionViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
 

@@ -25,7 +25,7 @@ define('src/core/mixinLoad', [
     _this.loadErr = _this.loader.loadErr;
   }
 
-  function load(routeData, cb) {
+  function load(routeData, extraData, cb) {
     /* jshint validthis:true */
     var _this = this,
       loader = _this.loader,
@@ -37,7 +37,7 @@ define('src/core/mixinLoad', [
       loader(cb);
 
       join = joiner();
-      _this.onLoad(routeData, join);
+      _this.onLoad(routeData, extraData, join);
       join.when(function(errResp) {
         if (errResp) {
           notify.notify('error', errResp.Message);

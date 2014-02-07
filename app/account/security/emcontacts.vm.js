@@ -44,7 +44,7 @@ define('src/account/security/emcontacts.vm', [
   utils.inherits(EmContactsViewModel, ControllerViewModel);
   EmContactsViewModel.prototype.viewTmpl = 'tmpl-security-emcontacts';
 
-  EmContactsViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  EmContactsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var cb = join.add();
     setTimeout(function() {
       //@TODO: load real data

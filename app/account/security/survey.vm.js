@@ -45,7 +45,7 @@ define('src/account/security/survey.vm', [
             surveyid: item.surveyid,
             locale: item.locale,
             resultid: item.resultid,
-          }, function() {
+          }, null, function() {
             //
           });
         }
@@ -67,7 +67,7 @@ define('src/account/security/survey.vm', [
   utils.inherits(SurveyViewModel, ControllerViewModel);
   SurveyViewModel.prototype.viewTmpl = 'tmpl-security-survey';
 
-  SurveyViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  SurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var cb = join.add();
     setTimeout(function() {
       //@TODO: load real data

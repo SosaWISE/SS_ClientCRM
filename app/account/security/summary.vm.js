@@ -32,7 +32,7 @@ define('src/account/security/summary.vm', [
   utils.inherits(SummaryViewModel, ControllerViewModel);
   SummaryViewModel.prototype.viewTmpl = 'tmpl-security-summary';
 
-  SummaryViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  SummaryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var cb = join.add();
     setTimeout(function() {
       cb();
