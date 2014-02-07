@@ -4,7 +4,7 @@ div(class="rep-find")
     li
       span(class="label") Company ID
       input(type="text", class="rep-id", placeholder="NAME001",
-        data-bind="ukov:repData.SalesRepID,value:repData.SalesRepID,valueUpdate:'keyup',enter:cmdFind,select:focusFirst")
+        data-bind="ukov:repData.CompanyID,value:repData.CompanyID,valueUpdate:'keyup',enter:cmdFind,select:focusFirst")
     //- li
       div(data-bind="template:{name:comboVM.viewTmpl,data:comboVM}")
 
