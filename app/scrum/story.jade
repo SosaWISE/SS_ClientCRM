@@ -12,7 +12,7 @@ div(class="story bl-drag-item",data-bind="drag:{}")
         span(class="pts",data-bind="text:points")
         span(class="owner") ???
 
-      div(class="tasks",data-bind="foreach:childs")
+      div(class="tasks",data-bind="foreach:tasks")
         div(class="task-wrap")
           div(class="task")
-            span(data-bind="text:Name")
+            span(data-bind="text:item.Name")

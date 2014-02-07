@@ -19,6 +19,10 @@ define('src/scrum/backlogdata', [
     return 1;
   }
 
+  function returnZero() {
+    return 0;
+  }
+
   function sorter(a, b) {
     return a.sortOrder - b.sortOrder;
   }
@@ -37,7 +41,7 @@ define('src/scrum/backlogdata', [
     }
   }
 
-  function makeItemSid(item, type) {
+  function getSidPrefix(type) {
     var prefix;
     switch (type) {
       case 'epic':
@@ -46,29 +50,58 @@ define('src/scrum/backlogdata', [
       case 'story':
         prefix = 'US';
         break;
+      case 'step':
+        prefix = 'TS';
+        break;
       case 'task':
         prefix = 'T';
         break;
       default:
         throw new Error('unsupported type: ' + type);
     }
-    return prefix + item.ID;
+    return prefix;
   }
 
-  function BaseItemViewModel(container, item, type, level) {
+  function makeItemSid(item, type) {
+    return getSidPrefix(type) + item.ID;
+  }
+
+  function mixinComputeLength(_this) {
+    _this.length = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        return _this.childs().reduce(function(current, value) {
+          return current + value.length();
+        }, 1);
+      },
+    });
+  }
+
+  function mixinComputePoints(_this) {
+    _this.points = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        return _this.childs().reduce(function(current, value) {
+          return current + value.points();
+        }, 0);
+      },
+    });
+  }
+
+  function BaseItemViewModel(container, item, type, hasChilds) {
     var _this = this;
     _this.container = container;
     _this.item = item;
     _this.type = type;
-    _this.level = level;
     _this.viewTmpl = 'tmpl-scrum_' + type;
     _this.sid = makeItemSid(item, type);
     _this.parentSid = _this.makeParentSid();
     _this.version = item.Version || 0;
     _this.sortOrder = item.SortOrder || 0;
     _this.length = returnOne;
+    _this.points = returnZero;
+    _this.childs = hasChilds ? ko.observableArray() : true; // true is a hack to stop treehelper from creating a childs array
   }
-  BaseItemViewModel.prototype.childs = true; // hack to stop treehelper from creating a childs array
   BaseItemViewModel.prototype.makeParentSid = function() {
     var _this = this,
       item = _this.item,
@@ -79,14 +112,16 @@ define('src/scrum/backlogdata', [
         prefix = 'E';
         break;
       case 'story':
-        if (_this.level !== 0) {
-          parentId = item.EpicId;
-          prefix = 'E';
-        }
+        parentId = item.EpicId;
+        prefix = 'E';
+        break;
+      case 'step':
+        parentId = item.ParentId;
+        prefix = 'US';
         break;
       case 'task':
-        parentId = item.StoryId;
-        prefix = 'US';
+        parentId = item.TaskStepId;
+        prefix = 'TS';
         break;
       default:
         throw new Error('unsupported type: ' + _this.type);
@@ -204,49 +239,69 @@ define('src/scrum/backlogdata', [
     return list[list.length - 1];
   };
 
-  function EpicViewModel(container, item, type, level) {
+  function EpicViewModel(container, item, type) {
     var _this = this;
     if (type !== 'epic') {
       throw new Error('item must be an epic');
     }
-    EpicViewModel.super_.call(_this, container, item, type, level);
+    EpicViewModel.super_.call(_this, container, item, type, true);
 
-    _this.length = ko.computed({
-      deferEvaluation: true,
-      read: function() {
-        return _this.childs().reduce(function(current, value) {
-          return current + value.length();
-        }, 1);
-      },
-    });
-
-    _this.points = ko.computed({
-      deferEvaluation: true,
-      read: function() {
-        return _this.childs().reduce(function(current, value) {
-          return current + value.points();
-        }, 0);
-      },
-    });
-    _this.childs = ko.observableArray();
+    mixinComputeLength(_this);
+    mixinComputePoints(_this);
   }
   utils.inherits(EpicViewModel, BaseItemViewModel);
   // EpicViewModel.prototype.onUpdate = function(item) {};
 
-  function StoryViewModel(container, item, type, level) {
+  function StoryViewModel(container, item, type) {
     var _this = this;
     if (type !== 'story') {
       throw new Error('item must be a story');
     }
-    StoryViewModel.super_.call(_this, container, item, type, level);
+    StoryViewModel.super_.call(_this, container, item, type, true);
 
+    mixinComputeLength(_this);
     _this.points = ko.observable(item.Points);
+
+    _this.tasks = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        var tasks = [];
+        // steps
+        _this.childs().forEach(function(step) {
+          // tasks
+          step.childs().forEach(function(task) {
+            tasks.push(task);
+          });
+        });
+        return tasks;
+      },
+    });
   }
   utils.inherits(StoryViewModel, BaseItemViewModel);
   StoryViewModel.prototype.onUpdate = function(item) {
     var _this = this;
     _this.points(item.Points);
   };
+
+  function StepViewModel(container, item, type) {
+    var _this = this;
+    if (type !== 'step') {
+      throw new Error('item must be a step');
+    }
+    StepViewModel.super_.call(_this, container, item, type, true);
+
+    mixinComputeLength(_this);
+  }
+  utils.inherits(StepViewModel, BaseItemViewModel);
+
+  function TaskViewModel(container, item, type) {
+    var _this = this;
+    if (type !== 'task') {
+      throw new Error('item must be a task');
+    }
+    TaskViewModel.super_.call(_this, container, item, type, false);
+  }
+  utils.inherits(TaskViewModel, BaseItemViewModel);
 
   function BacklogData() {
     var _this = this;
@@ -269,6 +324,15 @@ define('src/scrum/backlogdata', [
   BacklogData.prototype.addChild = BaseItemViewModel.prototype.addChild;
 
   BacklogData.prototype.updateItem = function(item, type) {
+    // ensure items have correct parent ids
+    switch (type) {
+      case 'task':
+        if (typeof(item.TaskStepId) === 'number') {
+          item.TaskStepId = item.TaskStepId + '_' + getSidPrefix('story') + item.StoryId;
+        }
+        break;
+    }
+
     var _this = this,
       sidToVmMap = _this.sidToVmMap,
       vm = _this.makeVm(item, type),
@@ -294,6 +358,27 @@ define('src/scrum/backlogdata', [
       sidToVmMap[vm.sid] = vm;
       added = true;
     }
+
+    // update or add item childs, if any
+    if (added) {
+      switch (type) {
+        case 'story':
+          // update or add steps
+          buildStorySteps(_this, item).forEach(function(step) {
+            _this.updateItem(step, 'step');
+          });
+          // update or add tasks
+          if (item.Tasks && Array.isArray(item.Tasks)) {
+            item.Tasks.forEach(function(task) {
+              task.StoryId = task.StoryId || item.ID;
+              _this.updateItem(task, 'task');
+            });
+            delete item.Tasks;
+          }
+          break;
+      }
+    }
+
     return added;
   };
   BacklogData.prototype.removeItem = function(item, type) {
@@ -311,12 +396,21 @@ define('src/scrum/backlogdata', [
     }
 
     delete sidToVmMap[sid];
+    // recursively delete childs from map
+    (function deleteChlds(childs) {
+      if (!childs || childs === true) {
+        return;
+      }
+      childs().forEach(function(item) {
+        delete sidToVmMap[item.sid];
+        deleteChlds(item.childs);
+      });
+    })(currVm.childs);
     return currVm.getParent().removeChild(currVm);
   };
 
   BacklogData.prototype.makeVm = function(item, type) {
     var _this = this,
-      level = _this.typeToLevelMap[type],
       Ctor;
     switch (type) {
       case 'epic':
@@ -325,15 +419,18 @@ define('src/scrum/backlogdata', [
       case 'story':
         Ctor = StoryViewModel;
         break;
+      case 'step':
+        Ctor = StepViewModel;
+        break;
       case 'task':
-        // Ctor = TaskViewModel;
+        Ctor = TaskViewModel;
         break;
       default:
         throw new Error('unsupported type: ' + type);
     }
-    return new Ctor(_this, item, type, level);
+    return new Ctor(_this, item, type);
   };
-  BacklogData.prototype.init = function(typeLevels) {
+  BacklogData.prototype.init = function(epics, storys) {
     var _this = this,
       sidToVmMap = _this.sidToVmMap,
       childs, list, orphans = [];
@@ -341,25 +438,35 @@ define('src/scrum/backlogdata', [
     if (_this._initialized) {
       throw new Error('already initialized');
     }
-    _this._initialized = true;
 
-    _this.typeToLevelMap = {};
-    typeLevels.forEach(function(obj, level) {
-      _this.typeToLevelMap[obj.type] = level;
-    });
+    _this.taskSteps = [
+      {
+        ID: 1,
+        Name: 'To Do',
+      },
+      {
+        ID: 2,
+        Name: 'In Progress',
+      },
+      {
+        ID: 3,
+        Name: 'Done',
+      },
+      {
+        ID: 4,
+        Name: 'Approved',
+      },
+    ];
 
-    // add epics, storys, and tasks to map
-    typeLevels.forEach(function(obj) {
-      obj.list.forEach(function(item) {
-        var vm = _this.makeVm(item, obj.type),
-          currVm = sidToVmMap[vm.sid];
-        // There's a small chance that the item could have been updated in the time it takes
-        // to get all the items, so we're just making sure we have the latest version.
-        if (!currVm || currVm.version <= vm.version) {
-          sidToVmMap[vm.sid] = vm;
-        }
+    function updateList(list, type) {
+      list.forEach(function(item) {
+        _this.updateItem(item, type);
       });
-    });
+    }
+    updateList(epics, 'epic');
+    updateList(storys, 'story');
+
+    _this._initialized = true;
 
     // turn map back into a list
     list = Object.keys(sidToVmMap).map(function(key) {
@@ -376,6 +483,19 @@ define('src/scrum/backlogdata', [
 
     _this.childs(childs);
   };
+
+  function buildStorySteps(_this, story) {
+    var storySid = makeItemSid(story, 'story');
+    return _this.taskSteps.map(function(taskStep) {
+      return {
+        ParentId: story.ID,
+        ID: taskStep.ID + '_' + storySid,
+        Name: taskStep.Name,
+        Version: 0,
+        SortOrder: taskStep.ID,
+      };
+    });
+  }
 
   function findItemAtIndex(item, indexObj) {
     var result;

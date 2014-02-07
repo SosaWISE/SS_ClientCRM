@@ -40,16 +40,17 @@ define('src/scrum/backlog.vm', [
       if (err) {
         return;
       }
-      _this.bd.init([
-        {
-          type: 'epic',
-          list: epics,
-        },
-        {
-          type: 'story',
-          list: storys,
-        }
-      ]);
+      _this.bd.init(epics, storys);
+      // _this.bd.init([
+      //   {
+      //     type: 'epic',
+      //     list: epics,
+      //   },
+      //   {
+      //     type: 'story',
+      //     list: storys,
+      //   }
+      // ]);
     });
   };
 
