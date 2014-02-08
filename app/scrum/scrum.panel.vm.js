@@ -4,7 +4,8 @@ define('src/scrum/scrum.panel.vm', [
   'src/scrum/scrumrepo',
   'src/scrum/backlog.vm',
   'src/scrum/planning.vm',
-  'src/scrum/tracking.vm',
+  // 'src/scrum/tracking.vm',
+  'src/scrum/taskboard.vm',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
@@ -13,7 +14,8 @@ define('src/scrum/scrum.panel.vm', [
   ScrumRepo,
   BacklogViewModel,
   PlanningViewModel,
-  TrackingViewModel,
+  // TrackingViewModel,
+  TaskBoardViewModel,
   utils,
   ControllerViewModel
 ) {
@@ -64,7 +66,13 @@ define('src/scrum/scrum.panel.vm', [
             title: 'Story Board',
             repo: _this.repo,
           }),
-          new TrackingViewModel({
+          // new TrackingViewModel({
+          //   pcontroller: _this,
+          //   id: 'track',
+          //   title: 'Task Board',
+          //   repo: _this.repo,
+          // }),
+          new TaskBoardViewModel({
             pcontroller: _this,
             id: 'track',
             title: 'Task Board',

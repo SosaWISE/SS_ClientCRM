@@ -4,6 +4,27 @@
     background: #fff;
   }
 
+  .drag-hdl {
+    cursor: url(/stuff/img/cursor-grab-up.cur), default;
+    &:before {
+      font-family: entypo;
+      font-size: 16;
+      content: '\2630';
+    }
+  }
+  .first,
+  .middle,
+  .last {
+    display:table-cell;
+    span {
+      display:inline-block;
+      vertical-align: top;
+    }
+  }
+  .middle {
+    width: 100%;
+  }
+
   .scrum-backlog {
     position: absolute;
     // top:0;right:0;bottom:0;left:0;
@@ -43,29 +64,11 @@
       }
     }
 
-    .first,
-    .name,
-    .last {
-      display:table-cell;
-      span {
-        display:inline-block;
-        vertical-align: top;
-      }
-    }
     .first {
       padding: 0px 3px;
       vertical-align: top;
-      .drag-hdl {
-        cursor: url(/stuff/img/cursor-grab-up.cur), default;
-        &:before {
-          font-family: entypo;
-          font-size: 16;
-          content: '\2630';
-        }
-      }
     }
-    .name {
-      width: 100%;
+    .middle {
       padding-right: 10px;
       span {
         display: block;
@@ -137,25 +140,44 @@
       .step {
         // background: blue;
         display: table-cell;
-        width: 33.33%;
+        width: 25%;
 
         min-height: 100px;
         height: 100%;
 
         vertical-align: top;
-        padding: 5px 0px 0px 5px;
+        padding: 0px 5px 5px 0px;
+        // background: orange;
 
+        &.drop-accept {
+          background: #bbb;
+        }
         .task-wrap {
           vertical-align: top;
           display:inline-block;
-          padding: 0px 5px 5px 0px;
+          padding: 5px 0px 0px 5px;
           width: 49%;
-        }
-        .task {
-          height: 80px;
-          border: solid 1px gray;
-          .border-radius(5px);
-          padding: 2px;
+          // background: red;
+          .task {
+            // background: blue;
+            height: 80px;
+            border: solid 1px gray;
+            .border-radius(5px);
+            padding: 2px;
+
+            position: relative;
+            .bl-item-sibling {
+              position: absolute;
+              top:-5px;left:-5px;
+              width: 4px;
+              height: 100%;
+              // background: yellow;
+
+              &.drop-accept {
+                background: #bbb;
+              }
+            }
+          }
         }
       }
     }

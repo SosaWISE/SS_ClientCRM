@@ -1,17 +1,21 @@
 div(class="epic bl-drag-item",data-bind="drag:{}")
-  div(class="bl-item-sibling",data-bind="drop:{accept:'.bl-drag-item',onDropName:'onDropSibling'}")
+  div(class="bl-item-sibling",data-bind="drop:{accept:'.bl-drag-item',onDrop:'onDropSibling'}")
 
   div(class="bl-item-wrap")
-    div(class="bl-item",data-bind="drop:{accept:'.bl-drag-item',onDropName:'onDropChild'}")
+    div(class="bl-item",data-bind="drop:{accept:'.bl-drag-item',onDrop:'onDropChild'}")
       div(class="first")
         span(class="drag-hdl")
-      div(class="name")
+      div(class="middle")
+        //- span(class="title",data-bind="text:item.ID")
         span(class="title",data-bind="text:item.Name")
       div(class="last")
         span(class="pts",data-bind="text:points")
         span(class="owner") ???
 
+  //- div(class="bl-item-sibling",data-bind="drop:{accept:'.bl-drag-item',onDrop:'onDropSibling'}")
+
   div(class="bl-item-wrap")
     <!-- ko foreach:childs -->
     div(data-bind="template:{name:viewTmpl}")
     <!-- /ko -->
+

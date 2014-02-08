@@ -19,40 +19,46 @@ define('src/core/ko.bindingHandlers.jquery.ui', [
 
   ko.bindingHandlers.drop = {
     init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
-      var el, dropOptions, onDropName, onOverName, onOutName;
+      var el, dropOptions, onDrop, onOver, onOut, onAccept;
 
       el = jquery(element);
       // el.droppable("destroy");
 
       dropOptions = ko.unwrap(valueAccessor());
 
-      onDropName = getField(dropOptions, 'onDropName', 'onDrop');
-      onOverName = getField(dropOptions, 'onOverName', 'onOver');
-      onOutName = getField(dropOptions, 'onOutName', 'onOut');
+      onDrop = viewModel[getField(dropOptions, 'onDrop', 'onDrop')];
+      onOver = viewModel[getField(dropOptions, 'onOver', 'onOver')];
+      onOut = viewModel[getField(dropOptions, 'onOut', 'onOut')];
+      onAccept = viewModel[getField(dropOptions, 'onAccept', 'onAccept')];
 
       el.droppable({
         tolerance: getField(dropOptions, 'tolerance', 'pointer'),
         greedy: getField(dropOptions, 'greedy', true),
         // activeClass: 'drop-item',
         hoverClass: getField(dropOptions, 'hoverClass', 'drop-accept'),
-        accept: getField(dropOptions, 'accept', '.bl-drag-item'),
+        accept: (!onAccept) ? getField(dropOptions, 'accept', '.bl-drag-item') : function(el) {
+          var testVm = ko.dataFor(el.get(0));
+          if (testVm) {
+            return onAccept.call(viewModel, testVm, el);
+          }
+        },
         drop: function(ev, ui) {
           var dropVm = ko.dataFor(ev.toElement);
-          if (dropVm && viewModel[onDropName]) {
-            viewModel[onDropName](dropVm, ev, ui);
+          if (dropVm && onDrop) {
+            onDrop.call(viewModel, dropVm, ev, ui);
           }
-          // if (viewModel[onDropName]) {
-          //   viewModel[onDropName](ev, ui);
+          // if (onDrop) {
+          //   onDrop(ev, ui);
           // }
         },
         over: function(ev, ui) {
-          if (viewModel[onOverName]) {
-            viewModel[onOverName](ev, ui);
+          if (onOver) {
+            onOver.call(viewModel, ev, ui);
           }
         },
         out: function(ev, ui) {
-          if (viewModel[onOutName]) {
-            viewModel[onOutName](ev, ui);
+          if (onOut) {
+            onOut.call(viewModel, ev, ui);
           }
         }
       });

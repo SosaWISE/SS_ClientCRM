@@ -293,6 +293,11 @@ define('src/scrum/backlogdata', [
     mixinComputeLength(_this);
   }
   utils.inherits(StepViewModel, BaseItemViewModel);
+  StepViewModel.prototype.onAccept = function(testVm) {
+    var _this = this;
+    return (testVm instanceof TaskViewModel) &&
+      testVm.item.StoryId === _this.item.ParentId;
+  };
 
   function TaskViewModel(container, item, type) {
     var _this = this;
@@ -302,6 +307,11 @@ define('src/scrum/backlogdata', [
     TaskViewModel.super_.call(_this, container, item, type, false);
   }
   utils.inherits(TaskViewModel, BaseItemViewModel);
+  TaskViewModel.prototype.onAccept = function(testVm) {
+    var _this = this;
+    return (testVm instanceof TaskViewModel) &&
+      testVm.item.StoryId === _this.item.StoryId;
+  };
 
   function BacklogData() {
     var _this = this;
