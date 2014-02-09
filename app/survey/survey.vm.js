@@ -47,13 +47,15 @@ define('src/survey/survey.vm', [
     // computed observables
     _this.nextName = ko.computed(_this.computeNextName, _this);
 
-    _this.layersVM = new LayersViewModel();
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
+    });
 
     //
     // events
     //
     _this.clickAddSurveyTranslation = function() {
-      _this.layersVM.show(new NewSurveyTranslationViewModel({
+      _this.layersVm.show(new NewSurveyTranslationViewModel({
         surveyVM: _this,
       }), function(model) {
         if (!model) {
@@ -79,14 +81,14 @@ define('src/survey/survey.vm', [
         nextName: parentVM.nextName(),
         groupOrder: parentVM.nextGroupOrder(),
       });
-      _this.layersVM.show(vm, function(model) {
+      _this.layersVm.show(vm, function(model) {
         if (!model) {
           return;
         }
         model.childs = [];
         var vm = createQuestion(_this, model, parent);
         // make sure it is loaded
-        vm.load({}, function(errResp) {
+        vm.load({}, null, function(errResp) {
           if (errResp) {
             return notify.notify('error', errResp.Message);
           }
@@ -95,19 +97,19 @@ define('src/survey/survey.vm', [
       });
     };
     _this.clickAddToken = function(vm) {
-      _this.layersVM.show(new NewQMTokenMapViewModel({
+      _this.layersVm.show(new NewQMTokenMapViewModel({
         questionMeaningVM: vm,
         tokensVM: _this.tokensVM,
       }));
     };
     _this.clickAddPossibleAnswer = function(vm) {
-      _this.layersVM.show(new NewQPossibleAnswerMapViewModel({
+      _this.layersVm.show(new NewQPossibleAnswerMapViewModel({
         questionVM: vm,
         possibleAnswersVM: _this.possibleAnswersVM,
       }));
     };
     _this.clickTakeSurvey = function() {
-      _this.layersVM.show(new TakeSurveyTranslationViewModel({
+      _this.layersVm.show(new TakeSurveyTranslationViewModel({
         surveyTranslationVMs: _this.translations(),
         routeData: {
           surveyid: _this.id,
@@ -120,7 +122,7 @@ define('src/survey/survey.vm', [
   SurveyViewModel.prototype.routePart = 'surveyid';
   SurveyViewModel.prototype.viewTmpl = 'tmpl-survey';
 
-  SurveyViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  SurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
     loadQuestions(_this, _this.id, routeData, join);
@@ -151,7 +153,7 @@ define('src/survey/survey.vm', [
         if (resp.Value) {
           var treeTrunk = treehelper.makeTree(resp.Value, 'QuestionID', 'ParentId', function(model, parentVM /*, parent*/ ) {
             var vm = createQuestion(surveyVM, model, parentVM);
-            vm.load(routeData, join.add());
+            vm.load(routeData, null, join.add());
             return vm;
           });
           surveyVM.questions(treeTrunk);
@@ -172,7 +174,7 @@ define('src/survey/survey.vm', [
         if (resp.Value) {
           var list = resp.Value.map(function(model) {
             var vm = createSurveyTranslation(surveyVM, model);
-            // lazy load survey translation data // vm.load(routeData, join.add());
+            // lazy load survey translation data // vm.load(routeData, null, join.add());
             return vm;
           });
           surveyVM.translations(list);

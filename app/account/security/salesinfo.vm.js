@@ -268,7 +268,7 @@ define('src/account/security/salesinfo.vm', [
   utils.inherits(SalesInfoViewModel, ControllerViewModel);
   SalesInfoViewModel.prototype.viewTmpl = 'tmpl-security-salesinfo';
 
-  SalesInfoViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  SalesInfoViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
     _this.msAccountId = routeData.id;

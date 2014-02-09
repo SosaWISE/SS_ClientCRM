@@ -38,7 +38,9 @@ define('src/panels/surveys.panel.vm', [
     SurveysPanelViewModel.super_.call(_this, options);
 
     _this.surveyTypes = _this.childs;
-    _this.layersVM = new LayersViewModel();
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
+    });
 
     //
     // events
@@ -49,7 +51,7 @@ define('src/panels/surveys.panel.vm', [
   }
   utils.inherits(SurveysPanelViewModel, ControllerViewModel);
 
-  SurveysPanelViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  SurveysPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       tokensVM, possibleAnswersVM,
       cb = join.add(),
@@ -59,8 +61,8 @@ define('src/panels/surveys.panel.vm', [
       tokensVM = new deps.TokensViewModel();
       possibleAnswersVM = new deps.PossibleAnswersViewModel();
 
-      tokensVM.load(routeData, depJoin.add());
-      possibleAnswersVM.load(routeData, depJoin.add());
+      tokensVM.load(routeData, null, depJoin.add());
+      possibleAnswersVM.load(routeData, null, depJoin.add());
 
       dataservice.survey.surveyTypes.read({}, null, function(err, resp) {
         if (err) {
@@ -73,12 +75,12 @@ define('src/panels/surveys.panel.vm', [
               var list = resp.Value.map(function(model) {
                 var vm = new deps.SurveyTypeViewModel({
                   pcontroller: _this,
-                  layersVM: _this.layersVM,
+                  layersVm: _this.layersVm,
                   tokensVM: tokensVM,
                   possibleAnswersVM: possibleAnswersVM,
                   model: model,
                 });
-                vm.load(routeData, join.add());
+                vm.load(routeData, null, join.add());
                 return vm;
               });
               _this.surveyTypes(list);

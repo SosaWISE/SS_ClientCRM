@@ -1,7 +1,9 @@
 define('src/u-kov/string-converters', [
+  'src/core/paymenthelper',
   'src/core/strings',
   'moment'
 ], function(
+  paymenthelper,
   strings,
   moment
 ) {
@@ -192,6 +194,32 @@ define('src/u-kov/string-converters', [
       } else {
         return strings.format(outputFormat, matches[1], matches[2], matches[3]);
       }
+    };
+  };
+
+
+  converters.ccard = function() {
+    return function convCCard(val) {
+      val = trim(val);
+      if (!val) {
+        return;
+      }
+
+      val = val.replace(/[^\d]/g, '');
+      if (13 < val.length && val.length < 17 && paymenthelper.luhnTest(val)) {
+        return val;
+      } else {
+        return new Error('Invalid number text');
+      }
+    };
+  };
+  converters.numText = function() {
+    return function convNumText(val) {
+      val = trim(val);
+      if (!val) {
+        return;
+      }
+      return val.replace(/[^\d]/g, '');
     };
   };
 

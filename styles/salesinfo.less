@@ -5,6 +5,7 @@
   // ** Properties
   position: absolute;
   top:0;right:0;bottom:0;left:0;
+  overflow:auto;
 
   // ** Inner elements
   .center {
@@ -17,6 +18,7 @@
     // ** Properties
     position: absolute;
     top:0;width:@middle;bottom:10px;left:@pad;
+    min-height:600px;
 
     // ** Inner Elements
     div.title {
@@ -56,6 +58,7 @@
     position: absolute;
     top:0;right:@pad;bottom:0;left:@middle + (@pad * 2);
     min-width: 330px;
+    min-height:600px;
 
     // ** Inner Elements
     div.title {

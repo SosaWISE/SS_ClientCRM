@@ -39,7 +39,7 @@ define('src/account/security/inventory.vm', [
   utils.inherits(InventoryViewModel, ControllerViewModel);
   InventoryViewModel.prototype.viewTmpl = 'tmpl-security-inventory';
 
-  InventoryViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var cb = join.add();
     setTimeout(function() {
       //@TODO: load real data

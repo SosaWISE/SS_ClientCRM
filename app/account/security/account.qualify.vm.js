@@ -1,10 +1,10 @@
-define('src/account/account.qualify.vm', [
+define('src/account/security/account.qualify.vm', [
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
-  'src/rep.find.vm',
-  'src/address.validate.vm',
-  'src/account/account.runcredit.vm',
+  'src/account/default/rep.find.vm',
+  'src/account/default/address.validate.vm',
+  'src/account/default/runcredit.vm',
   'ko'
 ], function(
   notify,
@@ -59,7 +59,9 @@ define('src/account/account.qualify.vm', [
       return !busy && _this.step() === 0;
     });
     _this.cmdAddress = ko.command(function(cb) {
-      showLayer(AddressValidateViewModel, _this.addressModel, _this.cmdCustomer);
+      showLayer(AddressValidateViewModel, _this.addressModel, _this.cmdCustomer, {
+        repModel: _this.repModel()
+      });
       cb();
     }, function(busy) {
       return !busy && _this.step() === 1;
@@ -72,16 +74,32 @@ define('src/account/account.qualify.vm', [
         }
       }, null, {
         addressId: _this.addressModel().AddressID,
+        repModel: _this.repModel()
       });
       cb();
     }, function(busy) {
       return !busy && _this.step() === 2;
     });
+
+    _this.cmdCreateAccount = ko.command(function(cb) {
+      var routeData, extraData;
+      routeData = {
+        masterid: 555555,
+        id: 4444444,
+        tab: 'checklist',
+        p1: 'salesinfo',
+      };
+      extraData = {
+        checklist: _this.pcontroller,
+      };
+      _this.goTo(routeData, extraData);
+      cb();
+    });
   }
   utils.inherits(AccountQualifyViewModel, ControllerViewModel);
-  AccountQualifyViewModel.prototype.viewTmpl = 'tmpl-account_qualify';
+  AccountQualifyViewModel.prototype.viewTmpl = 'tmpl-security-account_qualify';
 
-  AccountQualifyViewModel.prototype.onLoad = function( /*routeData, join*/ ) { // override me
+  AccountQualifyViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // override me
     var _this = this;
     _this.cmdFindRep.execute();
   };

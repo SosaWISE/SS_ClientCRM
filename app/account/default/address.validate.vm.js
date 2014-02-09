@@ -1,4 +1,4 @@
-define('src/address.validate.vm', [
+define('src/account/default/address.validate.vm', [
   'src/core/combo.vm',
   'src/core/notify',
   'src/core/utils',
@@ -172,17 +172,15 @@ define('src/address.validate.vm', [
     _this.height = ko.observable('auto');
     _this.setManualOverride(false);
 
+    _this.data.SeasonId(_this.repModel.Seasons[0].SeasonID);
+    _this.data.SalesRepId(_this.repModel.CompanyID);
+    _this.data.TeamLocationId(_this.repModel.TeamLocationId);
 
     /////TESTING//////////////////////
-    _this.data.SeasonId(1);
-    _this.data.SalesRepId('SOSA001');
-    _this.data.TeamLocationId(1);
     _this.data.PostalCode('84057');
     _this.data.StreetAddress('1517 N 1335 W');
     _this.data.PhoneNumber('801 822 1234');
     _this.data.PhoneNumber(_this.data.model.PhoneNumber);
-    _this.data.City('OREM');
-    _this.data.StateId('UT');
     /////TESTING//////////////////////
 
     //
@@ -227,7 +225,7 @@ define('src/address.validate.vm', [
     _this.loading = _this.cmdValidate.busy;
   }
   utils.inherits(AddressValidateViewModel, BaseViewModel);
-  AddressValidateViewModel.prototype.viewTmpl = 'tmpl-address_validate';
+  AddressValidateViewModel.prototype.viewTmpl = 'tmpl-acct-default-address_validate';
 
   AddressValidateViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
     var _this = this;

@@ -109,6 +109,11 @@ define('src/u-kov/ukov-prop-array', [
       } else {
         delete _this._ignore;
       }
+      // set ignore on items
+      _this().forEach(function(item) {
+        item.ignore(ignoreVal, false);
+      });
+      // update self
       _this.update(!allowParentUpdate);
     }
     return !!_this._ignore;

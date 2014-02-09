@@ -1,8 +1,8 @@
 define('src/core/base.vm', [
-  'src/core/mixin.load',
+  'src/core/mixinLoad',
   'ko'
 ], function(
-  mixin_load,
+  mixinLoad,
   ko
 ) {
   "use strict";
@@ -15,16 +15,13 @@ define('src/core/base.vm', [
 
     // sub-classes should call this manually
     // if they want the load functionality
-    // _this.initMixinLoad();
+    // _this.mixinLoad();
 
     _this.active = ko.observable(false);
   }
 
-  //
-  // mixins:
-  //
-  // load function
-  mixin_load(BaseViewModel.prototype);
+  // set function that adds load functionality
+  BaseViewModel.prototype.mixinLoad = mixinLoad;
 
 
   BaseViewModel.prototype.name = null;
@@ -42,6 +39,40 @@ define('src/core/base.vm', [
     return vm.viewTmpl;
   };
 
+  // this will be over written if mixinLoad is called
+  BaseViewModel.prototype.load = function(routeData, extraData, cb) {
+    cb();
+  };
+  // activate can be async or synchronous depending
+  // on whether mixinLoad has been called or not
+  BaseViewModel.prototype.activate = function(routeCtx) {
+    var _this = this;
+
+    // immdediately set as active
+    _this.active(true);
+    // store last route
+    _this._lastRouteData = routeCtx.routeData;
+    // load self
+    _this.load(routeCtx.routeData, null, function() {
+      // check if routeCtx is still active
+      if (!routeCtx.active()) {
+        return;
+      }
+      // active this controller
+      _this.onActivate(routeCtx);
+      // we're done with activating
+      routeCtx.done();
+    });
+  };
+  BaseViewModel.prototype.onActivate = function( /*routeCtx*/ ) {};
+
+  // synchronous
+  BaseViewModel.prototype.deactivate = function() {
+    var _this = this;
+    _this.onDeactivate();
+    _this.active(false);
+  };
+  BaseViewModel.prototype.onDeactivate = function() {};
 
 
   //

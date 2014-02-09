@@ -33,7 +33,7 @@ define('src/core/router', [
     }
 
     function changePath() {
-      _this.goToPath(_this.getPath(), false);
+      _this.goToPath(_this.getPath(), null, false);
     }
 
     // check the user is logged in
@@ -56,7 +56,7 @@ define('src/core/router', [
     });
   };
   Router.prototype.useDestPath = function() {
-    this.goToPath(this.destPath, false);
+    this.goToPath(this.destPath, null, false);
     this.destPath = null;
   };
 
@@ -90,7 +90,7 @@ define('src/core/router', [
     return hash;
   };
 
-  Router.prototype.goToPath = function(path, allowHistory) {
+  Router.prototype.goToPath = function(path, extraData, allowHistory) {
     var _this = this,
       user = _this.getUser(),
       routes = user ? _this.routes : _this.anonRoutes,
@@ -120,7 +120,7 @@ define('src/core/router', [
     // set path before the route is activated
     _this.setPath(path, allowHistory);
     // activate the route
-    _this.currRouteCtx = route.activate(path, function onActivated(pathTaken) {
+    _this.currRouteCtx = route.activate(path, extraData, function onActivated(pathTaken) {
       if (pathTaken !== path) {
         // set pathTaken in address bar
         _this.setPath(pathTaken, false);
@@ -129,13 +129,13 @@ define('src/core/router', [
 
     showElements(user, route.name);
   };
-  Router.prototype.goTo = function(routeName, routeData, allowHistory) {
+  Router.prototype.goTo = function(routeName, routeData, extraData, allowHistory) {
     var _this = this,
       route = _this.routeMap[routeName];
     if (!route) {
       throw new Error('no route named ' + routeName);
     }
-    return _this.goToPath(route.toPath(routeData), allowHistory);
+    return _this.goToPath(route.toPath(routeData), extraData, allowHistory);
   };
 
 

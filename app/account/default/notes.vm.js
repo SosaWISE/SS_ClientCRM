@@ -1,10 +1,9 @@
-define('src/account/notes.vm', [
+define('src/account/default/notes.vm', [
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/ukov',
   'ko',
   'src/core/combo.vm',
-  'src/core/mixin.load',
   'src/dataservice',
   'src/core/notify',
   'src/core/utils',
@@ -15,7 +14,6 @@ define('src/account/notes.vm', [
   ukov,
   ko,
   ComboViewModel,
-  mixin_load,
   dataservice,
   notify,
   utils,
@@ -68,7 +66,7 @@ define('src/account/notes.vm', [
     NotesViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, ['id']);
 
-    _this.initMixinLoad();
+    _this.mixinLoad();
 
     _this.note = ukov.wrap('', schemaNote);
     _this.data = ukov.wrap({
@@ -225,9 +223,9 @@ define('src/account/notes.vm', [
     });
   }
   utils.inherits(NotesViewModel, BaseViewModel);
-  NotesViewModel.prototype.viewTmpl = 'tmpl-notes';
+  NotesViewModel.prototype.viewTmpl = 'tmpl-acct-default-notes';
 
-  NotesViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  NotesViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
     load_departments(_this.departmentsCvm, join.add());
     load_notes(_this.id, _this.notesGvm, join.add());

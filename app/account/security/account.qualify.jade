@@ -1,15 +1,18 @@
 div(class="account-info")
-  div(class="col",style="margin-left:10px;margin-right:30px;")
+  div(class="col")
     div(class="section",data-bind="cmd:cmdFindRep,toggle:{empty:!repModel()}")
       span(class="title") Sales Rep
       div(class="contents",data-bind="if:repModel")
-        div(data-bind="template:{data:repModel,name:'tmpl-rep_info'}")
+        div(data-bind="template:{data:repModel,name:'tmpl-acct-default-rep_info'}")
     div(class="section",data-bind="cmd:cmdAddress,toggle:{empty:!addressModel()}")
       span(class="title") Premise
       div(class="contents",data-bind="if:addressModel")
-        div(data-bind="template:{data:addressModel,name:'tmpl-address'}")
+        div(data-bind="template:{data:addressModel,name:'tmpl-acct-default-address'}")
     div(class="section",data-bind="cmd:cmdCustomer,toggle:{empty:!customerModel()}")
       span(class="title") Customer
       div(class="contents",data-bind="if:customerModel()&&creditModel()")
-        div(data-bind="template:{name:'tmpl-credit',data:creditModel}")
-        div(data-bind="template:{name:'tmpl-customer',data:customerModel}")
+        div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditModel}")
+        div(data-bind="template:{name:'tmpl-acct-default-customer',data:customerModel}")
+
+  div(class="actions")
+    span(class="btn",tabindex="0",data-bind="cmd:cmdCreateAccount") Create Account

@@ -103,6 +103,11 @@ define('src/u-kov/ukov-model', [
       } else {
         delete _this._ignore;
       }
+      // set ignore on fields
+      Object.keys(_this.doc).forEach(function(key) {
+        _this[key].ignore(ignoreVal, false);
+      });
+      // update self
       _this.update(!allowParentUpdate && _this.parentModel);
     }
     return !!_this._ignore;

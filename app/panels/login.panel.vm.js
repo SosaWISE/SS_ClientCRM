@@ -74,7 +74,7 @@ define('src/panels/login.panel.vm', [
   // members
   //
 
-  LoginViewModel.prototype.onLoad = function(routeData, join) { // override me
+  LoginViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
     join = join;
   };
   LoginViewModel.prototype.onActivate = function(routeData) {

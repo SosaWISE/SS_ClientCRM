@@ -17,6 +17,7 @@ define('src/dataservices/maincore', [
       'notecategory1',
       'notecategory2',
       'notetypes',
+      'localizations'
     ].forEach(function(collectionName) {
         result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
       });

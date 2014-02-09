@@ -58,6 +58,7 @@ define('src/core/layers.vm', [
   function LayersViewModel(options) {
     var _this = this;
     LayersViewModel.super_.call(_this, options);
+    BaseViewModel.ensureProps(_this, ['controller']);
 
     _this.showLayers = ko.observableArray();
     _this.alertLayers = ko.observableArray();
@@ -66,13 +67,13 @@ define('src/core/layers.vm', [
   LayersViewModel.prototype.viewTmpl = 'tmpl-layers';
   LayersViewModel.prototype.focus = function() {}; // default to doing nothing
 
-  LayersViewModel.prototype.show = function(viewModel, onClose) {
+  LayersViewModel.prototype.show = function(viewModel, onClose, routeData) {
     var _this = this;
-    return add(_this, _this.showLayers, viewModel, onClose);
+    return add(_this, _this.showLayers, viewModel, onClose, routeData);
   };
-  LayersViewModel.prototype.alert = function(viewModel, onClose) {
+  LayersViewModel.prototype.alert = function(viewModel, onClose, routeData) {
     var _this = this;
-    return add(_this, _this.alertLayers, viewModel, onClose);
+    return add(_this, _this.alertLayers, viewModel, onClose, routeData);
   };
   LayersViewModel.prototype.closeTop = function() {
     var _this = this,
@@ -94,8 +95,8 @@ define('src/core/layers.vm', [
     return getTopLayer(_this.alertLayers()) || getTopLayer(_this.showLayers());
   };
 
-  function add(layersVM, layers, viewModel, onClose) {
-    var lastActive, layer, subscription, prevVM;
+  function add(layersVm, layers, viewModel, onClose, routeData) {
+    var lastActive, layer, subscription, prevCtx;
 
     lastActive = document.activeElement;
     layer = {
@@ -105,12 +106,15 @@ define('src/core/layers.vm', [
           subscription.dispose();
           subscription = null;
         }
-        var topLayer = layersVM.getTopLayer(),
+        var topLayer = layersVm.getTopLayer(),
           index = layers.indexOf(layer);
 
         //@TODO: check to see if the layer can be closed
         if (index > -1) {
           layers.splice(index, 1);
+        }
+        if (prevCtx) {
+          prevCtx.dispose();
         }
         if (typeof(onClose) === 'function') {
           onClose(result);
@@ -123,7 +127,7 @@ define('src/core/layers.vm', [
             lastActive.focus();
           } else {
             // try to focus the next top layer
-            layersVM.focus();
+            layersVm.focus();
           }
         }
       },
@@ -138,23 +142,51 @@ define('src/core/layers.vm', [
     });
 
     subscription = layer.vm.subscribe(function(vm) {
-      if (prevVM) {
-        delete prevVM.layersVM;
-        delete prevVM.layer;
-        prevVM.active(false);
+      var ctx = createContext(vm, routeData || layersVm.controller.getRouteData(), null, function() {
+        console.log('activated layer');
+      });
+
+      if (prevCtx) {
+        prevCtx.dispose();
       }
-      vm.layersVM = layersVM;
+      prevCtx = ctx;
+
+      vm.layersVm = layersVm;
       vm.layer = layer;
-      vm.active(true);
-      prevVM = vm;
+      vm.activate(ctx);
     });
     layer.vm(viewModel);
     layers.push(layer);
 
     // ensure nothing under the layer has focus
-    layersVM.focus();
+    layersVm.focus();
 
     return layer;
+  }
+
+  // mimic how the router works
+  function createContext(vm, routeData, extraData, cb) {
+    var disposed,
+      routeCtx;
+    if (routeData) {
+      routeCtx = {
+        routeData: routeData,
+        extraData: extraData,
+        dispose: function() {
+          disposed = true;
+          delete vm.layersVm;
+          delete vm.layer;
+          vm.deactivate();
+        },
+        active: function() {
+          return !disposed;
+        },
+        done: function() {
+          cb();
+        },
+      };
+      return routeCtx;
+    }
   }
 
   return LayersViewModel;

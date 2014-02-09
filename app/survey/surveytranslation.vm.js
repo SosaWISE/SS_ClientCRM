@@ -28,7 +28,7 @@ define('src/survey/surveytranslation.vm', [
     //
     _this.cmdToggle = ko.command(function(cb) {
       if (!_this.active()) {
-        _this.load({}, function() {
+        _this.load({}, null, function() {
           _this.active(true);
           cb();
         });
@@ -41,7 +41,7 @@ define('src/survey/surveytranslation.vm', [
   utils.inherits(SurveyTranslationViewModel, ControllerViewModel);
   SurveyTranslationViewModel.prototype.viewTmpl = 'tmpl-surveytranslation';
 
-  SurveyTranslationViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  SurveyTranslationViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
 

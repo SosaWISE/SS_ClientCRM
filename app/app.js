@@ -72,7 +72,7 @@ define('src/app', [
     if (panelVM.active()) {
       return;
     }
-    panelVM.goTo(panelVM.getRouteData(), true);
+    panelVM.goTo(panelVM.getRouteData(), null, true);
   };
 
 

@@ -15,7 +15,7 @@ define('src/panels/home.panel.vm', [
   }
   utils.inherits(HomePanelViewModel, ControllerViewModel);
 
-  HomePanelViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  HomePanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
     notify.notify('info', '/surveys/1', 0, {
       view: function() {

@@ -1,4 +1,4 @@
-define('src/core/mixin.load', [
+define('src/core/mixinLoad', [
   'src/core/helpers',
   'src/core/joiner',
   'src/core/notify',
@@ -9,26 +9,27 @@ define('src/core/mixin.load', [
 ) {
   "use strict";
 
+  function onLoad_no_op( /*routeData, join*/ ) {}
 
-  function initMixinLoad() {
+  function mixinLoad() {
     /* jshint validthis:true */
     var _this = this;
+    _this.load = load;
+    if (typeof(_this.onLoad) !== 'function') {
+      // only define if it hasn't already been defined
+      _this.onLoad = onLoad_no_op;
+    }
     _this.loader = helpers.onetimer();
     _this.loading = _this.loader.loading;
     _this.loaded = _this.loader.loaded;
     _this.loadErr = _this.loader.loadErr;
   }
 
-  function load(routeData, cb) {
+  function load(routeData, extraData, cb) {
     /* jshint validthis:true */
     var _this = this,
       loader = _this.loader,
       join;
-
-    if (!loader) {
-      console.warn('call initMixinLoad before calling load');
-      return;
-    }
 
     // call onLoad if it hasn't been called yet
     if (!loader.loaded() && !loader.loading()) {
@@ -36,7 +37,7 @@ define('src/core/mixin.load', [
       loader(cb);
 
       join = joiner();
-      _this.onLoad(routeData, join);
+      _this.onLoad(routeData, extraData, join);
       join.when(function(errResp) {
         if (errResp) {
           notify.notify('error', errResp.Message);
@@ -50,17 +51,5 @@ define('src/core/mixin.load', [
     }
   }
 
-  function onLoad_no_op( /*routeData, join*/ ) {}
-
-
-  // parameter can be _this or prototype
-  return function mixin_load(_this) {
-    _this.initMixinLoad = initMixinLoad;
-    _this.load = load;
-    if (typeof(_this.onLoad) !== 'function') {
-      // only define if it hasn't already been defined
-      _this.onLoad = onLoad_no_op;
-    }
-    return _this;
-  };
+  return mixinLoad;
 });

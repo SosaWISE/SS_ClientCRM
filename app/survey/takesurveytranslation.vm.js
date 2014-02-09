@@ -37,7 +37,7 @@ define('src/survey/takesurveytranslation.vm', [
       }
     };
     _this.clickTake = function() {
-      if (!_this.layersVM) {
+      if (!_this.layersVm) {
         return;
       }
       var vm, locale = _this.localeComboVM.selectedValue();
@@ -65,10 +65,7 @@ define('src/survey/takesurveytranslation.vm', [
           },
         },
       });
-      vm.load(_this.routeData, function() {
-        //
-      });
-      _this.layersVM.show(vm);
+      _this.layersVm.show(vm, null, _this.routeData);
       // _this.clickCancel();
     };
   }

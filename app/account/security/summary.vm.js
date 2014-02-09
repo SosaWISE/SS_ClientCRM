@@ -17,7 +17,9 @@ define('src/account/security/summary.vm', [
     var _this = this;
     SummaryViewModel.super_.call(_this, options);
 
-    _this.layersVm = new LayersViewModel();
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
+    });
 
     _this.emcontactsVm = new EmContactsViewModel({
       layersVm: _this.layersVm,
@@ -30,7 +32,7 @@ define('src/account/security/summary.vm', [
   utils.inherits(SummaryViewModel, ControllerViewModel);
   SummaryViewModel.prototype.viewTmpl = 'tmpl-security-summary';
 
-  SummaryViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  SummaryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var cb = join.add();
     setTimeout(function() {
       cb();

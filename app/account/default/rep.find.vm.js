@@ -1,4 +1,4 @@
-define('src/rep.find.vm', [
+define('src/account/default/rep.find.vm', [
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
@@ -17,22 +17,15 @@ define('src/rep.find.vm', [
 
   var schema = {
     _model: true,
-    SalesRepID: {
+    CompanyID: {
       converter: ukov.converters.toUpper(),
       validators: [
         ukov.validators.isRequired('Company ID is required'),
-        ukov.validators.isPattern(/^[a-z]{4}[0-9]{3}$/i, 'invalid Company ID. expected format: NAME001'),
+        ukov.validators.isPattern(/^[a-z]{4}[0-9]{3}$/i, 'Invalid Company ID. Expected format: AAAA000'),
       ],
     },
     // SeasonId: {},
     // TeamLocationId: {},
-
-    img: {},
-    fullname: {},
-    season: {},
-    office: {},
-    phone: {},
-    email: {},
   };
 
   function RepFindViewModel(options) {
@@ -41,13 +34,15 @@ define('src/rep.find.vm', [
 
     _this.title = _this.title || 'Sales Rep';
     _this.focusFirst = ko.observable(false);
-    _this.repData = ukov.wrap({}, schema);
+    _this.repData = ukov.wrap({
+      CompanyID: '',
+    }, schema);
     _this.loading = ko.observable(false);
     _this.loaded = ko.observable(false);
     _this.repResult = ko.observable(null);
 
     /////TESTING//////////////////////
-    _this.repData.SalesRepID('sosa001');
+    _this.repData.CompanyID('sosa001');
     /////TESTING//////////////////////
 
     //
@@ -59,35 +54,28 @@ define('src/rep.find.vm', [
       }
     };
     _this.cmdFind = ko.command(function(cb) {
-      _this.repData.SalesRepID.validate();
-      if (!_this.repData.SalesRepID.isValid()) {
-        notify.notify('warn', _this.repData.SalesRepID.errMsg(), 7);
+      _this.repData.validate();
+      if (!_this.repData.isValid()) {
+        notify.notify('warn', _this.repData.errMsg(), 7);
         return cb();
       }
 
       _this.loaded(false);
-      //var model = _this.repData.getValue();
+      var model = _this.repData.getValue();
+      _this.repData.markClean();
+      _this.repResult(null);
       dataservice.qualify.salesrep.read({
-          id: _this.repData.getValue().SalesRepID
-        }, null,
-        function(err, resp) {
-          if (err) {
-            notify.notify('warn', err.Message, 10);
-            _this.focusFirst(true);
-          } else {
-            _this.repData.markClean(resp.Value, true);
-            _this.repResult({
-              img: resp.Value.ImagePath,
-              fullname: resp.Value.FirstName + ' ' + resp.Value.LastName,
-              season: resp.Value.Seasons[0].SeasonName,
-              office: '[Not Set Yet]',
-              phone: resp.Value.PhoneCell,
-              email: resp.Value.Email
-            });
-            _this.loaded(true);
-          }
-          cb();
-        });
+        id: model.CompanyID
+      }, null, function(err, resp) {
+        if (err) {
+          notify.notify('warn', err.Message, 10);
+          _this.focusFirst(true);
+        } else if (resp.Value) {
+          _this.repResult(resp.Value);
+          _this.loaded(true);
+        }
+        cb();
+      });
     });
 
     _this.loading = _this.cmdFind.busy;
@@ -102,7 +90,7 @@ define('src/rep.find.vm', [
     });
   }
   utils.inherits(RepFindViewModel, BaseViewModel);
-  RepFindViewModel.prototype.viewTmpl = 'tmpl-rep_find';
+  RepFindViewModel.prototype.viewTmpl = 'tmpl-acct-default-rep_find';
   RepFindViewModel.prototype.width = 400;
   RepFindViewModel.prototype.height = 'auto';
 

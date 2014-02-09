@@ -1,5 +1,5 @@
 define('src/account/security/systemdetails.vm', [
-  'src/rep.find.vm',
+  'src/account/default/rep.find.vm',
   'src/account/security/emcontacts.vm',
   'ko',
   'src/core/utils',
@@ -46,7 +46,7 @@ define('src/account/security/systemdetails.vm', [
   utils.inherits(SystemDetailsViewModel, ControllerViewModel);
   SystemDetailsViewModel.prototype.viewTmpl = 'tmpl-security-systemdetails';
 
-  SystemDetailsViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  SystemDetailsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
     setTimeout(function() {
