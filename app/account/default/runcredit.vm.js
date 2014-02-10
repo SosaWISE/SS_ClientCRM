@@ -220,6 +220,29 @@ define('src/account/default/runcredit.vm', [
         _this.layer.close(result);
       }
     };
+
+    _this.clickCreate = function () {
+      if (_this.layer){
+        if (_this.creditResult()){
+        var result,
+          model = {leadId: _this.creditResult().LeadId};
+          dataservice.monitoringstation.accounts.post(null, model, null, function(err,resp) {
+            if (err) {
+              notify.notify('warn', resp.Message, 10);
+              return;
+            }
+            result = {
+              customer: _this.data.model,
+              creditResult: _this.creditResult(),
+              accountInfo: resp
+            };
+
+          _this.layer.close(result);
+          });
+        }
+      }
+    };
+
     _this.cmdRun = ko.command(function(cb) {
       _this.data.validate();
       _this.data.update();
