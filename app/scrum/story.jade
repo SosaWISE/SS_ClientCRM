@@ -5,6 +5,8 @@ div(class="story bl-drag-item",data-bind="drag:{}")
     div(class="bl-item")
       div(class="first")
         span(class="drag-hdl")
+        span(class="btn edit",data-bind="cmd:cmdEdit") Edit
+        span(class="btn add",data-bind="cmd:cmdEdit") Child
       div(class="middle")
         //- span(class="title",data-bind="text:item.ID")
         span(class="title",data-bind="text:item.Name")

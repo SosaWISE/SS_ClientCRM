@@ -1,11 +1,13 @@
 define('src/scrum/backlog.vm', [
   'src/scrum/backlogdata',
   'src/dataservice',
+  'src/core/layers.vm',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
   BacklogData,
   dataservice,
+  LayersViewModel,
   utils,
   ControllerViewModel
 ) {
@@ -16,7 +18,13 @@ define('src/scrum/backlog.vm', [
     BacklogViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['repo']);
 
-    _this.bd = new BacklogData();
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
+    });
+    _this.bd = new BacklogData({
+      layersVm: _this.layersVm,
+      isBacklog: true,
+    });
 
     //
     // events
@@ -25,7 +33,7 @@ define('src/scrum/backlog.vm', [
   utils.inherits(BacklogViewModel, ControllerViewModel);
   BacklogViewModel.prototype.viewTmpl = 'tmpl-scrum_backlog';
 
-  BacklogViewModel.prototype.onLoad = function(routeData, join) {
+  BacklogViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this,
       epics, storys;
 
@@ -56,7 +64,7 @@ define('src/scrum/backlog.vm', [
 
   function load_epics(setter, join) {
     var cb = join.add();
-    dataservice.scrum.scopes.read({}, setter, function(err, resp) {
+    dataservice.scrum.epics.read({}, setter, function(err, resp) {
       cb(err, resp);
     });
   }

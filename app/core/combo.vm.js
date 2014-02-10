@@ -209,7 +209,11 @@ define('src/core/combo.vm', [
   ComboViewModel.prototype.setList = function(list) {
     list = list || [];
     var _this = this,
-      wrapList = new Array(list.length);
+      wrapList = new Array(list.length),
+      selectedValue = _this.selectedValue.peek();
+
+    // un-set selected value
+    _this.selectedValue(null);
 
     list.forEach(function(item, index) {
       wrapList[index] = wrapItem(item, _this.fields);
@@ -220,9 +224,8 @@ define('src/core/combo.vm', [
     _this.list(wrapList);
     filterList(_this.list(), _this.filterText());
 
-    // reset selected value
-    _this.selectedValue(null);
-    _this.deactivateCurrent();
+    // re-set selected value
+    _this.selectedValue(selectedValue);
   };
   ComboViewModel.prototype.addItem = function(item) {
     var _this = this;

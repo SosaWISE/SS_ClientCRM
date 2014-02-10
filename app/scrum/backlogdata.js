@@ -1,10 +1,13 @@
 define('src/scrum/backlogdata', [
+  'src/scrum/story.editor.vm',
   'src/core/relativesort',
   'src/core/treehelper',
   'src/core/notify',
   'ko',
   'src/core/utils',
+  'src/core/ko.command', // no reference needed
 ], function(
+  StoryEditorViewModel,
   RelativeSort,
   treehelper,
   notify,
@@ -108,12 +111,16 @@ define('src/scrum/backlogdata', [
       parentId, prefix;
     switch (_this.type) {
       case 'epic':
-        parentId = item.ParentId;
-        prefix = 'E';
+        if (_this.container.isBacklog) {
+          parentId = item.ParentId;
+          prefix = 'E';
+        }
         break;
       case 'story':
-        parentId = item.EpicId;
-        prefix = 'E';
+        if (_this.container.isBacklog) {
+          parentId = item.EpicId;
+          prefix = 'E';
+        }
         break;
       case 'step':
         parentId = item.ParentId;
@@ -276,6 +283,25 @@ define('src/scrum/backlogdata', [
         return tasks;
       },
     });
+
+    //
+    // events
+    //
+    _this.cmdEdit = ko.command(function(cb) {
+      var vm = new StoryEditorViewModel({
+        item: utils.clone(_this.item),
+        epics: _this.container.getEpics(),
+        sprints: [],
+      });
+      _this.container.layersVm.show(vm, function(result) {
+        console.log(result);
+        if (result) {
+          //@TODO: use correct update function
+          _this.container.updateItem(result, 'story');
+        }
+        cb();
+      });
+    });
   }
   utils.inherits(StoryViewModel, BaseItemViewModel);
   StoryViewModel.prototype.onUpdate = function(item) {
@@ -313,9 +339,13 @@ define('src/scrum/backlogdata', [
       testVm.item.StoryId === _this.item.StoryId;
   };
 
-  function BacklogData() {
+  function BacklogData(options) {
     var _this = this;
     // EpicViewModel.super_.call(_this, null, null, 'backlog');
+    options = options || {};
+
+    _this.layersVm = options.layersVm;
+    _this.isBacklog = options.isBacklog || false;
 
     _this._initialized = false;
     _this.sidToVmMap = {};
@@ -492,6 +522,24 @@ define('src/scrum/backlogdata', [
     });
 
     _this.childs(childs);
+  };
+
+  function addEpics(item, epics) {
+    item.childs().some(function(vm) {
+      if (vm.type === 'epic') {
+        epics.push({
+          ID: vm.item.ID,
+          Name: vm.item.Name,
+        });
+        addEpics(vm, epics);
+      }
+    });
+  }
+  BacklogData.prototype.getEpics = function() {
+    var _this = this,
+      epics = [];
+    addEpics(_this, epics);
+    return epics;
   };
 
   function buildStorySteps(_this, story) {

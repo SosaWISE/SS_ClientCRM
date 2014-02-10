@@ -12,3 +12,5 @@ div(class="scrum-backlog")
             <!-- ko foreach:childs -->
             div(data-bind="template:{name:viewTmpl}")
             <!-- /ko -->
+
+div(class="layers",data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

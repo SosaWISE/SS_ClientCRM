@@ -4,6 +4,22 @@
     background: #fff;
   }
 
+  .btn {
+    font-size: 0.8em;
+    position: relative;
+
+    &.edit {
+      padding: 0px 4px;
+    }
+    &.add {
+      padding: 0px 4px 0px 19px;
+
+      &:before {
+        .mixin-edit-btn("\e016", 1px, -8px, 13px);
+      }
+    }
+  }
+
   .drag-hdl {
     cursor: url(/stuff/img/cursor-grab-up.cur), default;
     &:before {
@@ -20,6 +36,9 @@
       display:inline-block;
       vertical-align: top;
     }
+  }
+  .first {
+    white-space: nowrap;
   }
   .middle {
     width: 100%;
@@ -65,7 +84,9 @@
     }
 
     .first {
-      padding: 0px 3px;
+      span {
+        margin-right: 3px;
+      }
       vertical-align: top;
     }
     .middle {

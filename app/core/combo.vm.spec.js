@@ -48,6 +48,30 @@ define('src/core/combo.vm.spec', [
       expect(c.selectedValue()).toBe(null);
     });
 
+    describe('setList', function() {
+      it('should reselect selected item', function() {
+        var item = {
+          value: 2,
+          text: '2b',
+        };
+        c.setList([
+          {
+            value: 2,
+            text: '2a',
+          },
+        ]);
+        c.selectedValue(2);
+        c.setList([
+          {
+            value: 1,
+            text: '1a',
+          },
+          item,
+        ]);
+        expect(c.selectedValue()).toBe(2);
+        expect(c.selected().item).toBe(item);
+      });
+    });
     describe('filterText', function() {
       beforeEach(function() {
         c.filterText('bce');

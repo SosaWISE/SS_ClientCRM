@@ -79,11 +79,11 @@ define('mock/scrum/scrumservice.mock', [
       }
       send(result, setter, cb);
     };
-    dataservice.scrum.scopes.read = function(params, setter, cb) {
+    dataservice.scrum.epics.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:
-          result = scopes;
+          result = epics;
           break;
       }
       send(result, setter, cb);
@@ -140,8 +140,8 @@ define('mock/scrum/scrumservice.mock', [
 
 
 
-    dataservice.scrum.scopes.save = function(data, setter, cb) {
-      send(createOrUpdate(scopes, 'ID', '@INC(scopes)', {
+    dataservice.scrum.epics.save = function(data, setter, cb) {
+      send(createOrUpdate(epics, 'ID', '@INC(epics)', {
         ID: data.ID,
         Name: data.Name,
       }), setter, cb);
@@ -235,7 +235,7 @@ define('mock/scrum/scrumservice.mock', [
   // data used in mock function
   var persons,
     sprints,
-    scopes,
+    epics,
     storytypes,
     storys,
     tasksteps,
@@ -262,11 +262,11 @@ define('mock/scrum/scrumservice.mock', [
     ],
   }).list;
 
-  scopes = mockery.fromTemplate({
+  epics = mockery.fromTemplate({
     'list|2-2': [
       {
         ParentId: null,
-        ID: '@INC(scopes)',
+        ID: '@INC(epics)',
         Name: '@SCOPE_PNAME',
         SortOrder: '@NUMBER(0,100000)',
       },
@@ -274,8 +274,8 @@ define('mock/scrum/scrumservice.mock', [
   }).list.concat(mockery.fromTemplate({
     'list|5-5': [
       {
-        ParentId: '@REF_INC(scopes)',
-        ID: '@INC(scopes)',
+        ParentId: '@REF_INC(epics)',
+        ID: '@INC(epics)',
         Name: '@SCOPE_CNAME',
         SortOrder: '@NUMBER(0,100000)',
       },
@@ -295,9 +295,9 @@ define('mock/scrum/scrumservice.mock', [
       {
         ID: '@INC(storys)',
         StoryTypeId: '@REF_INC(storytypes)',
-        SprintId: 2,
+        SprintId: 1,
         PersonId: '@REF_INC(persons)',
-        ScopeId: '@REF_INC(scopes)',
+        EpicId: '@REF_INC(epics)',
         Name: '@TEXT(20,30)',
         Description: '@TEXT(50,80)',
         Points: '@STORY_POINTS',
@@ -314,7 +314,7 @@ define('mock/scrum/scrumservice.mock', [
         StoryTypeId: '@REF_INC(storytypes)',
         SprintId: null,
         PersonId: null,
-        ScopeId: '@FK(scopes)',
+        EpicId: '@FK(epics)',
         Name: '@TEXT(20,30)',
         Description: '@TEXT(50,80)',
         Points: '@STORY_POINTS',

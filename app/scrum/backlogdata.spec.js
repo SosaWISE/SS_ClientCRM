@@ -78,7 +78,9 @@ define('src/scrum/backlogdata.spec', [
         },
       ];
 
-      bd = new BacklogData();
+      bd = new BacklogData({
+        isBacklog: true,
+      });
       bd.init(epics, storys);
       // console.log(bd);
     });

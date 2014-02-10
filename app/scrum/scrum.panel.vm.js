@@ -39,7 +39,7 @@ define('src/scrum/scrum.panel.vm', [
   utils.inherits(ScrumPanelViewModel, ControllerViewModel);
   ScrumPanelViewModel.prototype.viewTmpl = 'tmpl-panel_scrum';
 
-  ScrumPanelViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  ScrumPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
 

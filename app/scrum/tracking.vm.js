@@ -35,7 +35,7 @@ define('src/scrum/tracking.vm', [
   utils.inherits(TrackingViewModel, ControllerViewModel);
   TrackingViewModel.prototype.viewTmpl = 'tmpl-scrum_tracking';
 
-  TrackingViewModel.prototype.onLoad = function(routeData, join) { // overrides base
+  TrackingViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
     _this.sprint(_this.repo.storyRepo.list()[0]);
     join.add()();

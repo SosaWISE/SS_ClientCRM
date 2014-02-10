@@ -1,0 +1,38 @@
+div(class="story-editor")
+  h2(class="title",data-bind="text:title")
+  ul(class="edit-form")
+    li
+      span(class="label") StoryTypeId
+      div(data-bind="template:{name:data.StoryTypeCvm.viewTmpl,data:data.StoryTypeCvm}")
+    li
+      span(class="label") Name
+      input(type="text", placeholder="",
+        data-bind="ukov:data.Name,value:data.Name,valueUpdate:'keyup'")
+    li
+      span(class="label") Description
+      textarea(placeholder="",
+        data-bind="ukov:data.Description,value:data.Description,valueUpdate:'keyup'")
+    li
+      span(class="label") Points
+      div(data-bind="template:{name:data.PointsCvm.viewTmpl,data:data.PointsCvm}")
+    li
+      span(class="label") Person
+      div(data-bind="template:{name:data.PersonCvm.viewTmpl,data:data.PersonCvm}")
+    li
+      span(class="label") Sprint
+      div(data-bind="template:{name:data.SprintCvm.viewTmpl,data:data.SprintCvm}")
+    li
+      span(class="label") Epic
+      div(data-bind="template:{name:data.EpicCvm.viewTmpl,data:data.EpicCvm}")
+
+    //- li
+      span(class="label") asdf
+      input(type="text", placeholder="",
+        data-bind="ukov:data.asdf,value:data.asdf,valueUpdate:'keyup'")
+    //- li
+      span(class="label") asdf
+      div(data-bind="template:{name:asdfCvm.viewTmpl,data:asdfCvm}")
+
+  div(class="actions")
+    span(class="btn-bg", tabindex="0", data-bind="cmd:cmdSave") Ok
+    span(class="btn-bg", tabindex="0", data-bind="cmd:clickClose") Cancel
