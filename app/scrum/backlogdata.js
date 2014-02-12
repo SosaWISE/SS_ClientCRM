@@ -1,4 +1,6 @@
 define('src/scrum/backlogdata', [
+  'src/scrum/epic.editor.vm',
+  'src/scrum/task.editor.vm',
   'src/scrum/story.editor.vm',
   'src/core/relativesort',
   'src/core/treehelper',
@@ -7,6 +9,8 @@ define('src/scrum/backlogdata', [
   'src/core/utils',
   'src/core/ko.command', // no reference needed
 ], function(
+  EpicEditorViewModel,
+  TaskEditorViewModel,
   StoryEditorViewModel,
   RelativeSort,
   treehelper,
@@ -127,7 +131,7 @@ define('src/scrum/backlogdata', [
         prefix = 'US';
         break;
       case 'task':
-        parentId = item.TaskStepId;
+        parentId = item.TaskStepSid;
         prefix = 'TS';
         break;
       default:
@@ -255,6 +259,19 @@ define('src/scrum/backlogdata', [
 
     mixinComputeLength(_this);
     mixinComputePoints(_this);
+
+    //
+    // events
+    //
+    _this.cmdEdit = ko.command(function(cb) {
+      _this.container.editItem('epic', null, _this.item, cb);
+    });
+    _this.cmdAddEpic = ko.command(function(cb) {
+      _this.container.editItem('epic', _this.item.ID, null, cb);
+    });
+    _this.cmdAddStory = ko.command(function(cb) {
+      _this.container.editItem('story', _this.item.ID, null, cb);
+    });
   }
   utils.inherits(EpicViewModel, BaseItemViewModel);
   // EpicViewModel.prototype.onUpdate = function(item) {};
@@ -288,19 +305,10 @@ define('src/scrum/backlogdata', [
     // events
     //
     _this.cmdEdit = ko.command(function(cb) {
-      var vm = new StoryEditorViewModel({
-        item: utils.clone(_this.item),
-        epics: _this.container.getEpics(),
-        sprints: [],
-      });
-      _this.container.layersVm.show(vm, function(result) {
-        console.log(result);
-        if (result) {
-          //@TODO: use correct update function
-          _this.container.updateItem(result, 'story');
-        }
-        cb();
-      });
+      _this.container.editItem('story', null, _this.item, cb);
+    });
+    _this.cmdAddTask = ko.command(function(cb) {
+      _this.container.editItem('task', _this.item.ID, null, cb);
     });
   }
   utils.inherits(StoryViewModel, BaseItemViewModel);
@@ -331,6 +339,13 @@ define('src/scrum/backlogdata', [
       throw new Error('item must be a task');
     }
     TaskViewModel.super_.call(_this, container, item, type, false);
+
+    //
+    // events
+    //
+    _this.cmdEdit = ko.command(function(cb) {
+      _this.container.editItem('task', null, _this.item, cb);
+    });
   }
   utils.inherits(TaskViewModel, BaseItemViewModel);
   TaskViewModel.prototype.onAccept = function(testVm) {
@@ -358,6 +373,16 @@ define('src/scrum/backlogdata', [
       },
     });
     _this.childs = ko.observableArray();
+
+    //
+    // events
+    //
+    _this.cmdAddEpic = ko.command(function(cb) {
+      _this.editItem('epic', null, null, cb);
+    });
+    _this.cmdAddStory = ko.command(function(cb) {
+      _this.editItem('story', null, null, cb);
+    });
   }
   utils.inherits(BacklogData, BaseItemViewModel);
   BacklogData.prototype.removeChild = BaseItemViewModel.prototype.removeChild;
@@ -367,8 +392,8 @@ define('src/scrum/backlogdata', [
     // ensure items have correct parent ids
     switch (type) {
       case 'task':
-        if (typeof(item.TaskStepId) === 'number') {
-          item.TaskStepId = item.TaskStepId + '_' + getSidPrefix('story') + item.StoryId;
+        if (!item.TaskStepSid) {
+          item.TaskStepSid = item.TaskStepId + '_' + getSidPrefix('story') + item.StoryId;
         }
         break;
     }
@@ -540,6 +565,46 @@ define('src/scrum/backlogdata', [
       epics = [];
     addEpics(_this, epics);
     return epics;
+  };
+
+  BacklogData.prototype.makeEditor = function(type, parentId, item) {
+    var vm, _this = this;
+    switch (type) {
+      case 'epic':
+        vm = new EpicEditorViewModel({
+          parentId: parentId,
+          item: utils.clone(item),
+          epics: _this.getEpics(),
+        });
+        break;
+      case 'story':
+        vm = new StoryEditorViewModel({
+          epicId: parentId,
+          item: utils.clone(item),
+          epics: _this.getEpics(),
+          sprints: [], //@TODO
+        });
+        break;
+      case 'task':
+        vm = new TaskEditorViewModel({
+          storyId: parentId,
+          item: item,
+          taskSteps: _this.taskSteps,
+        });
+        break;
+    }
+    return vm;
+  };
+  BacklogData.prototype.editItem = function(type, parentId, item, cb) {
+    var _this = this,
+      vm = _this.makeEditor(type, parentId, item);
+    _this.layersVm.show(vm, function(result) {
+      if (result) {
+        //@TODO: use correct update function
+        _this.updateItem(result, type);
+      }
+      cb();
+    });
   };
 
   function buildStorySteps(_this, story) {

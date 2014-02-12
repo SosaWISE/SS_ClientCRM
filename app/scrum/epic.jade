@@ -5,6 +5,9 @@ div(class="epic bl-drag-item",data-bind="drag:{}")
     div(class="bl-item",data-bind="drop:{accept:'.bl-drag-item',onDrop:'onDropChild'}")
       div(class="first")
         span(class="drag-hdl")
+        span(class="btn edit",tabindex="0",data-bind="cmd:cmdEdit") Edit
+        span(class="btn add",tabindex="0",data-bind="cmd:cmdAddEpic") Epic
+        span(class="btn add",tabindex="0",data-bind="cmd:cmdAddStory") Story
       div(class="middle")
         //- span(class="title",data-bind="text:item.ID")
         span(class="title",data-bind="text:item.Name")

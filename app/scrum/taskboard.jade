@@ -9,9 +9,9 @@ div(class="scrum-track",data-bind="if:sprint")
       span(class="pts",data-bind="text:points")
       span(class="owner") ???
 
-    div(class="tasks-wrap")
+    div(class="steps-wrap")
       //- Steps
-      div(class="tasks",data-bind="foreach:childs")
+      div(class="steps",data-bind="foreach:childs")
         //- Tasks
         //- span(class="title",data-bind="text:item.ID")
         div(class="step",data-bind="foreach:childs,drop:{accept:'.bl-drag-item',onDrop:'onDropChild'}")
@@ -19,12 +19,13 @@ div(class="scrum-track",data-bind="if:sprint")
           div(class="task-wrap bl-drag-item",data-bind="drag:{}")
             div(class="task bl-item-wrap")
               div(class="bl-item-sibling",data-bind="drop:{accept:'.bl-drag-item',onDrop:'onDropSibling'}")
-              div(class="bl-item")
-                div(class="first")
-                  span(class="drag-hdl")
-                div(class="middle")
-                  //- span(class="title",data-bind="text:item.ID")
-                  span(class="title",data-bind="text:item.Name")
-                div(class="last")
+              div(class="bl-item-wrap")
+                div(class="bl-item")
+                  div(class="first")
+                    span(class="drag-hdl")
+                  div(class="middle")
+                    //- span(class="title",data-bind="text:item.ID")
+                    span(class="title",data-bind="text:item.Name")
+                  div(class="last")
 
   <!-- /ko -->

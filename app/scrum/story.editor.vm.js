@@ -1,13 +1,17 @@
 define('src/scrum/story.editor.vm', [
+  'src/dataservice',
   'src/core/combo.vm',
   'src/ukov',
   'ko',
+  'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
 ], function(
+  dataservice,
   ComboViewModel,
   ukov,
   ko,
+  notify,
   utils,
   BaseViewModel
 ) {
@@ -48,17 +52,17 @@ define('src/scrum/story.editor.vm', [
   function StoryEditorViewModel(options) {
     var _this = this;
     StoryEditorViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, []);
+    BaseViewModel.ensureProps(_this, ['epics']);
 
-    _this.title = (options.item ? 'Edit' : 'New') + ' Story';
-    _this.data = ukov.wrap(options.item || {
+    _this.title = (_this.item ? 'Edit' : 'New') + ' Story';
+    _this.data = ukov.wrap(_this.item || {
       StoryTypeId: 1,
       Name: '',
       Description: '',
       Points: null,
       PersonId: null,
       SprintId: null,
-      EpicId: null,
+      EpicId: _this.epicId,
       SortOrder: null,
       IsDeleted: false,
       Version: 1,
@@ -95,22 +99,43 @@ define('src/scrum/story.editor.vm', [
     //
     // events
     //
-    _this.clickClose = function() {
+    _this.cmdSave = ko.command(function(cb) {
+      _this.save(cb);
+    });
+    _this.cmdClose = ko.command(function(cb) {
       if (_this.layer) {
         _this.layer.close(null);
       }
-    };
-    _this.cmdSave = ko.command(function(cb) {
-      if (_this.layer) {
-        _this.layer.close(_this.data.getValue());
-      }
       cb();
+    }, function(busy) {
+      return !busy && !_this.cmdSave.busy();
     });
   }
   utils.inherits(StoryEditorViewModel, BaseViewModel);
   StoryEditorViewModel.prototype.viewTmpl = 'tmpl-scrum_story_editor';
   StoryEditorViewModel.prototype.width = 400;
   StoryEditorViewModel.prototype.height = 'auto';
+
+  StoryEditorViewModel.prototype.save = function(cb) {
+    var _this = this,
+      model;
+    if (!_this.data.isValid()) {
+      notify.notify('warn', _this.data.errMsg(), 7);
+      cb();
+      return;
+    }
+
+    model = _this.data.getValue();
+    _this.data.markClean(model, true);
+    dataservice.scrum.storys.save(model, null, function(err, resp) {
+      if (err) {
+        notify.notify('error', err.Message);
+      } else if (_this.layer) {
+        _this.layer.close(resp.Value);
+      }
+      cb(resp.Value);
+    });
+  };
 
   StoryEditorViewModel.prototype.storyTypeOptions = [
     {

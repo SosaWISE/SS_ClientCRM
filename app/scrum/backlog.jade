@@ -1,14 +1,17 @@
 div(class="scrum-backlog")
-  table(class="fh-wrap")
+  table(class="fh-wrap",data-bind="with:bd")
     tr
       td(class="fh-header")
         | Backlog
+        div
+          span(class="btn add",tabindex="0",data-bind="cmd:cmdAddEpic") Epic
+          span(class="btn add",tabindex="0",data-bind="cmd:cmdAddStory") Story
     tr
       td(class="fh-body")
         div(class="fh-contents")
           //- div(class="slickgrid",data-bind="slickgrid:gvm")
 
-          div(data-bind="with:bd")
+          div()
             <!-- ko foreach:childs -->
             div(data-bind="template:{name:viewTmpl}")
             <!-- /ko -->

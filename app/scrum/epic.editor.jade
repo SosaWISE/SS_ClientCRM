@@ -1,0 +1,14 @@
+div(class="story-editor")
+  h2(class="title",data-bind="text:title")
+  ul(class="edit-form")
+    li
+      span(class="label") Name
+      input(type="text", placeholder="",
+        data-bind="ukov:data.Name,value:data.Name,valueUpdate:'keyup'")
+    li
+      span(class="label") Parent
+      div(data-bind="template:{name:data.ParentCvm.viewTmpl,data:data.ParentCvm}")
+
+  div(class="actions")
+    span(class="btn-bg", tabindex="0", data-bind="cmd:cmdSave") Ok
+    span(class="btn-bg", tabindex="0", data-bind="cmd:cmdClose") Cancel

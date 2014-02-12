@@ -144,6 +144,8 @@ define('mock/scrum/scrumservice.mock', [
       send(createOrUpdate(epics, 'ID', '@INC(epics)', {
         ID: data.ID,
         Name: data.Name,
+        ParentId: data.ParentId,
+        SortOrder: data.SortOrder,
       }), setter, cb);
     };
     dataservice.scrum.storys.save = function(data, setter, cb) {
@@ -153,9 +155,11 @@ define('mock/scrum/scrumservice.mock', [
         SprintId: data.SprintId,
         ParentId: data.ParentId,
         PersonId: data.PersonId,
+        EpicId: data.EpicId,
         Name: data.Name,
         Description: data.Description,
         Points: data.Points,
+        SortOrder: data.SortOrder,
         IsDeleted: data.IsDeleted,
         Version: data.Version ? data.Version + 1 : 1,
       });
@@ -171,6 +175,7 @@ define('mock/scrum/scrumservice.mock', [
         Name: data.Name,
         PersonId: data.PersonId,
         Hours: data.Hours,
+        SortOrder: data.SortOrder,
         IsDeleted: data.IsDeleted,
         Version: data.Version ? data.Version + 1 : 1,
       }), setter, cb);
@@ -269,6 +274,7 @@ define('mock/scrum/scrumservice.mock', [
         ID: '@INC(epics)',
         Name: '@SCOPE_PNAME',
         SortOrder: '@NUMBER(0,100000)',
+        Version: 1,
       },
     ],
   }).list.concat(mockery.fromTemplate({
@@ -278,6 +284,7 @@ define('mock/scrum/scrumservice.mock', [
         ID: '@INC(epics)',
         Name: '@SCOPE_CNAME',
         SortOrder: '@NUMBER(0,100000)',
+        Version: 1,
       },
     ],
   }).list);
@@ -337,12 +344,13 @@ define('mock/scrum/scrumservice.mock', [
   tasks = mockery.fromTemplate({
     'list|40-40': [
       {
-        ID: '@INC(storys)',
+        ID: '@INC(tasks)',
         StoryId: '@REF_INC(storys)',
         TaskStepId: '@REF_INC(tasksteps)',
         PersonId: '@REF_INC(persons)',
         Name: '@TEXT(15,20)',
         Hours: '@NUMBER(1,4)',
+        SortOrder: '@NUMBER(0,100000)',
         IsDeleted: false,
         Version: 1,
       },

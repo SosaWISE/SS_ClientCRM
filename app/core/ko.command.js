@@ -121,4 +121,32 @@
       }
     }
   };
+  ko.bindingHandlers.cmdEnter = {
+    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+      var value = valueAccessor(),
+        events = {};
+
+      if (ko.isCommand(value)) {
+        value = value.execute;
+      } else if (typeof(value) === 'function') {
+        value = value;
+      } else {
+        console.log('value is not a command or a function', value);
+        return;
+      }
+
+      events.keyup = function(vm, evt) {
+        switch (evt.keyCode) {
+          case 13: // enter
+            // call click function
+            value.apply(this, arguments);
+            break;
+        }
+      };
+
+      // bind to events
+      ko.bindingHandlers.event.init.call(this, element, makeValueAccessor(events), allBindingsAccessor, viewModel, bindingContext);
+    },
+    update: ko.bindingHandlers.cmd.update,
+  };
 });
