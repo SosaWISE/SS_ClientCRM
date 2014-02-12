@@ -202,7 +202,7 @@ define('src/account/default/address.validate.vm', [
       var model = _this.data.getValue();
       dataservice.qualify.addressValidation.post(null, model, null, function(err, resp) {
         if (err) {
-          notify.notify('warn', resp.Message, 10);
+          notify.notify('error', resp.Message);
         } else {
           _this.data.markClean(model, true);
           //@TODO: handle !Validated
