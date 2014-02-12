@@ -89,7 +89,7 @@ define('src/account/security/account.qualify.vm', [
         leadId: _this.creditResult().LeadId
       }, null, function(err, resp) {
         if (err) {
-          notify.notify('error', resp.Message, 10);
+          notify.notify('error', resp.Message);
           return;
         }
         var checklistVm = _this.pcontroller;
