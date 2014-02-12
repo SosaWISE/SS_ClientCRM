@@ -205,6 +205,7 @@ define('src/account/default/address.validate.vm', [
           notify.notify('warn', resp.Message, 10);
         } else {
           _this.data.markClean(model, true);
+          //@TODO: handle !Validated
           _this.result(resp.Value);
         }
         cb();

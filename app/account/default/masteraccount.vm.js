@@ -80,7 +80,7 @@ define('src/account/default/masteraccount.vm', [
     var _this = this,
       cb = join.add();
 
-    _this.notesVM.load(routeData, null, function(err) {
+    _this.notesVM.load(routeData, extraData, function(err) {
       if (!err) {
         load_billingInfoSummary(_this, _this.id, _this.accounts, join.add());
         load_aging(_this, _this.id, _this.agings, join.add());

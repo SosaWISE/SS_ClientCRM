@@ -1,7 +1,9 @@
 define('src/core/helpers', [
-  'ko'
+  'ko',
+  'src/core/utils',
 ], function(
-  ko
+  ko,
+  utils
 ) {
   "use strict";
 
@@ -16,17 +18,17 @@ define('src/core/helpers', [
 
       function once(cb) {
         if (loaded()) {
-          if (typeof(cb) === 'function') {
+          if (utils.isFunc(cb)) {
             cb();
           }
         } else {
-          if (typeof(cb) === 'function') {
+          if (utils.isFunc(cb)) {
             callbacks.push(cb);
           }
 
           if (!loading()) {
             loading(true);
-            if (typeof(load) === 'function') {
+            if (utils.isFunc(load)) {
               load(loadCb);
             }
           }

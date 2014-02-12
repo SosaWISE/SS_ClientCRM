@@ -1,7 +1,9 @@
 define('src/core/strings', [
   'src/core/arrays',
+  'src/core/utils',
 ], function(
-  arrays
+  arrays,
+  utils
 ) {
   "use strict";
 
@@ -33,7 +35,7 @@ define('src/core/strings', [
       formatName = formatName;
       var val = argsArray[paramIndex];
       if (val != null) {
-        if (formatName && typeof(decorators[formatName]) === 'function') {
+        if (formatName && utils.isFunc(decorators[formatName])) {
           return decorators[formatName](val);
         } else {
           return val;

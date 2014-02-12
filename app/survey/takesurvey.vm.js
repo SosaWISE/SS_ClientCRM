@@ -75,8 +75,8 @@ define('src/survey/takesurvey.vm', [
     }
 
     // ensure tokens and PAs are loaded
-    _this.tokensVM.load(routeData, null, join.add());
-    _this.possibleAnswersVM.load(routeData, null, join.add());
+    _this.tokensVM.load(routeData, extraData, join.add());
+    _this.possibleAnswersVM.load(routeData, extraData, join.add());
 
     join.when(function(err) {
       if (err) {

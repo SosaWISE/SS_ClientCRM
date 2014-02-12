@@ -45,7 +45,7 @@ define('src/slick/slickgrid.vm', [
     // find more plugins in columns
     _this.columns.forEach(function(col, index) {
       // test if column is a plugin
-      if (typeof(col.init) === 'function' && typeof(col.getColumnDefinition) === 'function') {
+      if (utils.isFunc(col.init) && utils.isFunc(col.getColumnDefinition)) {
         _this.plugins.push(col);
         // overwrite column with real column definition
         _this.columns[index] = col.getColumnDefinition();

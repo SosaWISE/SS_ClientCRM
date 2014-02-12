@@ -57,6 +57,7 @@ define('src/account/security/checklist.vm', [
         id: 'qualify',
         title: 'Qualify Customer',
         layersVm: _this.layersVm,
+        canCreateAccount: true,
       }),
       new SalesInfoViewModel({
         pcontroller: _this,

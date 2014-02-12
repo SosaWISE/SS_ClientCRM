@@ -1,9 +1,11 @@
 define('mock/dataservices/survey.mock', [
   'src/dataservice',
   'src/core/mockery',
+  'src/core/utils',
 ], function(
   dataservice,
-  mockery
+  mockery,
+  utils
 ) {
   "use strict";
 
@@ -32,7 +34,7 @@ define('mock/dataservices/survey.mock', [
       }
 
       setTimeout(function() {
-        if (!err && result && typeof(setter) === 'function') {
+        if (!err && result && utils.isFunc(setter)) {
           setter(result.Value);
         }
         cb(err, result);

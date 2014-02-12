@@ -1,11 +1,13 @@
 define('src/core/dataservice.base', [
   'jquery',
   'src/core/jsonhelpers',
-  'src/core/querystring'
+  'src/core/querystring',
+  'src/core/utils',
 ], function(
   jquery,
   jsonhelpers,
-  querystring
+  querystring,
+  utils
 ) {
   "use strict";
 
@@ -182,14 +184,14 @@ define('src/core/dataservice.base', [
       xhr: xhr,
     };
 
-    if (typeof(context.callback) === 'function') {
+    if (utils.isFunc(context.callback)) {
       // try to update session id
       DataserviceBase.sessionID(responseData.SessionId);
       var err;
       // check if there was an error
       if (responseData.Code === 0) {
         // try to set setter value,
-        if (typeof(context.setter) === 'function') {
+        if (utils.isFunc(context.setter)) {
           context.setter(responseData.Value);
         }
       } else {
