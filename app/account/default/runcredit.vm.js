@@ -86,7 +86,10 @@ define('src/account/default/runcredit.vm', [
   schema = {
     _model: true,
     LeadSourceId: {},
+    LeadDispositionId: {},
     TeamLocationId: {},
+    DealerId: {},
+    Gender: {},
     SeasonId: {},
 
     SalesRepId: {
@@ -152,7 +155,6 @@ define('src/account/default/runcredit.vm', [
     },
   };
 
-
   function RunCreditViewModel(options) {
     var _this = this,
       customerModel;
@@ -167,6 +169,8 @@ define('src/account/default/runcredit.vm', [
     _this.data = ukov.wrap({
       LocalizationID: '',
       LeadSourceId: config.leadSourceId,
+      LeadDispositionId: config.leadDispositionId,
+      DealerId: 5000,
       AddressId: _this.addressId,
       SalesRepId: _this.repModel.CompanyID,
       TeamLocationId: _this.repModel.TeamLocationId,
@@ -176,6 +180,7 @@ define('src/account/default/runcredit.vm', [
       MiddleName: '',
       LastName: '',
       // Suffix: '',
+      Gender: 'Male',
       SSN: '',
       DOB: '',
       Email: '',
