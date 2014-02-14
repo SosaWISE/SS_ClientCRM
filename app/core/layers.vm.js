@@ -101,7 +101,7 @@ define('src/core/layers.vm', [
     lastActive = document.activeElement;
     layer = {
       vm: ko.observable(null),
-      close: function(result) {
+      close: function() {
         if (subscription) {
           subscription.dispose();
           subscription = null;
@@ -116,8 +116,8 @@ define('src/core/layers.vm', [
         if (prevCtx) {
           prevCtx.dispose();
         }
-        if (typeof(onClose) === 'function') {
-          onClose(result);
+        if (utils.isFunc(onClose)) {
+          onClose.apply(null, ko.utils.makeArray(arguments));
         }
 
         //
@@ -171,7 +171,7 @@ define('src/core/layers.vm', [
     if (routeData) {
       routeCtx = {
         routeData: routeData,
-        extraData: extraData,
+        extraData: extraData || {},
         dispose: function() {
           disposed = true;
           delete vm.layersVm;

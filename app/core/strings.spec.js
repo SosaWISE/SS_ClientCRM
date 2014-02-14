@@ -1,6 +1,6 @@
 /* global describe, it, expect */
 define('src/core/strings.spec', [
-  'src/core/strings'
+  'src/core/strings',
 ], function(strings) {
   "use strict";
 
@@ -8,9 +8,9 @@ define('src/core/strings.spec', [
     // var vm;
     // beforeEach(function() {});
 
-    it('should have an `format` property', function() {
+    it('should have an `format` function', function() {
       expect(strings.format).toBeDefined();
-      expect(typeof(strings.format) === 'function').toBeDefined();
+      expect(typeof(strings.format)).toBe('function');
     });
 
     describe('format params', function() {

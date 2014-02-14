@@ -1,6 +1,10 @@
 ﻿define('src/core/ko.command', [
-  'ko'
-], function(ko) {
+  'ko',
+  'src/core/utils',
+], function(
+  ko,
+  utils
+) {
   "use strict";
 
   //
@@ -8,11 +12,11 @@
   //
 
   ko.isCommand = function(obj) {
-    return obj && typeof(obj.execute) === 'function';
+    return obj && utils.isFunc(obj.execute);
   };
   ko.command = function(execute, canExecute) {
     var _cmd = ko.observable(),
-      can;
+      canExecuteWrapper;
 
     _cmd.busy = ko.observable();
 
@@ -20,8 +24,8 @@
       _cmd.busy(false);
     }
     _cmd.execute = function(cb) {
-      if (!can) {
-        if (typeof(cb) === 'function') {
+      if (!_cmd.canExecute.peek()) {
+        if (utils.isFunc(cb)) {
           cb();
         }
         return;
@@ -29,23 +33,28 @@
       _cmd.busy(true);
       return execute.call(this, function() {
         onComplete();
-        if (typeof(cb) === 'function') {
+        if (utils.isFunc(cb)) {
           cb.apply(null, ko.utils.makeArray(arguments));
         }
       });
     };
 
     if (canExecute) {
-      _cmd.canExecute = ko.computed(function() {
-        can = canExecute(_cmd.busy());
-        return can;
-      });
+      canExecuteWrapper = function() {
+        return canExecute(_cmd.busy());
+      };
     } else {
-      _cmd.canExecute = ko.computed(function() {
-        can = !_cmd.busy();
-        return can;
-      });
+      canExecuteWrapper = function() {
+        return !_cmd.busy();
+      };
     }
+    _cmd.canExecute = ko.computed({
+      read: canExecuteWrapper,
+      write: canExecuteWrapper, // ignores passed in value, basically forces a recompute
+    });
+    _cmd.recompute = function() {
+      _cmd.canExecute(1);
+    };
 
     return _cmd;
   };
@@ -67,7 +76,7 @@
 
       if (ko.isCommand(value)) {
         events.click = value.execute;
-      } else if (typeof(value) === 'function') {
+      } else if (utils.isFunc(value)) {
         events.click = value;
       } else {
         console.log('value is not a command or a function', value);
@@ -94,7 +103,7 @@
       if (ko.isCommand(value)) {
         canExecute = value.canExecute();
         busy = value.busy();
-      } else if (typeof(value) === 'function') {
+      } else if (utils.isFunc(value)) {
         canExecute = true;
         busy = false;
       } else {

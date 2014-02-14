@@ -1,9 +1,11 @@
 define('mock/dataservices/accountingengine.mock', [
   'src/dataservice',
   'src/core/mockery',
+  'src/core/utils',
 ], function(
   dataservice,
-  mockery
+  mockery,
+  utils
 ) {
   "use strict";
 
@@ -32,7 +34,7 @@ define('mock/dataservices/accountingengine.mock', [
       }
 
       setTimeout(function() {
-        if (!err && result && typeof(setter) === 'function') {
+        if (!err && result && utils.isFunc(setter)) {
           setter(result.Value);
         }
         cb(err, result);
@@ -163,7 +165,16 @@ define('mock/dataservices/accountingengine.mock', [
         Value: '@MONEY(0,60)',
       }
     ]
-  }).list;
+  }).list.concat(mockery.fromTemplate({
+    // multiples of 6
+    'list|6-6': [
+      {
+        CMFID: 3000003,
+        Age: '@AGING',
+        Value: '@MONEY(0,60)',
+      }
+    ]
+  }).list);
 
   billingInfoSummarys = mockery.fromTemplate({
     'list|8-8': [
@@ -178,7 +189,20 @@ define('mock/dataservices/accountingengine.mock', [
         NumberOfUnites: '@NUNITS',
       }
     ],
-  }).list;
+  }).list.concat(mockery.fromTemplate({
+    'list|8-8': [
+      {
+        SummaryID: '@INC(summary)',
+        CustomerMasterFileId: 3000003,
+        AccountId: '@INC(account)',
+        AccountName: '@ACCT_NAME',
+        AccountDesc: '@ACCT_DESC',
+        AmountDue: '@DUE',
+        DueDate: '@DUEDATE',
+        NumberOfUnites: '@NUNITS',
+      }
+    ],
+  }).list);
 
   return mock;
 });

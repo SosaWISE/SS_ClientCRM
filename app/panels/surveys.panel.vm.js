@@ -61,8 +61,8 @@ define('src/panels/surveys.panel.vm', [
       tokensVM = new deps.TokensViewModel();
       possibleAnswersVM = new deps.PossibleAnswersViewModel();
 
-      tokensVM.load(routeData, null, depJoin.add());
-      possibleAnswersVM.load(routeData, null, depJoin.add());
+      tokensVM.load(routeData, extraData, depJoin.add());
+      possibleAnswersVM.load(routeData, extraData, depJoin.add());
 
       dataservice.survey.surveyTypes.read({}, null, function(err, resp) {
         if (err) {
@@ -80,7 +80,7 @@ define('src/panels/surveys.panel.vm', [
                   possibleAnswersVM: possibleAnswersVM,
                   model: model,
                 });
-                vm.load(routeData, null, join.add());
+                vm.load(routeData, extraData, join.add());
                 return vm;
               });
               _this.surveyTypes(list);

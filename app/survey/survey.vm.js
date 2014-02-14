@@ -125,8 +125,8 @@ define('src/survey/survey.vm', [
   SurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
-    loadQuestions(_this, _this.id, routeData, join);
-    loadSurveyTranslations(_this, _this.id, routeData, join);
+    loadQuestions(_this, _this.id, routeData, extraData, join);
+    loadSurveyTranslations(_this, _this.id, routeData, extraData, join);
 
     join.when(function() {
       var translations = _this.translations(),
@@ -143,7 +143,7 @@ define('src/survey/survey.vm', [
     });
   };
 
-  function loadQuestions(surveyVM, surveyID, routeData, join) {
+  function loadQuestions(surveyVM, surveyID, routeData, extraData, join) {
     var cb = join.add();
     dataservice.survey.surveys.read({
       id: surveyID,
@@ -153,7 +153,7 @@ define('src/survey/survey.vm', [
         if (resp.Value) {
           var treeTrunk = treehelper.makeTree(resp.Value, 'QuestionID', 'ParentId', function(model, parentVM /*, parent*/ ) {
             var vm = createQuestion(surveyVM, model, parentVM);
-            vm.load(routeData, null, join.add());
+            vm.load(routeData, extraData, join.add());
             return vm;
           });
           surveyVM.questions(treeTrunk);
@@ -164,7 +164,7 @@ define('src/survey/survey.vm', [
     });
   }
 
-  function loadSurveyTranslations(surveyVM, surveyID, routeData, join) {
+  function loadSurveyTranslations(surveyVM, surveyID, routeData, extraData, join) {
     var cb = join.add();
     dataservice.survey.surveys.read({
       id: surveyID,
@@ -174,7 +174,7 @@ define('src/survey/survey.vm', [
         if (resp.Value) {
           var list = resp.Value.map(function(model) {
             var vm = createSurveyTranslation(surveyVM, model);
-            // lazy load survey translation data // vm.load(routeData, null, join.add());
+            // lazy load survey translation data // vm.load(routeData, extraData, join.add());
             return vm;
           });
           surveyVM.translations(list);

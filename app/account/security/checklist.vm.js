@@ -35,6 +35,14 @@ define('src/account/security/checklist.vm', [
       controller: _this,
     });
 
+    _this.qualifyVm = new AccountQualifyViewModel({
+      pcontroller: _this,
+      id: 'qualify',
+      title: 'Qualify Customer',
+      layersVm: _this.layersVm,
+      canCreateAccount: true,
+    });
+
     //
     // events
     //
@@ -52,12 +60,7 @@ define('src/account/security/checklist.vm', [
     var _this = this;
 
     _this.checklist([
-      new AccountQualifyViewModel({
-        pcontroller: _this,
-        id: 'qualify',
-        title: 'Qualify Customer',
-        layersVm: _this.layersVm,
-      }),
+      _this.qualifyVm,
       new SalesInfoViewModel({
         pcontroller: _this,
         id: 'salesinfo',
@@ -113,18 +116,19 @@ define('src/account/security/checklist.vm', [
 
     join.add()();
   };
+
   ChecklistViewModel.prototype.onActivate = function(routeCtx) { // overrides base
-    var _this = this;
-    if (routeCtx.routeData.tab) {
+    var _this = this,
+      routeData = routeCtx.routeData,
+      routePart = _this.getChildRoutePart();
+
+    if (_this.qualifyVm.canCreateAccount) {
+      // when there is no account, qualify is the only selectable child
+      routeData[routePart] = _this.qualifyVm.id;
+    } else if (routeData[routePart]) {
       //@TODO: ensure the action is currently valid
     }
-    // call base
     ChecklistViewModel.super_.prototype.onActivate.call(_this, routeCtx);
-
-    // // this timeout makes it possible to focus the input
-    // setTimeout(function() {
-    //   _this.focus(true);
-    // }, 100);
   };
 
   return ChecklistViewModel;

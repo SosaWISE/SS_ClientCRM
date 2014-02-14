@@ -49,8 +49,8 @@ define('src/survey/surveytype.vm', [
 
   SurveyTypeViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
-    loadSurveys(_this, _this.id, routeData, join);
-    loadQuestionMeaning(_this, _this.id, routeData, join);
+    loadSurveys(_this, _this.id, routeData, extraData, join);
+    loadQuestionMeaning(_this, _this.id, routeData, extraData, join);
   };
 
   SurveyTypeViewModel.prototype.hasVersion = function(version) {
@@ -61,7 +61,7 @@ define('src/survey/surveytype.vm', [
     });
   };
 
-  function loadSurveys(surveyTypeVM, surveyTypeID, routeData, join) {
+  function loadSurveys(surveyTypeVM, surveyTypeID, routeData, extraData, join) {
     var cb = join.add();
     dataservice.survey.surveyTypes.read({
       id: surveyTypeID,
@@ -71,7 +71,7 @@ define('src/survey/surveytype.vm', [
         if (resp.Value) {
           var list = resp.Value.map(function(model) {
             var vm = createSurvey(surveyTypeVM, model);
-            // lazy load survey data // vm.load(routeData, null, join.add());
+            // lazy load survey data // vm.load(routeData, extraData, join.add());
             return vm;
           });
           surveyTypeVM.surveys(list);
@@ -82,7 +82,7 @@ define('src/survey/surveytype.vm', [
     });
   }
 
-  function loadQuestionMeaning(surveyTypeVM, surveyTypeID, routeData, join) {
+  function loadQuestionMeaning(surveyTypeVM, surveyTypeID, routeData, extraData, join) {
     var cb = join.add();
     dataservice.survey.surveyTypes.read({
       id: surveyTypeID,
@@ -93,7 +93,7 @@ define('src/survey/surveytype.vm', [
           var list = resp.Value.map(function(model) {
             var vm = createQuestionMeaning(surveyTypeVM, model);
             surveyTypeVM.qmMap[model.QuestionMeaningID] = vm;
-            vm.load(routeData, null, join.add());
+            vm.load(routeData, extraData, join.add());
             return vm;
           });
           surveyTypeVM.questionMeanings(list);

@@ -1,4 +1,5 @@
 define('src/account/security/account.qualify.vm', [
+  'src/dataservice',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
@@ -7,6 +8,7 @@ define('src/account/security/account.qualify.vm', [
   'src/account/default/runcredit.vm',
   'ko'
 ], function(
+  dataservice,
   notify,
   utils,
   ControllerViewModel,
@@ -31,7 +33,7 @@ define('src/account/security/account.qualify.vm', [
     _this.repModel = ko.observable();
     _this.addressModel = ko.observable();
     _this.customerModel = ko.observable();
-    _this.creditModel = ko.observable();
+    _this.creditResult = ko.observable();
 
 
     //
@@ -41,11 +43,12 @@ define('src/account/security/account.qualify.vm', [
       if (_this.layer) {
         return;
       }
-      _this.layer = _this.layersVm.show(new Ctor(options), function onClose(result) {
+      _this.layer = _this.layersVm.show(new Ctor(options), function onClose() {
         _this.layer = null;
-        if (result) {
+        var args = ko.utils.makeArray(arguments);
+        if (args[args.length - 1]) {
           _this.step(_this.step() + 1);
-          setter(result);
+          setter.apply(null, args);
           if (ko.isCommand(nextCmd)) {
             nextCmd.execute();
           }
@@ -67,10 +70,10 @@ define('src/account/security/account.qualify.vm', [
       return !busy && _this.step() === 1;
     });
     _this.cmdCustomer = ko.command(function(cb) {
-      showLayer(AccountRunCreditViewModel, function(result) {
-        if (result) {
-          _this.customerModel(result.customer);
-          _this.creditModel(result.creditResult);
+      showLayer(AccountRunCreditViewModel, function(customer, creditResult) {
+        if (creditResult) {
+          _this.customerModel(customer);
+          _this.creditResult(creditResult);
         }
       }, null, {
         addressId: _this.addressModel().AddressID,
@@ -82,18 +85,32 @@ define('src/account/security/account.qualify.vm', [
     });
 
     _this.cmdCreateAccount = ko.command(function(cb) {
-      var routeData, extraData;
-      routeData = {
-        masterid: 555555,
-        id: 4444444,
-        tab: 'checklist',
-        p1: 'salesinfo',
-      };
-      extraData = {
-        checklist: _this.pcontroller,
-      };
-      _this.goTo(routeData, extraData);
-      cb();
+      dataservice.monitoringstation.accounts.post(null, {
+        leadId: _this.creditResult().LeadId
+      }, null, function(err, resp) {
+        if (err) {
+          notify.notify('error', resp.Message);
+          return;
+        }
+        var checklistVm = _this.pcontroller;
+        if (checklistVm.close() > -1) {
+          _this.goTo({
+            masterid: resp.Value.CustomerMasterFileId,
+            id: resp.Value.AccountID,
+            tab: 'checklist',
+            p1: 'salesinfo',
+          }, {
+            checklist: checklistVm,
+          });
+
+          _this.canCreateAccount = false;
+        } else {
+          notify.notify('warn', 'unable to close??');
+        }
+        cb();
+      });
+    }, function(busy) {
+      return !busy && _this.step() === 3 && _this.canCreateAccount && _this.customerModel() && _this.creditResult();
     });
   }
   utils.inherits(AccountQualifyViewModel, ControllerViewModel);
@@ -106,8 +123,6 @@ define('src/account/security/account.qualify.vm', [
   AccountQualifyViewModel.prototype.onActivate = function( /*routeCtx*/ ) { // overrides base
     var _this = this;
     _this.setLayerActive(true);
-    // // this should be the last controller to be activated
-    // routeCtx.done();
   };
   AccountQualifyViewModel.prototype.onDeactivate = function() { // overrides base
     var _this = this;
