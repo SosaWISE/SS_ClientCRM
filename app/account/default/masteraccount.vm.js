@@ -141,7 +141,7 @@ define('src/account/default/masteraccount.vm', [
     return new AccountViewModel({
       pcontroller: pcontroller,
       id: id,
-      title: title,
+      title: title || '[Unknown]',
       rmr: rmr,
       units: units,
     });
