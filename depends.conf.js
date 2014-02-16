@@ -10,7 +10,7 @@ window.require = {
     mock: '/mock',
 
     // external libs
-    jquery: '/tparty/jquery-1.9.1',
+    jquery: '/tparty/jquery-2.1.0',
     'jquery.ui': '/tparty/jquery-ui-1.10.4.custom',
     ko: '/tparty/knockout',
     moment: '/tparty/moment', // Used for Date object

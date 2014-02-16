@@ -1,8 +1,8 @@
-div(class="epic bl-drag-item",data-bind="drag:{}")
-  div(class="bl-item-sibling",data-bind="drop:{accept:'.bl-drag-item',onDrop:'onDropSibling'}")
+div(class="epic bl-drag-item",data-bind="scrumDrag:{}")
+  div(class="bl-item-sibling",data-bind="scrumDrop:{accept:'.bl-drag-item',onDrop:'onDropSibling'}")
 
   div(class="bl-item-wrap")
-    div(class="bl-item",data-bind="drop:{accept:'.bl-drag-item',onDrop:'onDropChild'}")
+    div(class="bl-item",data-bind="scrumDrop:{accept:'.bl-drag-item',onDrop:'onDropChild'}")
       div(class="first")
         span(class="drag-hdl")
         span(class="btn edit",tabindex="0",data-bind="cmd:cmdEdit") Edit
@@ -15,7 +15,7 @@ div(class="epic bl-drag-item",data-bind="drag:{}")
         span(class="pts",data-bind="text:points")
         span(class="owner") ???
 
-  //- div(class="bl-item-sibling",data-bind="drop:{accept:'.bl-drag-item',onDrop:'onDropSibling'}")
+  //- div(class="bl-item-sibling",data-bind="scrumDrop:{accept:'.bl-drag-item',onDrop:'onDropSibling'}")
 
   div(class="bl-item-wrap")
     <!-- ko foreach:childs -->

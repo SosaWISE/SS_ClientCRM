@@ -56,13 +56,13 @@ define('src/scrum/story.editor.vm', [
 
     _this.title = (_this.item ? 'Edit' : 'New') + ' Story';
     _this.data = ukov.wrap(_this.item || {
+      EpicId: _this.epicId,
       StoryTypeId: 1,
       Name: '',
       Description: '',
       Points: null,
       PersonId: null,
       SprintId: null,
-      EpicId: _this.epicId,
       SortOrder: null,
       IsDeleted: false,
       Version: 1,
