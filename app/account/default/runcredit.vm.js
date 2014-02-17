@@ -170,7 +170,7 @@ define('src/account/default/runcredit.vm', [
       LocalizationID: '',
       LeadSourceId: config.leadSourceId,
       LeadDispositionId: config.leadDispositionId,
-      DealerId: 5000,
+      DealerId: config.user().DealerId,
       AddressId: _this.addressId,
       SalesRepId: _this.repModel.CompanyID,
       TeamLocationId: _this.repModel.TeamLocationId,
