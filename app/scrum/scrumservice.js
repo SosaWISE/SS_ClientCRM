@@ -13,6 +13,7 @@ define('src/scrum/scrumservice', [
 
     [
       'persons',
+      'projects',
       'sprints',
       'epics',
       'storytypes',

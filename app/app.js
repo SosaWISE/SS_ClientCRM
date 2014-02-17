@@ -1,5 +1,6 @@
 define('src/app', [
   'src/core/router',
+  'src/scrum/scrum.panel.vm',
   'src/panels/login.panel.vm',
   'src/panels/home.panel.vm',
   'src/panels/accounts.panel.vm',
@@ -7,6 +8,7 @@ define('src/app', [
   'src/core/notify'
 ], function(
   router,
+  ScrumPanelViewModel,
   LoginViewModel,
   HomePanelViewModel,
   AccountsPanelViewModel,
@@ -61,6 +63,12 @@ define('src/app', [
       name: 'Surveys',
       ico: '&#128101;',
     }),
+    new ScrumPanelViewModel({
+      routePart: routePart,
+      id: 'scrum',
+      name: 'Scrum',
+      ico: '&#9416;',
+    }),
   ]);
   setTemplate(app.panels, 'viewTmpl', 'panel_');
 
@@ -89,6 +97,7 @@ define('src/app', [
   router.addRoute(app.panelMap.surveys, 'surveys', ':surveytypeid/:surveyid/:locale', {
     locale: 'en',
   });
+  router.addRoute(app.panelMap.scrum, 'scrum', ':projectid/:sprintid/:view', {});
 
   window.onerror = function(message, url, line, column, err) {
     var text = [];

@@ -70,11 +70,37 @@ define('mock/scrum/scrumservice.mock', [
       }
       send(result, setter, cb);
     };
-    dataservice.scrum.sprints.read = function(params, setter, cb) {
-      var result;
+    dataservice.scrum.projects.read = function(params, setter, cb) {
+      var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = sprints;
+          result = findSingleOrAll(projects, 'ID', id);
+          break;
+        case 'epics':
+          result = filterListBy(epics, 'ProjectId', id);
+          break;
+        case 'sprints':
+          result = filterListBy(sprints, 'ProjectId', id);
+          break;
+      }
+      send(result, setter, cb);
+    };
+    dataservice.scrum.sprints.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = findSingleOrAll(sprints, 'ID', id);
+          break;
+        case 'storys':
+          if (id === 'null') {
+            id = null;
+          }
+          result = filterListBy(storys, 'SprintId', id);
+          // include Tasks on result
+          result = clone(result);
+          result.forEach(function(story) {
+            story.Tasks = filterListBy(tasks, 'StoryId', story.ID);
+          });
           break;
       }
       send(result, setter, cb);
@@ -103,14 +129,9 @@ define('mock/scrum/scrumservice.mock', [
         case null:
           result = findSingleOrAll(storys, 'ID', id);
           break;
-        case 'bysprint':
-          if (id === 'null') {
-            id = null;
-          }
-          result = filterListBy(storys, 'SprintId', id);
-          break;
       }
       // include Tasks on result
+      result = clone(result);
       result.forEach(function(story) {
         story.Tasks = filterListBy(tasks, 'StoryId', story.ID);
       });
@@ -144,6 +165,7 @@ define('mock/scrum/scrumservice.mock', [
       send(createOrUpdate(epics, 'ID', '@INC(epics)', {
         ID: data.ID,
         Name: data.Name,
+        ProjectId: data.ProjectId,
         ParentId: data.ParentId,
         SortOrder: data.SortOrder,
       }), setter, cb);
@@ -216,11 +238,11 @@ define('mock/scrum/scrumservice.mock', [
       new Date(2013, 1, 30),
       new Date(2013, 2, 13),
     ]);
-    mockery.addModulusValueFunc('SCOPE_PNAME', [
+    mockery.addModulusValueFunc('EPIC_PNAME', [
       'Web client',
       'Web server',
     ]);
-    mockery.addModulusValueFunc('SCOPE_CNAME', [
+    mockery.addModulusValueFunc('EPIC_CNAME', [
       'Panel',
       'Actions',
       'Tests',
@@ -239,6 +261,7 @@ define('mock/scrum/scrumservice.mock', [
 
   // data used in mock function
   var persons,
+    projects,
     sprints,
     epics,
     storytypes,
@@ -257,10 +280,20 @@ define('mock/scrum/scrumservice.mock', [
     ],
   }).list;
 
+  projects = mockery.fromTemplate({
+    'list|3-3': [
+      {
+        ID: '@INC(projects)',
+        Name: 'Project-@INC(projects)',
+      },
+    ],
+  }).list;
+
   sprints = mockery.fromTemplate({
     'list|3-3': [
       {
         ID: '@INC(sprints)',
+        ProjectId: 1,
         StartOn: '@SPRINT_STARTON',
         EndOn: '@SPRINT_ENDON',
       },
@@ -270,9 +303,10 @@ define('mock/scrum/scrumservice.mock', [
   epics = mockery.fromTemplate({
     'list|2-2': [
       {
-        ParentId: null,
         ID: '@INC(epics)',
-        Name: '@SCOPE_PNAME',
+        ProjectId: 1,
+        ParentId: null,
+        Name: '@EPIC_PNAME',
         SortOrder: '@NUMBER(0,100000)',
         Version: 1,
       },
@@ -280,9 +314,10 @@ define('mock/scrum/scrumservice.mock', [
   }).list.concat(mockery.fromTemplate({
     'list|5-5': [
       {
-        ParentId: '@REF_INC(epics)',
         ID: '@INC(epics)',
-        Name: '@SCOPE_CNAME',
+        ProjectId: 1,
+        ParentId: '@REF_INC(epics)',
+        Name: '@EPIC_CNAME',
         SortOrder: '@NUMBER(0,100000)',
         Version: 1,
       },

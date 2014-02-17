@@ -1,7 +1,7 @@
 div(class="scrum-tab scrum-track",data-bind="if:sprint")
   div(class="header")
   div(class="sprints")
-    div(class="sprint",data-bind="foreach:sprint().childs")
+    div(class="sprint",data-bind="foreach:sprint().bd.childs")
       //- Storys
       div(class="story-wrap")
         div(class="story")

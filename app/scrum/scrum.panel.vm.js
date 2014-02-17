@@ -3,11 +3,8 @@ define('src/scrum/scrum.panel.vm', [
   'jquery',
   'ko',
   'src/dataservice',
-  'src/scrum/scrumrepo',
-  'src/scrum/backlog.vm',
-  'src/scrum/planning.vm',
-  // 'src/scrum/tracking.vm',
-  'src/scrum/taskboard.vm',
+  'src/scrum/project.vm',
+  'src/scrum/sprint.vm',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
@@ -15,11 +12,8 @@ define('src/scrum/scrum.panel.vm', [
   jquery,
   ko,
   dataservice,
-  ScrumRepo,
-  BacklogViewModel,
-  PlanningViewModel,
-  // TrackingViewModel,
-  TaskBoardViewModel,
+  ProjectViewModel,
+  SprintViewModel,
   utils,
   ControllerViewModel
 ) {
@@ -29,9 +23,11 @@ define('src/scrum/scrum.panel.vm', [
   function ScrumPanelViewModel(options) {
     var _this = this;
     ScrumPanelViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['id']);
+    ControllerViewModel.ensureProps(_this, []);
 
-    _this.list = _this.childs;
+    _this.projects = _this.childs;
+    _this.hideNav = ko.observable(false);
+    _this.hideNav(true);
 
     //
     // events
@@ -39,58 +35,55 @@ define('src/scrum/scrum.panel.vm', [
     _this.clickItem = function(vm) {
       _this.selectChild(vm);
     };
+    _this.clickToggleNav = function() {
+      _this.hideNav(!_this.hideNav());
+    };
   }
   utils.inherits(ScrumPanelViewModel, ControllerViewModel);
   ScrumPanelViewModel.prototype.viewTmpl = 'tmpl-panel_scrum';
 
   ScrumPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this,
-      cb = join.add();
+    var _this = this;
 
-    dataservice.scrum.storys.read({
-      id: _this.id,
-      link: 'bysprint'
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
+    load_projects(_this, join);
 
-        _this.repo = new ScrumRepo({
-          stepValues: [1, 2, 3],
-        });
-
-        _this.list([
-          new BacklogViewModel({
-            pcontroller: _this,
-            id: 'backlog',
-            title: 'Backlog',
-            repo: _this.repo,
-          }),
-          new PlanningViewModel({
-            pcontroller: _this,
-            id: 'plan',
-            title: 'Story Board',
-            repo: _this.repo,
-          }),
-          // new TrackingViewModel({
-          //   pcontroller: _this,
-          //   id: 'track',
-          //   title: 'Task Board',
-          //   repo: _this.repo,
-          // }),
-          new TaskBoardViewModel({
-            pcontroller: _this,
-            id: 'track',
-            title: 'Task Board',
-            repo: _this.repo,
-          }),
-        ]);
-
-        resp.Value.forEach(function(story) {
-          _this.repo.updateStory(story);
-        });
-      }, cb);
-    });
+    // join.when(function(err) {
+    //   if (err) {
+    //     return;
+    //   }
+    //   _this.list([
+    //     new BacklogViewModel({
+    //       pcontroller: _this,
+    //       id: 'backlog',
+    //       title: 'Backlog',
+    //       projectVm: _this.projectVm,
+    //     }),
+    //     new TaskBoardViewModel({
+    //       pcontroller: _this,
+    //       id: 'track',
+    //       title: 'Task Board',
+    //       projectVm: _this.projectVm,
+    //     }),
+    //   ]);
+    // });
   };
 
+  function load_projects(_this, join) {
+    var cb = join.add();
+    dataservice.scrum.projects.read({}, null, function(err, resp) {
+      utils.safeCallback(err, function() {
+        var list = resp.Value.map(function(item) {
+          return new ProjectViewModel({
+            pcontroller: _this,
+            id: item.ID,
+            title: item.Name,
+            item: item,
+          });
+        });
+        _this.projects(list);
+      }, cb);
+    });
+  }
 
   //
   // ui bindings
