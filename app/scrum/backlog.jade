@@ -8,5 +8,14 @@ div(class="scrum-tab scrum-backlog",data-bind="with:backlog().bd")
       <!-- ko foreach:childs -->
       div(data-bind="template:{name:viewTmpl}")
       <!-- /ko -->
+    <!-- ko foreach:$parent.sprints3 -->
+    <!-- ko if:$data -->
+    div(class="sprint")
+      div(class="title") ??
+      <!-- ko foreach:bd.childs -->
+      div(data-bind="template:{name:viewTmpl}")
+      <!-- /ko -->
+    <!-- /ko -->
+    <!-- /ko -->
 
 div(class="layers",data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

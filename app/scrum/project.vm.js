@@ -26,6 +26,7 @@ define('src/scrum/project.vm', [
 
     _this.sprints = _this.childs;
     _this.sprint = _this.activeChild;
+    _this.sprints3 = ko.observableArray();
     _this.backlog = ko.observable();
     _this.epics = ko.observableArray();
 
@@ -53,10 +54,44 @@ define('src/scrum/project.vm', [
       controller: _this,
     });
 
+    // update sprints3 (prev, current, and next sprints)
+    _this.sprint.subscribe(function(sprint) {
+      var sprints = _this.sprints(),
+        sprints3 = _this.sprints3,
+        index = sprints.indexOf(sprint),
+        index3 = sprints3().indexOf(sprint);
+      if (index < 0) { // no selected sprint
+        sprints3([]);
+      } else if (index3 < 0) { // make new array with 3 elements
+        sprints3([sprints[index - 1] || null, sprints[index], sprints[index + 1] || null]);
+      } else { // try to center the item
+        switch (index3) {
+          case 0: // move item to the right by adding an item to the left and removing the last
+            sprints3.pop();
+            sprints3.unshift(sprints[index - 1] || null);
+            break;
+          case 2: // move item to the left by adding an item to the right and removing the first
+            sprints3.shift();
+            sprints3.push(sprints[index + 1] || null);
+            break;
+          case 1: // already centered. do nothing
+            break;
+          default:
+            throw new Error('invalid index3');
+        }
+      }
+      // ensure all the sprints are loaded
+      sprints3().forEach(function(sprint) {
+        if (sprint) {
+          sprint.load(_this.getRouteData(), {}, function() {});
+        }
+      });
+    });
+
     //
     // events
     //
-    _this.clickItem = function(view) {
+    _this.clickView = function(view) {
       var prevView = _this.view();
       if (prevView) {
         prevView.deactivate();
@@ -71,6 +106,8 @@ define('src/scrum/project.vm', [
         done: function() {},
       });
     };
+    _this.cmdPrevSprint = createMoveCmd(_this, false);
+    _this.cmdNextSprint = createMoveCmd(_this, true);
   }
   utils.inherits(ProjectViewModel, ControllerViewModel);
   ProjectViewModel.prototype.viewTmpl = 'tmpl-scrum_project';
@@ -79,7 +116,7 @@ define('src/scrum/project.vm', [
     var _this = this,
       cb = join.add();
 
-    _this.clickItem(_this.views[0]);
+    _this.clickView(_this.views[0]);
 
 
     load_sprints(_this, join);
@@ -131,6 +168,26 @@ define('src/scrum/project.vm', [
       layersVm: _this.layersVm,
       epics: epics, // only set for backlog
     });
+  }
+
+  function createMoveCmd(_this, isNext) {
+    return ko.command(function(cb) {
+      var sprint = getSprint(_this, isNext);
+      // ensure sprint is loaded
+      sprint.load(_this.getRouteData(), {}, function() {});
+      // set sprint
+      _this.sprint(sprint);
+      cb();
+    }, function(busy) {
+      return !busy && !(!getSprint(_this, isNext));
+    });
+  }
+
+  function getSprint(_this, isNext) {
+    var sprints = _this.sprints(),
+      sprint = _this.sprint(),
+      index = sprints.indexOf(sprint) + (isNext ? 1 : -1);
+    return sprints[index];
   }
 
   return ProjectViewModel;

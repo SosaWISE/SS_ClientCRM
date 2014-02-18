@@ -7,7 +7,7 @@ div(class="scrum project",data-bind="if:loaded")
           li(class="tab under-toggle-btn")
           <!-- ko foreach:views -->
           li(class="tab")
-            a(data-bind="click:$parent.clickItem,active:active,text:title")
+            a(data-bind="click:$parent.clickView,active:active,text:title")
           <!-- /ko -->
     tr
       td(class="fh-body")

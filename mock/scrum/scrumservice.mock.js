@@ -337,7 +337,7 @@ define('mock/scrum/scrumservice.mock', [
       {
         ID: '@INC(storys)',
         StoryTypeId: '@REF_INC(storytypes)',
-        SprintId: 1,
+        SprintId: '@REF_INC(sprints)',
         PersonId: '@REF_INC(persons)',
         EpicId: '@REF_INC(epics)',
         Name: '@TEXT(20,30)',

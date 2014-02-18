@@ -1,5 +1,8 @@
 div(class="scrum-tab scrum-track",data-bind="if:sprint")
   div(class="header")
+    div(class="",data-bind="text:sprint().id")
+    span(data-bind="cmd:cmdPrevSprint") Prev Sprint
+    span(data-bind="cmd:cmdNextSprint") Next Sprint
   div(class="sprints")
     div(class="sprint",data-bind="foreach:sprint().bd.childs")
       //- Storys
