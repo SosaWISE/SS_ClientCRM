@@ -1,4 +1,4 @@
-div(class="panel scrum",data-bind="active:active")
+div(class="panel scrum",data-bind="active:active,toggle:{'hide-nav':hideNav}")
   //- div(data-bind="if:false")
     div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
 
@@ -13,7 +13,7 @@ div(class="panel scrum",data-bind="active:active")
         div(class="section")
           span(class="title") Projects
           div(class="contents")
-            ul(class="",data-bind="foreach:projects")
+            ul(class="projects",data-bind="foreach:projects")
               li
                 a(data-bind="active:active,click:$parent.clickItem")
                   span(class="name",data-bind="text:title")

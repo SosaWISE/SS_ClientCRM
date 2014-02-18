@@ -44,7 +44,7 @@ define('src/scrum/project.vm', [
       new TaskBoardViewModel({
         projectVm: _this,
         id: 'taskboard',
-        title: 'TaskBoard',
+        title: 'Task Board',
       }),
     ];
     _this.view = ko.observable(_this.views[0]);
