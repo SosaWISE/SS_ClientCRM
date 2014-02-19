@@ -12,7 +12,7 @@ body.scrum {
 
   .btn {
     background-color: @bg-color;
-    font-size: 0.8em;
+    font-size: 0.9em;
     position: relative;
 
     &.edit {
@@ -171,6 +171,7 @@ body.scrum {
   }
 
   .cog-menu {
+    position: relative;
     display:inline;
     .cog {
       cursor: pointer;
@@ -180,8 +181,12 @@ body.scrum {
         content: '\2699';
       }
     }
-    ul {
-      display: none;
+    ul.menu {
+      z-index: 1;
+      background-color: #fff;
+      position: absolute;
+      border: 1px solid silver;
+      padding: 2px;
     }
   }
 

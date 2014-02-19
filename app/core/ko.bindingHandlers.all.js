@@ -85,6 +85,52 @@
   createKeyHandler('escape', 27); // <ESC>
   createKeyHandler('enter', 13, true);
 
+  // clickMenu
+  //---------------------------
+  ko.bindingHandlers.clickMenu = {
+    init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      var showObservable = valueAccessor();
+      if (!ko.isObservable(showObservable)) {
+        throw new Error('expected an observable');
+      }
+
+      function hide() {
+        showObservable(false);
+      }
+
+      function newValueAccessor() {
+        return {
+          click: function() {
+            var show = !showObservable();
+            // always unbind the hide handler
+            jquery('body').off('click', hide);
+            if (show) {
+              // using a timeout instead of stopPropagation in order
+              // to allow only one clickMenu menu to be open at a time
+              setTimeout(function() {
+                // hide whenever something is clicked
+                jquery('body').one('click', hide);
+                showObservable(show);
+              }, 0);
+            } else {
+              showObservable(show);
+            }
+          },
+        };
+      }
+      ko.bindingHandlers.event.init.call(this, element, newValueAccessor, allBindings, viewModel, bindingContext);
+    },
+    update: function(element, valueAccessor) {
+      var show = ko.unwrap(valueAccessor()),
+        menu = jquery(element).siblings('.menu');
+      if (show) {
+        menu.show();
+      } else {
+        menu.hide();
+      }
+    },
+  };
+
 
   // swapLoginFields
   //---------------------------

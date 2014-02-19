@@ -108,6 +108,7 @@ define('src/scrum/backlogdata', [
     _this.length = returnOne;
     _this.points = returnZero;
     _this.childs = hasChilds ? ko.observableArray() : true; // true is a hack to stop treehelper from creating a childs array
+    _this.showMenu = ko.observable(false);
   }
   BaseItemViewModel.prototype.makeParentSid = function() {
     var _this = this,

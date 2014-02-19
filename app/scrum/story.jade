@@ -5,8 +5,13 @@ div(class="story bl-drag-item",data-bind="scrumDrag:{}")
     div(class="bl-item")
       div(class="first")
         span(class="drag-hdl")
-        span(class="btn edit",tabindex="0",data-bind="cmd:cmdEdit") Edit
-        span(class="btn add",tabindex="0",data-bind="cmd:cmdAddTask") Task
+        div(class="cog-menu")
+          span(class="cog",data-bind="clickMenu:showMenu")
+          ul(class="menu")
+            li
+              span(class="btn edit",tabindex="0",data-bind="cmd:cmdEdit") Edit
+            li
+              span(class="btn add",tabindex="0",data-bind="cmd:cmdAddTask") Task
       div(class="middle")
         //- span(class="title",data-bind="text:item.ID")
         span(class="title",data-bind="text:item.Name")
@@ -34,7 +39,11 @@ div(class="story bl-drag-item",data-bind="scrumDrag:{}")
                   div(class="bl-item")
                     div(class="first")
                       span(class="drag-hdl")
-                      span(class="btn edit",tabindex="0",data-bind="cmd:cmdEdit") Edit
+                      div(class="cog-menu")
+                        span(class="cog",data-bind="clickMenu:showMenu")
+                        ul(class="menu")
+                          li
+                            span(class="btn edit",tabindex="0",data-bind="cmd:cmdEdit") Edit
                     div(class="middle")
                       //- span(class="title",data-bind="text:item.ID")
                       span(class="title",data-bind="text:item.Name")
