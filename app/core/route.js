@@ -131,7 +131,7 @@ define('src/core/route', [
       routeCtx = {
         route: _this,
         routeData: routeData,
-        extraData: extraData,
+        extraData: extraData || {},
         dispose: function(deactivate) {
           disposed = true;
           if (deactivate) {

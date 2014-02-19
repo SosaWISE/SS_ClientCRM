@@ -1,5 +1,8 @@
 define('src/core/treehelper', [
-], function() {
+  'src/core/utils',
+], function(
+  utils
+) {
   'use strict';
 
   function walkTree_Helper(list, fn, parent) {
@@ -27,10 +30,10 @@ define('src/core/treehelper', [
       tempChildsMap = {},
       toVisitMap = {},
       preSort;
-    if (typeof(mapFn) !== 'function') {
+    if (!utils.isFunc(mapFn)) {
       mapFn = passThrough;
     }
-    if (typeof(sortFn) === 'function') {
+    if (utils.isFunc(sortFn)) {
       preSort = !postSort;
     } else {
       preSort = postSort = false;

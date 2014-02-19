@@ -53,7 +53,7 @@ define('src/core/base.vm', [
     // store last route
     _this._lastRouteData = routeCtx.routeData;
     // load self
-    _this.load(routeCtx.routeData, null, function() {
+    _this.load(routeCtx.routeData, routeCtx.extraData, function() {
       // check if routeCtx is still active
       if (!routeCtx.active()) {
         return;

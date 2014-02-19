@@ -27,9 +27,6 @@ define('src/account/default/runcredit.vm', [
     update: function(element, valueAccessor) {
       var cls,
         creditGroup = valueAccessor();
-      if (!creditGroup) {
-        throw new Error('no crObj');
-      }
       switch (creditGroup) {
         case "Excellent":
           cls = "excellent";
@@ -57,9 +54,6 @@ define('src/account/default/runcredit.vm', [
     update: function(element, valueAccessor) {
       var newText,
         creditStatus = valueAccessor();
-      if (!creditStatus) {
-        throw new Error('no Credit Status value was passed.');
-      }
       if (creditStatus) {
         newText = 'Report Found';
       } else {
@@ -92,7 +86,10 @@ define('src/account/default/runcredit.vm', [
   schema = {
     _model: true,
     LeadSourceId: {},
+    LeadDispositionId: {},
     TeamLocationId: {},
+    DealerId: {},
+    Gender: {},
     SeasonId: {},
 
     SalesRepId: {
@@ -158,9 +155,9 @@ define('src/account/default/runcredit.vm', [
     },
   };
 
-
   function RunCreditViewModel(options) {
-    var _this = this;
+    var _this = this,
+      customerModel;
     RunCreditViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, ['addressId']);
     _this.mixinLoad();
@@ -172,15 +169,18 @@ define('src/account/default/runcredit.vm', [
     _this.data = ukov.wrap({
       LocalizationID: '',
       LeadSourceId: config.leadSourceId,
+      LeadDispositionId: config.leadDispositionId,
+      DealerId: config.user().DealerId,
       AddressId: _this.addressId,
       SalesRepId: _this.repModel.CompanyID,
       TeamLocationId: _this.repModel.TeamLocationId,
       SeasonId: _this.repModel.Seasons[0].SeasonID,
-      Salutation: '',
+      // Salutation: '',
       FirstName: '',
       MiddleName: '',
       LastName: '',
-      Suffix: '',
+      // Suffix: '',
+      Gender: 'Male',
       SSN: '',
       DOB: '',
       Email: '',
@@ -202,24 +202,17 @@ define('src/account/default/runcredit.vm', [
     _this.data.Email('Bob.Bobbins@some.com');
     /////TESTING//////////////////////
 
-    _this.width = ko.observable(600);
-    _this.height = ko.observable('auto');
-
     //
     // events
     //
-    _this.clickClose = function() {
+    _this.cmdAccept = ko.command(function(cb) {
       if (_this.layer) {
-        var result;
-        if (_this.creditResult()) {
-          result = {
-            customer: _this.data.model,
-            creditResult: _this.creditResult(),
-          };
-        }
-        _this.layer.close(result);
+        _this.layer.close(customerModel, _this.creditResult());
       }
-    };
+      cb();
+    }, function(busy) {
+      return !busy && _this.creditResult() && _this.creditResult().IsHit;
+    });
     _this.cmdRun = ko.command(function(cb) {
       _this.data.validate();
       _this.data.update();
@@ -229,9 +222,9 @@ define('src/account/default/runcredit.vm', [
       }
 
       _this.loaded(false);
-      var model = _this.data.getValue();
-      _this.data.markClean(model, true);
-      dataservice.qualify.runcredit.post(null, model, null, function(err, resp) {
+      customerModel = _this.data.getValue();
+      _this.data.markClean(customerModel, true);
+      dataservice.qualify.runcredit.post(null, customerModel, null, function(err, resp) {
         if (err) {
           notify.notify('warn', resp.Message, 10);
           return cb();
@@ -240,12 +233,16 @@ define('src/account/default/runcredit.vm', [
         _this.loaded(true);
         cb();
       });
+    }, function(busy) {
+      return !busy && (!_this.creditResult() || !_this.creditResult().IsHit);
     });
 
     _this.loading = _this.cmdRun.busy;
   }
   utils.inherits(RunCreditViewModel, BaseViewModel);
   RunCreditViewModel.prototype.viewTmpl = 'tmpl-acct-default-runcredit';
+  RunCreditViewModel.prototype.width = 600;
+  RunCreditViewModel.prototype.height = 'auto';
 
   RunCreditViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
     var _this = this;

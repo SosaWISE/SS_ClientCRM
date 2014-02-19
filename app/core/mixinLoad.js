@@ -2,10 +2,12 @@ define('src/core/mixinLoad', [
   'src/core/helpers',
   'src/core/joiner',
   'src/core/notify',
+  'src/core/utils',
 ], function(
   helpers,
   joiner,
-  notify
+  notify,
+  utils
 ) {
   "use strict";
 
@@ -15,7 +17,7 @@ define('src/core/mixinLoad', [
     /* jshint validthis:true */
     var _this = this;
     _this.load = load;
-    if (typeof(_this.onLoad) !== 'function') {
+    if (!utils.isFunc(_this.onLoad)) {
       // only define if it hasn't already been defined
       _this.onLoad = onLoad_no_op;
     }

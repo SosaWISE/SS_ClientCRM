@@ -73,10 +73,10 @@ div(class="sales-info")
             div(class="totals")
               div
                 div(class="name") Points Given:
-                div(class="value") 6.5
+                div(class="value",data-bind="likecurrency:pointsGiven")
               div
                 div(class="name") Points Available:
-                div(class="value") 0.0
+                div(class="value",data-bind="likecurrency:pointsAvailable")
               div
                 div(class="name") Total:
-                div(class="value") $365.90
+                div(class="value",data-bind="currency:estimateTotal")

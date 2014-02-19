@@ -1,9 +1,11 @@
 define('mock/dataservices/qualify.mock', [
   'src/core/mockery',
-  'src/dataservice'
+  'src/dataservice',
+  'src/core/utils',
 ], function(
   mockery,
-  dataservice
+  dataservice,
+  utils
 ) {
   "use strict";
 
@@ -25,7 +27,7 @@ define('mock/dataservices/qualify.mock', [
       };
 
       setTimeout(function() {
-        if (!err && result && typeof(setter) === 'function') {
+        if (!err && result && utils.isFunc(setter)) {
           setter(result.Value);
         }
         cb(err, result);
@@ -164,9 +166,10 @@ define('mock/dataservices/qualify.mock', [
         CreditReportVendorMicrobiltId: 1,
         CreditReportVendorEasyAccessId: 1,
         CreditReportVendorManualId: 1,
-        Score: 678,
-        IsScored: true,
-        IsHit: true,
+        Score: '@CREDIT_SCORE', //678,
+        IsScored: '@CREDIT_SCORED', //true,
+        IsHit: '@CREDIT_SCORE_HIT', //true,
+        CreditGroup: '@CREDIT_GROUP',
 
         // IsActive: true,
         // IsDeleted: false,
@@ -182,6 +185,36 @@ define('mock/dataservices/qualify.mock', [
       'SHUM001',
       'BOBB001',
     ]);
+
+    mockery.fn.CREDIT_SCORE = [
+      500,
+      610,
+      630,
+      700,
+      null,
+    ];
+    mockery.fn.CREDIT_SCORED = function(cache) {
+      return !!cache.CREDIT_SCORE;
+    };
+    mockery.fn.CREDIT_SCORE_HIT = function(cache) {
+      return !!cache.CREDIT_SCORE;
+    };
+    mockery.fn.CREDIT_GROUP = function(cache) {
+      var score = cache.CREDIT_SCORE,
+        result;
+      if (!score) {
+        result = '';
+      } else if (score >= 650) {
+        result = 'Excellent';
+      } else if (score >= 625) {
+        result = 'Good';
+      } else if (score >= 600) {
+        result = 'Sub';
+      } else {
+        result = 'Poor';
+      }
+      return result;
+    };
   })();
 
   // data used in mock functions

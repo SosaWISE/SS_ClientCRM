@@ -35,6 +35,7 @@ define('src/config', [
   set('titlePrefix', '');
   set('titlePostfix', '| CRM');
   set('leadSourceId', 1);
+  set('leadDispositionId', 9);
 
   return config;
 });

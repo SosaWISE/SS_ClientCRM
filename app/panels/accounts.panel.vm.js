@@ -76,18 +76,24 @@ define('src/panels/accounts.panel.vm', [
       });
       _this.defaultChild = _this.searchVM;
 
-      ////////////////TESTING//////////////////////////////////
-      _this.list([
-        createAccountVM(_this, 3000001, '3000001'),
-        new deps.AccountInfoViewModel({
-          pcontroller: _this,
-          id: 3000002,
-          title: '3000002',
-          name: '3000002',
-        }),
-        createAccountVM(_this, 3000003, '3000003'),
-      ]);
-      ////////////////TESTING//////////////////////////////////
+      // ////////////////TESTING//////////////////////////////////
+      // _this.list([
+      //   createAccountVM(_this, 3000001, '3000001'),
+      //   new deps.AccountInfoViewModel({
+      //     pcontroller: _this,
+      //     id: 3000002,
+      //     title: '3000002',
+      //     name: '3000002',
+      //   }),
+      //   createAccountVM(_this, 3000003, '3000003'),
+      //   new deps.AccountInfoViewModel({
+      //     pcontroller: _this,
+      //     id: 123,
+      //     title: '123',
+      //     name: '123',
+      //   }),
+      // ]);
+      // ////////////////TESTING//////////////////////////////////
 
       cb();
     });

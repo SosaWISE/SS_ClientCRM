@@ -1,9 +1,11 @@
 define('src/core/router', [
   'jquery',
-  'src/core/route'
+  'src/core/route',
+  'src/core/utils',
 ], function(
   jquery,
-  Route
+  Route,
+  utils
 ) {
   "use strict";
 
@@ -27,7 +29,7 @@ define('src/core/router', [
     var _this = this;
     // ,changeTimeout;
 
-    if (typeof(getUser) === 'function') {
+    if (utils.isFunc(getUser)) {
       // set getUser
       _this.getUser = getUser;
     }

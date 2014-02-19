@@ -1,7 +1,9 @@
 define('src/core/onresize', [
  'underscore',
+ 'src/core/utils',
 ], function(
-  underscore
+  underscore,
+  utils
 ) {
   "use strict";
 
@@ -54,7 +56,7 @@ define('src/core/onresize', [
     if (!el) {
       throw new Error('no el');
     }
-    if (typeof(onResize) !== 'function') {
+    if (!utils.isFunc(onResize)) {
       throw new Error('onResize not a function');
     }
 

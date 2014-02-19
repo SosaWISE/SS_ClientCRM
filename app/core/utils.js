@@ -45,5 +45,15 @@ define('src/core/utils', [
       }
     },
 
+    isFunc: function(obj) {
+      return typeof(obj) === 'function' || (obj instanceof Function);
+    },
+    isStr: function(obj) {
+      return typeof(obj) === 'string' || (obj instanceof String);
+    },
+    isNum: function(obj) {
+      return typeof(obj) === 'number' || (obj instanceof Number);
+    },
+
   };
 });

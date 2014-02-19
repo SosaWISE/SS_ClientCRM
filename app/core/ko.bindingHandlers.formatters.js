@@ -46,6 +46,25 @@ define('src/core/ko.bindingHandlers.formatters', [
     },
   };
 
+  function makeFormattedLikeCurrencyValueAccessor(valueAccessor) {
+    return function() {
+      var value = ko.unwrap(valueAccessor());
+      value = strings.decorators.c(value).replace(/\$/, '');
+      return value;
+    };
+  }
+  ko.bindingHandlers.likecurrency = {
+    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+      // pass through to `text` binding
+      ko.bindingHandlers.text.init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
+    },
+    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+      // call `text` binding with formatted currency
+      valueAccessor = makeFormattedLikeCurrencyValueAccessor(valueAccessor);
+      ko.bindingHandlers.text.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
+    },
+  };
+
 
   //
   // Date bindings

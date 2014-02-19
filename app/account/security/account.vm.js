@@ -37,27 +37,33 @@ define('src/account/security/account.vm', [
 
   AccountViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
-      cb = join.add();
+      cb = join.add(),
+      checklist;
+
     setTimeout(function() {
+      checklist = extraData.checklist;
+      if (checklist && checklist instanceof ChecklistViewModel) {
+        checklist = extraData.checklist;
+        checklist.updateRouting(_this);
+      } else {
+        checklist = new ChecklistViewModel({
+          pcontroller: _this,
+        });
+      }
+      checklist.id = 'checklist';
+      checklist.title = 'Setup Checklist';
+
       _this.childs([
         createSummary(_this, 'Account Summary'),
         createFauxController(_this, 'EMC/Equipment'),
         createFauxController(_this, 'Signal History'),
         createInventory(_this, 'Inventory'),
         createFauxController(_this, 'Contract Approval'),
-        (extraData && extraData.checklist) ? extraData.checklist : createAccountChecklist(_this, 'Setup Checklist'),
+        checklist,
       ]);
       cb();
     }, 0);
   };
-
-  function createAccountChecklist(pcontroller, title) {
-    return new ChecklistViewModel({
-      pcontroller: pcontroller,
-      id: 'checklist',
-      title: title,
-    });
-  }
 
   function createInventory(pcontroller, title) {
     return new InventoryViewModel({

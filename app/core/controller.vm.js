@@ -21,22 +21,34 @@ define('src/core/controller.vm', [
     var _this = this;
     ControllerViewModel.super_.call(_this, options);
 
-    if (_this.pcontroller) {
-      // cache route
-      _this.route = _this.route || _this.pcontroller.getRoute();
-      // cache routePart
-      _this.routePart = _this.routePart || _this.pcontroller.getChildRoutePart();
-    }
-
     _this.mixinLoad();
-
     _this.childs = ko.observableArray();
     _this.activeChild = ko.observable(null);
+    _this.updateRouting();
   }
   utils.inherits(ControllerViewModel, BaseViewModel);
   ControllerViewModel.ensureProps = BaseViewModel.ensureProps;
   // ControllerViewModel.prototype.routePart = 'route';
   // ControllerViewModel.prototype.defaultChild = null;
+
+  ControllerViewModel.prototype.updateRouting = function(pcontroller) {
+    var _this = this;
+    if (arguments.length) {
+      _this.pcontroller = pcontroller;
+    }
+    if (_this.pcontroller) {
+      // cache route
+      _this.route = _this.pcontroller.getRoute();
+      // cache routePart
+      _this.routePart = _this.pcontroller.getChildRoutePart();
+      // update childs if already loaded
+      _this.childs.peek().forEach(function(childVm) {
+        if (utils.isFunc(childVm.updateRouting)) {
+          childVm.updateRouting(_this);
+        }
+      });
+    }
+  };
 
   ControllerViewModel.prototype.setRoute = function(route) {
     var _this = this;
@@ -55,6 +67,16 @@ define('src/core/controller.vm', [
     }
     return result;
   };
+  ControllerViewModel.prototype.getRoutePart = function() {
+    var _this = this,
+      result;
+    if (_this.route) {
+      result = _this.route;
+    } else {
+      result = _this.pcontroller.getRoute();
+    }
+    return result;
+  };
   ControllerViewModel.prototype.getChildRoutePart = function() {
     var _this = this;
     return _this.getRoute().getNextPart(_this.routePart);
@@ -64,14 +86,14 @@ define('src/core/controller.vm', [
   // activate async
   ControllerViewModel.prototype.activate = function(routeCtx) { // overrides base
     var _this = this,
-      lastActiveChild = _this.activeChild();
+      lastActiveChild = _this.activeChild.peek();
 
     // immdediately set as active
     _this.active(true);
     // store last route
     _this._lastRouteData = routeCtx.routeData;
     // load self
-    _this.load(routeCtx.routeData, null, function() {
+    _this.load(routeCtx.routeData, routeCtx.extraData, function() {
       // check if routeCtx is still active
       if (!routeCtx.active()) {
         return;
@@ -79,10 +101,10 @@ define('src/core/controller.vm', [
       // active this controller
       _this.onActivate(routeCtx);
       // deactivate old child if different from newly activated child
-      if (lastActiveChild && lastActiveChild !== _this.activeChild()) {
+      if (lastActiveChild && lastActiveChild !== _this.activeChild.peek()) {
         lastActiveChild.deactivate();
       }
-      if (!_this.activeChild()) {
+      if (!_this.activeChild.peek()) {
         _this.setTitle();
         // we're done with activating
         routeCtx.done();
@@ -101,11 +123,11 @@ define('src/core/controller.vm', [
         // no child found
         _this.removeExtraRouteData(routeData);
         // try to use the default child
-        child = _this.defaultChild || _this.childs()[0];
+        child = _this.defaultChild || _this.childs.peek()[0];
       }
     }
     // only set if different than current
-    if (_this.activeChild() !== child) {
+    if (_this.activeChild.peek() !== child) {
       _this.activeChild(child);
     }
     if (child) {
@@ -119,7 +141,7 @@ define('src/core/controller.vm', [
   ControllerViewModel.prototype.findChild = function(routeData) {
     var _this = this,
       result;
-    _this.childs().some(function(item) {
+    _this.childs.peek().some(function(item) {
       var routePart = item.routePart;
       if (routePart) {
         /* jshint eqeqeq:false */
@@ -140,7 +162,7 @@ define('src/core/controller.vm', [
   // synchronous
   ControllerViewModel.prototype.onDeactivate = function() { // overrides base
     var _this = this,
-      activeChild = _this.activeChild();
+      activeChild = _this.activeChild.peek();
     if (activeChild) {
       activeChild.deactivate();
       if (true) { //@TODO: real if statement
@@ -148,6 +170,42 @@ define('src/core/controller.vm', [
         _this.activeChild(null);
       }
     }
+  };
+
+  ControllerViewModel.prototype.canClose = function() {
+    return true;
+  };
+  ControllerViewModel.prototype.closeChild = function(vm) {
+    var _this = this,
+      index = -1,
+      childs;
+    // check if can close
+    if (vm.canClose()) {
+      index = _this.childs.peek().indexOf(vm);
+      if (index > -1) {
+        // remove from list
+        _this.childs.splice(index, 1);
+        // deactivate vm
+        vm.deactivate();
+        // check if a sibling needs to be activated
+        if (_this.activeChild.peek() === vm) {
+          // activate next or prev child
+          childs = _this.childs.peek();
+          vm = childs[index] || childs[index - 1];
+          _this.goTo(_this.getRouteData());
+        }
+      }
+    } else {
+      // if can't close navigate to vm
+      _this.goTo(vm.getRouteData(), {
+        closeFailed: true,
+      });
+    }
+    return index;
+  };
+  ControllerViewModel.prototype.close = function() {
+    var _this = this;
+    return _this.pcontroller.closeChild(_this);
   };
 
   ControllerViewModel.prototype.goTo = function(routeData, extraData, allowHistory) {
