@@ -3,19 +3,20 @@ div(class="scrum-tab scrum-backlog",data-bind="with:backlog().bd")
     span(class="btn add",tabindex="0",data-bind="cmd:cmdAddEpic") Epic
     span(class="btn add",tabindex="0",data-bind="cmd:cmdAddStory") Story
   div(class="sprints")
-    div(class="sprint backlog")
-      div(class="title") Backlog
-      <!-- ko foreach:childs -->
-      div(data-bind="template:{name:viewTmpl}")
+    div(class="sprint-wrap")
+      div(class="sprint backlog")
+        div(class="title") Backlog
+        <!-- ko foreach:childs -->
+        div(data-bind="template:{name:viewTmpl}")
+        <!-- /ko -->
+      <!-- ko foreach:$parent.sprints3 -->
+      <!-- ko if:$data -->
+      div(class="sprint")
+        div(class="title") ??
+        <!-- ko foreach:bd.childs -->
+        div(data-bind="template:{name:viewTmpl}")
+        <!-- /ko -->
       <!-- /ko -->
-    <!-- ko foreach:$parent.sprints3 -->
-    <!-- ko if:$data -->
-    div(class="sprint")
-      div(class="title") ??
-      <!-- ko foreach:bd.childs -->
-      div(data-bind="template:{name:viewTmpl}")
       <!-- /ko -->
-    <!-- /ko -->
-    <!-- /ko -->
 
 div(class="layers",data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

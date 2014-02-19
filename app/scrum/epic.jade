@@ -5,9 +5,15 @@ div(class="epic bl-drag-item",data-bind="scrumDrag:{}")
     div(class="bl-item",data-bind="scrumDrop:{accept:'.bl-drag-item',onDrop:'onDropChild'}")
       div(class="first")
         span(class="drag-hdl")
-        span(class="btn edit",tabindex="0",data-bind="cmd:cmdEdit") Edit
-        span(class="btn add",tabindex="0",data-bind="cmd:cmdAddEpic") Epic
-        span(class="btn add",tabindex="0",data-bind="cmd:cmdAddStory") Story
+        div(class="cog-menu")
+          span(class="cog")
+          ul
+            li
+              span(class="btn edit",tabindex="0",data-bind="cmd:cmdEdit") Edit
+            li
+              span(class="btn add",tabindex="0",data-bind="cmd:cmdAddEpic") Epic
+            li
+              span(class="btn add",tabindex="0",data-bind="cmd:cmdAddStory") Story
       div(class="middle")
         //- span(class="title",data-bind="text:item.ID")
         span(class="title",data-bind="text:item.Name")

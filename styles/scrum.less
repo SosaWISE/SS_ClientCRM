@@ -170,6 +170,21 @@ body.scrum {
     width: 100%;
   }
 
+  .cog-menu {
+    display:inline;
+    .cog {
+      cursor: pointer;
+      &:before {
+        font-family: entypo;
+        font-size: 16;
+        content: '\2699';
+      }
+    }
+    ul {
+      display: none;
+    }
+  }
+
   .scrum-tab {
     > .header {
       position: absolute;
@@ -180,8 +195,17 @@ body.scrum {
       top:50px;right:0px;bottom:0px;left:0px;
       overflow: auto;
 
-      .sprint {
-        padding-bottom: 400px;
+      > .sprint-wrap {
+        white-space: nowrap;
+        .sprint {
+          white-space: normal;
+          display: inline-block;
+          vertical-align: top;
+          width: 300px;
+          padding-bottom: 400px;
+
+          font-size: 0.9em;
+        }
       }
     }
 
@@ -194,7 +218,7 @@ body.scrum {
     position: absolute;
     top:0;right:0;bottom:0;left:0;
 
-    .sprint.backlog {
+    .sprint-wrap .sprint.backlog {
       width: 500px;
     }
 
