@@ -1,4 +1,5 @@
 define('src/account/security/salesinfo.vm', [
+  'src/config',
   'src/slick/buttonscolumn',
   'src/slick/slickgrid.vm',
   'src/ukov',
@@ -9,6 +10,7 @@ define('src/account/security/salesinfo.vm', [
   'ko',
   'src/core/combo.vm',
 ], function(
+  config,
   ButtonsColumn,
   SlickGridViewModel,
   ukov,
@@ -116,14 +118,23 @@ define('src/account/security/salesinfo.vm', [
           buttons: [
             {
               text: 'Add',
-              fn: function(item) {
-                alert('add ' + JSON.stringify(item));
-              },
+              fn: _this.fxAddItem,
+              // fn: function(item) {
+              //   alert('add ' + JSON.stringify(item));
+              // },
             },
           ]
         }),
       ],
     });
+
+    _this.fxAddItem = function(item) {
+      console.log("Adding: ", JSON.stringify(item));
+    };
+
+    _this.pointsGiven = ko.observable(0);
+    _this.pointsAvailable = ko.observable(0);
+    _this.estimateTotal = ko.observable(0);
     // while (_this.frequentGrid.list().length < 19) {
     //   _this.frequentGrid.list().push({
     //     ItemSKU: 'Item ' + _this.frequentGrid.list().length,
@@ -222,9 +233,20 @@ define('src/account/security/salesinfo.vm', [
         });
       });
     });
-
     _this.activationFeeActual.subscribe(function(newValue) {
       console.log("New Activation Fee: ", newValue);
+      _this.refreshInvoice();
+    });
+    _this.ctComboVM.selectedValue.subscribe(function(newValue) {
+      console.log("New Cellular Type:", newValue);
+      _this.refreshInvoice();
+    });
+    _this.over3Months.subscribe(function(newValue) {
+      console.log("New Over 3 Months: ", newValue);
+      _this.refreshInvoice();
+    });
+    _this.apckComboVM.selectedValue.subscribe(function(newValue) {
+      console.log("AlarmComPackage: ", newValue);
       _this.refreshInvoice();
     });
     _this.monthlyMonitoringRateActual.subscribe(function(newValue) {
@@ -246,8 +268,10 @@ define('src/account/security/salesinfo.vm', [
           MonthlyMonitoringRate: _this.monthlyMonitoringRate(),
           MonthlyMonitoringRateItemId: _this.monthlyMonitoringRateItemId,
           MonthlyMonitoringRateActual: _this.monthlyMonitoringRateActual(),
-          AlarmComPackage: _this.apckComboVM.selectedValue(),
+          CellTypeId: _this.ctComboVM.selectedValue(),
           Over3Months: _this.over3Months(),
+          AlarmComPackageId: _this.apckComboVM.selectedValue(),
+          DealerId: config.user().DealerId,
         }, schema);
 
         dataservice.salessummary.invoicerefresh.save(_this.sData.model.root, null, function(err, resp) {
@@ -256,6 +280,17 @@ define('src/account/security/salesinfo.vm', [
           } else {
             console.log("Response: ", resp);
             _this.partsGrid.list(resp.Value.Items);
+
+            /** Calculate points and estimate total price. */
+            var totalPrice = 0,
+              pointsGiven = 0;
+            resp.Value.Items.map(function(item) {
+              // console.log("Invoice Item Refreshed:", item);
+              totalPrice += item.RetailPrice;
+              pointsGiven += item.SystemPoints;
+            });
+            _this.pointsGiven(pointsGiven);
+            _this.estimateTotal(totalPrice);
           }
         });
       }
