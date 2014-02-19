@@ -26,7 +26,9 @@ define('src/survey/qpossibleanswermap.vm', [
     _this.cmdToggle = ko.command(function(cb) {
       var model = _this.model;
       model.Expands = !model.Expands;
-      dataservice.survey.questionPossibleAnswerMaps.save(model, null, function(err, resp) {
+      dataservice.survey.questionPossibleAnswerMaps.save({
+        data: model,
+      }, null, function(err, resp) {
         if (err) {
           notify.notify('warn', err.Message);
         } else {

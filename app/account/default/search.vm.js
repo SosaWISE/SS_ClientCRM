@@ -96,7 +96,7 @@ define('src/account/default/search.vm', [
 
 
     _this.searchGvm = new SlickGridViewModel({
-      options: {
+      gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
         rowHeight: 27,

@@ -46,9 +46,9 @@ define('src/panels/accounts.panel.vm', [
       _this.selectChild(vm);
     };
     _this.clickAddItem = function() {
-      var vm = createAccountVM(0, 'New Account');
-      _this.list.push(vm);
-      _this.selectChild(vm);
+      // var vm = createAccountVM(0, 'New Account');
+      // _this.list.push(vm);
+      // _this.selectChild(vm);
     };
     _this.clickNew = function() {
       newCount++;
@@ -112,7 +112,7 @@ define('src/panels/accounts.panel.vm', [
         /* jshint eqeqeq:false */
         if (typeof(id) !== 'undefined' && parseInt(id, 10) == id) {
           // create child and add to list
-          result = createAccountVM(_this, parseInt(id, 10), id + '');
+          result = createMasterAccountVM(_this, parseInt(id, 10), id + '');
           _this.list.push(result);
         }
       }
@@ -120,7 +120,7 @@ define('src/panels/accounts.panel.vm', [
     return result;
   };
 
-  function createAccountVM(pcontroller, id, name) {
+  function createMasterAccountVM(pcontroller, id, name) {
     return new deps.MasterAccountViewModel({
       pcontroller: pcontroller,
       id: id,

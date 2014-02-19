@@ -48,11 +48,13 @@ define('src/survey/question.new.vm', [
         return cb();
       }
       dataservice.survey.questions.save({
-        SurveyId: _this.surveyVM.model.SurveyID,
-        QuestionMeaningId: selectedValue.model.QuestionMeaningID,
-        ParentId: (_this.parent) ? _this.parent.model.QuestionID : null,
-        GroupOrder: _this.groupOrder,
-        MapToTokenId: null,
+        data: {
+          SurveyId: _this.surveyVM.model.SurveyID,
+          QuestionMeaningId: selectedValue.model.QuestionMeaningID,
+          ParentId: (_this.parent) ? _this.parent.model.QuestionID : null,
+          GroupOrder: _this.groupOrder,
+          MapToTokenId: null,
+        },
       }, null, function(err, resp) {
         if (err) {
           notify.notify('error', err.Message);

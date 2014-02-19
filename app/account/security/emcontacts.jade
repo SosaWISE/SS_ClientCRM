@@ -7,12 +7,9 @@ div(class="acct-emcontacts")
           li
             a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickAddContact") Add Contact
           li
-            a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickEditContact") Edit Contact
-          li
-            a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickDeleteContact") Delete Contact
-          li
             a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickReorderContacts") Reorder Contacts
     tr
       td(class="fh-body")
-        div(class="fh-contents")
+        div(class="fh-contents relative")
           div(class="slickgrid",data-bind="slickgrid:gvm")
+          //- div(data-bind="template:{name:gvm.menuVm.viewTmpl,data:gvm.menuVm}")

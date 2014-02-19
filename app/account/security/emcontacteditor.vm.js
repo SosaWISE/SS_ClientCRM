@@ -1,4 +1,5 @@
 define('src/account/security/emcontacteditor.vm', [
+  'src/dataservice',
   'src/core/combo.vm',
   'src/core/notify',
   'src/core/utils',
@@ -6,6 +7,7 @@ define('src/account/security/emcontacteditor.vm', [
   'ko',
   'src/ukov',
 ], function(
+  dataservice,
   ComboViewModel,
   notify,
   utils,
@@ -22,6 +24,11 @@ define('src/account/security/emcontacteditor.vm', [
   schema = {
     _model: true,
 
+    EmergencyContactID: {},
+
+    CustomerId: {},
+    AccountId: {},
+
     Prefix: {
       converter: strConverter,
     },
@@ -31,7 +38,7 @@ define('src/account/security/emcontacteditor.vm', [
         ukov.validators.isRequired('First name is required'),
       ],
     },
-    MiddleInitial: {
+    MiddleName: {
       converter: strConverter,
     },
     LastName: {
@@ -40,12 +47,19 @@ define('src/account/security/emcontacteditor.vm', [
         ukov.validators.isRequired('Last name is required'),
       ],
     },
-    Suffix: {
+    Postfix: {
       converter: strConverter,
     },
 
-    Relastionship: {
-
+    RelationshipId: {
+      validators: [
+        ukov.validators.isRequired('Relationship is required'),
+      ],
+    },
+    OrderNumber: {
+      validators: [
+        ukov.validators.isRequired('OrderNumber is required'),
+      ],
     },
 
     Email: {
@@ -55,131 +69,156 @@ define('src/account/security/emcontacteditor.vm', [
       ],
     },
 
-    HouseKeys: {
+    HasKey: {},
 
+    Phone1: {
+      converter: phoneConverter,
+      validators: [
+        ukov.validators.isRequired('Primary phone is required'),
+      ],
     },
-
-    PrimaryPhone: {
+    Phone1TypeId: {
+      validators: [
+        ukov.validators.isRequired('Primary phone type is required'),
+      ],
+    },
+    Phone2: {
       converter: phoneConverter,
     },
-    PrimaryPhoneTypeId: {
-
-    },
-    SecondaryPhone: {
+    Phone2TypeId: {},
+    Phone3: {
       converter: phoneConverter,
     },
-    SecondaryPhoneTypeId: {
-
-    },
-    AlternatePhone: {
-      converter: phoneConverter,
-    },
-    AlternatePhoneTypeId: {
-
-    },
+    Phone3TypeId: {},
   };
 
 
   function EmContactEditorViewModel(options) {
     var _this = this;
     EmContactEditorViewModel.super_.call(_this, options);
+    BaseViewModel.ensureProps(_this, [
+      // 'customerId',
+      'accountId',
+      'phoneOptions',
+      'phoneOptionFields',
+      'relationshipOptions',
+      'relationshipOptionFields',
+    ]);
 
     _this.width = ko.observable(550);
     _this.height = ko.observable('auto');
 
-    _this.data = ukov.wrap({
+    _this.data = ukov.wrap(_this.item || {
+      // EmergencyContactID: '',
+      CustomerId: _this.customerId,
+      AccountId: _this.accountId,
+      RelationshipId: null,
+      OrderNumber: _this.orderNumber || 999,
+      Allergies: '',
+      MedicalConditions: '',
+      HasKey: false,
+      DOB: '',
       Prefix: '',
       FirstName: '',
-      MiddleInitial: '',
+      MiddleName: '',
       LastName: '',
-      Suffix: '',
-      Relastionship: null,
+      Postfix: '',
       Email: '',
-      HouseKeys: false,
-      PrimaryPhone: '',
-      PrimaryPhoneTypeId: null,
-      SecondaryPhone: '',
-      SecondaryPhoneTypeId: null,
-      AlternatePhone: '',
-      AlternatePhoneTypeId: null,
+      Password: '',
+      Phone1: '',
+      Phone1TypeId: null,
+      Phone2: '',
+      Phone2TypeId: null,
+      Phone3: '',
+      Phone3TypeId: null,
+      Comment1: '',
     }, schema);
 
     _this.data.RelastionshipCvm = new ComboViewModel({
-      selectedValue: _this.data.Relastionship,
-      list: _this.relastionshipOptions,
+      selectedValue: _this.data.RelationshipId,
+      list: _this.relationshipOptions,
+      fields: _this.relationshipOptionFields,
     });
-    _this.data.HouseKeysCvm = new ComboViewModel({
-      selectedValue: _this.data.HouseKeys,
-      list: _this.houseKeysOptions,
+    _this.data.HasKeyCvm = new ComboViewModel({
+      selectedValue: _this.data.HasKey,
+      list: _this.yesNoOptions,
     });
 
-    _this.data.PrimaryPhoneTypeCvm = new ComboViewModel({
-      selectedValue: _this.data.PrimaryPhoneTypeId,
+    _this.data.Phone1TypeCvm = new ComboViewModel({
+      selectedValue: _this.data.Phone1TypeId,
       list: _this.phoneOptions,
+      fields: _this.phoneOptionFields,
       nullable: true,
     });
-    _this.data.SecondaryPhoneTypeCvm = new ComboViewModel({
-      selectedValue: _this.data.SecondaryPhoneTypeId,
+    _this.data.Phone2TypeCvm = new ComboViewModel({
+      selectedValue: _this.data.Phone2TypeId,
       list: _this.phoneOptions,
+      fields: _this.phoneOptionFields,
       nullable: true,
     });
-    _this.data.AlternatePhoneTypeCvm = new ComboViewModel({
-      selectedValue: _this.data.AlternatePhoneTypeId,
+    _this.data.Phone3TypeCvm = new ComboViewModel({
+      selectedValue: _this.data.Phone3TypeId,
       list: _this.phoneOptions,
+      fields: _this.phoneOptionFields,
       nullable: true,
     });
 
     //
     // events
     //
-    _this.clickCancel = function() {
+    _this.cmdCancel = ko.command(function(cb) {
       if (_this.layer) {
         _this.layer.close(null);
       }
-    };
-    _this.clickSave = function() {
-      if (_this.layer) {
-        var model = _this.data.getValue();
-        alert('@TODO: add contact:' + JSON.stringify(model));
-        _this.layer.close(model);
+      cb();
+    }, function(busy) {
+      return !busy && !_this.cmdSave.busy() && !_this.cmdDelete.busy();
+    });
+    _this.cmdSave = ko.command(function(cb) {
+      if (!_this.layer) {
+        cb();
+        return;
       }
-    };
+      if (!_this.data.isValid()) {
+        notify.notify('warn', _this.data.errMsg(), 7);
+        cb();
+        return;
+      }
+      var model = _this.data.getValue();
+      _this.data.markClean(model, true);
+      dataservice.monitoringstation.emergencyContacts.save({
+        id: model.EmergencyContactID,
+        data: model,
+      }, null, function(err, resp) {
+        if (err) {
+          notify.notify('error', err.Message);
+        }
+        utils.safeCallback(err, function() {
+          _this.layer.close(resp.Value, false);
+        }, cb);
+      });
+    }, function(busy) {
+      return !busy && !_this.cmdDelete.busy();
+    });
+    _this.cmdDelete = ko.command(function(cb) {
+      if (!_this.layer) {
+        cb();
+        return;
+      }
+      dataservice.monitoringstation.emergencyContacts.del(_this.data.model.EmergencyContactID, null, function(err, resp) {
+        if (err) {
+          notify.notify('error', err.Message);
+        }
+        utils.safeCallback(err, function() {
+          _this.layer.close(resp.Value, true);
+        }, cb);
+      });
+    }, function(busy) {
+      return !busy && _this.item && !_this.cmdSave.busy();
+    });
   }
   utils.inherits(EmContactEditorViewModel, BaseViewModel);
   EmContactEditorViewModel.prototype.viewTmpl = 'tmpl-security-emcontacteditor';
-
-
-  //@TODO: load options from server
-  EmContactEditorViewModel.prototype.phoneOptions = [
-    {
-      value: 1,
-      text: 'Home'
-    },
-    {
-      value: 2,
-      text: 'Cellular'
-    },
-  ];
-  EmContactEditorViewModel.prototype.houseKeysOptions = [
-    {
-      value: true,
-      text: 'Yes'
-    },
-    {
-      value: false,
-      text: 'No'
-    },
-  ];
-  EmContactEditorViewModel.prototype.relastionshipOptions = [
-    {
-      value: 1,
-      text: 'Relative'
-    },
-    {
-      value: 2,
-      text: 'Spouse'
-    },
-  ];
 
   return EmContactEditorViewModel;
 });

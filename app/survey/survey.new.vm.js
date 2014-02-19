@@ -66,7 +66,9 @@ define('src/survey/survey.new.vm', [
         notify.notify('warn', _this.sData.errMsg(), 10);
         return cb();
       }
-      dataservice.survey.surveys.save(_this.sData.model, null, function(err, resp) {
+      dataservice.survey.surveys.save({
+        data: _this.sData.model,
+      }, null, function(err, resp) {
         if (err) {
           notify.notify('error', err.Message);
         } else {

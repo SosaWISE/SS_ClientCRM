@@ -49,6 +49,7 @@
       };
     }
     _cmd.canExecute = ko.computed({
+      deferEvaluation: true,
       read: canExecuteWrapper,
       write: canExecuteWrapper, // ignores passed in value, basically forces a recompute
     });

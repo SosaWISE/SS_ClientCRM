@@ -137,20 +137,36 @@
     ko.bindingHandlers[name] = {
       update: function(element, valueAccessor) {
         var size = ko.utils.unwrapObservable(valueAccessor());
-        if (size) {
-          if (typeof(size) === 'number') {
-            size = size + "px";
-          }
-        } else {
-          size = "";
-        }
-
+        size = ensurePx(size, "");
         jquery(element).css(name, size);
       },
     };
   }
   createSizeHandler('width');
   createSizeHandler('height');
+
+  function ensurePx(val, defaultVal) {
+    if (val) {
+      if (typeof(val) === 'number') {
+        val = val + "px";
+      }
+    } else {
+      val = defaultVal;
+    }
+    return val;
+  }
+
+  // size
+  //---------------------------
+  ko.bindingHandlers.position = {
+    update: function(element, valueAccessor) {
+      var position = ko.utils.unwrapObservable(valueAccessor()) || {};
+      jquery(element).css({
+        top: ensurePx(position.top, '0px'),
+        left: ensurePx(position.left, '0px'),
+      });
+    },
+  };
 
 
   //@NOTE: instead use the table approach used by the OP, since no javascript is needed

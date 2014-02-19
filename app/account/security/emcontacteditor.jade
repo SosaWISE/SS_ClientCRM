@@ -2,6 +2,10 @@ div(class="acct-emcontacteditor")
   table(class="fh-wrap")
     tr
       td(class="fh-header")
+        ul(class="actions")
+          li
+            a(class="btn",data-bind="cmd:cmdDelete") Delete
+
         div
           ul(class="edit-form limit-width")
             li
@@ -13,9 +17,9 @@ div(class="acct-emcontacteditor")
               input(type="text", placeholder="",
                 data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup'")
             li
-              span(class="label") Middle Initial
+              span(class="label") Middle Name
               input(type="text", placeholder="",
-                data-bind="ukov:data.MiddleInitial,value:data.MiddleInitial,valueUpdate:'keyup'")
+                data-bind="ukov:data.MiddleName,value:data.MiddleName,valueUpdate:'keyup'")
             li
               span(class="label") Last Name
               input(type="text", placeholder="",
@@ -23,7 +27,7 @@ div(class="acct-emcontacteditor")
             li
               span(class="label") Suffix
               input(type="text", placeholder="",
-                data-bind="ukov:data.Suffix,value:data.Suffix,valueUpdate:'keyup'")
+                data-bind="ukov:data.Postfix,value:data.Postfix,valueUpdate:'keyup'")
           ul(class="edit-form limit-width right-side")
             li
               span(class="label") Relastionship
@@ -33,34 +37,33 @@ div(class="acct-emcontacteditor")
               input(type="text", placeholder="",
                 data-bind="ukov:data.Email,value:data.Email,valueUpdate:'keyup'")
             li
-              span(class="label") House Keys
-              div(data-bind="template:{name:data.HouseKeysCvm.viewTmpl,data:data.HouseKeysCvm}")
-
+              span(class="label") Has Keys
+              div(data-bind="template:{name:data.HasKeyCvm.viewTmpl,data:data.HasKeyCvm}")
         div
           ul(class="edit-form")
             li
               span(class="label") Primary Phone
               input(type="text", placeholder="(123) 123-1234",class="limit-width",
-                data-bind="ukov:data.PrimaryPhone,value:data.PrimaryPhone,valueUpdate:'keyup'")
+                data-bind="ukov:data.Phone1,value:data.Phone1,valueUpdate:'keyup'")
               div(class="limit-width right-side",
-                data-bind="template:{name:data.PrimaryPhoneTypeCvm.viewTmpl,data:data.PrimaryPhoneTypeCvm}")
+                data-bind="template:{name:data.Phone1TypeCvm.viewTmpl,data:data.Phone1TypeCvm}")
             li
               span(class="label") Secondary Phone
               input(type="text", placeholder="(123) 123-1234",class="limit-width",
-                data-bind="ukov:data.SecondaryPhone,value:data.SecondaryPhone,valueUpdate:'keyup'")
+                data-bind="ukov:data.Phone2,value:data.Phone2,valueUpdate:'keyup'")
               div(class="limit-width right-side",
-                data-bind="template:{name:data.SecondaryPhoneTypeCvm.viewTmpl,data:data.SecondaryPhoneTypeCvm}")
+                data-bind="template:{name:data.Phone2TypeCvm.viewTmpl,data:data.Phone2TypeCvm}")
             li
               span(class="label") Alternate Phone
               input(type="text", placeholder="(123) 123-1234",class="limit-width",
-                data-bind="ukov:data.AlternatePhone,value:data.AlternatePhone,valueUpdate:'keyup'")
+                data-bind="ukov:data.Phone3,value:data.Phone3,valueUpdate:'keyup'")
               div(class="limit-width right-side",
-                data-bind="template:{name:data.AlternatePhoneTypeCvm.viewTmpl,data:data.AlternatePhoneTypeCvm}")
+                data-bind="template:{name:data.Phone3TypeCvm.viewTmpl,data:data.Phone3TypeCvm}")
     tr
       td(class="fh-body")
         div(class="fh-contents")
           ul(class="actions")
             li
-              a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+              a(class="btn",tabindex="0",data-bind="cmd:cmdCancel") Cancel
             li
-              a(class="btn",tabindex="0",data-bind="cmd:clickSave") Save
+              a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save

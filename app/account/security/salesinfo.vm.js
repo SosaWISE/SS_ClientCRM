@@ -84,7 +84,7 @@ define('src/account/security/salesinfo.vm', [
     _this.title = ko.observable(_this.title);
 
     _this.frequentGrid = new SlickGridViewModel({
-      options: {
+      gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
         rowHeight: 27,
@@ -145,7 +145,7 @@ define('src/account/security/salesinfo.vm', [
     // }
 
     _this.partsGrid = new SlickGridViewModel({
-      options: {
+      gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
         rowHeight: 27,
@@ -274,7 +274,9 @@ define('src/account/security/salesinfo.vm', [
           DealerId: config.user().DealerId,
         }, schema);
 
-        dataservice.salessummary.invoicerefresh.save(_this.sData.model.root, null, function(err, resp) {
+        dataservice.salessummary.invoicerefresh.save({
+          data: _this.sData.model.root,
+        }, null, function(err, resp) {
           if (err) {
             notify.notify('error', err.Message);
           } else {

@@ -110,7 +110,7 @@ define('src/account/default/notes.vm', [
 
 
     _this.notesGvm = new SlickGridViewModel({
-      options: {
+      gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
         rowHeight: 27 * 2,
@@ -234,7 +234,9 @@ define('src/account/default/notes.vm', [
 
   function createNote(ukovData, cb) {
     var model = ukovData.getValue();
-    dataservice.maincore.notes.save(model, null, function(err, resp) {
+    dataservice.maincore.notes.save({
+      data: model,
+    }, null, function(err, resp) {
       utils.safeCallback(err, function() {
         ukovData.setVal(resp.Value);
         ukovData.markClean(resp.Value);
@@ -258,7 +260,9 @@ define('src/account/default/notes.vm', [
 
     note('');
 
-    dataservice.maincore.notes.save(model, null, function(err, resp) {
+    dataservice.maincore.notes.save({
+      data: model,
+    }, null, function(err, resp) {
       utils.safeCallback(err, function() {
         ukovData.setVal(resp.Value);
         ukovData.markClean(resp.Value);

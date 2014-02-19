@@ -27,6 +27,16 @@ define('src/core/base.vm', [
   BaseViewModel.prototype.name = null;
   BaseViewModel.prototype.viewTmpl = null;
   BaseViewModel.prototype.booleanOptions = [true, false];
+  BaseViewModel.prototype.yesNoOptions = [
+    {
+      value: false,
+      text: 'No'
+    },
+    {
+      value: true,
+      text: 'Yes'
+    },
+  ];
 
   //
   // public members

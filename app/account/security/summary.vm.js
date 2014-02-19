@@ -33,11 +33,11 @@ define('src/account/security/summary.vm', [
   SummaryViewModel.prototype.viewTmpl = 'tmpl-security-summary';
 
   SummaryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var cb = join.add();
-    setTimeout(function() {
-      cb();
-      //@TODO: load real account
-    }, 0);
+    var _this = this;
+
+    _this.emcontactsVm.load(routeData, extraData, join);
+
+    //@TODO: load real account
   };
 
   return SummaryViewModel;
