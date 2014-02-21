@@ -30,13 +30,30 @@ define('src/account/security/emcontacts.vm', [
         }
       });
     };
-    _this.clickReorderContacts = function() {
-      alert('@TODO: reorder contacts');
-    };
 
     _this.gvm = new EmContactsGridViewModel({
       edit: function(contact, cb) {
         _this.showContactEditor(contact, cb);
+      },
+      save: function(model) {
+        dataservice.monitoringstation.emergencyContacts.save({
+          id: model.EmergencyContactID,
+          data: model,
+        }, null, function(err /*, resp*/ ) {
+          if (err) {
+            notify.notify('error', err.Message);
+          }
+        });
+      },
+      fullnameFormatter: function(row, cell, value, columnDef, dataCtx) {
+        return [dataCtx.Prefix, dataCtx.FirstName, dataCtx.MiddleName, dataCtx.LastName, dataCtx.Postfix].join(' ');
+      },
+      relationshipFormatter: function(row, cell, value) {
+        var relationship = findById(_this.relationshipOptions, value, 'RelationshipID');
+        return relationship ? relationship.RelationshipDescription : 'Unknown Relationship';
+      },
+      yesNoFormatter: function(row, cell, value) {
+        return value ? 'yes' : 'no';
       },
     });
   }
@@ -78,6 +95,10 @@ define('src/account/security/emcontacts.vm', [
       link: 'emergencyContacts',
     }, null, function(err, resp) {
       utils.safeCallback(err, function() {
+        // sort emergency contacts
+        resp.Value.sort(function(a, b) {
+          return a.OrderNumber - b.OrderNumber;
+        });
         _this.gvm.list(resp.Value);
         cb();
       });
@@ -100,6 +121,17 @@ define('src/account/security/emcontacts.vm', [
         _this.relationshipOptions = resp.Value;
       }, cb);
     });
+  }
+
+  function findById(list, id, idName) {
+    var result;
+    list.some(function(item) {
+      if (item[idName] === id) {
+        result = item;
+        return true;
+      }
+    });
+    return result;
   }
 
 

@@ -224,22 +224,22 @@ define('mock/dataservices/monitoringstation.mock', [
   }).list;
 
   emergencyContacts = mockery.fromTemplate({
-    'list|3-3': [
+    'list|15-15': [
       {
         EmergencyContactID: '@INC(emergencyContacts)',
         CustomerId: null,
         AccountId: 1,
         RelationshipId: '@REF_INC(emergencyContactRelationships)',
-        OrderNumber: '@NUMBER(1,15)',
+        OrderNumber: '@NUMBER(1,100)',
         Allergies: null,
         MedicalConditions: null,
         HasKey: '@BOOL',
         DOB: null,
-        Prefix: '@TEXT(2,3)',
+        Prefix: '@CHAR_UPPER(pre)@CHAR_LOWER(pre).',
         FirstName: '@NAME',
-        MiddleName: '@CHAR_UPPER',
+        MiddleName: '@CHAR_UPPER.',
         LastName: '@LASTNAME',
-        Postfix: '@TEXT(2,3)',
+        Postfix: '@CHAR_UPPER(post)@CHAR_LOWER(post).',
         Email: '@EMAIL',
         Password: null,
         Phone1: '@PHONE',

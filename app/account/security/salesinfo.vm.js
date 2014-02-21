@@ -188,32 +188,6 @@ define('src/account/security/salesinfo.vm', [
           ]
         }),
       ],
-      list: [
-        {
-          ItemDesc: 'Simon XT (234422)',
-          Cost: 189.99,
-          SystemPoints: 4.0,
-          Total: 189.99,
-        },
-        {
-          ItemDesc: 'Free Panel (234422)',
-          Cost: -189.99,
-          SystemPoints: -4.0,
-          Total: 189.99,
-        },
-        {
-          ItemDesc: 'Simon XT (234422)',
-          Cost: 189.99,
-          SystemPoints: 4.0,
-          Total: 189.99,
-        },
-        {
-          ItemDesc: 'Free Panel (234422)',
-          Cost: -189.99,
-          SystemPoints: -4.0,
-          Total: 189.99,
-        },
-      ],
     });
 
     _this.psComboVM.selectedValue.subscribe(function(psValue) {

@@ -53,7 +53,9 @@ define('src/slick/slickgrid.vm', [
     });
 
     _this.gridOptions = _this.gridOptions || {};
-    _this.list = ko.observableArray(_this.list);
+    if (!_this.list || !ko.isObservable(_this.list)) {
+      _this.list = ko.observableArray(_this.list);
+    }
     _this.updateGrid = function() {
       var grid = _this.grid;
       if (grid) {
@@ -65,7 +67,7 @@ define('src/slick/slickgrid.vm', [
     _this.list.subscribe(function(list) {
       var grid = _this.grid;
       if (grid) {
-        grid.setData(list, true);
+        grid.setData(list, false); // false - don't scroll to top
         _this.updateGrid();
       }
     });
@@ -137,7 +139,7 @@ define('src/slick/slickgrid.vm', [
       if (element && element !== container) {
         console.warn('unBound element doesn\'t match grid container', container, element);
       }
-      _this.grid.destroy();
+      _this.grid.destroy(); // also unregisters all plugins
       _this.grid = null;
     }
   };

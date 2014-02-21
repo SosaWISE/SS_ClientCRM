@@ -1,12 +1,12 @@
 define('src/account/security/emcontacts.gvm', [
-  'jquery',
   'ko',
+  'src/slick/moverows',
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/core/utils',
 ], function(
-  jquery,
   ko,
+  MoveRows,
   RowEvent,
   SlickGridViewModel,
   utils
@@ -14,14 +14,25 @@ define('src/account/security/emcontacts.gvm', [
   "use strict";
 
   function EmContactsGridViewModel(options) {
-    var _this = this;
+    var _this = this,
+      list = ko.observableArray();
     EmContactsGridViewModel.super_.call(_this, {
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
         rowHeight: 27,
       },
+      list: list,
       plugins: [
+        new MoveRows({
+          observableArray: list,
+          orderName: 'OrderNumber',
+          onOrderChanged: function(changedRows) {
+            changedRows.forEach(function(item) {
+              options.save(item);
+            });
+          },
+        }),
         new RowEvent({
           eventName: 'onDblClick',
           fn: function(item) {
@@ -40,49 +51,49 @@ define('src/account/security/emcontacts.gvm', [
       ],
       columns: [
         {
-          id: 'OrderNumber',
-          name: 'OrderNumber',
-          field: 'OrderNumber',
+          id: '#',
+          name: '',
+          width: 30,
+          behavior: 'selectAndMove',
+          resizable: false,
+          cssClass: 'cell-reorder',
         },
         {
-          id: 'FirstName',
-          name: 'FirstName',
-          field: 'FirstName',
-        },
-        {
-          id: 'MiddleName',
-          name: 'MiddleName',
-          field: 'MiddleName',
-        },
-        {
-          id: 'LastName',
-          name: 'LastName',
-          field: 'LastName',
+          id: 'Name',
+          name: 'Name',
+          formatter: options.fullnameFormatter,
         },
         {
           id: 'RelationshipId',
           name: 'RelationshipId',
           field: 'RelationshipId',
+          formatter: options.relationshipFormatter,
         },
         {
           id: 'Phone1',
           name: 'Phone1',
           field: 'Phone1',
+          width: 50,
         },
         {
           id: 'Phone2',
           name: 'Phone2',
           field: 'Phone2',
+          width: 50,
         },
         {
           id: 'Phone3',
           name: 'Phone3',
           field: 'Phone3',
+          width: 50,
         },
         {
           id: 'HasKey',
           name: 'HasKey',
           field: 'HasKey',
+          // resizable: false,
+          width: 30,
+          formatter: options.yesNoFormatter,
         },
       ],
     });
