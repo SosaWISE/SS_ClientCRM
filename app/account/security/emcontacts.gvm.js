@@ -1,81 +1,129 @@
 define('src/account/security/emcontacts.gvm', [
+  'ko',
+  'src/slick/moverows',
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/core/utils',
 ], function(
+  ko,
+  MoveRows,
   RowEvent,
   SlickGridViewModel,
   utils
 ) {
   "use strict";
 
-  function EmContactsGridViewModel() {
-    var _this = this;
+  function EmContactsGridViewModel(options) {
+    var _this = this,
+      list = ko.observableArray();
     EmContactsGridViewModel.super_.call(_this, {
-      options: {
+      gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
         rowHeight: 27,
       },
+      list: list,
       plugins: [
+        new MoveRows({
+          observableArray: list,
+          orderName: 'OrderNumber',
+          onOrderChanged: function(changedRows) {
+            changedRows.forEach(function(item) {
+              options.save(item);
+            });
+          },
+        }),
         new RowEvent({
           eventName: 'onDblClick',
-          fn: function() {
-            alert('double clicked');
+          fn: function(item) {
+            options.edit(item, function(model, deleted) {
+              if (!model) { // nothing changed
+                return;
+              }
+              if (deleted) { // remove deleted item
+                _this.list.remove(item);
+              } else { // update in place
+                _this.list.replace(item, model);
+              }
+            });
           },
         }),
       ],
       columns: [
         {
-          id: 'Order',
-          name: 'Order',
-          field: 'Order',
+          id: '#',
+          name: '',
+          width: 30,
+          behavior: 'selectAndMove',
+          resizable: false,
+          cssClass: 'cell-reorder',
         },
         {
           id: 'Name',
           name: 'Name',
-          field: 'Name',
+          formatter: options.fullnameFormatter,
         },
         {
-          id: 'Relationship',
-          name: 'Relationship',
-          field: 'Relationship',
+          id: 'RelationshipId',
+          name: 'RelationshipId',
+          field: 'RelationshipId',
+          formatter: options.relationshipFormatter,
         },
         {
-          id: 'PrimaryPhone',
-          name: 'PrimaryPhone',
-          field: 'PrimaryPhone',
+          id: 'Phone1',
+          name: 'Phone1',
+          field: 'Phone1',
+          width: 50,
         },
         {
-          id: 'SecondayPhone',
-          name: 'SecondayPhone',
-          field: 'SecondayPhone',
+          id: 'Phone2',
+          name: 'Phone2',
+          field: 'Phone2',
+          width: 50,
         },
         {
-          id: 'AlternatePhone',
-          name: 'AlternatePhone',
-          field: 'AlternatePhone',
+          id: 'Phone3',
+          name: 'Phone3',
+          field: 'Phone3',
+          width: 50,
         },
         {
-          id: 'HouseKeys',
-          name: 'HouseKeys',
-          field: 'HouseKeys',
+          id: 'HasKey',
+          name: 'HasKey',
+          field: 'HasKey',
+          // resizable: false,
+          width: 30,
+          formatter: options.yesNoFormatter,
         },
       ],
     });
-    while (_this.list().length < 2) {
-      _this.list().push({
-        Order: _this.list().length + 1,
-        Name: 'Name ' + (_this.list().length + 1),
-        Relationship: 'Relationship ' + (_this.list().length + 1),
-        PrimaryPhone: 'PrimaryPhone ' + (_this.list().length + 1),
-        SecondayPhone: 'SecondayPhone ' + (_this.list().length + 1),
-        AlternatePhone: 'AlternatePhone ' + (_this.list().length + 1),
-        HouseKeys: (_this.list().length % 2) === 0,
-      });
-    }
   }
   utils.inherits(EmContactsGridViewModel, SlickGridViewModel);
+
+  // EmContactsGridViewModel.prototype.augmentMenuVm = function(menuVm) {
+  //   var _this = this;
+  //   menuVm.clickDelete = function() {
+  //     var item = _this.grid.getDataItem(menuVm.cell.row);
+  //     console.log(item);
+  //   };
+  //   menuVm.viewTmpl = 'tmpl-security-emcontacts_ctxmenu';
+  // };
+
+  EmContactsGridViewModel.prototype.nextOrderNumber = function() {
+    var _this = this,
+      list = _this.list(),
+      orderNumber;
+    if (list.length) {
+      orderNumber = list[list.length - 1].OrderNumber;
+      if (!orderNumber) {
+        orderNumber = list.length;
+      }
+      orderNumber += 1;
+    } else {
+      orderNumber = 1;
+    }
+    return orderNumber;
+  };
 
   return EmContactsGridViewModel;
 });

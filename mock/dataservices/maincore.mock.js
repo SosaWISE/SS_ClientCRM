@@ -125,7 +125,8 @@ define('mock/dataservices/maincore.mock', [
 
 
 
-    dataservice.maincore.notes.save = function(data, setter, cb) {
+    dataservice.maincore.notes.save = function(params, setter, cb) {
+      var data = params.data;
       send(createOrUpdate(notes, 'NoteID', '@INC(note)', {
         NoteID: data.NoteID,
         NoteTypeId: data.NoteTypeId,

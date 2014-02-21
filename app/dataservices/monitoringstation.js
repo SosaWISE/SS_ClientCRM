@@ -13,6 +13,9 @@ define('src/dataservices/monitoringstation', [
 
     [
       'accounts',
+      'emergencyContacts',
+      'emergencyContactPhoneTypes',
+      'emergencyContactRelationships',
     ].forEach(function(collectionName) {
         result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
       });

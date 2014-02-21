@@ -82,7 +82,9 @@ define('src/survey/questiontranslation.vm', [
         notify.notify('warn', _this.qtData.errMsg(), 10);
         return cb();
       }
-      dataservice.survey.questionTranslations.save(_this.qtData.model, null, function(err, resp) {
+      dataservice.survey.questionTranslations.save({
+        data: _this.qtData.model,
+      }, null, function(err, resp) {
         if (err) {
           notify.notify('error', err.Message);
         } else {

@@ -53,9 +53,11 @@ define('src/survey/qpossibleanswermap.new.vm', [
         return cb();
       }
       dataservice.survey.questionPossibleAnswerMaps.save({
-        QuestionId: _this.questionVM.model.QuestionID,
-        PossibleAnswerId: possibleAnswer.PossibleAnswerID,
-        Expands: _this.expandsComboVM.selectedValue(),
+        data: {
+          QuestionId: _this.questionVM.model.QuestionID,
+          PossibleAnswerId: possibleAnswer.PossibleAnswerID,
+          Expands: _this.expandsComboVM.selectedValue(),
+        },
       }, null, function(err, resp) {
         if (err) {
           notify.notify('error', err.Message);

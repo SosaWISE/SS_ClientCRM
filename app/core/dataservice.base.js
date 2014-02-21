@@ -32,7 +32,7 @@ define('src/core/dataservice.base', [
     return this.baseUrl + frontSlash(id) + frontSlash(link) + (query ? ('?' + query) : '');
   };
 
-  //@NOTE: currently the webservice only supports POST and GET
+  //@NOTE: the webservice only supports POST, GET and DELETE
 
   DataserviceBase.prototype.post = function(path, data, setter, callback) {
     this.ajax('POST', null, path, null, data, setter, callback);
@@ -41,9 +41,8 @@ define('src/core/dataservice.base', [
     this.ajax('GET', null, path, queryObj, null, setter, callback);
   };
 
-  DataserviceBase.prototype.save = function(data, setter, callback) { // used to be `create`
-    this.ajax('POST', null, null, null, data, setter, callback);
-    // this.ajax('POST', params.id, params.link, null, params.data, setter, callback);
+  DataserviceBase.prototype.save = function(params, setter, callback) {
+    this.ajax('POST', params.id, params.link, null, params.data, setter, callback);
   };
   DataserviceBase.prototype.read = function(params, setter, callback) {
     this.ajax('GET', params.id, params.link, params.queryObj, null, setter, callback);
@@ -51,9 +50,9 @@ define('src/core/dataservice.base', [
   // DataserviceBase.prototype.update = function(id, data, setter, callback) {
   //   this.ajax('PATCH', id, null, null, data, setter, callback);
   // };
-  // DataserviceBase.prototype.del = DataserviceBase.prototype.delete = function(id, setter, callback) {
-  //   this.ajax('DELETE', id, null, null, null, setter, callback);
-  // };
+  DataserviceBase.prototype.del = DataserviceBase.prototype.delete = function(id, setter, callback) {
+    this.ajax('DELETE', id, null, null, null, setter, callback);
+  };
   // DataserviceBase.prototype.replace = function(id, data, setter, callback) {
   //   this.ajax('PUT', id, null, null, data, setter, callback);
   // };

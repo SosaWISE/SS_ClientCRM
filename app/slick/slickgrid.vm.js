@@ -19,13 +19,13 @@ define('src/slick/slickgrid.vm', [
 
   ko.bindingHandlers.slickgrid = {
     init: function(element, valueAccessor) {
-      var gridVM = valueAccessor();
-      gridVM.onBound(element);
+      var gridVm = valueAccessor();
+      gridVm.onBound(element);
 
       // get notified when the element is disposed
       ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
-        var gridVM = valueAccessor();
-        gridVM.unBound(element);
+        var gridVm = valueAccessor();
+        gridVm.unBound(element);
       });
     },
   };
@@ -52,7 +52,7 @@ define('src/slick/slickgrid.vm', [
       }
     });
 
-    _this.options = _this.options || {};
+    _this.gridOptions = _this.gridOptions || {};
     _this.updateGrid = function() {
       var grid = _this.grid;
       if (grid) {
@@ -81,14 +81,45 @@ define('src/slick/slickgrid.vm', [
       });
     } else {
       // either list was passed in or an array will be set at some point
-      _this.list = ko.observableArray(_this.list);
+      if (!_this.list || !ko.isObservable(_this.list)) {
+        _this.list = ko.observableArray(_this.list);
+      }
       _this.list.subscribe(function(list) {
         var grid = _this.grid;
         if (grid) {
-          grid.setData(list, true);
+        grid.setData(list, false); // false - don't scroll to top
           _this.updateGrid();
         }
       });
+    }
+
+    // try to create context menu
+    if (utils.isFunc(_this.augmentMenuVm)) {
+      _this.menuVm = {
+        visible: ko.observable(false),
+        position: ko.observable({
+          top: 0,
+          left: 0,
+        }),
+        show: function(e) {
+          e.preventDefault();
+          var offset = jquery(e.currentTarget).offset();
+          _this.menuVm.position({
+            top: e.clientY - offset.top + 24,
+            left: e.clientX - offset.left,
+          });
+          _this.menuVm.cell = _this.grid.getCellFromEvent(e);
+          _this.menuVm.visible(true);
+          // unbind to prevent multiple event listeners
+          jquery("body").off("click", _this.menuVm.hide);
+          // hide whenever something else is clicked
+          jquery("body").one("click", _this.menuVm.hide);
+        },
+        hide: function() {
+          _this.menuVm.visible(false);
+        },
+      };
+      _this.augmentMenuVm(_this.menuVm);
     }
 
     _this.active = ko.observable(false);
@@ -103,17 +134,25 @@ define('src/slick/slickgrid.vm', [
       _this.unBound();
     }
     setTimeout(function() {
-      _this.grid = new Slick.Grid(element, _this.list(), _this.columns, _this.options);
-      _this.grid.setSelectionModel(new Slick.RowSelectionModel({
-        // selectActiveRow: false
-      }));
+      _this.grid = new Slick.Grid(element, _this.list(), _this.columns, _this.gridOptions);
+      if (!_this.noSelection) {
+        _this.grid.setSelectionModel(new Slick.RowSelectionModel({
+          // selectActiveRow: false
+        }));
+      }
       _this.plugins.forEach(function(plugin) {
         _this.grid.registerPlugin(plugin);
       });
+      if (_this.menuVm) {
+        _this.grid.onContextMenu.subscribe(function(e) {
+          _this.menuVm.show(e);
+        });
+      }
       onresize(_this.grid.getContainerNode(), _this.updateGrid);
     }, 0);
   };
   SlickGridViewModel.prototype.unBound = function(element) {
+    // destroy grid everytime this view model is unbound
     var _this = this,
       container;
     if (_this.grid) {
@@ -121,10 +160,11 @@ define('src/slick/slickgrid.vm', [
       if (element && element !== container) {
         console.warn('unBound element doesn\'t match grid container', container, element);
       }
-      _this.grid.destroy();
+      _this.grid.destroy(); // also unregisters all plugins
       _this.grid = null;
     }
   };
+
 
   SlickGridViewModel.formatters = {
     currency: function(row, cell, value /*, columnDef, dataContext*/ ) {

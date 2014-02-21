@@ -40,9 +40,11 @@ define('src/survey/qmtokenmap.new.vm', [
         return cb();
       }
       dataservice.survey.questionMeaningTokenMaps.save({
-        QuestionMeaningId: _this.questionMeaningVM.model.QuestionMeaningID,
-        TokenId: selectedValue.TokenID,
-        IsDeleted: false,
+        data: {
+          QuestionMeaningId: _this.questionMeaningVM.model.QuestionMeaningID,
+          TokenId: selectedValue.TokenID,
+          IsDeleted: false,
+        },
       }, null, function(err, resp) {
         if (err) {
           notify.notify('error', err.Message);

@@ -174,27 +174,31 @@ define('mock/dataservices/survey.mock', [
 
 
 
-    dataservice.survey.surveyTypes.save = function(data, setter, cb) {
+    dataservice.survey.surveyTypes.save = function(params, setter, cb) {
+      var data = params.data;
       send(createOrUpdate(surveyTypes, 'SurveyTypeID', '@INC(surveyType)', {
         SurveyTypeID: data.SurveyTypeID,
         Name: data.Name,
       }), setter, cb);
     };
-    dataservice.survey.surveys.save = function(data, setter, cb) {
+    dataservice.survey.surveys.save = function(params, setter, cb) {
+      var data = params.data;
       send(createOrUpdate(surveys, 'SurveyID', '@INC(survey)', {
         SurveyID: data.SurveyID,
         SurveyTypeId: data.SurveyTypeId,
         Version: data.Version,
       }), setter, cb);
     };
-    dataservice.survey.questionMeanings.save = function(data, setter, cb) {
+    dataservice.survey.questionMeanings.save = function(params, setter, cb) {
+      var data = params.data;
       send(createOrUpdate(questionMeanings, 'QuestionMeaningID', '@INC(questionMeaning)', {
         QuestionMeaningID: data.QuestionMeaningID,
         SurveyTypeId: data.SurveyTypeId,
         Name: data.Name,
       }), setter, cb);
     };
-    dataservice.survey.questions.save = function(data, setter, cb) {
+    dataservice.survey.questions.save = function(params, setter, cb) {
+      var data = params.data;
       send(createOrUpdate(questions, 'QuestionID', '@INC(question)', {
         QuestionID: data.QuestionID,
         SurveyId: data.SurveyId,
@@ -204,7 +208,8 @@ define('mock/dataservices/survey.mock', [
         MapToTokenId: data.MapToTokenId,
       }), setter, cb);
     };
-    dataservice.survey.questionTranslations.save = function(data, setter, cb) {
+    dataservice.survey.questionTranslations.save = function(params, setter, cb) {
+      var data = params.data;
       send(createOrUpdate(questionTranslations, 'QuestionTranslationID', '@INC(questionTranslation)', {
         QuestionTranslationID: data.QuestionTranslationID,
         SurveyTranslationId: data.SurveyTranslationId,
@@ -212,7 +217,8 @@ define('mock/dataservices/survey.mock', [
         TextFormat: data.TextFormat,
       }), setter, cb);
     };
-    dataservice.survey.surveyTranslations.save = function(data, setter, cb) {
+    dataservice.survey.surveyTranslations.save = function(params, setter, cb) {
+      var data = params.data;
       send(createOrUpdate(surveyTranslations, 'SurveyTranslationID', '@INC(surveyTranslation)', {
         SurveyTranslationID: data.SurveyTranslationID,
         SurveyId: data.SurveyId,
@@ -245,7 +251,8 @@ define('mock/dataservices/survey.mock', [
 
 
 
-    dataservice.survey.questionMeaningTokenMaps.save = function(data, setter, cb) {
+    dataservice.survey.questionMeaningTokenMaps.save = function(params, setter, cb) {
+      var data = params.data;
       send(saveWithNoPKey(questionMeanings_Tokens_Map, {
         QuestionMeaningId: data.QuestionMeaningId,
         TokenId: data.TokenId,
@@ -261,7 +268,8 @@ define('mock/dataservices/survey.mock', [
         return index;
       }), setter, cb);
     };
-    dataservice.survey.questionPossibleAnswerMaps.save = function(data, setter, cb) {
+    dataservice.survey.questionPossibleAnswerMaps.save = function(params, setter, cb) {
+      var data = params.data;
       send(saveWithNoPKey(questions_PossibleAnswers_Map, {
         QuestionId: data.QuestionId,
         PossibleAnswerId: data.PossibleAnswerId,
