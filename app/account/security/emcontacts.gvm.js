@@ -59,6 +59,13 @@ define('src/account/security/emcontacts.gvm', [
           cssClass: 'cell-reorder',
         },
         {
+          id: '#c',
+          name: '',
+          width: 30,
+          behavior: 'dropChild',
+          resizable: false,
+        },
+        {
           id: 'Name',
           name: 'Name',
           formatter: options.fullnameFormatter,

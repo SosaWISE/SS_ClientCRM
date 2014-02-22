@@ -1,7 +1,9 @@
 define('src/slick/moverows', [
+  'src/slick/rowmovemanager',
   'slick',
   'jquery',
 ], function(
+  RowMoveManager,
   Slick,
   jquery
 ) {
@@ -37,6 +39,8 @@ define('src/slick/moverows', [
         _handler.subscribe(_grid.onDragInit, onDragInit);
         _handler.subscribe(_moveRowsPlugin.onBeforeMoveRows, onBeforeMoveRows);
         _handler.subscribe(_moveRowsPlugin.onMoveRows, onMoveRows);
+        _handler.subscribe(_moveRowsPlugin.onBeforeMoveChildRows, onBeforeMoveChildRows);
+        _handler.subscribe(_moveRowsPlugin.onMoveChildRows, onMoveChildRows);
       },
     });
 
@@ -78,6 +82,54 @@ define('src/slick/moverows', [
         moveResults, newList, changedRows;
 
       // rowIndices should already be sorted in OnBeforeMoveRows
+      // sortRowIndices(rowIndices);
+
+      // move the rows
+      moveResults = moveRows(rowIndices, insertBefore, options.observableArray());
+      // make newList by joining top, moved, and bottom
+      newList = moveResults.top.concat(moveResults.middle, moveResults.bottom);
+
+      // update sortOrder and notify of any changes
+      changedRows = updateSortOrder(rowIndices, insertBefore, options.orderName, newList);
+      if (changedRows.length) {
+        options.onOrderChanged(changedRows);
+      }
+
+      // refresh grid
+      options.observableArray(newList);
+      // reselect selected rows
+      _grid.setSelectedRows(getSelectedRowIndices(moveResults.top.length, rowIndices.length));
+      // unselect selected cell
+      _grid.resetActiveCell();
+    }
+
+    function onBeforeMoveChildRows(e, data) {
+      var rowIndices = data.rows,
+        i, length = rowIndices.length,
+        index;
+
+      sortRowIndices(rowIndices);
+
+      // this only works with one row or sequential rows.
+      for (i = 0; i < length; i++) {
+        index = rowIndices[i];
+        // can't move under self
+        if (index === data.insertUnder) {
+          e.stopPropagation();
+          return false;
+        }
+        //@TODO: need to ask the row value it's self if the data can be a child of it
+      }
+      return true;
+    }
+
+    function onMoveChildRows(e, args) {
+      var rowIndices = args.rows,
+        insertBefore = args.insertUnder + 1,
+        moveResults, newList, changedRows;
+      //@TODO: this is basically copied from onMoveRows. it needs to be changed to work with childs.
+
+      // rowIndices should already be sorted in OnBeforeMoveChildRows
       // sortRowIndices(rowIndices);
 
       // move the rows
