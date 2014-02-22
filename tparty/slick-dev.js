@@ -4,7 +4,6 @@ define('slick', [
   '/tparty/jquery.event.drag-2.2',
   '/tparty/slick.core',
   '/tparty/slick.grid',
-  '/tparty/slick.rowmovemanager',
   '/tparty/slick.rowselectionmodel',
 ], function() {
   "use strict";
