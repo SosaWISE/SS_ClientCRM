@@ -1,5 +1,6 @@
 define('src/scrum/project.vm', [
   'src/scrum/taskboard.vm',
+  'src/scrum/backloggrids.vm',
   'src/scrum/backlog.vm',
   'src/scrum/sprint.vm',
   'src/dataservice',
@@ -9,6 +10,7 @@ define('src/scrum/project.vm', [
   'src/core/controller.vm',
 ], function(
   TaskBoardViewModel,
+  BacklogGridsViewModel,
   BacklogViewModel,
   SprintViewModel,
   dataservice,
@@ -30,25 +32,8 @@ define('src/scrum/project.vm', [
     _this.backlog = ko.observable();
     _this.epics = ko.observableArray();
 
-    _this.views = [
-      new BacklogViewModel({
-        projectVm: _this,
-        id: 'backlog',
-        title: 'Backlog',
-      }),
-      // new BacklogViewModel({
-      //   projectVm: _this,
-      //   id: 'planning',
-      //   title: 'Planning',
-      //   viewTmpl: 'tmpl-scrum_planning',
-      // }),
-      new TaskBoardViewModel({
-        projectVm: _this,
-        id: 'taskboard',
-        title: 'Task Board',
-      }),
-    ];
-    _this.view = ko.observable(_this.views[0]);
+    _this.views = ko.observableArray();
+    _this.view = ko.observable();
 
     _this.layersVm = new LayersViewModel({
       controller: _this,
@@ -116,8 +101,6 @@ define('src/scrum/project.vm', [
     var _this = this,
       cb = join.add();
 
-    _this.clickView(_this.views[0]);
-
 
     load_sprints(_this, join);
     load_epics(_this, function() {
@@ -129,6 +112,35 @@ define('src/scrum/project.vm', [
       backlog.load(routeData, extraData, join);
       // set backlog
       _this.backlog(backlog);
+
+
+
+      _this.views([
+        new BacklogGridsViewModel({
+          projectVm: _this,
+          id: 'backloggrids',
+          title: 'Backlog Grids',
+        }),
+        // new BacklogViewModel({
+        //   projectVm: _this,
+        //   id: 'backlog',
+        //   title: 'Backlog',
+        // }),
+        // new BacklogViewModel({
+        //   projectVm: _this,
+        //   id: 'planning',
+        //   title: 'Planning',
+        //   viewTmpl: 'tmpl-scrum_planning',
+        // }),
+        new TaskBoardViewModel({
+          projectVm: _this,
+          id: 'taskboard',
+          title: 'Task Board',
+        }),
+      ]);
+      _this.clickView(_this.views()[0]);
+
+
 
       cb();
     });

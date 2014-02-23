@@ -1,0 +1,9 @@
+div(class="scrum-tab scrum-backlog")
+  div(class="header",data-bind="with:projectVm.backlog().bd")
+    span(class="btn add",tabindex="0",data-bind="cmd:cmdAddEpic") Epic
+    span(class="btn add",tabindex="0",data-bind="cmd:cmdAddStory") Story
+  div(class="sprints")
+    div(class="sprint-wrap")
+      div(class="slickgrid",data-bind="slickgrid:gvm",style="color:black")
+
+div(class="layers",data-bind="template:{name:projectVm.layersVm.viewTmpl,data:projectVm.layersVm}")

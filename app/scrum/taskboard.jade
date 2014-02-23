@@ -1,11 +1,11 @@
-div(class="scrum-tab scrum-track",data-bind="if:sprint")
+div(class="scrum-tab scrum-track",data-bind="if:projectVm.sprint")
   div(class="header")
-    div(class="",data-bind="text:sprint().id")
-    span(data-bind="cmd:cmdPrevSprint") Prev Sprint
-    span(data-bind="cmd:cmdNextSprint") Next Sprint
+    div(class="",data-bind="text:projectVm.sprint().id")
+    span(data-bind="cmd:projectVm.cmdPrevSprint") Prev Sprint
+    span(data-bind="cmd:projectVm.cmdNextSprint") Next Sprint
   div(class="sprints")
     div(class="sprint-wrap")
-      div(class="sprint",data-bind="foreach:sprint().bd.childs")
+      div(class="sprint",data-bind="foreach:projectVm.sprint().bd.childs")
         //- Storys
         div(class="story-wrap")
           div(class="story")

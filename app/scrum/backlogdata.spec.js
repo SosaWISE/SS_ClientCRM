@@ -19,19 +19,19 @@ define('src/scrum/backlogdata.spec', [
         {
           ParentId: null,
           ID: 1,
-          Name: "Web client",
+          Name: 'Epic 1',
           SortOrder: 1,
         },
         {
           ParentId: null,
           ID: 2,
-          Name: "Web server",
+          Name: 'Epic 2',
           SortOrder: 2,
         },
         {
           ParentId: 1,
           ID: 3,
-          Name: "Panel",
+          Name: 'Epic 3',
           SortOrder: 3,
         },
       ];
@@ -75,6 +75,16 @@ define('src/scrum/backlogdata.spec', [
           Version: 1,
           Points: 1,
           SortOrder: 15,
+          Tasks: [
+            {
+              ID: 1,
+              StoryId: 5,
+              TaskStepId: 1,
+              Name: 'Task 1',
+              SortOrder: 21,
+              Version: 1,
+            },
+          ],
         },
       ];
 
@@ -97,7 +107,7 @@ define('src/scrum/backlogdata.spec', [
         sid = 'Backlog';
         item = bd;
         expect(item.childs().length).toBe(2, sid + ' childs');
-        expect(item.length()).toBe(28, sid + ' length');
+        expect(item.length()).toBe(29, sid + ' length');
         expect(Object.keys(item.sidToVmMap).length).toBe(item.length(), sid + ' map length');
 
         parent = bd;
@@ -108,7 +118,7 @@ define('src/scrum/backlogdata.spec', [
         expect(item.getParent()).toBe(parent);
         expect(item.points()).toBe(16.5, sid + ' points');
         expect(item.childs().length).toBe(3, sid + ' childs');
-        expect(item.length()).toBe(22, sid + ' length');
+        expect(item.length()).toBe(23, sid + ' length');
 
         parent = bd.childs()[0];
         console.log(parent.childs());
@@ -119,7 +129,7 @@ define('src/scrum/backlogdata.spec', [
         expect(item.getParent()).toBe(parent);
         expect(item.points()).toBe(1.5, sid + ' points');
         expect(item.childs().length).toBe(2, sid + ' childs');
-        expect(item.length()).toBe(11, sid + ' length');
+        expect(item.length()).toBe(12, sid + ' length');
         sid = 'US2';
         item = parent.childs()[1];
         expect(item.sid).toBe(sid);
@@ -153,7 +163,7 @@ define('src/scrum/backlogdata.spec', [
         expect(item.getParent()).toBe(parent);
         expect(item.points()).toBe(1, sid + ' points');
         expect(item.childs().length).toBe(4, sid + ' childs');
-        expect(item.length()).toBe(5, sid + ' length');
+        expect(item.length()).toBe(6, sid + ' length');
 
 
 
@@ -196,7 +206,7 @@ define('src/scrum/backlogdata.spec', [
         sid = 'Backlog';
         item = bd;
         expect(item.childs().length).toBe(2, sid + ' childs');
-        expect(item.length()).toBe(28, sid + ' length');
+        expect(item.length()).toBe(29, sid + ' length');
         expect(Object.keys(item.sidToVmMap).length).toBe(item.length(), sid + ' map length');
 
         parent = bd;
@@ -207,7 +217,7 @@ define('src/scrum/backlogdata.spec', [
         expect(item.getParent()).toBe(parent);
         expect(item.points()).toBe(17, sid + ' points');
         expect(item.childs().length).toBe(3, sid + ' childs');
-        expect(item.length()).toBe(22, sid + ' length');
+        expect(item.length()).toBe(23, sid + ' length');
 
         parent = bd.childs()[0];
         sid = 'E3';
@@ -217,7 +227,7 @@ define('src/scrum/backlogdata.spec', [
         expect(item.getParent()).toBe(parent);
         expect(item.points()).toBe(2, sid + ' points');
         expect(item.childs().length).toBe(2, sid + ' childs');
-        expect(item.length()).toBe(11, sid + ' length');
+        expect(item.length()).toBe(12, sid + ' length');
 
         parent = bd.childs()[0].childs()[0];
         sid = 'US1';
@@ -242,7 +252,7 @@ define('src/scrum/backlogdata.spec', [
         sid = 'Backlog';
         item = bd;
         expect(item.childs().length).toBe(3, sid + ' childs');
-        expect(item.length()).toBe(29, sid + ' length');
+        expect(item.length()).toBe(30, sid + ' length');
         expect(Object.keys(item.sidToVmMap).length).toBe(item.length(), sid + ' map length');
 
         parent = bd;
@@ -269,7 +279,7 @@ define('src/scrum/backlogdata.spec', [
         sid = 'Backlog';
         item = bd;
         expect(item.childs().length).toBe(2, sid + ' childs');
-        expect(item.length()).toBe(29, sid + ' length');
+        expect(item.length()).toBe(30, sid + ' length');
         expect(Object.keys(item.sidToVmMap).length).toBe(item.length(), sid + ' map length');
 
         sid = 'E2';
@@ -325,7 +335,7 @@ define('src/scrum/backlogdata.spec', [
         expect(item.length()).toBe(6, sid + ' length');
 
         parent = item;
-        sid = 'TS1_US6';
+        sid = 'ST1_US6';
         item = parent.childs()[0];
         expect(item.sid).toBe(sid);
         expect(item.parentSid).toBe('US6');
@@ -348,7 +358,7 @@ define('src/scrum/backlogdata.spec', [
         sid = 'Backlog';
         item = bd;
         expect(item.childs().length).toBe(2, sid + ' childs');
-        expect(item.length()).toBe(28, sid + ' length');
+        expect(item.length()).toBe(29, sid + ' length');
         expect(Object.keys(item.sidToVmMap).length).toBe(item.length(), sid + ' map length');
       });
       it('should move backlog items to another parent', function() {
@@ -367,7 +377,7 @@ define('src/scrum/backlogdata.spec', [
         sid = 'Backlog';
         item = bd;
         expect(item.childs().length).toBe(2, sid + ' childs');
-        expect(item.length()).toBe(28, sid + ' length');
+        expect(item.length()).toBe(29, sid + ' length');
         expect(Object.keys(item.sidToVmMap).length).toBe(item.length(), sid + ' map length');
 
         // old parents
@@ -425,30 +435,54 @@ define('src/scrum/backlogdata.spec', [
         sid = 'Backlog';
         item = bd;
         expect(item.childs().length).toBe(2, sid + ' childs');
-        expect(item.length()).toBe(23, sid + ' length');
+        expect(item.length()).toBe(24, sid + ' length');
         expect(Object.keys(item.sidToVmMap).length).toBe(item.length(), sid + ' map length');
 
         parent = bd;
       });
     });
 
-    // describe('getItem', function() {
-    //   it('should correctly get item by index', function() {
-    //     expect(function() {
-    //       bd.getItem(-1);
-    //     }).toThrow();
-    //     expect(bd.getItem(0).sid).toBe('E1');
-    //     expect(bd.getItem(1).sid).toBe('E3');
-    //     expect(bd.getItem(2).sid).toBe('US1');
-    //     expect(bd.getItem(3).sid).toBe('US5');
-    //     expect(bd.getItem(4).sid).toBe('US2');
-    //     expect(bd.getItem(5).sid).toBe('US4');
-    //     expect(bd.getItem(6).sid).toBe('E2');
-    //     expect(bd.getItem(7).sid).toBe('US3');
-    //     expect(function() {
-    //       bd.getItem(8);
-    //     }).toThrow();
-    //   });
-    // });
+    describe('getItem', function() {
+      it('should correctly get item by index', function() {
+        bd.print();
+
+        var index = -1;
+        expect(function() {
+          bd.getItem(index++);
+        }).toThrow();
+        expect(bd.getItem(index++).sid).toBe('E1');
+        expect(bd.getItem(index++).sid).toBe('E3');
+        expect(bd.getItem(index++).sid).toBe('US1');
+        expect(bd.getItem(index++).sid).toBe('ST1_US1');
+        expect(bd.getItem(index++).sid).toBe('ST2_US1');
+        expect(bd.getItem(index++).sid).toBe('ST3_US1');
+        expect(bd.getItem(index++).sid).toBe('ST4_US1');
+        expect(bd.getItem(index++).sid).toBe('US5');
+        expect(bd.getItem(index++).sid).toBe('ST1_US5');
+        expect(bd.getItem(index++).sid).toBe('T1');
+        expect(bd.getItem(index++).sid).toBe('ST2_US5');
+        expect(bd.getItem(index++).sid).toBe('ST3_US5');
+        expect(bd.getItem(index++).sid).toBe('ST4_US5');
+        expect(bd.getItem(index++).sid).toBe('US2');
+        expect(bd.getItem(index++).sid).toBe('ST1_US2');
+        expect(bd.getItem(index++).sid).toBe('ST2_US2');
+        expect(bd.getItem(index++).sid).toBe('ST3_US2');
+        expect(bd.getItem(index++).sid).toBe('ST4_US2');
+        expect(bd.getItem(index++).sid).toBe('US4');
+        expect(bd.getItem(index++).sid).toBe('ST1_US4');
+        expect(bd.getItem(index++).sid).toBe('ST2_US4');
+        expect(bd.getItem(index++).sid).toBe('ST3_US4');
+        expect(bd.getItem(index++).sid).toBe('ST4_US4');
+        expect(bd.getItem(index++).sid).toBe('E2');
+        expect(bd.getItem(index++).sid).toBe('US3');
+        expect(bd.getItem(index++).sid).toBe('ST1_US3');
+        expect(bd.getItem(index++).sid).toBe('ST2_US3');
+        expect(bd.getItem(index++).sid).toBe('ST3_US3');
+        expect(bd.getItem(index++).sid).toBe('ST4_US3');
+        expect(function() {
+          bd.getItem(index++);
+        }).toThrow();
+      });
+    });
   });
 });

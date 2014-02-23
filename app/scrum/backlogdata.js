@@ -1,4 +1,5 @@
 define('src/scrum/backlogdata', [
+  'slick',
   'src/scrum/epic.editor.vm',
   'src/scrum/task.editor.vm',
   'src/scrum/story.editor.vm',
@@ -9,6 +10,7 @@ define('src/scrum/backlogdata', [
   'src/core/utils',
   'src/core/ko.command', // no reference needed
 ], function(
+  Slick,
   EpicEditorViewModel,
   TaskEditorViewModel,
   StoryEditorViewModel,
@@ -21,14 +23,6 @@ define('src/scrum/backlogdata', [
   "use strict";
 
   var rsort = new RelativeSort();
-
-  function returnOne() {
-    return 1;
-  }
-
-  function returnZero() {
-    return 0;
-  }
 
   function sorter(a, b) {
     return a.sortOrder - b.sortOrder;
@@ -58,7 +52,7 @@ define('src/scrum/backlogdata', [
         prefix = 'US';
         break;
       case 'step':
-        prefix = 'TS';
+        prefix = 'ST';
         break;
       case 'task':
         prefix = 'T';
@@ -73,16 +67,17 @@ define('src/scrum/backlogdata', [
     return getSidPrefix(type) + item.ID;
   }
 
-  function mixinComputeLength(_this) {
-    _this.length = ko.computed({
-      deferEvaluation: true,
-      read: function() {
-        return _this.childs().reduce(function(current, value) {
-          return current + value.length();
-        }, 1);
-      },
-    });
-  }
+  // function mixinComputeLength(_this, startLength) {
+  //   startLength = startLength || 0;
+  //   _this.length = ko.computed({
+  //     deferEvaluation: true,
+  //     read: function() {
+  //       return _this.childs().reduce(function(current, value) {
+  //         return current + value.length();
+  //       }, startLength);
+  //     },
+  //   });
+  // }
 
   function mixinComputePoints(_this) {
     _this.points = ko.computed({
@@ -105,11 +100,17 @@ define('src/scrum/backlogdata', [
     _this.parentSid = _this.makeParentSid();
     _this.version = item.Version || 0;
     _this.sortOrder = item.SortOrder || 0;
-    _this.length = returnOne;
-    _this.points = returnZero;
     _this.childs = hasChilds ? ko.observableArray() : true; // true is a hack to stop treehelper from creating a childs array
     _this.showMenu = ko.observable(false);
+    _this.depth = ko.observable(0);
   }
+  BaseItemViewModel.prototype.startLength = 1;
+  BaseItemViewModel.prototype.length = function() {
+    return this.startLength;
+  };
+  BaseItemViewModel.prototype.points = function() {
+    return 0;
+  };
   BaseItemViewModel.prototype.makeParentSid = function() {
     var _this = this,
       item = _this.item,
@@ -133,7 +134,7 @@ define('src/scrum/backlogdata', [
         break;
       case 'task':
         parentId = item.TaskStepSid;
-        prefix = 'TS';
+        prefix = 'ST';
         break;
       default:
         throw new Error('unsupported type: ' + _this.type);
@@ -186,13 +187,50 @@ define('src/scrum/backlogdata', [
       return container;
     }
   };
-  BaseItemViewModel.prototype.removeChild = function(vm) {
+  BaseItemViewModel.prototype.updateComputables = function(recursive) {
+    // recursively tell children to update length
+    // once the children have the correct length
+    // the parent's (_this) length can be calculated
+    var _this = this,
+      length = _this.startLength;
+    if (_this.childs !== true) {
+      length = _this.childs().reduce(function(current, child) {
+        if (recursive) {
+          child.updateComputables(recursive);
+        }
+        return current + (child.length() || child.startLength);
+      }, length);
+    }
+    _this.length(length);
+  };
+  BaseItemViewModel.prototype.updateUpComputables = function() {
     var _this = this;
-    return !!_this.childs.remove(vm).length;
+    _this.updateComputables();
+    _this.getParent().updateUpComputables();
+  };
+  BaseItemViewModel.prototype.removeChild = function(vm) {
+    var _this = this,
+      removed = _this.childs.remove(vm).length > 0;
+    _this.updateUpComputables();
+    return removed;
   };
   BaseItemViewModel.prototype.addChild = function(vm) {
     var _this = this;
     insert(_this.childs, vm, sorter);
+    _this.updateUpComputables();
+    // update all children depths
+    vm.updateDepth(_this.depth() + 1);
+  };
+  BaseItemViewModel.prototype.updateDepth = function(depth) {
+    var _this = this;
+    _this.depth(depth);
+    if (_this.childs !== true) {
+      // update all children depths
+      depth += 1;
+      _this.childs().forEach(function(child) {
+        child.updateDepth(depth);
+      });
+    }
   };
   BaseItemViewModel.prototype.onDropSibling = function(vm) {
     var _this = this,
@@ -258,7 +296,8 @@ define('src/scrum/backlogdata', [
     }
     EpicViewModel.super_.call(_this, container, item, type, true);
 
-    mixinComputeLength(_this);
+    // mixinComputeLength(_this, 1);
+    _this.length = ko.observable(_this.startLength);
     mixinComputePoints(_this);
 
     //
@@ -284,7 +323,8 @@ define('src/scrum/backlogdata', [
     }
     StoryViewModel.super_.call(_this, container, item, type, true);
 
-    mixinComputeLength(_this);
+    // mixinComputeLength(_this, 1);
+    _this.length = ko.observable(_this.startLength);
     _this.points = ko.observable(item.Points);
 
     _this.tasks = ko.computed({
@@ -325,7 +365,8 @@ define('src/scrum/backlogdata', [
     }
     StepViewModel.super_.call(_this, container, item, type, true);
 
-    mixinComputeLength(_this);
+    // mixinComputeLength(_this, 1);
+    _this.length = ko.observable(_this.startLength);
   }
   utils.inherits(StepViewModel, BaseItemViewModel);
   StepViewModel.prototype.onAccept = function(testVm) {
@@ -360,20 +401,19 @@ define('src/scrum/backlogdata', [
     // EpicViewModel.super_.call(_this, null, null, 'backlog');
     options = options || {};
 
+    _this.onRowCountChanged = new Slick.Event();
+    _this.onRowsChanged = new Slick.Event();
+
     _this.layersVm = options.layersVm;
     _this.isBacklog = options.isBacklog || false;
 
     _this._initialized = false;
     _this.sidToVmMap = {};
-    _this.length = ko.computed({
-      deferEvaluation: true,
-      read: function() {
-        return _this.childs().reduce(function(current, value) {
-          return current + value.length();
-        }, 0);
-      },
-    });
+    _this.startLength = 0;
+    _this.length = ko.observable(_this.startLength);
+    // mixinComputeLength(_this, 0);
     _this.childs = ko.observableArray();
+    _this.depth = ko.observable(0);
 
     //
     // events
@@ -388,6 +428,10 @@ define('src/scrum/backlogdata', [
   utils.inherits(BacklogData, BaseItemViewModel);
   BacklogData.prototype.removeChild = BaseItemViewModel.prototype.removeChild;
   BacklogData.prototype.addChild = BaseItemViewModel.prototype.addChild;
+  BacklogData.prototype.updateComputables = BaseItemViewModel.prototype.updateComputables;
+  // purposely using updateComputables instead of updateUpComputables
+  // since we don't have a parent
+  BacklogData.prototype.updateUpComputables = BaseItemViewModel.prototype.updateComputables;
 
   BacklogData.prototype.updateItem = function(item, type) {
     // ensure items have correct parent ids
@@ -548,6 +592,11 @@ define('src/scrum/backlogdata', [
     });
 
     _this.childs(childs);
+
+    _this.updateComputables(true);
+    childs.forEach(function(child) {
+      child.updateDepth(0);
+    });
   };
 
   function addEpics(item, epics) {
@@ -621,6 +670,11 @@ define('src/scrum/backlogdata', [
     });
   }
 
+  BacklogData.prototype.getLength = function() {
+    var _this = this;
+    return _this.length();
+  };
+
   function findItemAtIndex(item, indexObj) {
     var result;
     if (indexObj.index === 0) {
@@ -653,6 +707,58 @@ define('src/scrum/backlogdata', [
     return findItemAtIndex(_this, {
       index: index + 1
     });
+  };
+  BacklogData.prototype.getItemMetadata = function(index) {
+    var _this = this,
+      item, result;
+    item = _this.getItem(index);
+    if (item.depth() > 0) {
+      result = {
+        // selectable: true,
+        // focusable: false,
+        // cssClasses: '',
+        columns: [
+          {
+            id: '#',
+          },
+          {
+            id: '#c',
+          },
+          {
+            id: "name",
+            formatter: function(row, cell, value, columnDef, dataCtx) {
+              var i = item.depth(),
+                tab = '';
+              while (i--) {
+                tab += '<span class="cell-tab">&nbsp;</span>';
+              }
+              return tab + dataCtx.item.Name;
+            },
+          },
+          {
+            id: "points",
+            formatter: function(row, cell, value, columnDef, dataCtx) {
+              return dataCtx.points();
+            },
+          },
+        ]
+      };
+    }
+    return result;
+  };
+
+  function print(item, indent) {
+    if (item.item) {
+      console.log(indent, item.sid + ': ' + item.item.Name);
+    }
+    if (item.childs !== true) {
+      item.childs().forEach(function(child) {
+        print(child, indent + '  ');
+      });
+    }
+  }
+  BacklogData.prototype.print = function() {
+    print(this, '');
   };
 
   return BacklogData;

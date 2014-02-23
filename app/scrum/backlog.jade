@@ -1,4 +1,4 @@
-div(class="scrum-tab scrum-backlog",data-bind="with:backlog().bd")
+div(class="scrum-tab scrum-backlog",data-bind="with:projectVm.backlog().bd")
   div(class="header")
     span(class="btn add",tabindex="0",data-bind="cmd:cmdAddEpic") Epic
     span(class="btn add",tabindex="0",data-bind="cmd:cmdAddStory") Story
@@ -19,4 +19,4 @@ div(class="scrum-tab scrum-backlog",data-bind="with:backlog().bd")
       <!-- /ko -->
       <!-- /ko -->
 
-div(class="layers",data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
+div(class="layers",data-bind="template:{name:projectVm.layersVm.viewTmpl,data:projectVm.layersVm}")
