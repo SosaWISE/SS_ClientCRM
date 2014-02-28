@@ -66,20 +66,18 @@ define('src/survey/surveytype.vm', [
     dataservice.survey.surveyTypes.read({
       id: surveyTypeID,
       link: 'surveys',
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        if (resp.Value) {
-          var list = resp.Value.map(function(model) {
-            var vm = createSurvey(surveyTypeVM, model);
-            // lazy load survey data // vm.load(routeData, extraData, join.add());
-            return vm;
-          });
-          surveyTypeVM.surveys(list);
-        } else {
-          surveyTypeVM.surveys([]);
-        }
-      }, cb);
-    });
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Value) {
+        var list = resp.Value.map(function(model) {
+          var vm = createSurvey(surveyTypeVM, model);
+          // lazy load survey data // vm.load(routeData, extraData, join.add());
+          return vm;
+        });
+        surveyTypeVM.surveys(list);
+      } else {
+        surveyTypeVM.surveys([]);
+      }
+    }, utils.no_op));
   }
 
   function loadQuestionMeaning(surveyTypeVM, surveyTypeID, routeData, extraData, join) {
@@ -87,21 +85,19 @@ define('src/survey/surveytype.vm', [
     dataservice.survey.surveyTypes.read({
       id: surveyTypeID,
       link: 'questionMeanings',
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        if (resp.Value) {
-          var list = resp.Value.map(function(model) {
-            var vm = createQuestionMeaning(surveyTypeVM, model);
-            surveyTypeVM.qmMap[model.QuestionMeaningID] = vm;
-            vm.load(routeData, extraData, join.add());
-            return vm;
-          });
-          surveyTypeVM.questionMeanings(list);
-        } else {
-          surveyTypeVM.questionMeanings([]);
-        }
-      }, cb);
-    });
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Value) {
+        var list = resp.Value.map(function(model) {
+          var vm = createQuestionMeaning(surveyTypeVM, model);
+          surveyTypeVM.qmMap[model.QuestionMeaningID] = vm;
+          vm.load(routeData, extraData, join.add());
+          return vm;
+        });
+        surveyTypeVM.questionMeanings(list);
+      } else {
+        surveyTypeVM.questionMeanings([]);
+      }
+    }, utils.no_op));
   }
 
   SurveyTypeViewModel.prototype.addQuestionMeaning = function(model) {

@@ -148,20 +148,18 @@ define('src/survey/survey.vm', [
     dataservice.survey.surveys.read({
       id: surveyID,
       link: 'questions',
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        if (resp.Value) {
-          var treeTrunk = treehelper.makeTree(resp.Value, 'QuestionID', 'ParentId', function(model, parentVM /*, parent*/ ) {
-            var vm = createQuestion(surveyVM, model, parentVM);
-            vm.load(routeData, extraData, join.add());
-            return vm;
-          });
-          surveyVM.questions(treeTrunk);
-        } else {
-          surveyVM.questions([]);
-        }
-      }, cb);
-    });
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Value) {
+        var treeTrunk = treehelper.makeTree(resp.Value, 'QuestionID', 'ParentId', function(model, parentVM /*, parent*/ ) {
+          var vm = createQuestion(surveyVM, model, parentVM);
+          vm.load(routeData, extraData, join.add());
+          return vm;
+        });
+        surveyVM.questions(treeTrunk);
+      } else {
+        surveyVM.questions([]);
+      }
+    }, utils.no_op));
   }
 
   function loadSurveyTranslations(surveyVM, surveyID, routeData, extraData, join) {
@@ -169,20 +167,18 @@ define('src/survey/survey.vm', [
     dataservice.survey.surveys.read({
       id: surveyID,
       link: 'surveyTranslations',
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        if (resp.Value) {
-          var list = resp.Value.map(function(model) {
-            var vm = createSurveyTranslation(surveyVM, model);
-            // lazy load survey translation data // vm.load(routeData, extraData, join.add());
-            return vm;
-          });
-          surveyVM.translations(list);
-        } else {
-          surveyVM.translations([]);
-        }
-      }, cb);
-    });
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Value) {
+        var list = resp.Value.map(function(model) {
+          var vm = createSurveyTranslation(surveyVM, model);
+          // lazy load survey translation data // vm.load(routeData, extraData, join.add());
+          return vm;
+        });
+        surveyVM.translations(list);
+      } else {
+        surveyVM.translations([]);
+      }
+    }, utils.no_op));
   }
 
   SurveyViewModel.prototype.onActivate = function() { // overrides base

@@ -187,18 +187,14 @@ define('src/account/default/notes.vm', [
       dataservice.maincore.notecategory1.read({
         id: selectedValue,
         link: 'departmentid',
-      }, null, function(err, resp) {
-        utils.safeCallback(err, function() {
-          if (_this.departmentsCvm.selectedValue() === selectedValue) {
-            // make sure selectedValue hasn't changed
-            _this.data.NoteCategory1IdCvm.setList(resp.Value);
-          }
-        }, function(err) {
-          if (err) {
-            notify.notify('error', err.Message);
-          }
-        });
-      });
+      }, null, utils.safeCallback(null, function(err, resp) {
+        if (_this.departmentsCvm.selectedValue() === selectedValue) {
+          // make sure selectedValue hasn't changed
+          _this.data.NoteCategory1IdCvm.setList(resp.Value);
+        }
+      }, function(err) {
+        notify.notify('error', err.Message);
+      }));
     });
     _this.data.NoteCategory1IdCvm.selectedValue.subscribe(function(selectedValue) {
       _this.data.NoteCategory2IdCvm.setList([]);
@@ -208,18 +204,14 @@ define('src/account/default/notes.vm', [
       dataservice.maincore.notecategory2.read({
         id: selectedValue,
         link: 'category1id',
-      }, null, function(err, resp) {
-        utils.safeCallback(err, function() {
-          if (_this.data.NoteCategory1IdCvm.selectedValue() === selectedValue) {
-            // make sure selectedValue hasn't changed
-            _this.data.NoteCategory2IdCvm.setList(resp.Value);
-          }
-        }, function(err) {
-          if (err) {
-            notify.notify('error', err.Message);
-          }
-        });
-      });
+      }, null, utils.safeCallback(null, function(err, resp) {
+        if (_this.data.NoteCategory1IdCvm.selectedValue() === selectedValue) {
+          // make sure selectedValue hasn't changed
+          _this.data.NoteCategory2IdCvm.setList(resp.Value);
+        }
+      }, function(err) {
+        notify.notify('error', err.Message);
+      }));
     });
   }
   utils.inherits(NotesViewModel, BaseViewModel);
@@ -236,12 +228,10 @@ define('src/account/default/notes.vm', [
     var model = ukovData.getValue();
     dataservice.maincore.notes.save({
       data: model,
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        ukovData.setVal(resp.Value);
-        ukovData.markClean(resp.Value);
-      }, cb);
-    });
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      ukovData.setVal(resp.Value);
+      ukovData.markClean(resp.Value);
+    }));
   }
 
   function appendNote(note, ukovData, cb) {
@@ -262,21 +252,17 @@ define('src/account/default/notes.vm', [
 
     dataservice.maincore.notes.save({
       data: model,
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        ukovData.setVal(resp.Value);
-        ukovData.markClean(resp.Value);
-      }, cb);
-    });
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      ukovData.setVal(resp.Value);
+      ukovData.markClean(resp.Value);
+    }));
   }
 
   function load_departments(cvm, cb) {
-    dataservice.maincore.departments.read({}, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        cvm.setList(resp.Value);
-        cvm.selectItem(cvm.list()[0]);
-      }, cb);
-    });
+    dataservice.maincore.departments.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      cvm.setList(resp.Value);
+      cvm.selectItem(cvm.list()[0]);
+    }));
   }
 
   function load_notes(id, gvm, cb) {
@@ -284,11 +270,9 @@ define('src/account/default/notes.vm', [
     dataservice.maincore.notes.read({
       id: id,
       link: 'cmfid',
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        gvm.list(resp.Value || []);
-      }, cb);
-    });
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      gvm.list(resp.Value || []);
+    }));
   }
 
 

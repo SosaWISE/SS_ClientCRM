@@ -241,7 +241,7 @@ define('src/account/default/runcredit.vm', [
   }
   utils.inherits(RunCreditViewModel, BaseViewModel);
   RunCreditViewModel.prototype.viewTmpl = 'tmpl-acct-default-runcredit';
-  RunCreditViewModel.prototype.width = 600;
+  RunCreditViewModel.prototype.width = 550;
   RunCreditViewModel.prototype.height = 'auto';
 
   RunCreditViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
@@ -261,12 +261,10 @@ define('src/account/default/runcredit.vm', [
   };
 
   function load_localization(comboVM, cb) {
-    dataservice.maincore.localizations.read({}, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        comboVM.setList(resp.Value);
-        comboVM.selectItem(comboVM.list()[0]);
-      }, cb);
-    });
+    dataservice.maincore.localizations.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      comboVM.setList(resp.Value);
+      comboVM.selectItem(comboVM.list()[0]);
+    }, utils.no_op));
   }
 
   return RunCreditViewModel;

@@ -164,10 +164,12 @@ define('src/core/router', [
   }
 
   var bodyEl = jquery('body'),
+    siteLoadingEl = jquery('#siteLoading'),
     loginEl = jquery('#login-container'),
     siteEl = jquery('#site-container');
 
   function showElements(user, cls) {
+    siteLoadingEl.remove();
     if (user) {
       bodyEl.attr('class', cls);
       loginEl.hide();

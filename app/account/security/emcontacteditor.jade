@@ -1,69 +1,65 @@
 div(class="acct-emcontacteditor")
-  table(class="fh-wrap")
-    tr
-      td(class="fh-header")
-        ul(class="actions")
-          li
-            a(class="btn",data-bind="cmd:cmdDelete") Delete
+  ul(class="actions")
+    li
+      a(class="btn",data-bind="cmd:cmdDelete") Delete
 
-        div
-          ul(class="edit-form limit-width")
-            li
-              span(class="label") Prefix
-              input(type="text", placeholder="",
-                data-bind="ukov:data.Prefix,value:data.Prefix,valueUpdate:'keyup'")
-            li
-              span(class="label") First Name
-              input(type="text", placeholder="",
-                data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup'")
-            li
-              span(class="label") Middle Name
-              input(type="text", placeholder="",
-                data-bind="ukov:data.MiddleName,value:data.MiddleName,valueUpdate:'keyup'")
-            li
-              span(class="label") Last Name
-              input(type="text", placeholder="",
-                data-bind="ukov:data.LastName,value:data.LastName,valueUpdate:'keyup'")
-            li
-              span(class="label") Suffix
-              input(type="text", placeholder="",
-                data-bind="ukov:data.Postfix,value:data.Postfix,valueUpdate:'keyup'")
-          ul(class="edit-form limit-width right-side")
-            li
-              span(class="label") Relastionship
-              div(data-bind="template:{name:data.RelastionshipCvm.viewTmpl,data:data.RelastionshipCvm}")
-            li
-              span(class="label") Email
-              input(type="text", placeholder="",
-                data-bind="ukov:data.Email,value:data.Email,valueUpdate:'keyup'")
-            li
-              span(class="label") Has Keys
-              div(data-bind="template:{name:data.HasKeyCvm.viewTmpl,data:data.HasKeyCvm}")
-        div
-          ul(class="edit-form")
-            li
-              span(class="label") Primary Phone
-              input(type="text", placeholder="(123) 123-1234",class="limit-width",
-                data-bind="ukov:data.Phone1,value:data.Phone1,valueUpdate:'keyup'")
-              div(class="limit-width right-side",
-                data-bind="template:{name:data.Phone1TypeCvm.viewTmpl,data:data.Phone1TypeCvm}")
-            li
-              span(class="label") Secondary Phone
-              input(type="text", placeholder="(123) 123-1234",class="limit-width",
-                data-bind="ukov:data.Phone2,value:data.Phone2,valueUpdate:'keyup'")
-              div(class="limit-width right-side",
-                data-bind="template:{name:data.Phone2TypeCvm.viewTmpl,data:data.Phone2TypeCvm}")
-            li
-              span(class="label") Alternate Phone
-              input(type="text", placeholder="(123) 123-1234",class="limit-width",
-                data-bind="ukov:data.Phone3,value:data.Phone3,valueUpdate:'keyup'")
-              div(class="limit-width right-side",
-                data-bind="template:{name:data.Phone3TypeCvm.viewTmpl,data:data.Phone3TypeCvm}")
-    tr
-      td(class="fh-body")
-        div(class="fh-contents")
-          ul(class="actions")
-            li
-              a(class="btn",tabindex="0",data-bind="cmd:cmdCancel") Cancel
-            li
-              a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
+  div(class="line-top")
+    ul(class="edit-form limit-width")
+      li
+        span(class="label") Prefix
+        input(type="text", placeholder="",
+          data-bind="ukov:data.Prefix,value:data.Prefix,valueUpdate:'keyup'")
+      li
+        span(class="label") First Name
+        input(type="text", placeholder="",
+          data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup'")
+      li
+        span(class="label") Middle Name
+        input(type="text", placeholder="",
+          data-bind="ukov:data.MiddleName,value:data.MiddleName,valueUpdate:'keyup'")
+      li
+        span(class="label") Last Name
+        input(type="text", placeholder="",
+          data-bind="ukov:data.LastName,value:data.LastName,valueUpdate:'keyup'")
+      li
+        span(class="label") Suffix
+        input(type="text", placeholder="",
+          data-bind="ukov:data.Postfix,value:data.Postfix,valueUpdate:'keyup'")
+    ul(class="edit-form limit-width right-side")
+      li
+        span(class="label") Relationship
+        div(data-bind="template:{name:data.RelationshipCvm.viewTmpl,data:data.RelationshipCvm}")
+      li
+        span(class="label") Email
+        input(type="text", placeholder="",
+          data-bind="ukov:data.Email,value:data.Email,valueUpdate:'keyup'")
+      li
+        span(class="label") Has Keys
+        div(data-bind="template:{name:data.HasKeyCvm.viewTmpl,data:data.HasKeyCvm}")
+  div(class="line-top")
+    ul(class="edit-form ib")
+      li
+        span(class="label") Primary Phone
+        input(type="text", placeholder="(123) 123-1234",class="limit-width",
+          data-bind="ukov:data.Phone1,value:data.Phone1,valueUpdate:'keyup'")
+        div(class="limit-width right-side",
+          data-bind="template:{name:data.Phone1TypeCvm.viewTmpl,data:data.Phone1TypeCvm}")
+      li
+        span(class="label") Secondary Phone
+        input(type="text", placeholder="(123) 123-1234",class="limit-width",
+          data-bind="ukov:data.Phone2,value:data.Phone2,valueUpdate:'keyup'")
+        div(class="limit-width right-side",
+          data-bind="template:{name:data.Phone2TypeCvm.viewTmpl,data:data.Phone2TypeCvm}")
+      li
+        span(class="label") Alternate Phone
+        input(type="text", placeholder="(123) 123-1234",class="limit-width",
+          data-bind="ukov:data.Phone3,value:data.Phone3,valueUpdate:'keyup'")
+        div(class="limit-width right-side",
+          data-bind="template:{name:data.Phone3TypeCvm.viewTmpl,data:data.Phone3TypeCvm}")
+
+  div(class="line-top")
+    ul(class="actions")
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdCancel") Cancel
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save

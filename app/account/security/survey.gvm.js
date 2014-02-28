@@ -16,7 +16,7 @@ define('src/account/security/survey.gvm', [
   function SurveyGridViewModel(options) {
     var _this = this;
     SurveyGridViewModel.super_.call(_this, {
-      options: {
+      gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
         rowHeight: 27,

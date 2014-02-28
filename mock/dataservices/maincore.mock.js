@@ -119,6 +119,15 @@ define('mock/dataservices/maincore.mock', [
       }
       send(result, setter, cb);
     };
+    dataservice.maincore.localizations.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = findSingleOrAll(localizations, 'LocalizationID', id);
+          break;
+      }
+      send(result, setter, cb);
+    };
 
 
 
@@ -183,7 +192,8 @@ define('mock/dataservices/maincore.mock', [
     noteCategorys1,
     noteCategorys2,
     notes,
-    noteTypes;
+    noteTypes,
+    localizations;
 
   departments = [
     {
@@ -279,6 +289,18 @@ define('mock/dataservices/maincore.mock', [
       NoteType: 'Standard Note'
     },
   ];
+
+  localizations = [
+    {
+      LocalizationID: 'en-US',
+      LocalizationName: 'English USA',
+    },
+    {
+      LocalizationID: 'es',
+      LocalizationName: 'Spanish Standard',
+    }
+  ];
+
 
   return mock;
 });

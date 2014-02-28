@@ -63,47 +63,47 @@ define('mock/dataservices/salessummary.mock', [
     //   return result;
     // }
 
-    dataservice.salessummary.pointsystems.read = function(params, setter, cb) {
+    dataservice.salessummary.pointSystems.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:
-          result = pointsystems;
+          result = pointSystems;
           break;
       }
       send(result, setter, cb);
     };
-    dataservice.salessummary.cellulartypes.read = function(params, setter, cb) {
+    dataservice.salessummary.cellularTypes.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:
-          result = cellulartypes;
+          result = cellularTypes;
           break;
       }
       send(result, setter, cb);
     };
-    dataservice.salessummary.vendoralarmcompacakges.read = function(params, setter, cb) {
+    dataservice.salessummary.vendorAlarmcomPacakges.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:
-          result = vendoralarmcompacakges;
+          result = vendorAlarmcomPacakges;
           break;
       }
       send(result, setter, cb);
     };
-    dataservice.salessummary.contractlengthsget.read = function(params, setter, cb) {
+    dataservice.salessummary.contractLengthsGet.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:
-          result = contractlengthsget;
+          result = contractLengthsGet;
           break;
       }
       send(result, setter, cb);
     };
-    dataservice.salessummary.frequentlyinstalledequipmentget.read = function(params, setter, cb) {
+    dataservice.salessummary.frequentlyInstalledEquipmentGet.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:
-          result = frequentlyinstalledequipmentget;
+          result = frequentlyInstalledEquipmentGet;
           break;
       }
       send(result, setter, cb);
@@ -119,16 +119,17 @@ define('mock/dataservices/salessummary.mock', [
   })();
 
   // data used in mock function
-  var pointsystems,
+  var pointSystems,
     // activationfees,
     // surveytypes,
-    cellulartypes,
-    vendoralarmcompacakges,
+    cellularTypes,
+    vendorAlarmcomPacakges,
     // equipmentbypointsget,
-    contractlengthsget,
-    frequentlyinstalledequipmentget;
+    contractLengthsGet,
+    frequentlyInstalledEquipmentGet,
+    invoiceMsIsntalls;
 
-  pointsystems = [
+  pointSystems = [
     {
       InvoiceTemplateID: 1,
       DealerId: 5000,
@@ -157,7 +158,7 @@ define('mock/dataservices/salessummary.mock', [
     }
   ];
 
-  cellulartypes = [
+  cellularTypes = [
     {
       "CellularTypeID": "CELLPRI",
       "CellularTypeName": "Cell Primary"
@@ -176,7 +177,7 @@ define('mock/dataservices/salessummary.mock', [
     }
   ];
 
-  vendoralarmcompacakges = [
+  vendorAlarmcomPacakges = [
     {
       "AlarmComPackageID": "ADVINT",
       "PackageName": "Advanced Interactive",
@@ -194,7 +195,7 @@ define('mock/dataservices/salessummary.mock', [
     }
   ];
 
-  contractlengthsget = [
+  contractLengthsGet = [
     {
       "ContractTemplateID": 1,
       "ContractName": "Full Contract 3 Years",
@@ -225,7 +226,7 @@ define('mock/dataservices/salessummary.mock', [
     }
   ];
 
-  frequentlyinstalledequipmentget = [
+  frequentlyInstalledEquipmentGet = [
     {
       "ItemID": "EQPM_INVT126",
       "ItemTypeId": "EQPM_INVT",
@@ -309,6 +310,23 @@ define('mock/dataservices/salessummary.mock', [
       "IsCatalogItem": true,
       "IsActive": true,
       "IsDeleted": false
+    }
+  ];
+
+  invoiceMsIsntalls = [
+    {
+      "InvoiceID": 10010064,
+      "AccountId": 100212,
+      "ActivationFeeItemId": "SETUP_FEE_199",
+      "ActivationFee": 199,
+      "ActivationFeeActual": 199,
+      "MonthlyMonitoringRateItemId": "MON_CONT_5000",
+      "MonthlyMonitoringRateActual": 39.95,
+      "MonthlyMonitoringRate": 39.95,
+      "AlarmComPackageId": "WRLFWN",
+      "Over3Months": false,
+      "CellularTypeId": null,
+      "ContractTemplateId": 1
     }
   ];
 

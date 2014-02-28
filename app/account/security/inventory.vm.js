@@ -29,12 +29,6 @@ define('src/account/security/inventory.vm', [
     _this.clickAddExistingEquipment = function() {
       alert('@TODO: add existing equipment');
     };
-    _this.clickEditEquipment = function() {
-      alert('@TODO: edit equipment');
-    };
-    _this.clickRemoveEquipment = function() {
-      alert('@TODO: remove equipment');
-    };
   }
   utils.inherits(InventoryViewModel, ControllerViewModel);
   InventoryViewModel.prototype.viewTmpl = 'tmpl-security-inventory';

@@ -1,0 +1,27 @@
+div(class="parts-editor")
+  div(data-bind="if:cmdSave.busy")
+    div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+
+  h2(class="title") Add Part
+  div(class="line-top")
+    ul(class="edit-form limit-width")
+      li(data-bind="if:byPart")
+        span(class="label") Part #
+        input(type="text",placeholder="",data-bind="select:focusFirst,ukov:data.ItemSku,value:data.ItemSku,valueUpdate:'keyup'")
+      li(data-bind="if:!byPart")
+        span(class="label") Barcode
+        input(type="text",placeholder="",data-bind="ukov:data.BarcodeId,value:data.BarcodeId,valueUpdate:'keyup'")
+    ul(class="edit-form limit-width")
+      //- li
+        span(class="label") Item
+        span(class="label") Item name goes here
+      li
+        span(class="label") Assign To
+        div(data-bind="template:{name:data.AssignToCvm.viewTmpl,data:data.AssignToCvm}")
+
+  div(class="line-top")
+    ul(class="actions")
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdCancel") Cancel
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save

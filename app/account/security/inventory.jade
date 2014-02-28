@@ -9,12 +9,8 @@ div(class="acct-inventory")
             a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickAddByPart") Add By Part
           li
             a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickAddExistingEquipment") Add Existing Equipment
-          li
-            a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickEditEquipment") Edit Equipment
-          li
-            a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickRemoveEquipment") Remove Equipment
         div
-          |Total Points:
+          |Total Points:&nbsp;
           span(data-bind="text:gvm.totalPoints")
     tr
       td(class="fh-body")

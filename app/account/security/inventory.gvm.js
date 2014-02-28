@@ -14,7 +14,7 @@ define('src/account/security/inventory.gvm', [
   function InventoryGridViewModel() {
     var _this = this;
     InventoryGridViewModel.super_.call(_this, {
-      options: {
+      gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
         rowHeight: 27,

@@ -21,12 +21,15 @@ define('src/core/mockery', [
       max = (max) ? parseInt(max, 10) : 100;
       return randomFromRange(min * 100, max * 100, 100, 10000) / 100;
     },
-    INC: function(cache, key) {
+    INC: function(cache, key, idSeed) {
       var val = incMap[key];
       if (val) {
         val++;
       } else {
-        val = identitySeed; // default start value
+        if (idSeed) {
+          idSeed = parseInt(idSeed, 10);
+        }
+        val = idSeed || identitySeed; // default start value
       }
       incMap[key] = val;
       return val;

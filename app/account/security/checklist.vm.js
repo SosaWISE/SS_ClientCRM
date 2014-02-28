@@ -65,6 +65,7 @@ define('src/account/security/checklist.vm', [
         pcontroller: _this,
         id: 'salesinfo',
         title: 'Sales Info',
+        layersVm: _this.layersVm,
       }),
       new SurveyViewModel({
         pcontroller: _this,
@@ -123,8 +124,8 @@ define('src/account/security/checklist.vm', [
       routePart = _this.getChildRoutePart();
 
     if (_this.qualifyVm.canCreateAccount) {
-      // when there is no account, qualify is the only selectable child
-      routeData[routePart] = _this.qualifyVm.id;
+      // // when there is no account, qualify is the only selectable child
+      // routeData[routePart] = _this.qualifyVm.id;
     } else if (routeData[routePart]) {
       //@TODO: ensure the action is currently valid
     }

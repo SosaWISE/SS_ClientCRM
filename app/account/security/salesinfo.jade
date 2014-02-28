@@ -10,7 +10,7 @@ div(class="sales-info")
               div(class="letter") A.
               div(class="question") Is this a 6.5 or 8 Point system?
               div(class="answer")
-                div(data-bind="template:{name:psComboVM.viewTmpl,data:psComboVM}")
+                div(data-bind="template:{name:pointSystemsCvm.viewTmpl,data:pointSystemsCvm}")
 
             div(class="subHeader") Monitoring And Service Information
             div(class="line")
@@ -30,12 +30,12 @@ div(class="sales-info")
               div(class="letter") D.
               div(class="question") What is the cell type?
               div(class="answer")
-                div(data-bind="template:{name:ctComboVM.viewTmpl,data:ctComboVM}")
+                div(data-bind="template:{name:cellularTypesCvm.viewTmpl,data:cellularTypesCvm}")
             div(class="line")
               div(class="letter") E.
               div(class="question") Which Alarm.com package are we going with?
               div(class="answer")
-                div(data-bind="template:{name:apckComboVM.viewTmpl,data:apckComboVM}")
+                div(data-bind="template:{name:alarmcomPacakgesCvm.viewTmpl,data:alarmcomPacakgesCvm}")
 
             div(class="subHeader") Monthly Monitoring
             div(class="line")
@@ -50,7 +50,7 @@ div(class="sales-info")
               div(class="letter") G.
               div(class="question") What is the contract length?
               div(class="answer")
-                div(data-bind="template:{name:clComboVM.viewTmpl,data:clComboVM}")
+                div(data-bind="template:{name:contractLengthsCvm.viewTmpl,data:contractLengthsCvm}")
 
             div(class="subHeader") Frequently Installed Equipment
       tr
@@ -63,8 +63,11 @@ div(class="sales-info")
       tr
         td(class="fh-header")
           div(class="title") Inventory
-          div(class="ssiAddEqpmt")
-            a(href="#") Add By Part #
+          ul(class="actions")
+            li
+              a(class="btn small",tabindex="0",data-bind="cmd:cmdAddByPart") Add By Part #
+            li
+              a(class="btn small",tabindex="0",data-bind="cmd:cmdAddByBarcode") Add By Barcode
       tr
         td(class="fh-body")
           div(class="fh-contents")
@@ -73,10 +76,10 @@ div(class="sales-info")
             div(class="totals")
               div
                 div(class="name") Points Given:
-                div(class="value",data-bind="likecurrency:pointsGiven")
+                div(class="value",data-bind="likecurrency:partsGrid.pointsGiven")
               div
                 div(class="name") Points Available:
                 div(class="value",data-bind="likecurrency:pointsAvailable")
               div
                 div(class="name") Total:
-                div(class="value",data-bind="currency:estimateTotal")
+                div(class="value",data-bind="currency:partsGrid.estimateTotal")

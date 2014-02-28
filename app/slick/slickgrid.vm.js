@@ -104,6 +104,7 @@ define('src/slick/slickgrid.vm', [
     _this.active = ko.observable(false);
   }
   utils.inherits(SlickGridViewModel, BaseViewModel);
+  SlickGridViewModel.ensureProps = BaseViewModel.ensureProps;
 
   SlickGridViewModel.prototype.onBound = function(element) {
     // create a new grid everytime this view model is bound/rebound

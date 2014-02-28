@@ -1,6 +1,6 @@
 h2(class="title") Run Credit
 div(class="runcredit-form", data-bind="toggle:{'override':override}")
-  ul(class="edit-form",style="width:260px;")
+  ul(class="edit-form limit-width")
     li
       span(class="label") Prefix
       input(type="text", placeholder="Mr.",
@@ -21,7 +21,7 @@ div(class="runcredit-form", data-bind="toggle:{'override':override}")
       span(class="label") Suffix
       input(type="text", placeholder="Jr.",
         data-bind="ukov:data.Suffix,value:data.Suffix,valueUpdate:'keyup'")
-  ul(class="edit-form",style="width:260px;position:absolute;top:0px;right:0px;")
+  ul(class="edit-form limit-width right-side")
     li
       span(class="label") Email
       input(type="text", placeholder="",

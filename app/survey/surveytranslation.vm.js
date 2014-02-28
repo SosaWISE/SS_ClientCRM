@@ -48,24 +48,22 @@ define('src/survey/surveytranslation.vm', [
     dataservice.survey.surveyTranslations.read({
       id: _this.id,
       link: 'questionTranslations',
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        // clear cache
-        _this.vmMap = {};
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      // clear cache
+      _this.vmMap = {};
+      //
+      var map = {};
+      _this.map = map;
+      if (resp.Value) {
+        resp.Value.forEach(function(model) {
+          map[model.QuestionId] = model;
+        });
         //
-        var map = {};
-        _this.map = map;
-        if (resp.Value) {
-          resp.Value.forEach(function(model) {
-            map[model.QuestionId] = model;
-          });
-          //
-          _this.list(resp.Value);
-        } else {
-          _this.list([]);
-        }
-      }, cb);
-    });
+        _this.list(resp.Value);
+      } else {
+        _this.list([]);
+      }
+    }, utils.no_op));
   };
 
   SurveyTranslationViewModel.prototype.getQuestionTranslationVM = function(questionVM) { // overrides base

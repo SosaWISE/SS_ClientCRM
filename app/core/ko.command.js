@@ -20,9 +20,6 @@
 
     _cmd.busy = ko.observable();
 
-    function onComplete() {
-      _cmd.busy(false);
-    }
     _cmd.execute = function(cb) {
       if (!_cmd.canExecute.peek()) {
         if (utils.isFunc(cb)) {
@@ -32,7 +29,7 @@
       }
       _cmd.busy(true);
       return execute.call(this, function() {
-        onComplete();
+        _cmd.busy(false);
         if (utils.isFunc(cb)) {
           cb.apply(null, ko.utils.makeArray(arguments));
         }
@@ -80,7 +77,7 @@
       } else if (utils.isFunc(value)) {
         events.click = value;
       } else {
-        console.log('value is not a command or a function', value);
+        console.warn('value is not a command or a function:', value);
         return;
       }
 
@@ -108,7 +105,7 @@
         canExecute = true;
         busy = false;
       } else {
-        console.log('value is not a command or a function', value);
+        console.warn('value is not a command or a function:', value);
         return;
       }
 

@@ -1,8 +1,10 @@
 define('mock/dataservices/monitoringstation.mock', [
+  'mock/dataservices/accountingengine.mock',
   'src/dataservice',
   'src/core/mockery',
   'src/core/utils',
 ], function(
+  accountingengine_mock,
   dataservice,
   mockery,
   utils
@@ -95,6 +97,24 @@ define('mock/dataservices/monitoringstation.mock', [
     };
 
 
+    dataservice.monitoringstation.accounts.post = function(path, data, setter, cb) {
+      var billingInfoSummary = accountingengine_mock.addAccount('@INC(customerMasterFile)');
+
+      //@TODO: needs more Id's set
+      send(mockery.fromTemplate({
+        AccountID: billingInfoSummary.AccountId,
+        LeadId: data.leadId,
+        CustomerId: 0,
+        CustomerMasterFileId: billingInfoSummary.CustomerMasterFileId,
+        IndustryAccountId: 0,
+        SystemTypeId: 0,
+        CellularTypeId: 0,
+        PanelTypeId: 0,
+        PanelItemId: 0,
+        CellPackageItemId: 0,
+        ContractTemplateId: 0,
+      }), setter, cb);
+    };
     dataservice.monitoringstation.emergencyContacts.save = function(params, setter, cb) {
       var data = params.data;
       send(createOrUpdate(emergencyContacts, 'EmergencyContactID', '@INC(emergencyContacts)', {

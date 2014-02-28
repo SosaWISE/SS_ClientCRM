@@ -61,13 +61,23 @@ define('src/account/security/emcontacts.vm', [
   EmContactsViewModel.prototype.viewTmpl = 'tmpl-security-emcontacts';
 
   EmContactsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this;
+    var _this = this,
+      tempContacts;
 
     _this.accountId = routeData.id;
 
-    load_contacts(_this, _this.accountId, join.add());
     load_phoneOptions(_this, join.add());
     load_relationshipOptions(_this, join.add());
+    load_contacts(function(list) {
+      tempContacts = list;
+    }, _this.accountId, join.add());
+
+    join.when(function(err) {
+      if (err) {
+        return;
+      }
+      _this.gvm.list(tempContacts);
+    });
   };
   EmContactsViewModel.prototype.showContactEditor = function(contact, cb) {
     var _this = this;
@@ -89,38 +99,31 @@ define('src/account/security/emcontacts.vm', [
     }), cb);
   };
 
-  function load_contacts(_this, accountId, cb) {
+  function load_contacts(setter, accountId, cb) {
     dataservice.monitoringstation.accounts.read({
       id: accountId,
       link: 'emergencyContacts',
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        // sort emergency contacts
-        resp.Value.sort(function(a, b) {
-          return a.OrderNumber - b.OrderNumber;
-        });
-        _this.gvm.list(resp.Value);
-        cb();
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      // sort emergency contacts
+      resp.Value.sort(function(a, b) {
+        return a.OrderNumber - b.OrderNumber;
       });
-    });
+      setter(resp.Value);
+    }, utils.no_op));
   }
 
   function load_phoneOptions(_this, cb) {
     _this.phoneOptions = null;
-    dataservice.monitoringstation.emergencyContactPhoneTypes.read({}, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        _this.phoneOptions = resp.Value;
-      }, cb);
-    });
+    dataservice.monitoringstation.emergencyContactPhoneTypes.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      _this.phoneOptions = resp.Value;
+    }, utils.no_op));
   }
 
   function load_relationshipOptions(_this, cb) {
     _this.relationshipOptions = null;
-    dataservice.monitoringstation.emergencyContactRelationships.read({}, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        _this.relationshipOptions = resp.Value;
-      }, cb);
-    });
+    dataservice.monitoringstation.emergencyContactRelationships.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      _this.relationshipOptions = resp.Value;
+    }, utils.no_op));
   }
 
   function findById(list, id, idName) {

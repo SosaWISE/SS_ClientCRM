@@ -134,7 +134,7 @@ define('src/account/security/emcontacteditor.vm', [
       Comment1: '',
     }, schema);
 
-    _this.data.RelastionshipCvm = new ComboViewModel({
+    _this.data.RelationshipCvm = new ComboViewModel({
       selectedValue: _this.data.RelationshipId,
       list: _this.relationshipOptions,
       fields: _this.relationshipOptionFields,
@@ -189,14 +189,11 @@ define('src/account/security/emcontacteditor.vm', [
       dataservice.monitoringstation.emergencyContacts.save({
         id: model.EmergencyContactID,
         data: model,
-      }, null, function(err, resp) {
-        if (err) {
-          notify.notify('error', err.Message);
-        }
-        utils.safeCallback(err, function() {
-          _this.layer.close(resp.Value, false);
-        }, cb);
-      });
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        _this.layer.close(resp.Value, false);
+      }, function(err) {
+        notify.notify('error', err.Message);
+      }));
     }, function(busy) {
       return !busy && !_this.cmdDelete.busy();
     });
@@ -205,14 +202,11 @@ define('src/account/security/emcontacteditor.vm', [
         cb();
         return;
       }
-      dataservice.monitoringstation.emergencyContacts.del(_this.data.model.EmergencyContactID, null, function(err, resp) {
-        if (err) {
-          notify.notify('error', err.Message);
-        }
-        utils.safeCallback(err, function() {
-          _this.layer.close(resp.Value, true);
-        }, cb);
-      });
+      dataservice.monitoringstation.emergencyContacts.del(_this.data.model.EmergencyContactID, null, utils.safeCallback(cb, function(err, resp) {
+        _this.layer.close(resp.Value, true);
+      }, function(err) {
+        notify.notify('error', err.Message);
+      }));
     }, function(busy) {
       return !busy && _this.item && !_this.cmdSave.busy();
     });

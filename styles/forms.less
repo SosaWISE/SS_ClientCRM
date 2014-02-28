@@ -170,18 +170,21 @@
   }
 }
 
+.line-top {
+  border-top: 1px solid #fff;
+  padding-top: 5px;
+  margin-top: 5px;
+}
 .edit-form {
-  // padding: 15px 15px 10px 15px;
-
   li {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
   }
 
   .label {
     display: block;
     // text-transform: uppercase;
     font-weight: 500;
-    margin-bottom: 3px;
+    margin-bottom: 0px;
   }
   input[type=text],
   textarea {
@@ -203,6 +206,21 @@
   }
   textarea {
     font-size: 13px;
+  }
+
+  &.limit-width,
+  div.limit-width,
+  input[type=text].limit-width,
+  textarea.limit-width {
+    width: 250px;
+    display: inline-block;
+    vertical-align: top;
+  }
+  &.right-side,
+  div.right-side,
+  input[type=text].right-side,
+  textarea.right-side {
+    margin-left: 10px;
   }
 }
 

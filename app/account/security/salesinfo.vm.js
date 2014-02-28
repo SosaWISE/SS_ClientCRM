@@ -1,7 +1,9 @@
 define('src/account/security/salesinfo.vm', [
+  'src/account/security/parts.editor.vm',
   'src/config',
   'src/slick/buttonscolumn',
-  'src/slick/slickgrid.vm',
+  'src/account/security/frequent.gvm',
+  'src/account/security/salesinfo.gvm',
   'src/ukov',
   'src/dataservice',
   'src/core/notify',
@@ -10,9 +12,11 @@ define('src/account/security/salesinfo.vm', [
   'ko',
   'src/core/combo.vm',
 ], function(
+  PartsEditorViewModel,
   config,
   ButtonsColumn,
-  SlickGridViewModel,
+  FrequentGridViewModel,
+  SalesInfoGridViewModel,
   ukov,
   dataservice,
   notify,
@@ -23,25 +27,30 @@ define('src/account/security/salesinfo.vm', [
 ) {
   "use strict";
 
-  function SalesInfoViewModel(options) {
-    var _this = this,
-      regx = /^[0-9]+.[0-9][0-9]$/,
-      schema = {
-        moddel: true,
-        ActivationFee: {},
-        ActivationFeeActual: {
-          converter: ukov.converters.string(),
-          validators: [
-            ukov.validators.isRequired('Activation Fee is Required'),
-            function(val) {
-              if (!regx.test(val)) {
-                return "Invalid value for activation fee.";
-              }
-            }
-          ]
+  var schema,
+    regx = /^[0-9]+.[0-9][0-9]$/;
+
+  schema = {
+    _model: true,
+
+    ActivationFee: {},
+    ActivationFeeActual: {
+      converter: ukov.converters.string(),
+      validators: [
+        ukov.validators.isRequired('Activation Fee is Required'),
+        function(val) {
+          if (!regx.test(val)) {
+            return "Invalid value for activation fee.";
+          }
         }
-      };
+      ]
+    }
+  };
+
+  function SalesInfoViewModel(options) {
+    var _this = this;
     SalesInfoViewModel.super_.call(_this, options);
+    ControllerViewModel.ensureProps(_this, ['layersVm']);
 
     // ** Fields
     _this.finishedLoading = false;
@@ -56,26 +65,26 @@ define('src/account/security/salesinfo.vm', [
     _this.monthlyMonitoringRate = ko.observable();
     _this.monthlyMonitoringRateItemId = '';
     _this.monthlyMonitoringRateActual = ko.observable();
-    _this.psComboVM = new ComboViewModel({
+    _this.pointSystemsCvm = new ComboViewModel({
       fields: {
         text: 'TemplateName',
         value: 'InvoiceTemplateID',
       }
     });
-    _this.ctComboVM = new ComboViewModel({
+    _this.cellularTypesCvm = new ComboViewModel({
       nullable: true,
       fields: {
         text: 'CellularTypeName',
         value: 'CellularTypeID',
       }
     });
-    _this.apckComboVM = new ComboViewModel({
+    _this.alarmcomPacakgesCvm = new ComboViewModel({
       fields: {
         text: 'PackageName',
         value: 'AlarmComPackageID',
       }
     });
-    _this.clComboVM = new ComboViewModel({
+    _this.contractLengthsCvm = new ComboViewModel({
       fields: {
         text: 'ContractName',
         value: 'ContractTemplateID',
@@ -83,135 +92,44 @@ define('src/account/security/salesinfo.vm', [
     });
     _this.title = ko.observable(_this.title);
 
-    _this.frequentGrid = new SlickGridViewModel({
-      gridOptions: {
-        enableColumnReorder: false,
-        forceFitColumns: true,
-        rowHeight: 27,
+    _this.frequentGrid = new FrequentGridViewModel({
+      addPart: function(part) {
+        showPartsEditor(_this, true, part.ItemSKU, null);
       },
-      columns: [
-        {
-          id: 'item',
-          name: 'Item',
-          field: 'ItemSKU',
-        },
-        {
-          id: 'description',
-          name: 'Description',
-          field: 'ItemDesc',
-        },
-        {
-          id: 'price',
-          name: 'Price',
-          field: 'Cost',
-          formatter: SlickGridViewModel.formatters.currency,
-        },
-        {
-          id: 'points',
-          name: 'Points',
-          field: 'SystemPoints',
-          formatter: SlickGridViewModel.formatters.likecurrency,
-        },
-        new ButtonsColumn({
-          id: 'actions',
-          name: 'Actions',
-          buttons: [
-            {
-              text: 'Add',
-              fn: _this.fxAddItem,
-              // fn: function(item) {
-              //   alert('add ' + JSON.stringify(item));
-              // },
-            },
-          ]
-        }),
-      ],
     });
-
-    _this.fxAddItem = function(item) {
-      console.log("Adding: ", JSON.stringify(item));
-    };
-
-    _this.pointsGiven = ko.observable(0);
-    _this.pointsAvailable = ko.observable(0);
-    _this.estimateTotal = ko.observable(0);
-    // while (_this.frequentGrid.list().length < 19) {
-    //   _this.frequentGrid.list().push({
-    //     ItemSKU: 'Item ' + _this.frequentGrid.list().length,
-    //     ItemDesc: 'Description ' + _this.frequentGrid.list().length,
-    //     Cost: _this.frequentGrid.list().length * -1.23,
-    //     SystemPoints: _this.frequentGrid.list().length - 4,
-    //   });
-    // }
-
-    _this.partsGrid = new SlickGridViewModel({
-      gridOptions: {
-        enableColumnReorder: false,
-        forceFitColumns: true,
-        rowHeight: 27,
-      },
-      columns: [
-        {
-          id: 'description',
-          name: 'Description',
-          field: 'ItemDesc',
-          width: 200,
-        },
-        {
-          id: 'price',
-          name: 'Price',
-          field: 'Cost',
-          formatter: SlickGridViewModel.formatters.currency,
-        },
-        {
-          id: 'points',
-          name: 'Points',
-          field: 'SystemPoints',
-          formatter: SlickGridViewModel.formatters.likecurrency,
-        },
-        {
-          id: 'total',
-          name: 'Total',
-          field: 'RetailPrice',
-          formatter: SlickGridViewModel.formatters.currency,
-        },
-        new ButtonsColumn({
-          id: 'actions',
-          name: 'Actions',
-          buttons: [
-            {
-              text: 'Del',
-              fn: function(item) {
-                alert('delete ' + JSON.stringify(item));
-              },
-            },
-          ]
-        }),
-      ],
-    });
-
-    _this.psComboVM.selectedValue.subscribe(function(psValue) {
-      _this.clComboVM.setList([]);
-      dataservice.salessummary.contractlengthsget.read({
-        id: psValue,
-      }, null, function(err, resp) {
-        utils.safeCallback(err, function() {
-          // only set cl if same as current selected psValue
-          if (_this.psComboVM.selectedValue() === psValue) {
-            _this.clComboVM.setList(resp.Value);
-          }
-        }, function(err) {
-          if (err) {
+    _this.partsGrid = new SalesInfoGridViewModel({
+      deletePart: function(part) {
+        dataservice.invoicesrv.invoiceItems.get(part.InvoiceItemID + '/Delete', //@TODO: change this from a GET to a DELETE
+          null, null, utils.safeCallback(null, function(err, resp) {
+            if (resp.Value) {
+              _this.refreshInvoice();
+            }
+          }, function(err) {
             notify.notify('error', err.Message);
-          }
-        });
-      });
+          }));
+      },
+    });
+
+    _this.pointsAvailable = ko.observable(0);
+
+    _this.pointSystemsCvm.selectedValue.subscribe(function(psValue) {
+      _this.contractLengthsCvm.setList([]);
+      dataservice.salessummary.contractLengthsGet.read({
+        id: psValue,
+      }, null, utils.safeCallback(null, function(err, resp) {
+        // only set cl if same as current selected psValue
+        if (_this.pointSystemsCvm.selectedValue() === psValue) {
+          _this.contractLengthsCvm.setList(resp.Value);
+        }
+      }, function(err) {
+        notify.notify('error', err.Message);
+      }));
     });
     _this.activationFeeActual.subscribe(function(newValue) {
       console.log("New Activation Fee: ", newValue);
       _this.refreshInvoice();
     });
-    _this.ctComboVM.selectedValue.subscribe(function(newValue) {
+    _this.cellularTypesCvm.selectedValue.subscribe(function(newValue) {
       console.log("New Cellular Type:", newValue);
       _this.refreshInvoice();
     });
@@ -219,7 +137,7 @@ define('src/account/security/salesinfo.vm', [
       console.log("New Over 3 Months: ", newValue);
       _this.refreshInvoice();
     });
-    _this.apckComboVM.selectedValue.subscribe(function(newValue) {
+    _this.alarmcomPacakgesCvm.selectedValue.subscribe(function(newValue) {
       console.log("AlarmComPackage: ", newValue);
       _this.refreshInvoice();
     });
@@ -229,52 +147,42 @@ define('src/account/security/salesinfo.vm', [
     });
 
 
-    _this.refreshInvoice = function() {
-      /** Check that the form has loaded. */
-      if (_this.finishedLoading) {
-        /** Initialize. */
-        _this.sData = ukov.wrap({
-          InvoiceID: _this.invoiceID,
-          AccountId: _this.msAccountId,
-          ActivationFee: _this.activationFee(),
-          ActivationFeeItemId: _this.activationFeeItemId,
-          ActivationFeeActual: _this.activationFeeActual(),
-          MonthlyMonitoringRate: _this.monthlyMonitoringRate(),
-          MonthlyMonitoringRateItemId: _this.monthlyMonitoringRateItemId,
-          MonthlyMonitoringRateActual: _this.monthlyMonitoringRateActual(),
-          CellTypeId: _this.ctComboVM.selectedValue(),
-          Over3Months: _this.over3Months(),
-          AlarmComPackageId: _this.apckComboVM.selectedValue(),
-          DealerId: config.user().DealerId,
-        }, schema);
-
-        dataservice.salessummary.invoicerefresh.save({
-          data: _this.sData.model.root,
-        }, null, function(err, resp) {
-          if (err) {
-            notify.notify('error', err.Message);
-          } else {
-            console.log("Response: ", resp);
-            _this.partsGrid.list(resp.Value.Items);
-
-            /** Calculate points and estimate total price. */
-            var totalPrice = 0,
-              pointsGiven = 0;
-            resp.Value.Items.map(function(item) {
-              // console.log("Invoice Item Refreshed:", item);
-              totalPrice += item.RetailPrice;
-              pointsGiven += item.SystemPoints;
-            });
-            _this.pointsGiven(pointsGiven);
-            _this.estimateTotal(totalPrice);
-          }
-        });
-      }
-    };
 
     //
     // events
     //
+    _this.refreshInvoice = function(cb) {
+      /** Check that the form has loaded. */
+      if (_this.finishedLoading) {
+        dataservice.salessummary.invoiceRefresh.save({
+          data: {
+            InvoiceID: _this.invoiceID,
+            AccountId: _this.msAccountId,
+            ActivationFee: _this.activationFee(),
+            ActivationFeeItemId: _this.activationFeeItemId,
+            ActivationFeeActual: _this.activationFeeActual(),
+            MonthlyMonitoringRate: _this.monthlyMonitoringRate(),
+            MonthlyMonitoringRateItemId: _this.monthlyMonitoringRateItemId,
+            MonthlyMonitoringRateActual: _this.monthlyMonitoringRateActual(),
+            CellTypeId: _this.cellularTypesCvm.selectedValue(),
+            Over3Months: _this.over3Months(),
+            AlarmComPackageId: _this.alarmcomPacakgesCvm.selectedValue(),
+            DealerId: config.user().DealerId,
+          },
+        }, null, utils.safeCallback(cb, function(err, resp) {
+          console.log("Response: ", resp);
+          _this.partsGrid.list(resp.Value.Items);
+        }, function(err) {
+          notify.notify('error', err.Message);
+        }));
+      }
+    };
+    _this.cmdAddByPart = ko.command(function(cb) {
+      showPartsEditor(_this, true, null, cb);
+    });
+    _this.cmdAddByBarcode = ko.command(function(cb) {
+      showPartsEditor(_this, false, null, cb);
+    });
   }
   utils.inherits(SalesInfoViewModel, ControllerViewModel);
   SalesInfoViewModel.prototype.viewTmpl = 'tmpl-security-salesinfo';
@@ -285,10 +193,10 @@ define('src/account/security/salesinfo.vm', [
     _this.msAccountId = routeData.id;
 
     load_invoice(_this, function() {
-      load_vendoralarmcompacakges(_this.apckComboVM, join.add());
-      load_pointsystems(_this.psComboVM, join.add());
-      load_cellulartypes(_this.ctComboVM, join.add());
-      load_frequentlyinstalledequipmentget(_this.frequentGrid, join.add());
+      load_vendorAlarmcomPacakges(_this.alarmcomPacakgesCvm, join.add());
+      load_pointSystems(_this.pointSystemsCvm, join.add());
+      load_cellularTypes(_this.cellularTypesCvm, join.add());
+      load_frequentlyInstalledEquipmentGet(_this.frequentGrid, join.add());
 
       /** Refresh the invoice. */
       _this.refreshInvoice();
@@ -298,13 +206,10 @@ define('src/account/security/salesinfo.vm', [
   };
 
   function load_invoice(_this, cb) {
-    dataservice.salessummary.invoicemsisntalls.read({
+    dataservice.salessummary.invoiceMsIsntalls.read({
       id: _this.msAccountId,
       link: 'accountid'
-    }, null, function(err, resp) {
-      if (err) {
-        return cb(err);
-      }
+    }, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Value) {
         console.log(resp.Value);
         _this.invoiceID = resp.Value.InvoiceID;
@@ -318,49 +223,75 @@ define('src/account/security/salesinfo.vm', [
         /** Allow for refreshing. */
         _this.finishedLoading = true;
       }
-      cb();
-    });
+    }, function(err) {
+      notify.notify('error', err.Message);
+    }));
   }
 
-  function load_pointsystems(comboVM, cb) {
-    // ** Pull pointsystems
-    dataservice.salessummary.pointsystems.read({}, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        // ** Bind data
-        comboVM.setList(resp.Value);
-        comboVM.selectItem(comboVM.list()[0]);
-      }, cb);
-    });
+  function load_pointSystems(comboVM, cb) {
+    // ** Pull pointSystems
+    dataservice.salessummary.pointSystems.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      // ** Bind data
+      comboVM.setList(resp.Value);
+      comboVM.selectItem(comboVM.list()[0]);
+    }, utils.no_op));
   }
 
-  function load_cellulartypes(comboVM, cb) {
+  function load_cellularTypes(comboVM, cb) {
     // ** Pull Cellular Types
-    dataservice.salessummary.cellulartypes.read({}, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        // ** Bind data
-        comboVM.setList(resp.Value);
-      }, cb);
-    });
+    dataservice.salessummary.cellularTypes.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      // ** Bind data
+      comboVM.setList(resp.Value);
+    }, utils.no_op));
   }
 
-  function load_vendoralarmcompacakges(comboVM, cb) {
+  function load_vendorAlarmcomPacakges(comboVM, cb) {
     // ** Pull alarm.com packages
-    dataservice.salessummary.vendoralarmcompacakges.read({}, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        // ** Bind Data
-        comboVM.setList(resp.Value);
-      }, cb);
+    dataservice.salessummary.vendorAlarmcomPacakges.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      // ** Bind Data
+      comboVM.setList(resp.Value);
+    }, utils.no_op));
+  }
+
+  function load_frequentlyInstalledEquipmentGet(gridVM, cb) {
+    // ** Pull data
+    dataservice.salessummary.frequentlyInstalledEquipmentGet.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      // ** Bind data to table
+      gridVM.list(resp.Value || []);
+    }, utils.no_op));
+  }
+
+  function showPartsEditor(_this, byPart, id, cb) {
+    _this.layersVm.show(createPartsEditor(_this, byPart, id), createPartsEditorCb(_this, cb));
+  }
+
+  function createPartsEditor(_this, byPart, id) {
+    return new PartsEditorViewModel({
+      byPart: byPart,
+      itemSku: byPart ? id : null,
+      barcode: !byPart ? id : null,
+      invoiceID: _this.invoiceID,
+      //@TODO: get real salesman and technician
+      salesman: {
+        id: 'SALS001',
+        name: 'SALS001',
+      },
+      // technician: {
+      //   id: 'FRANK002',
+      //   name: 'Frank',
+      // },
     });
   }
 
-  function load_frequentlyinstalledequipmentget(gridVM, cb) {
-    // ** Pull data
-    dataservice.salessummary.frequentlyinstalledequipmentget.read({}, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        // ** Bind data to table
-        gridVM.list(resp.Value || []);
-      }, cb);
-    });
+  function createPartsEditorCb(_this, cb) {
+    return function(result) {
+      if (result && result.Items) {
+        _this.partsGrid.list(result.Items);
+      }
+      if (utils.isFunc(cb)) {
+        cb();
+      }
+    };
   }
 
   return SalesInfoViewModel;

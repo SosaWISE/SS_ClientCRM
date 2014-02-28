@@ -5,9 +5,8 @@ define('src/core/utils', [
 ) {
   "use strict";
 
-  function no_op() {}
-
-  return {
+  var utils = {
+    no_op: function() {},
 
     inherits: function(ctor, superCtor) {
       ctor.super_ = superCtor;
@@ -21,20 +20,32 @@ define('src/core/utils', [
       });
     },
 
-    safeCallback: function(err, action, cb) {
-      cb = cb || no_op;
-      if (err) {
-        return cb(err);
+    safeCallback: function(cb, successFn, errorFn) {
+      if (!utils.isFunc(cb)) {
+        cb = utils.no_op;
       }
-      try {
-        action();
-      } catch (ex) {
-        err = {
-          Message: ex.message
-        };
-      } finally {
-        cb(err);
+      if (!utils.isFunc(successFn)) {
+        throw new Error('successFn must be a function');
       }
+      if (errorFn && !utils.isFunc(errorFn)) {
+        throw new Error('errorFn must be a function or falsey');
+      }
+      // return a function to be called when the async operation is complete
+      return function(err, resp, ctx) {
+        try {
+          if (err && errorFn) {
+            errorFn(err, resp, ctx);
+          } else {
+            successFn(err, resp, ctx);
+          }
+        } catch (ex) {
+          err = {
+            Message: ex.message
+          };
+        } finally {
+          cb(err, resp);
+        }
+      };
     },
 
     clone: function(value) {
@@ -56,4 +67,6 @@ define('src/core/utils', [
     },
 
   };
+
+  return utils;
 });

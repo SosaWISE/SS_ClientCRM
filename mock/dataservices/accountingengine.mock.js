@@ -92,7 +92,7 @@ define('mock/dataservices/accountingengine.mock', [
   (function() {
     // mockery.random = Math.random;
 
-    mockery.addModulusValueFunc('ACCT_NAME', [
+    mockery.addModulusValueFunc('ACCT_NAME', [ // multiples of 8
       'Main Home Security System',
       'Vacation Home Security System',
       'FWI Firewall',
@@ -102,7 +102,7 @@ define('mock/dataservices/accountingengine.mock', [
       'Strike Plate',
       'Window Film',
     ]);
-    mockery.addModulusValueFunc('ACCT_DESC', [
+    mockery.addModulusValueFunc('ACCT_DESC', [ // multiples of 8
       'This is the house where my family lives.  Here we do all our stuf.',
       'This home we like to go to when winter comes around.',
       'This is the firewall that protects our family from porn.',
@@ -142,7 +142,7 @@ define('mock/dataservices/accountingengine.mock', [
       1,
       4,
     ]);
-    mockery.addModulusValueFunc('AGING', [
+    mockery.addModulusValueFunc('AGING', [ // multiples of 6
       'Current',
       '1 to 30',
       '31 to 60',
@@ -153,56 +153,54 @@ define('mock/dataservices/accountingengine.mock', [
   })();
 
   // data used in mock function
-  var agings,
-    billingInfoSummarys;
+  var cmfidList,
+    agings,
+    billingInfoSummarys,
+    billingInfoTmpl;
 
-  agings = mockery.fromTemplate({
-    // multiples of 6
-    'list|6-6': [
-      {
-        CMFID: 3000001,
-        Age: '@AGING',
-        Value: '@MONEY(0,60)',
-      }
-    ]
-  }).list.concat(mockery.fromTemplate({
-    // multiples of 6
-    'list|6-6': [
-      {
-        CMFID: 3000003,
-        Age: '@AGING',
-        Value: '@MONEY(0,60)',
-      }
-    ]
-  }).list);
+  cmfidList = mockery.fromTemplate({
+    'list|2-2': ['@INC(customerMasterFile,3000001)']
+  }).list;
 
-  billingInfoSummarys = mockery.fromTemplate({
-    'list|8-8': [
-      {
-        SummaryID: '@INC(summary)',
-        CustomerMasterFileId: 3000001,
-        AccountId: '@INC(account)',
-        AccountName: '@ACCT_NAME',
-        AccountDesc: '@ACCT_DESC',
-        AmountDue: '@DUE',
-        DueDate: '@DUEDATE',
-        NumberOfUnites: '@NUNITS',
-      }
-    ],
-  }).list.concat(mockery.fromTemplate({
-    'list|8-8': [
-      {
-        SummaryID: '@INC(summary)',
-        CustomerMasterFileId: 3000003,
-        AccountId: '@INC(account)',
-        AccountName: '@ACCT_NAME',
-        AccountDesc: '@ACCT_DESC',
-        AmountDue: '@DUE',
-        DueDate: '@DUEDATE',
-        NumberOfUnites: '@NUNITS',
-      }
-    ],
-  }).list);
+  billingInfoTmpl = {
+    SummaryID: '@INC(summary)',
+    CustomerMasterFileId: 'set me!!!',
+    AccountId: '@INC(account)',
+    AccountName: '@ACCT_NAME',
+    AccountDesc: '@ACCT_DESC',
+    AmountDue: '@DUE',
+    DueDate: '@DUEDATE',
+    NumberOfUnites: '@NUNITS',
+  };
+
+  agings = [];
+  billingInfoSummarys = [];
+  cmfidList.forEach(function(cmfid) {
+
+    agings = agings.concat(mockery.fromTemplate({
+      'list|6-6': [ // multiples of 6
+        {
+          CMFID: cmfid,
+          Age: '@AGING',
+          Value: '@MONEY(0,60)',
+        }
+      ]
+    }).list);
+
+    billingInfoTmpl.CustomerMasterFileId = cmfid;
+    billingInfoSummarys = billingInfoSummarys.concat(mockery.fromTemplate({
+      'list|8-8': [billingInfoTmpl], // multiples of 8
+    }).list);
+  });
+
+  mock.addAccount = function(cmfid) {
+    billingInfoTmpl.CustomerMasterFileId = cmfid;
+    var bis = mockery.fromTemplate(billingInfoTmpl);
+
+    billingInfoSummarys.push(bis);
+
+    return bis;
+  };
 
   return mock;
 });

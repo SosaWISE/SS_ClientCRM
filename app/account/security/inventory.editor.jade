@@ -1,0 +1,57 @@
+//- IsNonZone
+  ZoneEventType
+//- LocationNeeded
+  ItemLocation
+//- WirelessNeeded
+  IsExistingWiring
+//- MainPanelNeeded
+  MainPanel
+
+div(class="equipment-editor")
+  div(data-bind="if:cmdAdd.busy")
+    div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+
+  ul(class="actions")
+    li
+      a(class="btn",data-bind="cmd:cmdDelete") Delete
+
+  div(class="line-top")
+    ul(class="edit-form limit-width")
+      li
+        span(class="label") Item
+        span(class="label") Item name goes here
+      li
+        span(class="label") Zone
+        input(type="text",placeholder="",data-bind="ukov:data.Zone,value:data.Zone,valueUpdate:'keyup'")
+      li
+        span(class="label") Zone Event Type
+        div(data-bind="template:{name:data.ZoneEventTypeCvm.viewTmpl,data:data.ZoneEventTypeCvm}")
+      li
+        span(class="label") Location
+        div(data-bind="template:{name:data.ItemLocationCvm.viewTmpl,data:data.ItemLocationCvm}")
+      li
+        span(class="label") Assign To
+        div(data-bind="template:{name:data.AssignToCvm.viewTmpl,data:data.AssignToCvm}")
+    ul(class="edit-form limit-width right-side")
+      li
+        span(class="label") Part #
+        span(class="label") Part # goes here
+      li
+        span(class="label") Upgrade
+        div(data-bind="template:{name:data.IsUpgradeCvm.viewTmpl,data:data.IsUpgradeCvm}")
+      li
+        span(class="label") Upgrade Amount
+        input(type="text",placeholder="",data-bind="ukov:data.Price,value:data.Price,valueUpdate:'keyup'")
+      li
+        span(class="label") Existing Wiring
+        div(data-bind="template:{name:data.IsExistingWiringCvm.viewTmpl,data:data.IsExistingWiringCvm}")
+      li
+        span(class="label") Main Panel
+        div(data-bind="template:{name:data.MainPanelCvm.viewTmpl,data:data.MainPanelCvm}")
+
+  div(class="line-top")
+    ul(class="actions")
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdCancel") Cancel
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save

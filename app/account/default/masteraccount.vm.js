@@ -100,41 +100,37 @@ define('src/account/default/masteraccount.vm', [
     dataservice.accountingengine.billingInfoSummary.read({
       id: masterId,
       link: 'CMFID',
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        if (resp.Value) {
-          var list = resp.Value.map(function(acct) {
-            return createAccount(pcontroller, acct.AccountId, acct.AccountName, acct.AmountDue, acct.NumberOfUnites);
-          });
-          accounts(list);
-        } else {
-          accounts([]);
-        }
-      }, cb);
-    });
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Value) {
+        var list = resp.Value.map(function(acct) {
+          return createAccount(pcontroller, acct.AccountId, acct.AccountName, acct.AmountDue, acct.NumberOfUnites);
+        });
+        accounts(list);
+      } else {
+        accounts([]);
+      }
+    }, utils.no_op));
   }
 
   function load_aging(pcontroller, masterId, agings, cb) {
     dataservice.accountingengine.aging.read({
       id: masterId,
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        if (resp.Value) {
-          var list, map = {};
-          // make map for easy lookup
-          resp.Value.forEach(function(aging) {
-            map[aging.Age] = aging.Value;
-          });
-          // create view models in the expected order
-          list = agingList.map(function(name, index) {
-            return createAging(pcontroller, index, name, map[name]);
-          });
-          agings(list);
-        } else {
-          agings([]);
-        }
-      }, cb);
-    });
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Value) {
+        var list, map = {};
+        // make map for easy lookup
+        resp.Value.forEach(function(aging) {
+          map[aging.Age] = aging.Value;
+        });
+        // create view models in the expected order
+        list = agingList.map(function(name, index) {
+          return createAging(pcontroller, index, name, map[name]);
+        });
+        agings(list);
+      } else {
+        agings([]);
+      }
+    }, utils.no_op));
   }
 
   function createAccount(pcontroller, id, title, rmr, units) {
