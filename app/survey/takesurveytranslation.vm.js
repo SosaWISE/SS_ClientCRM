@@ -18,7 +18,7 @@ define('src/survey/takesurveytranslation.vm', [
     TakeSurveyTranslationViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, ['surveyTranslationVMs', 'routeData']);
 
-    _this.localeComboVM = new ComboViewModel({
+    _this.localeCvm = new ComboViewModel({
       list: _this.surveyTranslationVMs.map(function(surveyTranslationVM) {
         var locale = surveyTranslationVM.model.LocalizationCode;
         return {
@@ -27,6 +27,9 @@ define('src/survey/takesurveytranslation.vm', [
         };
       })
     });
+    if (_this.localeCvm.list()[0]) {
+      _this.localeCvm.selectedValue(_this.localeCvm.list()[0].value);
+    }
 
     //
     // events
@@ -40,9 +43,9 @@ define('src/survey/takesurveytranslation.vm', [
       if (!_this.layersVm) {
         return;
       }
-      var vm, locale = _this.localeComboVM.selectedValue();
+      var vm, locale = _this.localeCvm.selectedValue();
       if (!locale) {
-        notify.notify('warn', 'No localization code selected', 10);
+        notify.notify('warn', 'No localization code selected', 7);
         return;
       }
       _this.routeData.locale = locale;
