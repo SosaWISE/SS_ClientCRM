@@ -186,7 +186,7 @@ define('src/account/default/runcredit.vm', [
       Email: '',
     }, schema);
 
-    _this.laComboVM = new ComboViewModel({
+    _this.localizationCvm = new ComboViewModel({
       selectedValue: _this.data.LocalizationID,
       fields: {
         text: 'LocalizationName',
@@ -257,13 +257,13 @@ define('src/account/default/runcredit.vm', [
     var _this = this,
       cb = join.add();
 
-    load_localization(_this.laComboVM, cb);
+    load_localization(_this.localizationCvm, cb);
   };
 
-  function load_localization(comboVM, cb) {
+  function load_localization(cvm, cb) {
     dataservice.maincore.localizations.read({}, null, utils.safeCallback(cb, function(err, resp) {
-      comboVM.setList(resp.Value);
-      comboVM.selectItem(comboVM.list()[0]);
+      cvm.setList(resp.Value);
+      cvm.selectItem(cvm.list()[0]);
     }, utils.no_op));
   }
 

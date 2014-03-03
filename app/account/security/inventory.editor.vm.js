@@ -17,8 +17,12 @@ define('src/account/security/inventory.editor.vm', [
 ) {
   "use strict";
 
-  var schema,
+  var searchKeySchema, schema,
     strConverter = ukov.converters.string();
+
+  searchKeySchema = {
+    converter: strConverter,
+  };
 
   schema = {
     _model: true,
@@ -39,11 +43,11 @@ define('src/account/security/inventory.editor.vm', [
     BaseViewModel.ensureProps(_this, [
       // 'customerId',
       'accountId',
-      'phoneOptions',
-      'phoneOptionFields',
-      'relationshipOptions',
-      'relationshipOptionFields',
+      'monitoringStationOS',
     ]);
+    _this.mixinLoad();
+
+    _this.searchKey = ukov.wrap('', searchKeySchema);
 
     _this.data = ukov.wrap(_this.item || {
       Zone: '',
@@ -55,42 +59,98 @@ define('src/account/security/inventory.editor.vm', [
     }, schema);
 
     _this.data.ZoneEventTypeCvm = new ComboViewModel({
-      selectedValue: _this.data.asdf,
+      selectedValue: _this.data.ZoneEventType,
       list: _this.relationshipOptions,
       fields: _this.relationshipOptionFields,
     });
     _this.data.ItemLocationCvm = new ComboViewModel({
-      selectedValue: _this.data.asdf,
-      list: _this.yesNoOptions,
+      selectedValue: _this.data.ItemLocation,
     });
     _this.data.AssignToCvm = new ComboViewModel({
       selectedValue: _this.data.asdf,
       nullable: true,
     });
+    _this.data.IsUpgradeCvm = new ComboViewModel({
+      selectedValue: _this.data.asdf,
+      nullable: true,
+      list: _this.isUpgradeOptions,
+    });
+    _this.data.IsExistingWiringCvm = new ComboViewModel({
+      selectedValue: _this.data.asdf,
+      nullable: true,
+      list: _this.yesNoOptions,
+    });
     _this.data.MainPanelCvm = new ComboViewModel({
       selectedValue: _this.data.asdf,
       nullable: true,
+      list: _this.yesNoOptions,
     });
 
     //
     // events
     //
     _this.cmdCancel = ko.command(function(cb) {
-      if (_this.layer) {
-        _this.layer.close(null);
-      }
+      closeLayer(null);
       cb();
     }, function(busy) {
       return !busy && !_this.cmdSave.busy();
     });
     _this.cmdSave = ko.command(function(cb) {
+      // closeLayer(result);
       cb();
     });
+
+    function closeLayer(result) {
+      if (_this.layer) {
+        _this.layer.close(result);
+      }
+    }
   }
   utils.inherits(InventoryEditorViewModel, BaseViewModel);
   InventoryEditorViewModel.prototype.viewTmpl = 'tmpl-security-inventory_editor';
   InventoryEditorViewModel.prototype.width = 550;
   InventoryEditorViewModel.prototype.height = 'auto';
+
+  // ?????????
+  InventoryEditorViewModel.prototype.isUpgradeOptions = [
+    {
+      value: null,
+      text: 'null',
+    },
+    {
+      value: true,
+      text: 'Tech',
+    },
+    {
+      value: false,
+      text: 'Rep',
+    },
+  ];
+
+  InventoryEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
+    var _this = this;
+
+    load_zoneEventTypes(_this.data.ZoneEventTypeCvm, _this.monitoringStationOS, join.add());
+    load_accountZoneTypes(_this.ItemLocationCvm, _this.monitoringStationOS, join.add());
+  };
+
+  function load_zoneEventTypes(cvm, monitoringStationOS, cb) {
+    readMonitoringStationOS(cvm, monitoringStationOS, 'zoneEventTypes', cb);
+  }
+
+  function load_accountZoneTypes(cvm, monitoringStationOS, cb) {
+    readMonitoringStationOS(cvm, monitoringStationOS, 'accountZoneTypes', cb);
+  }
+
+  function readMonitoringStationOS(cvm, id, link, cb) {
+    dataservice.monitoringstation.monitoringStationOS.read({
+      id: id,
+      link: link,
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      cvm.setList(resp.Value);
+      cvm.selectItem(cvm.list()[0]); // select first
+    }, utils.no_op));
+  }
 
   return InventoryEditorViewModel;
 });

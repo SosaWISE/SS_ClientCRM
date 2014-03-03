@@ -4,11 +4,11 @@ div(class="acct-inventory")
       td(class="fh-header")
         ul(class="actions left cf")
           li
-            a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickAddByBarcode") Add By Barcode
+            a(class="btn small add-btn",tabindex="0",data-bind="cmd:cmdAddByBarcode") Add By Barcode
           li
-            a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickAddByPart") Add By Part
+            a(class="btn small add-btn",tabindex="0",data-bind="cmd:cmdAddByPart") Add By Part
           li
-            a(class="btn small add-btn",tabindex="0",data-bind="cmd:clickAddExistingEquipment") Add Existing Equipment
+            a(class="btn small add-btn",tabindex="0",data-bind="cmd:cmdAddExistingEquipment") Add Existing Equipment
         div
           |Total Points:&nbsp;
           span(data-bind="text:gvm.totalPoints")
@@ -16,3 +16,5 @@ div(class="acct-inventory")
       td(class="fh-body")
         div(class="fh-contents")
           div(class="slickgrid",data-bind="slickgrid:gvm")
+
+div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

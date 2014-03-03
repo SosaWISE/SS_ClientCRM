@@ -8,12 +8,21 @@
   MainPanel
 
 div(class="equipment-editor")
-  div(data-bind="if:cmdAdd.busy")
+  div(data-bind="if:loading")
     div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
 
-  ul(class="actions")
+  //- ul(class="actions")
     li
       a(class="btn",data-bind="cmd:cmdDelete") Delete
+
+  div(class="line-top")
+    ul(class="edit-form limit-width")
+      li
+        span(class="label") Barcode or Part # ???
+        input(type="text",placeholder="",data-bind="ukov:searchKey,value:searchKey,valueUpdate:'keyup',cmdEnter:cmdSearch")
+    ul(class="actions limit-width right-side")
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdSearch") Search
 
   div(class="line-top")
     ul(class="edit-form limit-width")
@@ -41,7 +50,7 @@ div(class="equipment-editor")
         div(data-bind="template:{name:data.IsUpgradeCvm.viewTmpl,data:data.IsUpgradeCvm}")
       li
         span(class="label") Upgrade Amount
-        input(type="text",placeholder="",data-bind="ukov:data.Price,value:data.Price,valueUpdate:'keyup'")
+        input(type="text",placeholder="",data-bind="ukov:data.UpgradePrice,value:data.UpgradePrice,valueUpdate:'keyup'")
       li
         span(class="label") Existing Wiring
         div(data-bind="template:{name:data.IsExistingWiringCvm.viewTmpl,data:data.IsExistingWiringCvm}")

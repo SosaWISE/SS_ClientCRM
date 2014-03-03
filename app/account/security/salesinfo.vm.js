@@ -99,14 +99,16 @@ define('src/account/security/salesinfo.vm', [
     });
     _this.partsGrid = new SalesInfoGridViewModel({
       deletePart: function(part) {
-        dataservice.invoicesrv.invoiceItems.get(part.InvoiceItemID + '/Delete', //@TODO: change this from a GET to a DELETE
-          null, null, utils.safeCallback(null, function(err, resp) {
-            if (resp.Value) {
-              _this.refreshInvoice();
-            }
-          }, function(err) {
-            notify.notify('error', err.Message);
-          }));
+        dataservice.invoicesrv.invoiceItems.read({ //@TODO: change this from a GET to a DELETE
+          id: part.InvoiceItemID,
+          link: '/Delete',
+        }, null, null, utils.safeCallback(null, function(err, resp) {
+          if (resp.Value) {
+            _this.refreshInvoice();
+          }
+        }, function(err) {
+          notify.notify('error', err.Message);
+        }));
       },
     });
 
