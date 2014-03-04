@@ -55,7 +55,6 @@ define('src/account/security/account.vm', [
 
       _this.childs([
         createSummary(_this, 'Account Summary'),
-        createFauxController(_this, 'EMC/Equipment'),
         createFauxController(_this, 'Signal History'),
         createInventory(_this, 'Inventory'),
         createFauxController(_this, 'Contract Approval'),

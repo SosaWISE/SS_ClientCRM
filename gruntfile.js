@@ -1,12 +1,25 @@
 module.exports = function(grunt) {
   'use strict';
 
+  var jsfiles;
+
+  jsfiles = [
+    '**/*.js',
+    // exclude files
+    '!app/flowMap/**/*.js',
+    '!node_modules/**/*.js',
+    '!testing/**/*.js',
+    '!tparty/**/*.js',
+  ];
+
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jade');
   grunt.loadNpmTasks('grunt-contrib-less');
+  grunt.loadNpmTasks('grunt-jsbeautifier');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -152,6 +165,17 @@ module.exports = function(grunt) {
           '<%= www %>/spec/index.html': 'spec/index.jade',
         },
       },
+      dev: {
+        options: {
+          data: {
+            release: false,
+          },
+        },
+        files: {
+          'index.html': 'index.jade',
+          'spec/index.html': 'spec/index.jade',
+        },
+      },
     },
     less: {
       production: {
@@ -162,8 +186,46 @@ module.exports = function(grunt) {
           '<%= www %>/index.css': 'index.less',
         },
       },
+      dev: {
+        options: {
+          cleancss: false,
+        },
+        files: {
+          'index.css': 'index.less',
+        },
+      },
+    },
+
+    jsbeautifier: {
+      format: {
+        src: jsfiles,
+        options: {
+          config: '.jsbeautifyrc',
+        },
+      },
+      test: {
+        src: jsfiles,
+        options: {
+          config: '.jsbeautifyrc',
+          mode: 'VERIFY_ONLY',
+        },
+      },
+    },
+    jshint: {
+      jsfiles: jsfiles,
+      options: {
+        jshintrc: '.jshintrc',
+      },
     },
   });
+
+  // // always copy pre-commit hook to git hooks
+  // grunt.registerTask('install-pre-commit-hook', function(){
+  //   grunt.file.copy('pre-commit.sh', '.git/hooks/pre-commit');
+  //   require('fs').chmodSync('.git/hooks/pre-commit', '755');
+  // });
+  // grunt.task.run('install-pre-commit-hook');
+
 
   grunt.registerTask('default', [
     'copy',
@@ -171,5 +233,18 @@ module.exports = function(grunt) {
     'uglify',
     'jade',
     'less',
+  ]);
+
+  grunt.registerTask('dev', [
+    'jade',
+    'less',
+  ]);
+  grunt.registerTask('jsformat', [
+    'jsbeautifier:format',
+  ]);
+
+  grunt.registerTask('git-pre-commit', [
+    'jshint',
+    'jsbeautifier:test',
   ]);
 };

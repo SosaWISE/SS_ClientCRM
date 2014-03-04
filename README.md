@@ -12,7 +12,7 @@ Dependencies
 ------------
 
   - [Node.js](http://nodejs.org/), plus node module dependencies defined in package.json
-  - [Grunt.js](https://github.com/gruntjs/grunt-cli), is only needed for manually compiling and for building production files.
+  - [Grunt.js](https://github.com/gruntjs/grunt-cli)
 
 
 

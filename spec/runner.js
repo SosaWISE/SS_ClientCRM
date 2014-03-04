@@ -1,3 +1,4 @@
+/* global jasmine */
 define('spec/runner', [
   // 'app/../loadDependencies'
 ], function() {
