@@ -39,7 +39,7 @@ module.exports = function(grunt) {
     },
 
     copy: {
-      production: {
+      prod: {
         files: [
           {
             src: [
@@ -136,7 +136,7 @@ module.exports = function(grunt) {
       },
     },
     uglify: {
-      production: {
+      prod: {
         options: {
           mangle: false,
         },
@@ -154,7 +154,7 @@ module.exports = function(grunt) {
       }
     },
     jade: {
-      production: {
+      prod: {
         options: {
           data: {
             release: true,
@@ -178,7 +178,7 @@ module.exports = function(grunt) {
       },
     },
     less: {
-      production: {
+      prod: {
         options: {
           cleancss: true,
         },
@@ -219,32 +219,19 @@ module.exports = function(grunt) {
     },
   });
 
-  // // always copy pre-commit hook to git hooks
-  // grunt.registerTask('install-pre-commit-hook', function(){
-  //   grunt.file.copy('pre-commit.sh', '.git/hooks/pre-commit');
-  //   require('fs').chmodSync('.git/hooks/pre-commit', '755');
-  // });
-  // grunt.task.run('install-pre-commit-hook');
 
-
-  grunt.registerTask('default', [
+  grunt.registerTask('build', [
     'copy',
     'concat',
     'uglify',
-    'jade',
-    'less',
+    'jade:prod',
+    'less:prod',
   ]);
-
-  grunt.registerTask('dev', [
-    'jade',
-    'less',
+  grunt.registerTask('build-dev', [
+    'jade:dev',
+    'less:dev',
   ]);
   grunt.registerTask('jsformat', [
     'jsbeautifier:format',
-  ]);
-
-  grunt.registerTask('git-pre-commit', [
-    'jshint',
-    'jsbeautifier:test',
   ]);
 };
