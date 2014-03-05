@@ -137,18 +137,18 @@ Javascript formatting
 
   - Install `JsFormat`
       - Tools > Command Palette (Shift+Ctrl+P)
-      - Package Control: Install Package (type: pcip, then press: enter)
+      - Select Package Control: Install Package (type: pcip, then press: enter)
       - Select JsFormat package (type: jsformat, then press: enter)
 
 Javascript linting
 
   - Install `SublimeLinter`
       - Tools > Command Palette (Shift+Ctrl+P)
-      - Package Control: Install Package (type: pcip, then press: enter)
+      - Select Package Control: Install Package (type: pcip, then press: enter)
       - Select SublimeLinter package (type: sublimelinter, then press: enter)
   - Install `SublimeLinter-jshint`
       - Tools > Command Palette (Shift+Ctrl+P)
-      - Package Control: Install Package (type: pcip, then press: enter)
+      - Select Package Control: Install Package (type: pcip, then press: enter)
       - Select SublimeLinter-jshint package (type: sublimelinter-jshint, then press: enter)
       - globally install jshint (you will need sudo/admin privileges)
           - `npm install -g jshint`
@@ -159,11 +159,11 @@ Syntax highlighting
 
   - Install `Jade`
       - Tools > Command Palette (Shift+Ctrl+P)
-      - Package Control: Install Package (type: pcip, then press: enter)
+      - Select Package Control: Install Package (type: pcip, then press: enter)
       - Select Jade package (type: jade, then press: enter)
   - Install `Less`
       - Tools > Command Palette (Shift+Ctrl+P)
-      - Package Control: Install Package (type: pcip, then press: enter)
+      - Select Package Control: Install Package (type: pcip, then press: enter)
       - Select LESS package (type: less, then press: enter)
 
 
