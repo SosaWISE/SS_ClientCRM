@@ -110,7 +110,7 @@ Javascript formatting
 -----------------------------
 
 All javascript code should be correctly formatted. Formatting rules are specified in `.jsbeautifyrc`.
-You install it with this command or if you have Sublime Text you can install the packages below.
+You can install it with this command (you will need sudo/admin privileges) or if you have Sublime Text you can install the packages below.
 
     npm install -g jsbeautify
 
@@ -119,7 +119,7 @@ Javascript linting
 -----------------------------
 
 All javascript code should pass jshint. Linting rules are specified in `.jshintrc`.
-You install it with this command. If you have Sublime Text you can make it easier to use by installing the packages below.
+You can install it with this command (you will need sudo/admin privileges). If you have Sublime Text you can make it easier to use by installing the packages below.
 You will still need to install this node module.
 
     npm install -g jshint
@@ -127,6 +127,8 @@ You will still need to install this node module.
 
 Sublime Text 3
 --------------
+
+The project for Sublime Text is `crm.sublime-project`. A few packages you will want to include for Sublime Text are listed below:
 
   - Install `Package Control` - The Sublime Text package manager that makes it exceedingly simple to find, install and keep packages up-to-date.
       - Follow instructions [here](https://sublime.wbond.net/installation)
@@ -136,18 +138,18 @@ Javascript formatting
   - Install `JsFormat`
       - Tools > Command Palette (Shift+Ctrl+P)
       - Package Control: Install Package (type: pcip, then press: enter)
-      - JsFormat (type: jsformat, then press: enter)
+      - Select JsFormat package (type: jsformat, then press: enter)
 
 Javascript linting
 
   - Install `SublimeLinter`
       - Tools > Command Palette (Shift+Ctrl+P)
       - Package Control: Install Package (type: pcip, then press: enter)
-      - SublimeLinter (type: sublimelinter, then press: enter)
+      - Select SublimeLinter package (type: sublimelinter, then press: enter)
   - Install `SublimeLinter-jshint`
       - Tools > Command Palette (Shift+Ctrl+P)
       - Package Control: Install Package (type: pcip, then press: enter)
-      - SublimeLinter-jshint (type: sublimelinter-jshint, then press: enter)
+      - Select SublimeLinter-jshint package (type: sublimelinter-jshint, then press: enter)
       - globally install jshint (you will need sudo/admin privileges)
           - `npm install -g jshint`
       - Preferences > Package Settings > SublimeLinter > Settings - User
@@ -158,10 +160,10 @@ Syntax highlighting
   - Install `Jade`
       - Tools > Command Palette (Shift+Ctrl+P)
       - Package Control: Install Package (type: pcip, then press: enter)
-      - Jade (type: jade, then press: enter)
+      - Select Jade package (type: jade, then press: enter)
   - Install `Less`
       - Tools > Command Palette (Shift+Ctrl+P)
       - Package Control: Install Package (type: pcip, then press: enter)
-      - LESS (type: less, then press: enter)
+      - Select LESS package (type: less, then press: enter)
 
 
