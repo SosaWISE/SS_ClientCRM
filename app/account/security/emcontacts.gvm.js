@@ -74,18 +74,27 @@ define('src/account/security/emcontacts.gvm', [
           name: 'Phone1',
           field: 'Phone1',
           width: 50,
+          formatter: function(row, cell, value, columnDef, dataCtx) {
+            return formatPhoneAndType(value, dataCtx.Phone1TypeId);
+          },
         },
         {
           id: 'Phone2',
           name: 'Phone2',
           field: 'Phone2',
           width: 50,
+          formatter: function(row, cell, value, columnDef, dataCtx) {
+            return formatPhoneAndType(value, dataCtx.Phone2TypeId);
+          },
         },
         {
           id: 'Phone3',
           name: 'Phone3',
           field: 'Phone3',
           width: 50,
+          formatter: function(row, cell, value, columnDef, dataCtx) {
+            return formatPhoneAndType(value, dataCtx.Phone3TypeId);
+          },
         },
         {
           id: 'HasKey',
@@ -97,6 +106,14 @@ define('src/account/security/emcontacts.gvm', [
         },
       ],
     });
+
+    function formatPhoneAndType(phone, type) {
+      type = options.getPhoneType(type);
+      if (type && type.MsPhoneTypeId && phone) {
+        return type.MsPhoneTypeId + ': ' + phone;
+      }
+      return phone;
+    }
   }
   utils.inherits(EmContactsGridViewModel, SlickGridViewModel);
 

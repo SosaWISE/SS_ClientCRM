@@ -49,12 +49,22 @@ define('src/account/security/emcontacts.vm', [
         return [dataCtx.Prefix, dataCtx.FirstName, dataCtx.MiddleName, dataCtx.LastName, dataCtx.Postfix].join(' ');
       },
       relationshipFormatter: function(row, cell, value) {
-        var relationship = findById(_this.relationshipOptions, value, 'RelationshipID');
+        var relationship = findById(_this.relationshipTypes, value, 'RelationshipID');
         return relationship ? relationship.RelationshipDescription : 'Unknown Relationship';
       },
       yesNoFormatter: function(row, cell, value) {
         return value ? 'yes' : 'no';
       },
+      getPhoneType: function(phoneTypeId) {
+        var result;
+        _this.phoneTypes.some(function(phoneType) {
+          if (phoneType.PhoneTypeID === phoneTypeId) {
+            result = phoneType;
+            return true;
+          }
+        });
+        return result;
+      }
     });
   }
   utils.inherits(EmContactsViewModel, ControllerViewModel);
@@ -66,8 +76,8 @@ define('src/account/security/emcontacts.vm', [
 
     _this.accountId = routeData.id;
 
-    load_phoneOptions(_this, join.add());
-    load_relationshipOptions(_this, join.add());
+    load_phoneTypes(_this, join.add());
+    load_relationshipTypes(_this, join.add());
     load_contacts(function(list) {
       tempContacts = list;
     }, _this.accountId, join.add());
@@ -84,15 +94,15 @@ define('src/account/security/emcontacts.vm', [
     _this.layersVm.show(new EmContactEditorViewModel({
       item: utils.clone(contact),
       // customerId: 0, //????
-      accountId: _this.accountId, //????
+      accountId: _this.accountId,
       orderNumber: _this.gvm.nextOrderNumber(),
-      phoneOptions: _this.phoneOptions,
-      phoneOptionFields: {
+      phoneTypes: _this.phoneTypes,
+      phoneTypeFields: {
         value: 'PhoneTypeID',
         text: 'PhoneTypeDescription',
       },
-      relationshipOptions: _this.relationshipOptions,
-      relationshipOptionFields: {
+      relationshipTypes: _this.relationshipTypes,
+      relationshipTypeFields: {
         value: 'RelationshipID',
         text: 'RelationshipDescription',
       },
@@ -112,17 +122,17 @@ define('src/account/security/emcontacts.vm', [
     }, utils.no_op));
   }
 
-  function load_phoneOptions(_this, cb) {
-    _this.phoneOptions = null;
+  function load_phoneTypes(_this, cb) {
+    _this.phoneTypes = null;
     dataservice.monitoringstation.emergencyContactPhoneTypes.read({}, null, utils.safeCallback(cb, function(err, resp) {
-      _this.phoneOptions = resp.Value;
+      _this.phoneTypes = resp.Value;
     }, utils.no_op));
   }
 
-  function load_relationshipOptions(_this, cb) {
-    _this.relationshipOptions = null;
+  function load_relationshipTypes(_this, cb) {
+    _this.relationshipTypes = null;
     dataservice.monitoringstation.emergencyContactRelationships.read({}, null, utils.safeCallback(cb, function(err, resp) {
-      _this.relationshipOptions = resp.Value;
+      _this.relationshipTypes = resp.Value;
     }, utils.no_op));
   }
 

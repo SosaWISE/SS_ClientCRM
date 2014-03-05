@@ -99,10 +99,10 @@ define('src/account/security/emcontacteditor.vm', [
     BaseViewModel.ensureProps(_this, [
       // 'customerId',
       'accountId',
-      'phoneOptions',
-      'phoneOptionFields',
-      'relationshipOptions',
-      'relationshipOptionFields',
+      'phoneTypes',
+      'phoneTypeFields',
+      'relationshipTypes',
+      'relationshipTypeFields',
     ]);
 
     _this.width = ko.observable(550);
@@ -136,8 +136,8 @@ define('src/account/security/emcontacteditor.vm', [
 
     _this.data.RelationshipCvm = new ComboViewModel({
       selectedValue: _this.data.RelationshipId,
-      list: _this.relationshipOptions,
-      fields: _this.relationshipOptionFields,
+      list: _this.relationshipTypes,
+      fields: _this.relationshipTypeFields,
     });
     _this.data.HasKeyCvm = new ComboViewModel({
       selectedValue: _this.data.HasKey,
@@ -146,20 +146,20 @@ define('src/account/security/emcontacteditor.vm', [
 
     _this.data.Phone1TypeCvm = new ComboViewModel({
       selectedValue: _this.data.Phone1TypeId,
-      list: _this.phoneOptions,
-      fields: _this.phoneOptionFields,
+      list: _this.phoneTypes,
+      fields: _this.phoneTypeFields,
       nullable: true,
     });
     _this.data.Phone2TypeCvm = new ComboViewModel({
       selectedValue: _this.data.Phone2TypeId,
-      list: _this.phoneOptions,
-      fields: _this.phoneOptionFields,
+      list: _this.phoneTypes,
+      fields: _this.phoneTypeFields,
       nullable: true,
     });
     _this.data.Phone3TypeCvm = new ComboViewModel({
       selectedValue: _this.data.Phone3TypeId,
-      list: _this.phoneOptions,
-      fields: _this.phoneOptionFields,
+      list: _this.phoneTypes,
+      fields: _this.phoneTypeFields,
       nullable: true,
     });
 
