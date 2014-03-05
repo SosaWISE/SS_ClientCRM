@@ -62,6 +62,7 @@ Code overview
 -------------
 
 @TODO: Knockout.js explanation
+
 @TODO: Router/Controller explanation
 
   - `/app`
@@ -103,4 +104,64 @@ The build process currently has these steps:
 To do all that you just need to type this one little command:
 
     grunt build
+
+
+Javascript formatting
+-----------------------------
+
+All javascript code should be correctly formatted. Formatting rules are specified in `.jsbeautifyrc`.
+You install it with this command or if you have Sublime Text you can install the packages below.
+
+    npm install -g jsbeautify
+
+
+Javascript linting
+-----------------------------
+
+All javascript code should pass jshint. Linting rules are specified in `.jshintrc`.
+You install it with this command. If you have Sublime Text you can make it easier to use by installing the packages below.
+You will still need to install this node module.
+
+    npm install -g jshint
+
+
+Sublime Text 3
+--------------
+
+  - Install `Package Control` - The Sublime Text package manager that makes it exceedingly simple to find, install and keep packages up-to-date.
+      - Follow instructions [here](https://sublime.wbond.net/installation)
+
+Javascript formatting
+
+  - Install `JsFormat`
+      - Tools > Command Palette (Shift+Ctrl+P)
+      - Package Control: Install Package (type: pcip, then press: enter)
+      - JsFormat (type: jsformat, then press: enter)
+
+Javascript linting
+
+  - Install `SublimeLinter`
+      - Tools > Command Palette (Shift+Ctrl+P)
+      - Package Control: Install Package (type: pcip, then press: enter)
+      - SublimeLinter (type: sublimelinter, then press: enter)
+  - Install `SublimeLinter-jshint`
+      - Tools > Command Palette (Shift+Ctrl+P)
+      - Package Control: Install Package (type: pcip, then press: enter)
+      - SublimeLinter-jshint (type: sublimelinter-jshint, then press: enter)
+      - globally install jshint (you will need sudo/admin privileges)
+          - `npm install -g jshint`
+      - Preferences > Package Settings > SublimeLinter > Settings - User
+          - change `"show_errors_on_save": false,` to `"show_errors_on_save": true,`
+
+Syntax highlighting
+
+  - Install `Jade`
+      - Tools > Command Palette (Shift+Ctrl+P)
+      - Package Control: Install Package (type: pcip, then press: enter)
+      - Jade (type: jade, then press: enter)
+  - Install `Less`
+      - Tools > Command Palette (Shift+Ctrl+P)
+      - Package Control: Install Package (type: pcip, then press: enter)
+      - LESS (type: less, then press: enter)
+
 
