@@ -1,4 +1,4 @@
-define('src/account/default/initialpayment.vm', [
+define('src/account/security/clist.initialpayment.vm', [
   'src/account/default/payby.vm',
   'src/dataservice',
   'ko',
@@ -19,20 +19,12 @@ define('src/account/default/initialpayment.vm', [
 ) {
   "use strict";
 
-  function InitialPaymentViewModel(options) {
+  function CListInitialPaymentViewModel(options) {
     var _this = this;
-    InitialPaymentViewModel.super_.call(_this, options);
+    CListInitialPaymentViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
-    _this.breakdown = ko.observable({
-      ActivationFee: 1,
-      Monitoring: 2,
-      SalesUpgrades: 3,
-      TechUpgrades: 4,
-      Subtotal: 10,
-      Taxes: 0.7,
-      Total: 10.7,
-    });
+    _this.breakdown = ko.observable();
     _this.initialPaymentMethod = ko.observable();
     _this.recurringSame = ko.observable(true);
     _this.recurringPaymentMethod = ko.observable();
@@ -104,18 +96,27 @@ define('src/account/default/initialpayment.vm', [
     //
     // _this.methodCvm.selectedValue(1);
   }
-  utils.inherits(InitialPaymentViewModel, ControllerViewModel);
-  InitialPaymentViewModel.prototype.viewTmpl = 'tmpl-acct-default-initialpayment';
+  utils.inherits(CListInitialPaymentViewModel, ControllerViewModel);
+  CListInitialPaymentViewModel.prototype.viewTmpl = 'tmpl-security-clist_initialpayment';
 
-  InitialPaymentViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+  CListInitialPaymentViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
     setTimeout(function() {
       //@TODO: load real data
-      _this = _this;
+      _this.breakdown({
+        ActivationFee: 1,
+        Monitoring: 2,
+        SalesUpgrades: 3,
+        TechUpgrades: 4,
+        Subtotal: 10,
+        Taxes: 0.7,
+        Total: 10.7,
+      });
+
       cb();
     }, 0);
   };
 
-  return InitialPaymentViewModel;
+  return CListInitialPaymentViewModel;
 });

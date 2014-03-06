@@ -1,29 +1,23 @@
-define('src/account/security/systemdetails.vm', [
+define('src/account/security/clist.systemdetails.vm', [
   'src/account/default/rep.find.vm',
-  'src/account/security/emcontacts.vm',
   'ko',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
   RepFindViewModel,
-  EmContactsViewModel,
   ko,
   utils,
   ControllerViewModel
 ) {
   "use strict";
 
-  function SystemDetailsViewModel(options) {
+  function CListSystemDetailsViewModel(options) {
     var _this = this;
-    SystemDetailsViewModel.super_.call(_this, options);
+    CListSystemDetailsViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
     _this.data = ko.observable();
     _this.repModel = ko.observable();
-
-    _this.emcontactsVm = new EmContactsViewModel({
-      layersVm: _this.layersVm,
-    });
 
     //
     // events
@@ -43,23 +37,19 @@ define('src/account/security/systemdetails.vm', [
       return !busy && !_this.repModel();
     });
   }
-  utils.inherits(SystemDetailsViewModel, ControllerViewModel);
-  SystemDetailsViewModel.prototype.viewTmpl = 'tmpl-security-systemdetails';
+  utils.inherits(CListSystemDetailsViewModel, ControllerViewModel);
+  CListSystemDetailsViewModel.prototype.viewTmpl = 'tmpl-security-clist_systemdetails';
 
-  SystemDetailsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+  CListSystemDetailsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
     setTimeout(function() {
-      //@TODO: create/load numbers
-      _this.data({
-        'IndustryNumber': '54332211',
-        'ReceiverNumber': '8775555555',
-        'LastNOCDate': 'Midnight of 2/5/2014 11:59:59 PM (MST)',
-      });
+      //@TODO: load real data
+      _this.data({});
 
       cb();
     }, 2000);
   };
 
-  return SystemDetailsViewModel;
+  return CListSystemDetailsViewModel;
 });

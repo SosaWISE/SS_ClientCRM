@@ -61,17 +61,19 @@ define('src/account/security/emcontacts.gvm', [
         {
           id: 'Name',
           name: 'Name',
+          width: 50,
           formatter: options.fullnameFormatter,
         },
         {
           id: 'RelationshipId',
-          name: 'RelationshipId',
+          name: 'Relationship',
           field: 'RelationshipId',
+          width: 50,
           formatter: options.relationshipFormatter,
         },
         {
           id: 'Phone1',
-          name: 'Phone1',
+          name: 'Primary Phone',
           field: 'Phone1',
           width: 50,
           formatter: function(row, cell, value, columnDef, dataCtx) {
@@ -80,7 +82,7 @@ define('src/account/security/emcontacts.gvm', [
         },
         {
           id: 'Phone2',
-          name: 'Phone2',
+          name: 'Secondary Phone',
           field: 'Phone2',
           width: 50,
           formatter: function(row, cell, value, columnDef, dataCtx) {
@@ -89,7 +91,7 @@ define('src/account/security/emcontacts.gvm', [
         },
         {
           id: 'Phone3',
-          name: 'Phone3',
+          name: 'Alternate Phone',
           field: 'Phone3',
           width: 50,
           formatter: function(row, cell, value, columnDef, dataCtx) {
@@ -98,11 +100,12 @@ define('src/account/security/emcontacts.gvm', [
         },
         {
           id: 'HasKey',
-          name: 'HasKey',
+          name: 'Has Keys',
           field: 'HasKey',
           // resizable: false,
           width: 30,
-          formatter: options.yesNoFormatter,
+          minWidth: 15,
+          formatter: SlickGridViewModel.formatters.xFormatter,
         },
       ],
     });

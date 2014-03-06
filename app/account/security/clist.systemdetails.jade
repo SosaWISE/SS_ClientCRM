@@ -1,4 +1,4 @@
-div(class="acct-systemdetails")
+div(class="acct-item acct-clist-systemdetails")
   table(class="fh-wrap")
     tr
       td(class="fh-header")
@@ -8,8 +8,6 @@ div(class="acct-systemdetails")
             div(class="contents",data-bind="if:repModel")
               div(data-bind="template:{data:repModel,name:'tmpl-acct-default-rep_info'}")
 
-        div(style="height:300px;",
-          data-bind="template:{name:emcontactsVm.viewTmpl,data:emcontactsVm}")
     tr
       td(class="fh-body")
         div(class="fh-contents")

@@ -1,9 +1,9 @@
-define('src/account/security/salesinfo.vm', [
+define('src/account/security/clist.salesinfo.vm', [
   'src/account/security/parts.editor.vm',
   'src/config',
   'src/slick/buttonscolumn',
   'src/account/security/frequent.gvm',
-  'src/account/security/salesinfo.gvm',
+  'src/account/security/clist.salesinfo.gvm',
   'src/ukov',
   'src/dataservice',
   'src/core/notify',
@@ -16,7 +16,7 @@ define('src/account/security/salesinfo.vm', [
   config,
   ButtonsColumn,
   FrequentGridViewModel,
-  SalesInfoGridViewModel,
+  CListSalesInfoGridViewModel,
   ukov,
   dataservice,
   notify,
@@ -47,9 +47,9 @@ define('src/account/security/salesinfo.vm', [
     }
   };
 
-  function SalesInfoViewModel(options) {
+  function CListSalesInfoViewModel(options) {
     var _this = this;
-    SalesInfoViewModel.super_.call(_this, options);
+    CListSalesInfoViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
     // ** Fields
@@ -97,7 +97,7 @@ define('src/account/security/salesinfo.vm', [
         showPartsEditor(_this, true, part.ItemSKU, null);
       },
     });
-    _this.partsGrid = new SalesInfoGridViewModel({
+    _this.partsGrid = new CListSalesInfoGridViewModel({
       deletePart: function(part) {
         dataservice.invoicesrv.invoiceItems.read({ //@TODO: change this from a GET to a DELETE
           id: part.InvoiceItemID,
@@ -186,10 +186,10 @@ define('src/account/security/salesinfo.vm', [
       showPartsEditor(_this, false, null, cb);
     });
   }
-  utils.inherits(SalesInfoViewModel, ControllerViewModel);
-  SalesInfoViewModel.prototype.viewTmpl = 'tmpl-security-salesinfo';
+  utils.inherits(CListSalesInfoViewModel, ControllerViewModel);
+  CListSalesInfoViewModel.prototype.viewTmpl = 'tmpl-security-clist_salesinfo';
 
-  SalesInfoViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+  CListSalesInfoViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
     _this.msAccountId = routeData.id;
@@ -296,5 +296,5 @@ define('src/account/security/salesinfo.vm', [
     };
   }
 
-  return SalesInfoViewModel;
+  return CListSalesInfoViewModel;
 });

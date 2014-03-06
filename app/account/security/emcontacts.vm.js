@@ -1,4 +1,5 @@
 define('src/account/security/emcontacts.vm', [
+  'ko',
   'src/dataservice',
   'src/account/security/emcontacteditor.vm',
   'src/account/security/emcontacts.gvm',
@@ -6,6 +7,7 @@ define('src/account/security/emcontacts.vm', [
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  ko,
   dataservice,
   EmContactEditorViewModel,
   EmContactsGridViewModel,
@@ -23,13 +25,14 @@ define('src/account/security/emcontacts.vm', [
     //
     // events
     //
-    _this.clickAddContact = function() {
+    _this.cmdAddContact = ko.command(function(cb) {
       _this.showContactEditor(null, function(model) {
         if (model) {
           _this.gvm.list.push(model);
         }
+        cb();
       });
-    };
+    });
 
     _this.gvm = new EmContactsGridViewModel({
       edit: function(contact, cb) {
@@ -51,9 +54,6 @@ define('src/account/security/emcontacts.vm', [
       relationshipFormatter: function(row, cell, value) {
         var relationship = findById(_this.relationshipTypes, value, 'RelationshipID');
         return relationship ? relationship.RelationshipDescription : 'Unknown Relationship';
-      },
-      yesNoFormatter: function(row, cell, value) {
-        return value ? 'yes' : 'no';
       },
       getPhoneType: function(phoneTypeId) {
         var result;

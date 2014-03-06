@@ -153,6 +153,12 @@ define('src/slick/slickgrid.vm', [
     likecurrency: function(row, cell, value /*, columnDef, dataContext*/ ) {
       return strings.decorators.c(value).replace('$', '');
     },
+    yesNoFormatter: function(row, cell, value) {
+      return value ? 'yes' : 'no';
+    },
+    xFormatter: function(row, cell, value) {
+      return value ? 'X' : '';
+    },
   };
 
   return SlickGridViewModel;

@@ -1,22 +1,22 @@
-define('src/account/security/salesinfo.gvm', [
+define('src/account/security/clist.salesinfo.gvm', [
   'ko',
   'src/slick/buttonscolumn',
-  'src/slick/rowevent',
+  // 'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/core/utils',
 ], function(
   ko,
   ButtonsColumn,
-  RowEvent,
+  // RowEvent,
   SlickGridViewModel,
   utils
 ) {
   "use strict";
 
-  function SalesInfoGridViewModel(options) {
+  function CListSalesInfoGridViewModel(options) {
     var _this = this;
     SlickGridViewModel.ensureProps(options, ['deletePart']);
-    SalesInfoGridViewModel.super_.call(_this, {
+    CListSalesInfoGridViewModel.super_.call(_this, {
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
@@ -83,7 +83,7 @@ define('src/account/security/salesinfo.gvm', [
       _this.estimateTotal(totalPrice);
     });
   }
-  utils.inherits(SalesInfoGridViewModel, SlickGridViewModel);
+  utils.inherits(CListSalesInfoGridViewModel, SlickGridViewModel);
 
-  return SalesInfoGridViewModel;
+  return CListSalesInfoGridViewModel;
 });

@@ -1,4 +1,4 @@
-define('src/account/security/inventory.gvm', [
+define('src/account/security/equipment.gvm', [
   'ko',
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
@@ -11,9 +11,9 @@ define('src/account/security/inventory.gvm', [
 ) {
   "use strict";
 
-  function InventoryGridViewModel() {
+  function EquipmentGridViewModel() {
     var _this = this;
-    InventoryGridViewModel.super_.call(_this, {
+    EquipmentGridViewModel.super_.call(_this, {
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
@@ -45,7 +45,7 @@ define('src/account/security/inventory.gvm', [
         },
         {
           id: 'PartNumber',
-          name: 'PartNumber',
+          name: 'Part #',
           field: 'PartNumber',
         },
         {
@@ -60,27 +60,33 @@ define('src/account/security/inventory.gvm', [
         },
         {
           id: 'AssignedTo',
-          name: 'AssignedTo',
+          name: 'Assigned To',
           field: 'AssignedTo',
         },
         {
           id: 'ExistingWiring',
-          name: 'ExistingWiring',
+          name: 'Existing Wiring',
           field: 'ExistingWiring',
+          minWidth: 15,
+          formatter: SlickGridViewModel.formatters.xFormatter,
         },
         {
           id: 'ExistingEquipment',
-          name: 'ExistingEquipment',
+          name: 'Existing Equipment',
           field: 'ExistingEquipment',
+          minWidth: 15,
+          formatter: SlickGridViewModel.formatters.xFormatter,
         },
         {
           id: 'TechUpgrade',
-          name: 'TechUpgrade',
+          name: 'Tech Upgrade',
           field: 'TechUpgrade',
+          minWidth: 15,
+          formatter: SlickGridViewModel.formatters.xFormatter,
         },
         {
           id: 'UpgradePrice',
-          name: 'UpgradePrice',
+          name: 'Upgrade Price',
           field: 'UpgradePrice',
         },
       ],
@@ -107,7 +113,7 @@ define('src/account/security/inventory.gvm', [
       }, 0);
     });
   }
-  utils.inherits(InventoryGridViewModel, SlickGridViewModel);
+  utils.inherits(EquipmentGridViewModel, SlickGridViewModel);
 
-  return InventoryGridViewModel;
+  return EquipmentGridViewModel;
 });

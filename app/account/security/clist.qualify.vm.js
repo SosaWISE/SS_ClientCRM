@@ -1,4 +1,4 @@
-define('src/account/security/account.qualify.vm', [
+define('src/account/security/clist.qualify.vm', [
   'src/dataservice',
   'src/core/notify',
   'src/core/utils',
@@ -19,9 +19,9 @@ define('src/account/security/account.qualify.vm', [
 ) {
   "use strict";
 
-  function AccountQualifyViewModel(options) {
+  function CListQualifyViewModel(options) {
     var _this = this;
-    AccountQualifyViewModel.super_.call(_this, options);
+    CListQualifyViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
     _this.title = ko.observable(_this.title);
@@ -113,23 +113,23 @@ define('src/account/security/account.qualify.vm', [
       return !busy && _this.step() === 3 && _this.canCreateAccount && _this.customerModel() && _this.creditResult();
     });
   }
-  utils.inherits(AccountQualifyViewModel, ControllerViewModel);
-  AccountQualifyViewModel.prototype.viewTmpl = 'tmpl-security-account_qualify';
+  utils.inherits(CListQualifyViewModel, ControllerViewModel);
+  CListQualifyViewModel.prototype.viewTmpl = 'tmpl-security-clist_qualify';
 
-  AccountQualifyViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // override me
+  CListQualifyViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // override me
     var _this = this;
     _this.cmdFindRep.execute();
   };
-  AccountQualifyViewModel.prototype.onActivate = function( /*routeCtx*/ ) { // overrides base
+  CListQualifyViewModel.prototype.onActivate = function( /*routeCtx*/ ) { // overrides base
     var _this = this;
     _this.setLayerActive(true);
   };
-  AccountQualifyViewModel.prototype.onDeactivate = function() { // overrides base
+  CListQualifyViewModel.prototype.onDeactivate = function() { // overrides base
     var _this = this;
     _this.setLayerActive(false);
   };
 
-  AccountQualifyViewModel.prototype.setLayerActive = function(active) {
+  CListQualifyViewModel.prototype.setLayerActive = function(active) {
     var vm, layer = this.layer;
     if (layer) {
       vm = layer.vm();
@@ -139,5 +139,5 @@ define('src/account/security/account.qualify.vm', [
     }
   };
 
-  return AccountQualifyViewModel;
+  return CListQualifyViewModel;
 });

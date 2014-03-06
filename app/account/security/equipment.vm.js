@@ -1,15 +1,15 @@
-define('src/account/security/inventory.vm', [
+define('src/account/security/equipment.vm', [
   'ko',
-  'src/account/security/inventory.editor.vm',
-  'src/account/security/inventory.gvm',
+  'src/account/security/equipment.editor.vm',
+  'src/account/security/equipment.gvm',
   'src/core/layers.vm',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
   ko,
-  InventoryEditorViewModel,
-  InventoryGridViewModel,
+  EquipmentEditorViewModel,
+  EquipmentGridViewModel,
   LayersViewModel,
   notify,
   utils,
@@ -17,35 +17,35 @@ define('src/account/security/inventory.vm', [
 ) {
   "use strict";
 
-  function InventoryViewModel(options) {
+  function EquipmentViewModel(options) {
     var _this = this;
-    InventoryViewModel.super_.call(_this, options);
+    EquipmentViewModel.super_.call(_this, options);
     // ControllerViewModel.ensureProps(_this, ['layersVm']);
 
     _this.layersVm = new LayersViewModel({
       controller: _this,
     });
 
-    _this.gvm = new InventoryGridViewModel();
+    _this.gvm = new EquipmentGridViewModel();
 
     //
     // events
     //
     _this.cmdAddByPart = ko.command(function(cb) {
-      showInventoryEditor(_this, true, null, cb);
+      showEquipmentEditor(_this, true, null, cb);
     });
     _this.cmdAddByBarcode = ko.command(function(cb) {
-      showInventoryEditor(_this, false, null, cb);
+      showEquipmentEditor(_this, false, null, cb);
     });
     _this.cmdAddExistingEquipment = ko.command(function(cb) {
       alert('@TODO: add existing equipment');
       cb();
     });
   }
-  utils.inherits(InventoryViewModel, ControllerViewModel);
-  InventoryViewModel.prototype.viewTmpl = 'tmpl-security-inventory';
+  utils.inherits(EquipmentViewModel, ControllerViewModel);
+  EquipmentViewModel.prototype.viewTmpl = 'tmpl-security-equipment';
 
-  InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+  EquipmentViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
 
@@ -58,12 +58,12 @@ define('src/account/security/inventory.vm', [
   };
 
 
-  function showInventoryEditor(_this, byPart, cb) {
-    _this.layersVm.show(createInventoryEditor(_this, byPart), createInventoryEditorCb(_this, cb));
+  function showEquipmentEditor(_this, byPart, cb) {
+    _this.layersVm.show(createEquipmentEditor(_this, byPart), createEquipmentEditorCb(_this, cb));
   }
 
-  function createInventoryEditor(_this, byPart) {
-    return new InventoryEditorViewModel({
+  function createEquipmentEditor(_this, byPart) {
+    return new EquipmentEditorViewModel({
       byPart: byPart,
       accountId: _this.accountId,
       //@TODO: get real monitoringStationOS
@@ -80,7 +80,7 @@ define('src/account/security/inventory.vm', [
     });
   }
 
-  function createInventoryEditorCb(_this, cb) {
+  function createEquipmentEditorCb(_this, cb) {
     return function(result) {
       if (result && result.Items) {
         _this.partsGrid.list(result.Items);
@@ -91,5 +91,5 @@ define('src/account/security/inventory.vm', [
     };
   }
 
-  return InventoryViewModel;
+  return EquipmentViewModel;
 });

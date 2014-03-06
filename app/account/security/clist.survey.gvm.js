@@ -1,4 +1,4 @@
-define('src/account/security/survey.gvm', [
+define('src/account/security/clist.survey.gvm', [
   'src/core/notify',
   'ko',
   'src/slick/rowevent',
@@ -13,9 +13,9 @@ define('src/account/security/survey.gvm', [
 ) {
   "use strict";
 
-  function SurveyGridViewModel(options) {
+  function CListSurveyGridViewModel(options) {
     var _this = this;
-    SurveyGridViewModel.super_.call(_this, {
+    CListSurveyGridViewModel.super_.call(_this, {
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
@@ -93,7 +93,7 @@ define('src/account/security/survey.gvm', [
       });
     }
   }
-  utils.inherits(SurveyGridViewModel, SlickGridViewModel);
+  utils.inherits(CListSurveyGridViewModel, SlickGridViewModel);
 
-  return SurveyGridViewModel;
+  return CListSurveyGridViewModel;
 });

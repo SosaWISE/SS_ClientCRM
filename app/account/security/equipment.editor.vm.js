@@ -1,4 +1,4 @@
-define('src/account/security/inventory.editor.vm', [
+define('src/account/security/equipment.editor.vm', [
   'src/dataservice',
   'src/core/combo.vm',
   'src/core/notify',
@@ -37,9 +37,9 @@ define('src/account/security/inventory.editor.vm', [
   };
 
 
-  function InventoryEditorViewModel(options) {
+  function EquipmentEditorViewModel(options) {
     var _this = this;
-    InventoryEditorViewModel.super_.call(_this, options);
+    EquipmentEditorViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
       // 'customerId',
       'accountId',
@@ -106,13 +106,13 @@ define('src/account/security/inventory.editor.vm', [
       }
     }
   }
-  utils.inherits(InventoryEditorViewModel, BaseViewModel);
-  InventoryEditorViewModel.prototype.viewTmpl = 'tmpl-security-inventory_editor';
-  InventoryEditorViewModel.prototype.width = 550;
-  InventoryEditorViewModel.prototype.height = 'auto';
+  utils.inherits(EquipmentEditorViewModel, BaseViewModel);
+  EquipmentEditorViewModel.prototype.viewTmpl = 'tmpl-security-equipment_editor';
+  EquipmentEditorViewModel.prototype.width = 550;
+  EquipmentEditorViewModel.prototype.height = 'auto';
 
   // ?????????
-  InventoryEditorViewModel.prototype.isUpgradeOptions = [
+  EquipmentEditorViewModel.prototype.isUpgradeOptions = [
     {
       value: null,
       text: 'null',
@@ -127,7 +127,7 @@ define('src/account/security/inventory.editor.vm', [
     },
   ];
 
-  InventoryEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
+  EquipmentEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
 
     load_zoneEventTypes(_this.data.ZoneEventTypeCvm, _this.monitoringStationOS, join.add());
@@ -152,5 +152,5 @@ define('src/account/security/inventory.editor.vm', [
     }, utils.no_op));
   }
 
-  return InventoryEditorViewModel;
+  return EquipmentEditorViewModel;
 });

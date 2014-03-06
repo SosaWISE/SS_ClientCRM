@@ -1,4 +1,4 @@
-define('src/account/security/industrynums.vm', [
+define('src/account/security/clist.industrynums.vm', [
   'ko',
   'src/core/utils',
   'src/core/controller.vm',
@@ -9,16 +9,16 @@ define('src/account/security/industrynums.vm', [
 ) {
   "use strict";
 
-  function IndustryViewModel(options) {
+  function CListIndustryViewModel(options) {
     var _this = this;
-    IndustryViewModel.super_.call(_this, options);
+    CListIndustryViewModel.super_.call(_this, options);
 
     _this.data = ko.observable();
   }
-  utils.inherits(IndustryViewModel, ControllerViewModel);
-  IndustryViewModel.prototype.viewTmpl = 'tmpl-security-industrynums';
+  utils.inherits(CListIndustryViewModel, ControllerViewModel);
+  CListIndustryViewModel.prototype.viewTmpl = 'tmpl-security-clist_industrynums';
 
-  IndustryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+  CListIndustryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
     setTimeout(function() {
@@ -33,5 +33,5 @@ define('src/account/security/industrynums.vm', [
     }, 2000);
   };
 
-  return IndustryViewModel;
+  return CListIndustryViewModel;
 });

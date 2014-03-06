@@ -1,7 +1,7 @@
 define('src/account/security/account.vm', [
   'src/account/security/checklist.vm',
   'src/account/security/summary.vm',
-  'src/account/security/inventory.vm',
+  'src/account/security/equipment.vm',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
@@ -9,7 +9,7 @@ define('src/account/security/account.vm', [
 ], function(
   ChecklistViewModel,
   SummaryViewModel,
-  InventoryViewModel,
+  EquipmentViewModel,
   notify,
   utils,
   ControllerViewModel,
@@ -56,7 +56,7 @@ define('src/account/security/account.vm', [
       _this.childs([
         createSummary(_this, 'Account Summary'),
         createFauxController(_this, 'Signal History'),
-        createInventory(_this, 'Inventory'),
+        createEquipment(_this, 'Equipment'),
         createFauxController(_this, 'Contract Approval'),
         checklist,
       ]);
@@ -64,8 +64,8 @@ define('src/account/security/account.vm', [
     }, 0);
   };
 
-  function createInventory(pcontroller, title) {
-    return new InventoryViewModel({
+  function createEquipment(pcontroller, title) {
+    return new EquipmentViewModel({
       pcontroller: pcontroller,
       id: titleToId(title),
       title: title,

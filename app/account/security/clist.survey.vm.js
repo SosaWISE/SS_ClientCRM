@@ -1,23 +1,23 @@
-define('src/account/security/survey.vm', [
+define('src/account/security/clist.survey.vm', [
   'src/survey/takesurvey.vm',
-  'src/account/security/survey.gvm',
+  'src/account/security/clist.survey.gvm',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
   TakeSurveyViewModel,
-  SurveyGridViewModel,
+  CListSurveyGridViewModel,
   notify,
   utils,
   ControllerViewModel
 ) {
   "use strict";
 
-  function SurveyViewModel(options) {
+  function CListSurveyViewModel(options) {
     var _this = this;
-    SurveyViewModel.super_.call(_this, options);
+    CListSurveyViewModel.super_.call(_this, options);
 
-    _this.gvm = new SurveyGridViewModel({
+    _this.gvm = new CListSurveyGridViewModel({
       onClick: function(item) {
         var vm = item.vm;
 
@@ -64,10 +64,10 @@ define('src/account/security/survey.vm', [
       alert('@TODO:');
     };
   }
-  utils.inherits(SurveyViewModel, ControllerViewModel);
-  SurveyViewModel.prototype.viewTmpl = 'tmpl-security-survey';
+  utils.inherits(CListSurveyViewModel, ControllerViewModel);
+  CListSurveyViewModel.prototype.viewTmpl = 'tmpl-security-clist_survey';
 
-  SurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+  CListSurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var cb = join.add();
     setTimeout(function() {
       //@TODO: load real data
@@ -75,5 +75,5 @@ define('src/account/security/survey.vm', [
     }, 0);
   };
 
-  return SurveyViewModel;
+  return CListSurveyViewModel;
 });

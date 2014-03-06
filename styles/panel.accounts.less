@@ -230,117 +230,7 @@ table.fh-wrap {
     }
   }
 
-  .account-info {
-    padding: 0px 20px;
-    // overflow: auto;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    .transition(left @tranSec);
-    &.show-editor {
-      left: 300px;
-    }
-
-    background-color: #fff;
-    // color: #6c6c6c;
-
-    .details {
-      overflow: auto;
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      bottom: 300px;
-      left: 0;
-      .transition(right @tranSec, bottom @tranSec;);
-      &.hide-notes {
-        bottom: 20px;
-      }
-      &.show-reps {
-        right: 300px;
-      }
-    }
-
-    .notes {
-      position: absolute;
-      // top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      height: 300px;
-      .transition(bottom @tranSec;);
-      &.hide-notes {
-        bottom: -280px;
-      }
-
-      .title {
-        margin-left: 20px;
-        cursor: pointer;
-      }
-      .contents {
-        overflow-y: auto;
-        position: absolute;
-        left: 5px;
-        top: 20px;
-        right: 5px;
-        bottom: 5px;
-      }
-    }
-
-    .rep {
-      position: absolute;
-      top: 0;
-      right: -280px;
-      bottom: 300px;
-      // left: 0;
-      width: 300px;
-      .transition(right @tranSec, bottom @tranSec;);
-      &.show-reps {
-        right: 0;
-      }
-      &.hide-notes {
-        bottom: 20px;
-      }
-
-      // color: #fff;
-
-      .vertical-title {
-        .transform(rotate(90deg));
-        .transform-origin(0px 100% 0px);
-        font-size: 1.1em;
-        font-weight: 500;
-        span {
-          background-color: @account-bg;
-          padding-left: 5px;
-          padding-right: 5px;
-          text-transform: uppercase;
-          .border-radius(0px 0px 5px 5px);
-        }
-      }
-      .title {
-        // margin-left: 20px;
-        cursor: pointer;
-      }
-      .contents {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 20px;
-        width: 280px;
-        // height: 100%;
-        border-left: solid 2px @account-bg;
-        background-color: @account-bg;
-      }
-    }
-
-    div.actions {
-      margin-top: 20px;
-    }
-  }
-
-  .acct-qualify {
+  .acct-checklist {
 
     > .p-nav {
       background-color: white;
@@ -862,36 +752,141 @@ table.fh-wrap {
 }
 
 
+.acct-item {
+  position: absolute;
+  left:0px;top:0px;right:0px;bottom:0px;
+  padding: 0px 10px;
+}
+
 .acct-summary {
-  position: absolute;
-  left:10px;top:0px;right:10px;bottom:0px;
+  .slickgrid {
+    bottom: 10px;
+  }
+}
+.acct-equipment {
   .slickgrid {
     bottom: 10px;
   }
 }
 
-.acct-inventory {
-  position: absolute;
-  left:10px;top:0px;right:10px;bottom:0px;
-  .slickgrid {
-    bottom: 10px;
+.acct-clist-qualify {
+  @tranSec: .25s;
+
+  .transition(left @tranSec);
+  &.show-editor {
+    left: 300px;
+  }
+
+  background-color: #fff;
+  // color: #6c6c6c;
+
+  .details {
+    overflow: auto;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    bottom: 300px;
+    left: 0;
+    .transition(right @tranSec, bottom @tranSec;);
+    &.hide-notes {
+      bottom: 20px;
+    }
+    &.show-reps {
+      right: 300px;
+    }
+  }
+
+  .notes {
+    position: absolute;
+    // top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 300px;
+    .transition(bottom @tranSec;);
+    &.hide-notes {
+      bottom: -280px;
+    }
+
+    .title {
+      margin-left: 20px;
+      cursor: pointer;
+    }
+    .contents {
+      overflow-y: auto;
+      position: absolute;
+      left: 5px;
+      top: 20px;
+      right: 5px;
+      bottom: 5px;
+    }
+  }
+
+  .rep {
+    position: absolute;
+    top: 0;
+    right: -280px;
+    bottom: 300px;
+    // left: 0;
+    width: 300px;
+    .transition(right @tranSec, bottom @tranSec;);
+    &.show-reps {
+      right: 0;
+    }
+    &.hide-notes {
+      bottom: 20px;
+    }
+
+    // color: #fff;
+
+    .vertical-title {
+      .transform(rotate(90deg));
+      .transform-origin(0px 100% 0px);
+      font-size: 1.1em;
+      font-weight: 500;
+      span {
+        background-color: @account-bg;
+        padding-left: 5px;
+        padding-right: 5px;
+        text-transform: uppercase;
+        .border-radius(0px 0px 5px 5px);
+      }
+    }
+    .title {
+      // margin-left: 20px;
+      cursor: pointer;
+    }
+    .contents {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 20px;
+      width: 280px;
+      // height: 100%;
+      border-left: solid 2px @account-bg;
+      background-color: @account-bg;
+    }
+  }
+
+  div.actions {
+    margin-top: 20px;
   }
 }
-
-.acct-systemdetails {
-  position: absolute;
-  left:10px;top:0px;right:10px;bottom:0px;
-
+.acct-clist-systemdetails {
   .col {
     padding: 0px;
     margin-bottom: 10px
   }
 }
-
-.acct-survey {
-  position: absolute;
-  left:10px;top:0px;right:10px;bottom:0px;
-
+.acct-clist-emcontacts {
+  bottom:10px;
+  .col {
+    padding: 0px;
+    margin-bottom: 10px
+  }
+}
+.acct-clist-survey {
   .grid-wrap {
     height:100px;
     position:relative;
@@ -899,7 +894,7 @@ table.fh-wrap {
 }
 
 
-.initialpayment {
+.acct-clist-initialpayment {
   padding: 0px 20px;
   .checkbox {
     margin-top: 30px;

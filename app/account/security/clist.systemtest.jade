@@ -1,0 +1,11 @@
+div(class="acct-clist-systemtest")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+
+    tr
+      td(class="fh-body")
+        div(class="fh-contents")
+
+  div(data-bind="if:active()&&!loaded()")
+    div(class="spinner-wrap black", data-bind="template:'tmpl-spinner'")
