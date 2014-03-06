@@ -1,10 +1,12 @@
 define('src/account/security/clist.systemdetails.vm', [
   'src/account/default/rep.find.vm',
+  'src/account/security/clist.equipment.vm',
   'ko',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
   RepFindViewModel,
+  CListEquipmentViewModel,
   ko,
   utils,
   ControllerViewModel
@@ -18,6 +20,11 @@ define('src/account/security/clist.systemdetails.vm', [
 
     _this.data = ko.observable();
     _this.repModel = ko.observable();
+
+    _this.equipmentVm = new CListEquipmentViewModel({
+      pcontroller: _this,
+      layersVm: _this.layersVm,
+    });
 
     //
     // events
@@ -43,12 +50,15 @@ define('src/account/security/clist.systemdetails.vm', [
   CListSystemDetailsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
+
+    _this.equipmentVm.load(routeData, extraData, join);
+
     setTimeout(function() {
       //@TODO: load real data
       _this.data({});
 
       cb();
-    }, 2000);
+    }, 200);
   };
 
   return CListSystemDetailsViewModel;

@@ -22,7 +22,7 @@ define('src/account/security/equipment.vm', [
     EquipmentViewModel.super_.call(_this, options);
     // ControllerViewModel.ensureProps(_this, ['layersVm']);
 
-    _this.layersVm = new LayersViewModel({
+    _this.layersVm = _this.layersVm || new LayersViewModel({
       controller: _this,
     });
 
@@ -32,10 +32,10 @@ define('src/account/security/equipment.vm', [
     // events
     //
     _this.cmdAddByPart = ko.command(function(cb) {
-      showEquipmentEditor(_this, true, null, cb);
+      showEquipmentEditor(_this, true, cb);
     });
     _this.cmdAddByBarcode = ko.command(function(cb) {
-      showEquipmentEditor(_this, false, null, cb);
+      showEquipmentEditor(_this, false, cb);
     });
     _this.cmdAddExistingEquipment = ko.command(function(cb) {
       alert('@TODO: add existing equipment');

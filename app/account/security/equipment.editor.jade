@@ -20,8 +20,9 @@ div(class="equipment-editor")
       li
         span(class="label") Barcode or Part # ???
         input(type="text",placeholder="",data-bind="ukov:searchKey,value:searchKey,valueUpdate:'keyup',cmdEnter:cmdSearch")
-    ul(class="actions limit-width right-side")
+    ul(class="edit-form limit-width right-side")
       li
+        span(class="label") &nbsp;
         a(class="btn",tabindex="0",data-bind="cmd:cmdSearch") Search
 
   div(class="line-top")
