@@ -121,11 +121,11 @@ define('src/scrum/project.vm', [
           id: 'backloggrids',
           title: 'Backlog Grids',
         }),
-        // new BacklogViewModel({
-        //   projectVm: _this,
-        //   id: 'backlog',
-        //   title: 'Backlog',
-        // }),
+        new BacklogViewModel({
+          projectVm: _this,
+          id: 'backlog',
+          title: 'Backlog',
+        }),
         // new BacklogViewModel({
         //   projectVm: _this,
         //   id: 'planning',

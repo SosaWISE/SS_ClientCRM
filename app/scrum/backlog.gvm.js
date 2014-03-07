@@ -19,7 +19,8 @@ define('src/scrum/backlog.gvm', [
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
-        rowHeight: 27,
+        rowHeight: 20,
+        multiSelect: false,
       },
       dataView: options.dataView,
       plugins: [
@@ -58,16 +59,21 @@ define('src/scrum/backlog.gvm', [
           resizable: false,
           cssClass: 'cell-reorder',
         },
-        {
-          id: '#c',
-          name: '',
-          width: 30,
-          behavior: 'dropChild',
-          resizable: false,
-        },
+        // {
+        //   id: '#c',
+        //   name: '',
+        //   width: 30,
+        //   behavior: 'dropChild',
+        //   resizable: false,
+        //   cssClass: 'cell-drop-child',
+        //   formatter: function() {
+        //     return '<div class="target"></div>';
+        //   },
+        // },
         {
           id: "name",
           name: "Name",
+          behavior: 'dropChild',
           // field: "name",
           // width: 70,
           // minWidth: 50,

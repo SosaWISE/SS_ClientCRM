@@ -1,0 +1,21 @@
+X  drag tasks
+X  accept functions
+X  external update items
+X  add/edit epic, story, and task
+X    epic
+X      add
+X      edit
+X      add child(story|epic)
+X    story
+X      add
+X      edit
+X      add child(task)
+
+  make sprints3 horizontal in backlog
+
+  drag between sprints (including null sprint-backlog) (Story Board)
+  save on drag end
+  mock websocket updates
+  do websocket updates
+  notify on websocket update
+  use correct SortOrder when adding

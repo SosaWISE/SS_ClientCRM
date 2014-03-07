@@ -36,211 +36,68 @@ define('src/slick/movesubrows', [
       'init': function(grid) {
         _grid = grid;
         _grid.registerPlugin(_moveRowsPlugin);
-        _handler.subscribe(_grid.onDragInit, onDragInit);
-        _handler.subscribe(_moveRowsPlugin.onBeforeMoveRows, onBeforeMoveRows);
-        _handler.subscribe(_moveRowsPlugin.onMoveRows, onMoveRows);
-        // _handler.subscribe(_moveRowsPlugin.onBeforeMoveChildRows, onBeforeMoveChildRows);
-        // _handler.subscribe(_moveRowsPlugin.onMoveChildRows, onMoveChildRows);
+        _handler.subscribe(_grid.onDragInit, handleDragInit);
+        _handler.subscribe(_moveRowsPlugin.onBeforeMoveRows, handleBeforeMoveRows);
+        _handler.subscribe(_moveRowsPlugin.onMoveRows, handleMoveRows);
+        _handler.subscribe(_moveRowsPlugin.onBeforeMoveChildRows, handleBeforeMoveChildRows);
+        _handler.subscribe(_moveRowsPlugin.onMoveChildRows, handleMoveChildRows);
       },
     });
 
-    function onDragInit(e /*, dd*/ ) {
-      // prevent the grid from cancelling drag'n'drop by default
-      e.stopImmediatePropagation();
+    function handleDragInit(e /*, dd*/ ) {
+      var cell = _grid.getCellFromEvent(e),
+        item = options.dataView.getItem(cell.row);
+      if (item.canMove) {
+        // prevent the grid from cancelling drag'n'drop by default
+        e.stopImmediatePropagation();
+      }
     }
 
-    function onBeforeMoveRows(e, data) {
-      var rowIndices = data.rows,
-        i, length = rowIndices.length,
-        index, nextIndex;
-
-      sortRowIndices(rowIndices);
-
-      for (i = 0, nextIndex = rowIndices[0]; i < length; i++, nextIndex++) {
-        index = rowIndices[i];
-        if (index !== nextIndex) {
-          // rows are not sequential
-          return true;
-        }
-      }
-
-      // this only works with one row or sequential rows.
-      for (i = 0; i < length; i++) {
-        index = rowIndices[i];
-        // no point in moving before or after itself
-        if (index === data.insertBefore || index === data.insertBefore - 1) {
-          e.stopPropagation();
-          return false;
-        }
-      }
-      return true;
+    function handleBeforeMoveRows(e, args) {
+      var sibling = options.dataView.getItem(args.rows[0]),
+        item = options.dataView.getItem(args.insertBefore),
+        parent = item.getParent();
+      return sibling !== item && parent.acceptsChild(sibling);
     }
 
-    function onMoveRows(e, args) {
-      debugger;
+    function handleMoveRows(e, args) {
       var sibling = options.dataView.getItem(args.rows[0]),
         item = options.dataView.getItem(args.insertBefore);
 
       item.onDropSibling(sibling);
 
-      // var rowIndices = args.rows,
-      //   insertBefore = args.insertBefore; //,
-      // moveResults, newList, changedRows;
-
-      // rowIndices should already be sorted in OnBeforeMoveRows
-      // sortRowIndices(rowIndices);
-
-      // // move the rows
-      // moveResults = moveRows(rowIndices, insertBefore, options.observableArray());
-      // // make newList by joining top, moved, and bottom
-      // newList = moveResults.top.concat(moveResults.middle, moveResults.bottom);
-
-      // // update sortOrder and notify of any changes
-      // changedRows = updateSortOrder(rowIndices, insertBefore, options.orderName, newList);
-      // if (changedRows.length) {
-      //   options.onOrderChanged(changedRows);
-      // }
-
-      // // refresh grid
-      // options.observableArray(newList);
-
-      //@TODO: // reselect selected rows
-      // _grid.setSelectedRows(getSelectedRowIndices(moveResults.top.length, rowIndices.length));
-      // unselect selected cell
-      _grid.resetActiveCell();
-    }
-
-    /*
-    function onBeforeMoveChildRows(e, data) {
-      var rowIndices = data.rows,
-        i, length = rowIndices.length,
-        index;
-
-      sortRowIndices(rowIndices);
-
-      // this only works with one row or sequential rows.
-      for (i = 0; i < length; i++) {
-        index = rowIndices[i];
-        // can't move under self
-        if (index === data.insertUnder) {
-          e.stopPropagation();
-          return false;
-        }
-        //@TODO: need to ask the row value it's self if the data can be a child of it
-      }
-      return true;
-    }
-
-    function onMoveChildRows(e, args) {
-      var rowIndices = args.rows,
-        insertBefore = args.insertUnder + 1,
-        moveResults, newList, changedRows;
-      //@TODO: this is basically copied from onMoveRows. it needs to be changed to work with childs.
-
-      // rowIndices should already be sorted in OnBeforeMoveChildRows
-      // sortRowIndices(rowIndices);
-
-      // move the rows
-      moveResults = moveRows(rowIndices, insertBefore, options.observableArray());
-      // make newList by joining top, moved, and bottom
-      newList = moveResults.top.concat(moveResults.middle, moveResults.bottom);
-
-      // update sortOrder and notify of any changes
-      changedRows = updateSortOrder(rowIndices, insertBefore, options.orderName, newList);
-      if (changedRows.length) {
-        options.onOrderChanged(changedRows);
-      }
-
+      //@TODO: do correctly in backlogdata.js ?????
       // refresh grid
-      options.observableArray(newList);
+      _grid.invalidate();
+      _grid.render();
       // reselect selected rows
-      _grid.setSelectedRows(getSelectedRowIndices(moveResults.top.length, rowIndices.length));
+      _grid.setSelectedRows([sibling.getIndex()]);
       // unselect selected cell
       _grid.resetActiveCell();
     }
-    */
-  }
 
-  function sortRowIndices(rowIndices) {
-    // preserve row order - make sure they are in
-    // ascending order, not the order they were selected
-    rowIndices.sort(function(a, b) {
-      return a - b;
-    });
-  }
-
-  /*
-  function moveRows(rowIndices, insertBefore, list) {
-    // assumes rowIndices is sorted in ascending order
-    var top = list.slice(0, insertBefore),
-      middle = [],
-      bottom = list.slice(insertBefore, list.length),
-      i, rowIndex, length = rowIndices.length;
-
-    // remove moved rows from top and bottom
-    i = length;
-    while (i--) { // loop in reverse
-      rowIndex = rowIndices[i];
-      if (rowIndex < insertBefore) {
-        top.splice(rowIndex, 1);
-      } else {
-        bottom.splice(rowIndex - insertBefore, 1);
-      }
+    function handleBeforeMoveChildRows(e, args) {
+      var child = options.dataView.getItem(args.rows[0]),
+        item = options.dataView.getItem(args.insertUnder);
+      return item.acceptsChild(child);
     }
 
-    // add moved rows to top rows
-    for (i = 0; i < length; i++) {
-      middle.push(list[rowIndices[i]]);
+    function handleMoveChildRows(e, args) {
+      var child = options.dataView.getItem(args.rows[0]),
+        item = options.dataView.getItem(args.insertUnder);
+
+      item.onDropChild(child);
+
+      //@TODO: do correctly in backlogdata.js ?????
+      // refresh grid
+      _grid.invalidate();
+      _grid.render();
+      // reselect selected rows
+      _grid.setSelectedRows([child.getIndex()]);
+      // unselect selected cell
+      _grid.resetActiveCell();
     }
-
-    return {
-      top: top,
-      middle: middle,
-      bottom: bottom,
-    };
   }
-
-  function updateSortOrder(rowIndices, insertBefore, orderName, newList) {
-    var minIndex, maxIndex,
-      i, sortOrder, row,
-      changedRows = [];
-
-    // assumes rowIndices is sorted in ascending order
-    minIndex = Math.min(insertBefore, rowIndices[0]);
-    maxIndex = Math.max(insertBefore - 1, rowIndices[rowIndices.length - 1]);
-    // keep within array bounds
-    minIndex = Math.max(minIndex, 0);
-    maxIndex = Math.min(maxIndex, newList.length - 1);
-
-    // try to use previous value's sort order
-    sortOrder = (minIndex > 0) ? newList[minIndex - 1][orderName] : minIndex;
-
-    // update sortOrder property
-    for (i = minIndex; i <= maxIndex; i++) {
-      row = newList[i];
-      // check if order has changed
-      // increment sortOrder in advance (one-based)
-      if (row[orderName] !== ++sortOrder) {
-        row[orderName] = sortOrder;
-        changedRows.push(row);
-      }
-    }
-    return changedRows;
-  }
-  */
-
-  function getSelectedRowIndices(topLength, movedRowsLength) {
-    var i, results = [];
-    for (i = 0; i < movedRowsLength; i++) {
-      results.push(topLength + i);
-    }
-    return results;
-  }
-
-
-  // MoveSubRows.moveRows = moveRows;
-  // MoveSubRows.updateSortOrder = updateSortOrder;
-  MoveSubRows.getSelectedRowIndices = getSelectedRowIndices;
 
   return MoveSubRows;
 });

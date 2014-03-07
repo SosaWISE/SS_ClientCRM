@@ -104,6 +104,7 @@ define('src/scrum/backlogdata', [
     _this.showMenu = ko.observable(false);
     _this.depth = ko.observable(0);
   }
+  BaseItemViewModel.prototype.canMove = true;
   BaseItemViewModel.prototype.startLength = 1;
   BaseItemViewModel.prototype.length = function() {
     return this.startLength;
@@ -190,7 +191,7 @@ define('src/scrum/backlogdata', [
   BaseItemViewModel.prototype.updateComputables = function(recursive) {
     // recursively tell children to update length
     // once the children have the correct length
-    // the parent's (_this) length can be calculated
+    // the parent's(_this) length can be calculated
     var _this = this,
       length = _this.startLength;
     if (_this.childs !== true) {
@@ -288,6 +289,25 @@ define('src/scrum/backlogdata', [
       list = _this.childs();
     return list[list.length - 1];
   };
+  BaseItemViewModel.prototype.getIndex = function() {
+    var _this = this,
+      parent = _this.getParent(),
+      list, prevSiblingLengths = 0;
+
+    if (!parent) {
+      return -1;
+    }
+
+    list = parent.childs();
+    list.some(function(sibling) {
+      if (sibling === _this) {
+        return true;
+      }
+      prevSiblingLengths += sibling.length();
+    });
+
+    return prevSiblingLengths + parent.getIndex() + 1;
+  };
 
   function EpicViewModel(container, item, type) {
     var _this = this;
@@ -314,6 +334,10 @@ define('src/scrum/backlogdata', [
     });
   }
   utils.inherits(EpicViewModel, BaseItemViewModel);
+  EpicViewModel.prototype.acceptsChild = function(testVm) {
+    return (testVm instanceof EpicViewModel) ||
+      (testVm instanceof StoryViewModel);
+  };
   // EpicViewModel.prototype.onUpdate = function(item) {};
 
   function StoryViewModel(container, item, type) {
@@ -353,6 +377,9 @@ define('src/scrum/backlogdata', [
     });
   }
   utils.inherits(StoryViewModel, BaseItemViewModel);
+  StoryViewModel.prototype.acceptsChild = function( /*testVm*/ ) {
+    return false;
+  };
   StoryViewModel.prototype.onUpdate = function(item) {
     var _this = this;
     _this.points(item.Points);
@@ -369,7 +396,8 @@ define('src/scrum/backlogdata', [
     _this.length = ko.observable(_this.startLength);
   }
   utils.inherits(StepViewModel, BaseItemViewModel);
-  StepViewModel.prototype.onAccept = function(testVm) {
+  StepViewModel.prototype.canMove = false;
+  StepViewModel.prototype.acceptsChild = function(testVm) {
     var _this = this;
     return (testVm instanceof TaskViewModel) &&
       testVm.item.StoryId === _this.item.ParentId;
@@ -390,10 +418,13 @@ define('src/scrum/backlogdata', [
     });
   }
   utils.inherits(TaskViewModel, BaseItemViewModel);
-  TaskViewModel.prototype.onAccept = function(testVm) {
-    var _this = this;
-    return (testVm instanceof TaskViewModel) &&
-      testVm.item.StoryId === _this.item.StoryId;
+  // TaskViewModel.prototype.acceptsChild = function(testVm) {
+  //   var _this = this;
+  //   return (testVm instanceof TaskViewModel) &&
+  //     testVm.item.StoryId === _this.item.StoryId;
+  // };
+  TaskViewModel.prototype.acceptsChild = function( /*testVm*/ ) {
+    return false;
   };
 
   function BacklogData(options) {
@@ -426,9 +457,10 @@ define('src/scrum/backlogdata', [
     });
   }
   utils.inherits(BacklogData, BaseItemViewModel);
-  BacklogData.prototype.removeChild = BaseItemViewModel.prototype.removeChild;
-  BacklogData.prototype.addChild = BaseItemViewModel.prototype.addChild;
-  BacklogData.prototype.updateComputables = BaseItemViewModel.prototype.updateComputables;
+  BacklogData.prototype.acceptsChild = EpicViewModel.prototype.acceptsChild;
+  // BacklogData.prototype.removeChild = BaseItemViewModel.prototype.removeChild;
+  // BacklogData.prototype.addChild = BaseItemViewModel.prototype.addChild;
+  // BacklogData.prototype.updateComputables = BaseItemViewModel.prototype.updateComputables;
   // purposely using updateComputables instead of updateUpComputables
   // since we don't have a parent
   BacklogData.prototype.updateUpComputables = BaseItemViewModel.prototype.updateComputables;
@@ -721,9 +753,9 @@ define('src/scrum/backlogdata', [
           {
             id: '#',
           },
-          {
-            id: '#c',
-          },
+          // {
+          //   id: '#c',
+          // },
           {
             id: "name",
             formatter: function(row, cell, value, columnDef, dataCtx) {
@@ -733,6 +765,7 @@ define('src/scrum/backlogdata', [
                 tab += '<span class="cell-tab">&nbsp;</span>';
               }
               return tab + dataCtx.item.Name;
+              // return '<span class="parent-cell" style="width:' + (item.depth() * 25) + 'px;">&nbsp;</span>' + dataCtx.item.Name;
             },
           },
           {
