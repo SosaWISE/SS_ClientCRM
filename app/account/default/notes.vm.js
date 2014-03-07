@@ -150,6 +150,16 @@ define('src/account/default/notes.vm', [
           width: 30,
         },
         {
+          id: 'reason',
+          name: 'Reason',
+          // width: 30,
+          formatter: function(row, cell, value, columnDef, dataCtx) {
+            //@NOTE: for this to work we need a list of all category1 and category2.
+            //       currently we only have filtered lists
+            return dataCtx.NoteCategory1Id + ': ' + dataCtx.NoteCategory2Id;
+          },
+        },
+        {
           id: 'Note',
           name: 'Note',
           field: 'Note',
