@@ -28,34 +28,31 @@ div(class="acct-emcontacteditor")
     ul(class="edit-form limit-width right-side")
       li
         span(class="label") Relationship
-        div(data-bind="template:{name:data.RelationshipCvm.viewTmpl,data:data.RelationshipCvm}")
+        div(data-bind="cvm:data.RelationshipCvm")
       li
         span(class="label") Email
         input(type="text", placeholder="",
           data-bind="ukov:data.Email,value:data.Email,valueUpdate:'keyup'")
       li
         span(class="label") Has Keys
-        div(data-bind="template:{name:data.HasKeyCvm.viewTmpl,data:data.HasKeyCvm}")
+        div(data-bind="cvm:data.HasKeyCvm")
   div(class="line-top")
     ul(class="edit-form ib")
       li
         span(class="label") Primary Phone
         input(type="text", placeholder="(123) 123-1234",class="limit-width",
           data-bind="ukov:data.Phone1,value:data.Phone1,valueUpdate:'keyup'")
-        div(class="limit-width right-side",
-          data-bind="template:{name:data.Phone1TypeCvm.viewTmpl,data:data.Phone1TypeCvm}")
+        div(class="limit-width right-side",data-bind="cvm:data.Phone1TypeCvm")
       li
         span(class="label") Secondary Phone
         input(type="text", placeholder="(123) 123-1234",class="limit-width",
           data-bind="ukov:data.Phone2,value:data.Phone2,valueUpdate:'keyup'")
-        div(class="limit-width right-side",
-          data-bind="template:{name:data.Phone2TypeCvm.viewTmpl,data:data.Phone2TypeCvm}")
+        div(class="limit-width right-side",data-bind="cvm:data.Phone2TypeCvm")
       li
         span(class="label") Alternate Phone
         input(type="text", placeholder="(123) 123-1234",class="limit-width",
           data-bind="ukov:data.Phone3,value:data.Phone3,valueUpdate:'keyup'")
-        div(class="limit-width right-side",
-          data-bind="template:{name:data.Phone3TypeCvm.viewTmpl,data:data.Phone3TypeCvm}")
+        div(class="limit-width right-side",data-bind="cvm:data.Phone3TypeCvm")
 
   div(class="line-top")
     ul(class="actions")

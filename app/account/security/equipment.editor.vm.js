@@ -181,7 +181,7 @@ define('src/account/security/equipment.editor.vm', [
       link: link,
       query: query,
     }, null, utils.safeCallback(cb, function(err, resp) {
-      cvm.setLddist(resp.Value);
+      cvm.setList(resp.Value);
       // cvm.selectItem(cvm.list()[0]); // select first
     }, utils.no_op));
   }

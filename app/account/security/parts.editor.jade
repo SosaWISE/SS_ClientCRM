@@ -17,7 +17,7 @@ div(class="parts-editor")
         span(class="label") Item name goes here
       li
         span(class="label") Assign To
-        div(data-bind="template:{name:data.AssignToCvm.viewTmpl,data:data.AssignToCvm}")
+        div(data-bind="cvm:data.AssignToCvm")
 
   div(class="line-top")
     ul(class="actions")

@@ -13,7 +13,7 @@ table(class="question takequestion",data-bind="toggle:{'complete':isComplete}")
           a(class="btn small",data-bind="click:$parent.clickAnswer,active:$parent.answer()===text,text:text")
           |&nbsp;
       div(data-bind="if:answerMode==='combo'")
-        div(style="min-width:75px;",data-bind="template:{name:cvm.viewTmpl,data:cvm}")
+        div(style="min-width:75px;",data-bind="cvm:cvm")
       div(data-bind="if:answerMode==='text'")
         input(type="text",data-bind="value:answer,valueUpdate:'keyup'")
 

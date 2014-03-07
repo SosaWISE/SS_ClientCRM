@@ -4,12 +4,12 @@ div(class="current")
       td(class="fh-header")
         div
           div(class="input")
-            div(class="value",data-bind="template:{name:departmentsCvm.viewTmpl,data:departmentsCvm}")
+            div(class="value",data-bind="cvm:departmentsCvm")
         div
           div(class="input")
-            div(class="value",data-bind="template:{name:data.NoteCategory1IdCvm.viewTmpl,data:data.NoteCategory1IdCvm}")
+            div(class="value",data-bind="cvm:data.NoteCategory1IdCvm")
           div(class="input")
-            div(class="value",data-bind="template:{name:data.NoteCategory2IdCvm.viewTmpl,data:data.NoteCategory2IdCvm}")
+            div(class="value",data-bind="cvm:data.NoteCategory2IdCvm")
         pre(class="text",
           data-bind="text:data.Note")
     tr

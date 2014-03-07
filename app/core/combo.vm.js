@@ -378,5 +378,29 @@ define('src/core/combo.vm', [
     return results.join('');
   }
 
+
+  // cvm binding
+  function makeCvmValueAccessor(valueAccessor) {
+    return function() {
+      var cvm = ko.unwrap(valueAccessor());
+      if (!(cvm instanceof ComboViewModel)) {
+        throw new Error('expected bound value to be a ComboViewModel');
+      }
+      return {
+        data: cvm,
+        name: cvm.viewTmpl,
+        templateEngine: ko.nativeTemplateEngine.instance,
+      };
+    };
+  }
+  ko.bindingHandlers.cvm = {
+    init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      return ko.bindingHandlers.template.init(element, makeCvmValueAccessor(valueAccessor), allBindings, viewModel, bindingContext);
+    },
+    update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      return ko.bindingHandlers.template.update(element, makeCvmValueAccessor(valueAccessor), allBindings, viewModel, bindingContext);
+    },
+  };
+
   return ComboViewModel;
 });
