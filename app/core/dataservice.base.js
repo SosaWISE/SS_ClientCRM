@@ -15,10 +15,6 @@ define('src/core/dataservice.base', [
     _sessionId = null,
     _history = [];
 
-  function frontSlash(text) {
-    return text ? ('/' + text) : '';
-  }
-
   function DataserviceBase(collectionName, domain) {
     this.collectionName = collectionName;
     this.baseUrl = (domain ? ('//' + domain) : '') + frontSlash(collectionName);
@@ -27,13 +23,9 @@ define('src/core/dataservice.base', [
   // DataserviceBase.prototype.timeout = 1000 * 6;
   // DataserviceBase.prototype.timeout = 1000 * 60 * 3;
 
-  DataserviceBase.prototype.createRequestUrl = function(id, link, queryObj /*, httpVerb*/ ) {
-    var query = querystring.toQuerystring(queryObj);
-    return this.baseUrl + frontSlash(id) + frontSlash(link) + (query ? ('?' + query) : '');
-  };
+  //@NOTE: the webservice only supports POST, GET and DELETE (which is why update and replace are commented out)
 
-  //@NOTE: the webservice only supports POST, GET and DELETE
-
+  // raw post/get (difficult to mock)
   DataserviceBase.prototype.post = function(path, data, setter, callback) {
     this.ajax('POST', null, path, null, data, setter, callback);
   };
@@ -41,6 +33,7 @@ define('src/core/dataservice.base', [
     this.ajax('GET', null, path, queryObj, null, setter, callback);
   };
 
+  // post/get with params object (easy to mock)
   DataserviceBase.prototype.save = function(params, setter, callback) {
     this.ajax('POST', params.id, params.link, null, params.data, setter, callback);
   };
@@ -57,6 +50,12 @@ define('src/core/dataservice.base', [
   //   this.ajax('PUT', id, null, null, data, setter, callback);
   // };
 
+
+
+  DataserviceBase.prototype.createRequestUrl = function(id, link, queryObj /*, httpVerb*/ ) {
+    var query = querystring.toQuerystring(queryObj);
+    return this.baseUrl + frontSlash(id) + frontSlash(link) + (query ? ('?' + query) : '');
+  };
   DataserviceBase.prototype.ajax = function(httpVerb, id, link, queryObj, data, setter, callback) {
     queryObj = (queryObj || {});
     if (!queryObj.SessionId) {
@@ -79,7 +78,7 @@ define('src/core/dataservice.base', [
       // Delete  - DELETE
       // Replace - PUT
       httpVerb: httpVerb,
-      data: (data && typeof(data) !== "string") ? JSON.stringify(data, jsonhelpers.replacer) : data,
+      data: (data && !utils.isStr(data)) ? JSON.stringify(data, jsonhelpers.replacer) : data,
 
       contentType: 'application/json',
       dataType: 'json',
@@ -218,6 +217,11 @@ define('src/core/dataservice.base', [
   };
   DataserviceBase.maxHistory = 20;
   DataserviceBase._history = _history;
+
+
+  function frontSlash(text) {
+    return text ? ('/' + text) : '';
+  }
 
   return DataserviceBase;
 });

@@ -26,7 +26,6 @@ define('src/account/security/clist.survey.gvm', [
           eventName: 'onClick',
           fn: function(item) {
             options.onClick(item);
-            notify.notify('info', 'clicked ' + item.id, 5);
             return true; // do default
           },
         }),
@@ -34,12 +33,12 @@ define('src/account/security/clist.survey.gvm', [
       columns: [
         {
           id: 'CreatedBy',
-          name: 'CreatedBy',
+          name: 'Given By',
           field: 'CreatedBy',
         },
         {
           id: 'CreatedOn',
-          name: 'CreatedOn',
+          name: 'Survey Date',
           field: 'CreatedOn',
         },
         {
@@ -49,7 +48,7 @@ define('src/account/security/clist.survey.gvm', [
         },
         {
           id: 'SurveyName',
-          name: 'SurveyName',
+          name: 'Survey Name',
           field: 'SurveyName',
         },
         {

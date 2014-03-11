@@ -1,12 +1,10 @@
 define('specui/index', [
   'spec/runner',
-  'specui/_all',
   'jquery',
   'specui/browser',
   'specui/jasmine-matchers'
 ], function(
   runner,
-  uiSpecs,
   jquery,
   browser
 ) {
@@ -49,9 +47,7 @@ define('specui/index', [
   }, tabsMouseout);
 
   browser.ready(jquery('.frameLocation'), function() {
-    runner({}, [
-      uiSpecs
-    ], function() {
+    runner({}, ['src/_all.specui'], function() {
       console.log(' - specs loaded');
       jquery('.ph-HTMLReporter').replaceWith(jquery('#HTMLReporter'));
     });
