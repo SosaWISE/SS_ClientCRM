@@ -40,7 +40,7 @@ define('src/account/security/clist.salesinfo.gvm', [
         {
           id: 'price',
           name: 'Price',
-          field: 'Cost',
+          field: 'RetailPrice',
           formatter: SlickGridViewModel.formatters.currency,
         },
         {

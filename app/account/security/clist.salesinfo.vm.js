@@ -112,7 +112,14 @@ define('src/account/security/clist.salesinfo.vm', [
       },
     });
 
-    _this.pointsAvailable = ko.observable(0);
+    _this.pointsAvailable = ko.computed(function() {
+      var pointSystem = _this.pointSystemsCvm.selected();
+      if (pointSystem.value) {
+        return pointSystem.item.SystemPoints - _this.partsGrid.pointsGiven();
+      } else {
+        return 0;
+      }
+    });
 
     _this.pointSystemsCvm.selectedValue.subscribe(function(psValue) {
       _this.contractLengthsCvm.setList([]);
