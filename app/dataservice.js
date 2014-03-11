@@ -17,7 +17,7 @@ define('src/dataservice', [
   createAccountingEngineDataservices,
   createMainCoreDataservices,
   MonitoringStationDataService,
-  crateInvoicesrv
+  createInvoicesrv
 ) {
   "use strict";
   return {
@@ -29,6 +29,6 @@ define('src/dataservice', [
     accountingengine: createAccountingEngineDataservices(),
     maincore: createMainCoreDataservices(),
     monitoringstation: new MonitoringStationDataService(),
-    invoicesrv: crateInvoicesrv(),
+    invoicesrv: createInvoicesrv(),
   };
 });
