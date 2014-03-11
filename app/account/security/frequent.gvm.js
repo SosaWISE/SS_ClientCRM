@@ -36,7 +36,7 @@ define('src/account/security/frequent.gvm', [
         {
           id: 'price',
           name: 'Price',
-          field: 'Cost',
+          field: 'Price',
           formatter: SlickGridViewModel.formatters.currency,
         },
         {
