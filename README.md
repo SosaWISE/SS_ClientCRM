@@ -4,15 +4,14 @@ CRM
 This is a SPA that will run our CRM for our call center.
 
 
-    git clone https://bitbucket.org/aclshumway/port-router.git
-
-
 
 Dependencies
 ------------
 
-  - [Node.js](http://nodejs.org/), plus node module dependencies defined in package.json
-  - [Grunt.js](https://github.com/gruntjs/grunt-cli)
+  * [Node.js](http://nodejs.org/)
+  * [Grunt.js](https://github.com/gruntjs/grunt-cli) (you will need sudo/admin privileges)
+
+        npm install -g grunt-cli
 
 
 
@@ -23,19 +22,15 @@ Install required node modules.
 
     npm install
 
-Install grunt (if you need it):
-
-    npm install -g grunt-cli
-
 Copy example config file.
-When `useMocks` is set true, mocks will be used for all api calls that have mocks defined.
+When `useMocks` is set to true, mocks will be used for all api calls that have mocks defined.
 Api calls that don't have mocks will most likely fail.
 
-  - Linux:
+  * Linux:
 
         cp webconfig-example.js webconfig.js
 
-  - Windows:
+  * Windows:
 
         copy webconfig-example.js webconfig.js
 
@@ -61,23 +56,66 @@ Or if you want to use IIS or some other webserver you will need to compile those
 Code overview
 -------------
 
-@TODO: Knockout.js explanation
+### Folder structure ###
 
-@TODO: Router/Controller explanation
+  * `/app`
 
-  - `/app`
+      * `/account` - Code for Accounts panel (view models, views(jade), specs, etc.).
+      * `/core` - Generic code that isn't specific to our industry. Like third party libraries, but developed by us.
+      * `/dataservices` - Code for talking to the api.
+      * `/survey` - Code for Surveys panel (view models, views(jade), specs, etc.).
+      * `/u-kov` - Data entry library. Basically, any time data is entered, this lib is used. The README.md in this folder explains a bit more.
 
-      - `/account` - Code for Accounts panel (view models, views(jade), specs, etc.).
-      - `/core` - Generic code that isn't specific to our industry. Like third party libraries, but developed by us.
-      - `/dataservices` - Code for talking to the api.
-      - `/survey` - Code for Surveys panel (view models, views(jade), specs, etc.).
-      - `/u-kov` - Data entry library. Basically any time data is entered, this lib is used. The README.md in this folder explains a bit more.
+  * `/mock` - Api mocks. Essentially these files overwrite functions defined in /app/dataservices
+  * `/stuff` - Fonts and images
+  * `/styles` - Less files that become css
+  * `/tparty` - Third party libraries
 
-  - `/mock` - Api mocks. Essentially these files overwrite functions defined in /app/dataservices
-  - `/stuff` - Fonts and images
-  - `/styles` - Less files
-  - `/tparty` - Third party libraries
+### UI ###
 
+The UI starts as jade and less files that are compiled to html and css, respectively.
+When index.jade is compiled to index.html all the jade files are merged into it as 'templates'.
+Compiling index.less also merges all the less files that it references into index.css.
+[Knockout.js](http://knockoutjs.com/) is used to dynamically create the UI using the 'templates'.
+
+
+### Routing ###
+
+The routing system keeps the url hash in sync with the website and vice versa.
+This is accomplished using a hierarchical structure of ControllerViewModels.
+Each controller has a list of child view models. Each child can be a controller view model or normal view model(inherits from BaseViewModel).
+An example of what the routing system does can be found below:
+
+Given this route:
+
+    router.addRoute(app.panelMap.accounts, 'accounts', ':masterid/:id/:tab/:p1', {});
+
+And this url:
+
+    http://dev-crm.nexsense.com/#/accounts/3000001/100212/checklist/systemdetails
+
+The routing system takes these steps:
+
+  1. convert url hash to routeData object
+
+        routeData = {
+          "route": "accounts",
+          "masterid": "3000001",
+          "id": "100212",
+          "tab": "checklist",
+          "p1": "systemdetails",
+        }
+
+  2. activate top level controller
+      1. mark as active
+      1. load data asynchronously (this should be done in the onLoad function `onLoad(routeData, extraData, join)`)
+          1. `routeData` - url hash as an object
+          1. `extraData` - can only be used when navigating to a route from within code
+          1. `join` - instance of joiner (`core/joiner.js`). Essentially the callback to notify when the data has loaded.
+  3. find child of controller that matches routeData OR if nothing matches, use the first child
+  4. recursively repeat steps 2 & 3, replacing top level controller with the child found in step 3
+
+Currently panel view models (top level controllers) are created and their routes are registered in this file: `/app/app.js`.
 
 Running Specs
 -------------
@@ -86,7 +124,7 @@ Run the site and point Chrome to:
 
     http://dev-crm.nexsense.com/spec/
 
-Currently there are only specs for core and u-kov, but that doesn't mean everything shouldn't have a test...
+Currently there are only specs for core and u-kov, but that doesn't mean everything shouldn't have a spec...
 
 
 Build for Production
@@ -94,12 +132,12 @@ Build for Production
 
 The build process currently has these steps:
 
-  - delete everything in ../crm-www except webconfig.js
-  - copy files that don't need to be processed to ../crm-www (creates folder if it doesn't exist)
-  - merges javascript files into packages and outputs them to ../crm-www (package filenames end with .debug.js)
-  - uglifies/minifies the javascript packages (package filenames end with .js)
-  - compiles and minifies jade files and outputs them to ../crm-www
-  - compiles and minifies less files and outputs them to ../crm-www
+  * delete everything in ../crm-www except webconfig.js
+  * copy files that don't need to be processed to ../crm-www (creates folder if it doesn't exist)
+  * merges javascript files into packages and outputs them to ../crm-www (package filenames end with .debug.js)
+  * uglifies/minifies the javascript packages (package filenames end with .js)
+  * compiles and minifies jade files and outputs them to ../crm-www
+  * compiles and minifies less files and outputs them to ../crm-www
 
 To do all that you just need to type this one little command:
 
@@ -130,40 +168,40 @@ Sublime Text 3
 
 The project for Sublime Text is `crm.sublime-project`. A few packages you will want to include for Sublime Text are listed below:
 
-  - Install `Package Control` - The Sublime Text package manager that makes it exceedingly simple to find, install and keep packages up-to-date.
-      - Follow instructions [here](https://sublime.wbond.net/installation)
+  * Install `Package Control` - The Sublime Text package manager that makes it exceedingly simple to find, install and keep packages up-to-date.
+      * Follow instructions [here](https://sublime.wbond.net/installation)
 
 Javascript formatting
 
-  - Install `JsFormat`
-      - Tools > Command Palette (Shift+Ctrl+P)
-      - Select Package Control: Install Package (type: pcip, then press: enter)
-      - Select JsFormat package (type: jsformat, then press: enter)
+  * Install `JsFormat`
+      * Tools > Command Palette (Shift+Ctrl+P)
+      * Select Package Control: Install Package (type: pcip, then press: enter)
+      * Select JsFormat package (type: jsformat, then press: enter)
 
 Javascript linting
 
-  - Install `SublimeLinter`
-      - Tools > Command Palette (Shift+Ctrl+P)
-      - Select Package Control: Install Package (type: pcip, then press: enter)
-      - Select SublimeLinter package (type: sublimelinter, then press: enter)
-  - Install `SublimeLinter-jshint`
-      - Tools > Command Palette (Shift+Ctrl+P)
-      - Select Package Control: Install Package (type: pcip, then press: enter)
-      - Select SublimeLinter-jshint package (type: sublimelinter-jshint, then press: enter)
-      - globally install jshint (you will need sudo/admin privileges)
-          - `npm install -g jshint`
-      - Preferences > Package Settings > SublimeLinter > Settings - User
-          - change `"show_errors_on_save": false,` to `"show_errors_on_save": true,`
+  * Install `SublimeLinter`
+      * Tools > Command Palette (Shift+Ctrl+P)
+      * Select Package Control: Install Package (type: pcip, then press: enter)
+      * Select SublimeLinter package (type: sublimelinter, then press: enter)
+  * Install `SublimeLinter-jshint`
+      * Tools > Command Palette (Shift+Ctrl+P)
+      * Select Package Control: Install Package (type: pcip, then press: enter)
+      * Select SublimeLinter-jshint package (type: sublimelinter-jshint, then press: enter)
+      * globally install jshint (you will need sudo/admin privileges)
+          * `npm install -g jshint`
+      * Preferences > Package Settings > SublimeLinter > Settings - User
+          * change `"show_errors_on_save": false,` to `"show_errors_on_save": true,`
 
 Syntax highlighting
 
-  - Install `Jade`
-      - Tools > Command Palette (Shift+Ctrl+P)
-      - Select Package Control: Install Package (type: pcip, then press: enter)
-      - Select Jade package (type: jade, then press: enter)
-  - Install `Less`
-      - Tools > Command Palette (Shift+Ctrl+P)
-      - Select Package Control: Install Package (type: pcip, then press: enter)
-      - Select LESS package (type: less, then press: enter)
+  * Install `Jade`
+      * Tools > Command Palette (Shift+Ctrl+P)
+      * Select Package Control: Install Package (type: pcip, then press: enter)
+      * Select Jade package (type: jade, then press: enter)
+  * Install `Less`
+      * Tools > Command Palette (Shift+Ctrl+P)
+      * Select Package Control: Install Package (type: pcip, then press: enter)
+      * Select LESS package (type: less, then press: enter)
 
 
