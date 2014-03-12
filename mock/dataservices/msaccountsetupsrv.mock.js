@@ -1,4 +1,4 @@
-define('mock/dataservices/monitoringstation.mock', [
+define('mock/dataservices/msaccountsetupsrv.mock', [
   'mock/dataservices/accountingengine.mock',
   'src/dataservice',
   'src/core/mockery',
@@ -65,7 +65,7 @@ define('mock/dataservices/monitoringstation.mock', [
       return result;
     }
 
-    dataservice.monitoringstation.accounts.read = function(params, setter, cb) {
+    dataservice.msaccountsetupsrv.accounts.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -77,7 +77,7 @@ define('mock/dataservices/monitoringstation.mock', [
       }
       send(result, setter, cb);
     };
-    dataservice.monitoringstation.emergencyContactPhoneTypes.read = function(params, setter, cb) {
+    dataservice.msaccountsetupsrv.emergencyContactPhoneTypes.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -86,7 +86,7 @@ define('mock/dataservices/monitoringstation.mock', [
       }
       send(result, setter, cb);
     };
-    dataservice.monitoringstation.emergencyContactRelationships.read = function(params, setter, cb) {
+    dataservice.msaccountsetupsrv.emergencyContactRelationships.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -95,7 +95,7 @@ define('mock/dataservices/monitoringstation.mock', [
       }
       send(result, setter, cb);
     };
-    dataservice.monitoringstation.systemDetails.read = function(params, setter, cb) {
+    dataservice.msaccountsetupsrv.systemDetails.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -114,7 +114,7 @@ define('mock/dataservices/monitoringstation.mock', [
       }
       send(result, setter, cb);
     };
-    dataservice.monitoringstation.serviceTypes.read = function(params, setter, cb) {
+    dataservice.msaccountsetupsrv.serviceTypes.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -123,7 +123,7 @@ define('mock/dataservices/monitoringstation.mock', [
       }
       send(result, setter, cb);
     };
-    dataservice.monitoringstation.panelTypes.read = function(params, setter, cb) {
+    dataservice.msaccountsetupsrv.panelTypes.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -132,7 +132,7 @@ define('mock/dataservices/monitoringstation.mock', [
       }
       send(result, setter, cb);
     };
-    dataservice.monitoringstation.dslSeizureTypes.read = function(params, setter, cb) {
+    dataservice.msaccountsetupsrv.dslSeizureTypes.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -143,7 +143,7 @@ define('mock/dataservices/monitoringstation.mock', [
     };
 
 
-    dataservice.monitoringstation.accounts.post = function(path, data, setter, cb) {
+    dataservice.msaccountsetupsrv.accounts.post = function(path, data, setter, cb) {
       var billingInfoSummary = accountingengine_mock.addAccount('@INC(customerMasterFile)');
 
       //@TODO: needs more Id's set
@@ -161,7 +161,7 @@ define('mock/dataservices/monitoringstation.mock', [
         ContractTemplateId: 0,
       }), setter, cb);
     };
-    dataservice.monitoringstation.emergencyContacts.save = function(params, setter, cb) {
+    dataservice.msaccountsetupsrv.emergencyContacts.save = function(params, setter, cb) {
       var data = params.data;
       send(createOrUpdate(emergencyContacts, 'EmergencyContactID', '@INC(emergencyContacts)', {
         EmergencyContactID: data.EmergencyContactID,
@@ -189,7 +189,7 @@ define('mock/dataservices/monitoringstation.mock', [
         Comment1: data.Comment1,
       }), setter, cb);
     };
-    dataservice.monitoringstation.emergencyContacts.del = function(id, setter, cb) {
+    dataservice.msaccountsetupsrv.emergencyContacts.del = function(id, setter, cb) {
       send(deleteItem(emergencyContacts, 'EmergencyContactID', id), setter, cb);
     };
 

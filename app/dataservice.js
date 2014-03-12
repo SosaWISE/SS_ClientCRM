@@ -6,7 +6,7 @@ define('src/dataservice', [
   'src/dataservices/salessummary',
   'src/dataservices/accountingengine',
   'src/dataservices/maincore',
-  'src/dataservices/monitoringstation',
+  'src/dataservices/msaccountsetupsrv',
   'src/dataservices/invoicesrv',
 ], function(
   UserDataservice,
@@ -16,7 +16,7 @@ define('src/dataservice', [
   createSalesSummaryDataservices,
   createAccountingEngineDataservices,
   createMainCoreDataservices,
-  MonitoringStationDataService,
+  createMsAccountSetupSrv,
   createInvoicesrv
 ) {
   "use strict";
@@ -28,7 +28,7 @@ define('src/dataservice', [
     salessummary: createSalesSummaryDataservices(),
     accountingengine: createAccountingEngineDataservices(),
     maincore: createMainCoreDataservices(),
-    monitoringstation: new MonitoringStationDataService(),
+    msaccountsetupsrv: createMsAccountSetupSrv(),
     invoicesrv: createInvoicesrv(),
   };
 });

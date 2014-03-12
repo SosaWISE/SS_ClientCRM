@@ -150,14 +150,14 @@ define('src/account/security/clist.systemdetails.vm', [
 
   function load_types(typeName, setter, join) {
     var cb = join.add();
-    dataservice.monitoringstation[typeName].read({}, null, utils.safeCallback(cb, function(err, resp) {
+    dataservice.msaccountsetupsrv[typeName].read({}, null, utils.safeCallback(cb, function(err, resp) {
       setter(resp.Value);
     }));
   }
 
   function load_systemDetails(accountId, setter, join) {
     var cb = join.add();
-    dataservice.monitoringstation.systemDetails.read({
+    dataservice.msaccountsetupsrv.systemDetails.read({
       id: accountId,
     }, null, utils.safeCallback(cb, function(err, resp) {
       setter(resp.Value);

@@ -186,7 +186,7 @@ define('src/account/security/emcontacteditor.vm', [
       }
       var model = _this.data.getValue();
       _this.data.markClean(model, true);
-      dataservice.monitoringstation.emergencyContacts.save({
+      dataservice.msaccountsetupsrv.emergencyContacts.save({
         id: model.EmergencyContactID,
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
@@ -202,7 +202,7 @@ define('src/account/security/emcontacteditor.vm', [
         cb();
         return;
       }
-      dataservice.monitoringstation.emergencyContacts.del(_this.data.model.EmergencyContactID, null, utils.safeCallback(cb, function(err, resp) {
+      dataservice.msaccountsetupsrv.emergencyContacts.del(_this.data.model.EmergencyContactID, null, utils.safeCallback(cb, function(err, resp) {
         _this.layer.close(resp.Value, true);
       }, function(err) {
         notify.notify('error', err.Message);

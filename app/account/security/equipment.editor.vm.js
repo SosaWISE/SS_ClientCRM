@@ -176,7 +176,7 @@ define('src/account/security/equipment.editor.vm', [
   }
 
   function readMonitoringStationOS(cvm, id, link, query, cb) {
-    dataservice.monitoringstation.monitoringStationOS.read({
+    dataservice.msaccountsetupsrv.monitoringStationOS.read({
       id: id,
       link: link,
       query: query,

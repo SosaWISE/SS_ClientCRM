@@ -85,7 +85,7 @@ define('src/account/security/clist.qualify.vm', [
     });
 
     _this.cmdCreateAccount = ko.command(function(cb) {
-      dataservice.monitoringstation.accounts.post(null, {
+      dataservice.msaccountsetupsrv.accounts.post(null, {
         leadId: _this.creditResult().LeadId
       }, null, function(err, resp) {
         if (err) {

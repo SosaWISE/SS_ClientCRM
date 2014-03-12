@@ -39,7 +39,7 @@ define('src/account/security/emcontacts.vm', [
         _this.showContactEditor(contact, cb);
       },
       save: function(model) {
-        dataservice.monitoringstation.emergencyContacts.save({
+        dataservice.msaccountsetupsrv.emergencyContacts.save({
           id: model.EmergencyContactID,
           data: model,
         }, null, function(err /*, resp*/ ) {
@@ -110,7 +110,7 @@ define('src/account/security/emcontacts.vm', [
   };
 
   function load_contacts(setter, accountId, cb) {
-    dataservice.monitoringstation.accounts.read({
+    dataservice.msaccountsetupsrv.accounts.read({
       id: accountId,
       link: 'emergencyContacts',
     }, null, utils.safeCallback(cb, function(err, resp) {
@@ -124,14 +124,14 @@ define('src/account/security/emcontacts.vm', [
 
   function load_phoneTypes(_this, cb) {
     _this.phoneTypes = null;
-    dataservice.monitoringstation.emergencyContactPhoneTypes.read({}, null, utils.safeCallback(cb, function(err, resp) {
+    dataservice.msaccountsetupsrv.emergencyContactPhoneTypes.read({}, null, utils.safeCallback(cb, function(err, resp) {
       _this.phoneTypes = resp.Value;
     }, utils.no_op));
   }
 
   function load_relationshipTypes(_this, cb) {
     _this.relationshipTypes = null;
-    dataservice.monitoringstation.emergencyContactRelationships.read({}, null, utils.safeCallback(cb, function(err, resp) {
+    dataservice.msaccountsetupsrv.emergencyContactRelationships.read({}, null, utils.safeCallback(cb, function(err, resp) {
       _this.relationshipTypes = resp.Value;
     }, utils.no_op));
   }
