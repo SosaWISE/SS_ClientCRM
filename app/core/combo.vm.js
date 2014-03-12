@@ -51,6 +51,7 @@ define('src/core/combo.vm', [
     if (!_this.selectedValue) {
       _this.selectedValue = ko.observable();
     }
+    _this.selectionHistory = [];
 
     _this.list = ko.observableArray();
     _this.actions = ko.observableArray();
@@ -87,8 +88,14 @@ define('src/core/combo.vm', [
               _this.activateNext(true);
             }
           }
+
+          ko.utils.arrayRemoveItem(_this.selectionHistory, selectedValue);
+          _this.selectionHistory.push(selectedValue);
+          while (_this.selectionHistory.length > 5) {
+            _this.selectionHistory.shift(); // remove first item
+          }
         } else {
-          console.log('selectedValue not in list:', selectedValue);
+          // console.log('selectedValue not in list:', selectedValue);
           //@NOTE: this will call this function again
           // and set `selected` to `noItemSelected`
           _this.selectedValue(null);
@@ -210,7 +217,8 @@ define('src/core/combo.vm', [
     list = list || [];
     var _this = this,
       wrapList = new Array(list.length),
-      selectedValue = _this.selectedValue.peek();
+      selectedValue = _this.selectedValue.peek(),
+      i;
 
     // un-set selected value
     _this.selectedValue(null);
@@ -226,6 +234,17 @@ define('src/core/combo.vm', [
 
     // re-set selected value
     _this.selectedValue(selectedValue);
+
+    // try to select the most recently used value (loop in reverse order)
+    i = _this.selectionHistory.length;
+    while (_this.selectedValue() == null && i--) {
+      // console.log('try selection:', _this.selectionHistory[i]);
+      _this.selectedValue(_this.selectionHistory[i]);
+    }
+    // try to select the clean value
+    if (_this.selectedValue() == null && ko.isObservable(_this.selectedValue.cleanVal)) {
+      _this.selectedValue(_this.selectedValue.cleanVal());
+    }
   };
   ComboViewModel.prototype.addItem = function(item) {
     var _this = this;

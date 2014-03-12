@@ -51,7 +51,8 @@ define('src/account/security/parts.editor.vm', [
 
 
   function PartsEditorViewModel(options) {
-    var _this = this;
+    var _this = this,
+      assignToList;
     PartsEditorViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
       'byPart',
@@ -87,12 +88,16 @@ define('src/account/security/parts.editor.vm', [
     }
     _this.data.update(false, false);
 
+    assignToList = _this.getAssignToList();
     _this.data.AssignToCvm = new ComboViewModel({
-      selectedValue: ukov.wrap('', {
+      // try to select first item in assignToList
+      selectedValue: ukov.wrap(assignToList.length ? assignToList[0].value : '', {
         validators: [
           //
           function(value) {
             value = value || null;
+
+            //@REVIEW: not sure if setting the value in a validator is the best method...
             if (value === _this.salesman.id) {
               _this.data.SalesmanID(value);
               _this.data.TechnicianID(null);
@@ -102,13 +107,14 @@ define('src/account/security/parts.editor.vm', [
             }
 
             if (!value) {
-              return 'Please select an assign to person';
+              return 'Please assign the equipment to someone';
             }
           },
         ]
       }),
-      list: _this.getAssignToList(),
+      list: assignToList,
     });
+
     //
     // events
     //

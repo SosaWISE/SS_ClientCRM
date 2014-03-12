@@ -116,6 +116,19 @@ define('mock/dataservices/salessummary.mock', [
     mockery = mockery; // remove me
     // mockery.addModulusValueFunc('ASDF', [
     // ]);
+
+    mockery.addModulusValueFunc('CELLULAR_TYPE_ID', [
+      'CELLPRI',
+      'CELLSEC',
+      'CELLTRKR',
+      'NOCELL',
+    ]);
+    mockery.addModulusValueFunc('CELLULAR_TYPE_NAME', [
+      'Cell Primary',
+      'Cell Backup',
+      'Cell Tracker',
+      'No Cellular',
+    ]);
   })();
 
   // data used in mock function
@@ -158,24 +171,14 @@ define('mock/dataservices/salessummary.mock', [
     }
   ];
 
-  cellularTypes = [
-    {
-      "CellularTypeID": "CELLPRI",
-      "CellularTypeName": "Cell Primary"
-    },
-    {
-      "CellularTypeID": "CELLSEC",
-      "CellularTypeName": "Cell Backup"
-    },
-    {
-      "CellularTypeID": "CELLTRKR",
-      "CellularTypeName": "Cell Tracker"
-    },
-    {
-      "CellularTypeID": "NOCELL",
-      "CellularTypeName": "No Cellular"
-    }
-  ];
+  cellularTypes = mockery.fromTemplate({
+    'list|4-4': [
+      {
+        CellularTypeID: '@CELLULAR_TYPE_ID',
+        CellularTypeName: '@CELLULAR_TYPE_NAME',
+      },
+    ]
+  }).list;
 
   vendorAlarmcomPacakges = [
     {

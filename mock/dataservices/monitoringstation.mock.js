@@ -9,7 +9,7 @@ define('mock/dataservices/monitoringstation.mock', [
   mockery,
   utils
 ) {
-  "use strict";
+  'use strict';
 
   function mock(settings) {
     function clone(value) {
@@ -91,6 +91,52 @@ define('mock/dataservices/monitoringstation.mock', [
       switch (params.link || null) {
         case null:
           result = findSingleOrAll(emergencyContactRelationships, 'RelationshipID', id);
+          break;
+      }
+      send(result, setter, cb);
+    };
+    dataservice.monitoringstation.systemDetails.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          if (id) {
+            result = mockery.fromTemplate({
+              AccountPassword: '@SEASON@NUMBER(1,9999)',
+              SystemTypeId: '@SYSTEM_TYPE_ID',
+              PanelTypeId: '@PANEL_TYPE_ID',
+              CellularTypeId: '@CELLULAR_TYPE_ID',
+              DslSeizureId: '@DSLSEIZURE_TYPE_ID',
+            });
+          } else {
+            result = null;
+          }
+          break;
+      }
+      send(result, setter, cb);
+    };
+    dataservice.monitoringstation.serviceTypes.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = findSingleOrAll(systemTypes, 'SystemTypeID', id);
+          break;
+      }
+      send(result, setter, cb);
+    };
+    dataservice.monitoringstation.panelTypes.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = findSingleOrAll(panelTypes, 'PanelTypeID', id);
+          break;
+      }
+      send(result, setter, cb);
+    };
+    dataservice.monitoringstation.dslSeizureTypes.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = findSingleOrAll(dslSeizureTypes, 'DslSeizureID', id);
           break;
       }
       send(result, setter, cb);
@@ -211,13 +257,58 @@ define('mock/dataservices/monitoringstation.mock', [
       'Roommate', 'Secretary', 'Security', 'Self', 'Service Tech', 'Sister', 'Sister-In-Law', 'Son',
       'Son & Daughter-In-Law', 'Son-In-Law', 'Spouse', 'Supervisor', 'Uncle',
     ]);
+
+
+    mockery.addModulusValueFunc('SYSTEM_TYPE_ID', [
+      '2WAY',
+      'DIGI',
+      'GPSC',
+      'GPST',
+    ]);
+    mockery.addModulusValueFunc('SYSTEM_TYPE_NAME', [
+      'Two Way',
+      'Digital',
+      'GPS Cellular',
+      'GPS Tracker',
+    ]);
+
+    mockery.addModulusValueFunc('PANEL_TYPE_ID', [
+      'CONCORD',
+      'LYNX',
+      'PERS',
+      'PERS-A',
+      'PERS-C',
+      'PERS-E',
+      'PERS-M',
+      'PERS-P',
+      'SIMON',
+      'VISTA',
+    ]);
+    mockery.addModulusValueFunc('PANEL_TYPE_NAME', [
+      'Concord',
+      'Lynx',
+      'PERS Unit',
+      'PERS Automobile Unit',
+      'PERS Child Unit',
+      'PERS Exercise Unit',
+      'PERS Medical Unit',
+      'PERS Pet Unit',
+      'Simon III',
+      'Vista',
+    ]);
+
+    mockery.addModulusValueFunc('DSLSEIZURE_TYPE_ID', [1, 2, 3]);
+    mockery.addModulusValueFunc('DSLSEIZURE_TYPE_NAME', ['No', 'DSL', 'Yes']);
   })();
 
   // data used in mock function
   var accounts,
     emergencyContacts,
     emergencyContactPhoneTypes,
-    emergencyContactRelationships;
+    emergencyContactRelationships,
+    systemTypes,
+    panelTypes,
+    dslSeizureTypes;
 
   accounts = [];
 
@@ -273,6 +364,31 @@ define('mock/dataservices/monitoringstation.mock', [
     ]
   }).list;
 
+
+  systemTypes = mockery.fromTemplate({
+    'list|4-4': [
+      {
+        SystemTypeID: '@SYSTEM_TYPE_ID',
+        SystemTypeName: '@SYSTEM_TYPE_NAME'
+      },
+    ]
+  }).list;
+  panelTypes = mockery.fromTemplate({
+    'list|10-10': [
+      {
+        PanelTypeID: '@PANEL_TYPE_ID',
+        PanelTypeName: '@PANEL_TYPE_NAME'
+      },
+    ]
+  }).list;
+  dslSeizureTypes = mockery.fromTemplate({
+    'list|3-3': [
+      {
+        DslSeizureID: '@DSLSEIZURE_TYPE_ID',
+        DslSeizure: '@DSLSEIZURE_TYPE_NAME'
+      },
+    ]
+  }).list;
 
   return mock;
 });

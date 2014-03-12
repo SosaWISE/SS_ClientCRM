@@ -34,7 +34,7 @@ define('src/u-kov/bindings', [
       cls = 'form-saving';
     } else if (ukovItem.isValid && !ukovItem.isValid()) {
       cls = 'form-error';
-      title = 'Error: ' + ukovItem.errMsg();
+      title = 'Invalid: ' + ukovItem.errMsg();
     } else if (ukovItem.isClean && !ukovItem.isClean()) {
       cls = 'form-dirty';
     } else {

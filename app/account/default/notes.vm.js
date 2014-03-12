@@ -198,8 +198,8 @@ define('src/account/default/notes.vm', [
         id: selectedValue,
         link: 'departmentid',
       }, null, utils.safeCallback(null, function(err, resp) {
+        // make sure selectedValue hasn't changed
         if (_this.departmentsCvm.selectedValue() === selectedValue) {
-          // make sure selectedValue hasn't changed
           _this.data.NoteCategory1IdCvm.setList(resp.Value);
         }
       }, function(err) {
@@ -215,8 +215,8 @@ define('src/account/default/notes.vm', [
         id: selectedValue,
         link: 'category1id',
       }, null, utils.safeCallback(null, function(err, resp) {
+        // make sure selectedValue hasn't changed
         if (_this.data.NoteCategory1IdCvm.selectedValue() === selectedValue) {
-          // make sure selectedValue hasn't changed
           _this.data.NoteCategory2IdCvm.setList(resp.Value);
         }
       }, function(err) {
@@ -271,7 +271,12 @@ define('src/account/default/notes.vm', [
   function load_departments(cvm, cb) {
     dataservice.maincore.departments.read({}, null, utils.safeCallback(cb, function(err, resp) {
       cvm.setList(resp.Value);
-      cvm.selectItem(cvm.list()[0]);
+      // try to select Data Entry
+      cvm.selectedValue('DENTRY');
+      // select the first if nothing is selected
+      if (!cvm.selectedValue()) {
+        cvm.selectItem(cvm.list()[0]);
+      }
     }));
   }
 

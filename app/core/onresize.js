@@ -77,7 +77,7 @@ define('src/core/onresize', [
 
     listener = underscore.debounce(function() {
       if (setupSensor()) {
-        console.log('resized:', el);
+        // console.log('resized:', el);
         el.resizedAttached.call();
       }
     }, throttle || 100);

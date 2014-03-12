@@ -18,6 +18,10 @@ define('src/dataservices/monitoringstation', [
       'emergencyContactRelationships',
       'monitoringStationOS',
       'equipments',
+      'systemDetails',
+      'serviceTypes',
+      'panelTypes',
+      'dslSeizureTypes',
     ].forEach(function(collectionName) {
         result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
       });
