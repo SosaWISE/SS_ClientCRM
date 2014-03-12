@@ -6,6 +6,7 @@ define('src/dataservice', [
   'src/dataservices/salessummary',
   'src/dataservices/accountingengine',
   'src/dataservices/maincore',
+  'src/dataservices/monitoringstationsrv',
   'src/dataservices/msaccountsetupsrv',
   'src/dataservices/invoicesrv',
 ], function(
@@ -16,6 +17,7 @@ define('src/dataservice', [
   createSalesSummaryDataservices,
   createAccountingEngineDataservices,
   createMainCoreDataservices,
+  createMonitoringStationSrv,
   createMsAccountSetupSrv,
   createInvoicesrv
 ) {
@@ -28,6 +30,7 @@ define('src/dataservice', [
     salessummary: createSalesSummaryDataservices(),
     accountingengine: createAccountingEngineDataservices(),
     maincore: createMainCoreDataservices(),
+    monitoringstationsrv: createMonitoringStationSrv(),
     msaccountsetupsrv: createMsAccountSetupSrv(),
     invoicesrv: createInvoicesrv(),
   };

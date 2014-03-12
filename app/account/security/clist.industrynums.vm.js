@@ -1,9 +1,13 @@
 define('src/account/security/clist.industrynums.vm', [
+  'src/dataservice',
   'ko',
+  'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  dataservice,
   ko,
+  notify,
   utils,
   ControllerViewModel
 ) {
@@ -13,25 +17,46 @@ define('src/account/security/clist.industrynums.vm', [
     var _this = this;
     CListIndustryViewModel.super_.call(_this, options);
 
-    _this.data = ko.observable();
+    _this.industryAccounts = ko.observableArray();
+
+    //
+    // events
+    //
+    _this.cmdGenerate = ko.command(function(cb) {
+      dataservice.monitoringstationsrv.msAccounts.read({ //@TODO: this should be a POST
+        id: _this.accountId,
+        link: 'GenerateIndustryAccount',
+      }, null, utils.safeCallback(null, function( /*err, resp*/ ) {
+        // console.log(resp);
+        load_industryAccounts(_this, function(err) {
+          if (err) {
+            notify.notify('error', err.Message);
+          }
+          cb();
+        });
+      }, function(err) {
+        notify.notify('error', err.Message);
+        cb();
+      }));
+    });
   }
   utils.inherits(CListIndustryViewModel, ControllerViewModel);
   CListIndustryViewModel.prototype.viewTmpl = 'tmpl-security-clist_industrynums';
 
   CListIndustryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this,
-      cb = join.add();
-    setTimeout(function() {
-      //@TODO: create/load numbers
-      _this.data({
-        'IndustryNumber': '54332211',
-        'ReceiverNumber': '8775555555',
-        'LastNOCDate': 'Midnight of 2/5/2014 11:59:59 PM (MST)',
-      });
-
-      cb();
-    }, 2000);
+    var _this = this;
+    _this.accountId = routeData.id;
+    load_industryAccounts(_this, join.add());
   };
+
+  function load_industryAccounts(_this, cb) {
+    dataservice.monitoringstationsrv.msAccounts.read({
+      id: _this.accountId,
+      link: 'IndustryAccounts',
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      _this.industryAccounts(resp.Value);
+    }));
+  }
 
   return CListIndustryViewModel;
 });
