@@ -45,8 +45,9 @@ define('src/account/security/clist.systemdetails.vm', [
     });
     _this.cmdEditSystemDetails = ko.command(function(cb) {
       _this.layersVm.show(new SystemDetailsEditorViewModel({
-        item: utils.clone(_this.systemDetails) || {},
-        accountId: _this.accountId,
+        item: utils.clone(_this.systemDetails) || {
+          AccountID: _this.accountId,
+        },
         panelTypes: _this.panelTypes,
         panelTypeFields: {
           value: 'PanelTypeID',

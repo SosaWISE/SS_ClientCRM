@@ -101,6 +101,7 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
         case null:
           if (id) {
             result = mockery.fromTemplate({
+              AccountID: id,
               AccountPassword: '@SEASON@NUMBER(1,9999)',
               SystemTypeId: '@SYSTEM_TYPE_ID',
               PanelTypeId: '@PANEL_TYPE_ID',
@@ -191,6 +192,20 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
     };
     dataservice.msaccountsetupsrv.emergencyContacts.del = function(id, setter, cb) {
       send(deleteItem(emergencyContacts, 'EmergencyContactID', id), setter, cb);
+    };
+
+
+    dataservice.msaccountsetupsrv.systemDetails.save = function(params, setter, cb) {
+      var result, data = params.data;
+      result = {
+        AccountID: data.AccountID,
+        AccountPassword: data.AccountPassword || null,
+        SystemTypeId: data.SystemTypeId || null,
+        PanelTypeId: data.PanelTypeId || null,
+        CellularTypeId: data.CellularTypeId || null,
+        DslSeizureId: data.DslSeizureId || null,
+      };
+      send(result, setter, cb);
     };
 
     function createOrUpdate(list, idName, idTemplate, newValue) {

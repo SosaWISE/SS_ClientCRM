@@ -139,8 +139,9 @@ define('src/core/dataservice.base', [
       return;
     }
 
-    var value, code, message, responseData;
+    var value, code, msg, msgParts, responseData;
     try {
+      msgParts = [];
 
       try {
         value = JSON.parse(xhr.responseText);
@@ -150,15 +151,23 @@ define('src/core/dataservice.base', [
 
       if (textStatus === 'timeout') {
         code = 990003;
-        message = 'Request Timeout Error';
+        msg = 'Request Timeout Error';
       } else {
         code = 990002;
-        message = 'Server Error';
+        msg = 'Server Error';
+      }
+      msgParts.push(msg);
+
+      if (utils.isStr(errorThrown) && errorThrown.length) {
+        msgParts.push(errorThrown);
+      }
+      if (value && value.Message) {
+        msgParts.push(value.Message);
       }
 
       responseData = {
         Code: code,
-        Message: errorThrown || message,
+        Message: msgParts.join(': '),
         Value: value,
       };
     } catch (ex) {

@@ -21,6 +21,7 @@ define('src/account/security/systemdetails.editor.vm', [
 
   schema = {
     _model: true,
+    AccountID: {},
     AccountPassword: {},
     PanelTypeId: {},
     SystemTypeId: {},
@@ -34,7 +35,6 @@ define('src/account/security/systemdetails.editor.vm', [
     SystemDetailsEditorViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
       'item',
-      'accountId',
       'panelTypes', 'panelTypeFields',
       'systemTypes', 'systemTypeFields',
       'cellularTypes', 'cellularTypeFields',
@@ -75,10 +75,21 @@ define('src/account/security/systemdetails.editor.vm', [
       return !busy && !_this.cmdSave.busy();
     });
     _this.cmdSave = ko.command(function(cb) {
-      var result = _this.data.getValue();
-      alert('//@TODO: actually save data');
-      closeLayer(result);
-      cb();
+      if (!_this.data.isValid()) {
+        notify.notify('warn', _this.data.errMsg(), 7);
+        cb();
+        return;
+      }
+      var model = _this.data.getValue();
+      _this.data.markClean(model, true);
+      dataservice.msaccountsetupsrv.systemDetails.save({
+        id: model.AccountID,
+        data: model,
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        closeLayer(resp.Value);
+      }, function(err) {
+        notify.notify('error', err.Message);
+      }));
     });
     _this.cmdSearch = ko.command(function(cb) {
       cb();
