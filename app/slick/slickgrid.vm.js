@@ -69,8 +69,25 @@ define('src/slick/slickgrid.vm', [
       if (grid) {
         grid.setData(list, false); // false - don't scroll to top
         _this.updateGrid();
+        if (_this.handleSelectedRowsChanged) {
+          _this.handleSelectedRowsChanged(null, {
+            grid: grid,
+            rows: grid.getSelectedRows(),
+          });
+        }
       }
     });
+
+    if (_this.onSelectedRowsChanged) {
+      _this.handleSelectedRowsChanged = function(e, data) {
+        var i, length = data.rows.length,
+          rows = new Array(length);
+        for (i = 0; i < length; i++) {
+          rows[i] = data.grid.getDataItem(data.rows[i]);
+        }
+        _this.onSelectedRowsChanged(rows);
+      };
+    }
 
     // try to create context menu
     if (utils.isFunc(_this.augmentMenuVm)) {
@@ -116,9 +133,13 @@ define('src/slick/slickgrid.vm', [
     setTimeout(function() {
       _this.grid = new Slick.Grid(element, _this.list(), _this.columns, _this.gridOptions);
       if (!_this.noSelection) {
-        _this.grid.setSelectionModel(new Slick.RowSelectionModel({
+        var selectionModel = new Slick.RowSelectionModel({
           // selectActiveRow: false
-        }));
+        });
+        _this.grid.setSelectionModel(selectionModel);
+        if (_this.handleSelectedRowsChanged) {
+          _this.grid.onSelectedRowsChanged.subscribe(_this.handleSelectedRowsChanged);
+        }
       }
       _this.plugins.forEach(function(plugin) {
         _this.grid.registerPlugin(plugin);
@@ -140,6 +161,7 @@ define('src/slick/slickgrid.vm', [
       if (element && element !== container) {
         console.warn('unBound element doesn\'t match grid container', container, element);
       }
+      _this.grid.onSelectedRowsChanged.unsubscribe(_this.handleSelectedRowsChanged);
       _this.grid.destroy(); // also unregisters all plugins
       _this.grid = null;
     }

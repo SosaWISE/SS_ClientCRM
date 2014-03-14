@@ -1,0 +1,26 @@
+div(class="dispatchagencys-finder")
+  h2(class="title") Find Dispatch Agency
+  div(class="line-top")
+    ul(class="edit-form")
+      li
+        span(class="label") City Name
+        input(type="text",data-bind="ukov:data.CityName,value:data.CityName,valueUpdate:'keyup',enter:cmdFind,select:focusFirst")
+      li
+        span(class="label") Zip Code
+        input(type="text",data-bind="ukov:data.ZipCode,value:data.ZipCode,valueUpdate:'keyup',enter:cmdFind")
+
+  div(style="margin-bottom:20px;")
+      span(class="btn-bg", tabindex="0", data-bind="cmd:cmdFind") Find
+
+      //- div(class="actions")
+
+      span(class="btn-bg", tabindex="0", data-bind="cmd:cmdSelect") Select and Close
+
+  div(class="grid-wrap relative")
+    div(class="slickgrid",data-bind="slickgrid:gvm")
+
+    div(data-bind="if:cmdFind.busy")
+      div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+
+  div(data-bind="if:cmdSelect.busy")
+    div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")

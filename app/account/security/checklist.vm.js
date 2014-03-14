@@ -8,6 +8,7 @@ define('src/account/security/checklist.vm', [
   'src/account/security/clist.systemdetails.vm',
   'src/account/security/clist.systemtest.vm',
   'src/account/security/clist.initialpayment.vm',
+  'src/account/security/clist.submitonline.vm',
   'src/core/layers.vm',
   'src/core/notify', 'src/core/utils', 'src/core/controller.vm',
 ], function(
@@ -20,6 +21,7 @@ define('src/account/security/checklist.vm', [
   CListSystemDetailsViewModel,
   CListSystemTestViewModel,
   CListInitialPaymentViewModel,
+  CListSubmitOnlineViewModel,
   LayersViewModel,
   notify, utils, ControllerViewModel
 ) {
@@ -112,10 +114,12 @@ define('src/account/security/checklist.vm', [
         title: 'Initial Payment',
         layersVm: _this.layersVm,
       }),
-      {
+      new CListSubmitOnlineViewModel({
+        pcontroller: _this,
+        id: 'submitonline',
         title: 'Submit Account Online',
-        active: ko.observable(false),
-      },
+        layersVm: _this.layersVm,
+      }),
     ]);
 
 

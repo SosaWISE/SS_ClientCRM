@@ -1,10 +1,8 @@
 define('src/account/security/clist.systemtest.vm', [
-  'src/account/default/rep.find.vm',
   'ko',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
-  RepFindViewModel,
   ko,
   utils,
   ControllerViewModel
