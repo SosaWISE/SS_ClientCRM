@@ -84,6 +84,14 @@ define('src/core/base.vm', [
   };
   BaseViewModel.prototype.onDeactivate = function() {};
 
+  BaseViewModel.prototype.canClose = function() {
+    var _this = this;
+    return !_this.closeMsg();
+  };
+  BaseViewModel.prototype.closeMsg = function() {
+    // should return a non-empty string describing why this vm cannot be closed
+    return null;
+  };
 
   //
   // static functions

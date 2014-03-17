@@ -129,10 +129,11 @@ define('src/account/security/dispatchagencys.finder.vm', [
         _this.maxLength--;
         cb();
       }, 2000);
-
+      //@TODO: get correct api path and response format
       // dataservice.boh.boh.read({
       //   query: model,
-      // }, null, utils.safeCallback(cb, function(err, resp) {
+      // }, null, utils.safeCallback(null, function(err, resp) {
+      //   cb();
       //   _this.gvm.list(resp.Value);
       // }, function(err) {
       //   notify.notify('error', err.Message);
@@ -150,8 +151,10 @@ define('src/account/security/dispatchagencys.finder.vm', [
       setTimeout(function() {
         cb();
         closeLayer(null);
-      }, 2000);
-      // dataservice.boh.boh.save({}, null, utils.safeCallback(cb, function(err, resp) {
+      }, 5000);
+      //@TODO: get correct api path and response format
+      // dataservice.boh.boh.save({}, null, utils.safeCallback(null, function(err, resp) {
+      //   cb();
       //   closeLayer(resp.Value);
       // }, function(err) {
       //   notify.notify('error', err.Message);
@@ -161,6 +164,7 @@ define('src/account/security/dispatchagencys.finder.vm', [
     });
 
     function closeLayer(result) {
+      //@NOTE: command callbacks should be called before calling closeLayer
       if (_this.layer) {
         _this.layer.close(result);
       }
@@ -181,6 +185,15 @@ define('src/account/security/dispatchagencys.finder.vm', [
   DispatchAgencysFinderViewModel.prototype.viewTmpl = 'tmpl-security-dispatchagencys_finder';
   DispatchAgencysFinderViewModel.prototype.width = 600;
   DispatchAgencysFinderViewModel.prototype.height = 'auto';
+
+  DispatchAgencysFinderViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdSelect.busy()) {
+      msg = 'Please wait for the agency to be selected.';
+    }
+    return msg;
+  };
 
   return DispatchAgencysFinderViewModel;
 });

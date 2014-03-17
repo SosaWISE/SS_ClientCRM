@@ -172,8 +172,14 @@ define('src/core/controller.vm', [
     }
   };
 
-  ControllerViewModel.prototype.canClose = function() {
-    return true;
+  ControllerViewModel.prototype.canClose = function() { // overrides base
+    var _this = this;
+    //@TODO: check all childs
+    return !_this.closeMsg();
+  };
+  ControllerViewModel.prototype.closeMsg = function() { // overrides base
+    //@TODO: check all childs
+    return null;
   };
   ControllerViewModel.prototype.closeChild = function(vm) {
     var _this = this,

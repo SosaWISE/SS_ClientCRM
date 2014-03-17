@@ -72,16 +72,6 @@ define('src/account/security/dispatchagencys.gvm', [
         },
       ],
     });
-    while (_this.list().length < 3) {
-      _this.list.push({
-        DaAssignmentId: _this.list().length + 1,
-        DispatchAgencyTypeName: 'DispatchAgencyTypeName',
-        CsNo: 'CsNo',
-        AgencyName: 'AgencyName',
-        DispatchPhone: 'DispatchPhone',
-        MonitoringStationVerfied: 'MonitoringStationVerfied',
-      });
-    }
   }
   utils.inherits(DispatchAgencysGridViewModel, SlickGridViewModel);
 

@@ -107,9 +107,15 @@ define('src/core/layers.vm', [
           subscription = null;
         }
         var topLayer = layersVm.getTopLayer(),
-          index = layers.indexOf(layer);
+          index = layers.indexOf(layer),
+          msg, vm = layer.vm();
 
-        //@TODO: check to see if the layer can be closed
+        // check if the layer vm can be closed
+        if (vm && (msg = vm.closeMsg())) {
+          notify.notify('warn', msg, 7);
+          return;
+        }
+
         if (index > -1) {
           layers.splice(index, 1);
         }
