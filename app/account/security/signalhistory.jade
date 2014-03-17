@@ -1,0 +1,24 @@
+div(class="signalhistory")
+  div
+    h2 Zones/Signals
+    div(class="missing")
+      h3(class="title") Missing Signals
+      div(class="data")
+    div(class="missing")
+      h3(class="title") Missing Zones
+      div(class="data")
+
+  div
+    h2 Equipment Summary
+    div(class="grid-wrap")
+      div(class="slickgrid",data-bind="slickgrid:equipmentGvm")
+
+  div
+    h2 Signal History
+    div(class="grid-wrap")
+      div(class="slickgrid",data-bind="slickgrid:historyGvm")
+
+  div(data-bind="if:active()&&!loaded()")
+    div(class="spinner-wrap black", data-bind="template:'tmpl-spinner'")
+
+  //- div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
