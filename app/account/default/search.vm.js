@@ -75,6 +75,7 @@ define('src/account/default/search.vm', [
       matchStart: true,
       selectedValue: _this.data.StateId,
       list: AddressValidateViewModel.prototype.stateOptions, //@TODO: load states from server
+      nullable: true,
     });
 
     _this.gvm = new SlickGridViewModel({
