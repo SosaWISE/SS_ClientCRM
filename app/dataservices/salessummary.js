@@ -15,6 +15,7 @@ define('src/dataservices/salessummary', [
       'pointSystems',
       'activationfees',
       'surveytypes',
+      'panelTypes',
       'cellularTypes',
       'vendorAlarmcomPacakges',
       'equipmentbypointsget',

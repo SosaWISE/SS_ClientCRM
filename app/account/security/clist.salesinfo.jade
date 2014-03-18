@@ -7,47 +7,55 @@ div(class="acct-item sales-info")
           div(class="vars")
             div(class="subHeader") System Type Information
             div(class="line")
-              div(class="letter") A.
+              div(class="letter",data-bind="text:letter(1)")
               div(class="question") Is this a 6.5 or 8 Point system?
               div(class="answer")
                 div(data-bind="cvm:pointSystemsCvm")
 
             div(class="subHeader") Monitoring And Service Information
             div(class="line")
-              div(class="letter") B.
+              div(class="letter",data-bind="text:letter()")
               div(class="question")
                 |Is the activation fee&nbsp;
-                span(data-bind="currency:activationFee")
+                span(data-bind="currency:data.ActivationFee")
                 |?
               div(class="answer")
-                input(type="text",class="inputField",name="activationFeeActual",data-bind="value: activationFeeActual")
+                input(type="text",class="inputField",name="activationFeeActual",
+                  data-bind="ukov:data.ActivationFeeActual,value:data.ActivationFeeActual")
             div(class="line")
-              div(class="letter") C.
+              div(class="letter",data-bind="text:letter()")
               div(class="question") Is Activation over 3 months?
               div(class="answer")
-                input(type="checkbox",class="inputField",name="over3Months",data-bind="checked:over3Months,click:over3MonthsAction")
+                input(type="checkbox",class="inputField",name="over3Months",
+                  data-bind="checked:data.Over3Months")
             div(class="line")
-              div(class="letter") D.
+              div(class="letter",data-bind="text:letter()")
+              div(class="question") What is the panel type?
+              div(class="answer")
+                div(data-bind="cvm:data.PanelTypeCvm")
+            div(class="line")
+              div(class="letter",data-bind="text:letter()")
               div(class="question") What is the cell type?
               div(class="answer")
-                div(data-bind="cvm:cellularTypesCvm")
+                div(data-bind="cvm:data.CellularTypeCvm")
             div(class="line")
-              div(class="letter") E.
+              div(class="letter",data-bind="text:letter()")
               div(class="question") Which Alarm.com package are we going with?
               div(class="answer")
-                div(data-bind="cvm:alarmcomPacakgesCvm")
+                div(data-bind="cvm:data.AlarmComPackageCvm")
 
             div(class="subHeader") Monthly Monitoring
             div(class="line")
-              div(class="letter") F.
+              div(class="letter",data-bind="text:letter()")
               div(class="question")
                 |Will the monthly monitoring rate be&nbsp;
-                span(data-bind="currency:monthlyMonitoringRate")
+                span(data-bind="currency:data.MonthlyMonitoringRate")
                 |?
               div(class="answer")
-                input(type="text",class="inputField",name="mmr",data-bind="value:monthlyMonitoringRateActual")
+                input(type="text",class="inputField",name="mmr",
+                  data-bind="ukov:data.MonthlyMonitoringRateActual,value:data.MonthlyMonitoringRateActual")
             div(class="line")
-              div(class="letter") G.
+              div(class="letter",data-bind="text:letter()")
               div(class="question") What is the contract length?
               div(class="answer")
                 div(data-bind="cvm:contractLengthsCvm")
@@ -56,7 +64,7 @@ div(class="acct-item sales-info")
       tr
         td(class="fh-body")
           div(class="fh-contents")
-            div(class="slickgrid",data-bind="slickgrid:frequentGrid")
+            div(class="slickgrid",data-bind="slickgrid:frequentGvm")
 
   div(class="ssiInvoice")
     table(class="fh-wrap")
@@ -72,14 +80,14 @@ div(class="acct-item sales-info")
         td(class="fh-body")
           div(class="fh-contents")
             div(class="slickgrid",
-              data-bind="slickgrid:partsGrid")
+              data-bind="slickgrid:partsGvm")
             div(class="totals")
               div
                 div(class="name") Points Given:
-                div(class="value",data-bind="likecurrency:partsGrid.pointsGiven")
+                div(class="value",data-bind="likecurrency:partsGvm.pointsGiven")
               div
                 div(class="name") Points Available:
                 div(class="value",data-bind="likecurrency:pointsAvailable")
               div
                 div(class="name") Total:
-                div(class="value",data-bind="currency:partsGrid.estimateTotal")
+                div(class="value",data-bind="currency:partsGvm.estimateTotal")

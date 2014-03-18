@@ -213,6 +213,14 @@ define('src/core/combo.vm', [
     var _this = this;
     _this.selectItem(_this.list()[0]);
   };
+  ComboViewModel.prototype.selectedItem = function() {
+    var _this = this,
+      selected = _this.selected();
+    if (selected && selected !== _this.noItemSelected) {
+      return selected.item;
+    }
+    return null;
+  };
   ComboViewModel.prototype.setList = function(list) {
     list = list || [];
     var _this = this,

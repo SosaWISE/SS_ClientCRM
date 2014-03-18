@@ -1,4 +1,5 @@
 define('src/account/security/clist.salesinfo.vm', [
+  'underscore',
   'src/account/security/parts.editor.vm',
   'src/config',
   'src/slick/buttonscolumn',
@@ -12,6 +13,7 @@ define('src/account/security/clist.salesinfo.vm', [
   'ko',
   'src/core/combo.vm',
 ], function(
+  underscore,
   PartsEditorViewModel,
   config,
   ButtonsColumn,
@@ -27,24 +29,31 @@ define('src/account/security/clist.salesinfo.vm', [
 ) {
   "use strict";
 
-  var schema,
-    regx = /^[0-9]+.[0-9][0-9]$/;
+  var schema;
 
   schema = {
     _model: true,
-
+    DealerId: {},
+    AccountId: {},
     ActivationFee: {},
     ActivationFeeActual: {
-      converter: ukov.converters.string(),
+      converter: ukov.converters.number(2, 'Invalid activation fee'),
       validators: [
         ukov.validators.isRequired('Activation Fee is Required'),
-        function(val) {
-          if (!regx.test(val)) {
-            return "Invalid value for activation fee.";
-          }
-        }
       ]
-    }
+    },
+    ActivationFeeItemId: {},
+    AlarmComPackageId: {},
+    PanelTypeId: {},
+    CellularTypeId: {},
+    ContractTemplateId: {},
+    InvoiceID: {},
+    MonthlyMonitoringRate: {},
+    MonthlyMonitoringRateActual: {
+      converter: ukov.converters.number(2, 'Invalid monthly monitoring rate'),
+    },
+    MonthlyMonitoringRateItemId: {},
+    Over3Months: {},
   };
 
   function CListSalesInfoViewModel(options) {
@@ -52,36 +61,38 @@ define('src/account/security/clist.salesinfo.vm', [
     CListSalesInfoViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
-    // ** Fields
-    _this.finishedLoading = false;
-    _this.activationFee = ko.observable();
-    _this.activationFeeItemId = '';
-    _this.activationFeeActual = ko.observable();
-    _this.over3Months = ko.observable(false);
-    _this.over3MonthsAction = function() {
-      //console.log("Activation over 3 months: ", _this.over3Months());
-      return true;
-    };
-    _this.monthlyMonitoringRate = ko.observable();
-    _this.monthlyMonitoringRateItemId = '';
-    _this.monthlyMonitoringRateActual = ko.observable();
-    _this.pointSystemsCvm = new ComboViewModel({
+    _this.title = ko.observable(_this.title);
+    _this.data = ukov.wrap({
+      DealerId: config.user().DealerId,
+    }, schema);
+    _this.data.PanelTypeCvm = new ComboViewModel({
+      selectedValue: _this.data.PanelTypeId,
+      nullable: true,
       fields: {
-        text: 'TemplateName',
-        value: 'InvoiceTemplateID',
+        text: 'PanelTypeName',
+        value: 'PanelTypeID',
       }
     });
-    _this.cellularTypesCvm = new ComboViewModel({
+    _this.data.CellularTypeCvm = new ComboViewModel({
+      selectedValue: _this.data.CellularTypeId,
       nullable: true,
       fields: {
         text: 'CellularTypeName',
         value: 'CellularTypeID',
       }
     });
-    _this.alarmcomPacakgesCvm = new ComboViewModel({
+    _this.data.AlarmComPackageCvm = new ComboViewModel({
+      selectedValue: _this.data.AlarmComPackageId,
       fields: {
         text: 'PackageName',
         value: 'AlarmComPackageID',
+      }
+    });
+
+    _this.pointSystemsCvm = new ComboViewModel({
+      fields: {
+        text: 'TemplateName',
+        value: 'InvoiceTemplateID',
       }
     });
     _this.contractLengthsCvm = new ComboViewModel({
@@ -90,30 +101,28 @@ define('src/account/security/clist.salesinfo.vm', [
         value: 'ContractTemplateID',
       }
     });
-    _this.title = ko.observable(_this.title);
 
-    _this.frequentGrid = new FrequentGridViewModel({
+    _this.frequentGvm = new FrequentGridViewModel({
       addPart: function(part) {
         showPartsEditor(_this, true, part.ItemSKU, null);
       },
     });
-    _this.partsGrid = new CListSalesInfoGridViewModel({
+    _this.partsGvm = new CListSalesInfoGridViewModel({
       deletePart: function(part) {
-        dataservice.invoicesrv.invoiceItems.del(part.InvoiceItemID,
-          null, utils.safeCallback(null, function(err, resp) {
-            if (resp.Value) {
-              _this.refreshInvoice();
-            }
-          }, function(err) {
-            notify.notify('error', err.Message);
-          }));
+        dataservice.invoicesrv.invoiceItems.del(part.InvoiceItemID, null, utils.safeCallback(null, function(err, resp) {
+          if (resp.Value) {
+            _this.refreshInvoice();
+          }
+        }, function(err) {
+          notify.notify('error', err.Message);
+        }));
       },
     });
 
     _this.pointsAvailable = ko.computed(function() {
-      var pointSystem = _this.pointSystemsCvm.selected();
-      if (pointSystem.value) {
-        return pointSystem.item.SystemPoints - _this.partsGrid.pointsGiven();
+      var item = _this.pointSystemsCvm.selectedItem();
+      if (item) {
+        return item.SystemPoints - _this.partsGvm.pointsGiven();
       } else {
         return 0;
       }
@@ -132,57 +141,38 @@ define('src/account/security/clist.salesinfo.vm', [
         notify.notify('error', err.Message);
       }));
     });
-    _this.activationFeeActual.subscribe(function(newValue) {
-      console.log("New Activation Fee: ", newValue);
-      _this.refreshInvoice();
-    });
-    _this.cellularTypesCvm.selectedValue.subscribe(function(newValue) {
-      console.log("New Cellular Type:", newValue);
-      _this.refreshInvoice();
-    });
-    _this.over3Months.subscribe(function(newValue) {
-      console.log("New Over 3 Months: ", newValue);
-      _this.refreshInvoice();
-    });
-    _this.alarmcomPacakgesCvm.selectedValue.subscribe(function(newValue) {
-      console.log("AlarmComPackage: ", newValue);
-      _this.refreshInvoice();
-    });
-    _this.monthlyMonitoringRateActual.subscribe(function(newValue) {
-      console.log("MMR: ", newValue);
-      _this.refreshInvoice();
-    });
-
 
 
     //
     // events
     //
     _this.refreshInvoice = function(cb) {
-      /** Check that the form has loaded. */
-      if (_this.finishedLoading) {
-        dataservice.salessummary.invoiceRefresh.save({
-          data: {
-            InvoiceID: _this.invoiceID,
-            AccountId: _this.msAccountId,
-            ActivationFee: _this.activationFee(),
-            ActivationFeeItemId: _this.activationFeeItemId,
-            ActivationFeeActual: _this.activationFeeActual(),
-            MonthlyMonitoringRate: _this.monthlyMonitoringRate(),
-            MonthlyMonitoringRateItemId: _this.monthlyMonitoringRateItemId,
-            MonthlyMonitoringRateActual: _this.monthlyMonitoringRateActual(),
-            CellTypeId: _this.cellularTypesCvm.selectedValue(),
-            Over3Months: _this.over3Months(),
-            AlarmComPackageId: _this.alarmcomPacakgesCvm.selectedValue(),
-            DealerId: config.user().DealerId,
-          },
-        }, null, utils.safeCallback(cb, function(err, resp) {
-          console.log("Response: ", resp);
-          _this.partsGrid.list(resp.Value.Items);
-        }, function(err) {
-          notify.notify('error', err.Message);
-        }));
+      if (!_this.data.isValid()) {
+        notify.notify('warn', _this.data.errMsg(), 7);
+        return;
       }
+
+      var data = _this.data.getValue();
+      data.CellTypeId = data.CellularTypeId; //@HACK: to save CellularTypeId
+      if (underscore.isEqual(_this.currData, data)) {
+        // no need to re-save the same data
+        return;
+      }
+      _this.currData = data;
+      _this.data.markClean(data, true);
+
+      // console.log("refreshInvoice");
+      dataservice.salessummary.invoiceRefresh.save({
+        data: data,
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        // make sure this is the last response
+        if (_this.currData === data) {
+          // console.log("Response: ", resp);
+          _this.partsGvm.list(resp.Value.Items);
+        }
+      }, function(err) {
+        notify.notify('error', err.Message);
+      }));
     };
     _this.cmdAddByPart = ko.command(function(cb) {
       showPartsEditor(_this, true, null, cb);
@@ -196,75 +186,98 @@ define('src/account/security/clist.salesinfo.vm', [
 
   CListSalesInfoViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
-      cb = join.add();
-    _this.msAccountId = routeData.id;
+      subjoin = join.create(),
+      refreshInvoiceCb = join.add();
 
-    load_invoice(_this, function() {
-      load_vendorAlarmcomPacakges(_this.alarmcomPacakgesCvm, join.add());
-      load_pointSystems(_this.pointSystemsCvm, join.add());
-      load_cellularTypes(_this.cellularTypesCvm, join.add());
-      load_frequentlyInstalledEquipmentGet(_this.frequentGrid, join.add());
+    _this.data.AccountId(routeData.id);
 
+    load_invoice(_this.data, subjoin.add());
+    load_vendorAlarmComPackages(_this.data.AlarmComPackageCvm, subjoin.add());
+    load_pointSystems(_this.pointSystemsCvm, subjoin.add());
+    load_panelTypes(_this.data.PanelTypeCvm, subjoin.add());
+    load_cellularTypes(_this.data.CellularTypeCvm, subjoin.add());
+    load_frequentlyInstalledEquipmentGet(_this.frequentGvm, subjoin.add());
+
+    subjoin.when(function(err) {
+      if (err) {
+        refreshInvoiceCb();
+        return;
+      }
+      //@REVIEW: why is the invoice being refreshed after it was just loaded???? possibly for new invoices???
       /** Refresh the invoice. */
-      _this.refreshInvoice();
+      _this.refreshInvoice(refreshInvoiceCb);
 
-      cb();
+      // subscribe to updates after everyting has been set
+      _this.data.ActivationFeeActual.subscribe(_this.refreshInvoice);
+      _this.data.PanelTypeId.subscribe(_this.refreshInvoice);
+      _this.data.CellularTypeId.subscribe(_this.refreshInvoice);
+      _this.data.Over3Months.subscribe(_this.refreshInvoice);
+      _this.data.AlarmComPackageId.subscribe(_this.refreshInvoice);
+      _this.data.MonthlyMonitoringRateActual.subscribe(_this.refreshInvoice);
     });
   };
 
-  function load_invoice(_this, cb) {
+  CListSalesInfoViewModel.prototype.letter = function(first) {
+    var _this = this;
+    if (first) {
+      // reset to first letter
+      _this._char = 'A'.charCodeAt(0);
+    }
+    return String.fromCharCode(_this._char++) + '.';
+  };
+
+
+  function load_invoice(data, cb) {
     dataservice.salessummary.invoiceMsIsntalls.read({
-      id: _this.msAccountId,
+      id: data.AccountId(),
       link: 'accountid'
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Value) {
-        console.log(resp.Value);
-        _this.invoiceID = resp.Value.InvoiceID;
-        _this.activationFee(resp.Value.ActivationFee);
-        _this.activationFeeActual(resp.Value.ActivationFeeActual);
-        _this.activationFeeItemId = resp.Value.ActivationFeeItemId;
-        _this.monthlyMonitoringRate(resp.Value.MonthlyMonitoringRate);
-        _this.monthlyMonitoringRateActual(resp.Value.MonthlyMonitoringRateActual);
-        _this.monthlyMonitoringRateItemId = resp.Value.MonthlyMonitoringRateItemId;
-
-        /** Allow for refreshing. */
-        _this.finishedLoading = true;
+        // console.log(resp.Value);
+        data.setVal(resp.Value);
+        data.markClean(resp.Value, true);
       }
     }, function(err) {
       notify.notify('error', err.Message);
     }));
   }
 
-  function load_pointSystems(comboVM, cb) {
+  function load_pointSystems(cvm, cb) {
     // ** Pull pointSystems
     dataservice.salessummary.pointSystems.read({}, null, utils.safeCallback(cb, function(err, resp) {
       // ** Bind data
-      comboVM.setList(resp.Value);
-      comboVM.selectItem(comboVM.list()[0]);
+      cvm.setList(resp.Value);
+      cvm.selectItem(cvm.list()[0]);
     }, utils.no_op));
   }
 
-  function load_cellularTypes(comboVM, cb) {
+  function load_panelTypes(cvm, cb) {
+    dataservice.salessummary.panelTypes.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      cvm.setList(resp.Value);
+    }, utils.no_op));
+  }
+
+  function load_cellularTypes(cvm, cb) {
     // ** Pull Cellular Types
     dataservice.salessummary.cellularTypes.read({}, null, utils.safeCallback(cb, function(err, resp) {
       // ** Bind data
-      comboVM.setList(resp.Value);
+      cvm.setList(resp.Value);
     }, utils.no_op));
   }
 
-  function load_vendorAlarmcomPacakges(comboVM, cb) {
+  function load_vendorAlarmComPackages(cvm, cb) {
     // ** Pull alarm.com packages
     dataservice.salessummary.vendorAlarmcomPacakges.read({}, null, utils.safeCallback(cb, function(err, resp) {
       // ** Bind Data
-      comboVM.setList(resp.Value);
+      cvm.setList(resp.Value);
     }, utils.no_op));
   }
 
-  function load_frequentlyInstalledEquipmentGet(gridVM, cb) {
+  function load_frequentlyInstalledEquipmentGet(gvm, cb) {
     // ** Pull data
     dataservice.salessummary.frequentlyInstalledEquipmentGet.read({}, null, utils.safeCallback(cb, function(err, resp) {
       // ** Bind data to table
-      gridVM.list(resp.Value || []);
+      gvm.list(resp.Value || []);
     }, utils.no_op));
   }
 
@@ -277,7 +290,7 @@ define('src/account/security/clist.salesinfo.vm', [
       byPart: byPart,
       itemSku: byPart ? id : null,
       barcode: !byPart ? id : null,
-      invoiceID: _this.invoiceID,
+      invoiceID: _this.data.InvoiceID(),
       //@TODO: get real salesman and technician
       salesman: {
         id: 'SALS001',
@@ -293,7 +306,7 @@ define('src/account/security/clist.salesinfo.vm', [
   function createPartsEditorCb(_this, cb) {
     return function(result) {
       if (result && result.Items) {
-        _this.partsGrid.list(result.Items);
+        _this.partsGvm.list(result.Items);
       }
       if (utils.isFunc(cb)) {
         cb();

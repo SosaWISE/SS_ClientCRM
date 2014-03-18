@@ -45,6 +45,7 @@ define('src/core/combo.vm.spec', [
 
     it('should start with no item selected', function() {
       expect(c.selected()).toBe(c.noItemSelected);
+      expect(c.selectedItem()).toBe(null);
       expect(c.selectedValue()).toBe(null);
     });
 

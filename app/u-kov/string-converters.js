@@ -54,7 +54,8 @@ define('src/u-kov/string-converters', [
       return val === 'true' || val === '1';
     };
   };
-  converters.number = function(precision) {
+  converters.number = function(precision, errMsg) {
+    errMsg = errMsg || 'invalid number';
     var roundingMagnitude = Math.pow(10, precision || 0);
     return function convNumber(val) {
       if (!val) {
@@ -63,7 +64,7 @@ define('src/u-kov/string-converters', [
 
       var num = parseFloat(val);
       if (isNaN(val) || isNaN(num)) {
-        return new Error('invalid number');
+        return new Error(errMsg);
       } else {
         // round to correct precision
         return Math.round(num * roundingMagnitude) / roundingMagnitude;
