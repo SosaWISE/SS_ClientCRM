@@ -736,20 +736,56 @@ table.fh-wrap {
       margin-left: 5px;
     }
   }
-  ul {
-    list-style: none;
+  ul.edit-form > li {
+    display: inline-block;
+    vertical-align: top;
+    height: 50px;
+    width: 24.5%;
+    margin: 0 0.5% 10px 0;
     padding: 0;
-    margin: 0;
-    border: 0 solid transparent;
-    li {
-      width: 16%;
-      min-width: 85px;
-      list-style: none;
-      float: left;
-      margin: 0 4px 10px 0;
-      padding: 0;
-    }
+    white-space: nowrap;
   }
+
+  .slickgrid {
+    bottom: 30px;
+  }
+  .grid-pager {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+
+    > ul {
+      width: 100px;
+      margin: auto;
+      // display: inline-block;
+
+      > li {
+        .user-select(none);
+        width: auto;
+        display: inline-block;
+        padding: 0px 3px;
+        cursor: pointer;
+        &:hover {
+          text-decoration: underline;
+        }
+
+        .active {
+          font-weight: 500;
+          text-decoration: underline;
+        }
+      }
+    }
+
+    // input,
+    // .label {
+    //   display: inline;
+    // }
+  }
+  // .grid-wrap {
+  //   position:relative;
+  //   height: 100%;
+  //   margin-top: 0px;
+  // }
 }
 
 

@@ -67,7 +67,7 @@ define('src/slick/slickgrid.vm', [
     _this.list.subscribe(function(list) {
       var grid = _this.grid;
       if (grid) {
-        grid.setData(list, false); // false - don't scroll to top
+        grid.setData(list, _this.scrollToTop); // false - don't scroll to top
         _this.updateGrid();
         if (_this.handleSelectedRowsChanged) {
           _this.handleSelectedRowsChanged(null, {
@@ -164,6 +164,13 @@ define('src/slick/slickgrid.vm', [
       _this.grid.onSelectedRowsChanged.unsubscribe(_this.handleSelectedRowsChanged);
       _this.grid.destroy(); // also unregisters all plugins
       _this.grid = null;
+    }
+  };
+
+  SlickGridViewModel.prototype.setSelectedRows = function(rows) {
+    var _this = this;
+    if (_this.grid) {
+      _this.grid.setSelectedRows(rows);
     }
   };
 

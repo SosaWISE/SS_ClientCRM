@@ -61,7 +61,7 @@ define('src/core/combo.vm', [
     _this.deselectInput = ko.observable(false);
 
     _this.filterText.subscribe(function(filterText) {
-      filterList(_this.list(), filterText);
+      filterList(_this.list(), filterText, _this.matchStart);
       _this.deactivateCurrent();
       _this.activateNext(true);
     });
@@ -238,7 +238,7 @@ define('src/core/combo.vm', [
       wrapList.unshift(_this.noneItem);
     }
     _this.list(wrapList);
-    filterList(_this.list(), _this.filterText());
+    filterList(_this.list(), _this.filterText(), _this.matchStart);
 
     // re-set selected value
     _this.selectedValue(selectedValue);
@@ -346,10 +346,10 @@ define('src/core/combo.vm', [
     return -1;
   }
 
-  function filterList(list, filterText) {
+  function filterList(list, filterText, matchStart) {
     var matches = getMatches(filterText),
       regx, letterRegxList;
-    regx = createRegx(matches);
+    regx = createRegx(matches, matchStart);
     letterRegxList = createLetterRegxList(matches);
     list.forEach(function(wrappedItem) {
       if (regx.test(wrappedItem.text)) {
@@ -371,8 +371,12 @@ define('src/core/combo.vm', [
     return matches;
   }
 
-  function createRegx(matches) {
-    return new RegExp(regxAnyLetter + matches.join(regxAnyLetter) + regxAnyLetter, 'i');
+  function createRegx(matches, matchStart) {
+    if (matchStart) {
+      return new RegExp('^' + matches.join('') + regxAnyLetter, 'i');
+    } else {
+      return new RegExp(regxAnyLetter + matches.join(regxAnyLetter) + regxAnyLetter, 'i');
+    }
   }
 
   function createLetterRegxList(matches) {

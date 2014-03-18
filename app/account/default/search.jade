@@ -1,62 +1,49 @@
 div(class="acct-search")
   table(class="fh-wrap")
     tr
-      td(class="fh-header")
+      td(class="fh-header relative")
         div(class="search-form")
           ul(class="edit-form cf")
             li
-              span(class="label") Account #
-              input(type="text", placeholder="",
-                data-bind="hasfocus:focus,ukov:data.AccountId,value:data.AccountId,valueUpdate:'keyup'")
-            li
-              span(class="label") Case #
-              input(type="text", placeholder="",
-                data-bind="ukov:data.CaseId,value:data.CaseId,valueUpdate:'keyup'")
-            li
               span(class="label") First Name
               input(type="text", placeholder="",
-                data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup'")
+                data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup',enter:cmdSearch,select:focusFirst")
             li
               span(class="label") Last Name
               input(type="text", placeholder="",
-                data-bind="ukov:data.LastName,value:data.LastName,valueUpdate:'keyup'")
-            li
-              span(class="label") DOB
-              input(type="text", placeholder="",
-                data-bind="ukov:data.DOB,value:data.DOB,valueUpdate:'keyup'")
+                data-bind="ukov:data.LastName,value:data.LastName,valueUpdate:'keyup',enter:cmdSearch")
             li
               span(class="label") Phone
               input(type="text", placeholder="",
-                data-bind="ukov:data.Phone,value:data.Phone,valueUpdate:'keyup'")
+                data-bind="ukov:data.PhoneNumber,value:data.PhoneNumber,valueUpdate:'keyup',enter:cmdSearch")
             li
-              span(class="label") CSID
-              input(type="text", placeholder="",
-                data-bind="ukov:data.CSID,value:data.CSID,valueUpdate:'keyup'")
-            li
-              span(class="label") Email
-              input(type="text", placeholder="",
-                data-bind="ukov:data.Email,value:data.Email,valueUpdate:'keyup'")
-            li
-              span(class="label") Address
-              input(type="text", placeholder="",
-                data-bind="ukov:data.Address,value:data.Address,valueUpdate:'keyup'")
+              span(class="label") &nbsp;
+              span(class="label") &nbsp;
             li
               span(class="label") City
               input(type="text", placeholder="",
-                data-bind="ukov:data.City,value:data.City,valueUpdate:'keyup'")
+                data-bind="ukov:data.City,value:data.City,valueUpdate:'keyup',enter:cmdSearch")
             li
               span(class="label") State
-              input(type="text", placeholder="",
-                data-bind="ukov:data.State,value:data.State,valueUpdate:'keyup'")
+              div(data-bind="cvm:data.StateCvm")
             li
-              span(class="label") Zip
+              span(class="label") Postal Code
               input(type="text", placeholder="",
-                data-bind="ukov:data.Zip,value:data.Zip,valueUpdate:'keyup'")
+                data-bind="ukov:data.PostalCode,value:data.PostalCode,valueUpdate:'keyup',enter:cmdSearch")
+            li
+              span(class="label") Results per Page
+              div(data-bind="cvm:data.PageSizeCvm")
         div(class="actions")
-          a(class="btn",tabindex="0") Search
-          a(class="btn",tabindex="0") Clear
+          a(class="btn",tabindex="0",data-bind="cmd:cmdSearch") Search
+          a(class="btn",tabindex="0",data-bind="cmd:clickClear") Clear
     tr
       td(class="fh-body")
         div(class="fh-contents")
-          div(class="slickgrid",style="background:white;margin:10px;color:black",
-            data-bind="slickgrid:searchGvm")
+          div(class="grid-wrap")
+            div(class="slickgrid",style="background:white;margin:10px;color:black",
+              data-bind="slickgrid:gvm")
+
+          div(class="grid-pager")
+            ul(data-bind="foreach:gvmPages")
+              li
+                span(class="label",data-bind="cmd:$parent.cmdPage,text:$data,active:$parent.data.PageNumber()===$data")

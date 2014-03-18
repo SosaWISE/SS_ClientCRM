@@ -15,8 +15,8 @@ define('src/dataservices/accountingengine', [
       'aging',
       'billingInfoSummary',
       'invoices',
-      'invoiceitems',
-      'customersearches'
+      'invoiceItems',
+      'customerSearches'
     ].forEach(function(collectionName) {
         result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
       });

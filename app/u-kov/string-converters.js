@@ -39,6 +39,11 @@ define('src/u-kov/string-converters', [
       return trim(val);
     };
   };
+  converters.nullString = function() {
+    return function convNullString(val) {
+      return trim(val) || null;
+    };
+  };
   converters.toUpper = function() {
     return function convString(val) {
       val = trim(val);
@@ -186,7 +191,7 @@ define('src/u-kov/string-converters', [
     return function convPhone(val) {
       val = trim(val);
       if (!val) {
-        return;
+        return null;
       }
 
       var matches = phoneRegx.exec(val);
