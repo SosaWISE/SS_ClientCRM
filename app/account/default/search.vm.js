@@ -138,22 +138,20 @@ define('src/account/default/search.vm', [
     _this.gvmPages = ko.computed(function() {
       // calculate which pages (based on the current page) should show in the footer
       var pages = [],
-        pg,
         currPage = _this.data.PageNumber() || 1,
-        startPage = currPage - 2,
+        pg = currPage - 2,
         endPage = currPage + 3;
-
       pages.push({
         page: currPage - 1,
         disabled: false,
         text: '<<',
         active: false,
       });
-      for (pg = startPage; pg < endPage; pg++) {
+      for (; pg < endPage; pg++) {
         pages.push({
           page: pg,
           disabled: pg < 1,
-          text: pg < 1 ? '&nbsp;' : pg,
+          text: pg < 1 ? ' ' : pg,
           active: pg === currPage,
         });
       }
@@ -169,14 +167,12 @@ define('src/account/default/search.vm', [
     //
     // events
     //
-    _this.cmdSearch = ko.command(function(cb) {
-      var vm = this;
+    _this.cmdSearch = ko.command(function(cb, vm) {
       _this.search(vm.page, cb);
-    }, function(busy) {
-      return !busy;
     });
     _this.clickClear = function() {
       _this.clearData();
+      _this.focusFirst(true);
     };
 
     //
@@ -217,6 +213,7 @@ define('src/account/default/search.vm', [
         City: null,
         StateId: null,
         PostalCode: null,
+        // don't reset PageSize or PageNumber
         // PageSize: 25,
         // PageNumber: 1,
       };
@@ -254,7 +251,7 @@ define('src/account/default/search.vm', [
         _this.gvm.list(resp.Value);
         _this.gvm.setSelectedRows([]);
       }, function(err) {
-        notify.notify('error', err.Message);
+        notify.notify('error', err.Message, 30);
       }));
     }, 0);
   };

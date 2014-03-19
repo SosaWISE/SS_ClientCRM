@@ -33,7 +33,7 @@
         if (utils.isFunc(cb)) {
           cb.apply(null, ko.utils.makeArray(arguments));
         }
-      });
+      }, this); // pass view model as second argument
     };
 
     if (canExecute) {
