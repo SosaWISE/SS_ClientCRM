@@ -36,6 +36,12 @@ div(class="acct-search")
         div(class="actions")
           a(class="btn",tabindex="0",data-bind="cmd:cmdSearch") Search
           a(class="btn",tabindex="0",data-bind="cmd:clickClear") Clear
+
+        div(class="grid-pager",data-bind="visible:data.isClean")
+          ul(data-bind="foreach:gvmPages")
+            li
+              //- cmd modifies the `disabled` class so `notEnabled` is added  to permanently disable negative pages
+              span(class="label",data-bind="cmd:$parent.cmdSearch,html:text,active:active,toggle:{notEnabled:disabled}")
     tr
       td(class="fh-body")
         div(class="fh-contents")
@@ -43,7 +49,5 @@ div(class="acct-search")
             div(class="slickgrid",style="background:white;margin:10px;color:black",
               data-bind="slickgrid:gvm")
 
-          div(class="grid-pager")
-            ul(data-bind="foreach:gvmPages")
-              li
-                span(class="label",data-bind="cmd:$parent.cmdPage,text:$data,active:$parent.data.PageNumber()===$data")
+          div(data-bind="if:cmdSearch.busy")
+            div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")

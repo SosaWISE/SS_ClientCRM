@@ -746,32 +746,43 @@ table.fh-wrap {
     white-space: nowrap;
   }
 
-  .slickgrid {
-    bottom: 30px;
+  .spinner-wrap {
+    // match .slickgrid margins
+    top:10px;right:10px;bottom:10px;left:10px;
   }
   .grid-pager {
     position: absolute;
-    bottom: 10px;
-    width: 100%;
+    bottom: -5px;
 
     > ul {
-      width: 100px;
-      margin: auto;
-      // display: inline-block;
+      margin-left: 15px;
+      white-space: nowrap;
 
       > li {
         .user-select(none);
         width: auto;
         display: inline-block;
         padding: 0px 3px;
-        cursor: pointer;
-        &:hover {
-          text-decoration: underline;
-        }
-
-        .active {
+        span.label {
+          cursor: pointer;
           font-weight: 500;
-          text-decoration: underline;
+          display: inline-block;
+          min-width: 20px;
+          &:hover {
+            text-decoration: underline;
+          }
+          &.disabled ,
+          &.notEnabled {
+            .opacity(0.9);
+            cursor: default;
+            text-decoration: none;
+          }
+          &.active {
+            font-weight: 100;
+            font-size: 1.3em;
+            cursor: default;
+            text-decoration: underline;
+          }
         }
       }
     }

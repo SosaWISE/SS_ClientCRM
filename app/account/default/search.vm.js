@@ -138,12 +138,31 @@ define('src/account/default/search.vm', [
     _this.gvmPages = ko.computed(function() {
       // calculate which pages (based on the current page) should show in the footer
       var pages = [],
+        pg,
         currPage = _this.data.PageNumber() || 1,
-        startPage = Math.max(1, currPage - 2),
+        startPage = currPage - 2,
         endPage = currPage + 3;
-      for (currPage = startPage; currPage < endPage; currPage++) {
-        pages.push(currPage);
+
+      pages.push({
+        page: currPage - 1,
+        disabled: false,
+        text: '<<',
+        active: false,
+      });
+      for (pg = startPage; pg < endPage; pg++) {
+        pages.push({
+          page: pg,
+          disabled: pg < 1,
+          text: pg < 1 ? '&nbsp;' : pg,
+          active: pg === currPage,
+        });
       }
+      pages.push({
+        page: currPage + 1,
+        disabled: false,
+        text: '>>',
+        active: false,
+      });
       return pages;
     });
 
@@ -151,21 +170,10 @@ define('src/account/default/search.vm', [
     // events
     //
     _this.cmdSearch = ko.command(function(cb) {
-      _this.data.PageNumber(1);
-      _this.search(cb);
+      var vm = this;
+      _this.search(vm.page, cb);
     }, function(busy) {
-      return !busy && !_this.cmdPage.busy();
-    });
-    _this.cmdPage = ko.command(function(cb) {
-      var page = this;
-      if (page === _this.data.PageNumber.peek()) {
-        cb();
-        return;
-      }
-      _this.data.PageNumber(page);
-      _this.search(cb);
-    }, function(busy) {
-      return !busy && !_this.cmdSearch.busy() && _this.data.isValid() && _this.data.isClean();
+      return !busy;
     });
     _this.clickClear = function() {
       _this.clearData();
@@ -183,6 +191,7 @@ define('src/account/default/search.vm', [
   }
   utils.inherits(SearchViewModel, ControllerViewModel);
   SearchViewModel.prototype.viewTmpl = 'tmpl-acct-default-search';
+  SearchViewModel.prototype.page = 1; // first page. needed in cmdSearch
 
   SearchViewModel.prototype.pageSizeOptions = [
     {
@@ -214,25 +223,40 @@ define('src/account/default/search.vm', [
     _this.data.setVal(data);
     _this.data.markClean(data, true);
   };
-  SearchViewModel.prototype.search = function(cb) {
+  SearchViewModel.prototype.search = function(page, cb) {
     var _this = this,
       model;
+    if (page < 1) { // don't set to a page less than 1
+      cb();
+      return;
+    }
+
+    if (_this.data.isClean() && _this.data.PageNumber() === page) {
+      // only search if something has changed
+      cb();
+      return;
+    }
     if (!_this.data.isValid()) {
       notify.notify('warn', _this.data.errMsg(), 7);
       cb();
       return;
     }
+    // _this.data.PageNumber.markClean(_this.data.PageNumber(), true);
     model = _this.data.getValue();
-    _this.data.markClean(model, true);
+    model.PageNumber = page;
     _this.gvm.list([]);
-    dataservice.accountingengine.customerSearches.save({
-      data: model,
-    }, null, utils.safeCallback(cb, function(err, resp) {
-      _this.gvm.list(resp.Value);
-      _this.gvm.setSelectedRows([]);
-    }, function(err) {
-      notify.notify('error', err.Message);
-    }));
+    setTimeout(function() {
+      dataservice.accountingengine.customerSearches.save({
+        data: model,
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        _this.data.PageNumber(page);
+        _this.data.markClean(model, true);
+        _this.gvm.list(resp.Value);
+        _this.gvm.setSelectedRows([]);
+      }, function(err) {
+        notify.notify('error', err.Message);
+      }));
+    }, 0);
   };
 
   return SearchViewModel;
