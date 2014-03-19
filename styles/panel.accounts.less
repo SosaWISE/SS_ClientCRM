@@ -1102,3 +1102,25 @@ table.fh-wrap {
     position: relative;
   }
 }
+
+
+
+
+.acct-ico {
+  @size: 45px * 0.4;
+  margin-top: (21px - @size)/2;
+  .mixinAcctIco(@index) {
+    background-position: -@size*@index 0;
+  }
+
+  display: inline-block;
+  background:url("/stuff/img/accttypeicons.png") no-repeat;
+  background-size: auto @size;
+  width: @size;
+  height: @size;
+  &.alrm { .mixinAcctIco(0); }
+  &.lead { .mixinAcctIco(1); }
+  &.boh1 { .mixinAcctIco(2); }
+  &.boh2 { .mixinAcctIco(3); }
+  &.boh3 { .mixinAcctIco(4); }
+}

@@ -1,36 +1,39 @@
 
 ul.tabs {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  white-space: nowrap;
   border: 0 solid transparent;
   li.tab {
-    list-style: none;
-    float: left;
-    margin: 0 1px 0 0;
-    padding: 0;
+    display: inline-block;
+    vertical-align: top;
+
+    background: rgba(0, 0, 0, 0.2);
+    color: rgba(255,255,255,0.66);
+
     &:last-child {
       margin-right: 0;
     }
     a {
+      color: inherit;
+      display: inline-block;
+      height: 39px;
       cursor: pointer;
-      display: block;
-      // width: 99px;
       padding: 10px;
       margin: 0;
       text-align: center;
-      background: rgba(0, 0, 0, 0.2);
       border: 0 solid transparent;
       // text-transform: uppercase;
       font-weight: 500;
-      color: rgba(255,255,255,0.66);
       .transition(.1s);
     }
-    a:hover {
+    a.close {
+      padding-left: 0px;
+    }
+
+    &:hover {
       background: rgba(0, 0, 0, 0.25);
       color: rgba(255,255,255,0.8);
     }
-    a.active {
+    &.active {
       background: transparent;
       color: white;
     }

@@ -56,7 +56,7 @@ define('src/account/default/masteraccount.vm', [
       }, 0);
     });
 
-    _this.notesVM = new NotesViewModel({
+    _this.notesVm = new NotesViewModel({
       id: _this.id,
     });
 
@@ -80,7 +80,7 @@ define('src/account/default/masteraccount.vm', [
     var _this = this,
       cb = join.add();
 
-    _this.notesVM.load(routeData, extraData, function(err) {
+    _this.notesVm.load(routeData, extraData, function(err) {
       if (!err) {
         load_billingInfoSummary(_this, _this.id, _this.accounts, join.add());
         load_aging(_this, _this.id, _this.agings, join.add());
@@ -95,6 +95,17 @@ define('src/account/default/masteraccount.vm', [
       }
     });
   };
+  MasterAccountViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      // check if notesVm has a close msg
+      msg = _this.notesVm.closeMsg();
+    // get default close msg
+    if (!msg) {
+      msg = MasterAccountViewModel.super_.prototype.closeMsg.call(_this);
+    }
+    return msg;
+  };
+
 
   function load_billingInfoSummary(pcontroller, masterId, accounts, cb) {
     dataservice.accountingengine.billingInfoSummary.read({

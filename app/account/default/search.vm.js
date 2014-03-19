@@ -23,7 +23,8 @@ define('src/account/default/search.vm', [
 ) {
   "use strict";
   var schema,
-    nullStrConverter = ukov.converters.nullString();
+    nullStrConverter = ukov.converters.nullString(),
+    typeMap;
 
   schema = {
     _model: true,
@@ -54,6 +55,18 @@ define('src/account/default/search.vm', [
     PageNumber: {
       converter: ukov.converters.number(0),
     },
+  };
+
+  function createType(cls, title) {
+    return '<div class="acct-ico ' + cls + '" title="' + title + '"></div>';
+  }
+
+  typeMap = {
+    ALRM: createType('alrm', 'Alarm'),
+    LEAD: createType('lead', 'Lead'),
+    boh1: createType('boh1', 'boh'),
+    boh2: createType('boh2', 'boh'),
+    boh3: createType('boh3', 'boh'),
   };
 
   function SearchViewModel(options) {
@@ -99,12 +112,18 @@ define('src/account/default/search.vm', [
       columns: [
         {
           id: 'Icons',
-          name: '',
-          field: 'ICONS',
+          name: 'Acct Types',
+          field: 'AccountTypes',
           width: 30,
           formatter: function(row, cell, value) {
-            //@TODO: change this when ICONS is no longer html hex codes (eg &#8962;)
-            return value;
+            ///////////TESTING////////////////////////////////
+            value = ['ALRM', 'LEAD', 'boh1', 'boh2', 'boh3'];
+            ///////////TESTING////////////////////////////////
+            var results = new Array(value.length);
+            value.forEach(function(type, i) {
+              results[i] = typeMap[type];
+            });
+            return results.join('');
           },
         },
         {

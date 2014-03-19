@@ -184,9 +184,16 @@ define('src/core/controller.vm', [
   ControllerViewModel.prototype.closeChild = function(vm) {
     var _this = this,
       index = -1,
-      childs;
+      childs, routeData,
+      msg = vm.closeMsg();
     // check if can close
-    if (vm.canClose()) {
+    if (msg) {
+      // if can't close navigate to vm
+      _this.goTo(vm.getRouteData(), {
+        closeFailed: true,
+      });
+      notify.notify('warn', msg, 15);
+    } else {
       index = _this.childs.peek().indexOf(vm);
       if (index > -1) {
         // remove from list
@@ -195,23 +202,30 @@ define('src/core/controller.vm', [
         vm.deactivate();
         // check if a sibling needs to be activated
         if (_this.activeChild.peek() === vm) {
-          // activate next or prev child
+          // null out previous child
+          _this._prevChild = null;
+          // try to activate next or prev child
           childs = _this.childs.peek();
           vm = childs[index] || childs[index - 1];
-          _this.goTo(_this.getRouteData());
+          if (vm) {
+            routeData = vm.getRouteData();
+          } else {
+            // activate default
+            routeData = _this.getRouteData();
+            _this.removeExtraRouteData(routeData);
+          }
+          _this.goTo(routeData);
         }
       }
-    } else {
-      // if can't close navigate to vm
-      _this.goTo(vm.getRouteData(), {
-        closeFailed: true,
-      });
     }
     return index;
   };
   ControllerViewModel.prototype.close = function() {
-    var _this = this;
-    return _this.pcontroller.closeChild(_this);
+    var _this = this,
+      pcontroller = _this.pcontroller;
+    if (pcontroller) {
+      return pcontroller.closeChild(_this);
+    }
   };
 
   ControllerViewModel.prototype.goTo = function(routeData, extraData, allowHistory) {

@@ -3,11 +3,13 @@ div(class="accounts",data-bind="if:loaded")
     tr
       td(class="fh-header")
         ul(class="tabs cf")
-          li(class="tab")
-            a(data-bind="click:clickSearch,active:searchVM.active") Search
+          li(class="tab",data-bind="active:searchVM.active")
+            a(data-bind="click:clickSearch") Search
           <!-- ko foreach:list -->
-          li(class="tab")
-            a(data-bind="click:$parent.clickItem,active:active,text:title")
+          li(class="tab",data-bind="active:active")
+            a(data-bind="click:$parent.clickItem,text:title")
+            span(data-bind="if:active")
+              a(class="close",data-bind="click:close") X
           <!-- /ko -->
           li(class="tab")
             a(data-bind="click:clickNew") +

@@ -39,11 +39,10 @@ define('src/account/default/notes.vm', [
     },
     NoteCategory2Id: {
       validators: [
-        //
-        function(val, model) {
-          model = arguments;
-          return null;
-        },
+        // //
+        // function(val, model) {
+        //   return null;
+        // },
         ukov.validators.isRequired('Please select a secondary reason'),
       ],
     },
@@ -233,6 +232,16 @@ define('src/account/default/notes.vm', [
     load_notes(_this.id, _this.notesGvm, join.add());
     createNote(_this.data, join.add());
   };
+  NotesViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (!_this.note._saved) {
+      msg = 'An an account note has not been entered.';
+    } else if (!_this.data.isClean() || !_this.note.isClean()) {
+      msg = 'Pending changes for the current note need to be saved.';
+    }
+    return msg;
+  };
 
   function createNote(ukovData, cb) {
     var model = ukovData.getValue();
@@ -263,6 +272,7 @@ define('src/account/default/notes.vm', [
     dataservice.maincore.notes.save({
       data: model,
     }, null, utils.safeCallback(cb, function(err, resp) {
+      note._saved = true; // mark the note as being saved (used in `closeMsg`)
       ukovData.setVal(resp.Value);
       ukovData.markClean(resp.Value);
     }));
