@@ -57,6 +57,7 @@ define('src/account/default/masteraccount.vm', [
     });
 
     _this.notesVm = new NotesViewModel({
+      vm: _this,
       id: _this.id,
     });
 

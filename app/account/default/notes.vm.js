@@ -63,7 +63,7 @@ define('src/account/default/notes.vm', [
   function NotesViewModel(options) {
     var _this = this;
     NotesViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, ['id']);
+    BaseViewModel.ensureProps(_this, ['id', 'vm']);
 
     _this.mixinLoad();
 
@@ -177,10 +177,9 @@ define('src/account/default/notes.vm', [
     });
     _this.cmdAppendClose = ko.command(function(cb) {
       _this.cmdAppend.execute(function(err) {
-        if (err) {
-          return cb();
+        if (!err) {
+          _this.vm.close();
         }
-        alert('@TODO: close account');
         cb();
       });
     });
