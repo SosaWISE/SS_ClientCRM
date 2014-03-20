@@ -192,7 +192,7 @@ define('src/core/controller.vm', [
       _this.goTo(vm.getRouteData(), {
         closeFailed: true,
       });
-      notify.notify('warn', msg, 15);
+      notify.notify('warn', msg, 7);
     } else {
       index = _this.childs.peek().indexOf(vm);
       if (index > -1) {

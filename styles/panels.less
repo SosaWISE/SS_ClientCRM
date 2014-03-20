@@ -1,5 +1,6 @@
 
 ul.tabs {
+  .user-select(none);
   white-space: nowrap;
   border: 0 solid transparent;
   li.tab {
@@ -9,10 +10,7 @@ ul.tabs {
     background: rgba(0, 0, 0, 0.2);
     color: rgba(255,255,255,0.66);
 
-    &:last-child {
-      margin-right: 0;
-    }
-    a {
+    a:not(.close) {
       color: inherit;
       display: inline-block;
       height: 39px;
@@ -26,16 +24,38 @@ ul.tabs {
       .transition(.1s);
     }
     a.close {
-      padding-left: 0px;
+      color: inherit;
+      display: inline-block;
+      margin-left: -10px;
+      margin-right: 2px;
+      padding: 1px 5px;
+      &:before {
+        font-family: 'entypo';
+        content: '\2715';
+      }
+      .border-radius(9px);
+      .transition(.1s);
+      &:hover {
+        background: rgba(0, 0, 0, 0.25);
+      }
+      &:active {
+        background: rgba(0, 0, 0, 0.4);
+      }
     }
 
     &:hover {
       background: rgba(0, 0, 0, 0.25);
       color: rgba(255,255,255,0.8);
     }
+    &:active {
+      background: rgba(0, 0, 0, 0.3);
+    }
     &.active {
       background: transparent;
       color: white;
+      a:not(.close) {
+        cursor: default;
+      }
     }
   }
 }

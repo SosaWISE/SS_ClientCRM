@@ -5,8 +5,8 @@ table(class="fh-wrap")
         //-HACK to not be convered up by toggle-btn
         li(class="tab under-toggle-btn")
         <!-- ko foreach:childs -->
-        li(class="tab")
-          a(data-bind="click:$parent.clickItem,active:active,text:title")
+        li(class="tab",data-bind="active:active")
+          a(data-bind="click:$parent.clickItem,text:title")
         <!-- /ko -->
   tr
     td(class="fh-body")
