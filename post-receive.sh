@@ -8,4 +8,5 @@ GIT_WORK_TREE=${DIR} git checkout -f master
 # install and build
 cd ${DIR}
 npm install
+grunt init
 grunt build
