@@ -18,29 +18,24 @@ Dependencies
 Setup
 -----
 
-Install required node modules.
+* Install required node modules.
 
-    npm install
+        npm install
 
-Copy example config file.
-When `useMocks` is set to true, mocks will be used for all api calls that have mocks defined.
-Api calls that don't have mocks will most likely fail.
+* Initialize project
 
-  * Linux:
+        grunt init
 
-        cp webconfig-example.js webconfig.js
+* (This step is not required) Set `useMocks` in webconfig.js to true.
+This will make it so mocks will be used for all api calls that have mocks defined. Api calls that don't have mocks will most likely fail.
 
-  * Windows:
-
-        copy webconfig-example.js webconfig.js
-
-Modify hosts file. (Since the api calls use CORS, the nexsense.com domains will give you an error if they don't match what the webservice expects.
+* Modify hosts file. (Since the api calls use CORS, the nexsense.com domains will give you an error if they don't match what the webservice expects.
 And I don't know what the webservice expects because I always run chrome with web security disabled. e.g.: `google-chrome --disable-web-security`.
 I believe in Windows you can just add the --disable-web-security flag to the Target for the chrome shortcut.
 Also, the cors webservice ip will be different, but I don't know what that is or even if it is currently accessibly from the outside world.)
 
-    127.0.0.1       dev-crm.nexsense.com prod-crm.nexsense.com
-    192.168.1.11    sse.services.cmscors
+        127.0.0.1       dev-crm.nexsense.com prod-crm.nexsense.com
+        10.1.0.11       sse.services.cmscors
 
 Run
 ---

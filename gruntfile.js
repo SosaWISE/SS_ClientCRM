@@ -1,7 +1,8 @@
 module.exports = function(grunt) {
   'use strict';
 
-  var jsfiles;
+  var path = require('path'),
+    jsfiles;
 
   jsfiles = [
     '**/*.js',
@@ -39,8 +40,22 @@ module.exports = function(grunt) {
     },
 
     copy: {
+      webconfig: {
+        src: 'webconfig-example.js',
+        dest: 'webconfig.js',
+        filter: function() { // only copy if webconfig.js doesn't exist
+          return !grunt.file.exists('webconfig.js');
+        },
+      },
       prod: {
         files: [
+          {
+            src: 'webconfig-example.js',
+            dest: '<%= www %>/webconfig.js',
+            filter: function() { // only copy if webconfig.js doesn't exist in output dir
+              return !grunt.file.exists(path.join(path.join(grunt.config('www'), 'webconfig.js')));
+            },
+          },
           {
             src: [
               'logindummy.html',
@@ -56,7 +71,7 @@ module.exports = function(grunt) {
             src: 'depends-production.conf.js',
             dest: '<%= www %>/depends.conf.js',
           },
-        ]
+        ],
       },
     },
     concat: {
@@ -219,9 +234,12 @@ module.exports = function(grunt) {
     },
   });
 
+  grunt.registerTask('init', [
+    'copy:webconfig',
+  ]);
 
   grunt.registerTask('build', [
-    'copy',
+    'copy:prod',
     'concat',
     'uglify',
     'jade:prod',
