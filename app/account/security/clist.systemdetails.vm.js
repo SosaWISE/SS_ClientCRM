@@ -87,7 +87,7 @@ define('src/account/security/clist.systemdetails.vm', [
 
     _this.accountId = routeData.id;
 
-    _this.equipmentVm.load(routeData, extraData, join);
+    _this.equipmentVm.load(routeData, extraData, join.add());
 
     load_types('panelTypes', function(results) {
       _this.panelTypes = results;

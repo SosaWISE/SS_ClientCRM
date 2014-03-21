@@ -1,0 +1,33 @@
+div(class="alarmdotcom-editor")
+  h2(class="title") Alarm.Com
+
+  div(class="line-top")
+    ul(class="edit-form")
+      li
+        span(class="label") Serial #
+        input(type="text",placeholder="",
+          data-bind="ukov:data.SerialNumber,value:data.SerialNumber,valueUpdate:'keyup',select:focusFirst")
+      li
+        span(class="label") Alarm.Com Customer #
+        input(type="text",placeholder="",
+          data-bind="ukov:data.AlarmDotComCustomerNumber,value:data.AlarmDotComCustomerNumber,valueUpdate:'keyup'")
+      li
+        span(class="label") Service Plan
+        div(data-bind="cvm:data.AlarmPackageCvm")
+      li
+        span(class="label") Two-Way Voice
+        div(class="checkbox",data-bind="cmd:function(){data.EnableTwoWay(!data.EnableTwoWay())}")
+          a(class="btn small",data-bind="active:data.EnableTwoWay")
+          span(data-bind="text:data.EnableTwoWay()?' Enabled':'Disabled'")
+          //- Enabled
+
+  div
+    //- (style="margin-bottom:20px;")
+    //- ul(class="actions")
+      //- li
+    span(class="btn-bg", tabindex="0", data-bind="cmd:cmdRegister") Register
+      //- li
+    span(class="btn-bg", tabindex="0", data-bind="cmd:cmdUnregister") Unregister
+
+  //- div(data-bind="if:busy")
+    div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")

@@ -1,0 +1,57 @@
+div(class="alarmdotcom")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+        div(class="col")
+          div(class="section")
+            span(class="title") Receiver Details
+            div(class="contents",data-bind="with:receiverData")
+              ul(class="display-form")
+                li
+                  span(class="label") Account #:
+                  span(class="value",data-bind="text:AccountNumber")
+                li
+                  span(class="label") Industry #:
+                  span(class="value",data-bind="text:IndustryNumber")
+                li
+                  span(class="label") Receiver #:
+                  span(class="value",data-bind="text:ReceiverNumber")
+
+          div(class="section",style="cursor:pointer",data-bind="cmd:cmdEditDetails,toggle:{empty:!detailsData()}")
+            span(class="title") Alarm.Com Details
+            div(class="contents",data-bind="with:detailsData")
+              ul(class="display-form")
+                li
+                  span(class="label") Registered:
+                  span(class="value",data-bind="text:$parent.IsRegistered()?'Yes':'No'")
+                li
+                  span(class="label") Serial #:
+                  span(class="value",data-bind="text:SerialNumber")
+                li
+                  span(class="label") Alarm.Com Customer #:
+                  span(class="value",data-bind="text:AlarmDotComCustomerNumber")
+                li
+                  span(class="label") Service Plan:
+                  span(class="value",data-bind="text:AlarmPackageId")
+                li
+                  span(class="label") Two-Way Voice:
+                  span(class="value",data-bind="text:EnableTwoWay")
+                li(style="padding:10px 0px 5px 0px;")
+                  a(class="btn small add-btn",tabindex="0",data-bind="cmd:$parent.cmdSwapModem,clickBubble:false") Swap Modem
+
+    tr
+      td(class="fh-body")
+        div(class="fh-contents")
+          table(class="fh-wrap")
+            tr
+              td(class="fh-header")
+                ul(class="actions left cf",style="margin-top:10px;")
+                  li
+                    a(class="btn small add-btn",tabindex="0",data-bind="cmd:cmdRequestDeviceEquipment") Request Device Equipment
+            tr
+              td(class="fh-body")
+                div(class="fh-contents")
+                  div(class="slickgrid",data-bind="slickgrid:equipmentGvm")
+
+  div(data-bind="if:active()&&!loaded()")
+    div(class="spinner-wrap black", data-bind="template:'tmpl-spinner'")

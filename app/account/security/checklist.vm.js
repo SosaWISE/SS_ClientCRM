@@ -6,6 +6,7 @@ define('src/account/security/checklist.vm', [
   'src/account/security/clist.industrynums.vm',
   'src/account/security/clist.emcontacts.vm',
   'src/account/security/clist.systemdetails.vm',
+  'src/account/security/clist.registercell.vm',
   'src/account/security/clist.systemtest.vm',
   'src/account/security/clist.initialpayment.vm',
   'src/account/security/clist.submitonline.vm',
@@ -19,6 +20,7 @@ define('src/account/security/checklist.vm', [
   CListIndustryViewModel,
   CListEmcontactsViewModel,
   CListSystemDetailsViewModel,
+  CListRegisterCellViewModel,
   CListSystemTestViewModel,
   CListInitialPaymentViewModel,
   CListSubmitOnlineViewModel,
@@ -89,6 +91,12 @@ define('src/account/security/checklist.vm', [
         pcontroller: _this,
         id: 'systemdetails',
         title: 'System Details',
+        layersVm: _this.layersVm,
+      }),
+      new CListRegisterCellViewModel({
+        pcontroller: _this,
+        id: 'registercell',
+        title: 'Register Cell',
         layersVm: _this.layersVm,
       }),
       new CListSystemTestViewModel({

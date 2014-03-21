@@ -35,7 +35,7 @@ define('src/account/security/clist.emcontacts.vm', [
   CListEmcontactsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
-    _this.emcontactsVm.load(routeData, extraData, join);
+    _this.emcontactsVm.load(routeData, extraData, join.add());
 
     //@TODO: load real data
   };
