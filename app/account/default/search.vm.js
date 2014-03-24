@@ -62,13 +62,18 @@ define('src/account/default/search.vm', [
   }
 
   typeMap = {
-    ALRM: createType('alrm', 'Alarm'),
     LEAD: createType('lead', 'Lead'),
-    boh1: createType('boh1', 'boh'),
-    boh2: createType('boh2', 'boh'),
-    boh3: createType('boh3', 'boh'),
+
+    ALRM: createType('alrm', 'Alarm System'),
+    INSEC: createType('insec', 'Internet Security'),
+    LFLCK: createType('lflck', 'Life Lock'),
+    NUMAN: createType('numan', 'NuManna'),
+    PERS: createType('pers', 'GPS Tracking Device'),
+    SKPLT: createType('skplt', 'Strick Plate'),
+    WNFIL: createType('wnfil', 'Window Film'),
   };
 
+  // ctor
   function SearchViewModel(options) {
     var _this = this;
     SearchViewModel.super_.call(_this, options);
@@ -76,6 +81,7 @@ define('src/account/default/search.vm', [
     _this.title = ko.observable(_this.title);
     _this.focusFirst = ko.observable(false);
     _this.data = ukov.wrap({
+      // only set initial values for PageSize and PageNumber. all other values should be null by default.
       PageSize: 25,
       PageNumber: 1,
     }, schema);
@@ -114,11 +120,8 @@ define('src/account/default/search.vm', [
           id: 'Icons',
           name: 'Acct Types',
           field: 'AccountTypes',
-          width: 30,
+          width: 50,
           formatter: function(row, cell, value) {
-            ///////////TESTING////////////////////////////////
-            value = ['ALRM', 'LEAD', 'boh1', 'boh2', 'boh3'];
-            ///////////TESTING////////////////////////////////
             var results = new Array(value.length);
             value.forEach(function(type, i) {
               results[i] = typeMap[type];
@@ -155,32 +158,7 @@ define('src/account/default/search.vm', [
       ],
     });
     _this.gvmPages = ko.computed(function() {
-      // calculate which pages (based on the current page) should show in the footer
-      var pages = [],
-        currPage = _this.data.PageNumber() || 1,
-        pg = currPage - 2,
-        endPage = currPage + 3;
-      pages.push({
-        page: currPage - 1,
-        disabled: false,
-        text: '<<',
-        active: false,
-      });
-      for (; pg < endPage; pg++) {
-        pages.push({
-          page: pg,
-          disabled: pg < 1,
-          text: pg < 1 ? ' ' : pg,
-          active: pg === currPage,
-        });
-      }
-      pages.push({
-        page: currPage + 1,
-        disabled: false,
-        text: '>>',
-        active: false,
-      });
-      return pages;
+      return calculatePages(_this.data.PageNumber());
     });
 
     //
@@ -249,6 +227,7 @@ define('src/account/default/search.vm', [
 
     if (_this.data.isClean() && _this.data.PageNumber() === page) {
       // only search if something has changed
+      notify.notify('warn', 'Nothing changed. No search made.', 3);
       cb();
       return;
     }
@@ -257,23 +236,61 @@ define('src/account/default/search.vm', [
       cb();
       return;
     }
-    // _this.data.PageNumber.markClean(_this.data.PageNumber(), true);
+
     model = _this.data.getValue();
+    // set page here instead of on `data` so that the pager isn't updated until the search is done
     model.PageNumber = page;
+    // clear grid
     _this.gvm.list([]);
-    setTimeout(function() {
-      dataservice.accountingengine.customerSearches.save({
-        data: model,
-      }, null, utils.safeCallback(cb, function(err, resp) {
-        _this.data.PageNumber(page);
-        _this.data.markClean(model, true);
-        _this.gvm.list(resp.Value);
-        _this.gvm.setSelectedRows([]);
-      }, function(err) {
-        notify.notify('error', err.Message, 30);
-      }));
-    }, 0);
+    // do search
+    dataservice.accountingengine.customerSearches.save({
+      data: model,
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      // update the page number and pager
+      _this.data.PageNumber(page);
+      // mark search query as the new clean
+      _this.data.markClean(model, true);
+      // set results in grid
+      _this.gvm.list(resp.Value);
+      _this.gvm.setSelectedRows([]);
+    }, function(err) {
+      notify.notify('error', err.Message, 30);
+    }));
   };
+
+  function calculatePages(currPage) {
+    currPage = currPage || 1;
+    // calculate which pages (based on the current page) should show in the pager
+    var pages = [],
+      pg = currPage - 2,
+      endPage = currPage + 3,
+      valid;
+    // prev page button
+    pages.push({
+      page: currPage - 1,
+      disabled: false,
+      text: '<<',
+      active: false,
+    });
+    // add pages
+    for (; pg < endPage; pg++) {
+      valid = pg >= 1;
+      pages.push({
+        page: pg,
+        disabled: !valid, // disable invalid pages
+        text: !valid ? ' ' : pg, // no text for invalid pages
+        active: pg === currPage,
+      });
+    }
+    // next page button
+    pages.push({
+      page: currPage + 1,
+      disabled: false,
+      text: '>>',
+      active: false,
+    });
+    return pages;
+  }
 
   return SearchViewModel;
 });
