@@ -6,6 +6,8 @@ define('src/survey/takesurvey.vm', [
   'src/survey/takequestion.vm',
   'ko',
   'src/dataservice',
+  'src/core/jsonhelpers',
+  'src/core/strings',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
@@ -17,6 +19,8 @@ define('src/survey/takesurvey.vm', [
   TakeQuestionViewModel,
   ko,
   dataservice,
+  jsonhelpers,
+  strings,
   notify,
   utils,
   ControllerViewModel
@@ -45,27 +49,28 @@ define('src/survey/takesurvey.vm', [
 
   TakeSurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
-      id = parseInt(routeData.surveyid, 10),
       locale = routeData.locale,
-      resultid = routeData.resultid,
       tempSurveyType, surveyData, tempResult;
 
-    if (!id || !locale) {
+    _this.surveyid = parseInt(routeData.surveyid, 10);
+    _this.resultid = routeData.resultid;
+
+    if (!_this.surveyid || !locale) {
       return join.add()({ // Code: ???,
         Message: 'missing or invalid route data values',
       });
     }
 
-    loadSurveyType(id, function(val) {
+    loadSurveyType(_this.surveyid, function(val) {
       tempSurveyType = val;
     }, join);
 
-    loadSurvey(id, locale, function(val) {
+    loadSurvey(_this.surveyid, locale, function(val) {
       surveyData = val;
     }, join);
 
-    if (resultid) {
-      loadResult(resultid, function(val) {
+    if (_this.resultid) {
+      loadResult(_this.resultid, function(val) {
         tempResult = val;
       }, join);
     }
@@ -107,6 +112,36 @@ define('src/survey/takesurvey.vm', [
       _this.survey(createSurvey(_this.surveyData, _this.possibleAnswersVM.paMap, _this.tokensVM.tokenMap, dataContext));
     }
   };
+
+  TakeSurveyViewModel.prototype.saveSurvey = function() {
+    var _this = this;
+    if (_this.surveyData) {
+      if (_this.resultid) {
+        notify.notify('warn', strings.format('Survey {0} has already been saved.', _this.resultid), 7);
+        return;
+      }
+
+      _this = {
+        // ResultID: 0,
+        SurveyId: _this.surveyid,
+        SurveyTranslationId: _this.surveyData.surveyTranslation.SurveyTranslationID,
+
+        // stringify Context
+        Context: stringify(_this.dataContext),
+        // get all visible question answers
+        Answers: [
+          {
+            QuestionId: 0,
+            AnswerText: 'asdf',
+          },
+        ],
+      };
+    }
+  };
+
+  function stringify(json) {
+    return JSON.stringify(json, jsonhelpers.replacer, '  ');
+  }
 
   function createSurvey(surveyData, paMap, tokenMap, data) {
     var survey, questions;
