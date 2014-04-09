@@ -1,3 +1,16 @@
+window.onerror = function(message, url, line, column, err) {
+  "use strict";
+  var text = [];
+  text.push('Line ' + line + ', Column ' + column);
+  text.push('Url: ' + url);
+  text.push('');
+  text.push('Message: ' + message);
+  text.push('');
+  // err = err;
+  text.push('StackTrace: ' + err.stack);
+  alert(text.join('\n'));
+};
+
 define('src/bootstrapper', [
  // load main libs
   'jquery',

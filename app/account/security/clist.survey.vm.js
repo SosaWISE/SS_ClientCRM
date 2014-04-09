@@ -23,7 +23,7 @@ define('src/account/security/clist.survey.vm', [
 
         if (!vm) {
           item.vm = vm = new TakeSurveyViewModel({
-            tokenData: {
+            dataContext: {
               CompanyName: 'CompanyName',
               ADUserDisplayName: 'ADUserDisplayName',
               PrimaryCustomer: {

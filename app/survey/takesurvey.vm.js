@@ -26,7 +26,7 @@ define('src/survey/takesurvey.vm', [
   function TakeSurveyViewModel(options) {
     var _this = this;
     TakeSurveyViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['tokenData']);
+    ControllerViewModel.ensureProps(_this, ['dataContext']);
 
     _this.survey = ko.observable();
 
@@ -36,23 +36,19 @@ define('src/survey/takesurvey.vm', [
     //
     // events
     //
-    _this.clickCancel = function() {
-      if (_this.layer) {
-        _this.layer.close();
-      }
-    };
   }
   utils.inherits(TakeSurveyViewModel, ControllerViewModel);
   TakeSurveyViewModel.prototype.viewTmpl = 'tmpl-takesurvey';
   TakeSurveyViewModel.prototype.width = '90%';
-  TakeSurveyViewModel.prototype.height = '90%';
+  TakeSurveyViewModel.prototype.height = '95%';
+  TakeSurveyViewModel.prototype.contextEditorVm = null;
 
   TakeSurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       id = parseInt(routeData.surveyid, 10),
       locale = routeData.locale,
       resultid = routeData.resultid,
-      tempSurveyType, tempSurvey, tempResult;
+      tempSurveyType, surveyData, tempResult;
 
     if (!id || !locale) {
       return join.add()({ // Code: ???,
@@ -65,7 +61,7 @@ define('src/survey/takesurvey.vm', [
     }, join);
 
     loadSurvey(id, locale, function(val) {
-      tempSurvey = val;
+      surveyData = val;
     }, join);
 
     if (resultid) {
@@ -84,17 +80,18 @@ define('src/survey/takesurvey.vm', [
         return;
       }
 
-      tempSurvey.surveyType = tempSurveyType;
-      tempSurvey.surveyResult = tempResult;
+      surveyData.surveyType = tempSurveyType;
+      surveyData.surveyResult = tempResult;
 
       // console.log('tokens', JSON.stringify(_this.tokensVM.childs(), null, '  '));
-      // console.log('surveyType', tempSurvey.surveyType);
-      // console.log('survey', tempSurvey);
-      // console.log('surveyType', JSON.stringify(tempSurvey.surveyType, null, '  '));
-      // console.log('survey', JSON.stringify(tempSurvey, null, '  '));
+      // console.log('surveyType', surveyData.surveyType);
+      // console.log('survey', surveyData);
+      // console.log('surveyType', JSON.stringify(surveyData.surveyType, null, '  '));
+      // console.log('survey', JSON.stringify(surveyData, null, '  '));
 
       //
-      _this.survey(createSurvey(tempSurvey, _this.possibleAnswersVM.paMap, _this.tokensVM.tokenMap, _this.tokenData));
+      _this.surveyData = surveyData;
+      _this.reloadSurvey();
     });
   };
 
@@ -102,22 +99,31 @@ define('src/survey/takesurvey.vm', [
     // do nothing
   };
 
-  function createSurvey(tempSurvey, paMap, tokenMap, data) {
+  TakeSurveyViewModel.prototype.reloadSurvey = function() {
+    var _this = this,
+      dataContext;
+    if (_this.surveyData) {
+      dataContext = _this.surveyData.surveyResult ? _this.surveyData.surveyResult.Context : _this.dataContext;
+      _this.survey(createSurvey(_this.surveyData, _this.possibleAnswersVM.paMap, _this.tokensVM.tokenMap, dataContext));
+    }
+  };
+
+  function createSurvey(surveyData, paMap, tokenMap, data) {
     var survey, questions;
 
     questions = createTakeQuestions(
-      tempSurvey.questions,
+      surveyData.questions,
       paMap,
-      tempSurvey.surveyType.questionMeanings,
-      tempSurvey.surveyTranslation.questionTranslations,
+      surveyData.surveyType.questionMeanings,
+      surveyData.surveyTranslation.questionTranslations,
       tokenMap,
       data,
-      tempSurvey.surveyResult
+      surveyData.surveyResult
     );
 
     survey = {
-      version: tempSurvey.Version,
-      locale: tempSurvey.surveyTranslation.LocalizationCode,
+      version: surveyData.Version,
+      locale: surveyData.surveyTranslation.LocalizationCode,
       questions: makeTree(questions),
     };
 
@@ -337,6 +343,10 @@ define('src/survey/takesurvey.vm', [
     dataservice.survey.results.read({
       id: resultid
     }, setter, function(err, resp) {
+      if (!err && utils.isStr(resp.Value.Context)) {
+        //
+        resp.Value.Context = JSON.parse(resp.Value.Context);
+      }
       cb(err, resp);
     });
   }

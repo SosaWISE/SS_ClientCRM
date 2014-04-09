@@ -29,7 +29,7 @@
       // default size
       width: 98%;
       height: 98%;
-      // overflow: hidden;
+      overflow: auto;
 
       > .content {
         padding: 20px;
@@ -42,6 +42,11 @@
             display: inline-block;
             padding: 10px 0px 10px 5px;
           }
+        }
+
+        // correctly show scroll bars
+        table.fh-wrap {
+          height: calc(100% - 20px*2); // `calc` is a CSS3 function. too bad it took til now to find out about it...
         }
       }
 

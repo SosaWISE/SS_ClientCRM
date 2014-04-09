@@ -9,7 +9,7 @@ define('src/survey/questiontranslation.vm', [
 ], function(
   ukov,
   dataservice,
-  EditorQuestionTranslationViewModel,
+  QuestionTranslationEditorViewModel,
   ko,
   notify,
   utils,
@@ -61,7 +61,7 @@ define('src/survey/questiontranslation.vm', [
         return;
       }
       //
-      var vm = new EditorQuestionTranslationViewModel({
+      var vm = new QuestionTranslationEditorViewModel({
         input: _this.qtData.TextFormat,
         questionMeaningVM: _this.questionVM.questionMeaningVM,
       });

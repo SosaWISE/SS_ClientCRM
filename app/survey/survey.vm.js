@@ -51,6 +51,17 @@ define('src/survey/survey.vm', [
       controller: _this,
     });
 
+    _this.takeVm = new TakeSurveyTranslationViewModel({
+      layersVm: _this.layersVm,
+      surveyTranslationVMs: _this.translations(),
+      routeData: {
+        surveyid: _this.id,
+      },
+    });
+    _this.translations.subscribe(function(vms) {
+      _this.takeVm.updateSurveyTranslations(vms);
+    });
+
     //
     // events
     //
@@ -108,15 +119,7 @@ define('src/survey/survey.vm', [
         possibleAnswersVM: _this.possibleAnswersVM,
       }));
     };
-    _this.clickTakeSurvey = function() {
-      _this.layersVm.show(new TakeSurveyTranslationViewModel({
-        surveyTranslationVMs: _this.translations(),
-        routeData: {
-          surveyid: _this.id,
-          // locale: 'en',
-        },
-      }));
-    };
+    _this.clickTakeSurvey = _this.takeVm.clickTake;
   }
   utils.inherits(SurveyViewModel, ControllerViewModel);
   SurveyViewModel.prototype.routePart = 'surveyid';

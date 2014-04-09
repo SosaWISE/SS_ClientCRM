@@ -317,6 +317,25 @@ define('mock/dataservices/survey.mock', [
 
       'SystemDetails.PremisePhone',
     ]);
+    mockery.addModulusValueFunc('TOKEN_TYPES', [
+      'string', // operators: all
+      'number', // operators: all
+      'bool', // operators: ==, !=
+    ]);
+    mockery.addModulusValueFunc('CONDITIONAL_OPERATORS', [
+      '==', //  'equal',
+      '!=', //  'not-equal',
+      // '===', // 'strict-equal',
+      // '!==', // 'strict-not-equal',
+      '>', //   'greater-than',
+      '>=', //  'greater-than-or-equal',
+      '<', //   'less-than',
+      '<=', //  'less-than-or-equal',
+    ]);
+    mockery.addModulusValueFunc('LOGICAL_OPERATORS', [
+      '&&', //
+      '||', //
+    ]);
     mockery.addModulusValueFunc('SV_PA', [
       'yes',
       'no',
@@ -378,6 +397,7 @@ define('mock/dataservices/survey.mock', [
       {
         TokenID: '@INC(token)',
         Token: '@SV_TOKEN',
+        ValueType: '@TOKEN_TYPES',
       }
     ],
   }).list;
@@ -485,7 +505,7 @@ define('mock/dataservices/survey.mock', [
     {
       ResultID: 1,
       SurveyId: 1,
-      'Answers': [
+      Answers: [
         {
           AnswerID: 1,
           ResultId: 1,
@@ -505,6 +525,23 @@ define('mock/dataservices/survey.mock', [
           AnswerText: 'answer text!!',
         },
       ],
+      Context: JSON.stringify({
+        CompanyName: 'Nexsense',
+        ADUserDisplayName: 'auser',
+        PrimaryCustomer: {
+          Name: 'Bob',
+          LastName: 'Bobbins',
+        },
+        PremiseAddress: {
+          Street: '111 Technology Way',
+          City: 'Orem',
+          State: 'UT',
+          Zip: '84059',
+        },
+        SystemDetails: {
+          PremisePhone: '(801) 123-1234',
+        },
+      }),
     }
   ];
 

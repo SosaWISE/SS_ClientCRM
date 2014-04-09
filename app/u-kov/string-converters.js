@@ -229,5 +229,20 @@ define('src/u-kov/string-converters', [
     };
   };
 
+  converters.jsonString = function(replacer, reviver) {
+    return function convJsonString(val) {
+      val = trim(val);
+      if (!val) {
+        return null;
+      }
+
+      try {
+        return JSON.stringify(JSON.parse(val, reviver), replacer, '  ');
+      } catch (ex) {
+        return ex;
+      }
+    };
+  };
+
   return converters;
 });

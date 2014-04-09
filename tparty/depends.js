@@ -289,6 +289,13 @@
       if (cb) {
         script.onload = cb;
       }
+      script.onerror = function() {
+        // continue loading dependencies and then throw error
+        if (cb) {
+          cb();
+        }
+        throw new Error('Failed to load script: ' + url);
+      };
       script.async = async || false;
       script.src = url;
       document.body.appendChild(script);

@@ -8,7 +8,11 @@ div(class="survey")
         a(class="btn",data-bind="active:active,busy:cmdToggle.busy")
           span(data-bind="text:model.LocalizationCode")
       <!-- /ko -->
-    a(style="float:right;",data-bind="click:clickTakeSurvey") Test Survey
+    ul(class="sv",style="position:absolute;right:5px;top:5px;")
+      li
+        a(data-bind="click:clickTakeSurvey") Test Survey
+      li(style="padding-left:5px;")
+        div(style="min-width:50px;",data-bind="cvm:takeVm.localeCvm")
 
   div(class="content")
     div(data-bind="foreach:questions")

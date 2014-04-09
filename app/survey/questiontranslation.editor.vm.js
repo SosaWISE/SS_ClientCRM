@@ -13,18 +13,18 @@ define('src/survey/questiontranslation.editor.vm', [
 ) {
   'use strict';
 
-  function EditorQuestionTranslationViewModel(options) {
+  function QuestionTranslationEditorViewModel(options) {
     var _this = this;
-    EditorQuestionTranslationViewModel.super_.call(_this, options);
+    QuestionTranslationEditorViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, ['questionMeaningVM', 'input']);
 
     // _this.input = should be passed in
     _this.output = ko.computed(_this.computeHtml, _this);
   }
-  utils.inherits(EditorQuestionTranslationViewModel, BaseViewModel);
-  EditorQuestionTranslationViewModel.prototype.viewTmpl = 'tmpl-questiontranslation_editor';
+  utils.inherits(QuestionTranslationEditorViewModel, BaseViewModel);
+  QuestionTranslationEditorViewModel.prototype.viewTmpl = 'tmpl-questiontranslation_editor';
 
-  EditorQuestionTranslationViewModel.prototype.computeHtml = function() {
+  QuestionTranslationEditorViewModel.prototype.computeHtml = function() {
     //@TODO: format with real & mock tokens
     var tokenValues = this.questionMeaningVM.tokenMaps().map(function(tokenMap) {
       return tokenMap.token.Token;
@@ -32,5 +32,5 @@ define('src/survey/questiontranslation.editor.vm', [
     return surveyhelper.formatQuestion(this.input(), tokenValues, '[missing param]');
   };
 
-  return EditorQuestionTranslationViewModel;
+  return QuestionTranslationEditorViewModel;
 });
