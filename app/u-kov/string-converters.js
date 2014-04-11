@@ -1,8 +1,10 @@
 define('src/u-kov/string-converters', [
+  'src/core/jsonhelpers',
   'src/core/paymenthelper',
   'src/core/strings',
   'moment'
 ], function(
+  jsonhelpers,
   paymenthelper,
   strings,
   moment
@@ -24,41 +26,25 @@ define('src/u-kov/string-converters', [
       /^([0-9]{1,2} \w+ )([0-9]{1,2} )/, // DD MMM YY
     ];
 
-  function trim(text) {
-    if (text) {
-      text = (text + '').replace(/^\s+|\s+$/g, '');
-    } else if (text !== '') {
-      text = null;
-    }
-    return text;
-  }
-
-
   converters.string = function() {
-    return function convString(val) {
-      return trim(val);
-    };
+    return convString;
   };
   converters.nullString = function() {
-    return function convNullString(val) {
-      return trim(val) || null;
-    };
+    return convNullString;
   };
   converters.toUpper = function() {
-    return function convString(val) {
-      val = trim(val);
-      if (val) {
-        val = trim(val).toUpperCase();
-      }
-      return val;
-    };
+    return convToUpper;
   };
   converters.bool = function() {
-    return function convBool(val) {
-      val = val.toLowerCase();
-      return val === 'true' || val === '1';
-    };
+    return convBool;
   };
+  converters.numText = function() {
+    return convNumText;
+  };
+  converters.jsonString = function() {
+    return convJsonString;
+  };
+
   converters.number = function(precision, errMsg) {
     errMsg = errMsg || 'invalid number';
     var roundingMagnitude = Math.pow(10, precision || 0);
@@ -202,8 +188,6 @@ define('src/u-kov/string-converters', [
       }
     };
   };
-
-
   converters.ccard = function() {
     return function convCCard(val) {
       val = trim(val);
@@ -219,30 +203,58 @@ define('src/u-kov/string-converters', [
       }
     };
   };
-  converters.numText = function() {
-    return function convNumText(val) {
-      val = trim(val);
-      if (!val) {
-        return;
-      }
-      return val.replace(/[^\d]/g, '');
-    };
-  };
 
-  converters.jsonString = function(replacer, reviver) {
-    return function convJsonString(val) {
-      val = trim(val);
-      if (!val) {
-        return null;
-      }
 
-      try {
-        return JSON.stringify(JSON.parse(val, reviver), replacer, '  ');
-      } catch (ex) {
-        return ex;
-      }
-    };
-  };
+  function trim(text) {
+    if (text) {
+      text = (text + '').replace(/^\s+|\s+$/g, '');
+    } else if (text !== '') {
+      text = null;
+    }
+    return text;
+  }
+
+  function convString(val) {
+    return trim(val);
+  }
+
+  function convNullString(val) {
+    return trim(val) || null;
+  }
+
+  function convToUpper(val) {
+    val = trim(val);
+    if (val) {
+      val = val.toUpperCase();
+    }
+    return val;
+  }
+
+  function convBool(val) {
+    val = val.toLowerCase();
+    return val === 'true' || val === '1';
+  }
+
+  function convNumText(val) {
+    val = trim(val);
+    if (!val) {
+      return;
+    }
+    return val.replace(/[^\d]/g, '');
+  }
+
+  function convJsonString(val) {
+    val = trim(val);
+    if (!val) {
+      return null;
+    }
+
+    try {
+      return jsonhelpers.stringify(jsonhelpers.parse(val), 2);
+    } catch (ex) {
+      return ex;
+    }
+  }
 
   return converters;
 });

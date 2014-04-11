@@ -1,173 +1,127 @@
 define('mock/dataservices/survey.mock', [
   'src/dataservice',
-  'src/core/mockery',
   'src/core/utils',
+  'src/core/mockery',
 ], function(
   dataservice,
-  mockery,
-  utils
+  utils,
+  mockery
 ) {
   "use strict";
 
   function mock(settings) {
-    function clone(value) {
-      return JSON.parse(JSON.stringify(value));
-    }
-
-    function send(value, setter, cb, timeout) {
-      var err, result;
-      if (value) {
-        value = clone(value);
-      }
-      if (false && !value) {
-        err = {
-          Code: 12345,
-          Message: 'No value',
-          Value: null,
-        };
-      } else {
-        result = {
-          Code: 0,
-          Message: 'Success',
-          Value: value,
-        };
-      }
-
-      setTimeout(function() {
-        if (!err && result && utils.isFunc(setter)) {
-          setter(result.Value);
-        }
-        cb(err, result);
-      }, timeout || settings.timeout);
-    }
-
-    function filterListBy(list, propName, id) {
-      return list.filter(function(item) {
-        return item[propName] === id;
-      });
-    }
-
-    function findSingleBy(list, propName, id) {
-      return list.filter(function(item) {
-        return item[propName] === id;
-      })[0];
-    }
-
-    function findSingleOrAll(list, propName, id) {
-      var result;
-      if (id > 0) {
-        result = findSingleBy(list, propName, id);
-      } else {
-        result = list;
-      }
-      return result;
+    function send(code, value, setter, cb, timeout) {
+      mockery.send(code, value, setter, cb, timeout || settings.timeout);
     }
 
     dataservice.survey.tokens.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(tokens, 'TokenID', id);
+          result = mockery.findSingleOrAll(tokens, 'TokenID', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
 
     dataservice.survey.possibleAnswers.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(possibleAnswers, 'PossibleAnswerID', id);
+          result = mockery.findSingleOrAll(possibleAnswers, 'PossibleAnswerID', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
 
     dataservice.survey.surveyTypes.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(surveyTypes, 'SurveyTypeID', id);
+          result = mockery.findSingleOrAll(surveyTypes, 'SurveyTypeID', id);
           break;
         case 'surveys':
-          result = filterListBy(surveys, 'SurveyTypeId', id);
+          result = mockery.filterListBy(surveys, 'SurveyTypeId', id);
           break;
         case 'questionMeanings':
-          result = filterListBy(questionMeanings, 'SurveyTypeId', id);
+          result = mockery.filterListBy(questionMeanings, 'SurveyTypeId', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
 
     dataservice.survey.questionMeanings.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(questionMeanings, 'QuestionMeaningID', id);
+          result = mockery.findSingleOrAll(questionMeanings, 'QuestionMeaningID', id);
           break;
         case 'questionMeaningTokenMaps':
-          result = filterListBy(questionMeanings_Tokens_Map, 'QuestionMeaningId', id);
+          result = mockery.filterListBy(questionMeanings_Tokens_Map, 'QuestionMeaningId', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
 
     dataservice.survey.surveys.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(surveys, 'SurveyID', id);
+          result = mockery.findSingleOrAll(surveys, 'SurveyID', id);
           break;
         case 'surveyType':
-          result = findSingleBy(surveys, 'SurveyID', id);
+          result = mockery.findSingleBy(surveys, 'SurveyID', id);
           if (result) {
-            result = findSingleBy(surveyTypes, 'SurveyTypeID', result.SurveyTypeId);
+            result = mockery.findSingleBy(surveyTypes, 'SurveyTypeID', result.SurveyTypeId);
           }
           break;
         case 'questions':
-          result = filterListBy(questions, 'SurveyId', id);
+          result = mockery.filterListBy(questions, 'SurveyId', id);
           break;
         case 'surveyTranslations':
-          result = filterListBy(surveyTranslations, 'SurveyId', id);
+          result = mockery.filterListBy(surveyTranslations, 'SurveyId', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
 
     dataservice.survey.questions.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(questions, 'QuestionID', id);
+          result = mockery.findSingleOrAll(questions, 'QuestionID', id);
           break;
         case 'questionPossibleAnswerMaps':
-          result = filterListBy(questions_PossibleAnswers_Map, 'QuestionId', id);
+          result = mockery.filterListBy(questions_PossibleAnswers_Map, 'QuestionId', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
 
     dataservice.survey.surveyTranslations.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(surveyTranslations, 'SurveyTranslationID', id);
+          result = mockery.findSingleOrAll(surveyTranslations, 'SurveyTranslationID', id);
           break;
         case 'questionTranslations':
-          result = filterListBy(questionTranslations, 'SurveyTranslationId', id);
+          result = mockery.filterListBy(questionTranslations, 'SurveyTranslationId', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
 
     dataservice.survey.results.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(surveyResults, 'ResultID', id);
+          result = mockery.findSingleOrAll(surveyResults, 'ResultID', id);
+          break;
+        case 'answers':
+          result = mockery.filterListBy(resultAnswers, 'ResultId', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
 
 
@@ -176,14 +130,14 @@ define('mock/dataservices/survey.mock', [
 
     dataservice.survey.surveyTypes.save = function(params, setter, cb) {
       var data = params.data;
-      send(createOrUpdate(surveyTypes, 'SurveyTypeID', '@INC(surveyType)', {
+      send(0, mockery.createOrUpdate(surveyTypes, 'SurveyTypeID', '@INC(surveyType)', {
         SurveyTypeID: data.SurveyTypeID,
         Name: data.Name,
       }), setter, cb);
     };
     dataservice.survey.surveys.save = function(params, setter, cb) {
       var data = params.data;
-      send(createOrUpdate(surveys, 'SurveyID', '@INC(survey)', {
+      send(0, mockery.createOrUpdate(surveys, 'SurveyID', '@INC(survey)', {
         SurveyID: data.SurveyID,
         SurveyTypeId: data.SurveyTypeId,
         Version: data.Version,
@@ -191,7 +145,7 @@ define('mock/dataservices/survey.mock', [
     };
     dataservice.survey.questionMeanings.save = function(params, setter, cb) {
       var data = params.data;
-      send(createOrUpdate(questionMeanings, 'QuestionMeaningID', '@INC(questionMeaning)', {
+      send(0, mockery.createOrUpdate(questionMeanings, 'QuestionMeaningID', '@INC(questionMeaning)', {
         QuestionMeaningID: data.QuestionMeaningID,
         SurveyTypeId: data.SurveyTypeId,
         Name: data.Name,
@@ -199,7 +153,7 @@ define('mock/dataservices/survey.mock', [
     };
     dataservice.survey.questions.save = function(params, setter, cb) {
       var data = params.data;
-      send(createOrUpdate(questions, 'QuestionID', '@INC(question)', {
+      send(0, mockery.createOrUpdate(questions, 'QuestionID', '@INC(question)', {
         QuestionID: data.QuestionID,
         SurveyId: data.SurveyId,
         QuestionMeaningId: data.QuestionMeaningId,
@@ -210,7 +164,7 @@ define('mock/dataservices/survey.mock', [
     };
     dataservice.survey.questionTranslations.save = function(params, setter, cb) {
       var data = params.data;
-      send(createOrUpdate(questionTranslations, 'QuestionTranslationID', '@INC(questionTranslation)', {
+      send(0, mockery.createOrUpdate(questionTranslations, 'QuestionTranslationID', '@INC(questionTranslation)', {
         QuestionTranslationID: data.QuestionTranslationID,
         SurveyTranslationId: data.SurveyTranslationId,
         QuestionId: data.QuestionId,
@@ -219,41 +173,39 @@ define('mock/dataservices/survey.mock', [
     };
     dataservice.survey.surveyTranslations.save = function(params, setter, cb) {
       var data = params.data;
-      send(createOrUpdate(surveyTranslations, 'SurveyTranslationID', '@INC(surveyTranslation)', {
+      send(0, mockery.createOrUpdate(surveyTranslations, 'SurveyTranslationID', '@INC(surveyTranslation)', {
         SurveyTranslationID: data.SurveyTranslationID,
         SurveyId: data.SurveyId,
         LocalizationCode: data.LocalizationCode,
       }), setter, cb);
     };
+    dataservice.survey.results.save = function(params, setter, cb) {
+      var data = params.data,
+        svResult;
+      svResult = mockery.createOrUpdate(surveyResults, 'ResultID', '@INC(surveyResults)', {
+        // ResultID: data.ResultID,
+        SurveyTranslationId: data.SurveyTranslationId,
+        Context: data.Context,
+        // Answers: data.Answers,
+      });
 
-    function createOrUpdate(list, idName, idTemplate, newValue) {
-      var id = newValue[idName],
-        index;
-      if (id > 0) {
-        if (!list.some(function(item, i) {
-          if (item[idName] === id) {
-            index = i;
-            return true;
-          }
-        })) {
-          throw new Error('invalid id. id not in list.');
-        }
+      // save Answers
+      data.Answers.forEach(function(data) {
+        mockery.createOrUpdate(resultAnswers, 'AnswerID', '@INC(resultAnswers)', {
+          // AnswerID: data.AnswerID,
+          ResultId: svResult.ResultID,
+          QuestionId: data.QuestionId,
+          AnswerText: data.AnswerText,
+        });
+      });
 
-        // replace old value with new value
-        list.splice(index, 1, newValue);
-      } else {
-        newValue[idName] = mockery.fromTemplate(idTemplate);
-        // add new value
-        list.push(newValue);
-      }
-      return newValue;
-    }
-
+      send(0, svResult, setter, cb);
+    };
 
 
     dataservice.survey.questionMeaningTokenMaps.save = function(params, setter, cb) {
       var data = params.data;
-      send(saveWithNoPKey(questionMeanings_Tokens_Map, {
+      send(0, mockery.saveWithNoPKey(questionMeanings_Tokens_Map, {
         QuestionMeaningId: data.QuestionMeaningId,
         TokenId: data.TokenId,
       }, function(list, value) {
@@ -270,7 +222,7 @@ define('mock/dataservices/survey.mock', [
     };
     dataservice.survey.questionPossibleAnswerMaps.save = function(params, setter, cb) {
       var data = params.data;
-      send(saveWithNoPKey(questions_PossibleAnswers_Map, {
+      send(0, mockery.saveWithNoPKey(questions_PossibleAnswers_Map, {
         QuestionId: data.QuestionId,
         PossibleAnswerId: data.PossibleAnswerId,
         Expands: data.Expands,
@@ -286,18 +238,6 @@ define('mock/dataservices/survey.mock', [
         return index;
       }), setter, cb);
     };
-
-    function saveWithNoPKey(list, newValue, findFunc) {
-      var index = findFunc(list, newValue);
-      if (index > -1) {
-        // update
-        list.splice(index, 1, newValue);
-      } else {
-        // create
-        list.push(newValue);
-      }
-      return newValue;
-    }
   }
 
   (function() {
@@ -363,7 +303,8 @@ define('mock/dataservices/survey.mock', [
     questionTranslations,
     possibleAnswers,
     questions_PossibleAnswers_Map,
-    surveyResults;
+    surveyResults,
+    resultAnswers;
 
   surveyTypes = mockery.fromTemplate({
     'list|3-3': [
@@ -476,7 +417,7 @@ define('mock/dataservices/survey.mock', [
   }).list;
 
   questions_PossibleAnswers_Map = mockery.fromTemplate({
-    'list|2-2': [
+    'list|3-3': [
       {
         QuestionId: '@FK(question)',
         PossibleAnswerId: '@FK(possibleAnswer)',
@@ -501,49 +442,83 @@ define('mock/dataservices/survey.mock', [
   //     }
   //   ],
   // }).list;
-  surveyResults = [
-    {
-      ResultID: 1,
-      SurveyId: 1,
-      Answers: [
-        {
-          AnswerID: 1,
-          ResultId: 1,
-          QuestionId: 1,
-          AnswerText: 'yes',
-        },
-        {
-          AnswerID: 2,
-          ResultId: 1,
-          QuestionId: 2,
-          AnswerText: 'no',
-        },
-        {
-          AnswerID: 3,
-          ResultId: 1,
-          QuestionId: 3,
-          AnswerText: 'answer text!!',
-        },
-      ],
-      Context: JSON.stringify({
-        CompanyName: 'Nexsense',
-        ADUserDisplayName: 'auser',
-        PrimaryCustomer: {
-          Name: 'Bob',
-          LastName: 'Bobbins',
-        },
-        PremiseAddress: {
-          Street: '111 Technology Way',
-          City: 'Orem',
-          State: 'UT',
-          Zip: '84059',
-        },
-        SystemDetails: {
-          PremisePhone: '(801) 123-1234',
-        },
-      }),
-    }
-  ];
+  surveyResults = mockery.fromTemplate({
+    'list|1-1': [
+      {
+        ResultID: '@INC(surveyResults)',
+        SurveyTranslationId: 1,
+        AccountId: 1,
+        Caller: 'boh?',
+        // RecruitID: -1, //boh?
+        Passed: true,
+        IsComplete: true,
+        Context: JSON.stringify({
+          CompanyName: 'Nexsense',
+          ADUserDisplayName: 'auser',
+          PrimaryCustomer: {
+            Name: 'Bob',
+            LastName: 'Bobbins',
+          },
+          PremiseAddress: {
+            Street: '111 Technology Way',
+            City: 'Orem',
+            State: 'UT',
+            Zip: '84059',
+          },
+          SystemDetails: {
+            PremisePhone: '(801) 123-1234',
+          },
+        }),
+        CreatedBy: 'auser',
+        CreatedOn: '@DATE',
+      }
+    ],
+  }).list;
+
+  resultAnswers = mockery.fromTemplate({
+    'list|3-3': [
+      {
+        AnswerID: '@INC(resultAnswers)',
+        ResultId: 1,
+        QuestionId: '@FK(question)',
+        AnswerText: '@SV_PA',
+      },
+    ],
+  }).list;
+
+  mock.getAccountSurveyResultViews = function(accountId) {
+    var resultViews = [];
+    mockery.filterListBy(surveyResults, 'AccountId', accountId).forEach(function(svResult) {
+      var svTranslation = mockery.findSingleBy(surveyTranslations, 'SurveyTranslationID', svResult.SurveyTranslationId),
+        sv = mockery.findSingleBy(surveys, 'SurveyID', svTranslation.SurveyId),
+        svType = mockery.findSingleBy(surveyTypes, 'SurveyTypeID', sv.SurveyTypeId);
+
+      resultViews.push({
+        ResultID: svResult.ResultID,
+        SurveyTranslationId: svResult.SurveyTranslationId,
+        AccountId: svResult.AccountId,
+        Caller: svResult.Caller,
+        // RecruitId: svResult.RecruitId,
+        Passed: svResult.Passed,
+        IsComplete: svResult.IsComplete,
+        Context: svResult.Context,
+        CreatedBy: svResult.CreatedBy,
+        CreatedOn: svResult.CreatedOn,
+        // ModifiedBy: svResult.ModifiedBy,
+        // ModifiedOn: svResult.ModifiedOn,
+
+        SurveyId: sv.SurveyID,
+        Version: sv.Version,
+        // IsCurrent: sv.IsCurrent, // ??
+
+        SurveyType: svType.Name,
+        SurveyTypeId: svType.SurveyTypeID,
+
+        LocalizationCode: svTranslation.LocalizationCode,
+      });
+    });
+    return resultViews;
+  };
 
   return mock;
 });

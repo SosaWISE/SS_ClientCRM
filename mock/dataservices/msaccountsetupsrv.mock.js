@@ -1,99 +1,53 @@
 define('mock/dataservices/msaccountsetupsrv.mock', [
+  'mock/dataservices/survey.mock',
   'mock/dataservices/accountingengine.mock',
   'src/dataservice',
   'src/core/mockery',
-  'src/core/utils',
 ], function(
+  survey_mock,
   accountingengine_mock,
   dataservice,
-  mockery,
-  utils
+  mockery
 ) {
   'use strict';
 
   function mock(settings) {
-    function clone(value) {
-      return JSON.parse(JSON.stringify(value));
-    }
-
-    function send(value, setter, cb, timeout) {
-      var err, result;
-      if (value) {
-        value = clone(value);
-      }
-      if (false && !value) {
-        err = {
-          Code: 12345,
-          Message: 'No value',
-          Value: null,
-        };
-      } else {
-        result = {
-          Code: 0,
-          Message: 'Success',
-          Value: value,
-        };
-      }
-
-      setTimeout(function() {
-        if (!err && result && utils.isFunc(setter)) {
-          setter(result.Value);
-        }
-        cb(err, result);
-      }, timeout || settings.timeout);
-    }
-
-    function filterListBy(list, propName, id) {
-      return list.filter(function(item) {
-        return item[propName] === id;
-      });
-    }
-
-    function findSingleBy(list, propName, id) {
-      return list.filter(function(item) {
-        return item[propName] === id;
-      })[0];
-    }
-
-    function findSingleOrAll(list, propName, id) {
-      var result;
-      if (id > 0) {
-        result = findSingleBy(list, propName, id);
-      } else {
-        result = list;
-      }
-      return result;
+    function send(code, value, setter, cb, timeout) {
+      mockery.send(code, value, setter, cb, timeout || settings.timeout);
     }
 
     dataservice.msaccountsetupsrv.accounts.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(accounts, 'AccountID', id);
+          result = mockery.findSingleOrAll(accounts, 'AccountID', id);
           break;
         case 'emergencyContacts':
-          result = filterListBy(emergencyContacts, 'AccountId', id);
+          result = mockery.filterListBy(emergencyContacts, 'AccountId', id);
+          break;
+        case 'surveys':
+          result = survey_mock.getAccountSurveyResultViews(id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.msaccountsetupsrv.emergencyContactPhoneTypes.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(emergencyContactPhoneTypes, 'PhoneTypeID', id);
+          result = mockery.findSingleOrAll(emergencyContactPhoneTypes, 'PhoneTypeID', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.msaccountsetupsrv.emergencyContactRelationships.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(emergencyContactRelationships, 'RelationshipID', id);
+          result = mockery.findSingleOrAll(emergencyContactRelationships, 'RelationshipID', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.msaccountsetupsrv.systemDetails.read = function(params, setter, cb) {
       var result, id = params.id;
@@ -113,34 +67,34 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
           }
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.msaccountsetupsrv.serviceTypes.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(systemTypes, 'SystemTypeID', id);
+          result = mockery.findSingleOrAll(systemTypes, 'SystemTypeID', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.msaccountsetupsrv.panelTypes.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(panelTypes, 'PanelTypeID', id);
+          result = mockery.findSingleOrAll(panelTypes, 'PanelTypeID', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.msaccountsetupsrv.dslSeizureTypes.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(dslSeizureTypes, 'DslSeizureID', id);
+          result = mockery.findSingleOrAll(dslSeizureTypes, 'DslSeizureID', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
 
 
@@ -148,7 +102,7 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
       var billingInfoSummary = accountingengine_mock.addAccount('@INC(customerMasterFile)');
 
       //@TODO: needs more Id's set
-      send(mockery.fromTemplate({
+      send(0, mockery.fromTemplate({
         AccountID: billingInfoSummary.AccountId,
         LeadId: data.leadId,
         CustomerId: 0,
@@ -164,7 +118,7 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
     };
     dataservice.msaccountsetupsrv.emergencyContacts.save = function(params, setter, cb) {
       var data = params.data;
-      send(createOrUpdate(emergencyContacts, 'EmergencyContactID', '@INC(emergencyContacts)', {
+      send(0, mockery.createOrUpdate(emergencyContacts, 'EmergencyContactID', '@INC(emergencyContacts)', {
         EmergencyContactID: data.EmergencyContactID,
         CustomerId: data.CustomerId || null,
         AccountId: data.AccountId || null,
@@ -191,7 +145,7 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
       }), setter, cb);
     };
     dataservice.msaccountsetupsrv.emergencyContacts.del = function(id, setter, cb) {
-      send(deleteItem(emergencyContacts, 'EmergencyContactID', id), setter, cb);
+      send(0, mockery.deleteItem(emergencyContacts, 'EmergencyContactID', id), setter, cb);
     };
 
 
@@ -205,44 +159,8 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
         CellularTypeId: data.CellularTypeId || null,
         DslSeizureId: data.DslSeizureId || null,
       };
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
-
-    function createOrUpdate(list, idName, idTemplate, newValue) {
-      var id = newValue[idName],
-        index;
-      if (id > 0) {
-        if (!list.some(function(item, i) {
-          if (item[idName] === id) {
-            index = i;
-            return true;
-          }
-        })) {
-          throw new Error('invalid id. id not in list.');
-        }
-
-        // replace old value with new value
-        list.splice(index, 1, newValue);
-      } else {
-        newValue[idName] = mockery.fromTemplate(idTemplate);
-        // add new value
-        list.push(newValue);
-      }
-      return newValue;
-    }
-
-    function deleteItem(list, idName, id) {
-      var result;
-      list.some(function(item, index) {
-        if (item[idName] === id) {
-          // remove
-          list.splice(index, 1);
-          result = item;
-          return true;
-        }
-      });
-      return result;
-    }
   }
 
   (function() {

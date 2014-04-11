@@ -52,7 +52,7 @@ define('src/core/utils', [
       if (value == null) {
         return value;
       } else {
-        return JSON.parse(JSON.stringify(value, jsonhelpers.replacer), jsonhelpers.reviver);
+        return jsonhelpers.parse(jsonhelpers.stringify(value));
       }
     },
 

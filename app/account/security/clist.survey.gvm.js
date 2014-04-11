@@ -1,10 +1,12 @@
 define('src/account/security/clist.survey.gvm', [
+  'moment',
   'src/core/notify',
   'ko',
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/core/utils',
 ], function(
+  moment,
   notify,
   ko,
   RowEvent,
@@ -35,62 +37,54 @@ define('src/account/security/clist.survey.gvm', [
           id: 'CreatedBy',
           name: 'Given By',
           field: 'CreatedBy',
+          width: 50,
         },
         {
           id: 'CreatedOn',
           name: 'Survey Date',
           field: 'CreatedOn',
+          formatter: function(row, cell, value) {
+            return moment.utc(value).format('MM/DD/YYYY hh:mm a');
+          },
         },
         {
           id: 'Caller',
           name: 'Caller',
           field: 'Caller',
-        },
-        {
-          id: 'SurveyName',
-          name: 'Survey Name',
-          field: 'SurveyName',
+          width: 50,
         },
         {
           id: 'Version',
           name: 'Version',
           field: 'Version',
+          width: 30,
         },
         {
-          id: 'Localization',
+          id: 'LocalizationCode',
           name: 'Localization',
-          field: 'Localization',
+          field: 'LocalizationCode',
+          width: 30,
         },
         {
           id: 'Status',
           name: 'Status',
-          field: 'Status',
+          field: 'IsComplete',
+          formatter: function(row, cell, value) {
+            return value ? 'Complete' : 'Incomplete';
+          },
+          width: 30,
         },
         {
           id: 'Result',
           name: 'Result',
-          field: 'Result',
+          field: 'Passed',
+          formatter: function(row, cell, value) {
+            return value ? 'Passed' : 'Failed';
+          },
+          width: 30,
         },
       ],
     });
-    while (_this.list().length < 2) {
-      _this.list().push({
-        id: (_this.list().length + 1),
-        surveyid: (_this.list().length + 1),
-        locale: 'en',
-        resultid: (_this.list().length + 1),
-
-
-        CreatedBy: 'CreatedBy ' + (_this.list().length + 1),
-        CreatedOn: 'CreatedOn ' + (_this.list().length + 1),
-        Caller: 'Caller ' + (_this.list().length + 1),
-        SurveyName: 'SurveyName ' + (_this.list().length + 1),
-        Version: 'Version ' + (_this.list().length + 1),
-        Localization: 'Localization ' + (_this.list().length + 1),
-        Status: 'Status ' + (_this.list().length + 1),
-        Result: 'Result ' + (_this.list().length + 1),
-      });
-    }
   }
   utils.inherits(CListSurveyGridViewModel, SlickGridViewModel);
 

@@ -234,7 +234,7 @@ define('src/account/security/clist.salesinfo.vm', [
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Value) {
         // console.log(resp.Value);
-        data.setVal(resp.Value);
+        data.setValue(resp.Value);
         data.markClean(resp.Value, true);
       }
     }, function(err) {

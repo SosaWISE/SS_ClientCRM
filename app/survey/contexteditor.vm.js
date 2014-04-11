@@ -16,7 +16,7 @@ define('src/survey/contexteditor.vm', [
   'use strict';
 
   var contextSchema = {
-    converter: ukov.converters.jsonString(jsonhelpers.replacer, jsonhelpers.reviver),
+    converter: ukov.converters.jsonString(),
     validators: [
       ukov.validators.isRequired('Context is required'),
     ],
@@ -27,13 +27,13 @@ define('src/survey/contexteditor.vm', [
     ContextEditorViewModel.super_.call(_this, options);
     // BaseViewModel.ensureProps(_this, []);
 
-    _this.contextStr = ukov.wrap(stringify(_this.dataContext), contextSchema);
+    _this.contextStr = ukov.wrap(jsonhelpers.stringify(_this.dataContext, 2), contextSchema);
 
     //
     // events
     //
     _this.cmdReset = ko.command(function(cb) {
-      _this.contextStr(stringify(_this.dataContext));
+      _this.contextStr(jsonhelpers.stringify(_this.dataContext, 2));
       cb();
     });
     _this.cmdReload = ko.command(function(cb) {
@@ -69,18 +69,9 @@ define('src/survey/contexteditor.vm', [
       val = _this.contextStr.cleanVal();
     }
 
-    _this.takeSurveyVm.dataContext = JSON.parse(val, jsonhelpers.reviver);
+    _this.takeSurveyVm.dataContext = jsonhelpers.parse(val);
     _this.takeSurveyVm.reloadSurvey();
-
-    // force recompute since _this.takeSurveyVm is not an observable
-    _this.cmdReload.recompute();
   };
-
-
-
-  function stringify(json) {
-    return JSON.stringify(json, jsonhelpers.replacer, '  ');
-  }
 
   return ContextEditorViewModel;
 });

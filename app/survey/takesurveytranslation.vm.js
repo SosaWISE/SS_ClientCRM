@@ -18,7 +18,7 @@ define('src/survey/takesurveytranslation.vm', [
   function TakeSurveyTranslationViewModel(options) {
     var _this = this;
     TakeSurveyTranslationViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, ['surveyTranslationVMs', 'routeData']);
+    BaseViewModel.ensureProps(_this, ['surveyTranslationVMs', 'surveyid']);
 
     _this.localeCvm = new ComboViewModel({
       list: _this.surveyTranslationVMs.map(function(surveyTranslationVM) {
@@ -75,9 +75,9 @@ define('src/survey/takesurveytranslation.vm', [
       notify.notify('warn', 'No localization code selected', 7);
       return;
     }
-    _this.routeData.locale = locale;
     vm = new TakeSurveyViewModel({
-      dataContext: {},
+      surveyid: _this.surveyid,
+      locale: locale,
     });
 
     if (!_this.contextEditorVm) {
@@ -103,7 +103,7 @@ define('src/survey/takesurveytranslation.vm', [
     }
     _this.contextEditorVm.setTakeSurveyVm(vm);
 
-    _this.layersVm.show(vm, null, _this.routeData);
+    _this.layersVm.show(vm);
   };
 
   return TakeSurveyTranslationViewModel;

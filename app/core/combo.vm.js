@@ -1,10 +1,12 @@
 define('src/core/combo.vm', [
   'ko',
+  'src/core/jsonhelpers',
   'src/core/strings',
   'src/core/utils',
   'src/core/base.vm',
 ], function(
   ko,
+  jsonhelpers,
   strings,
   utils,
   BaseViewModel
@@ -286,10 +288,10 @@ define('src/core/combo.vm', [
 
   function wrapItem(item, fields) {
     if (!(fields.value in item)) {
-      throw new Error('no ' + fields.value + ' field: ' + JSON.stringify(item));
+      throw new Error('no ' + fields.value + ' field: ' + jsonhelpers.stringify(item));
     }
     if (!(fields.text in item)) {
-      throw new Error('no ' + fields.text + ' field: ' + JSON.stringify(item));
+      throw new Error('no ' + fields.text + ' field: ' + jsonhelpers.stringify(item));
     }
     return {
       item: item,

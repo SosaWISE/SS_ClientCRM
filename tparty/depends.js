@@ -251,7 +251,11 @@
             });
           }
         } catch (ex) {
-          console.error('DEPENDS ERROR: failed to define `' + mod.name + '` - ' + ex);
+          // console.error('DEPENDS ERROR: failed to define `' + mod.name + '` - ' + ex);
+          // throw error in a different context
+          setTimeout(function() {
+            throw new Error('DEPENDS: failed to define `' + mod.name + '` - ' + ex);
+          }, 0);
         }
 
         if (mod.value === undefined) {

@@ -2,74 +2,23 @@ define('mock/dataservices/accountingengine.mock', [
   'src/core/strings',
   'src/dataservice',
   'src/core/mockery',
-  'src/core/utils',
 ], function(
   strings,
   dataservice,
-  mockery,
-  utils
+  mockery
 ) {
   "use strict";
 
   function mock(settings) {
-    function clone(value) {
-      return JSON.parse(JSON.stringify(value));
-    }
-
-    function send(value, setter, cb, timeout) {
-      var err, result;
-      if (value) {
-        value = clone(value);
-      }
-      if (false && !value) {
-        err = {
-          Code: 12345,
-          Message: 'No value',
-          Value: null,
-        };
-      } else {
-        result = {
-          Code: 0,
-          Message: 'Success',
-          Value: value,
-        };
-      }
-
-      setTimeout(function() {
-        if (!err && result && utils.isFunc(setter)) {
-          setter(result.Value);
-        }
-        cb(err, result);
-      }, timeout || settings.timeout);
-    }
-
-    function filterListBy(list, propName, id) {
-      return list.filter(function(item) {
-        return item[propName] === id;
-      });
-    }
-
-    function findSingleBy(list, propName, id) {
-      return list.filter(function(item) {
-        return item[propName] === id;
-      })[0];
-    }
-
-    function findSingleOrAll(list, propName, id) {
-      var result;
-      if (id > 0) {
-        result = findSingleBy(list, propName, id);
-      } else {
-        result = list;
-      }
-      return result;
+    function send(code, value, setter, cb, timeout) {
+      mockery.send(code, value, setter, cb, timeout || settings.timeout);
     }
 
     dataservice.accountingengine.aging.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          // result = filterListBy(agings, 'CMFID', id);
+          // result = mockery.filterListBy(agings, 'CMFID', id);
           result = mockery.fromTemplate({
             'list|6-6': [ // multiples of 6
               {
@@ -81,16 +30,16 @@ define('mock/dataservices/accountingengine.mock', [
           }).list;
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.accountingengine.billingInfoSummary.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(billingInfoSummarys, 'SummaryID', id);
+          result = mockery.findSingleOrAll(billingInfoSummarys, 'SummaryID', id);
           break;
         case 'CMFID':
-          result = filterListBy(billingInfoSummarys, 'CustomerMasterFileId', id);
+          result = mockery.filterListBy(billingInfoSummarys, 'CustomerMasterFileId', id);
           if (!result || !result.length) {
             billingInfoTmpl.CustomerMasterFileId = id;
             result = mockery.fromTemplate({
@@ -101,11 +50,11 @@ define('mock/dataservices/accountingengine.mock', [
           }
           break;
         case 'AccountId':
-          result = filterListBy(billingInfoSummarys, 'AccountId', id);
+          result = mockery.filterListBy(billingInfoSummarys, 'AccountId', id);
           break;
       }
 
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
 
     dataservice.accountingengine.customerSearches.save = function(params, setter, cb) {
@@ -130,7 +79,7 @@ define('mock/dataservices/accountingengine.mock', [
           result = mockery.fromTemplate(template).list;
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
   }
 

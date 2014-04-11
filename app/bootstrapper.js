@@ -50,9 +50,7 @@ define('src/bootstrapper', [
   ControllerViewModel.titlePostfix = config.titlePostfix;
   notify.resources = resources;
   // overwrite jquery's parseJSON
-  jquery.parseJSON = function(data) {
-    JSON.parse(data, jsonhelpers.reviver);
-  };
+  jquery.parseJSON = jsonhelpers.parse;
 
   var deps = [];
   if (config.useMocks) {

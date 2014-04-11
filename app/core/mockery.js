@@ -1,6 +1,9 @@
 // the mock factory
 define('src/core/mockery', [
-], function() {
+  'src/core/utils',
+], function(
+  utils
+) {
   'use strict';
 
   var mockery = {},
@@ -101,6 +104,9 @@ define('src/core/mockery', [
         'Lewis', 'Robinson', 'Walker', 'Perez', 'Hall', 'Young', 'Allen'],
     SEASON: ['Spring', 'Summer', 'Fall', 'Winter'],
 
+    DATE: function() {
+      return randomDate();
+    },
     DATE_YYYY: function() {
       var yyyy = randomDate().getFullYear();
       return yyyy + '';
@@ -338,6 +344,105 @@ define('src/core/mockery', [
       return values[count++ % values.length];
     };
   };
+
+
+  mockery.filterListBy = function(list, propName, id) {
+    return list.filter(function(item) {
+      return item[propName] === id;
+    });
+  };
+  mockery.findSingleBy = function(list, propName, id) {
+    return list.filter(function(item) {
+      return item[propName] === id;
+    })[0];
+  };
+  mockery.findSingleOrAll = function(list, propName, id) {
+    var result;
+    if (id > 0) {
+      result = mockery.findSingleBy(list, propName, id);
+    } else {
+      result = list;
+    }
+    return result;
+  };
+  mockery.createOrUpdate = function(list, idName, idTemplate, newValue) {
+    var id = newValue[idName],
+      index;
+    if (id > 0) {
+      if (!list.some(function(item, i) {
+        if (item[idName] === id) {
+          index = i;
+          return true;
+        }
+      })) {
+        throw new Error('invalid id. id not in list.');
+      }
+
+      // replace old value with new value
+      list.splice(index, 1, newValue);
+    } else {
+      newValue[idName] = mockery.fromTemplate(idTemplate);
+      // add new value
+      list.push(newValue);
+    }
+    return newValue;
+  };
+  mockery.deleteItem = function(list, idName, id) {
+    var result;
+    list.some(function(item, index) {
+      if (item[idName] === id) {
+        // remove
+        list.splice(index, 1);
+        result = item;
+        return true;
+      }
+    });
+    return result;
+  };
+  mockery.saveWithNoPKey = function(list, newValue, findFunc) {
+    var index = findFunc(list, newValue);
+    if (index > -1) {
+      // update
+      list.splice(index, 1, newValue);
+    } else {
+      // create
+      list.push(newValue);
+    }
+    return newValue;
+  };
+  mockery.send = function(code, value, setter, cb, timeout) {
+    var err, result;
+    if (value) {
+      value = utils.clone(value);
+    }
+    if (code) {
+      err = {
+        Code: code,
+        Message: 'Error Code ' + code,
+        Value: value,
+      };
+      // } else if (!value) {
+      //   err = {
+      //     Code: 12345,
+      //     Message: 'No value',
+      //     Value: null,
+      //   };
+    } else {
+      result = {
+        Code: 0,
+        Message: 'Success',
+        Value: value,
+      };
+    }
+
+    setTimeout(function() {
+      if (!err && result && utils.isFunc(setter)) {
+        setter(result.Value);
+      }
+      cb(err, result);
+    }, timeout || 100);
+  };
+
 
   return mockery;
 });

@@ -214,7 +214,7 @@ define('src/account/default/search.vm', [
         // PageSize: 25,
         // PageNumber: 1,
       };
-    _this.data.setVal(data);
+    _this.data.setValue(data);
     _this.data.markClean(data, true);
   };
   SearchViewModel.prototype.search = function(page, cb) {

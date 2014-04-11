@@ -1,67 +1,16 @@
 define('mock/dataservices/salessummary.mock', [
   'src/dataservice',
   'src/core/mockery',
-  'src/core/utils',
 ], function(
   dataservice,
-  mockery,
-  utils
+  mockery
 ) {
   "use strict";
 
   function mock(settings) {
-    function clone(value) {
-      return JSON.parse(JSON.stringify(value));
+    function send(code, value, setter, cb, timeout) {
+      mockery.send(code, value, setter, cb, timeout || settings.timeout);
     }
-
-    function send(value, setter, cb, timeout) {
-      var err, result;
-      if (value) {
-        value = clone(value);
-      }
-      if (false && !value) {
-        err = {
-          Code: 12345,
-          Message: 'No value',
-          Value: null,
-        };
-      } else {
-        result = {
-          Code: 0,
-          Message: 'Success',
-          Value: value,
-        };
-      }
-
-      setTimeout(function() {
-        if (!err && result && utils.isFunc(setter)) {
-          setter(result.Value);
-        }
-        cb(err, result);
-      }, timeout || settings.timeout);
-    }
-
-    // function filterListBy(list, propName, id) {
-    //   return list.filter(function(item) {
-    //     return item[propName] === id;
-    //   });
-    // }
-
-    // function findSingleBy(list, propName, id) {
-    //   return list.filter(function(item) {
-    //     return item[propName] === id;
-    //   })[0];
-    // }
-
-    // function findSingleOrAll(list, propName, id) {
-    //   var result;
-    //   if (id > 0) {
-    //     result = findSingleBy(list, propName, id);
-    //   } else {
-    //     result = list;
-    //   }
-    //   return result;
-    // }
 
     dataservice.salessummary.pointSystems.read = function(params, setter, cb) {
       var result;
@@ -70,7 +19,7 @@ define('mock/dataservices/salessummary.mock', [
           result = pointSystems;
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.salessummary.cellularTypes.read = function(params, setter, cb) {
       var result;
@@ -79,7 +28,7 @@ define('mock/dataservices/salessummary.mock', [
           result = cellularTypes;
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.salessummary.vendorAlarmcomPacakges.read = function(params, setter, cb) {
       var result;
@@ -88,7 +37,7 @@ define('mock/dataservices/salessummary.mock', [
           result = vendorAlarmcomPacakges;
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.salessummary.contractLengthsGet.read = function(params, setter, cb) {
       var result;
@@ -97,7 +46,7 @@ define('mock/dataservices/salessummary.mock', [
           result = contractLengthsGet;
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.salessummary.frequentlyInstalledEquipmentGet.read = function(params, setter, cb) {
       var result;
@@ -106,7 +55,7 @@ define('mock/dataservices/salessummary.mock', [
           result = frequentlyInstalledEquipmentGet;
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
   }
 

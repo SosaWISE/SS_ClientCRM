@@ -54,9 +54,7 @@ define('src/survey/survey.vm', [
     _this.takeVm = new TakeSurveyTranslationViewModel({
       layersVm: _this.layersVm,
       surveyTranslationVMs: _this.translations(),
-      routeData: {
-        surveyid: _this.id,
-      },
+      surveyid: _this.id,
     });
     _this.translations.subscribe(function(vms) {
       _this.takeVm.updateSurveyTranslations(vms);

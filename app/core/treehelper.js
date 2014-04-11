@@ -11,8 +11,10 @@ define('src/core/treehelper', [
     }
 
     list.forEach(function(item) {
-      fn(item, parent);
-      walkTree_Helper(item.childs, fn, item);
+      var stop = fn(item, parent);
+      if (!stop) {
+        walkTree_Helper(item.childs, fn, item);
+      }
     });
   }
 

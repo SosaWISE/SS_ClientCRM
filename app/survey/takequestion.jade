@@ -1,5 +1,4 @@
 table(class="question takequestion",data-bind="toggle:{'complete':isComplete}")
-  thead
   tr
     td(class="title")
       h2(data-bind="text:name")
@@ -15,10 +14,11 @@ table(class="question takequestion",data-bind="toggle:{'complete':isComplete}")
       div(data-bind="if:answerMode==='combo'")
         div(style="min-width:75px;",data-bind="cvm:cvm")
       div(data-bind="if:answerMode==='text'")
-        input(type="text",data-bind="value:answer,valueUpdate:'keyup'")
+        input(type="text",data-bind="ukov:answer,value:answer,valueUpdate:'keyup'")
 
   tr(data-bind="visible:showSubs")
     td
     td(colspan="2")
       div(data-bind="foreach:questions")
+        //- begin question recursion
         div(class="relative",data-bind="template:'tmpl-takequestion'")

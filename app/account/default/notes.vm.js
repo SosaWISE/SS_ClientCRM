@@ -247,7 +247,7 @@ define('src/account/default/notes.vm', [
     dataservice.maincore.notes.save({
       data: model,
     }, null, utils.safeCallback(cb, function(err, resp) {
-      ukovData.setVal(resp.Value);
+      ukovData.setValue(resp.Value);
       ukovData.markClean(resp.Value);
     }));
   }
@@ -272,7 +272,7 @@ define('src/account/default/notes.vm', [
       data: model,
     }, null, utils.safeCallback(cb, function(err, resp) {
       note._saved = true; // mark the note as being saved (used in `closeMsg`)
-      ukovData.setVal(resp.Value);
+      ukovData.setValue(resp.Value);
       ukovData.markClean(resp.Value);
     }));
   }

@@ -11,7 +11,7 @@ define('src/u-kov/ukov-prop', [
         return true;
       },
       // setting a value would throw an error if
-      // this empty write fucntion weren't here
+      // this empty write function weren't here
       write: function() {},
     });
 
@@ -28,6 +28,7 @@ define('src/u-kov/ukov-prop', [
     }
     var prop = ko.observable(null),
       currVal;
+    prop.setValue = prop;
     ko.utils.extend(prop, fn);
 
     prop.uid = 'prop' + (++count);
@@ -70,22 +71,22 @@ define('src/u-kov/ukov-prop', [
     return prop;
   }
   fn.updateStoredValue = function() {
-    var val = this.peek(),
-      converter = this.doc.converter;
+    var _this = this,
+      val = _this.peek(),
+      converter = _this.doc.converter;
     if (converter && typeof(val) === 'string') {
       val = converter(val);
     }
-    this.model[this.key] = val;
+    _this.model[_this.key] = val;
     return val;
   };
   fn.getValue = function() {
-    return this.model[this.key];
+    var _this = this;
+    return _this.model[_this.key];
   };
   fn.getNameInGroup = function() {
-    return this.doc.nameInGroup || this.key;
-  };
-  fn.setVal = function(val) {
-    this(val);
+    var _this = this;
+    return _this.doc.nameInGroup || _this.key;
   };
   fn.markClean = function(cleanVal, allowParentUpdate) {
     var _this = this,
@@ -102,18 +103,14 @@ define('src/u-kov/ukov-prop', [
   fn.ignore = function(ignoreVal, allowParentUpdate) {
     var _this = this;
     if (arguments.length) {
-      if (ignoreVal) {
-        _this._ignore = true;
-      } else {
-        delete _this._ignore;
-      }
+      _this._ignore = !! ignoreVal;
       // rerun validations
       _this.validate();
       if (allowParentUpdate) {
         _this.updateParent();
       }
     }
-    return !!_this._ignore;
+    return _this._ignore;
   };
   fn.update = function() {};
   fn.validate = function() {
@@ -126,16 +123,18 @@ define('src/u-kov/ukov-prop', [
     }
   };
   fn.validateSingle = function() {
-    var val = this.getValue();
+    var _this = this,
+      val = _this.getValue();
     if (val instanceof Error) {
-      this.errMsg(val.message || 'invalid value');
+      _this.errMsg(val.message || 'invalid value');
     } else {
-      this.errMsg(getValidationMsg(this.doc.validators, val, this.model, this.ukovModel, this));
+      _this.errMsg(getValidationMsg(_this.doc.validators, val, _this.model, _this.ukovModel, _this));
     }
-    return this.isValid();
+    return _this.isValid();
   };
   fn.validateGroup = function() {
-    var validationGroup = this.doc.validationGroup,
+    var _this = this,
+      validationGroup = _this.doc.validationGroup,
       prop, validIndividually = true,
       groupUkovProps = [],
       groupVal = {}, errMsg;
@@ -145,17 +144,17 @@ define('src/u-kov/ukov-prop', [
 
     // validate each field in the group individually
     validationGroup.keys.forEach(function(key) {
-      prop = this.ukovModel[key];
+      prop = _this.ukovModel[key];
       // validate individual field
       validIndividually &= prop.validateSingle();
       // store for later
       groupUkovProps.push(prop);
       groupVal[prop.getNameInGroup()] = prop.getValue();
-    }, this);
+    }, _this);
 
     // validate group as a whole
     if (validIndividually) {
-      errMsg = getValidationMsg(validationGroup.validators, groupVal, this.model, this.ukovModel, this);
+      errMsg = getValidationMsg(validationGroup.validators, groupVal, _this.model, _this.ukovModel, _this);
       if (errMsg) {
         // mark each with the group error
         groupUkovProps.forEach(function(prop) {

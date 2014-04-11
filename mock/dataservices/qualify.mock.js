@@ -1,65 +1,22 @@
 define('mock/dataservices/qualify.mock', [
-  'src/core/mockery',
   'src/dataservice',
-  'src/core/utils',
+  'src/core/mockery',
 ], function(
-  mockery,
   dataservice,
-  utils
+  mockery
 ) {
   "use strict";
 
   function mock(settings) {
-    function clone(value) {
-      return JSON.parse(JSON.stringify(value));
-    }
-
     function send(code, value, setter, cb, timeout) {
-      var err, result;
-      if (value) {
-        value = clone(value);
-      }
-
-      result = {
-        Code: code,
-        Message: code ? ('Error Code ' + code) : 'Success',
-        Value: value,
-      };
-
-      setTimeout(function() {
-        if (!err && result && utils.isFunc(setter)) {
-          setter(result.Value);
-        }
-        cb(err, result);
-      }, timeout || settings.timeout);
+      mockery.send(code, value, setter, cb, timeout || settings.timeout);
     }
 
-    // function filterListBy(list, propName, id) {
-    //   return list.filter(function(item) {
-    //     return item[propName] === id;
-    //   });
-    // }
-
-    function findSingleBy(list, propName, id) {
-      return list.filter(function(item) {
-        return item[propName] === id;
-      })[0];
-    }
-
-    function findSingleOrAll(list, propName, id) {
-      var result;
-      if (id > 0 || (typeof(id) === 'string' && id.length)) {
-        result = findSingleBy(list, propName, id);
-      } else {
-        result = list;
-      }
-      return result;
-    }
     dataservice.qualify.salesrep.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(salesreps, 'CompanyID', id);
+          result = mockery.findSingleOrAll(salesreps, 'CompanyID', id);
           break;
       }
       send(0, result, setter, cb);

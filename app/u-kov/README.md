@@ -52,9 +52,10 @@ A schema is an object with nested objects that describes the object to be wrappe
           - markClean(cleanVal, allowParentUpdate) - mark this object and all children as clean
               - `cleanVal` - value to set as the clean value
               - `allowParentUpdate` - true if `update` can be called on the parent model
-          - getValue(onlyDirty) - get a plain json object of the model
-              - `onlyDirty` - if true only object that are not clean are included
-          - setVal(val) - updates the values of the model and its children
+          - getValue(onlyDirty, excludeIgnored) - get a plain json object of the model
+              - `onlyDirty` - if true only objects that are not clean are included
+              - `excludeIgnored` - if true only non-ignored props are included
+          - setValue(val) - updates the values of the model and its children
   - UkovPropArray
       - observables
           - isClean() - returns true if no items in the array has changed

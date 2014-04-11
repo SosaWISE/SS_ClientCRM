@@ -28,7 +28,7 @@ define('src/u-kov/validators', [
     passwordRegex = /^(?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])\S+$/,
     ssnExactRegx = /^(?!000)(?!666)[0-8]\d{2}[- ](?!00)\d{2}[- ](?!0000)\d{4}$/,
 
-    relaxedEmailRegx = /^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+(?:\.[A-Z0-9.-]+)?\b$/i,
+    relaxedEmailRegx = /^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}\b$/i,
     zipRegx = /^[0-9]{5}$/;
 
   validators.isString = function(message) {
@@ -77,17 +77,6 @@ define('src/u-kov/validators', [
       }
     };
   };
-  // validators.isDate = function(message) {
-  // 	message = message || notDate;
-  // 	return getDateErrMsg(val/*, model*/) {
-  // 		if (val == null) {
-  // 			return;
-  // 		}
-  // 		if (true) { //@TODO:
-  // 			return message;
-  // 		}
-  // 	};
-  // };
 
   validators.isInRange = function(min, max, message) {
     message = message || notInRange;

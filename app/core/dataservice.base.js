@@ -78,7 +78,7 @@ define('src/core/dataservice.base', [
       // Delete  - DELETE
       // Replace - PUT
       httpVerb: httpVerb,
-      data: (data && !utils.isStr(data)) ? JSON.stringify(data, jsonhelpers.replacer) : data,
+      data: (data && !utils.isStr(data)) ? jsonhelpers.stringify(data) : data,
 
       contentType: 'application/json',
       dataType: 'json',
@@ -144,7 +144,7 @@ define('src/core/dataservice.base', [
       msgParts = [];
 
       try {
-        value = JSON.parse(xhr.responseText);
+        value = jsonhelpers.parse(xhr.responseText);
       } catch (ex) {
         value = xhr.responseText;
       }

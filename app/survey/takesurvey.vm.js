@@ -4,6 +4,7 @@ define('src/survey/takesurvey.vm', [
   'src/survey/tokens.vm',
   'src/survey/possibleanswers.vm',
   'src/survey/takequestion.vm',
+  'src/ukov',
   'ko',
   'src/dataservice',
   'src/core/jsonhelpers',
@@ -17,6 +18,7 @@ define('src/survey/takesurvey.vm', [
   TokensViewModel,
   PossibleAnswersViewModel,
   TakeQuestionViewModel,
+  ukov,
   ko,
   dataservice,
   jsonhelpers,
@@ -30,7 +32,25 @@ define('src/survey/takesurvey.vm', [
   function TakeSurveyViewModel(options) {
     var _this = this;
     TakeSurveyViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['dataContext']);
+    // ControllerViewModel.ensureProps(_this, ['dataContext']);
+
+    if (_this.surveyResult) {
+      _this.dataContext = (utils.isStr(_this.surveyResult.Context)) ? jsonhelpers.parse(_this.surveyResult.Context) : _this.surveyResult.Context;
+      _this.resultid = _this.surveyResult.ResultID;
+      _this.surveyid = _this.surveyResult.SurveyId;
+      _this.locale = _this.surveyResult.LocalizationCode;
+      if (!_this.dataContext) {
+        throw new Error('missing dataContext');
+      }
+      if (!_this.surveyid) {
+        throw new Error('missing surveyid');
+      }
+      if (!_this.locale) {
+        throw new Error('missing locale');
+      }
+    } else if (!_this.surveyid || !_this.locale) {
+      throw new Error('surveyResult or surveyid and locale need be passed in');
+    }
 
     _this.survey = ko.observable();
 
@@ -40,6 +60,9 @@ define('src/survey/takesurvey.vm', [
     //
     // events
     //
+    _this.cmdSaveSurvey = ko.command(function(cb) {
+      _this.saveSurvey(cb);
+    });
   }
   utils.inherits(TakeSurveyViewModel, ControllerViewModel);
   TakeSurveyViewModel.prototype.viewTmpl = 'tmpl-takesurvey';
@@ -49,35 +72,32 @@ define('src/survey/takesurvey.vm', [
 
   TakeSurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
-      locale = routeData.locale,
-      tempSurveyType, surveyData, tempResult;
+      tempSurveyType, surveyData, tempResultAnswers;
 
-    _this.surveyid = parseInt(routeData.surveyid, 10);
-    _this.resultid = routeData.resultid;
-
-    if (!_this.surveyid || !locale) {
-      return join.add()({ // Code: ???,
-        Message: 'missing or invalid route data values',
+    if (!_this.dataContext) {
+      join.add()({ // Code: ???,
+        Message: 'missing dataContext',
       });
+      return;
     }
 
     loadSurveyType(_this.surveyid, function(val) {
       tempSurveyType = val;
     }, join);
 
-    loadSurvey(_this.surveyid, locale, function(val) {
+    loadSurvey(_this.surveyid, _this.locale, function(val) {
       surveyData = val;
     }, join);
 
     if (_this.resultid) {
-      loadResult(_this.resultid, function(val) {
-        tempResult = val;
+      loadResultAnswers(_this.resultid, function(val) {
+        tempResultAnswers = val;
       }, join);
     }
 
     // ensure tokens and PAs are loaded
-    _this.tokensVM.load(routeData, extraData, join.add());
-    _this.possibleAnswersVM.load(routeData, extraData, join.add());
+    _this.tokensVM.load({}, {}, join.add());
+    _this.possibleAnswersVM.load({}, {}, join.add());
 
     join.when(function(err) {
       if (err) {
@@ -86,13 +106,7 @@ define('src/survey/takesurvey.vm', [
       }
 
       surveyData.surveyType = tempSurveyType;
-      surveyData.surveyResult = tempResult;
-
-      // console.log('tokens', JSON.stringify(_this.tokensVM.childs(), null, '  '));
-      // console.log('surveyType', surveyData.surveyType);
-      // console.log('survey', surveyData);
-      // console.log('surveyType', JSON.stringify(surveyData.surveyType, null, '  '));
-      // console.log('survey', JSON.stringify(surveyData, null, '  '));
+      surveyData.resultAnswers = tempResultAnswers;
 
       //
       _this.surveyData = surveyData;
@@ -105,67 +119,87 @@ define('src/survey/takesurvey.vm', [
   };
 
   TakeSurveyViewModel.prototype.reloadSurvey = function() {
-    var _this = this,
-      dataContext;
+    var _this = this;
     if (_this.surveyData) {
-      dataContext = _this.surveyData.surveyResult ? _this.surveyData.surveyResult.Context : _this.dataContext;
-      _this.survey(createSurvey(_this.surveyData, _this.possibleAnswersVM.paMap, _this.tokensVM.tokenMap, dataContext));
+      _this.survey(createSurvey(_this.surveyData, _this.possibleAnswersVM.paMap, _this.tokensVM.tokenMap, _this.dataContext));
     }
   };
 
-  TakeSurveyViewModel.prototype.saveSurvey = function() {
-    var _this = this;
+  TakeSurveyViewModel.prototype.saveSurvey = function(cb) {
+    var _this = this,
+      errMsg, answers = [];
     if (_this.surveyData) {
       if (_this.resultid) {
         notify.notify('warn', strings.format('Survey {0} has already been saved.', _this.resultid), 7);
+        cb();
         return;
       }
 
-      _this = {
-        // ResultID: 0,
-        SurveyId: _this.surveyid,
-        SurveyTranslationId: _this.surveyData.surveyTranslation.SurveyTranslationID,
+      _this.survey().questions.forEach(function(vm) {
+        var result = vm.addAnswers(answers);
+        // only store first error message
+        if (!errMsg) {
+          errMsg = result;
+        }
+      });
+      //@TODO: allow for saving even if there are errors?????
+      if (errMsg) {
+        notify.notify('warn', errMsg, 7);
+        cb();
+        return;
+      }
 
-        // stringify Context
-        Context: stringify(_this.dataContext),
-        // get all visible question answers
-        Answers: [
-          {
-            QuestionId: 0,
-            AnswerText: 'asdf',
-          },
-        ],
-      };
+      dataservice.survey.results.save({
+        data: {
+          // ResultID: 0,
+          SurveyTranslationId: _this.surveyData.surveyTranslation.SurveyTranslationID,
+          Context: jsonhelpers.stringify(_this.dataContext), // stringified Context
+          Answers: answers, // get all visible question answers
+        },
+      }, null, utils.safeCallback(function(err) {
+        if (err) {
+          notify.notify('error', err);
+        }
+        cb();
+      }, function(err, resp) {
+        _this.resultid = resp.Value.ResultID;
+      }, function(err) {
+        notify.notify('error', err.Message);
+      }));
     }
   };
 
-  function stringify(json) {
-    return JSON.stringify(json, jsonhelpers.replacer, '  ');
-  }
-
   function createSurvey(surveyData, paMap, tokenMap, data) {
-    var survey, questions;
+    var survey, questions, ukovModel;
+
+    ukovModel = ukov.wrap({}, {
+      _model: true
+    });
 
     questions = createTakeQuestions(
+      ukovModel,
       surveyData.questions,
       paMap,
       surveyData.surveyType.questionMeanings,
       surveyData.surveyTranslation.questionTranslations,
       tokenMap,
       data,
-      surveyData.surveyResult
+      surveyData.resultAnswers
     );
+    ukovModel.validate();
+    ukovModel.update();
 
     survey = {
       version: surveyData.Version,
       locale: surveyData.surveyTranslation.LocalizationCode,
       questions: makeTree(questions),
+      ukovModel: ukovModel,
     };
 
     return survey;
   }
 
-  function createTakeQuestions(questions, paMap, meanings, translations, tokenMap, data, surveyResult) {
+  function createTakeQuestions(ukovModel, questions, paMap, meanings, translations, tokenMap, data, resultAnswers) {
     var getTokenValue,
       meaningMap = {},
       questionTokenValuesMap = {},
@@ -208,9 +242,9 @@ define('src/survey/takesurvey.vm', [
       );
     });
 
-    if (surveyResult) {
+    if (resultAnswers) {
       // answerTextMap
-      surveyResult.Answers.forEach(function(answer) {
+      resultAnswers.forEach(function(answer) {
         answerTextMap[answer.QuestionId] = answer.AnswerText;
       });
     }
@@ -221,12 +255,14 @@ define('src/survey/takesurvey.vm', [
       });
 
       var vm = new TakeQuestionViewModel({
+        ukovModel: ukovModel,
         QuestionID: q.QuestionID,
         ParentId: q.ParentId,
         GroupOrder: q.GroupOrder,
         questionPossibleAnswerMaps: q.questionPossibleAnswerMaps,
         html: questionHtmlMap[q.QuestionID] || '<strong>[No Translation]</strong>',
         answerText: answerTextMap[q.QuestionID],
+        readonly: !! resultAnswers,
       });
 
       return vm;
@@ -246,6 +282,7 @@ define('src/survey/takesurvey.vm', [
       childs.push(vm);
       // start recursion
       vm.questions = makeTree(questions, vm);
+      vm.childs = vm.questions; // needed inorder to walk with treehelper
     });
     return childs;
   }
@@ -373,17 +410,12 @@ define('src/survey/takesurvey.vm', [
     }, setter, cb);
   }
 
-  function loadResult(resultid, setter, join) {
+  function loadResultAnswers(resultid, setter, join) {
     var cb = join.add();
     dataservice.survey.results.read({
-      id: resultid
-    }, setter, function(err, resp) {
-      if (!err && utils.isStr(resp.Value.Context)) {
-        //
-        resp.Value.Context = JSON.parse(resp.Value.Context);
-      }
-      cb(err, resp);
-    });
+      id: resultid,
+      link: 'answers',
+    }, setter, cb);
   }
 
   return TakeSurveyViewModel;
