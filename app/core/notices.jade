@@ -7,3 +7,5 @@ div(class="notice-wrapper", data-bind="foreach:list")
         span(class="msg", data-bind="text:message")
       div(class="actions", data-bind="foreach:actions")
         a(data-bind="text:name,click:action")
+
+div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

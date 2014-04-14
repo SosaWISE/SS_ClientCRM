@@ -75,6 +75,7 @@ define('src/account/security/checklist.vm', [
         pcontroller: _this,
         id: 'presurvey',
         title: 'Pre Survey',
+        surveyTypeId: 1, //@HACK: need better way of knowing the id of the survey type
       }),
       new CListIndustryViewModel({
         pcontroller: _this,
@@ -115,6 +116,7 @@ define('src/account/security/checklist.vm', [
         pcontroller: _this,
         id: 'postsurvey',
         title: 'Post Survey',
+        surveyTypeId: 2, //@HACK: need better way of knowing the id of the survey type
       }),
       new CListInitialPaymentViewModel({
         pcontroller: _this,
@@ -129,7 +131,6 @@ define('src/account/security/checklist.vm', [
         layersVm: _this.layersVm,
       }),
     ]);
-
 
     join.add()();
   };

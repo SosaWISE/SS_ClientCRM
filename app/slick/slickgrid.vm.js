@@ -173,6 +173,12 @@ define('src/slick/slickgrid.vm', [
       _this.grid.setSelectedRows(rows);
     }
   };
+  SlickGridViewModel.prototype.resetActiveCell = function() {
+    var _this = this;
+    if (_this.grid) {
+      _this.grid.resetActiveCell();
+    }
+  };
 
 
   SlickGridViewModel.formatters = {

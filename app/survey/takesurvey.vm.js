@@ -32,13 +32,18 @@ define('src/survey/takesurvey.vm', [
   function TakeSurveyViewModel(options) {
     var _this = this;
     TakeSurveyViewModel.super_.call(_this, options);
-    // ControllerViewModel.ensureProps(_this, ['dataContext']);
+    ControllerViewModel.ensureProps(_this, ['accountid', 'onSaved']);
 
     if (_this.surveyResult) {
-      _this.dataContext = (utils.isStr(_this.surveyResult.Context)) ? jsonhelpers.parse(_this.surveyResult.Context) : _this.surveyResult.Context;
       _this.resultid = _this.surveyResult.ResultID;
+      if (!_this.retake || !_this.dataContext) {
+        _this.dataContext = (utils.isStr(_this.surveyResult.Context)) ? jsonhelpers.parse(_this.surveyResult.Context) : _this.surveyResult.Context;
+      }
       _this.surveyid = _this.surveyResult.SurveyId;
-      _this.locale = _this.surveyResult.LocalizationCode;
+      if (!_this.retake || !_this.locale) {
+        _this.locale = _this.surveyResult.LocalizationCode;
+      }
+
       if (!_this.dataContext) {
         throw new Error('missing dataContext');
       }
@@ -121,7 +126,7 @@ define('src/survey/takesurvey.vm', [
   TakeSurveyViewModel.prototype.reloadSurvey = function() {
     var _this = this;
     if (_this.surveyData) {
-      _this.survey(createSurvey(_this.surveyData, _this.possibleAnswersVM.paMap, _this.tokensVM.tokenMap, _this.dataContext));
+      _this.survey(createSurvey(_this.surveyData, _this.possibleAnswersVM.paMap, _this.tokensVM.tokenMap, _this.dataContext, _this.retake));
     }
   };
 
@@ -129,47 +134,56 @@ define('src/survey/takesurvey.vm', [
     var _this = this,
       errMsg, answers = [];
     if (_this.surveyData) {
-      if (_this.resultid) {
+      if (_this.resultid && !_this.retake) {
         notify.notify('warn', strings.format('Survey {0} has already been saved.', _this.resultid), 7);
         cb();
         return;
       }
 
       _this.survey().questions.forEach(function(vm) {
-        var result = vm.addAnswers(answers);
+        var errResult = vm.addAnswers(answers);
         // only store first error message
-        if (!errMsg) {
-          errMsg = result;
+        if (!errMsg && errResult) {
+          errMsg = errResult;
         }
       });
-      //@TODO: allow for saving even if there are errors?????
+      //@REVEIW: allow for saving even if there are errors?????
       if (errMsg) {
         notify.notify('warn', errMsg, 7);
-        cb();
-        return;
+        // cb();
+        // return;
       }
 
       dataservice.survey.results.save({
         data: {
           // ResultID: 0,
+          AccountId: _this.accountid,
           SurveyTranslationId: _this.surveyData.surveyTranslation.SurveyTranslationID,
           Context: jsonhelpers.stringify(_this.dataContext), // stringified Context
-          Answers: answers, // get all visible question answers
+          Answers: answers, // all visible question answers
+          CreatedBy: 'boh?',
+          Caller: 'boh?',
+          Passed: !errMsg, //@REVIEW: Passed
+          IsComplete: !errMsg, //@REVIEW: IsComplete
         },
-      }, null, utils.safeCallback(function(err) {
-        if (err) {
-          notify.notify('error', err);
-        }
-        cb();
-      }, function(err, resp) {
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        // always set retake to false
+        _this.retake = false;
+
+        //@REVIEW: do something with resp.Value?????
         _this.resultid = resp.Value.ResultID;
+        _this.surveyData.resultAnswers = resp.Value.Answers;
+
+        //
+        _this.reloadSurvey();
+        _this.onSaved();
       }, function(err) {
         notify.notify('error', err.Message);
       }));
     }
   };
 
-  function createSurvey(surveyData, paMap, tokenMap, data) {
+  function createSurvey(surveyData, paMap, tokenMap, data, retake) {
     var survey, questions, ukovModel;
 
     ukovModel = ukov.wrap({}, {
@@ -184,7 +198,8 @@ define('src/survey/takesurvey.vm', [
       surveyData.surveyTranslation.questionTranslations,
       tokenMap,
       data,
-      surveyData.resultAnswers
+      surveyData.resultAnswers,
+      retake
     );
     ukovModel.validate();
     ukovModel.update();
@@ -199,13 +214,18 @@ define('src/survey/takesurvey.vm', [
     return survey;
   }
 
-  function createTakeQuestions(ukovModel, questions, paMap, meanings, translations, tokenMap, data, resultAnswers) {
+  function createTakeQuestions(ukovModel, questions, paMap, meanings, translations, tokenMap, data, resultAnswers, retake) {
     var getTokenValue,
       meaningMap = {},
       questionTokenValuesMap = {},
       questionHtmlMap = {},
       answerTextMap = {};
 
+    if (!data) {
+      throw new Error('missing data context');
+    }
+
+    // function for looking up data context values
     getTokenValue = underscore.memoize(function(token) {
       var parts = token.split('.'),
         result;
@@ -224,6 +244,9 @@ define('src/survey/takesurvey.vm', [
       return result;
     });
 
+    //
+    // create lookup mappings
+    //
     meanings.forEach(function(qm) {
       meaningMap[qm.QuestionMeaningID] = qm;
     });
@@ -233,7 +256,6 @@ define('src/survey/takesurvey.vm', [
         return getTokenValue(tokenMap[qmTokenMap.TokenId].Token);
       });
     });
-
     translations.forEach(function(translation) {
       questionHtmlMap[translation.QuestionId] = surveyhelper.formatQuestion(
         translation.TextFormat,
@@ -241,7 +263,6 @@ define('src/survey/takesurvey.vm', [
         '[missing token value]'
       );
     });
-
     if (resultAnswers) {
       // answerTextMap
       resultAnswers.forEach(function(answer) {
@@ -249,6 +270,7 @@ define('src/survey/takesurvey.vm', [
       });
     }
 
+    // create question view models
     return questions.map(function(q) {
       q.questionPossibleAnswerMaps.forEach(function(qpa) {
         qpa.text = paMap[qpa.PossibleAnswerId].AnswerText;
@@ -262,7 +284,7 @@ define('src/survey/takesurvey.vm', [
         questionPossibleAnswerMaps: q.questionPossibleAnswerMaps,
         html: questionHtmlMap[q.QuestionID] || '<strong>[No Translation]</strong>',
         answerText: answerTextMap[q.QuestionID],
-        readonly: !! resultAnswers,
+        readonly: ( !! resultAnswers) && !retake, // readonly if there are answers and not retaking the survey
       });
 
       return vm;

@@ -2,14 +2,12 @@ define('src/account/security/clist.survey.gvm', [
   'moment',
   'src/core/notify',
   'ko',
-  'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/core/utils',
 ], function(
   moment,
   notify,
   ko,
-  RowEvent,
   SlickGridViewModel,
   utils
 ) {
@@ -19,19 +17,17 @@ define('src/account/security/clist.survey.gvm', [
     var _this = this;
     CListSurveyGridViewModel.super_.call(_this, {
       gridOptions: {
+        multiSelect: false,
         enableColumnReorder: false,
         forceFitColumns: true,
         rowHeight: 27,
       },
-      plugins: [
-        new RowEvent({
-          eventName: 'onClick',
-          fn: function(item) {
-            options.onClick(item);
-            return true; // do default
-          },
-        }),
-      ],
+      onSelectedRowsChanged: function(rows) {
+        _this.selectedRow = rows[0];
+        if (_this.selectedRow) {
+          options.onClick(_this.selectedRow);
+        }
+      },
       columns: [
         {
           id: 'CreatedBy',

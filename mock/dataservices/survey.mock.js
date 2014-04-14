@@ -35,7 +35,8 @@ define('mock/dataservices/survey.mock', [
     };
 
     dataservice.survey.surveyTypes.read = function(params, setter, cb) {
-      var result, id = params.id;
+      var result, id = params.id,
+        code = 0;
       switch (params.link || null) {
         case null:
           result = mockery.findSingleOrAll(surveyTypes, 'SurveyTypeID', id);
@@ -46,8 +47,18 @@ define('mock/dataservices/survey.mock', [
         case 'questionMeanings':
           result = mockery.filterListBy(questionMeanings, 'SurveyTypeId', id);
           break;
+        case 'activeSurvey':
+          // get all surveys for type
+          result = mockery.filterListBy(surveys, 'SurveyTypeId', id);
+          // find first one that is marked as active or first in list?????
+          result = mockery.findSingleBy(result, 'Active', true) || result[0];
+          // webserver should return an error when result if null
+          if (!result) {
+            code = -1;
+          }
+          break;
       }
-      send(0, result, setter, cb);
+      send(code, result, setter, cb);
     };
 
     dataservice.survey.questionMeanings.read = function(params, setter, cb) {
@@ -184,9 +195,15 @@ define('mock/dataservices/survey.mock', [
         svResult;
       svResult = mockery.createOrUpdate(surveyResults, 'ResultID', '@INC(surveyResults)', {
         // ResultID: data.ResultID,
+        AccountId: data.AccountId,
         SurveyTranslationId: data.SurveyTranslationId,
+        // RecruitId: data.RecruitId,
+        Caller: data.Caller,
+        Passed: data.Passed,
+        IsComplete: data.IsComplete,
         Context: data.Context,
-        // Answers: data.Answers,
+        CreatedBy: data.CreatedBy,
+        CreatedOn: new Date(),
       });
 
       // save Answers
@@ -198,6 +215,9 @@ define('mock/dataservices/survey.mock', [
           AnswerText: data.AnswerText,
         });
       });
+
+      // set Answers on result
+      svResult.Answers = mockery.filterListBy(resultAnswers, 'ResultId', svResult.ResultID);
 
       send(0, svResult, setter, cb);
     };
@@ -448,8 +468,8 @@ define('mock/dataservices/survey.mock', [
         ResultID: '@INC(surveyResults)',
         SurveyTranslationId: 1,
         AccountId: 1,
+        // RecruitId: -1, //boh?
         Caller: 'boh?',
-        // RecruitID: -1, //boh?
         Passed: true,
         IsComplete: true,
         Context: JSON.stringify({
@@ -497,8 +517,8 @@ define('mock/dataservices/survey.mock', [
         ResultID: svResult.ResultID,
         SurveyTranslationId: svResult.SurveyTranslationId,
         AccountId: svResult.AccountId,
-        Caller: svResult.Caller,
         // RecruitId: svResult.RecruitId,
+        Caller: svResult.Caller,
         Passed: svResult.Passed,
         IsComplete: svResult.IsComplete,
         Context: svResult.Context,
@@ -516,6 +536,9 @@ define('mock/dataservices/survey.mock', [
 
         LocalizationCode: svTranslation.LocalizationCode,
       });
+    });
+    resultViews.sort(function(a, b) {
+      return b.CreatedOn.getTime() - a.CreatedOn.getTime();
     });
     return resultViews;
   };

@@ -76,8 +76,12 @@ define('src/survey/takesurveytranslation.vm', [
       return;
     }
     vm = new TakeSurveyViewModel({
+      accountid: 0,
       surveyid: _this.surveyid,
       locale: locale,
+      onSaved: function() {
+        alert('yay! saved!');
+      },
     });
 
     if (!_this.contextEditorVm) {

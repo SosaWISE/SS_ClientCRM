@@ -104,6 +104,9 @@ define('src/core/mockery', [
         'Lewis', 'Robinson', 'Walker', 'Perez', 'Hall', 'Young', 'Allen'],
     SEASON: ['Spring', 'Summer', 'Fall', 'Winter'],
 
+    NOW: function() {
+      return new Date();
+    },
     DATE: function() {
       return randomDate();
     },

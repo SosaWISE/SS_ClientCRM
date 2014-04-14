@@ -1,9 +1,13 @@
 define('src/core/notify', [
+  'src/core/dialog.vm',
+  'src/core/layers.vm',
+  // 'src/core/strings',
   'ko',
-  'src/core/strings'
 ], function(
-  ko,
-  strings
+  DialogViewModel,
+  LayersViewModel,
+  // strings,
+  ko
 ) {
   "use strict";
 
@@ -86,8 +90,18 @@ define('src/core/notify', [
   //
 
   function Notifier() {
-    this.list = ko.observableArray();
-    this.addAtTop = true;
+    var _this = this;
+    _this.list = ko.observableArray();
+    _this.addAtTop = true;
+
+    // default layers view model for dialogs
+    _this.layersVm = new LayersViewModel({
+      controller: {
+        getRouteData: function() {
+          return {};
+        },
+      },
+    });
   }
   Notifier.prototype.create = function() {
     return new Notifier();
@@ -111,17 +125,40 @@ define('src/core/notify', [
   };
 
 
-  Notifier.prototype.send = function(type, resKey, messageArgs, timeoutSec, actionsObj) {
-    // lookup resource by key and replace {n} with messageArgs
-    var msg = strings.aformat(this.resources[resKey] || ('invalid resource key `' + resKey + '`'), messageArgs || []);
-    this.notify(type, msg, timeoutSec, actionsObj);
+  //@REVIEW this needs to be rethought
+  // Notifier.prototype.send = function(type, resKey, messageArgs, timeoutSec, actionsObj) {
+  //   // lookup resource by key and replace {n} with messageArgs
+  //   var msg = strings.aformat(this.resources[resKey] || ('invalid resource key `' + resKey + '`'), messageArgs || []);
+  //   this.notify(type, msg, timeoutSec, actionsObj);
+  // };
+  // // add helper functions
+  // ['info', 'ok', 'warn', 'error'].forEach(function(type) {
+  //   Notifier.prototype[type] = function(resKey, messageArgs, timeoutSec, actionsObj) {
+  //     this.send(type, resKey, messageArgs, timeoutSec, actionsObj);
+  //   };
+  // });
+
+
+
+
+  Notifier.prototype.alert = function(title, msg, cb, layersVm) {
+    var _this = this;
+    show(_this, title, msg, cb, layersVm, ['ok']);
   };
-  // add helper functions
-  ['info', 'ok', 'warn', 'error'].forEach(function(type) {
-    Notifier.prototype[type] = function(resKey, messageArgs, timeoutSec, actionsObj) {
-      this.send(type, resKey, messageArgs, timeoutSec, actionsObj);
-    };
-  });
+  Notifier.prototype.confirm = function(title, msg, cb, layersVm) {
+    var _this = this;
+    show(_this, title, msg, cb, layersVm, ['yes', 'no']);
+  };
+
+  function show(_this, title, msg, cb, layersVm, actionNames) {
+    var vm = new DialogViewModel({
+      title: title || '',
+      msg: msg || '',
+      actionNames: actionNames,
+    });
+    (layersVm || _this.layersVm).alert(vm, cb);
+  }
+
 
   return new Notifier();
 });
