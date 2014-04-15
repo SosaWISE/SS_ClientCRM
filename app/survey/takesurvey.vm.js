@@ -58,6 +58,12 @@ define('src/survey/takesurvey.vm', [
     }
 
     _this.survey = ko.observable();
+    _this.showSave = ko.observable();
+    _this.updateShowSave = function() {
+      // return _this.resultid && !_this.retake;
+      _this.showSave(!_this.resultid || _this.retake);
+    };
+    _this.updateShowSave();
 
     _this.tokensVM = _this.tokensVM || new TokensViewModel();
     _this.possibleAnswersVM = _this.possibleAnswersVM || new PossibleAnswersViewModel();
@@ -134,12 +140,13 @@ define('src/survey/takesurvey.vm', [
     var _this = this,
       errMsg, answers = [];
     if (_this.surveyData) {
-      if (_this.resultid && !_this.retake) {
+      if (!_this.showSave()) { // if (_this.resultid && !_this.retake) {
         notify.notify('warn', strings.format('Survey {0} has already been saved.', _this.resultid), 7);
         cb();
         return;
       }
 
+      // gather answers
       _this.survey().questions.forEach(function(vm) {
         var errResult = vm.addAnswers(answers);
         // only store first error message
@@ -147,41 +154,57 @@ define('src/survey/takesurvey.vm', [
           errMsg = errResult;
         }
       });
-      //@REVEIW: allow for saving even if there are errors?????
+
+      // check for errors
       if (errMsg) {
         notify.notify('warn', errMsg, 7);
-        // cb();
-        // return;
+        // allow for saving even if there are errors
+        notify.confirm('Save incomplete survey?',
+          'This survey is incomplete. Saving now will result in an automatic failure, ' +
+          'but you will be able to retake it later. Do you still want to save the survey?',
+          function(result) {
+            if (result === 'yes') {
+              doSave(_this, answers, errMsg, cb);
+            } else {
+              cb();
+            }
+          });
+      } else {
+        doSave(_this, answers, errMsg, cb);
       }
-
-      dataservice.survey.results.save({
-        data: {
-          // ResultID: 0,
-          AccountId: _this.accountid,
-          SurveyTranslationId: _this.surveyData.surveyTranslation.SurveyTranslationID,
-          Context: jsonhelpers.stringify(_this.dataContext), // stringified Context
-          Answers: answers, // all visible question answers
-          CreatedBy: 'boh?',
-          Caller: 'boh?',
-          Passed: !errMsg, //@REVIEW: Passed
-          IsComplete: !errMsg, //@REVIEW: IsComplete
-        },
-      }, null, utils.safeCallback(cb, function(err, resp) {
-        // always set retake to false
-        _this.retake = false;
-
-        //@REVIEW: do something with resp.Value?????
-        _this.resultid = resp.Value.ResultID;
-        _this.surveyData.resultAnswers = resp.Value.Answers;
-
-        //
-        _this.reloadSurvey();
-        _this.onSaved();
-      }, function(err) {
-        notify.notify('error', err.Message);
-      }));
     }
   };
+
+  function doSave(_this, answers, errMsg, cb) {
+    dataservice.survey.results.save({
+      data: {
+        // ResultID: 0,
+        AccountId: _this.accountid,
+        SurveyTranslationId: _this.surveyData.surveyTranslation.SurveyTranslationID,
+        Context: jsonhelpers.stringify(_this.dataContext), // stringified Context
+        Answers: answers, // all visible question answers
+        CreatedBy: 'boh?',
+        Caller: 'boh?',
+        Passed: !errMsg, //@REVIEW: Passed
+        IsComplete: !errMsg, //@REVIEW: IsComplete
+      },
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      // always set retake to false
+      _this.retake = false;
+      //@REVIEW: do something with resp.Value?????
+      _this.resultid = resp.Value.ResultID;
+      _this.surveyData.resultAnswers = resp.Value.Answers;
+
+      // update after retake and resultid have changed
+      _this.updateShowSave();
+
+      //
+      _this.reloadSurvey();
+      _this.onSaved();
+    }, function(err) {
+      notify.notify('error', err.Message);
+    }));
+  }
 
   function createSurvey(surveyData, paMap, tokenMap, data, retake) {
     var survey, questions, ukovModel;

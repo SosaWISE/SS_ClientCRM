@@ -20,5 +20,5 @@ table(class="fh-wrap")
           //- div(data-bind="if:ukovModel.isValid")
           //-   pre(data-bind="text:require('src/core/jsonhelpers').stringify(ukovModel.getValue(false,true),2)")
 
-        div(style="padding-top:30px;padding-bottom:30px;")
+        div(style="padding-top:30px;padding-bottom:30px;",data-bind="if:showSave")
           div(class="btn",tabindex="0",data-bind="cmd:cmdSaveSurvey") Save

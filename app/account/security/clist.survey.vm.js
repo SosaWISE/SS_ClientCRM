@@ -25,19 +25,22 @@ define('src/account/security/clist.survey.vm', [
     _this.loadedResultVmMap = {};
     _this.gvm = new CListSurveyGridViewModel({
       onClick: function(item) {
-        if (_this.currentSurveyVm) {
-          notify.confirm('Are you sure?', 'Do you want to scrap the current survey to view this survey?', function(result) {
-            if (result === 'yes') {
-              _this.currentSurveyVm = null;
-              loadResult(item);
-            } else {
-              _this.gvm.setSelectedRows([]);
-              _this.gvm.resetActiveCell();
-            }
-          });
-        } else {
+        _this.checkForCurrentSurvey(function() {
           loadResult(item);
-        }
+        });
+        // if (_this.currentSurveyVm) {
+        //   notify.confirm('Are you sure?', 'Do you want to scrap the current survey?', function(result) {
+        //     if (result === 'yes') {
+        //       _this.currentSurveyVm = null;
+        //       loadResult(item);
+        //     } else {
+        //       _this.gvm.setSelectedRows([]);
+        //       _this.gvm.resetActiveCell();
+        //     }
+        //   });
+        // } else {
+        //   loadResult(item);
+        // }
       },
     });
 
@@ -95,47 +98,13 @@ define('src/account/security/clist.survey.vm', [
   };
 
   CListSurveyViewModel.prototype.takeSurvey = function(cb) {
-    var _this = this,
-      vm, dataContext = _this.getDataContext();
-    vm = new TakeSurveyViewModel({
-      accountid: _this.accountid,
-      dataContext: dataContext,
-      surveyid: _this.surveyid,
-      locale: 'en', //@REVIEW: how to get correct LocalizatonID
-      // retake: true,
-      onSaved: function() {
-        _this.currentSurveyVm = null;
-        _this.reloadAccountSurveys();
-      },
-    });
-    _this.activeChild(vm);
-    vm.load({}, {}, cb);
-
-    _this.gvm.setSelectedRows([]);
-    _this.gvm.resetActiveCell();
-
-    _this.currentSurveyVm = vm;
+    var _this = this;
+    //@REVIEW: how to get correct LocalizatonID
+    showTakeSurvey(_this, _this.surveyid, 'en', null, false, cb);
   };
   CListSurveyViewModel.prototype.retakeSurvey = function(surveyResultView, cb) {
-    var _this = this,
-      vm, dataContext = _this.getDataContext();
-    vm = new TakeSurveyViewModel({
-      accountid: _this.accountid,
-      surveyResult: surveyResultView,
-      onSaved: function() {
-        _this.currentSurveyVm = null;
-        _this.reloadAccountSurveys();
-      },
-      retake: true,
-      dataContext: dataContext,
-    });
-    _this.activeChild(vm);
-    vm.load({}, {}, cb);
-
-    _this.gvm.setSelectedRows([]);
-    _this.gvm.resetActiveCell();
-
-    _this.currentSurveyVm = vm;
+    var _this = this;
+    showTakeSurvey(_this, null, null, surveyResultView, true, cb);
   };
 
   CListSurveyViewModel.prototype.getDataContext = function() {
@@ -167,6 +136,59 @@ define('src/account/security/clist.survey.vm', [
       }
     });
   };
+
+  CListSurveyViewModel.prototype.checkForCurrentSurvey = function(yesCb, noCb) {
+    var _this = this;
+    if (_this.currentSurveyVm) {
+      notify.confirm('Are you sure?', 'Do you want to scrap the current survey?', function(result) {
+        if (result === 'yes') {
+          // scrap current survey
+          _this.currentSurveyVm = null;
+          _this.activeChild(null);
+          yesCb();
+        } else {
+          // make sure nothing in the grid is selected
+          _this.gvm.setSelectedRows([]);
+          _this.gvm.resetActiveCell();
+          if (utils.isFunc(noCb)) {
+            noCb();
+          }
+        }
+      });
+    } else {
+      yesCb();
+    }
+  };
+
+
+  function showTakeSurvey(_this, surveyid, locale, surveyResultView, retake, cb) {
+    _this.checkForCurrentSurvey(function() {
+      var vm, dataContext = _this.getDataContext();
+      vm = new TakeSurveyViewModel({
+        accountid: _this.accountid,
+        dataContext: dataContext,
+        onSaved: function() {
+          _this.currentSurveyVm = null;
+          _this.reloadAccountSurveys();
+        },
+
+        // options for first time
+        surveyid: surveyid,
+        locale: locale,
+
+        // options for retaking
+        surveyResult: surveyResultView,
+        retake: retake,
+      });
+      _this.activeChild(vm);
+      vm.load({}, {}, cb);
+
+      _this.gvm.setSelectedRows([]);
+      _this.gvm.resetActiveCell();
+
+      _this.currentSurveyVm = vm;
+    }, cb);
+  }
 
 
   function load_activeSurvey(surveyTypeId, setter, join) {
