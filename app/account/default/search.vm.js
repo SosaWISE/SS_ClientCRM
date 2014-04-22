@@ -28,6 +28,9 @@ define('src/account/default/search.vm', [
 
   schema = {
     _model: true,
+    CMFID: {
+      converter: ukov.converters.numText(),
+    },
     FirstName: {
       converter: nullStrConverter,
     },
@@ -204,6 +207,7 @@ define('src/account/default/search.vm', [
   SearchViewModel.prototype.clearData = function() {
     var _this = this,
       data = {
+        CMFID: null,
         FirstName: null,
         LastName: null,
         PhoneNumber: null,
@@ -225,14 +229,24 @@ define('src/account/default/search.vm', [
       return;
     }
 
-    if (_this.data.isClean() && _this.data.PageNumber() === page) {
-      // only search if something has changed
-      notify.notify('warn', 'Nothing changed. No search made.', 3);
+    if (!_this.data.isValid()) {
+      notify.notify('warn', _this.data.errMsg(), 7);
       cb();
       return;
     }
-    if (!_this.data.isValid()) {
-      notify.notify('warn', _this.data.errMsg(), 7);
+
+    if (_this.data.CMFID()) {
+      // if it's a Customer Number open a tab or select an open tab
+      _this.goTo({
+        masterid: _this.data.CMFID(),
+      });
+      cb();
+      return;
+    }
+
+    if (_this.data.isClean() && _this.data.PageNumber() === page) {
+      // only search if something has changed
+      notify.notify('warn', 'Nothing changed. No search made.', 3);
       cb();
       return;
     }

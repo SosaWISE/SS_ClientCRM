@@ -38,8 +38,21 @@ define('src/u-kov/string-converters', [
   converters.bool = function() {
     return convBool;
   };
-  converters.numText = function() {
-    return convNumText;
+  converters.numText = function(errMsg) {
+    errMsg = errMsg || 'invalid number';
+    return function convNumText(val) {
+      val = trim(val);
+      if (!val) {
+        return;
+      }
+
+      // return val.replace(/[^\d]/g, '');
+      if (/^[\d]+$/.test(val)) {
+        return val;
+      } else {
+        return new Error(errMsg);
+      }
+    };
   };
   converters.jsonString = function() {
     return convJsonString;
@@ -233,14 +246,6 @@ define('src/u-kov/string-converters', [
   function convBool(val) {
     val = val.toLowerCase();
     return val === 'true' || val === '1';
-  }
-
-  function convNumText(val) {
-    val = trim(val);
-    if (!val) {
-      return;
-    }
-    return val.replace(/[^\d]/g, '');
   }
 
   function convJsonString(val) {

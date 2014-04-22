@@ -5,9 +5,13 @@ div(class="acct-search")
         div(class="search-form")
           ul(class="edit-form cf")
             li
+              span(class="label") Customer Number
+              input(type="text", placeholder="",
+                data-bind="ukov:data.CMFID,value:data.CMFID,valueUpdate:'keyup',enter:cmdSearch,select:focusFirst")
+            li
               span(class="label") First Name
               input(type="text", placeholder="",
-                data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup',enter:cmdSearch,select:focusFirst")
+                data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup',enter:cmdSearch")
             li
               span(class="label") Last Name
               input(type="text", placeholder="",
@@ -16,9 +20,6 @@ div(class="acct-search")
               span(class="label") Phone
               input(type="text", placeholder="",
                 data-bind="ukov:data.PhoneNumber,value:data.PhoneNumber,valueUpdate:'keyup',enter:cmdSearch")
-            li
-              span(class="label") &nbsp;
-              span(class="label") &nbsp;
             li
               span(class="label") City
               input(type="text", placeholder="",
