@@ -10,5 +10,5 @@ div(class="acct-item acct-registercell")
   div(data-bind="if:vm()&&!cellErrMsg()")
    div(data-bind="template:{name:vm().viewTmpl,data:vm}")
 
-  div(data-bind="if:active()&&!loaded()")
+  div(data-bind="if:active()&&!allLoaded()")
     div(class="spinner-wrap black", data-bind="template:'tmpl-spinner'")

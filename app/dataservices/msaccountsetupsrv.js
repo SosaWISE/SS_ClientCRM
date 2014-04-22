@@ -22,6 +22,7 @@ define('src/dataservices/msaccountsetupsrv', [
       'serviceTypes',
       'panelTypes',
       'dslSeizureTypes',
+      'alarmcom',
     ].forEach(function(collectionName) {
         result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
       });

@@ -23,6 +23,8 @@ define('src/bootstrapper', [
   'src/core/jsonhelpers',
   'src/config',
   'src/resources',
+  'src/core/dialog.vm',
+  'src/core/layers.vm',
   'src/core/notify',
   'src/core/router',
   'src/core/controller.vm',
@@ -35,6 +37,8 @@ define('src/bootstrapper', [
   jsonhelpers,
   config,
   resources,
+  DialogViewModel,
+  LayersViewModel,
   notify,
   router,
   ControllerViewModel,
@@ -48,7 +52,7 @@ define('src/bootstrapper', [
 
   ControllerViewModel.titlePrefix = config.titlePrefix;
   ControllerViewModel.titlePostfix = config.titlePostfix;
-  notify.resources = resources;
+  notify.init(LayersViewModel, DialogViewModel, resources);
   // overwrite jquery's parseJSON
   jquery.parseJSON = jsonhelpers.parse;
 

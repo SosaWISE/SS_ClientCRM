@@ -79,6 +79,7 @@ define('src/survey/takesurvey.vm', [
   TakeSurveyViewModel.prototype.viewTmpl = 'tmpl-takesurvey';
   TakeSurveyViewModel.prototype.width = '90%';
   TakeSurveyViewModel.prototype.height = '95%';
+  TakeSurveyViewModel.prototype.autoflow = true;
   TakeSurveyViewModel.prototype.contextEditorVm = null;
 
   TakeSurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base

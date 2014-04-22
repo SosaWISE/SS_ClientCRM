@@ -1,4 +1,4 @@
-define('src/account/security/alarmdotcom.editor.vm', [
+define('src/account/security/alarmdotcom.swapmodem.vm', [
   'src/core/combo.vm',
   'src/ukov',
   'ko',
@@ -17,43 +17,40 @@ define('src/account/security/alarmdotcom.editor.vm', [
 ) {
   "use strict";
 
-  var schema;
+  var schema,
+    nullStrConverter = ukov.converters.nullString();
 
   schema = {
     _model: true,
-    SerialNumber: {},
-    AlarmDotComCustomerNumber: {},
-    AlarmPackageId: {},
-    EnableTwoWay: {},
+    NewSerialNumber: {},
+    SwapReason: {
+      converter: nullStrConverter,
+    },
+    SpecialRequest: {
+      converter: nullStrConverter,
+    },
+    RestoreBackedUpSettingsAfterSwap: {},
   };
 
-  function AlarmDotComEditorViewModel(options) {
+  function AlarmDotComSwapModemViewModel(options) {
     var _this = this;
-    AlarmDotComEditorViewModel.super_.call(_this, options);
+    AlarmDotComSwapModemViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
       'accountid',
-      'isRegistered',
-      'alarmComPackages',
-      'alarmComPackageFields',
     ]);
 
     _this.focusFirst = ko.observable(false);
     _this.data = ukov.wrap(_this.item || {
-      SerialNumber: '',
-      AlarmDotComCustomerNumber: '',
-      AlarmPackageId: null,
-      EnableTwoWay: false,
+      NewSerialNumber: '',
+      SwapReason: null,
+      SpecialRequest: null,
+      RestoreBackedUpSettingsAfterSwap: false,
     }, schema);
-    _this.data.AlarmPackageCvm = new ComboViewModel({
-      selectedValue: _this.data.AlarmPackageId,
-      list: _this.alarmComPackages,
-      fields: _this.alarmComPackageFields,
-    });
 
     //
     // events
     //
-    _this.cmdRegister = ko.command(function(cb) {
+    _this.cmdSwap = ko.command(function(cb) {
       if (!_this.data.isValid()) {
         notify.notify('warn', _this.data.errMsg(), 7);
         cb();
@@ -63,7 +60,7 @@ define('src/account/security/alarmdotcom.editor.vm', [
       _this.data.markClean(model, true);
       dataservice.msaccountsetupsrv.alarmcom.save({
         id: _this.accountid,
-        link: 'register',
+        link: 'swapmodem',
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
         closeLayer(resp.Value);
@@ -88,12 +85,12 @@ define('src/account/security/alarmdotcom.editor.vm', [
       }
     }
   }
-  utils.inherits(AlarmDotComEditorViewModel, BaseViewModel);
-  AlarmDotComEditorViewModel.prototype.viewTmpl = 'tmpl-security-alarmdotcom_editor';
-  AlarmDotComEditorViewModel.prototype.width = 450;
-  AlarmDotComEditorViewModel.prototype.height = 'auto';
+  utils.inherits(AlarmDotComSwapModemViewModel, BaseViewModel);
+  AlarmDotComSwapModemViewModel.prototype.viewTmpl = 'tmpl-security-alarmdotcom_swapmodem';
+  AlarmDotComSwapModemViewModel.prototype.width = 450;
+  AlarmDotComSwapModemViewModel.prototype.height = 'auto';
 
-  AlarmDotComEditorViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+  AlarmDotComSwapModemViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     // var _this = this,
     var cb = join.add();
     setTimeout(function() {
@@ -103,5 +100,5 @@ define('src/account/security/alarmdotcom.editor.vm', [
     }, 2000);
   };
 
-  return AlarmDotComEditorViewModel;
+  return AlarmDotComSwapModemViewModel;
 });

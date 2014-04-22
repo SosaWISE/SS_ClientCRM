@@ -254,7 +254,7 @@ define('src/core/controller.vm', [
     }
     routeData[_this.routePart] = _this.id;
   };
-  ControllerViewModel.prototype.getRouteData = function() {
+  ControllerViewModel.prototype.getRouteData = function() { // overrides base
     var _this = this,
       routeData;
     if (_this._lastRouteData) {

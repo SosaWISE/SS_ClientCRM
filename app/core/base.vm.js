@@ -63,6 +63,16 @@ define('src/core/base.vm', [
     _this.loaded = _this.loader.loaded;
     _this.loadErr = _this.loader.loadErr;
   };
+  BaseViewModel.prototype.getRouteData = function() {
+    return {};
+  };
+  BaseViewModel.prototype.reload = function(cb) {
+    var _this = this;
+    if (!_this.loader.reset()) {
+      return;
+    }
+    _this.load(_this.getRouteData(), {}, cb);
+  };
   // this will be over written when mixinLoad is called
   BaseViewModel.prototype.load = function(routeData, extraData, cb) {
     cb();

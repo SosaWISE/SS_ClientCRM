@@ -1,11 +1,7 @@
 define('src/core/notify', [
-  'src/core/dialog.vm',
-  'src/core/layers.vm',
   // 'src/core/strings',
   'ko',
 ], function(
-  DialogViewModel,
-  LayersViewModel,
   // strings,
   ko
 ) {
@@ -93,7 +89,9 @@ define('src/core/notify', [
     var _this = this;
     _this.list = ko.observableArray();
     _this.addAtTop = true;
-
+  }
+  Notifier.prototype.init = function(LayersViewModel, DialogViewModel, resources) {
+    var _this = this;
     // default layers view model for dialogs
     _this.layersVm = new LayersViewModel({
       controller: {
@@ -102,7 +100,9 @@ define('src/core/notify', [
         },
       },
     });
-  }
+    _this.DialogViewModel = DialogViewModel;
+    _this.resources = resources;
+  };
   Notifier.prototype.create = function() {
     return new Notifier();
   };
@@ -139,8 +139,6 @@ define('src/core/notify', [
   // });
 
 
-
-
   Notifier.prototype.alert = function(title, msg, cb, layersVm) {
     var _this = this;
     show(_this, title, msg, cb, layersVm, ['ok']);
@@ -151,7 +149,7 @@ define('src/core/notify', [
   };
 
   function show(_this, title, msg, cb, layersVm, actionNames) {
-    var vm = new DialogViewModel({
+    var vm = new _this.DialogViewModel({
       title: title || '',
       msg: msg || '',
       actionNames: actionNames,

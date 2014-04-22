@@ -17,13 +17,10 @@ div(class="alarmdotcom")
                   span(class="label") Receiver #:
                   span(class="value",data-bind="text:ReceiverNumber")
 
-          div(class="section",style="cursor:pointer",data-bind="cmd:cmdEditDetails,toggle:{empty:!detailsData()}")
-            span(class="title") Alarm.Com Details
+          div(class="section",style="cursor:pointer",data-bind="cmd:cmdEditDetails,toggle:{empty:!isRegistered()}")
+            span(class="title") Alarm.Com Registration
             div(class="contents",data-bind="with:detailsData")
               ul(class="display-form")
-                li
-                  span(class="label") Registered:
-                  span(class="value",data-bind="text:$parent.IsRegistered()?'Yes':'No'")
                 li
                   span(class="label") Serial #:
                   span(class="value",data-bind="text:SerialNumber")
@@ -35,9 +32,13 @@ div(class="alarmdotcom")
                   span(class="value",data-bind="text:AlarmPackageId")
                 li
                   span(class="label") Two-Way Voice:
-                  span(class="value",data-bind="text:EnableTwoWay")
-                li(style="padding:10px 0px 5px 0px;")
-                  a(class="btn small add-btn",tabindex="0",data-bind="cmd:$parent.cmdSwapModem,clickBubble:false") Swap Modem
+                  span(class="value",data-bind="text:EnableTwoWay?'Yes':'No'")
+                li
+                  ul(class="actions left")
+                    li
+                      a(class="btn small",tabindex="0",data-bind="cmd:$parent.cmdSwapModem,clickBubble:false") Swap Modem
+                    li
+                      a(class="btn small",tabindex="0",data-bind="cmd:$parent.cmdUnregister,clickBubble:false") Unregister
 
     tr
       td(class="fh-body")
@@ -47,7 +48,7 @@ div(class="alarmdotcom")
               td(class="fh-header")
                 ul(class="actions left cf",style="margin-top:10px;")
                   li
-                    a(class="btn small add-btn",tabindex="0",data-bind="cmd:cmdRequestDeviceEquipment") Request Device Equipment
+                    a(class="btn small",tabindex="0",data-bind="cmd:cmdRequestDeviceEquipment") Request Device Equipment
             tr
               td(class="fh-body")
                 div(class="fh-contents")

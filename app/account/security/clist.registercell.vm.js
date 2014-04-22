@@ -21,6 +21,14 @@ define('src/account/security/clist.registercell.vm', [
     _this.cellErrMsg = ko.observable();
     _this.vm = ko.observable();
 
+    _this.allLoaded = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        var vm = _this.vm();
+        return _this.loaded() && vm && vm.loaded();
+      }
+    });
+
     //
     // events
     //
@@ -41,10 +49,15 @@ define('src/account/security/clist.registercell.vm', [
       if (!success) {
         _this.cellErrMsg('asdf');
       } else {
+        //@TODO: decide which system (alarm.com or alarmnet)
         _this.vm(new AlarmDotComViewModel({
+          id: _this.id,
+          pcontroller: _this.pcontroller,
           layersVm: _this.layersVm,
         }));
         // _this.vm(new AlarmNetViewModel({
+        //   id: _this.id,
+        //   pcontroller: _this.pcontroller,
         //   layersVm: _this.layersVm,
         // }));
 
@@ -52,7 +65,7 @@ define('src/account/security/clist.registercell.vm', [
       }
 
       cb();
-    }, 2000);
+    }, 100);
   };
 
   return CListRegisterCellViewModel;

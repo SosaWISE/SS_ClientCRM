@@ -47,12 +47,20 @@ define('src/core/helpers', [
         callbacks.forEach(function(cb) {
           cb(err);
         });
+        callbacks = [];
         return true;
       }
       once.loadCb = loadCb;
       once.loaded = loaded;
       once.loading = loading;
       once.loadErr = loadErr;
+      once.reset = function() {
+        if (loading()) {
+          return;
+        }
+        loaded(false);
+        return true;
+      };
       return once;
     },
   };
