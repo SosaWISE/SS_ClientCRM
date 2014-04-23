@@ -25,16 +25,19 @@ define('src/core/mockery', [
       return randomFromRange(min * 100, max * 100, 100, 10000) / 100;
     },
     INC: function(cache, key, idSeed) {
-      var val = incMap[key];
-      if (val) {
-        val++;
+      var val, obj = incMap[key];
+      if (obj) {
+        val = obj.val++;
       } else {
         if (idSeed) {
           idSeed = parseInt(idSeed, 10);
         }
         val = idSeed || identitySeed; // default start value
+        incMap[key] = {
+          val: val,
+          idSeed: val,
+        };
       }
-      incMap[key] = val;
       return val;
     },
     INC_NULLABLE: function(cache, key) {
@@ -45,7 +48,8 @@ define('src/core/mockery', [
       }
     },
     REF_INC: function(cache, key) {
-      return mockery.fn.NUMBER(cache, identitySeed, incMap[key] || identitySeed);
+      var obj = incMap[key];
+      return mockery.fn.NUMBER(cache, identitySeed, obj ? obj.val : identitySeed);
     },
     FK: function(cache, key) {
       return incModulus(cache, key, key + '_FK_');
@@ -301,9 +305,10 @@ define('src/core/mockery', [
   }
 
   function incModulus(cache, refKey, key) {
-    var count = incMap[refKey] - identitySeed + 1,
-      refCount = mockery.fn.INC(cache, key) - identitySeed;
-    return (refCount % count) + identitySeed;
+    var obj = incMap[refKey],
+      count = obj.val - obj.idSeed + 1,
+      refCount = mockery.fn.INC(cache, key) - obj.idSeed;
+    return (refCount % count) + obj.idSeed;
   }
 
   function randomFromRange(min, max, defaultMin, defaultMax) {

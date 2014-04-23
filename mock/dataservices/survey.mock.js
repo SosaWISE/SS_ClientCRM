@@ -329,7 +329,7 @@ define('mock/dataservices/survey.mock', [
   surveyTypes = mockery.fromTemplate({
     'list|3-3': [
       {
-        SurveyTypeID: '@INC(surveyType)',
+        SurveyTypeID: '@INC(surveyType,1000)',
         Name: '@SV_TYPE',
       }
     ],
@@ -367,7 +367,7 @@ define('mock/dataservices/survey.mock', [
     'list|4-4': [
       {
         QuestionMeaningID: '@INC(questionMeaning)',
-        SurveyTypeId: 1,
+        SurveyTypeId: 1000,
         Name: '@TEXT(15,30)',
       }
     ],
@@ -393,19 +393,19 @@ define('mock/dataservices/survey.mock', [
         MapToTokenId: '@FK(token)',
       }
     ],
-  }).list
-    .concat(mockery.fromTemplate({
-      'list|2-2': [
-        {
-          ParentId: '@FK(question)',
-          QuestionID: '@INC(question)',
-          SurveyId: 1, //'@REF_INC(survey)',
-          QuestionMeaningId: '@FK(questionMeaning)',
-          GroupOrder: null, //'@NUMBER(0,5)',
-          MapToTokenId: '@FK(token)',
-        }
-      ],
-    }).list);
+  }).list;
+  // .concat(mockery.fromTemplate({
+  //   'list|2-2': [
+  //     {
+  //       ParentId: '@FK(question)',
+  //       QuestionID: '@INC(question)',
+  //       SurveyId: 1, //'@REF_INC(survey)',
+  //       QuestionMeaningId: '@FK(questionMeaning)',
+  //       GroupOrder: null, //'@NUMBER(0,5)',
+  //       MapToTokenId: '@FK(token)',
+  //     }
+  //   ],
+  // }).list);
   // set correct GroupOrders
   (function() {
     var countMap = {};
@@ -519,7 +519,7 @@ define('mock/dataservices/survey.mock', [
         AccountId: svResult.AccountId,
         // RecruitId: svResult.RecruitId,
         Caller: svResult.Caller,
-        Passed: svResult.Passed,
+        // Passed: svResult.Passed, // this will be decided by the server
         IsComplete: svResult.IsComplete,
         Context: svResult.Context,
         CreatedBy: svResult.CreatedBy,

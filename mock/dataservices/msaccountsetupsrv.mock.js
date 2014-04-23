@@ -25,7 +25,7 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
         case 'emergencyContacts':
           result = mockery.filterListBy(emergencyContacts, 'AccountId', id);
           break;
-        case 'surveys':
+        case 'surveyresults':
           result = survey_mock.getAccountSurveyResultViews(id);
           break;
       }

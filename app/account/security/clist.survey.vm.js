@@ -207,7 +207,7 @@ define('src/account/security/clist.survey.vm', [
     // load data
     dataservice.msaccountsetupsrv.accounts.read({
       id: accountid,
-      link: 'surveys',
+      link: 'surveyresults',
     }, gvm.list, cb);
   }
 
