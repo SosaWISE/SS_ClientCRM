@@ -24,7 +24,8 @@ define('src/u-kov/string-converters', [
       /^([0-9]{1,2}[- \/][0-9]{1,2}[- \/])([0-9]{1,2} )/, // MM/DD/YY | MM-DD-YY | MM DD YY
       /^(\w+ [0-9]{1,2} )([0-9]{1,2} )/, // MMM DD YY
       /^([0-9]{1,2} \w+ )([0-9]{1,2} )/, // DD MMM YY
-    ];
+    ],
+    ssnRegx = /^(\d{3})(\d{2})(\d{4})$/;
 
   converters.string = function() {
     return convString;
@@ -216,6 +217,9 @@ define('src/u-kov/string-converters', [
       }
     };
   };
+  converters.ssn = function() {
+    return convSsn;
+  };
 
 
   function trim(text) {
@@ -258,6 +262,24 @@ define('src/u-kov/string-converters', [
       return jsonhelpers.stringify(jsonhelpers.parse(val), 2);
     } catch (ex) {
       return ex;
+    }
+  }
+
+  function convSsn(val) {
+    val = trim(val);
+    if (!val) {
+      return null;
+    }
+
+    // remove everything but digits
+    val = val.replace(/[^0-9]/g, '');
+
+    // try to match
+    var matches = ssnRegx.exec(val);
+    if (matches) {
+      return strings.format('{0}-{1}-{2}', matches[1], matches[2], matches[3]);
+    } else {
+      return new Error('Invalid Social Security Number. Expected format: 123-12-1234');
     }
   }
 

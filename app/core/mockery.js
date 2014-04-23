@@ -366,7 +366,7 @@ define('src/core/mockery', [
   };
   mockery.findSingleOrAll = function(list, propName, id) {
     var result;
-    if (id > 0) {
+    if (id > 0 || (id && id.length)) {
       result = mockery.findSingleBy(list, propName, id);
     } else {
       result = list;

@@ -133,11 +133,7 @@ define('src/account/default/runcredit.vm', [
       validators: [max50],
     },
     SSN: {
-      converter: strConverter,
-      validators: [
-        ukov.validators.isSsn(),
-        max50
-      ],
+      converter: ukov.converters.ssn(),
       validationGroup: validationGroup,
     },
     DOB: {
