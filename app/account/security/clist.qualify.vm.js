@@ -26,8 +26,6 @@ define('src/account/security/clist.qualify.vm', [
 
     _this.title = ko.observable(_this.title);
     _this.hideNotes = ko.observable(false);
-    _this.hideRep = ko.observable(false);
-    _this.hideEditor = ko.observable(false);
     _this.step = ko.observable(0);
 
     _this.repModel = ko.observable();
@@ -116,9 +114,11 @@ define('src/account/security/clist.qualify.vm', [
   utils.inherits(CListQualifyViewModel, ControllerViewModel);
   CListQualifyViewModel.prototype.viewTmpl = 'tmpl-security-clist_qualify';
 
-  CListQualifyViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // override me
-    var _this = this;
-    _this.cmdFindRep.execute();
+  CListQualifyViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
+    // var _this = this;
+    // _this.cmdFindRep.execute();
+
+    join.add()();
   };
   CListQualifyViewModel.prototype.onActivate = function( /*routeCtx*/ ) { // overrides base
     var _this = this;
