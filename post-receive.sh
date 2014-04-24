@@ -1,5 +1,5 @@
 #!/bin/sh
-DIR=/home/user/crm
+DIR=/home/user/crmprod
 
 # make output dir
 mkdir -p ${DIR}
