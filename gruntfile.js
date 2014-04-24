@@ -252,4 +252,5 @@ module.exports = function(grunt) {
   grunt.registerTask('jsformat', [
     'jsbeautifier:format',
   ]);
+
 };
