@@ -115,8 +115,8 @@ define('src/account/security/clist.qualify.vm', [
   CListQualifyViewModel.prototype.viewTmpl = 'tmpl-security-clist_qualify';
 
   CListQualifyViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-    // var _this = this;
-    // _this.cmdFindRep.execute();
+    var _this = this;
+    _this.cmdFindRep.execute();
 
     join.add()();
   };
