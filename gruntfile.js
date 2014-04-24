@@ -34,7 +34,7 @@ module.exports = function(grunt) {
         },
         src: [
           // delete everything in build folder except webconfig.js
-          '<%= www %>/*', '!<%= www %>/webconfig.js',
+          '<%= www %>/**/*', '!<%= www %>/webconfig.js',
         ]
       }
     },
@@ -59,10 +59,10 @@ module.exports = function(grunt) {
           {
             src: [
               'logindummy.html',
-              'stuff/fonts/*',
-              'stuff/img/*',
+              'stuff/fonts/**/*',
+              'stuff/img/**/*',
               // specs
-              'tparty/jasmine/*',
+              'tparty/jasmine/**/*',
               'tparty/depends.js',
             ],
             dest: '<%= www %>/'
@@ -117,11 +117,11 @@ module.exports = function(grunt) {
           'app/**/*.js',
           // exclude specs and packages
           '!app/**/*.spec.js',
-          '!app/account/*',
-          '!app/survey/*',
-          '!app/core/*',
-          '!app/slick/*',
-          '!app/u-kov/*',
+          '!app/account/**/*',
+          '!app/survey/**/*',
+          '!app/core/**/*',
+          '!app/slick/**/*',
+          '!app/u-kov/**/*',
         ],
         dest: '<%= www %>/app.debug.js',
       },
