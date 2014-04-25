@@ -264,7 +264,7 @@ define('mock/dataservices/survey.mock', [
     // mockery.random = Math.random;
 
     mockery.addModulusValueFunc('SV_TOKEN', [
-      'CompanyName',
+      'Nexsense',
       'ADUserDisplayName',
 
       'PrimaryCustomer.Name',
@@ -282,7 +282,7 @@ define('mock/dataservices/survey.mock', [
       'number', // operators: all
       'bool', // operators: ==, !=
     ]);
-    mockery.addModulusValueFunc('CONDITIONAL_OPERATORS', [
+    mockery.addModulusValueFunc('COMPARISON_OPERATORS', [
       '==', //  'equal',
       '!=', //  'not-equal',
       // '===', // 'strict-equal',
@@ -478,6 +478,8 @@ define('mock/dataservices/survey.mock', [
           PrimaryCustomer: {
             Name: 'Bob',
             LastName: 'Bobbins',
+            FullName: 'Bob Bobbins',
+            Phone1: '(801) 555-1234',
           },
           PremiseAddress: {
             Street: '111 Technology Way',
@@ -487,6 +489,16 @@ define('mock/dataservices/survey.mock', [
           },
           SystemDetails: {
             PremisePhone: '(801) 123-1234',
+          },
+          ContractTerms: {
+            ContractLength: '60 months',
+            BillingMethod: 2,
+            MonthlyMonitoringFee: 49.99,
+            TotalActivationFee: 199.99,
+            BillingDate: '15th',
+          },
+          SalesRep: {
+            FirstName: 'RepName',
           },
         }),
         CreatedBy: 'auser',

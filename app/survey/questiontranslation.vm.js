@@ -83,6 +83,7 @@ define('src/survey/questiontranslation.vm', [
         return cb();
       }
       dataservice.survey.questionTranslations.save({
+        id: _this.qtData.model.QuestionTranslationID, // null or undefined if new
         data: _this.qtData.model,
       }, null, function(err, resp) {
         if (err) {

@@ -28,6 +28,17 @@ define('src/survey/tokens.vm', [
 
     dataservice.survey.tokens.read({}, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Value) {
+        // sort by Token value (ascending)
+        resp.Value.sort(function(a, b) {
+          var result = 0;
+          if (a.Token > b.Token) {
+            result = 1;
+          }
+          if (a.Token < b.Token) {
+            result = -1;
+          }
+          return result;
+        });
         resp.Value.forEach(function(token) {
           _this.tokenMap[token.TokenID] = token;
         });

@@ -142,7 +142,7 @@ define('src/core/combo.vm', [
     };
     _this.inputKeydown = function(vm, evt) {
       var keyCode = evt.keyCode;
-      console.log(keyCode);
+      // console.log(keyCode);
       if (!_this.isOpen()) {
         // ignore keys
         switch (keyCode) {

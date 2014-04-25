@@ -149,7 +149,7 @@ define('src/core/layers.vm', [
 
     subscription = layer.vm.subscribe(function(vm) {
       var ctx = createContext(vm, routeData || layersVm.controller.getRouteData(), null, function() {
-        console.log('activated layer');
+        // console.log('activated layer');
       });
 
       if (prevCtx) {

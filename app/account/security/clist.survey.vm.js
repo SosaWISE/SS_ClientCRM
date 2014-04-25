@@ -110,11 +110,13 @@ define('src/account/security/clist.survey.vm', [
   CListSurveyViewModel.prototype.getDataContext = function() {
     //@TODO: get real data context
     return {
-      CompanyName: 'CompanyName',
+      CompanyName: 'Nexsense',
       ADUserDisplayName: 'ADUserDisplayName',
       PrimaryCustomer: {
         Name: 'Bob',
         LastName: 'Bobbins',
+        FullName: 'Bob Bobbins',
+        Phone1: '(801) 555-1234',
       },
       PremiseAddress: {
         Street: '111 Technology Way',
@@ -124,6 +126,16 @@ define('src/account/security/clist.survey.vm', [
       },
       SystemDetails: {
         PremisePhone: 'PremisePhone',
+      },
+      ContractTerms: {
+        ContractLength: '60 months',
+        BillingMethod: 2,
+        MonthlyMonitoringFee: 49.99,
+        TotalActivationFee: 199.99,
+        BillingDate: '15th',
+      },
+      SalesRep: {
+        FirstName: 'RepName',
       },
     };
   };
