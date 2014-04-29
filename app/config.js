@@ -31,7 +31,10 @@ define('src/config', [
   //
   set('useMocks', false);
   set('token', 'SSE_CMS_CORS');
-  set('serviceDomain', 'sse.services.cmscors');
+  // set('serviceDomain', 'sse.services.cmscors'); // Local
+  set('serviceDomain', 'cs1.dev.nexsense.com');
+  // set('serviceDomain', 'cs1.tst.nexsense.com'); // Test Environment
+  // set('serviceDomain', 'cs1.stg.nexsense.com'); // Stage Environment
   set('titlePrefix', '');
   set('titlePostfix', '| CRM');
   set('leadSourceId', 1);
