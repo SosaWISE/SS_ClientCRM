@@ -9,6 +9,7 @@ define('src/dataservice', [
   'src/dataservices/monitoringstationsrv',
   'src/dataservices/msaccountsetupsrv',
   'src/dataservices/invoicesrv',
+  'src/dataservices/swingaccountsrv'
 ], function(
   UserDataservice,
   SessionDataservice,
@@ -19,7 +20,8 @@ define('src/dataservice', [
   createMainCoreDataservices,
   createMonitoringStationSrv,
   createMsAccountSetupSrv,
-  createInvoicesrv
+  createInvoicesrv,
+  createSwingAccountSrv
 ) {
   "use strict";
   return {
@@ -33,5 +35,6 @@ define('src/dataservice', [
     monitoringstationsrv: createMonitoringStationSrv(),
     msaccountsetupsrv: createMsAccountSetupSrv(),
     invoicesrv: createInvoicesrv(),
+    swingaccountsrv:createSwingAccountSrv()
   };
 });

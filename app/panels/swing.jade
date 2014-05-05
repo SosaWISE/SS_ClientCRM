@@ -1,0 +1,100 @@
+div(class="swing_wrapper")
+  div(class="swing_title") System Swings App
+  ul(class="content" id="left_content")
+    li(style="width: 90%; margin: auto;")      
+      ul(class="edit-form")
+        li
+          label Account ID: 
+          input(type="text" id="txtAccountID" placeholder="", data-bind="ukov:data.AccountID,value:data.AccountID,valueUpdate:'keyup'")
+                    
+          button(type="button" class="btn" id="swing_search" data-bind="cmd:cmdSearch") Search
+    li
+      div(class="outer_panes_left")
+        div(class="header_label") Customer 1 Information  
+        div(class="inner_panes_column_count")
+          ul(class="edit-form")
+            li
+              input(type="text" class="boxes"  placeholder="[Prefix]" data-bind="ukov:data.Customer1Prefix, value:data.Customer1Prefix, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes" placeholder="[First Name]" data-bind="ukov:data.Customer1FirstName, value:data.Customer1FirstName, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes"  placeholder="[Middle Name]" data-bind="ukov:data.Customer1MiddleName, value:data.Customer1MiddleName, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes"  placeholder="[Last Name]" data-bind="ukov:data.Customer1LastName, value:data.Customer1LastName, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes"  placeholder="[Suffix]" data-bind="ukov:data.Customer1Suffix, value:data.Customer1Suffix, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes" placeholder="[SSN]" data-bind="ukov:data.Customer1SSN, value:data.Customer1SSN, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes"  placeholder="[DOB]" data-bind="ukov:data.Customer1DOB, value:data.Customer1DOB, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes"  placeholder="[Email]" data-bind="ukov:data.Customer1Email, value:data.Customer1Email, valueUpdate:'keyup'")        
+    li      
+      div(class="outer_panes_left")
+        div(class="header_label") Customer 2 Information  
+        div(class="inner_panes_column_count")
+          ul(class="edit-form")
+            li
+              input(type="text" class="boxes"  placeholder="[Prefix]" data-bind="ukov:data.Customer2Prefix, value:data.Customer2Prefix, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes"  placeholder="[First Name]" data-bind="ukov:data.Customer2FirstName, value:data.Customer2FirstName, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes"  placeholder="[Middle Name]" data-bind="ukov:data.Customer2MiddleName, value:data.Customer2MiddleName, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes"  placeholder="[Last Name]" data-bind="ukov:data.Customer2LastName, value:data.Customer2LastName, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes"  placeholder="[Suffix]" data-bind="ukov:data.Customer2Suffix, value:data.Customer2Suffix, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes"  placeholder="[SSN]" data-bind="ukov:data.Customer2SSN, value:data.Customer2SSN, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes"  placeholder="[DOB]" data-bind="ukov:data.Customer2DOB, value:data.Customer2DOB, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes" placeholder="[Email]" data-bind="ukov:data.Customer2Email, value:data.Customer2Email, valueUpdate:'keyup'")   
+    li      
+      div(class="outer_panes_left")
+        div(class="header_label") Premise Address  
+        div(class="inner_panes_column_count_auto")   
+          ul(class="edit-form")
+
+            li
+              input(type="text" class="boxes" id="txtAddress" placeholder="[Street Address]", data-bind="ukov:data.StreetAddress1, value:data.StreetAddress1, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes" id="txtAddress2" placeholder="[Street Address 2]", data-bind="ukov:data.StreetAddress2, value:data.StreetAddress2, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes" id="txtCity" placeholder="[City]", data-bind="ukov:data.City, value:data.City, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes" id="txtCounty" placeholder="[County]", data-bind="ukov:data.County, value:data.County, valueUpdate:'keyup'")
+            li  
+              input(type="text" class="boxes" id="txtPostalCode" placeholder="[Postal Code]", data-bind="ukov:data.PostalCode, value:data.PostalCode, valueUpdate:'keyup'")
+            li  
+              div
+                //-span(class="label") State
+                div(data-bind="cvm:data.StateCvm")
+               
+
+  ul(class="content" id="right_content")          
+    li(style="text-align:right;")
+      button(type="button" class="btn" data-bind="cmd:cmdSwing") Swing System 
+    li
+      div(class="outer_panes_right")
+         ul(style="list-style-type: none;")
+           li(class="space")
+             div(class="inner_panes")
+               div(class="header_label") Emergency Contacts
+               div(class="slickgrid",style="background:white;margin:10px;color:black; min-height: 130px; position: relative;", data-bind="slickgrid:swingEmGvm")
+           li(class="space")
+             div(class="inner_panes")
+               div(class="header_label") System Details  
+                 br               
+                 button(type="button" class="btn" data-bind="") [Service Type]
+                 button(type="button" class="btn" data-bind="") [Cellular Type]
+                 button(type="button" class="btn" data-bind="") [Pass Phrase]
+                 button(type="button" class="btn" data-bind="") [Panel Type]
+                 button(type="button" class="btn" data-bind="") [DSL\Seisure]
+           li(class="space") 
+              div(class="inner_panes")            
+               div(class="header_label") Equipment Details
+               div(class="slickgrid",style="background:white;margin:10px;color:black; min-height: 130px; position: relative;", data-bind="slickgrid:swingEquipmentGvm")      
+     li
+       input(type="checkbox" class="checkbox" id="swing_equipment" data-bind="")
+       span(id="label" class="checkbox") Swing Equipment Also                  

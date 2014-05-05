@@ -4,6 +4,7 @@ define('src/app', [
   'src/panels/home.panel.vm',
   'src/panels/accounts.panel.vm',
   'src/panels/surveys.panel.vm',
+  'src/panels/swing.panel.vm', 
   'src/core/notify'
 ], function(
   router,
@@ -11,6 +12,7 @@ define('src/app', [
   HomePanelViewModel,
   AccountsPanelViewModel,
   SurveysPanelViewModel,
+  SwingViewModel,   
   notify
 ) {
   "use strict";
@@ -61,6 +63,12 @@ define('src/app', [
       name: 'Surveys',
       ico: '&#128101;',
     }),
+    new SwingViewModel({
+      routePart: routePart,
+      id: 'swing',
+      name: 'Swing',
+      ico: '&#128101;',
+    }),    
   ]);
   setTemplate(app.panels, 'viewTmpl', 'panel_');
 
@@ -89,6 +97,8 @@ define('src/app', [
   router.addRoute(app.panelMap.surveys, 'surveys', ':surveytypeid/:surveyid/:locale', {
     locale: 'en',
   });
+
+  router.addRoute(app.panelMap.swing, 'swing', '', {});
 
   return app;
 });
