@@ -252,4 +252,10 @@ module.exports = function(grunt) {
   grunt.registerTask('jsformat', [
     'jsbeautifier:format',
   ]);
+
+
+  grunt.registerTask('precommit', [
+    'jshint',
+    'jsbeautifier:test',
+  ]);
 };

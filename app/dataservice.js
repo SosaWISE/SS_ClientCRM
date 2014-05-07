@@ -35,6 +35,6 @@ define('src/dataservice', [
     monitoringstationsrv: createMonitoringStationSrv(),
     msaccountsetupsrv: createMsAccountSetupSrv(),
     invoicesrv: createInvoicesrv(),
-    swingaccountsrv:createSwingAccountSrv()
+    swingaccountsrv: createSwingAccountSrv()
   };
 });
