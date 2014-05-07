@@ -190,13 +190,13 @@ define('src/account/default/runcredit.vm', [
       }
     });
 
-    /////TESTING//////////////////////
-    _this.data.FirstName('Bob');
-    _this.data.LastName('Bobbins');
-    // _this.data.DOB('1-1-1');
-    _this.data.DOB(new Date(Date.UTC(2001, 0, 1)));
-    _this.data.Email('Bob.Bobbins@some.com');
-    /////TESTING//////////////////////
+    // /////TESTING//////////////////////
+    // _this.data.FirstName('Bob');
+    // _this.data.LastName('Bobbins');
+    // // _this.data.DOB('1-1-1');
+    // _this.data.DOB(new Date(Date.UTC(2001, 0, 1)));
+    // _this.data.Email('Bob.Bobbins@some.com');
+    // /////TESTING//////////////////////
 
     //
     // events

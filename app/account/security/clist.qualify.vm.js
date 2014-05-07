@@ -61,11 +61,12 @@ define('src/account/security/clist.qualify.vm', [
     });
     _this.cmdAddress = ko.command(function(cb) {
       showLayer(AddressValidateViewModel, _this.addressModel, _this.cmdCustomer, {
-        repModel: _this.repModel()
+        repModel: _this.repModel(),
+        item: utils.clone(_this.addressModel()),
       });
       cb();
     }, function(busy) {
-      return !busy && _this.step() === 1;
+      return !busy && (_this.step() === 1 || _this.step() === 2);
     });
     _this.cmdCustomer = ko.command(function(cb) {
       showLayer(AccountRunCreditViewModel, function(customer, creditResult) {

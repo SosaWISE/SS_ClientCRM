@@ -11,7 +11,7 @@ div(class="rep-find")
   div(style="margin-bottom:20px;")
       span(class="btn-bg", tabindex="0", data-bind="cmd:cmdFind") Find
 
-  div(class="repinfo-wrap",data-bind="if:loaded")
+  div(class="repinfo-wrap",data-bind="if:repResult")
     div(data-bind="template:{data:repResult,name:'tmpl-acct-default-rep_info'}")
 
     div(class="actions")

@@ -384,6 +384,16 @@ table.fh-wrap {
         }
       }
 
+      .transition(opacity .25s;);
+
+      &:not(.disabled) {
+        cursor: pointer;
+        opacity: 0.9;
+        &:hover {
+          opacity: 1;
+        }
+      }
+
       &.empty {
         .user-select(none);
         overflow: hidden;
@@ -394,7 +404,6 @@ table.fh-wrap {
         display:table;
         height: 150px;
         text-align: center;
-        .transition(opacity .25s;);
         opacity: 0.2;
         &:not(.disabled) {
           opacity: 0.7;
@@ -410,7 +419,7 @@ table.fh-wrap {
             text-align: center;
             margin-left: 5px;
           }
-          cursor: pointer;
+          // cursor: pointer;
         }
         .title {
           display:table-cell;

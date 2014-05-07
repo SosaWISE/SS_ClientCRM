@@ -37,13 +37,11 @@ define('src/account/default/rep.find.vm', [
     _this.repData = ukov.wrap({
       CompanyID: '',
     }, schema);
-    _this.loading = ko.observable(false);
-    _this.loaded = ko.observable(false);
     _this.repResult = ko.observable(null);
 
-    /////TESTING//////////////////////
-    _this.repData.CompanyID('sosa001');
-    /////TESTING//////////////////////
+    // /////TESTING//////////////////////
+    // _this.repData.CompanyID('sosa001');
+    // /////TESTING//////////////////////
 
     //
     // events
@@ -54,31 +52,27 @@ define('src/account/default/rep.find.vm', [
       }
     };
     _this.cmdFind = ko.command(function(cb) {
+      _this.repResult(null);
+
       _this.repData.validate();
       if (!_this.repData.isValid()) {
         notify.notify('warn', _this.repData.errMsg(), 7);
         return cb();
       }
 
-      _this.loaded(false);
       var model = _this.repData.getValue();
-      _this.repData.markClean();
-      _this.repResult(null);
       dataservice.qualify.salesrep.read({
         id: model.CompanyID
-      }, null, function(err, resp) {
-        if (err) {
-          notify.notify('warn', err.Message, 10);
-          _this.focusFirst(true);
-        } else if (resp.Value) {
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        _this.repData.markClean(model);
+        if (resp && resp.Value) {
           _this.repResult(resp.Value);
-          _this.loaded(true);
         }
-        cb();
-      });
+      }, function(err) {
+        notify.notify('error', err.Message);
+        _this.focusFirst(true);
+      }));
     });
-
-    _this.loading = _this.cmdFind.busy;
 
     _this.active.subscribe(function(active) {
       if (active) {

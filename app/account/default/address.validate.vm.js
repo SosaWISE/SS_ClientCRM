@@ -23,10 +23,14 @@ define('src/account/default/address.validate.vm', [
     max20 = ukov.validators.maxLength(20),
     max4 = ukov.validators.maxLength(4),
     max1 = ukov.validators.maxLength(1),
-    strConverter = ukov.converters.string();
+    strConverter = ukov.converters.string(),
+    nullStrConverter = ukov.converters.nullString();
 
   schema = {
     _model: true,
+
+    AddressID: {},
+
     DealerId: {},
 
     SeasonId: {},
@@ -112,19 +116,19 @@ define('src/account/default/address.validate.vm', [
       validators: [max20],
     },
     Extension: {
-      converter: strConverter,
+      converter: nullStrConverter,
       validators: [max50],
     },
     ExtensionNumber: {
-      converter: strConverter,
+      converter: nullStrConverter,
       validators: [max50],
     },
     CarrierRoute: {
-      converter: strConverter,
+      converter: nullStrConverter,
       validators: [max4],
     },
     DPVResponse: {
-      converter: strConverter,
+      converter: nullStrConverter,
       validators: [max1],
     },
   };
@@ -134,11 +138,16 @@ define('src/account/default/address.validate.vm', [
     var _this = this;
     AddressValidateViewModel.super_.call(_this, options);
 
+    if (_this.item) {
+      // ??? make it so Manual button can be toggled ???
+      _this.item.Validated = false;
+    }
+
     _this.focus = ko.observable(false);
-    _this.result = ko.observable(null);
+    _this.result = ko.observable(_this.item);
     _this.override = ko.observable(false);
 
-    _this.data = ukov.wrap({
+    _this.data = ukov.wrap(_this.item || {
       DealerId: 5000, // ?????
     }, schema);
 
@@ -170,18 +179,18 @@ define('src/account/default/address.validate.vm', [
 
     _this.width = ko.observable(0);
     _this.height = ko.observable('auto');
-    _this.setManualOverride(false);
+    _this.setManualOverride( !! _this.item);
 
     _this.data.SeasonId(_this.repModel.Seasons[0].SeasonID);
     _this.data.SalesRepId(_this.repModel.CompanyID);
     _this.data.TeamLocationId(_this.repModel.TeamLocationId);
 
-    /////TESTING//////////////////////
-    _this.data.PostalCode('84057');
-    _this.data.StreetAddress('1517 N 1335 W');
-    _this.data.PhoneNumber('801 822 1234');
-    _this.data.PhoneNumber(_this.data.model.PhoneNumber);
-    /////TESTING//////////////////////
+    // /////TESTING//////////////////////
+    // _this.data.PostalCode('84057');
+    // _this.data.StreetAddress('1517 N 1335 W');
+    // _this.data.PhoneNumber('801 822 1234');
+    // _this.data.PhoneNumber(_this.data.model.PhoneNumber);
+    // /////TESTING//////////////////////
 
     //
     // events
@@ -200,16 +209,17 @@ define('src/account/default/address.validate.vm', [
       }
 
       var model = _this.data.getValue();
-      dataservice.qualify.addressValidation.post(null, model, null, function(err, resp) {
-        if (err) {
-          notify.notify('error', resp.Message);
-        } else {
-          _this.data.markClean(model, true);
+      model.AddressId = model.AddressID; // copy id to match API inputs
+      dataservice.qualify.addressValidation.post(null, model, null, utils.safeCallback(cb, function(err, resp) {
+        if (resp && resp.Value) {
+          _this.data.setValue(resp.Value);
+          _this.data.markClean(resp.Value, true);
           //@TODO: handle !Validated
           _this.result(resp.Value);
         }
-        cb();
-      });
+      }, function(err) {
+        notify.notify('error', err.Message);
+      }));
     }, function(busy) {
       return !busy && !_this.data.isClean();
     });

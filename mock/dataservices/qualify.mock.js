@@ -41,7 +41,7 @@ define('mock/dataservices/qualify.mock', [
         SalesRepId: data.SalesRepId,
         SeasonId: data.SeasonId,
         TeamLocationId: data.TeamLocationId,
-        TimeZoneId: data.TimeZoneId || 1,
+        TimeZoneId: data.TimeZoneId || 8,
 
         // IsActive: false,
         // ModifiedOn: '0001-01-01T00:00:00',
@@ -58,13 +58,13 @@ define('mock/dataservices/qualify.mock', [
         // // CountryId
         // // AddressTypeId
         // PlusFour: data.PlusFour || '1234',
-        // StreetNumber: data.StreetNumber || '123',
-        // StreetName: data.StreetName || 'Street Name',
-        // StreetType: data.StreetType || 'RD',
-        // PreDirectional: data.PreDirectional || 'N',
-        // PostDirectional: data.PostDirectional || 'W',
-        // Extension: data.Extension,
-        // ExtensionNumber: data.ExtensionNumber,
+        StreetNumber: data.StreetNumber || '123',
+        StreetName: data.StreetName || 'Street Name',
+        StreetType: data.StreetType || 30 || 'RD',
+        PreDirectional: data.PreDirectional || 1 || 'N',
+        PostDirectional: data.PostDirectional || 4 || 'W',
+        Extension: data.Extension,
+        ExtensionNumber: data.ExtensionNumber,
         // // CountyCode
         // // Urbanization
         // // UrbanizationCode
@@ -73,9 +73,9 @@ define('mock/dataservices/qualify.mock', [
         // // Longitude
         // // CongressionalDistric
         // // DPV
-        // DPVResponse: data.DPVResponse,
+        DPVResponse: data.DPVResponse,
         // // DPVFootnote
-        // CarrierRoute: data.CarrierRoute,
+        CarrierRoute: data.CarrierRoute,
         // // IsDeleted
       }), setter, cb);
     };
@@ -187,11 +187,13 @@ define('mock/dataservices/qualify.mock', [
         LastName: '@LASTNAME',
         Seasons: [
           {
+            SeasonID: '@INC(seasons)',
             SeasonName: '@SEASON @DATE_YYYY',
           },
         ],
         PhoneCell: '@PHONE',
         Email: '@EMAIL',
+        TeamLocationId: '@INC(teamLocations)',
       },
     ],
   }).list;
