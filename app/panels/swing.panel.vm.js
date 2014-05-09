@@ -508,7 +508,7 @@ define('src/panels/swing.panel.vm', [
       null, utils.safeCallback(null, function(err, resp) {
 
         if (err) {
-          notify.notify('warn', err.Message, 10);          
+          notify.notify('warn', err.Message, 10);
         } else if (resp.Value) {
 
           var customer = resp.Value;
@@ -519,14 +519,14 @@ define('src/panels/swing.panel.vm', [
           vm.data.PanelType(customer.PanelType);
           vm.data.DslSeizure(customer.DslSeizure);
 
-        } else {        
+        } else {
 
           vm.data.markClean(resp.Value, true);
           notify.notify('warn', 'Account ID not found', 7);
           vm.clearData();
         }
 
-      }, utils.no_op));    
+      }, utils.no_op));
 
     //load data on UI for Equipment Info
     dataservice.swingaccountsrv.CustomerSwingEquipmentInfo.read({
