@@ -36,6 +36,17 @@ define('src/account/default/masteraccount.vm', [
     _this.hideNav = ko.observable(false);
     _this.hideNav(true);
 
+    /** Customer Information Card. */
+    _this.customerName = ko.observable("Andrés Sosa");
+    _this.streetAddress = ko.observable("[Not Implemented]");
+    _this.streetAddres2 = ko.observable();
+    _this.cityStateZip = ko.observable("[Not Implemented]");
+    _this.phoneHome = ko.observable("[Not Implemented]");
+    _this.phoneWork = ko.observable();
+    _this.phoneMobile = ko.observable();
+
+    _this.email = ko.observable("[Not Implemented]");
+
     _this.accounts = ko.observableArray();
     _this.agings = ko.observableArray();
     // override childs array from ControllerViewModel
@@ -85,6 +96,7 @@ define('src/account/default/masteraccount.vm', [
       if (!err) {
         load_billingInfoSummary(_this, _this.id, _this.accounts, join.add());
         load_aging(_this, _this.id, _this.agings, join.add());
+        load_customerInfoCard(_this, _this.id, join.add());
       }
       cb(err);
     });
@@ -107,6 +119,23 @@ define('src/account/default/masteraccount.vm', [
     return msg;
   };
 
+  function load_customerInfoCard(pcontroller, masterId, cb) {
+    dataservice.accountingengine.customerCardInfos.read({
+      id: masterId
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Value) {
+        pcontroller.customerName(resp.Value.FullName);
+        pcontroller.streetAddress(resp.Value.StreetAddress);
+        pcontroller.streetAddres2(resp.Value.StreetAddress2);
+
+        pcontroller.phoneHome(resp.Value.PhoneHome);
+        pcontroller.phoneWork(resp.Value.PhoneWork);
+        pcontroller.phoneMobile(resp.Value.PhoneMobile);
+
+        pcontroller.email(resp.Value.Email);
+      }
+    }, utils.no_op));
+  }
 
   function load_billingInfoSummary(pcontroller, masterId, accounts, cb) {
     dataservice.accountingengine.billingInfoSummary.read({
