@@ -77,6 +77,12 @@ define('src/panels/swing.panel.vm', [
     County: {},
     PostalCode: {},
 
+    ServiceType: {},
+    CellularType: {},
+    PassPhrase: {},
+    PanelType: {},
+    DslSeizure: {},
+
 
     // PhoneNumber: {
     //   converter: ukov.converters.phone(),
@@ -292,6 +298,12 @@ define('src/panels/swing.panel.vm', [
         City: null,
         County: null,
         PostalCode: null,
+        ServiceType: null,
+        CellularType: null,
+        PassPhrase: null,
+        PanelType: null,
+        DslSeizure: null,
+
       };
 
     _this.data.setVal(data);
@@ -416,6 +428,7 @@ define('src/panels/swing.panel.vm', [
   //used to extract msaccount details like customer info, premise address,
   //emergency contacts and Equipment Details and load into the SWING UI
   //msAccount- result from search
+  //system details
   function load_msaccount_details(vm, msAccount) {
 
     //load data on UI for Premise Address
@@ -488,6 +501,32 @@ define('src/panels/swing.panel.vm', [
       }
     }, utils.no_op));
 
+    //load data on UI for System Details
+    dataservice.swingaccountsrv.CustomerSwingSystemDetails.read({
+        id: msAccount.AccountID
+      },
+      null, utils.safeCallback(null, function(err, resp) {
+
+        if (err) {
+          notify.notify('warn', err.Message, 10);          
+        } else if (resp.Value) {
+
+          var customer = resp.Value;
+
+          vm.data.ServiceType(customer.ServiceType);
+          vm.data.CellularType(customer.CellularType);
+          vm.data.PassPhrase(customer.PassPhrase);
+          vm.data.PanelType(customer.PanelType);
+          vm.data.DslSeizure(customer.DslSeizure);
+
+        } else {        
+
+          vm.data.markClean(resp.Value, true);
+          notify.notify('warn', 'Account ID not found', 7);
+          vm.clearData();
+        }
+
+      }, utils.no_op));    
 
     //load data on UI for Equipment Info
     dataservice.swingaccountsrv.CustomerSwingEquipmentInfo.read({

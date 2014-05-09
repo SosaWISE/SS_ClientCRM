@@ -83,14 +83,21 @@ div(class="swing_wrapper")
                div(class="header_label") Emergency Contacts
                div(class="slickgrid",style="background:white;margin:10px;color:black; min-height: 130px; position: relative;", data-bind="slickgrid:swingEmGvm")
            li(class="space")
-             div(class="inner_panes")
-               div(class="header_label") System Details  
-                 br               
-                 button(type="button" class="btn" data-bind="") [Service Type]
-                 button(type="button" class="btn" data-bind="") [Cellular Type]
-                 button(type="button" class="btn" data-bind="") [Pass Phrase]
-                 button(type="button" class="btn" data-bind="") [Panel Type]
-                 button(type="button" class="btn" data-bind="") [DSL\Seisure]
+             div(class="inner_panes")               
+               div(class="inner_panes_right")
+                div(class="header_label") System Details
+                  ul(class="edit-form")
+                    li
+                      input(type="text" class="boxes"  placeholder="[Service Type]" data-bind="ukov:data.ServiceType, value:data.ServiceType, valueUpdate:'keyup'")
+                    li
+                      input(type="text" class="boxes"  placeholder="[Cellular Type]" data-bind="ukov:data.CellularType, value:data.CellularType, valueUpdate:'keyup'")
+                    li
+                      input(type="text" class="boxes"  placeholder="[Pass Phrase]" data-bind="ukov:data.PassPhrase, value:data.PassPhrase, valueUpdate:'keyup'")
+                    li
+                      input(type="text" class="boxes"  placeholder="[Panel Type]" data-bind="ukov:data.PanelType, value:data.PanelType, valueUpdate:'keyup'")
+                    li
+                      input(type="text" class="boxes"  placeholder="[DSL\Seisure]" data-bind="ukov:data.DslSeizure, value:data.DslSeizure, valueUpdate:'keyup'")        
+
            li(class="space") 
               div(class="inner_panes")            
                div(class="header_label") Equipment Details
