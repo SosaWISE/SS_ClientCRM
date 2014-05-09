@@ -21,7 +21,7 @@ div(class="acct-item sales-info")
                 |?
               div(class="answer")
                 input(type="text",class="inputField",name="activationFeeActual",
-                  data-bind="ukov:data.ActivationFeeActual,value:data.ActivationFeeActual")
+                  data-bind="ukov:data.ActivationFeeActual,currencyvalue:data.ActivationFeeActual")
             div(class="line")
               div(class="letter",data-bind="text:letter()")
               div(class="question") Is Activation over 3 months?
@@ -53,7 +53,7 @@ div(class="acct-item sales-info")
                 |?
               div(class="answer")
                 input(type="text",class="inputField",name="mmr",
-                  data-bind="ukov:data.MonthlyMonitoringRateActual,value:data.MonthlyMonitoringRateActual")
+                  data-bind="ukov:data.MonthlyMonitoringRateActual,currencyvalue:data.MonthlyMonitoringRateActual")
             div(class="line")
               div(class="letter",data-bind="text:letter()")
               div(class="question") What is the contract length?

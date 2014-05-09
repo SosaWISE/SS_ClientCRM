@@ -64,6 +64,17 @@ define('src/core/ko.bindingHandlers.formatters', [
       ko.bindingHandlers.text.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
     },
   };
+  ko.bindingHandlers.currencyvalue = {
+    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+      // pass through to `text` binding
+      ko.bindingHandlers.value.init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
+    },
+    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+      // call `text` binding with formatted currency
+      valueAccessor = makeFormattedLikeCurrencyValueAccessor(valueAccessor);
+      ko.bindingHandlers.value.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
+    },
+  };
 
 
   //
