@@ -20,15 +20,15 @@ div(class="panel account", data-bind="active:active,toggle:{'hide-nav':hideNav,'
             div(class="info userinfo")
               div(class="img-wrap")
                 div(class="img", style="background-image:url(https://secure.gravatar.com/avatar/f47bda756ab7abfaeb7b5e1b59d5edc9?s=80&r=pg&d=https%3A%2F%2Fkanbanflow.com%2Fimg%2Fgd.png);")
-              div(class="name") Andres Sosa
-              div(class="address") 1573 N Technology Way
+              div(class="name",data-bind="text:customerName")
+              div(class="address", data-bind="text:streetAddress")
               div(class="address") Suite 1100, Bldg A
               div(class="address") Orem, UT 84057
               div(class="separator")
-              div(class="phone mobile") (801) 822-9323
-              div(class="phone work") (801) 822-7862
-              div(class="phone home") (801) 226-7067
-              div(class="email") asosa@nexsense.com
+              div(class="phone mobile", data-bind="text:phoneMobile")
+              div(class="phone work", data-bind="text:phoneWork")
+              div(class="phone home", data-bind="text:phoneHome")
+              div(class="email", data-bind="text:email")
               div(class="credit-score excellent") Credit Score: TU Excellent
 
         div(class="section")
