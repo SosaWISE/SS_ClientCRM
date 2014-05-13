@@ -81,15 +81,7 @@ define('src/account/default/notes.vm', [
         value: 'NoteCategory1ID',
         text: 'Category',
       },
-      list: [
-        {
-          NoteCategory1ID: 1,
-          Category: 'Master Account Access',
-          Description: 'General Access to Master Account',
-        },
-      ]
     });
-    _this.data.NoteCategory1IdCvm.selectedValue(1);
     _this.data.NoteCategory2IdCvm = new ComboViewModel({
       selectedValue: _this.data.NoteCategory2Id,
       noItemSelectedText: '[Secondary Reason]',
@@ -244,6 +236,9 @@ define('src/account/default/notes.vm', [
 
   function createNote(ukovData, cb) {
     var model = ukovData.getValue();
+    // set default note categories
+    model.NoteCategory1Id = 1; // Master Access
+    model.NoteCategory2Id = 1; // General Open
     dataservice.maincore.notes.save({
       data: model,
     }, null, utils.safeCallback(cb, function(err, resp) {
