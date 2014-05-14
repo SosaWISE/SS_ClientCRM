@@ -84,6 +84,11 @@ define('src/account/default/masteraccount.vm', [
     _this.clickItem = function(vm) {
       _this.selectChild(vm);
     };
+    _this.clickReload = function() {
+      if (_this.loader.reset() && _this.notesVm.loader.reset()) {
+        _this.goTo(_this.getRouteData(), {});
+      }
+    };
   }
   utils.inherits(MasterAccountViewModel, ControllerViewModel);
   MasterAccountViewModel.prototype.viewTmpl = 'tmpl-acct-default-masteraccount';
@@ -92,13 +97,23 @@ define('src/account/default/masteraccount.vm', [
     var _this = this,
       cb = join.add();
 
-    _this.notesVm.load(routeData, extraData, function(err) {
-      if (!err) {
+    load_customerInfoCard(_this, _this.id, function(err) {
+      if (err) {
+        cb(err);
+        return;
+      }
+
+      _this.notesVm.load(routeData, extraData, function(err) {
+        if (err) {
+          cb(err);
+          return;
+        }
+
         load_billingInfoSummary(_this, _this.id, _this.accounts, join.add());
         load_aging(_this, _this.id, _this.agings, join.add());
-        load_customerInfoCard(_this, _this.id, join.add());
-      }
-      cb(err);
+
+        cb();
+      });
     });
 
     join.when(function(err) {
@@ -110,11 +125,15 @@ define('src/account/default/masteraccount.vm', [
   };
   MasterAccountViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
+      msg;
+    // just close if there is an error
+    if (!_this.loadErr()) {
       // check if notesVm has a close msg
       msg = _this.notesVm.closeMsg();
-    // get default close msg
-    if (!msg) {
-      msg = MasterAccountViewModel.super_.prototype.closeMsg.call(_this);
+      // get default close msg
+      if (!msg) {
+        msg = MasterAccountViewModel.super_.prototype.closeMsg.call(_this);
+      }
     }
     return msg;
   };

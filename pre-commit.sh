@@ -24,14 +24,15 @@ if echo "${NEW_NAMES}" | grep -q [^a-zA-Z0-9\.\_\\\/\-]; then
 fi
 
 
-# only test code that is being committed
-git stash save --include-untracked --keep-index --quiet "pre-commit"
-function cleanup {
-  # pop stash
-  git stash pop --quiet --index
-}
-# cleanup on exit
-trap cleanup EXIT
+# In some cases this can erase code. Plus all code should pass jshint and jsbeautifier tests.
+# # only test code that is being committed
+# git stash save --include-untracked --keep-index --quiet "pre-commit"
+# function cleanup {
+#   # pop stash
+#   git stash pop --quiet --index
+# }
+# # cleanup on exit
+# trap cleanup EXIT
 
 
 # jshint

@@ -29,6 +29,7 @@ define('src/bootstrapper', [
   'src/core/router',
   'src/core/controller.vm',
   'src/core/dataservice.base',
+  'src/core/joiner',
   'src/dataservice',
   'src/app'
 ], function(
@@ -44,6 +45,7 @@ define('src/bootstrapper', [
   router,
   ControllerViewModel,
   DataserviceBase,
+  joiner,
   dataservice,
   app
 ) {
@@ -52,13 +54,14 @@ define('src/bootstrapper', [
   console.log("Application Token: " + config.token);
   console.log("CORS Domain: " + config.serviceDomain);
 
-  DataserviceBase.prototype.timeout = config.apiTimeout;
-
   ControllerViewModel.titlePrefix = config.titlePrefix;
   ControllerViewModel.titlePostfix = config.titlePostfix;
   notify.init(LayersViewModel, DialogViewModel, resources);
   // overwrite jquery's parseJSON
   jquery.parseJSON = jsonhelpers.parse;
+  // set timeouts
+  DataserviceBase.prototype.timeout = config.apiTimeout;
+  joiner.Joiner.prototype.timeout = config.joinerTimeout;
 
   var deps = [];
   if (config.useMocks) {

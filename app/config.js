@@ -40,6 +40,7 @@ define('src/config', [
   set('leadSourceId', 1);
   set('leadDispositionId', 9);
   set('apiTimeout', 1000 * 30);
+  set('joinerTimeout', 1000 * 60);
 
   return config;
 });
