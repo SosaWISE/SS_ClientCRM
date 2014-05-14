@@ -54,12 +54,33 @@ define('src/account/security/clist.submitonline.vm', [
         cb();
       });
     });
+    _this.cmdSubmit = ko.command(function(cb) {
+      dataservice.monitoringstationsrv.msAccounts.save({
+        data: {
+          AccountId: _this.accountId,
+        },
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        console.log(resp);
+        //@TODO: do stuff after submit online, but what???
+
+        if (resp && resp.Value && resp.Value.WasSuccessfull) {
+          notify.notify('success', 'Successfully submitted online!');
+        } else {
+          notify.notify('warn', 'Failed to submit account online.');
+        }
+      }, function(err) {
+        notify.notify('error', err.Message);
+      }));
+    });
   }
   utils.inherits(CListSubmitOnlineViewModel, ControllerViewModel);
   CListSubmitOnlineViewModel.prototype.viewTmpl = 'tmpl-security-clist_submitonline';
 
   CListSubmitOnlineViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
+
+    _this.accountId = routeData.id;
+
     load_dispatchAgencys(_this, join.add());
     //@TODO: load account status
     //@TODO: load dispatch agency types

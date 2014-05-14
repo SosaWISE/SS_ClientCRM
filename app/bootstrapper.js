@@ -28,6 +28,7 @@ define('src/bootstrapper', [
   'src/core/notify',
   'src/core/router',
   'src/core/controller.vm',
+  'src/core/dataservice.base',
   'src/dataservice',
   'src/app'
 ], function(
@@ -42,6 +43,7 @@ define('src/bootstrapper', [
   notify,
   router,
   ControllerViewModel,
+  DataserviceBase,
   dataservice,
   app
 ) {
@@ -49,6 +51,8 @@ define('src/bootstrapper', [
   console.log("Bootstrapping version: ", config.version);
   console.log("Application Token: " + config.token);
   console.log("CORS Domain: " + config.serviceDomain);
+
+  DataserviceBase.prototype.timeout = config.apiTimeout;
 
   ControllerViewModel.titlePrefix = config.titlePrefix;
   ControllerViewModel.titlePostfix = config.titlePostfix;

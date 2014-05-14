@@ -39,6 +39,7 @@ define('src/config', [
   set('titlePostfix', '| CRM');
   set('leadSourceId', 1);
   set('leadDispositionId', 9);
+  set('apiTimeout', 1000 * 30);
 
   return config;
 });
