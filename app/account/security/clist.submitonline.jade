@@ -15,6 +15,15 @@ div(class="acct-item acct-clist-submitonline")
     ul
       li
         a(class="btn",tabindex="0",data-bind="cmd:cmdSubmit") Submit Online
+  ul(style="margin-top:20px;",data-bind="with:submissionData")
+    li
+      span(data-bind="text:Msg")
+    li
+      |Submission ID:&nbsp;
+      span(data-bind="text:AccountSubmitID")
+    li(data-bind="if:WasSuccessfull")
+      |Date:&nbsp;
+      span(data-bind="datetimetext:DateSubmitted")
 
 
   div(data-bind="if:active()&&!loaded()")

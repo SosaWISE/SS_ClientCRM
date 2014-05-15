@@ -30,6 +30,8 @@ define('src/account/security/clist.submitonline.vm', [
       },
     });
 
+    _this.submissionData = ko.observable();
+
     //
     // events
     //
@@ -63,10 +65,15 @@ define('src/account/security/clist.submitonline.vm', [
         console.log(resp);
         //@TODO: do stuff after submit online, but what???
 
-        if (resp && resp.Value && resp.Value.WasSuccessfull) {
-          notify.notify('success', 'Successfully submitted online!');
-        } else {
-          notify.notify('warn', 'Failed to submit account online.');
+        if (resp && resp.Value) {
+          if (resp.Value.WasSuccessfull) {
+            notify.notify('success', 'Successfully submitted online!', 7);
+            resp.Value.Msg = 'Submission Succeeded!';
+          } else {
+            notify.notify('warn', 'Failed to submit account online.', 7);
+            resp.Value.Msg = 'Submission Failed...';
+          }
+          _this.submissionData(resp.Value);
         }
       }, function(err) {
         notify.notify('error', err.Message);
