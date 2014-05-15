@@ -31,6 +31,7 @@ define('src/bootstrapper', [
   'src/core/dataservice.base',
   'src/core/joiner',
   'src/dataservice',
+  'src/ping',
   'src/app'
 ], function(
   jquery, ko, // main libs
@@ -47,6 +48,7 @@ define('src/bootstrapper', [
   DataserviceBase,
   joiner,
   dataservice,
+  ping,
   app
 ) {
   "use strict";
@@ -84,6 +86,10 @@ define('src/bootstrapper', [
         jquery('#login-container').remove();
         // incase it didn't get moved before the user was set
         jquery('#loginform').remove();
+        // start pinging to keep session alive
+        ping.start('/ping');
+      } else {
+        ping.stop();
       }
     });
 

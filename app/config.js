@@ -41,6 +41,7 @@ define('src/config', [
   set('leadDispositionId', 9);
   set('apiTimeout', 1000 * 30);
   set('joinerTimeout', 1000 * 60);
+  set('pingInterval', 1000 * 60 * 29); // One minute less than the session timeout (30 min).
 
   return config;
 });
