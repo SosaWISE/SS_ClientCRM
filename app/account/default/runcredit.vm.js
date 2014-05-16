@@ -180,6 +180,7 @@ define('src/account/default/runcredit.vm', [
       SSN: '',
       DOB: '',
       Email: '',
+      ProductSkwId: 'HSSS001' // *OPTIONAL  it will default to 'HSSS001' if not passed.  This Prodcut Skw is for an alarm system.  Depending on what type of lead we are creating you would pass the appropriate Product Skw.
     }, schema);
 
     _this.localizationCvm = new ComboViewModel({
