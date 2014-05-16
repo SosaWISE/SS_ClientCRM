@@ -32,11 +32,7 @@ define('src/config', [
   set('useMocks', false);
   set('token', 'SSE_CMS_CORS');
   set('serviceDomain', 'sse.services.cmscors'); // Local
-<<<<<<< HEAD
-  // set('serviceDomain', 'cs1.dev.nexsense.com');
-=======
   // set('serviceDomain', 'cs1.dev.nexsense.com'); // Dev Environment
->>>>>>> 0cb662fe194eddb6023a8cd1f859fd42e03628dd
   // set('serviceDomain', 'cs1.tst.nexsense.com'); // Test Environment
   // set('serviceDomain', 'cs1.stg.nexsense.com'); // Stage Environment
   set('titlePrefix', '');
