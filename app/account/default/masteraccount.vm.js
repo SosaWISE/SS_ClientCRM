@@ -89,6 +89,9 @@ define('src/account/default/masteraccount.vm', [
         _this.goTo(_this.getRouteData(), {});
       }
     };
+    _this.clickNewAccount = function() {
+      alert('I do nothing');
+    };
   }
   utils.inherits(MasterAccountViewModel, ControllerViewModel);
   MasterAccountViewModel.prototype.viewTmpl = 'tmpl-acct-default-masteraccount';

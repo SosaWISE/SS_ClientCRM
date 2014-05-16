@@ -42,7 +42,7 @@ div(data-bind="if:!loadErr()&&!loading()")
           div(class="section")
             div(class="title")
               span Accounts
-              span(class="btn small add-btn",tabindex="0",data-bind="") New
+              span(class="btn small add-btn",tabindex="0",data-bind="cmd:clickNewAccount") New
             div(class="contents")
               ul(class="accounts")
                 <!-- ko foreach:accounts -->
