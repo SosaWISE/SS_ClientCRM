@@ -32,13 +32,20 @@ define('src/config', [
   set('useMocks', false);
   set('token', 'SSE_CMS_CORS');
   set('serviceDomain', 'sse.services.cmscors'); // Local
+<<<<<<< HEAD
   // set('serviceDomain', 'cs1.dev.nexsense.com');
+=======
+  // set('serviceDomain', 'cs1.dev.nexsense.com'); // Dev Environment
+>>>>>>> 0cb662fe194eddb6023a8cd1f859fd42e03628dd
   // set('serviceDomain', 'cs1.tst.nexsense.com'); // Test Environment
   // set('serviceDomain', 'cs1.stg.nexsense.com'); // Stage Environment
   set('titlePrefix', '');
   set('titlePostfix', '| CRM');
   set('leadSourceId', 1);
   set('leadDispositionId', 9);
+  set('apiTimeout', 1000 * 30);
+  set('joinerTimeout', 1000 * 60);
+  set('pingInterval', 1000 * 60 * 29); // One minute less than the session timeout (30 min).
 
   return config;
 });

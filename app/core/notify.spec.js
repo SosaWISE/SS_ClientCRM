@@ -25,26 +25,27 @@ define('src/core/notify.spec', [
       expect(typeof notify.notify).toBe('function');
     });
 
-    it('should have a `send` function', function() {
-      expect(notify.send).toBeDefined();
-      expect(typeof notify.send).toBe('function');
-    });
-    it('should have an `info` function', function() {
-      expect(notify.info).toBeDefined();
-      expect(typeof notify.info).toBe('function');
-    });
-    it('should have an `ok` function', function() {
-      expect(notify.ok).toBeDefined();
-      expect(typeof notify.ok).toBe('function');
-    });
-    it('should have a `warn` function', function() {
-      expect(notify.warn).toBeDefined();
-      expect(typeof notify.warn).toBe('function');
-    });
-    it('should have an `error` function', function() {
-      expect(notify.error).toBeDefined();
-      expect(typeof notify.error).toBe('function');
-    });
+    // functions commented out in definition
+    // it('should have a `send` function', function() {
+    //   expect(notify.send).toBeDefined();
+    //   expect(typeof notify.send).toBe('function');
+    // });
+    // it('should have an `info` function', function() {
+    //   expect(notify.info).toBeDefined();
+    //   expect(typeof notify.info).toBe('function');
+    // });
+    // it('should have an `ok` function', function() {
+    //   expect(notify.ok).toBeDefined();
+    //   expect(typeof notify.ok).toBe('function');
+    // });
+    // it('should have a `warn` function', function() {
+    //   expect(notify.warn).toBeDefined();
+    //   expect(typeof notify.warn).toBe('function');
+    // });
+    // it('should have an `error` function', function() {
+    //   expect(notify.error).toBeDefined();
+    //   expect(typeof notify.error).toBe('function');
+    // });
 
     describe('add notification', function() {
       var item;

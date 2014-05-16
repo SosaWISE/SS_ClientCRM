@@ -28,7 +28,10 @@ define('src/bootstrapper', [
   'src/core/notify',
   'src/core/router',
   'src/core/controller.vm',
+  'src/core/dataservice.base',
+  'src/core/joiner',
   'src/dataservice',
+  'src/ping',
   'src/app'
 ], function(
   jquery, ko, // main libs
@@ -42,7 +45,10 @@ define('src/bootstrapper', [
   notify,
   router,
   ControllerViewModel,
+  DataserviceBase,
+  joiner,
   dataservice,
+  ping,
   app
 ) {
   "use strict";
@@ -55,6 +61,9 @@ define('src/bootstrapper', [
   notify.init(LayersViewModel, DialogViewModel, resources);
   // overwrite jquery's parseJSON
   jquery.parseJSON = jsonhelpers.parse;
+  // set timeouts
+  DataserviceBase.prototype.timeout = config.apiTimeout;
+  joiner.Joiner.prototype.timeout = config.joinerTimeout;
 
   var deps = [];
   if (config.useMocks) {
@@ -77,6 +86,10 @@ define('src/bootstrapper', [
         jquery('#login-container').remove();
         // incase it didn't get moved before the user was set
         jquery('#loginform').remove();
+        // start pinging to keep session alive
+        ping.start('/ping');
+      } else {
+        ping.stop();
       }
     });
 

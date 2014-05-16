@@ -26,7 +26,8 @@ div(class="swing_wrapper")
             li  
               input(type="text" class="boxes" placeholder="[SSN]" data-bind="ukov:data.Customer1SSN, value:data.Customer1SSN, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes"  placeholder="[DOB]" data-bind="ukov:data.Customer1DOB, value:data.Customer1DOB, valueUpdate:'keyup'")
+              input(type="text" class="boxes"  placeholder="[DOB]" data-bind="ukov:data.Customer1DOB, datevalue:data.Customer1DOB, valueUpdate:'keyup'")
+              
             li  
               input(type="text" class="boxes"  placeholder="[Email]" data-bind="ukov:data.Customer1Email, value:data.Customer1Email, valueUpdate:'keyup'")        
     li      
@@ -47,7 +48,7 @@ div(class="swing_wrapper")
             li  
               input(type="text" class="boxes"  placeholder="[SSN]" data-bind="ukov:data.Customer2SSN, value:data.Customer2SSN, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes"  placeholder="[DOB]" data-bind="ukov:data.Customer2DOB, value:data.Customer2DOB, valueUpdate:'keyup'")
+              input(type="text" class="boxes"  placeholder="[DOB]" data-bind="ukov:data.Customer2DOB, datevalue:data.Customer2DOB, valueUpdate:'keyup'")
             li  
               input(type="text" class="boxes" placeholder="[Email]" data-bind="ukov:data.Customer2Email, value:data.Customer2Email, valueUpdate:'keyup'")   
     li      
@@ -67,9 +68,10 @@ div(class="swing_wrapper")
             li  
               input(type="text" class="boxes" id="txtPostalCode" placeholder="[Postal Code]", data-bind="ukov:data.PostalCode, value:data.PostalCode, valueUpdate:'keyup'")
             li  
-              div
+              input(type="text" class="boxes" placeholder="[State]", data-bind="ukov:data.State, value:data.State, valueUpdate:'keyup'")            
+              //-div
                 //-span(class="label") State
-                div(data-bind="cvm:data.StateCvm")
+                //-div(data-bind="cvm:data.StateCvm")
                
 
   ul(class="content" id="right_content")          

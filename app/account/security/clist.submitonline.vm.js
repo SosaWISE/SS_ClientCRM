@@ -30,6 +30,8 @@ define('src/account/security/clist.submitonline.vm', [
       },
     });
 
+    _this.submissionData = ko.observable();
+
     //
     // events
     //
@@ -54,12 +56,38 @@ define('src/account/security/clist.submitonline.vm', [
         cb();
       });
     });
+    _this.cmdSubmit = ko.command(function(cb) {
+      dataservice.monitoringstationsrv.msAccounts.save({
+        data: {
+          AccountId: _this.accountId,
+        },
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        console.log(resp);
+        //@TODO: do stuff after submit online, but what???
+
+        if (resp && resp.Value) {
+          if (resp.Value.WasSuccessfull) {
+            notify.notify('success', 'Successfully submitted online!', 7);
+            resp.Value.Msg = 'Submission Succeeded!';
+          } else {
+            notify.notify('warn', 'Failed to submit account online.', 7);
+            resp.Value.Msg = 'Submission Failed...';
+          }
+          _this.submissionData(resp.Value);
+        }
+      }, function(err) {
+        notify.notify('error', err.Message);
+      }));
+    });
   }
   utils.inherits(CListSubmitOnlineViewModel, ControllerViewModel);
   CListSubmitOnlineViewModel.prototype.viewTmpl = 'tmpl-security-clist_submitonline';
 
   CListSubmitOnlineViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
+
+    _this.accountId = routeData.id;
+
     load_dispatchAgencys(_this, join.add());
     //@TODO: load account status
     //@TODO: load dispatch agency types

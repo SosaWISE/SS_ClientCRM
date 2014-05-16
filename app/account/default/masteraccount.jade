@@ -1,83 +1,94 @@
-div(class="panel account", data-bind="active:active,toggle:{'hide-nav':hideNav,'hide-notes':hideNotes}")
-  div(data-bind="if:false")
-    div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+div(class="panel account active load-err", data-bind="if:loadErr")
+  div(class="p-module")
+    div Failed to load customer account
+    ul(class="actions")
+      li
+        a(class="btn small",tabindex="0",data-bind="hasfocus:true,cmd:clickReload") Retry
+      li
+        a(class="btn small",tabindex="0",data-bind="cmd:close") Close
 
-  //- div(class="p-module",data-bind="if:activeChild")
-  //-   div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild}")
-  div(class="p-module",data-bind="if:activeChild()")
-    div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}")
+div(data-bind="if:!loadErr()&&!loading()")
+  div(class="panel account", data-bind="active:active,toggle:{'hide-nav':hideNav,'hide-notes':hideNotes}")
 
-  div(class="p-nav")
-    div(class="toggle-btn", data-bind="click:clickToggleNav,toggle:{'closed':hideNav}")
-      div(class="close")
-      div(class="open")
+    //- div(class="p-module",data-bind="if:activeChild")
+    //-   div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild}")
+    div(class="p-module",data-bind="if:activeChild()")
+      div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}")
 
-    div(class="contents-wrap")
-      div(class="contents")
-        div(class="section")
-          span(class="title") Contract Owner
-          div(class="contents")
-            div(class="info userinfo")
-              div(class="img-wrap")
-                div(class="img", style="background-image:url(https://secure.gravatar.com/avatar/f47bda756ab7abfaeb7b5e1b59d5edc9?s=80&r=pg&d=https%3A%2F%2Fkanbanflow.com%2Fimg%2Fgd.png);")
-              div(class="name",data-bind="text:customerName")
-              div(class="address", data-bind="text:streetAddress")
-              div(class="address") Suite 1100, Bldg A
-              div(class="address") Orem, UT 84057
-              div(class="separator")
-              div(class="phone mobile", data-bind="text:phoneMobile")
-              div(class="phone work", data-bind="text:phoneWork")
-              div(class="phone home", data-bind="text:phoneHome")
-              div(class="email", data-bind="text:email")
-              div(class="credit-score excellent") Credit Score: TU Excellent
+    div(class="p-nav")
+      div(class="toggle-btn", data-bind="click:clickToggleNav,toggle:{'closed':hideNav}")
+        div(class="close")
+        div(class="open")
 
-        div(class="section")
-          div(class="title")
-            span Accounts
-            span(class="btn small add-btn",tabindex="0",data-bind="") New
-          div(class="contents")
-            ul(class="accounts")
-              <!-- ko foreach:accounts -->
-              li
-                a(data-bind="active:active,click:$parent.clickItem")
-                  span(class="name",data-bind="text:title")
-                  <!-- ko if:hasRmr -->
-                  span(class="amount",data-bind="currencyHtml:rmr")
-                  <!-- /ko -->
-                  <!-- ko ifnot:hasRmr -->
-                  span(class="nUnits",data-bind="text:units")
-                  <!-- /ko -->
-              <!-- /ko -->
-              li
-                a(class="total")
-                  span(class="name") Total RMR
-                  span(class="amount",data-bind="currencyHtml:totalRmr")
+      div(class="contents-wrap")
+        div(class="contents")
+          div(class="section")
+            span(class="title") Contract Owner
+            div(class="contents")
+              div(class="info userinfo")
+                div(class="img-wrap")
+                  div(class="img", style="background-image:url(https://secure.gravatar.com/avatar/f47bda756ab7abfaeb7b5e1b59d5edc9?s=80&r=pg&d=https%3A%2F%2Fkanbanflow.com%2Fimg%2Fgd.png);")
+                div(class="name",data-bind="text:customerName")
+                div(class="address", data-bind="text:streetAddress")
+                div(class="address") Suite 1100, Bldg A
+                div(class="address") Orem, UT 84057
+                div(class="separator")
+                div(class="phone mobile", data-bind="text:phoneMobile")
+                div(class="phone work", data-bind="text:phoneWork")
+                div(class="phone home", data-bind="text:phoneHome")
+                div(class="email", data-bind="text:email")
+                div(class="credit-score excellent") Credit Score: TU Excellent
 
-        div(class="section")
-          span(class="title") Payment History
-          div(class="contents")
-            ul(class="accounts")
-              li
-                a(class="")
-                  span(class="name") ??
-                  span(class="amount")
+          div(class="section")
+            div(class="title")
+              span Accounts
+              span(class="btn small add-btn",tabindex="0",data-bind="") New
+            div(class="contents")
+              ul(class="accounts")
+                <!-- ko foreach:accounts -->
+                li
+                  a(data-bind="active:active,click:$parent.clickItem")
+                    span(class="name",data-bind="text:title")
+                    <!-- ko if:hasRmr -->
+                    span(class="amount",data-bind="currencyHtml:rmr")
+                    <!-- /ko -->
+                    <!-- ko ifnot:hasRmr -->
+                    span(class="nUnits",data-bind="text:units")
+                    <!-- /ko -->
+                <!-- /ko -->
+                li
+                  a(class="total")
+                    span(class="name") Total RMR
+                    span(class="amount",data-bind="currencyHtml:totalRmr")
 
-        div(class="section")
-          span(class="title") Aging
-          div(class="contents")
-            ul(class="accounts")
-              <!-- ko foreach:agings -->
-              li
-                a(data-bind="active:active,click:$parent.clickItem")
-                  span(class="name",data-bind="text:title")
-                  span(class="amount",data-bind="currencyHtml:amount")
-              <!-- /ko -->
-              li
-                a(class="total")
-                  span(class="name") Total Pasted Due
-                  span(class="amount",data-bind="currencyHtml:totalAging")
+          div(class="section")
+            span(class="title") Payment History
+            div(class="contents")
+              ul(class="accounts")
+                li
+                  a(class="")
+                    span(class="name") ??
+                    span(class="amount")
+
+          div(class="section")
+            span(class="title") Aging
+            div(class="contents")
+              ul(class="accounts")
+                <!-- ko foreach:agings -->
+                li
+                  a(data-bind="active:active,click:$parent.clickItem")
+                    span(class="name",data-bind="text:title")
+                    span(class="amount",data-bind="currencyHtml:amount")
+                <!-- /ko -->
+                li
+                  a(class="total")
+                    span(class="name") Total Pasted Due
+                    span(class="amount",data-bind="currencyHtml:totalAging")
 
 
-  div(class="notes")
-    div(class="contents",data-bind="template:{name:notesVm.viewTmpl,data:notesVm}")
-    div(class="title", data-bind="click:clickToggleNotes") Notes:
+    div(class="notes")
+      div(class="contents",data-bind="template:{name:notesVm.viewTmpl,data:notesVm}")
+      div(class="title", data-bind="click:clickToggleNotes") Notes:
+
+div(data-bind="if:loading")
+  div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
