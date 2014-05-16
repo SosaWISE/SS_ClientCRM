@@ -1,16 +1,16 @@
 define('src/panels/swing.panel.vm', [
-  'src/account/default/address.validate.vm',
-  'src/core/combo.vm',
-  'src/core/notify',
-  'ko',
-  'src/core/utils',
-  'src/core/controller.vm',
-  'src/dataservice',
-  'src/core/router',
-  'src/slick/slickgrid.vm',
-  'src/config',
-  'src/slick/rowevent',
-  'src/ukov',
+    'src/account/default/address.validate.vm',
+    'src/core/combo.vm',
+    'src/core/notify',
+    'ko',
+    'src/core/utils',
+    'src/core/controller.vm',
+    'src/dataservice',
+    'src/core/router',
+    'src/slick/slickgrid.vm',
+    'src/config',
+    'src/slick/rowevent',
+    'src/ukov',
 ], function(
   AddressValidateViewModel,
   ComboViewModel,
@@ -28,15 +28,14 @@ define('src/panels/swing.panel.vm', [
   "use strict";
   var schema,
     nullStrConverter = ukov.converters.nullString();
-
   schema = {
     _model: true,
 
     AccountID: {
       converter: ukov.converters.number(0),
       validators: [
-        ukov.validators.isRequired('Account ID is required')
-      ]
+                ukov.validators.isRequired('Account ID is required')
+            ]
     },
     PassedCredit: {
       converter: nullStrConverter,
@@ -59,7 +58,9 @@ define('src/panels/swing.panel.vm', [
     Customer1LastName: {},
     Customer1Suffix: {},
     Customer1SSN: {},
-    Customer1DOB: {},
+    Customer1DOB: {
+      converter: ukov.converters.date(),
+    },
     Customer1Email: {},
 
     Customer2Prefix: {},
@@ -68,7 +69,9 @@ define('src/panels/swing.panel.vm', [
     Customer2LastName: {},
     Customer2Suffix: {},
     Customer2SSN: {},
-    Customer2DOB: {},
+    Customer2DOB: {
+      converter: ukov.converters.date(),
+    },
     Customer2Email: {},
 
     StreetAddress1: {},
@@ -76,6 +79,7 @@ define('src/panels/swing.panel.vm', [
     City: {},
     County: {},
     PostalCode: {},
+    State: {},
 
     ServiceType: {},
     CellularType: {},
@@ -118,13 +122,15 @@ define('src/panels/swing.panel.vm', [
 
     //_this.focusFirst = ko.observable(false);
 
-    _this.data.StateCvm = new ComboViewModel({
-      matchStart: true,
-      selectedValue: _this.data.StateId,
-      list: AddressValidateViewModel.prototype.stateOptions, //@TODO: load states from server
-      nullable: true,
-    });
-
+    /** Removed - change dropdown to textfield **/
+    /*
+        _this.data.StateCvm = new ComboViewModel({
+            matchStart: true,
+            selectedValue: _this.data.StateId,
+            list: AddressValidateViewModel.prototype.stateOptions, //@TODO: load states from server
+            nullable: true,
+        });
+        */
 
     //Emergency Contact List
     _this.swingEmGvm = new SlickGridViewModel({
@@ -144,23 +150,19 @@ define('src/panels/swing.panel.vm', [
       //     },
       //   }),
       // ],
-      columns: [
-        {
-          id: 'Name',
-          name: 'Name',
-          field: 'Name',
-        },
-        {
-          id: 'Relationship',
-          name: 'Relationship',
-          field: 'Relationship',
-        },
-        {
-          id: 'Phone',
-          name: 'Phone',
-          field: 'Phone',
-        },
-      ],
+      columns: [{
+        id: 'Name',
+        name: 'Name',
+        field: 'Name',
+            }, {
+        id: 'Relationship',
+        name: 'Relationship',
+        field: 'Relationship',
+            }, {
+        id: 'Phone',
+        name: 'Phone',
+        field: 'Phone',
+            }, ],
     });
 
     /*
@@ -191,23 +193,19 @@ define('src/panels/swing.panel.vm', [
       //     },
       //   }),
       // ],
-      columns: [
-        {
-          id: 'Zone',
-          name: 'Zone',
-          field: 'Zone',
-        },
-        {
-          id: 'Equipment',
-          name: 'Equipment',
-          field: 'Equipment',
-        },
-        {
-          id: 'Location',
-          name: 'Location',
-          field: 'Location',
-        },
-      ],
+      columns: [{
+        id: 'Zone',
+        name: 'Zone',
+        field: 'Zone',
+            }, {
+        id: 'Equipment',
+        name: 'Equipment',
+        field: 'Equipment',
+            }, {
+        id: 'Location',
+        name: 'Location',
+        field: 'Location',
+            }, ],
     });
 
 
@@ -298,6 +296,7 @@ define('src/panels/swing.panel.vm', [
         City: null,
         County: null,
         PostalCode: null,
+        State: null,
         ServiceType: null,
         CellularType: null,
         PassPhrase: null,
@@ -348,9 +347,9 @@ define('src/panels/swing.panel.vm', [
         notify.notify('warn', err.Message, 10);
       } else if (resp.Value) {
         if (resp.Value.SwingStatus === "1") {
-          alert("Swing Successful!");
+          notify.notify('ok', 'Swing Successful!');
         } else {
-          alert("Swing Failed!");
+          notify.notify('error', 'Swing Failed!');
         }
       } else {
         //vm.data.setVal(null);
@@ -377,17 +376,19 @@ define('src/panels/swing.panel.vm', [
         } else if (resp.Value) {
           //we are not sure if this is the correct way of assign value to UI
           var customer = resp.Value;
+
+
           vm.data.Customer1Prefix(customer.Prefix);
           vm.data.Customer1FirstName(customer.FirstName);
           vm.data.Customer1MiddleName(customer.MiddleName);
           vm.data.Customer1LastName(customer.LastName);
           vm.data.Customer1Suffix(customer.Suffix);
           vm.data.Customer1SSN(customer.SSN);
-          vm.data.Customer1DOB(customer.DOB);
+          vm.data.Customer1DOB(new Date(customer.DOB));
           vm.data.Customer1Email(customer.Email);
 
         } else {
-          alert("clear data on pri");
+          //alert("clear data on pri");
           //vm.data.setVal(null);
           vm.data.markClean(resp.Value, true);
           notify.notify('warn', 'Account ID not found', 7);
@@ -410,11 +411,11 @@ define('src/panels/swing.panel.vm', [
           vm.data.Customer2LastName(customer.LastName);
           vm.data.Customer2Suffix(customer.Suffix);
           vm.data.Customer2SSN(customer.SSN);
-          vm.data.Customer2DOB(customer.DOB);
+          vm.data.Customer2DOB(new Date(customer.DOB));
           vm.data.Customer2Email(customer.Email);
 
         } else {
-          alert("clear data on sec");
+          //alert("clear data on sec");
           //vm.data.setVal(null);
           vm.data.markClean(resp.Value, true);
           notify.notify('warn', 'Account ID not found', 7);
@@ -442,8 +443,8 @@ define('src/panels/swing.panel.vm', [
           notify.notify('warn', err.Message, 10);
           //vm.focusFirst(true);
         } else if (resp.Value) {
-          //we are not sure if this is the correct way of assign value to UI
-          //we are not sure if this is the correct way of assign value to UI
+          //we are not sure if this is the correct way of assign value to UI 
+
           var customer = resp.Value;
 
           vm.data.StreetAddress1(customer.StreetAddress1);
@@ -451,6 +452,7 @@ define('src/panels/swing.panel.vm', [
           vm.data.City(customer.City);
           vm.data.County(customer.County);
           vm.data.PostalCode(customer.PostalCode);
+          vm.data.State(customer.State);
         } else {
           //vm.data.setVal(null);
           vm.data.markClean(resp.Value, true);
