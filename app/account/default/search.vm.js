@@ -118,7 +118,7 @@ define('src/account/default/search.vm', [
           },
         }),
       ],
-      columns: [
+      columns: [ //
         {
           id: 'Icons',
           name: 'Acct Types',
@@ -131,29 +131,24 @@ define('src/account/default/search.vm', [
             });
             return results.join('');
           },
-        },
-        {
+        }, {
           id: 'CustomerMasterFileID',
           name: 'CMFID',
           field: 'CustomerMasterFileID',
           width: 30,
-        },
-        {
+        }, {
           id: 'Fullname',
           name: 'Full name',
           field: 'Fullname',
-        },
-        {
+        }, {
           id: 'Phone',
           name: 'Phone',
           field: 'Phone',
-        },
-        {
+        }, {
           id: 'City',
           name: 'City',
           field: 'City',
-        },
-        {
+        }, {
           id: 'Email',
           name: 'Email',
           field: 'Email',
@@ -189,16 +184,14 @@ define('src/account/default/search.vm', [
   SearchViewModel.prototype.viewTmpl = 'tmpl-acct-default-search';
   SearchViewModel.prototype.page = 1; // first page. needed in cmdSearch
 
-  SearchViewModel.prototype.pageSizeOptions = [
+  SearchViewModel.prototype.pageSizeOptions = [ //
     {
       value: 25,
       text: '25',
-    },
-    {
+    }, {
       value: 50,
       text: '50',
-    },
-    {
+    }, {
       value: 100,
       text: '100',
     },

@@ -81,12 +81,11 @@ define('src/account/security/equipment.editor.vm', [
     _this.data.AssignToCvm = new ComboViewModel({
       selectedValue: _this.data.AssignTo,
       nullable: true,
-      list: [
+      list: [ //
         {
           value: 1,
           text: '1',
-        },
-        {
+        }, {
           value: 2,
           text: '2',
         },
@@ -143,16 +142,14 @@ define('src/account/security/equipment.editor.vm', [
   EquipmentEditorViewModel.prototype.height = 'auto';
 
   // ?????????
-  EquipmentEditorViewModel.prototype.isUpgradeOptions = [
+  EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
     {
       value: null,
       text: 'null',
-    },
-    {
+    }, {
       value: true,
       text: 'Tech',
-    },
-    {
+    }, {
       value: false,
       text: 'Rep',
     },

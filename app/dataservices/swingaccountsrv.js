@@ -11,14 +11,14 @@ define('src/dataservices/swingaccountsrv', [
     var serviceDomain = config.serviceDomain + '/swingaccountsrv',
       result = {};
     [
-     // 'accounts',
+      // 'accounts',
       'CustomerSwingInfo',
       'CustomerSwingPremiseAddress',
       'CustomerSwingEmergencyContact',
       'CustomerSwingEquipmentInfo',
       'CustomerSwingSystemDetails',
       'CustomerSwingInterim'
-     /* 'msAccount',
+      /* 'msAccount',
       'msAccountCustomer',
       'msAccountPremiseAddress',
       'msAccountEmergencyContact',
@@ -27,8 +27,8 @@ define('src/dataservices/swingaccountsrv', [
       'msZoneType',
       'msEquipmentLocation'*/
     ].forEach(function(collectionName) {
-        result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
-      });
+      result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
+    });
 
     return result;
   };

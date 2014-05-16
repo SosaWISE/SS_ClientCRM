@@ -64,29 +64,25 @@ define('src/account/security/dispatchagencys.finder.vm', [
           },
         }),
       ],
-      columns: [
+      columns: [ //
         {
           id: 'ID',
           name: 'ID',
           field: 'DispatchAgencyID',
           width: 30,
-        },
-        {
+        }, {
           id: 'AgencyType',
           name: 'Agency Type',
           field: 'DispatchAgencyTypeName',
-        },
-        {
+        }, {
           id: 'AgencyNo',
           name: 'Agency #',
           field: 'AgencyNo',
-        },
-        {
+        }, {
           id: 'AgencyName',
           name: 'Agency Name',
           field: 'AgencyName',
-        },
-        {
+        }, {
           id: 'DispatchPhone',
           name: 'Dispatch Phone',
           field: 'DispatchPhone',

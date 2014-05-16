@@ -144,57 +144,50 @@ define('mock/dataservices/maincore.mock', [
     noteTypes,
     localizations;
 
-  departments = [
+  departments = [ //
     {
       DepartmentID: 'COLLEC',
       DepartmentName: 'Collections'
-    },
-    {
+    }, {
       DepartmentID: 'CSERVIC',
       DepartmentName: 'Customer Service'
-    },
-    {
+    }, {
       DepartmentID: 'DENTRY',
       DepartmentName: 'Data Entry'
-    },
-    {
+    }, {
       DepartmentID: 'INSALES',
       DepartmentName: 'Inside Sales'
     },
   ];
 
-  noteCategorys1 = [
+  noteCategorys1 = [ //
     {
       NoteCategory1ID: 1,
       Category: 'Cat 1',
       Description: 'Cat 1 Description',
-    },
-    {
+    }, {
       NoteCategory1ID: 2,
       Category: 'Cat 2',
       Description: 'Cat 2 Description',
     },
   ];
-  noteCategorys2 = [
+  noteCategorys2 = [ //
     {
       NoteCategory2ID: 1,
       NoteCategory1Id: 1,
       Category: 'Cat 1.1',
       Description: 'Cat 1.1 Description',
-    },
-    {
+    }, {
       NoteCategory2ID: 2,
       NoteCategory1Id: 1,
       Category: 'Cat 1.2',
       Description: 'Cat 1.2 Description',
-    },
-    {
+    }, {
       NoteCategory2ID: 3,
       NoteCategory1Id: 2,
       Category: 'Cat 2.1',
       Description: 'Cat 2.1 Description',
-    },
-    {
+    }, {
       NoteCategory2ID: 4,
       NoteCategory1Id: 2,
       Category: 'Cat 2.2',
@@ -203,7 +196,7 @@ define('mock/dataservices/maincore.mock', [
   ];
 
   notes = mockery.fromTemplate({
-    'list|1-1': [
+    'list|1-1': [ //
       {
         NoteID: '@INC(note)',
         NoteTypeId: 'AUTO_GEN',
@@ -220,31 +213,27 @@ define('mock/dataservices/maincore.mock', [
     ]
   }).list;
 
-  noteTypes = [
+  noteTypes = [ //
     {
       NoteTypeID: 'AUTO_GEN',
       NoteType: 'Auto Generated'
-    },
-    {
+    }, {
       NoteTypeID: 'BILLING_ENGINE',
       NoteType: 'Billing Engine'
-    },
-    {
+    }, {
       NoteTypeID: 'CEN_STATION',
       NoteType: 'Central Station'
-    },
-    {
+    }, {
       NoteTypeID: 'STANDARD',
       NoteType: 'Standard Note'
     },
   ];
 
-  localizations = [
+  localizations = [ //
     {
       LocalizationID: 'en-US',
       LocalizationName: 'English USA',
-    },
-    {
+    }, {
       LocalizationID: 'es',
       LocalizationName: 'Spanish Standard',
     }

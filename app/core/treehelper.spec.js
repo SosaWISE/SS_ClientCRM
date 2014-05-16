@@ -6,73 +6,65 @@ define('src/core/treehelper.spec', [
 
   describe('treehelper', function() {
     var list, tree;
-    list = [
+    list = [ //
       {
         id: 1,
         parentId: null,
         name: '1.',
-      },
-      {
+      }, {
         id: 2,
         parentId: 1,
         name: '1.1.',
-      },
-      {
+      }, {
         id: 3,
         parentId: 2,
         name: '1.1.1.',
-      },
-      {
+      }, {
         id: 4,
         parentId: 2,
         name: '1.1.2.',
-      },
-      {
+      }, {
         id: 5,
         parentId: 1,
         name: '1.2.',
-      },
-      {
+      }, {
         id: 6,
         parentId: 5,
         name: '1.2.1.',
-      },
-      {
+      }, {
         id: 7,
         parentId: null,
         name: '2.',
       },
     ];
-    tree = [
+    tree = [ //
       {
         id: 1,
         parentId: null,
         name: '1.',
-        childs: [
+        childs: [ //
           {
             id: 2,
             parentId: 1,
             name: '1.1.',
-            childs: [
+            childs: [ //
               {
                 id: 3,
                 parentId: 2,
                 name: '1.1.1.',
                 childs: [],
-              },
-              {
+              }, {
                 id: 4,
                 parentId: 2,
                 name: '1.1.2.',
                 childs: [],
               },
             ],
-          },
-          {
+          }, {
             id: 5,
             parentId: 1,
             name: '1.2.',
-            childs: [
+            childs: [ //
               {
                 id: 6,
                 parentId: 5,
@@ -82,8 +74,7 @@ define('src/core/treehelper.spec', [
             ],
           },
         ],
-      },
-      {
+      }, {
         id: 7,
         parentId: null,
         name: '2.',
@@ -126,25 +117,24 @@ define('src/core/treehelper.spec', [
 
       it('should recursively nest and map items', function() {
         var list, tree, topLevelList;
-        list = [
+        list = [ //
           {
             id: 1,
             parentId: null,
             name: '1.',
-          },
-          {
+          }, {
             id: 2,
             parentId: 1,
             name: '1.1.',
           },
         ];
-        tree = [
+        tree = [ //
           {
             wrappedItem: {
               id: 1,
               parentId: null,
               name: '1.',
-              childs: [
+              childs: [ //
                 {
                   wrappedItem: {
                     id: 2,
@@ -172,23 +162,22 @@ define('src/core/treehelper.spec', [
 
       it('should sort items', function() {
         var tree, topLevelList;
-        tree = [
+        tree = [ //
           {
             id: 7,
             parentId: null,
             name: '2.',
             childs: [],
-          },
-          {
+          }, {
             id: 1,
             parentId: null,
             name: '1.',
-            childs: [
+            childs: [ //
               {
                 id: 5,
                 parentId: 1,
                 name: '1.2.',
-                childs: [
+                childs: [ //
                   {
                     id: 6,
                     parentId: 5,
@@ -196,19 +185,17 @@ define('src/core/treehelper.spec', [
                     childs: [],
                   },
                 ],
-              },
-              {
+              }, {
                 id: 2,
                 parentId: 1,
                 name: '1.1.',
-                childs: [
+                childs: [ //
                   {
                     id: 4,
                     parentId: 2,
                     name: '1.1.2.',
                     childs: [],
-                  },
-                  {
+                  }, {
                     id: 3,
                     parentId: 2,
                     name: '1.1.1.',

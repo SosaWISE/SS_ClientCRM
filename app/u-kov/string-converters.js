@@ -128,10 +128,10 @@ define('src/u-kov/string-converters', [
     var dateConverter = converters.date(),
       dateFormat = 'MM/DD/YYYY',
       timeFormats = [
-      'hh:mm:ss.SSS A',
-      'hh:mm:ss A',
-      'hh:mm A'
-    ];
+        'hh:mm:ss.SSS A',
+        'hh:mm:ss A',
+        'hh:mm A'
+      ];
     return function convDatetime(val) {
       val = trim(val);
       if (!val) {

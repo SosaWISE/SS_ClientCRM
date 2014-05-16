@@ -32,28 +32,24 @@ define('src/account/security/signalhistory.vm', [
         forceFitColumns: true,
         rowHeight: 27,
       },
-      columns: [
+      columns: [ //
         {
           id: 'Zone',
           name: 'Zone',
           field: 'Zone',
-        },
-        {
+        }, {
           id: 'Equipment',
           name: 'Equipment',
           field: 'Equipment',
-        },
-        {
+        }, {
           id: 'ZoneType',
           name: 'Zone Type',
           field: 'ZoneType',
-        },
-        {
+        }, {
           id: 'Location',
           name: 'Location',
           field: 'Location',
-        },
-        {
+        }, {
           id: 'Barcode',
           name: 'Barcode',
           field: 'Barcode',
@@ -68,43 +64,36 @@ define('src/account/security/signalhistory.vm', [
         forceFitColumns: true,
         rowHeight: 27,
       },
-      columns: [
+      columns: [ //
         {
           id: 'SignalType',
           name: 'SignalType',
           field: 'SignalType',
-        },
-        {
+        }, {
           id: 'EventDate',
           name: 'EventDate',
           field: 'EventDate',
-        },
-        {
+        }, {
           id: 'TwoWayTest',
           name: 'TwoWayTest',
           field: 'TwoWayTest',
-        },
-        {
+        }, {
           id: 'IndustryNumber',
           name: 'IndustryNumber',
           field: 'IndustryNumber',
-        },
-        {
+        }, {
           id: 'ZoneNumber',
           name: 'ZoneNumber',
           field: 'ZoneNumber',
-        },
-        {
+        }, {
           id: 'EventCode',
           name: 'EventCode',
           field: 'EventCode',
-        },
-        {
+        }, {
           id: 'EventDetails',
           name: 'EventDetails',
           field: 'EventDetails',
-        },
-        {
+        }, {
           id: 'Computed',
           name: 'Computed',
           field: 'Computed',

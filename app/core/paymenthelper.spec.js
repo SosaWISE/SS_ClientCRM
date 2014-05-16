@@ -1,6 +1,6 @@
 /*global describe,it,expect*/
 define('src/core/paymenthelper.spec', [
- 'src/core/paymenthelper',
+  'src/core/paymenthelper',
 ], function(
   paymenthelper
 ) {
@@ -148,52 +148,41 @@ define('src/core/paymenthelper.spec', [
 
     describe('getExpirationMonths:', function() {
       it('should create a list of all months', function() {
-        expect(paymenthelper.getExpirationMonths()).toEqual([
+        expect(paymenthelper.getExpirationMonths()).toEqual([ //
           {
             value: 0,
             text: '01-January',
-          },
-          {
+          }, {
             value: 1,
             text: '02-February',
-          },
-          {
+          }, {
             value: 2,
             text: '03-March',
-          },
-          {
+          }, {
             value: 3,
             text: '04-April',
-          },
-          {
+          }, {
             value: 4,
             text: '05-May',
-          },
-          {
+          }, {
             value: 5,
             text: '06-June',
-          },
-          {
+          }, {
             value: 6,
             text: '07-July',
-          },
-          {
+          }, {
             value: 7,
             text: '08-August',
-          },
-          {
+          }, {
             value: 8,
             text: '09-September',
-          },
-          {
+          }, {
             value: 9,
             text: '10-October',
-          },
-          {
+          }, {
             value: 10,
             text: '11-November',
-          },
-          {
+          }, {
             value: 11,
             text: '12-December',
           },
@@ -202,24 +191,20 @@ define('src/core/paymenthelper.spec', [
     });
     describe('getExpirationYears:', function() {
       it('should create a list years', function() {
-        expect(paymenthelper.getExpirationYears(5, 2000)).toEqual([
+        expect(paymenthelper.getExpirationYears(5, 2000)).toEqual([ //
           {
             value: 2000,
             text: '2000',
-          },
-          {
+          }, {
             value: 2001,
             text: '2001',
-          },
-          {
+          }, {
             value: 2002,
             text: '2002',
-          },
-          {
+          }, {
             value: 2003,
             text: '2003',
-          },
-          {
+          }, {
             value: 2004,
             text: '2004',
           },

@@ -81,7 +81,9 @@ define('src/core/joiner.spec', [
         add2(null, 2, 2);
         add1(null, 1);
         add3(null, [3]);
-        expect(callbackResults).toEqual([1, [2, 2], [3]]);
+        expect(callbackResults).toEqual([1, [2, 2],
+          [3]
+        ]);
       });
 
       it('callbacks should be called only one time', function() {

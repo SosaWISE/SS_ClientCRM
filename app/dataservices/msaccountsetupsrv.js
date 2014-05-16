@@ -24,8 +24,8 @@ define('src/dataservices/msaccountsetupsrv', [
       'dslSeizureTypes',
       'alarmcom',
     ].forEach(function(collectionName) {
-        result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
-      });
+      result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
+    });
 
     return result;
   };

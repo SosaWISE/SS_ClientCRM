@@ -27,64 +27,54 @@ define('src/account/security/equipment.gvm', [
           },
         }),
       ],
-      columns: [
+      columns: [ //
         {
           id: 'Zone',
           name: 'Zone',
           field: 'Zone',
-        },
-        {
+        }, {
           id: 'Points',
           name: 'Points',
           field: 'Points',
-        },
-        {
+        }, {
           id: 'Equipment',
           name: 'Equipment',
           field: 'Equipment',
-        },
-        {
+        }, {
           id: 'PartNumber',
           name: 'Part #',
           field: 'PartNumber',
-        },
-        {
+        }, {
           id: 'Location',
           name: 'Location',
           field: 'Location',
-        },
-        {
+        }, {
           id: 'Barcode',
           name: 'Barcode',
           field: 'Barcode',
-        },
-        {
+        }, {
           id: 'AssignedTo',
           name: 'Assigned To',
           field: 'AssignedTo',
-        },
-        {
+        }, {
           id: 'ExistingWiring',
           name: 'Existing Wiring',
           field: 'ExistingWiring',
           minWidth: 15,
           formatter: SlickGridViewModel.formatters.xFormatter,
-        },
-        {
+        }, {
           id: 'ExistingEquipment',
           name: 'Existing Equipment',
           field: 'ExistingEquipment',
           minWidth: 15,
           formatter: SlickGridViewModel.formatters.xFormatter,
-        },
-        {
+        }, {
           id: 'TechUpgrade',
           name: 'Tech Upgrade',
           field: 'TechUpgrade',
           minWidth: 15,
           formatter: SlickGridViewModel.formatters.xFormatter,
-        },
-        {
+        }, {
           id: 'UpgradePrice',
           name: 'Upgrade Price',
           field: 'UpgradePrice',

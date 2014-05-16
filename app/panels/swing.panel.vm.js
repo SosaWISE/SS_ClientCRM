@@ -1,16 +1,16 @@
 define('src/panels/swing.panel.vm', [
-    'src/account/default/address.validate.vm',
-    'src/core/combo.vm',
-    'src/core/notify',
-    'ko',
-    'src/core/utils',
-    'src/core/controller.vm',
-    'src/dataservice',
-    'src/core/router',
-    'src/slick/slickgrid.vm',
-    'src/config',
-    'src/slick/rowevent',
-    'src/ukov',
+  'src/account/default/address.validate.vm',
+  'src/core/combo.vm',
+  'src/core/notify',
+  'ko',
+  'src/core/utils',
+  'src/core/controller.vm',
+  'src/dataservice',
+  'src/core/router',
+  'src/slick/slickgrid.vm',
+  'src/config',
+  'src/slick/rowevent',
+  'src/ukov',
 ], function(
   AddressValidateViewModel,
   ComboViewModel,
@@ -28,14 +28,15 @@ define('src/panels/swing.panel.vm', [
   "use strict";
   var schema,
     nullStrConverter = ukov.converters.nullString();
+
   schema = {
     _model: true,
 
     AccountID: {
       converter: ukov.converters.number(0),
       validators: [
-                ukov.validators.isRequired('Account ID is required')
-            ]
+        ukov.validators.isRequired('Account ID is required')
+      ]
     },
     PassedCredit: {
       converter: nullStrConverter,
@@ -124,12 +125,12 @@ define('src/panels/swing.panel.vm', [
 
     /** Removed - change dropdown to textfield **/
     /*
-        _this.data.StateCvm = new ComboViewModel({
-            matchStart: true,
-            selectedValue: _this.data.StateId,
-            list: AddressValidateViewModel.prototype.stateOptions, //@TODO: load states from server
-            nullable: true,
-        });
+    _this.data.StateCvm = new ComboViewModel({
+      matchStart: true,
+      selectedValue: _this.data.StateId,
+      list: AddressValidateViewModel.prototype.stateOptions, //@TODO: load states from server
+      nullable: true,
+    });
         */
 
     //Emergency Contact List
@@ -150,19 +151,21 @@ define('src/panels/swing.panel.vm', [
       //     },
       //   }),
       // ],
-      columns: [{
-        id: 'Name',
-        name: 'Name',
-        field: 'Name',
-            }, {
-        id: 'Relationship',
-        name: 'Relationship',
-        field: 'Relationship',
-            }, {
-        id: 'Phone',
-        name: 'Phone',
-        field: 'Phone',
-            }, ],
+      columns: [ //
+        {
+          id: 'Name',
+          name: 'Name',
+          field: 'Name',
+        }, {
+          id: 'Relationship',
+          name: 'Relationship',
+          field: 'Relationship',
+        }, {
+          id: 'Phone',
+          name: 'Phone',
+          field: 'Phone',
+        },
+      ],
     });
 
     /*
@@ -193,19 +196,21 @@ define('src/panels/swing.panel.vm', [
       //     },
       //   }),
       // ],
-      columns: [{
-        id: 'Zone',
-        name: 'Zone',
-        field: 'Zone',
-            }, {
-        id: 'Equipment',
-        name: 'Equipment',
-        field: 'Equipment',
-            }, {
-        id: 'Location',
-        name: 'Location',
-        field: 'Location',
-            }, ],
+      columns: [ //
+        {
+          id: 'Zone',
+          name: 'Zone',
+          field: 'Zone',
+        }, {
+          id: 'Equipment',
+          name: 'Equipment',
+          field: 'Equipment',
+        }, {
+          id: 'Location',
+          name: 'Location',
+          field: 'Location',
+        },
+      ],
     });
 
 

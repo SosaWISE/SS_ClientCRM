@@ -30,26 +30,23 @@ define('src/account/security/clist.salesinfo.gvm', [
       //     },
       //   }),
       // ],
-      columns: [
+      columns: [ //
         {
           id: 'description',
           name: 'Description',
           field: 'ItemDesc',
           width: 200,
-        },
-        {
+        }, {
           id: 'price',
           name: 'Price',
           field: 'RetailPrice',
           formatter: SlickGridViewModel.formatters.currency,
-        },
-        {
+        }, {
           id: 'points',
           name: 'Points',
           field: 'SystemPoints',
           formatter: SlickGridViewModel.formatters.likecurrency,
-        },
-        {
+        }, {
           id: 'total',
           name: 'Total',
           field: 'RetailPrice',
@@ -58,7 +55,7 @@ define('src/account/security/clist.salesinfo.gvm', [
         new ButtonsColumn({
           id: 'actions',
           name: 'Actions',
-          buttons: [
+          buttons: [ //
             {
               text: 'Del',
               fn: options.deletePart,

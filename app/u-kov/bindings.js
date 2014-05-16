@@ -1,6 +1,6 @@
 define('src/u-kov/bindings', [
- 'jquery',
- 'ko',
+  'jquery',
+  'ko',
 ], function(
   jquery,
   ko

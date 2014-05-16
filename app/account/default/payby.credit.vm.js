@@ -203,20 +203,17 @@ define('src/account/default/payby.credit.vm', [
     _this.selected(selected);
   };
 
-  cardTypeOptions = [
+  cardTypeOptions = [ //
     {
       CreditCardTypeID: 1,
       CardType: 'Visa',
-    },
-    {
+    }, {
       CreditCardTypeID: 2,
       CardType: 'MasterCard',
-    },
-    {
+    }, {
       CreditCardTypeID: 3,
       CardType: 'Discover',
-    },
-    {
+    }, {
       CreditCardTypeID: 4,
       CardType: 'American Express',
     },

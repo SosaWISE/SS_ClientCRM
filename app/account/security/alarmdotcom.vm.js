@@ -33,13 +33,12 @@ define('src/account/security/alarmdotcom.vm', [
         forceFitColumns: true,
         rowHeight: 27,
       },
-      columns: [
+      columns: [ //
         {
           id: 'Zone',
           name: 'Zone',
           field: 'Zone',
-        },
-        {
+        }, {
           id: 'EquipmentDescription',
           name: 'Equipment Description',
           field: 'EquipmentDescription',

@@ -39,33 +39,28 @@ define('src/account/security/dispatchagencys.gvm', [
           },
         }),
       ],
-      columns: [
+      columns: [ //
         {
           id: 'ID',
           name: 'ID',
           field: 'DaAssignmentId',
-        },
-        {
+        }, {
           id: 'AgencyType',
           name: 'Agency Type',
           field: 'DispatchAgencyTypeName',
-        },
-        {
+        }, {
           id: 'CSNumber',
           name: 'CS #',
           field: 'CsNo',
-        },
-        {
+        }, {
           id: 'AgencyName',
           name: 'Agency Name',
           field: 'AgencyName',
-        },
-        {
+        }, {
           id: 'DispatchPhone',
           name: 'Dispatch Phone',
           field: 'DispatchPhone',
-        },
-        {
+        }, {
           id: 'StationVerfied',
           name: 'Station Verfied',
           field: 'MonitoringStationVerfied',

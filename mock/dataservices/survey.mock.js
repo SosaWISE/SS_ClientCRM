@@ -327,7 +327,7 @@ define('mock/dataservices/survey.mock', [
     resultAnswers;
 
   surveyTypes = mockery.fromTemplate({
-    'list|3-3': [
+    'list|3-3': [ //
       {
         SurveyTypeID: '@INC(surveyType,1000)',
         Name: '@SV_TYPE',
@@ -335,7 +335,7 @@ define('mock/dataservices/survey.mock', [
     ],
   }).list;
   surveys = mockery.fromTemplate({
-    'list|2-2': [
+    'list|2-2': [ //
       {
         SurveyID: '@INC(survey)',
         SurveyTypeId: '@FK(surveyType)',
@@ -344,7 +344,7 @@ define('mock/dataservices/survey.mock', [
     ],
   }).list;
   surveyTranslations = mockery.fromTemplate({
-    'list|2-2': [
+    'list|2-2': [ //
       {
         SurveyTranslationID: '@INC(surveyTranslation)',
         SurveyId: 1,
@@ -354,7 +354,7 @@ define('mock/dataservices/survey.mock', [
   }).list;
 
   tokens = mockery.fromTemplate({
-    'list|9-9': [
+    'list|9-9': [ //
       {
         TokenID: '@INC(token)',
         Token: '@SV_TOKEN',
@@ -364,7 +364,7 @@ define('mock/dataservices/survey.mock', [
   }).list;
 
   questionMeanings = mockery.fromTemplate({
-    'list|4-4': [
+    'list|4-4': [ //
       {
         QuestionMeaningID: '@INC(questionMeaning)',
         SurveyTypeId: 1000,
@@ -374,7 +374,7 @@ define('mock/dataservices/survey.mock', [
   }).list;
 
   questionMeanings_Tokens_Map = mockery.fromTemplate({
-    'list|5-5': [
+    'list|5-5': [ //
       {
         QuestionMeaningId: '@FK(questionMeaning)',
         TokenId: '@FK(token)',
@@ -383,7 +383,7 @@ define('mock/dataservices/survey.mock', [
   }).list;
 
   questions = mockery.fromTemplate({
-    'list|1-1': [
+    'list|1-1': [ //
       {
         QuestionID: '@INC(question)',
         SurveyId: 1, //'@REF_INC(survey)',
@@ -417,7 +417,7 @@ define('mock/dataservices/survey.mock', [
     });
   })();
   questionTranslations = mockery.fromTemplate({
-    'list|1-1': [
+    'list|1-1': [ //
       {
         QuestionTranslationID: '@INC(questionTranslation)',
         SurveyTranslationId: 1, //'@FK(surveyTranslation)',
@@ -428,7 +428,7 @@ define('mock/dataservices/survey.mock', [
   }).list;
 
   possibleAnswers = mockery.fromTemplate({
-    'list|3-3': [
+    'list|3-3': [ //
       {
         PossibleAnswerID: '@INC(possibleAnswer)',
         AnswerText: '@SV_PA',
@@ -437,7 +437,7 @@ define('mock/dataservices/survey.mock', [
   }).list;
 
   questions_PossibleAnswers_Map = mockery.fromTemplate({
-    'list|3-3': [
+    'list|3-3': [ //
       {
         QuestionId: '@FK(question)',
         PossibleAnswerId: '@FK(possibleAnswer)',
@@ -463,7 +463,7 @@ define('mock/dataservices/survey.mock', [
   //   ],
   // }).list;
   surveyResults = mockery.fromTemplate({
-    'list|1-1': [
+    'list|1-1': [ //
       {
         ResultID: '@INC(surveyResults)',
         SurveyTranslationId: 1,
@@ -508,7 +508,7 @@ define('mock/dataservices/survey.mock', [
   }).list;
 
   resultAnswers = mockery.fromTemplate({
-    'list|3-3': [
+    'list|3-3': [ //
       {
         AnswerID: '@INC(resultAnswers)',
         ResultId: 1,

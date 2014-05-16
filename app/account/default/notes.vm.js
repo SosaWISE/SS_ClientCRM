@@ -114,33 +114,29 @@ define('src/account/default/notes.vm', [
           },
         }),
       ],
-      columns: [
+      columns: [ //
         {
           id: 'CreatedOn',
           name: 'Date',
           field: 'CreatedOn',
           width: 40,
           cssClass: 'wrap-cell',
-        },
-        {
+        }, {
           id: 'CreatedBy',
           name: 'User',
           field: 'CreatedBy',
           width: 30,
-        },
-        {
+        }, {
           id: 'NoteCategory1Id',
           name: 'Primary Reason ID',
           field: 'NoteCategory1Id',
           width: 30,
-        },
-        {
+        }, {
           id: 'NoteCategory2Id',
           name: 'Secondary Reason',
           field: 'NoteCategory2Id',
           width: 30,
-        },
-        {
+        }, {
           id: 'reason',
           name: 'Reason',
           // width: 30,
@@ -149,8 +145,7 @@ define('src/account/default/notes.vm', [
             //       currently we only have filtered lists
             return dataCtx.NoteCategory1Id + ': ' + dataCtx.NoteCategory2Id;
           },
-        },
-        {
+        }, {
           id: 'Note',
           name: 'Note',
           field: 'Note',

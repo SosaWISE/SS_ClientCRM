@@ -25,7 +25,7 @@ define('src/survey/question.new.vm', [
     _this.qmComboVM = new ComboViewModel({
       list: createComboList(_this.surveyVM, _this.surveyTypeVM.questionMeanings())
     });
-    _this.qmComboVM.actions([
+    _this.qmComboVM.actions([ //
       {
         text: 'Add New Meaning',
         onClick: _this.showAddNewMeaning.bind(_this),

@@ -91,7 +91,7 @@ define('mock/dataservices/salessummary.mock', [
     frequentlyInstalledEquipmentGet,
     invoiceMsIsntalls;
 
-  pointSystems = [
+  pointSystems = [ //
     {
       InvoiceTemplateID: 1,
       DealerId: 5000,
@@ -104,8 +104,7 @@ define('mock/dataservices/salessummary.mock', [
       ActivationDiscountAmount: 0,
       MMRDiscountAmount: 0,
       SystemPoints: 8
-    },
-    {
+    }, {
       InvoiceTemplateID: 2,
       DealerId: 5000,
       ActivationItemId: "SETUP_FEE_99",
@@ -121,7 +120,7 @@ define('mock/dataservices/salessummary.mock', [
   ];
 
   cellularTypes = mockery.fromTemplate({
-    'list|4-4': [
+    'list|4-4': [ //
       {
         CellularTypeID: '@CELLULAR_TYPE_ID',
         CellularTypeName: '@CELLULAR_TYPE_NAME',
@@ -129,25 +128,23 @@ define('mock/dataservices/salessummary.mock', [
     ]
   }).list;
 
-  vendorAlarmcomPacakges = [
+  vendorAlarmcomPacakges = [ //
     {
       "AlarmComPackageID": "ADVINT",
       "PackageName": "Advanced Interactive",
       "DefaultValue": false
-    },
-    {
+    }, {
       "AlarmComPackageID": "BSCINT",
       "PackageName": "Basic Interactive",
       "DefaultValue": false
-    },
-    {
+    }, {
       "AlarmComPackageID": "WRLFWN",
       "PackageName": "Wireless Forwarding",
       "DefaultValue": true
     }
   ];
 
-  contractLengthsGet = [
+  contractLengthsGet = [ //
     {
       "ContractTemplateID": 1,
       "ContractName": "Full Contract 3 Years",
@@ -161,8 +158,7 @@ define('mock/dataservices/salessummary.mock', [
       "CreatedOn": "2014-01-08T14:03:02.9517605-07:00",
       "CreatedBy": "",
       "DEX_ROW_TS": "1900-01-01T00:00:00"
-    },
-    {
+    }, {
       "ContractTemplateID": 2,
       "ContractName": "Full Contract 5 Years",
       "ContractLength": 60,
@@ -178,7 +174,7 @@ define('mock/dataservices/salessummary.mock', [
     }
   ];
 
-  frequentlyInstalledEquipmentGet = [
+  frequentlyInstalledEquipmentGet = [ //
     {
       "ItemID": "EQPM_INVT126",
       "ItemTypeId": "EQPM_INVT",
@@ -192,8 +188,7 @@ define('mock/dataservices/salessummary.mock', [
       "IsCatalogItem": true,
       "IsActive": true,
       "IsDeleted": false
-    },
-    {
+    }, {
       "ItemID": "EQPM_INVT128",
       "ItemTypeId": "EQPM_INVT",
       "TaxOptionId": "TAX",
@@ -206,8 +201,7 @@ define('mock/dataservices/salessummary.mock', [
       "IsCatalogItem": true,
       "IsActive": true,
       "IsDeleted": false
-    },
-    {
+    }, {
       "ItemID": "EQPM_INVT131",
       "ItemTypeId": "EQPM_INVT",
       "TaxOptionId": "TAX",
@@ -220,8 +214,7 @@ define('mock/dataservices/salessummary.mock', [
       "IsCatalogItem": true,
       "IsActive": true,
       "IsDeleted": false
-    },
-    {
+    }, {
       "ItemID": "EQPM_INVT132",
       "ItemTypeId": "EQPM_INVT",
       "TaxOptionId": "TAX",
@@ -234,8 +227,7 @@ define('mock/dataservices/salessummary.mock', [
       "IsCatalogItem": true,
       "IsActive": true,
       "IsDeleted": false
-    },
-    {
+    }, {
       "ItemID": "EQPM_INVT133",
       "ItemTypeId": "EQPM_INVT",
       "TaxOptionId": "TAX",
@@ -248,8 +240,7 @@ define('mock/dataservices/salessummary.mock', [
       "IsCatalogItem": true,
       "IsActive": true,
       "IsDeleted": false
-    },
-    {
+    }, {
       "ItemID": "EQPM_INVT139",
       "ItemTypeId": "EQPM_INVT",
       "TaxOptionId": "TAX",
@@ -265,7 +256,7 @@ define('mock/dataservices/salessummary.mock', [
     }
   ];
 
-  invoiceMsIsntalls = [
+  invoiceMsIsntalls = [ //
     {
       "InvoiceID": 10010064,
       "AccountId": 100212,

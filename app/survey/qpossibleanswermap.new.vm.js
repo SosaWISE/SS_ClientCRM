@@ -24,12 +24,11 @@ define('src/survey/qpossibleanswermap.new.vm', [
       list: createComboList(_this.questionVM.possibleAnswerMaps(), _this.possibleAnswersVM.possibleAnswers())
     });
     _this.expandsComboVM = new ComboViewModel({
-      list: [
+      list: [ //
         {
           value: true,
           text: 'true',
-        },
-        {
+        }, {
           value: false,
           text: 'false',
         }

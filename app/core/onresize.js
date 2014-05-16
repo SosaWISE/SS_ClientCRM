@@ -1,6 +1,6 @@
 define('src/core/onresize', [
- 'underscore',
- 'src/core/utils',
+  'underscore',
+  'src/core/utils',
 ], function(
   underscore,
   utils

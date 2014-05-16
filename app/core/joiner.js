@@ -1,5 +1,5 @@
 define('src/core/joiner', [
- 'src/core/arrays',
+  'src/core/arrays',
 ], function(
   arrays
 ) {

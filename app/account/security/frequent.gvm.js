@@ -22,24 +22,21 @@ define('src/account/security/frequent.gvm', [
         forceFitColumns: true,
         rowHeight: 27,
       },
-      columns: [
+      columns: [ //
         {
           id: 'item',
           name: 'Item',
           field: 'ItemSKU',
-        },
-        {
+        }, {
           id: 'description',
           name: 'Description',
           field: 'ItemDesc',
-        },
-        {
+        }, {
           id: 'price',
           name: 'Price',
           field: 'Price',
           formatter: SlickGridViewModel.formatters.currency,
-        },
-        {
+        }, {
           id: 'points',
           name: 'Points',
           field: 'SystemPoints',
@@ -48,7 +45,7 @@ define('src/account/security/frequent.gvm', [
         new ButtonsColumn({
           id: 'actions',
           name: 'Actions',
-          buttons: [
+          buttons: [ //
             {
               text: 'Add',
               fn: options.addPart,

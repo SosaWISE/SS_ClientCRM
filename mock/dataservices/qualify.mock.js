@@ -179,13 +179,13 @@ define('mock/dataservices/qualify.mock', [
     addresss;
 
   salesreps = mockery.fromTemplate({
-    'list|3-3': [
+    'list|3-3': [ //
       {
         CompanyID: '@COMPANYID',
         ImagePath: '@IMG(100,100,people)',
         FirstName: '@MNAME',
         LastName: '@LASTNAME',
-        Seasons: [
+        Seasons: [ //
           {
             SeasonID: '@INC(seasons)',
             SeasonName: '@SEASON @DATE_YYYY',

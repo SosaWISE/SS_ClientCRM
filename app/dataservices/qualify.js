@@ -17,8 +17,8 @@ define('src/dataservices/qualify', [
       'addressValidation',
       'runcredit',
     ].forEach(function(collectionName) {
-        result[collectionName] = new DataserviceBase(collectionName, surveyServiceDomain);
-      });
+      result[collectionName] = new DataserviceBase(collectionName, surveyServiceDomain);
+    });
 
     return result;
   };

@@ -246,7 +246,7 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
   accounts = [];
 
   emergencyContactPhoneTypes = mockery.fromTemplate({
-    'list|6-6': [
+    'list|6-6': [ //
       {
         PhoneTypeID: '@INC(emergencyContactPhoneTypes)',
         PhoneTypeDescription: '@PHONE_DESC',
@@ -256,7 +256,7 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
     ]
   }).list;
   emergencyContactRelationships = mockery.fromTemplate({
-    'list|62-62': [
+    'list|62-62': [ //
       {
         RelationshipID: '@INC(emergencyContactRelationships)',
         RelationshipDescription: '@REL_DESC',
@@ -268,7 +268,7 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
   }).list;
 
   emergencyContacts = mockery.fromTemplate({
-    'list|15-15': [
+    'list|15-15': [ //
       {
         EmergencyContactID: '@INC(emergencyContacts)',
         CustomerId: null,
@@ -299,7 +299,7 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
 
 
   systemTypes = mockery.fromTemplate({
-    'list|4-4': [
+    'list|4-4': [ //
       {
         SystemTypeID: '@SYSTEM_TYPE_ID',
         SystemTypeName: '@SYSTEM_TYPE_NAME'
@@ -307,7 +307,7 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
     ]
   }).list;
   panelTypes = mockery.fromTemplate({
-    'list|10-10': [
+    'list|10-10': [ //
       {
         PanelTypeID: '@PANEL_TYPE_ID',
         PanelTypeName: '@PANEL_TYPE_NAME'
@@ -315,7 +315,7 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
     ]
   }).list;
   dslSeizureTypes = mockery.fromTemplate({
-    'list|3-3': [
+    'list|3-3': [ //
       {
         DslSeizureID: '@DSLSEIZURE_TYPE_ID',
         DslSeizure: '@DSLSEIZURE_TYPE_NAME'

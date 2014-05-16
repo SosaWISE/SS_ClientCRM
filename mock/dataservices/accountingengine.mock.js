@@ -64,7 +64,7 @@ define('mock/dataservices/accountingengine.mock', [
           template = {};
           fname = (data.FirstName || '@NAME');
           lname = (data.LastName || '@LASTNAME');
-          template['list|' + data.PageSize + '-' + data.PageSize] = [
+          template['list|' + data.PageSize + '-' + data.PageSize] = [ //
             {
               CustomerMasterFileID: '@NUMBER(3000001,3000100)',
               Fullname: '[C]: ' + fname + ' ' + lname,

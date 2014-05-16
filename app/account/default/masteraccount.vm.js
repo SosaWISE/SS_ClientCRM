@@ -18,13 +18,13 @@ define('src/account/default/masteraccount.vm', [
   "use strict";
 
   var agingList = [
-      'Current',
-      '1 to 30',
-      '31 to 60',
-      '61 to 90',
-      '91 to 120',
-      '> 120',
-    ];
+    'Current',
+    '1 to 30',
+    '31 to 60',
+    '61 to 90',
+    '91 to 120',
+    '> 120',
+  ];
 
   function MasterAccountViewModel(options) {
     var _this = this;

@@ -126,12 +126,11 @@ define('src/account/default/payby.eft.vm', [
     }, 0);
   };
 
-  accountTypeOptions = [
+  accountTypeOptions = [ //
     {
       BankAccountTypeID: 1,
       AccountType: 'Checking',
-    },
-    {
+    }, {
       BankAccountTypeID: 2,
       AccountType: 'Savings',
     },

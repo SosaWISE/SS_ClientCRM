@@ -10,32 +10,26 @@ define('src/core/combo.vm.spec', [
     var c, list;
     beforeEach(function() {
       c = new ComboViewModel();
-      c.setList([
+      c.setList([ //
         {
           value: 1,
           text: 'abcdef',
-        },
-        {
+        }, {
           value: 2,
           text: 'bcdefa',
-        },
-        {
+        }, {
           value: 3,
           text: 'cdefab',
-        },
-        {
+        }, {
           value: 4,
           text: 'defabc',
-        },
-        {
+        }, {
           value: 5,
           text: 'efabcd',
-        },
-        {
+        }, {
           value: 6,
           text: 'fabcde',
-        },
-        {
+        }, {
           value: 7,
           text: 'aBcdefabcdef',
         },

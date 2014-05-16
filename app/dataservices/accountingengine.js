@@ -19,8 +19,8 @@ define('src/dataservices/accountingengine', [
       'customerSearches',
       'customerCardInfos'
     ].forEach(function(collectionName) {
-        result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
-      });
+      result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
+    });
 
     return result;
   };

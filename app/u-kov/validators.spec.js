@@ -1,6 +1,6 @@
 /*global describe,it,expect*/
 define('src/u-kov/validators.spec', [
- 'src/u-kov/validators',
+  'src/u-kov/validators',
   'moment',
 ], function(
   validators,

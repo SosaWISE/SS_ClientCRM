@@ -12,10 +12,10 @@ window.onerror = function(message, url, line, column, err) {
 };
 
 define('src/bootstrapper', [
- // load main libs
+  // load main libs
   'jquery',
   'ko',
- // load plugins
+  // load plugins
   'src/core/ko.debug.helpers',
   'src/core/ko.command',
   'src/core/ko.bindingHandlers.all',

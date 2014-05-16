@@ -1,5 +1,4 @@
-define('src/core/arrays', [
-], function() {
+define('src/core/arrays', [], function() {
   "use strict";
 
   return {

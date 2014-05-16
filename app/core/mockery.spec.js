@@ -51,7 +51,7 @@ define('src/core/mockery.spec', [
       beforeEach(function() {
         resp = mockery.fromTemplate({
           'names': [
-           '@NAME',
+            '@NAME',
           ],
         });
       });

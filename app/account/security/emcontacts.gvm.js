@@ -49,7 +49,7 @@ define('src/account/security/emcontacts.gvm', [
           },
         }),
       ],
-      columns: [
+      columns: [ //
         {
           id: '#',
           name: '',
@@ -57,21 +57,18 @@ define('src/account/security/emcontacts.gvm', [
           behavior: 'selectAndMove',
           resizable: false,
           cssClass: 'cell-reorder',
-        },
-        {
+        }, {
           id: 'Name',
           name: 'Name',
           width: 50,
           formatter: options.fullnameFormatter,
-        },
-        {
+        }, {
           id: 'RelationshipId',
           name: 'Relationship',
           field: 'RelationshipId',
           width: 50,
           formatter: options.relationshipFormatter,
-        },
-        {
+        }, {
           id: 'Phone1',
           name: 'Primary Phone',
           field: 'Phone1',
@@ -79,8 +76,7 @@ define('src/account/security/emcontacts.gvm', [
           formatter: function(row, cell, value, columnDef, dataCtx) {
             return formatPhoneAndType(value, dataCtx.Phone1TypeId);
           },
-        },
-        {
+        }, {
           id: 'Phone2',
           name: 'Secondary Phone',
           field: 'Phone2',
@@ -88,8 +84,7 @@ define('src/account/security/emcontacts.gvm', [
           formatter: function(row, cell, value, columnDef, dataCtx) {
             return formatPhoneAndType(value, dataCtx.Phone2TypeId);
           },
-        },
-        {
+        }, {
           id: 'Phone3',
           name: 'Alternate Phone',
           field: 'Phone3',
@@ -97,8 +92,7 @@ define('src/account/security/emcontacts.gvm', [
           formatter: function(row, cell, value, columnDef, dataCtx) {
             return formatPhoneAndType(value, dataCtx.Phone3TypeId);
           },
-        },
-        {
+        }, {
           id: 'HasKey',
           name: 'Has Keys',
           field: 'HasKey',

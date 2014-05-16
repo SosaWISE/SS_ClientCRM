@@ -24,8 +24,8 @@ define('src/dataservices/survey', [
       'questionPossibleAnswerMaps',
       'results',
     ].forEach(function(collectionName) {
-        result[collectionName] = new DataserviceBase(collectionName, surveyServiceDomain);
-      });
+      result[collectionName] = new DataserviceBase(collectionName, surveyServiceDomain);
+    });
 
     return result;
   };

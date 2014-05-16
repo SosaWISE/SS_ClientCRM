@@ -48,15 +48,14 @@ module.exports = function(grunt) {
         },
       },
       prod: {
-        files: [
+        files: [ //
           {
             src: 'webconfig-example.js',
             dest: '<%= www %>/webconfig.js',
             filter: function() { // only copy if webconfig.js doesn't exist in output dir
               return !grunt.file.exists(path.join(path.join(grunt.config('www'), 'webconfig.js')));
             },
-          },
-          {
+          }, {
             src: [
               'logindummy.html',
               'stuff/fonts/**/*',
@@ -66,8 +65,7 @@ module.exports = function(grunt) {
               'tparty/depends.js',
             ],
             dest: '<%= www %>/'
-          },
-          {
+          }, {
             src: 'depends-production.conf.js',
             dest: '<%= www %>/depends.conf.js',
           },
