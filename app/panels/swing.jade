@@ -14,64 +14,65 @@ div(class="swing_wrapper")
         div(class="inner_panes_column_count")
           ul(class="edit-form")
             li
-              input(type="text" class="boxes"  placeholder="[Prefix]" data-bind="ukov:data.Customer1Prefix, value:data.Customer1Prefix, valueUpdate:'keyup'")
+              input(type="text" class="boxes"  placeholder="[Prefix]" data-bind="ukov:data.Customer1.Prefix, value:data.Customer1.Prefix, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes" placeholder="[First Name]" data-bind="ukov:data.Customer1FirstName, value:data.Customer1FirstName, valueUpdate:'keyup'")
+              input(type="text" class="boxes" placeholder="[First Name]" data-bind="ukov:data.Customer1.FirstName, value:data.Customer1.FirstName, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes"  placeholder="[Middle Name]" data-bind="ukov:data.Customer1MiddleName, value:data.Customer1MiddleName, valueUpdate:'keyup'")
+              input(type="text" class="boxes"  placeholder="[Middle Name]" data-bind="ukov:data.Customer1.MiddleName, value:data.Customer1.MiddleName, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes"  placeholder="[Last Name]" data-bind="ukov:data.Customer1LastName, value:data.Customer1LastName, valueUpdate:'keyup'")
+              input(type="text" class="boxes"  placeholder="[Last Name]" data-bind="ukov:data.Customer1.LastName, value:data.Customer1.LastName, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes"  placeholder="[Suffix]" data-bind="ukov:data.Customer1Suffix, value:data.Customer1Suffix, valueUpdate:'keyup'")
+              input(type="text" class="boxes"  placeholder="[Suffix]" data-bind="ukov:data.Customer1.Suffix, value:data.Customer1.Suffix, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes" placeholder="[SSN]" data-bind="ukov:data.Customer1SSN, value:data.Customer1SSN, valueUpdate:'keyup'")
+              input(type="text" class="boxes" placeholder="[SSN]" data-bind="ukov:data.Customer1.SSN, value:data.Customer1.SSN, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes"  placeholder="[DOB]" data-bind="ukov:data.Customer1DOB, datevalue:data.Customer1DOB, valueUpdate:'keyup'")
+              input(type="text" class="boxes"  placeholder="[DOB]" data-bind="ukov:data.Customer1.DOB, datevalue:data.Customer1.DOB, valueUpdate:'keyup'")
               
             li  
-              input(type="text" class="boxes"  placeholder="[Email]" data-bind="ukov:data.Customer1Email, value:data.Customer1Email, valueUpdate:'keyup'")        
+              input(type="text" class="boxes"  placeholder="[Email]" data-bind="ukov:data.Customer1.Email, value:data.Customer1.Email, valueUpdate:'keyup'")        
+             
     li      
       div(class="outer_panes_left")
         div(class="header_label") Customer 2 Information  
         div(class="inner_panes_column_count")
           ul(class="edit-form")
             li
-              input(type="text" class="boxes"  placeholder="[Prefix]" data-bind="ukov:data.Customer2Prefix, value:data.Customer2Prefix, valueUpdate:'keyup'")
+              input(type="text" class="boxes"  placeholder="[Prefix]" data-bind="ukov:data.Customer2.Prefix, value:data.Customer2.Prefix, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes"  placeholder="[First Name]" data-bind="ukov:data.Customer2FirstName, value:data.Customer2FirstName, valueUpdate:'keyup'")
+              input(type="text" class="boxes" placeholder="[First Name]" data-bind="ukov:data.Customer2.FirstName, value:data.Customer2.FirstName, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes"  placeholder="[Middle Name]" data-bind="ukov:data.Customer2MiddleName, value:data.Customer2MiddleName, valueUpdate:'keyup'")
+              input(type="text" class="boxes"  placeholder="[Middle Name]" data-bind="ukov:data.Customer2.MiddleName, value:data.Customer2.MiddleName, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes"  placeholder="[Last Name]" data-bind="ukov:data.Customer2LastName, value:data.Customer2LastName, valueUpdate:'keyup'")
+              input(type="text" class="boxes"  placeholder="[Last Name]" data-bind="ukov:data.Customer2.LastName, value:data.Customer2.LastName, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes"  placeholder="[Suffix]" data-bind="ukov:data.Customer2Suffix, value:data.Customer2Suffix, valueUpdate:'keyup'")
+              input(type="text" class="boxes"  placeholder="[Suffix]" data-bind="ukov:data.Customer2.Suffix, value:data.Customer2.Suffix, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes"  placeholder="[SSN]" data-bind="ukov:data.Customer2SSN, value:data.Customer2SSN, valueUpdate:'keyup'")
+              input(type="text" class="boxes" placeholder="[SSN]" data-bind="ukov:data.Customer2.SSN, value:data.Customer2.SSN, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes"  placeholder="[DOB]" data-bind="ukov:data.Customer2DOB, datevalue:data.Customer2DOB, valueUpdate:'keyup'")
+              input(type="text" class="boxes"  placeholder="[DOB]" data-bind="ukov:data.Customer2.DOB, datevalue:data.Customer2.DOB, valueUpdate:'keyup'")
+              
             li  
-              input(type="text" class="boxes" placeholder="[Email]" data-bind="ukov:data.Customer2Email, value:data.Customer2Email, valueUpdate:'keyup'")   
+              input(type="text" class="boxes"  placeholder="[Email]" data-bind="ukov:data.Customer2.Email, value:data.Customer2.Email, valueUpdate:'keyup'")
+           
     li      
       div(class="outer_panes_left")
         div(class="header_label") Premise Address  
         div(class="inner_panes_column_count_auto")   
-          ul(class="edit-form")
+          ul(class="edit-form" )
 
             li
-              input(type="text" class="boxes" id="txtAddress" placeholder="[Street Address]", data-bind="ukov:data.StreetAddress1, value:data.StreetAddress1, valueUpdate:'keyup'")
+              input(type="text" class="boxes" id="txtAddress" placeholder="[Street Address]", data-bind="ukov:data.Address.StreetAddress1, value:data.Address.StreetAddress1, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes" id="txtAddress2" placeholder="[Street Address 2]", data-bind="ukov:data.StreetAddress2, value:data.StreetAddress2, valueUpdate:'keyup'")
+              input(type="text" class="boxes" id="txtAddress2" placeholder="[Street Address 2]", data-bind="ukov:data.Address.StreetAddress2, value:data.Address.StreetAddress2, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes" id="txtCity" placeholder="[City]", data-bind="ukov:data.City, value:data.City, valueUpdate:'keyup'")
+              input(type="text" class="boxes" id="txtCity" placeholder="[City]", data-bind="ukov:data.Address.City, value:data.Address.City, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes" id="txtCounty" placeholder="[County]", data-bind="ukov:data.County, value:data.County, valueUpdate:'keyup'")
+              input(type="text" class="boxes" id="txtCounty" placeholder="[County]", data-bind="ukov:data.Address.County, value:data.Address.County, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes" id="txtPostalCode" placeholder="[Postal Code]", data-bind="ukov:data.PostalCode, value:data.PostalCode, valueUpdate:'keyup'")
+              input(type="text" class="boxes" id="txtPostalCode" placeholder="[Postal Code]", data-bind="ukov:data.Address.PostalCode, value:data.Address.PostalCode, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes" placeholder="[State]", data-bind="ukov:data.State, value:data.State, valueUpdate:'keyup'")            
-              //-div
-                //-span(class="label") State
-                //-div(data-bind="cvm:data.StateCvm")
+              input(type="text" class="boxes" placeholder="[State]", data-bind="ukov:data.Address.State, value:data.Address.State, valueUpdate:'keyup'")      
+           
                
 
   ul(class="content" id="right_content")          
@@ -90,20 +91,20 @@ div(class="swing_wrapper")
                 div(class="header_label") System Details
                   ul(class="edit-form")
                     li
-                      input(type="text" class="boxes"  placeholder="[Service Type]" data-bind="ukov:data.ServiceType, value:data.ServiceType, valueUpdate:'keyup'")
+                      input(type="text" class="boxes"  placeholder="[Service Type]" data-bind="ukov:data.SystemDetail.ServiceType, value:data.SystemDetail.ServiceType, valueUpdate:'keyup'")
                     li
-                      input(type="text" class="boxes"  placeholder="[Cellular Type]" data-bind="ukov:data.CellularType, value:data.CellularType, valueUpdate:'keyup'")
+                      input(type="text" class="boxes"  placeholder="[Cellular Type]" data-bind="ukov:data.SystemDetail.CellularType, value:data.SystemDetail.CellularType, valueUpdate:'keyup'")
                     li
-                      input(type="text" class="boxes"  placeholder="[Pass Phrase]" data-bind="ukov:data.PassPhrase, value:data.PassPhrase, valueUpdate:'keyup'")
+                      input(type="text" class="boxes"  placeholder="[Pass Phrase]" data-bind="ukov:data.SystemDetail.PassPhrase, value:data.SystemDetail.PassPhrase, valueUpdate:'keyup'")
                     li
-                      input(type="text" class="boxes"  placeholder="[Panel Type]" data-bind="ukov:data.PanelType, value:data.PanelType, valueUpdate:'keyup'")
+                      input(type="text" class="boxes"  placeholder="[Panel Type]" data-bind="ukov:data.SystemDetail.PanelType, value:data.SystemDetail.PanelType, valueUpdate:'keyup'")
                     li
-                      input(type="text" class="boxes"  placeholder="[DSL\Seisure]" data-bind="ukov:data.DslSeizure, value:data.DslSeizure, valueUpdate:'keyup'")        
+                      input(type="text" class="boxes"  placeholder="[DSL\Seisure]" data-bind="ukov:data.SystemDetail.DslSeizure, value:data.SystemDetail.DslSeizure, valueUpdate:'keyup'")        
 
            li(class="space") 
               div(class="inner_panes")            
                div(class="header_label") Equipment Details
                div(class="slickgrid",style="background:white;margin:10px;color:black; min-height: 130px; position: relative;", data-bind="slickgrid:swingEquipmentGvm")      
      li
-       input(type="checkbox" class="checkbox" id="swing_equipment" data-bind="")
+       input(type="checkbox" class="checkbox" id="swing_equipment" data-bind="ukov:data.SwingEquipment, value:data.SwingEquipment")
        span(id="label" class="checkbox") Swing Equipment Also                  
