@@ -253,7 +253,7 @@ module.exports = function(grunt) {
 
 
   grunt.registerTask('precommit', [
+    'jsbeautifier:test', // faster than jshint
     'jshint',
-    'jsbeautifier:test',
   ]);
 };

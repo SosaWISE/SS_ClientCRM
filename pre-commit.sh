@@ -35,20 +35,20 @@ fi
 # trap cleanup EXIT
 
 
-# jshint
-RESULT=`grunt --no-color jshint`
+# javascript formatting - faster than jshint
+RESULT=`grunt --no-color jsbeautifier:test`
 if echo "${RESULT}" | grep -q "Aborted"; then
-  echo "JsHint failed"
+  echo "Javascript formatting test failed"
+  echo "One or more javascript files is not correctly formatted"
   echo
   echo "${RESULT}"
   exit 1
 fi
 
-# javascript formatting
-RESULT=`grunt --no-color jsbeautifier:test`
+# jshint
+RESULT=`grunt --no-color jshint`
 if echo "${RESULT}" | grep -q "Aborted"; then
-  echo "Javascript formatting test failed"
-  echo "One or more javascript files is not correctly formatted"
+  echo "JsHint failed"
   echo
   echo "${RESULT}"
   exit 1
