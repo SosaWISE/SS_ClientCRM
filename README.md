@@ -31,11 +31,41 @@ This will make it so mocks will be used for all api calls that have mocks define
 
 * Modify hosts file. (Since the api calls use CORS, the nexsense.com domains will give you an error if they don't match what the webservice expects.
 And I don't know what the webservice expects because I always run chrome with web security disabled. e.g.: `google-chrome --disable-web-security`.
-I believe in Windows you can just add the --disable-web-security flag to the Target for the chrome shortcut.
-Also, the cors webservice ip will be different, but I don't know what that is or even if it is currently accessibly from the outside world.)
+I believe in Windows you can just add the --disable-web-security flag to the Target for the chrome shortcut.)
 
         127.0.0.1       dev-crm.nexsense.com prod-crm.nexsense.com
-        10.1.0.11       sse.services.cmscors
+
+
+Committing code
+---------------
+
+Before checking in any code, this command should not have any errors
+(If you're not on Windows you can use the `setup-hooks.sh` script to set up a pre-commit hook to automatically run this command for you when every you're committing):
+
+    grunt precommit
+
+If there are jsbeautifier errors you can run `grunt jsformat` to format all javascript files
+If there are jshint errors you'll probably have to edit the files by hand
+
+
+Javascript formatting
+-----------------------------
+
+All javascript code should be correctly formatted. Formatting rules are specified in `.jsbeautifyrc`.
+You can run the below command to format all javascript files or if you have Sublime Text you can install the packages below to format files are you edit them.
+
+    grunt jsformat
+
+
+Javascript linting
+-----------------------------
+
+All javascript code should pass jshint. Linting rules are specified in `.jshintrc`.
+You can install it with the command below (you will need sudo/admin privileges). If you have Sublime Text you can make it easier to use by installing the packages below.
+Although, you will still need to install this node module.
+
+    npm install -g jshint
+
 
 Run
 ---
@@ -139,25 +169,6 @@ To do all that you just need to type this one little command:
     grunt build
 
 
-Javascript formatting
------------------------------
-
-All javascript code should be correctly formatted. Formatting rules are specified in `.jsbeautifyrc`.
-You can install it with this command (you will need sudo/admin privileges) or if you have Sublime Text you can install the packages below.
-
-    npm install -g jsbeautify
-
-
-Javascript linting
------------------------------
-
-All javascript code should pass jshint. Linting rules are specified in `.jshintrc`.
-You can install it with this command (you will need sudo/admin privileges). If you have Sublime Text you can make it easier to use by installing the packages below.
-You will still need to install this node module.
-
-    npm install -g jshint
-
-
 Sublime Text 3
 --------------
 
@@ -172,6 +183,13 @@ Javascript formatting
       * Tools > Command Palette (Shift+Ctrl+P)
       * Select Package Control: Install Package (type: pcip, then press: enter)
       * Select JsFormat package (type: jsformat, then press: enter)
+      * Change Preferences > Package Settings > SublimeLinter > Settings - User to:
+
+            {
+              "format_on_save": true,
+              "jsbeautifyrc_files": true
+            }
+
 
 Javascript linting
 
