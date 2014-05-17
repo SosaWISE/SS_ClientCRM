@@ -1,17 +1,17 @@
 define('src/panels/swing.panel.vm', [
-    'src/account/default/address.validate.vm',
-    'src/core/combo.vm',
-    'src/core/notify',
-    'src/core/joiner',
-    'ko',
-    'src/core/utils',
-    'src/core/controller.vm',
-    'src/dataservice',
-    'src/core/router',
-    'src/slick/slickgrid.vm',
-    'src/config',
-    'src/slick/rowevent',
-    'src/ukov',
+  'src/account/default/address.validate.vm',
+  'src/core/combo.vm',
+  'src/core/notify',
+  'src/core/joiner',
+  'ko',
+  'src/core/utils',
+  'src/core/controller.vm',
+  'src/dataservice',
+  'src/core/router',
+  'src/slick/slickgrid.vm',
+  'src/config',
+  'src/slick/rowevent',
+  'src/ukov',
 ], function(
   AddressValidateViewModel,
   ComboViewModel,
@@ -28,55 +28,55 @@ define('src/panels/swing.panel.vm', [
   ukov
 ) {
   "use strict";
-  var schema,customerSchema, addressSchema, systemDetailSchema,
-    nullStrConverter = ukov.converters.nullString();
+  var schema, customerSchema, addressSchema, systemDetailSchema; //,
+  // nullStrConverter = ukov.converters.nullString();
 
-    //we need nested customer objects inorder easier display of the 2 customer information
-   customerSchema = {
-        _model: true,
-        Prefix: {},
-        FirstName: {},
-        MiddleName: {},
-        LastName: {},
-        Suffix: {},
-        SSN: {},
-        DOB: {},
-        Email: {},
-      };
+  //we need nested customer objects inorder easier display of the 2 customer information
+  customerSchema = {
+    _model: true,
+    Prefix: {},
+    FirstName: {},
+    MiddleName: {},
+    LastName: {},
+    Suffix: {},
+    SSN: {},
+    DOB: {},
+    Email: {},
+  };
 
-    addressSchema = {
-        _model: true,
-        StreetAddress1: {},
-        StreetAddress2: {},
-        City: {},
-        County: {},
-        PostalCode: {},
-        State: {},
-    };
+  addressSchema = {
+    _model: true,
+    StreetAddress1: {},
+    StreetAddress2: {},
+    City: {},
+    County: {},
+    PostalCode: {},
+    State: {},
+  };
 
-    systemDetailSchema = {
-        _model: true,
-        ServiceType: {},
-        CellularType: {},
-        PassPhrase: {},
-        PanelType: {},
-        DslSeizure: {},
-    };
+  systemDetailSchema = {
+    _model: true,
+    ServiceType: {},
+    CellularType: {},
+    PassPhrase: {},
+    PanelType: {},
+    DslSeizure: {},
+  };
 
 
-    schema = {
-      _model: true,
-      AccountID: {
-        converter: ukov.converters.number(0),
-        validators: [
-                ukov.validators.isRequired('Account ID is required')
-            ]
-      },
-      Customer1: customerSchema,
-      Customer2: customerSchema,
-      Address: addressSchema,
-      SystemDetail: systemDetailSchema,
-      SwingEquipment:{}
+  schema = {
+    _model: true,
+    AccountID: {
+      converter: ukov.converters.number(0),
+      validators: [
+        ukov.validators.isRequired('Account ID is required')
+      ]
+    },
+    Customer1: customerSchema,
+    Customer2: customerSchema,
+    Address: addressSchema,
+    SystemDetail: systemDetailSchema,
+    SwingEquipment: {}
   };
 
 
@@ -90,7 +90,7 @@ define('src/panels/swing.panel.vm', [
     //Validate inputs
     _this.data = ukov.wrap({}, schema);
 
-   // console.log(_this.data);
+    // console.log(_this.data);
 
     //Emergency Contact List
     _this.swingEmGvm = new SlickGridViewModel({
@@ -99,28 +99,24 @@ define('src/panels/swing.panel.vm', [
         forceFitColumns: true,
         rowHeight: 27,
       },
-      columns: [
-        {
-          id: 'Name',
-          name: 'Name',
-          formatter: function(row, cell, value, columnDef, dataCtx) {
-            var name;
-            // name concatenations goes here
-            name = dataCtx.MiddleInit == null ? dataCtx.FirstName + " " + dataCtx.LastName : dataCtx.FirstName + " " + dataCtx.MiddleInit + " " + dataCtx.LastName;
-            return name;
-          },
-        }, 
-        {
-          id: 'Relationship',
-          name: 'Relationship',
-          field: 'Relationship',
-        }, 
-        {
-          id: 'Phone',
-          name: 'Phone',
-          field: 'PhoneNumber1',
-        }, 
-      ],
+      columns: [{
+        id: 'Name',
+        name: 'Name',
+        formatter: function(row, cell, value, columnDef, dataCtx) {
+          var name;
+          // name concatenations goes here
+          name = dataCtx.MiddleInit == null ? dataCtx.FirstName + " " + dataCtx.LastName : dataCtx.FirstName + " " + dataCtx.MiddleInit + " " + dataCtx.LastName;
+          return name;
+        },
+      }, {
+        id: 'Relationship',
+        name: 'Relationship',
+        field: 'Relationship',
+      }, {
+        id: 'Phone',
+        name: 'Phone',
+        field: 'PhoneNumber1',
+      }, ],
     });
 
 
@@ -135,15 +131,15 @@ define('src/panels/swing.panel.vm', [
         id: 'Zone',
         name: 'Zone',
         field: 'ZoneTypeName',
-            }, {
+      }, {
         id: 'Equipment',
         name: 'Equipment',
         field: 'FullName',
-            }, {
+      }, {
         id: 'Location',
         name: 'Location',
         field: 'EquipmentLocationDesc',
-            }, ],
+      }, ],
     });
 
     //events
@@ -177,95 +173,97 @@ define('src/panels/swing.panel.vm', [
     routeData.action = 'swing';
   };
 
- 
-  SwingViewModel.prototype.clearData = function(){
-    var _this = this, data,
-        customer = {
-          Prefix: "",
-          FirstName: "",
-          MiddleName: "",
-          LastName: "",
-          Suffix: "",
-          SSN: "",
-          DOB: "",
-          Email:""
-        },
-        address = {
-          StreetAddress1: "",
-          StreetAddress2: "",
-          City: "",
-          County: "",
-          PostalCode: "",
-          State: "",
-        },
-        systemDetail = {
-          ServiceType: "",
-          CellularType: "",
-          PassPhrase: "",
-          PanelType: "",
-          DslSeizure: "",
-        };
+
+  SwingViewModel.prototype.clearData = function() {
+    var _this = this,
+      data,
+      customer = {
+        Prefix: "",
+        FirstName: "",
+        MiddleName: "",
+        LastName: "",
+        Suffix: "",
+        SSN: "",
+        DOB: "",
+        Email: ""
+      },
+      address = {
+        StreetAddress1: "",
+        StreetAddress2: "",
+        City: "",
+        County: "",
+        PostalCode: "",
+        State: "",
+      },
+      systemDetail = {
+        ServiceType: "",
+        CellularType: "",
+        PassPhrase: "",
+        PanelType: "",
+        DslSeizure: "",
+      };
 
     //Clear fields
-      data = {
-        //AccountID: null,
-        Customer1: customer,
-        Customer2: customer,
-        Address:address,
-        SystemDetail:systemDetail,
-        SwingEquipment:null
-      };
+    data = {
+      //AccountID: null,
+      Customer1: customer,
+      Customer2: customer,
+      Address: address,
+      SystemDetail: systemDetail,
+      SwingEquipment: null
+    };
 
     _this.data.setValue(data);
     _this.swingEmGvm.list([]);
     _this.swingEquipmentGvm.list([]);
 
-  }
+  };
 
   SwingViewModel.prototype.search = function(vm, cb) {
     //account object to be searched in ms_account table (accessed via stored procedure) from old database
-    var msAccountSearch = vm.data.getValue(), customer1, _this = this,
+    var msAccountSearch = vm.data.getValue(),
+      customer1, _this = this,
 
-    //add joiner since we need to call cb when all api calls have returned
-    join=joiner();
+      //add joiner since we need to call cb when all api calls have returned
+      join = joiner();
 
     //clear previous result
-   _this.clearData();
- 
+    _this.clearData();
+
     //load info for the primary customer
     load_customer_swing_info(vm, {
       InterimAccountId: msAccountSearch.AccountID,
       CustomerType: "PRI"
     }, join.add());
 
-      join.when(function(err) {
-        /*if (err) {
-          notify.notify('warn', "Account ID not found", 10);   
+    join.when(function( /*err*/ ) {
+      /*if (err) {
+          notify.notify('warn', "Account ID not found", 10);
         }else{
           console.log("no error");
         }*/
-          customer1  = vm.data.Customer1.getValue();
-          //check if customer1 first name is available it means -- account id is available in the old db
-          //also we were able to minimize API calls 
-          if(customer1.FirstName==""){
-            notify.notify('warn', "Account ID not found", 10);   
-          }else{
-              //we only call the following APIs once Account
-              //load info for the secondary customer
-              load_customer_swing_info(vm, {
-                  InterimAccountId: msAccountSearch.AccountID,
-                  CustomerType: "SEC"
-                },
-                join.add());
+      customer1 = vm.data.Customer1.getValue();
+      //check if customer1 first name is available it means -- account id is available in the old db
+      //also we were able to minimize API calls
+      if (customer1.FirstName === "") {
+        notify.notify('warn', "Account ID not found", 10);
+      } else {
+        //we only call the following APIs once Account
+        //load info for the secondary customer
+        load_customer_swing_info(vm, {
+            InterimAccountId: msAccountSearch.AccountID,
+            CustomerType: "SEC"
+          },
+          join.add());
 
-              //load info for the account details
-              load_msaccount_details(vm, 
-                msAccountSearch, join.add());
-          }
+        //load info for the account details
+        load_msaccount_details(vm,
+          msAccountSearch, join.add());
+      }
 
-        //since we are using joiner. invoked cb only once
-        cb();
-      });
+      //since we are using joiner. invoked cb only once
+      cb();
+    });
 
 
   };
@@ -301,58 +299,57 @@ define('src/panels/swing.panel.vm', [
   };
 
   //customer swing info
-  function load_customer_swing_info(vm, swingParam,cb) {
+  function load_customer_swing_info(vm, swingParam, cb) {
     //load data on UI for customer 1
     if (swingParam.CustomerType === "PRI") {
-        dataservice.swingaccountsrv.CustomerSwingInfo.post(null, swingParam
-        , null, utils.safeCallback(cb, function(err, resp) {
-        
-              if (err) {
-                 cb(error);
-                 // notify.notify('warn', err.Message, 10);
-                 // console.log("error in load_customer_swing_info");
-                  return;
-              }
-              if(resp.Value){
+      dataservice.swingaccountsrv.CustomerSwingInfo.post(null, swingParam, null, utils.safeCallback(cb, function(err, resp) {
 
-                //console.log(resp.Code);
-                if(resp.Code==0){
-                  var customer = resp.Value;
-                  vm.data.Customer1.setValue(customer);
-                  //console.log("true in load_customer_swing_info");
-                }else{
-                  notify.notify('warn', 'Account ID not found', 3);
-                }
-              }else{
-               // console.log("false resp.Value in load_customer_swing_info");
-              }
-          }, utils.no_op));
+        if (err) {
+          cb(err);
+          // notify.notify('warn', err.Message, 10);
+          // console.log("error in load_customer_swing_info");
+          return;
+        }
+        if (resp.Value) {
+
+          //console.log(resp.Code);
+          if (resp.Code === 0) {
+            var customer = resp.Value;
+            vm.data.Customer1.setValue(customer);
+            //console.log("true in load_customer_swing_info");
+          } else {
+            notify.notify('warn', 'Account ID not found', 3);
+          }
+        } else {
+          // console.log("false resp.Value in load_customer_swing_info");
+        }
+      }, utils.no_op));
 
     } else {
 
       //load data on UI for customer 2
-        dataservice.swingaccountsrv.CustomerSwingInfo.post(null, swingParam, 
-          null, utils.safeCallback(cb, function(err, resp) {
-             if (err) {
-                  //cb(error);
-                  notify.notify('warn', err.Message, 10);
-                  //console.log("error in load_customer_swing_info");
-                  return;
-              }
-              if(resp.Value){
+      dataservice.swingaccountsrv.CustomerSwingInfo.post(null, swingParam,
+        null, utils.safeCallback(cb, function(err, resp) {
+          if (err) {
+            //cb(error);
+            notify.notify('warn', err.Message, 10);
+            //console.log("error in load_customer_swing_info");
+            return;
+          }
+          if (resp.Value) {
 
-                //console.log(resp.Code);
-                if(resp.Code==0){
-                  var customer = resp.Value;
-                  vm.data.Customer2.setValue(customer);
-                  //console.log("true in load_customer_swing_info");
-                }else{
-                  notify.notify('warn', 'Account ID not found', 3);
-                }
-              }else{
-                //console.log("false resp.Value in load_customer_swing_info");
-              }
-      }, utils.no_op));
+            //console.log(resp.Code);
+            if (resp.Code === 0) {
+              var customer = resp.Value;
+              vm.data.Customer2.setValue(customer);
+              //console.log("true in load_customer_swing_info");
+            } else {
+              notify.notify('warn', 'Account ID not found', 3);
+            }
+          } else {
+            //console.log("false resp.Value in load_customer_swing_info");
+          }
+        }, utils.no_op));
     }
   }
 
@@ -361,7 +358,7 @@ define('src/panels/swing.panel.vm', [
   //emergency contacts and Equipment Details and load into the SWING UI
   //msAccount- result from search
   //system details
-  function load_msaccount_details(vm, msAccount,cb) {
+  function load_msaccount_details(vm, msAccount, cb) {
 
     //load data on UI for Premise Address
     //alert(msAccount.AccountID);
@@ -373,14 +370,14 @@ define('src/panels/swing.panel.vm', [
         if (err) {
           notify.notify('warn', err.Message, 10);
           return;
-        } 
+        }
 
         if (resp.Value) {
 
           var address = resp.Value;
           //This is an easier way of setting Ukov model properties
           vm.data.Address.setValue(address);
-        } 
+        }
 
       }, utils.no_op));
 
@@ -397,7 +394,7 @@ define('src/panels/swing.panel.vm', [
       if (resp.Value) {
         //Update Emergency Contact List
         vm.swingEmGvm.list(resp.Value);
-      } 
+      }
     }, utils.no_op));
 
 
@@ -433,13 +430,13 @@ define('src/panels/swing.panel.vm', [
 
         //Update Emergency Contact List
         vm.swingEmGvm.list(data);
-      } 
+      }
     }, utils.no_op));
     */
 
 
     //load data on UI for System Details
-     dataservice.swingaccountsrv.CustomerSwingSystemDetails.read({
+    dataservice.swingaccountsrv.CustomerSwingSystemDetails.read({
         id: msAccount.AccountID
       },
       null, utils.safeCallback(cb, function(err, resp) {
@@ -451,7 +448,7 @@ define('src/panels/swing.panel.vm', [
         if (resp.Value) {
           var systemDetail = resp.Value;
           vm.data.SystemDetail.setValue(systemDetail);
-        } 
+        }
 
       }, utils.no_op));
 
@@ -465,7 +462,7 @@ define('src/panels/swing.panel.vm', [
       }
       if (resp.Value) {
         vm.swingEquipmentGvm.list(resp.Value);
-      } 
+      }
 
     }, utils.no_op));
     /*dataservice.swingaccountsrv.CustomerSwingEquipmentInfo.read({
@@ -496,11 +493,11 @@ define('src/panels/swing.panel.vm', [
 
         //Update Equipment Info List
         vm.swingEquipmentGvm.list(data);
-      } 
+      }
 
     }, utils.no_op));*/
 
-  
+
 
   } //end of load_msaccount_details function
 
