@@ -150,7 +150,7 @@ define('src/survey/takequestion.vm', [
     // update childs when answer is set
     _this.answer.subscribe(function(answerText) {
       var paMap = _this.findPaMap(answerText),
-        expands = !! paMap && paMap.Expands;
+        expands = !!paMap && paMap.Expands;
 
       _this.showSubs(expands);
 

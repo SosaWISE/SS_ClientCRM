@@ -179,7 +179,7 @@ define('src/account/default/address.validate.vm', [
 
     _this.width = ko.observable(0);
     _this.height = ko.observable('auto');
-    _this.setManualOverride( !! _this.item);
+    _this.setManualOverride(!!_this.item);
 
     _this.data.SeasonId(_this.repModel.Seasons[0].SeasonID);
     _this.data.SalesRepId(_this.repModel.CompanyID);

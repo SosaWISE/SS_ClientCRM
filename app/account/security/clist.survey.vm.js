@@ -90,7 +90,7 @@ define('src/account/security/clist.survey.vm', [
   };
   CListSurveyViewModel.prototype.onActivate = function( /*routeCtx*/ ) { // overrides base
     var _this = this;
-    if ( !! _this.gvm.list().length && !_this.activeChild.peek()) {
+    if (!!_this.gvm.list().length && !_this.activeChild.peek()) {
       // take the survey since it hasn't been taken yet
       _this.takeSurvey();
     }

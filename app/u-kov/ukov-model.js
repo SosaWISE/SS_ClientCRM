@@ -102,7 +102,7 @@ define('src/u-kov/ukov-model', [
   UkovModel.prototype.ignore = function(ignoreVal, allowParentUpdate) {
     var _this = this;
     if (arguments.length) {
-      _this._ignore = !! ignoreVal;
+      _this._ignore = !!ignoreVal;
       // set ignore on fields
       Object.keys(_this.doc).forEach(function(key) {
         _this[key].ignore(ignoreVal, false);
@@ -137,7 +137,8 @@ define('src/u-kov/ukov-model', [
 
   UkovModel.prototype.getValue = function(onlyDirty, excludeIgnored) {
     var _this = this,
-      result = {}, prop;
+      result = {},
+      prop;
     Object.keys(_this.doc).forEach(function(key) {
       prop = _this[key];
       if (

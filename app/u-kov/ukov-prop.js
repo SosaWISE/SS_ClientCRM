@@ -5,7 +5,8 @@ define('src/u-kov/ukov-prop', [
 ) {
   "use strict";
 
-  var fn = {}, count = 0,
+  var fn = {},
+    count = 0,
     alwaysClean = ko.computed({
       read: function() {
         return true;
@@ -103,7 +104,7 @@ define('src/u-kov/ukov-prop', [
   fn.ignore = function(ignoreVal, allowParentUpdate) {
     var _this = this;
     if (arguments.length) {
-      _this._ignore = !! ignoreVal;
+      _this._ignore = !!ignoreVal;
       // rerun validations
       _this.validate();
       if (allowParentUpdate) {
@@ -137,7 +138,8 @@ define('src/u-kov/ukov-prop', [
       validationGroup = _this.doc.validationGroup,
       prop, validIndividually = true,
       groupUkovProps = [],
-      groupVal = {}, errMsg;
+      groupVal = {},
+      errMsg;
     if (!validationGroup) {
       return false;
     }

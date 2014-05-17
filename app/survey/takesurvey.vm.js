@@ -308,7 +308,7 @@ define('src/survey/takesurvey.vm', [
         questionPossibleAnswerMaps: q.questionPossibleAnswerMaps,
         html: questionHtmlMap[q.QuestionID] || '<strong>[No Translation]</strong>',
         answerText: answerTextMap[q.QuestionID],
-        readonly: ( !! resultAnswers) && !retake, // readonly if there are answers and not retaking the survey
+        readonly: (!!resultAnswers) && !retake, // readonly if there are answers and not retaking the survey
       });
 
       return vm;
