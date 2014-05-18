@@ -3,6 +3,7 @@ define('src/panels/swing.panel.vm', [
   'src/core/combo.vm',
   'src/core/notify',
   'src/core/joiner',
+  'src/core/jsonhelpers',
   'ko',
   'src/core/utils',
   'src/core/controller.vm',
@@ -17,6 +18,7 @@ define('src/panels/swing.panel.vm', [
   ComboViewModel,
   notify,
   joiner,
+  jsonhelpers,
   ko,
   utils,
   ControllerViewModel,
@@ -315,6 +317,10 @@ define('src/panels/swing.panel.vm', [
           //console.log(resp.Code);
           if (resp.Code === 0) {
             var customer = resp.Value;
+
+            //before inserting to ui, parse it first using jsonhelpers.parse
+            customer = jsonhelpers.parse(jsonhelpers.stringify(customer));
+
             vm.data.Customer1.setValue(customer);
             //console.log("true in load_customer_swing_info");
           } else {
@@ -341,6 +347,10 @@ define('src/panels/swing.panel.vm', [
             //console.log(resp.Code);
             if (resp.Code === 0) {
               var customer = resp.Value;
+
+              //before inserting to ui, parse it first using jsonhelpers.parse
+              customer = jsonhelpers.parse(jsonhelpers.stringify(customer));
+
               vm.data.Customer2.setValue(customer);
               //console.log("true in load_customer_swing_info");
             } else {
