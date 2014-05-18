@@ -280,13 +280,18 @@ define('src/panels/swing.panel.vm', [
       InterimAccountId: msAccountSearch.AccountID
     }, null, utils.safeCallback(null, function(err, resp) {
 
+      //debugging                  
+      console.log('Value:'+JSON.stringify(resp.Value));
+
       if (err) {
         notify.notify('warn', err.Message, 10);
       } else if (resp.Value) {
         if (resp.Value.SwingStatus === "1") {
           notify.notify('ok', 'Swing Successful!');
         } else {
-          notify.notify('error', 'Swing Failed!');
+
+          //temporarily display exception error from database. can't figure out how to return the exception returned by c# yet
+          notify.notify('error', resp.Value.SwingStatus);
         }
       } else {
         //vm.data.setVal(null);
