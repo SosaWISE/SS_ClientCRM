@@ -87,7 +87,7 @@ define('src/bootstrapper', [
         // incase it didn't get moved before the user was set
         jquery('#loginform').remove();
         // start pinging to keep session alive
-        ping.start('/ping');
+        ping.start('ping');
       } else {
         ping.stop();
       }

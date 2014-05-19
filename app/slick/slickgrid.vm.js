@@ -130,7 +130,9 @@ define('src/slick/slickgrid.vm', [
       console.warn('grid is already bound');
       _this.unBound();
     }
-    setTimeout(function() {
+    _this.bindTimeout = setTimeout(function() {
+      _this.bindTimeout = null;
+
       _this.grid = new Slick.Grid(element, _this.list(), _this.columns, _this.gridOptions);
       if (!_this.noSelection) {
         var selectionModel = new Slick.RowSelectionModel({
@@ -150,12 +152,17 @@ define('src/slick/slickgrid.vm', [
         });
       }
       onresize(_this.grid.getContainerNode(), _this.updateGrid);
-    }, 0);
+    }, 9);
   };
   SlickGridViewModel.prototype.unBound = function(element) {
     // destroy grid everytime this view model is unbound
     var _this = this,
       container;
+
+    // make sure we don't bind
+    clearTimeout(_this.bindTimeout);
+    _this.bindTimeout = null;
+
     if (_this.grid) {
       container = _this.grid.getContainerNode();
       if (element && element !== container) {
