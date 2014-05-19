@@ -121,7 +121,7 @@ define('src/account/default/notes.vm', [
           id: 'CreatedOn',
           name: 'Date',
           field: 'CreatedOn',
-          width: 40,
+          width: 20,
           cssClass: 'wrap-cell',
           formatter: function(row, cell, value) {
             return moment(value).format('MM/DD/YYYY hh:mm a');
@@ -132,25 +132,25 @@ define('src/account/default/notes.vm', [
           field: 'CreatedBy',
           width: 30,
         }, {
-          id: 'NoteCategory1Id',
-          name: 'Primary Reason',
-          // field: 'NoteCategory1Id',
-          field: 'Category1',
-          width: 30,
-        }, {
-          id: 'NoteCategory2Id',
-          name: 'Secondary Reason',
-          // field: 'NoteCategory2Id',
-          field: 'Category2',
-          width: 30,
-        }, {
+          //   id: 'NoteCategory1Id',
+          //   name: 'Primary Reason',
+          //   // field: 'NoteCategory1Id',
+          //   field: 'Category1',
+          //   width: 30,
+          // }, {
+          //   id: 'NoteCategory2Id',
+          //   name: 'Secondary Reason',
+          //   // field: 'NoteCategory2Id',
+          //   field: 'Category2',
+          //   width: 30,
+          // }, {
           id: 'reason',
           name: 'Reason',
           // width: 30,
           formatter: function(row, cell, value, columnDef, dataCtx) {
             //@NOTE: for this to work we need a list of all category1 and category2.
             //       currently we only have filtered lists
-            return dataCtx.NoteCategory1Id + ': ' + dataCtx.NoteCategory2Id;
+            return dataCtx.Category1 + ': ' + dataCtx.Category2;
           },
         }, {
           id: 'Note',
