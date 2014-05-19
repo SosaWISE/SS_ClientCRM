@@ -280,8 +280,8 @@ define('src/panels/swing.panel.vm', [
       InterimAccountId: msAccountSearch.AccountID
     }, null, utils.safeCallback(null, function(err, resp) {
 
-      //debugging                  
-      console.log('Value:'+JSON.stringify(resp.Value));
+      //debugging
+      console.log('Value:' + JSON.stringify(resp.Value));
 
       if (err) {
         notify.notify('warn', err.Message, 10);
