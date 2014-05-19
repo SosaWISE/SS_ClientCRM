@@ -1,4 +1,5 @@
 define('src/account/default/notes.vm', [
+  'moment',
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/ukov',
@@ -9,6 +10,7 @@ define('src/account/default/notes.vm', [
   'src/core/utils',
   'src/core/base.vm',
 ], function(
+  moment,
   RowEvent,
   SlickGridViewModel,
   ukov,
@@ -121,6 +123,9 @@ define('src/account/default/notes.vm', [
           field: 'CreatedOn',
           width: 40,
           cssClass: 'wrap-cell',
+          formatter: function(row, cell, value) {
+            return moment(value).format('MM/DD/YYYY hh:mm a');
+          }
         }, {
           id: 'CreatedBy',
           name: 'User',
@@ -128,13 +133,15 @@ define('src/account/default/notes.vm', [
           width: 30,
         }, {
           id: 'NoteCategory1Id',
-          name: 'Primary Reason ID',
-          field: 'NoteCategory1Id',
+          name: 'Primary Reason',
+          // field: 'NoteCategory1Id',
+          field: 'Category1',
           width: 30,
         }, {
           id: 'NoteCategory2Id',
           name: 'Secondary Reason',
-          field: 'NoteCategory2Id',
+          // field: 'NoteCategory2Id',
+          field: 'Category2',
           width: 30,
         }, {
           id: 'reason',
