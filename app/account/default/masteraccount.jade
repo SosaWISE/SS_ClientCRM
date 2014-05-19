@@ -7,7 +7,7 @@ div(class="panel account active load-err", data-bind="if:loadErr")
       li
         a(class="btn small",tabindex="0",data-bind="cmd:close") Close
 
-div(data-bind="if:!loadErr()&&!loading()")
+div(data-bind="if:!loadErr()")
   div(class="panel account", data-bind="active:active,toggle:{'hide-nav':hideNav,'hide-notes':hideNotes}")
 
     //- div(class="p-module",data-bind="if:activeChild")

@@ -82,17 +82,19 @@ define('src/core/onresize', [
       }
     }, throttle || 100);
 
-    if ('onresize' in el) {
-      //
-      // internet explorer
-      //
-      if (el.attachEvent) {
-        el.attachEvent('onresize', listener);
-      } else if (el.addEventListener) {
-        el.addEventListener('resize', listener);
-      }
-      return;
-    }
+    // This if statement no longer works. Chrome elements now have an `onresize` property defined.
+    // We don't support IE so this will be commented out until we care about IE and a fix is found.
+    // if ('onresize' in el) {
+    //   //
+    //   // internet explorer
+    //   //
+    //   if (el.attachEvent) {
+    //     el.attachEvent('onresize', listener);
+    //   } else if (el.addEventListener) {
+    //     el.addEventListener('resize', listener);
+    //   }
+    //   return;
+    // }
 
     //
     // other browsers
