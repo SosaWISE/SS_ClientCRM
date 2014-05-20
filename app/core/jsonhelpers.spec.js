@@ -53,7 +53,7 @@ define('src/core/jsonhelpers.spec', [
               name: "bob",
               bobOn: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
             },
-          })).toEqual('{"bobJson":"{\\"id\\":1,\\"name\\":\\"bob\\",\\"bobOn\\":960628087006}"}');
+          })).toBe('{"bobJson":"{\\"id\\":1,\\"name\\":\\"bob\\",\\"bobOn\\":960628087006}"}');
         });
       });
     });

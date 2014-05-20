@@ -41,7 +41,7 @@ define('src/survey/takesurvey.vm', [
     if (_this.surveyResult) {
       _this.resultid = _this.surveyResult.ResultID;
       if (!_this.retake || !_this.dataContext) {
-        _this.dataContext = (utils.isStr(_this.surveyResult.Context)) ? jsonhelpers.parse(_this.surveyResult.Context) : _this.surveyResult.Context;
+        _this.dataContext = _this.tokensVM.parseContext(_this.surveyResult.Context);
       }
       _this.surveyid = _this.surveyResult.SurveyId;
       if (!_this.retake || !_this.locale) {
@@ -186,7 +186,7 @@ define('src/survey/takesurvey.vm', [
         // ResultID: 0,
         AccountId: _this.accountid,
         SurveyTranslationId: _this.surveyData.surveyTranslation.SurveyTranslationID,
-        Context: jsonhelpers.stringify(_this.dataContext), // stringified Context
+        Context: _this.tokensVM.stringifyContext(_this.dataContext), // stringified Context
         Answers: answers, // all visible question answers
         CreatedBy: 'boh?',
         Caller: 'boh?',
