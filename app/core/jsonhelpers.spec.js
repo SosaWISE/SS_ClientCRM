@@ -44,6 +44,18 @@ define('src/core/jsonhelpers.spec', [
           })).toBe('{"DOB":960628087006}');
         });
       });
+
+      describe('when name ends with Json', function() {
+        it('should replace the javascript object with a JSON string', function() {
+          expect(jsonhelpers.stringify({
+            bobJson: {
+              id: 1,
+              name: "bob",
+              bobOn: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
+            },
+          })).toEqual('{"bobJson":"{\\"id\\":1,\\"name\\":\\"bob\\",\\"bobOn\\":960628087006}"}');
+        });
+      });
     });
     describe('reviver', function() {
       describe('should replace the number of milliseconds since 1 January 1970 (unix offset) with dates when the key', function() {
@@ -73,6 +85,18 @@ define('src/core/jsonhelpers.spec', [
       it('should replace datetime string with date', function() {
         expect(jsonhelpers.parse('{"bobOn":"2000-06-10T09:08:07.006Z"}')).toEqual({
           bobOn: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
+        });
+      });
+
+      describe('when name ends with Json', function() {
+        it('should replace JSON string with a javascript object', function() {
+          expect(jsonhelpers.parse('{"bobJson":"{\\"id\\":1,\\"name\\":\\"bob\\",\\"bobOn\\":960628087006}"}')).toEqual({
+            bobJson: {
+              id: 1,
+              name: "bob",
+              bobOn: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
+            },
+          });
         });
       });
     });

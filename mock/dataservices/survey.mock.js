@@ -164,13 +164,14 @@ define('mock/dataservices/survey.mock', [
     };
     dataservice.survey.questions.save = function(params, setter, cb) {
       var data = params.data;
-      send(0, mockery.createOrUpdate(questions, 'QuestionID', '@INC(question)', {
+      send(0, mockery.createOrUpdate(questions, 'QuestionID', '@INC(questions)', {
         QuestionID: data.QuestionID,
         SurveyId: data.SurveyId,
         QuestionMeaningId: data.QuestionMeaningId,
         ParentId: data.ParentId,
         GroupOrder: data.GroupOrder,
         MapToTokenId: data.MapToTokenId,
+        ConditionJson: data.ConditionJson,
       }), setter, cb);
     };
     dataservice.survey.questionTranslations.save = function(params, setter, cb) {
@@ -264,7 +265,7 @@ define('mock/dataservices/survey.mock', [
     // mockery.random = Math.random;
 
     mockery.addModulusValueFunc('SV_TOKEN', [
-      'Nexsense',
+      'CompanyName',
       'ADUserDisplayName',
 
       'PrimaryCustomer.Name',
@@ -282,20 +283,7 @@ define('mock/dataservices/survey.mock', [
       'number', // operators: all
       'bool', // operators: ==, !=
     ]);
-    mockery.addModulusValueFunc('COMPARISON_OPERATORS', [
-      '==', //  'equal',
-      '!=', //  'not-equal',
-      // '===', // 'strict-equal',
-      // '!==', // 'strict-not-equal',
-      '>', //   'greater-than',
-      '>=', //  'greater-than-or-equal',
-      '<', //   'less-than',
-      '<=', //  'less-than-or-equal',
-    ]);
-    mockery.addModulusValueFunc('LOGICAL_OPERATORS', [
-      '&&', //
-      '||', //
-    ]);
+    // mockery.addModulusValueFunc('LOGICAL_OPERATORS', ['&&', '||']);
     mockery.addModulusValueFunc('SV_PA', [
       'yes',
       'no',
@@ -385,7 +373,7 @@ define('mock/dataservices/survey.mock', [
   questions = mockery.fromTemplate({
     'list|1-1': [ //
       {
-        QuestionID: '@INC(question)',
+        QuestionID: '@INC(questions)',
         SurveyId: 1, //'@REF_INC(survey)',
         QuestionMeaningId: '@FK(questionMeaning)',
         ParentId: null,
@@ -393,19 +381,23 @@ define('mock/dataservices/survey.mock', [
         MapToTokenId: '@FK(token)',
       }
     ],
-  }).list;
-  // .concat(mockery.fromTemplate({
-  //   'list|2-2': [
-  //     {
-  //       ParentId: '@FK(question)',
-  //       QuestionID: '@INC(question)',
-  //       SurveyId: 1, //'@REF_INC(survey)',
-  //       QuestionMeaningId: '@FK(questionMeaning)',
-  //       GroupOrder: null, //'@NUMBER(0,5)',
-  //       MapToTokenId: '@FK(token)',
-  //     }
-  //   ],
-  // }).list);
+  }).list.concat(mockery.fromTemplate({
+    'list|2-2': [ //
+      {
+        ParentId: '@FK(questions)',
+        QuestionID: '@INC(questions)',
+        SurveyId: 1, //'@REF_INC(survey)',
+        QuestionMeaningId: '@FK(questionMeaning)',
+        GroupOrder: null, //'@NUMBER(0,5)',
+        MapToTokenId: '@FK(token)',
+        ConditionJson: {
+          TokenId: 3,
+          Comparison: '==',
+          Value: 'Bob',
+        },
+      }
+    ],
+  }).list);
   // set correct GroupOrders
   (function() {
     var countMap = {};
@@ -421,7 +413,7 @@ define('mock/dataservices/survey.mock', [
       {
         QuestionTranslationID: '@INC(questionTranslation)',
         SurveyTranslationId: 1, //'@FK(surveyTranslation)',
-        QuestionId: '@FK(question)',
+        QuestionId: '@FK(questions)',
         TextFormat: '@TEXT(20,40)?',
       }
     ],
@@ -439,7 +431,7 @@ define('mock/dataservices/survey.mock', [
   questions_PossibleAnswers_Map = mockery.fromTemplate({
     'list|3-3': [ //
       {
-        QuestionId: '@FK(question)',
+        QuestionId: '@FK(questions)',
         PossibleAnswerId: '@FK(possibleAnswer)',
         Expands: true, //'@BOOL',
       }
@@ -453,9 +445,9 @@ define('mock/dataservices/survey.mock', [
   //       SurveyId: 1,
   //       'Answers|3-3': [
   //         {
-  //           AnswerID: '@FK(question)',
+  //           AnswerID: '@FK(questions)',
   //           ResultId: 1,
-  //           QuestionId: '@FK(question)',
+  //           QuestionId: '@FK(questions)',
   //           AnswerText: '@SV_PA',
   //         }
   //       ],
@@ -512,7 +504,7 @@ define('mock/dataservices/survey.mock', [
       {
         AnswerID: '@INC(resultAnswers)',
         ResultId: 1,
-        QuestionId: '@FK(question)',
+        QuestionId: '@FK(questions)',
         AnswerText: '@SV_PA',
       },
     ],

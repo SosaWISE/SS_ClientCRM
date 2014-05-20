@@ -1,6 +1,8 @@
 define('src/core/treehelper', [
+  'ko',
   'src/core/utils',
 ], function(
+  ko,
   utils
 ) {
   'use strict';
@@ -9,7 +11,7 @@ define('src/core/treehelper', [
     if (!list) {
       return;
     }
-
+    list = ko.unwrap(list);
     list.forEach(function(item) {
       var stop = fn(item, parent);
       if (!stop) {

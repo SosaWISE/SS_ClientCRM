@@ -27,7 +27,7 @@ define('src/core/mockery', [
     INC: function(cache, key, idSeed) {
       var val, obj = incMap[key];
       if (obj) {
-        val = obj.val++;
+        val = ++obj.val;
       } else {
         if (idSeed) {
           idSeed = parseInt(idSeed, 10);

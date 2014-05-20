@@ -12,7 +12,7 @@ define('src/survey/survey.vm', [
   'src/dataservice',
   'ko',
   'src/core/notify',
-  'src/core/controller.vm',
+  'src/survey/questions.parent.vm', //'src/core/controller.vm',
   'src/core/utils',
 ], function(
   treehelper,
@@ -28,7 +28,7 @@ define('src/survey/survey.vm', [
   dataservice,
   ko,
   notify,
-  ControllerViewModel,
+  QuestionsParentViewModel,
   utils
 ) {
   'use strict';
@@ -36,16 +36,13 @@ define('src/survey/survey.vm', [
   function SurveyViewModel(options) {
     var _this = this;
     SurveyViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['model', 'surveyTypeVM', 'tokensVM', 'possibleAnswersVM']);
+    QuestionsParentViewModel.ensureProps(_this, ['model', 'surveyTypeVM', 'tokensVM', 'possibleAnswersVM']);
 
     _this.title = ko.observable(_this.surveyTypeVM.model.Name + ' ' + _this.model.Version);
     _this.id = _this.model.SurveyID;
 
     // observables
-    _this.questions = ko.observableArray();
     _this.translations = ko.observableArray();
-    // computed observables
-    _this.nextName = ko.computed(_this.computeNextName, _this);
 
     _this.layersVm = new LayersViewModel({
       controller: _this,
@@ -77,34 +74,6 @@ define('src/survey/survey.vm', [
         }
       });
     };
-    _this.clickAddQuestion = function(parentVM) {
-      var parent = (parentVM === _this) ? null : parentVM,
-        vm;
-      if (parent && parent.noAddSubQuestion()) {
-        return;
-      }
-      vm = new NewQuestionViewModel({
-        surveyVM: _this,
-        surveyTypeVM: _this.surveyTypeVM,
-        parent: parent,
-        nextName: parentVM.nextName(),
-        groupOrder: parentVM.nextGroupOrder(),
-      });
-      _this.layersVm.show(vm, function(model) {
-        if (!model) {
-          return;
-        }
-        model.childs = [];
-        var vm = createQuestion(_this, model, parent);
-        // make sure it is loaded
-        vm.load({}, null, function(errResp) {
-          if (errResp) {
-            return notify.notify('error', errResp.Message);
-          }
-          parentVM.questions.push(vm);
-        });
-      });
-    };
     _this.clickAddToken = function(vm) {
       _this.layersVm.show(new NewQMTokenMapViewModel({
         questionMeaningVM: vm,
@@ -118,8 +87,13 @@ define('src/survey/survey.vm', [
       }));
     };
     _this.clickTakeSurvey = _this.takeVm.clickTake;
+
+    _this.clickAddQuestion = function(parentVM) {
+      var parent = (parentVM === _this.topVm) ? null : parentVM;
+      newQuestion(_this, parent);
+    };
   }
-  utils.inherits(SurveyViewModel, ControllerViewModel);
+  utils.inherits(SurveyViewModel, QuestionsParentViewModel);
   SurveyViewModel.prototype.routePart = 'surveyid';
   SurveyViewModel.prototype.viewTmpl = 'tmpl-survey';
 
@@ -144,6 +118,8 @@ define('src/survey/survey.vm', [
     });
   };
 
+  SurveyViewModel.prototype.addQuestion = QuestionViewModel.prototype.addQuestion;
+
   function loadQuestions(surveyVM, surveyID, routeData, extraData, join) {
     var cb = join.add();
     dataservice.survey.surveys.read({
@@ -151,14 +127,18 @@ define('src/survey/survey.vm', [
       link: 'questions',
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Value) {
-        var treeTrunk = treehelper.makeTree(resp.Value, 'QuestionID', 'ParentId', function(model, parentVM /*, parent*/ ) {
-          var vm = createQuestion(surveyVM, model, parentVM);
-          vm.load(routeData, extraData, join.add());
+        // var treeTrunk =
+        treehelper.makeTree(resp.Value, 'QuestionID', 'ParentId', function(model, parentVM /*, parent*/ ) {
+          // var vm = QuestionsParentViewModel.createQuestion(surveyVM, model, parentVM);
+          // vm.load(routeData, extraData, join.add());
+          parentVM = parentVM || surveyVM;
+
+          var vm = parentVM.addQuestion(surveyVM, model, parentVM, join.add());
           return vm;
         });
-        surveyVM.questions(treeTrunk);
+        // surveyVM.setQuestions(treeTrunk);
       } else {
-        surveyVM.questions([]);
+        // surveyVM.setQuestions([]);
       }
     }, utils.no_op));
   }
@@ -194,28 +174,49 @@ define('src/survey/survey.vm', [
     });
   };
 
-  SurveyViewModel.prototype.computeNextName = function() {
-    return this.nextGroupOrder() + '.';
-  };
-
-  SurveyViewModel.prototype.nextGroupOrder = function() {
-    return this.questions().length + 1;
-  };
-
-  function createQuestion(surveyVM, model, parent) {
-    return new QuestionViewModel({
-      surveyVM: surveyVM,
-      possibleAnswersVM: surveyVM.possibleAnswersVM,
-      questionMeaningVM: surveyVM.surveyTypeVM.getQuestionMeaning(model.QuestionMeaningId),
-      model: model,
-      parent: parent,
-    });
-  }
+  // SurveyViewModel.prototype.computeNextName = function() {
+  //   return this.nextGroupOrder() + '.';
+  // };
+  //
+  // SurveyViewModel.prototype.nextGroupOrder = function() {
+  //   return this.questions().length + 1;
+  // };
+  //
+  // function createQuestion(surveyVM, model, parent) {
+  //   return new QuestionViewModel({
+  //     surveyVM: surveyVM,
+  //     possibleAnswersVM: surveyVM.possibleAnswersVM,
+  //     questionMeaningVM: surveyVM.surveyTypeVM.getQuestionMeaning(model.QuestionMeaningId),
+  //     model: model,
+  //     parent: parent,
+  //   });
+  // }
 
   function createSurveyTranslation(surveyVM, model) {
     return new SurveyTranslationViewModel({
       surveyVM: surveyVM,
       model: model,
+    });
+  }
+
+  function newQuestion(surveyVM, parentVm) {
+    var vm;
+    if (parentVm && parentVm.noAddSubQuestion()) {
+      return;
+    }
+    vm = new NewQuestionViewModel({
+      surveyVM: surveyVM,
+      surveyTypeVM: surveyVM.surveyTypeVM,
+      tokensVM: surveyVM.tokensVM,
+      parent: parentVm,
+      nextName: parentVm.nextName(),
+      groupOrder: parentVm.nextGroupOrder(),
+    });
+    surveyVM.layersVm.show(vm, function(model) {
+      if (!model) {
+        return;
+      }
+      parentVm.addQuestion(surveyVM, model, parentVm);
     });
   }
 

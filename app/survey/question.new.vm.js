@@ -1,4 +1,5 @@
 define('src/survey/question.new.vm', [
+  'src/ukov',
   'src/dataservice',
   'ko',
   'src/core/combo.vm',
@@ -7,6 +8,7 @@ define('src/survey/question.new.vm', [
   'src/core/base.vm',
   'src/core/utils',
 ], function(
+  ukov,
   dataservice,
   ko,
   ComboViewModel,
@@ -17,20 +19,95 @@ define('src/survey/question.new.vm', [
 ) {
   'use strict';
 
+  var schema;
+
+  schema = {
+    _model: true,
+
+    QuestionID: {},
+    SurveyId: {},
+    QuestionMeaningId: {
+      validators: [
+        ukov.validators.isRequired('Meaning is required'),
+      ],
+    },
+    ParentId: {},
+    GroupOrder: {},
+    MapToTokenId: {},
+    ConditionJson: {
+      _model: true,
+
+      TokenId: {
+        validators: [
+          ukov.validators.isRequired('Token is required'),
+        ],
+      },
+      Comparison: {
+        validators: [
+          ukov.validators.isRequired('Comparison is required'),
+        ],
+      },
+      Value: {
+        validators: [
+          ukov.validators.isRequired('Value is required'),
+        ],
+      },
+    },
+  };
+
   function NewQuestionViewModel(options) {
     var _this = this;
     NewQuestionViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, ['surveyVM', 'surveyTypeVM']);
+    BaseViewModel.ensureProps(_this, ['surveyVM', 'surveyTypeVM', 'tokensVM']);
 
-    _this.qmComboVM = new ComboViewModel({
+    _this.data = ukov.wrap({
+      // QuestionID: 0,
+      SurveyId: _this.surveyVM.model.SurveyID,
+      QuestionMeaningId: null,
+      ParentId: (_this.parent) ? _this.parent.model.QuestionID : null,
+      GroupOrder: _this.groupOrder,
+      MapToTokenId: null,
+      ConditionJson: {
+        TokenId: null,
+        Comparison: null,
+        Value: '',
+      },
+    }, schema);
+
+    _this.data.QuestionMeaningCvm = new ComboViewModel({
+      selectedValue: _this.data.QuestionMeaningId,
+      fields: {
+        value: 'QuestionMeaningID',
+        text: 'Name'
+      },
       list: createComboList(_this.surveyVM, _this.surveyTypeVM.questionMeanings())
     });
-    _this.qmComboVM.actions([ //
+    _this.data.QuestionMeaningCvm.actions([ //
       {
         text: 'Add New Meaning',
         onClick: _this.showAddNewMeaning.bind(_this),
       }
     ]);
+
+    _this.data.ConditionJson.TokenCvm = new ComboViewModel({
+      selectedValue: _this.data.ConditionJson.TokenId,
+      fields: {
+        value: 'TokenID',
+        text: 'Token',
+      },
+      list: _this.tokensVM.list(),
+      nullable: true,
+    });
+    _this.data.ConditionJson.ComparisonCvm = new ComboViewModel({
+      selectedValue: _this.data.ConditionJson.Comparison,
+      list: _this.comparisonOptions,
+      nullable: true,
+    });
+    _this.data.ConditionJson.Use = ko.observable(true);
+    _this.data.ConditionJson.Use.subscribe(function(use) {
+      _this.data.ConditionJson.ignore(!use, true);
+    });
+    // _this.data.ConditionJson.Use(false);
 
     //
     // events
@@ -42,19 +119,13 @@ define('src/survey/question.new.vm', [
       _this.layer.close();
     };
     _this.cmdAdd = ko.command(function(cb) {
-      var selectedValue = _this.qmComboVM.selectedValue();
-      if (!selectedValue) {
-        notify.notify('warn', 'No question meaning selected', 10);
+      if (!_this.data.isValid()) {
+        notify.notify('warn', _this.data.errMsg(), 10);
         return cb();
       }
+      var model = _this.data.getValue(false, true);
       dataservice.survey.questions.save({
-        data: {
-          SurveyId: _this.surveyVM.model.SurveyID,
-          QuestionMeaningId: selectedValue.model.QuestionMeaningID,
-          ParentId: (_this.parent) ? _this.parent.model.QuestionID : null,
-          GroupOrder: _this.groupOrder,
-          MapToTokenId: null,
-        },
+        data: model,
       }, null, function(err, resp) {
         if (err) {
           notify.notify('error', err.Message);
@@ -67,8 +138,8 @@ define('src/survey/question.new.vm', [
   }
   utils.inherits(NewQuestionViewModel, BaseViewModel);
   NewQuestionViewModel.prototype.viewTmpl = 'tmpl-question_new';
-  NewQuestionViewModel.prototype.width = 300;
-  NewQuestionViewModel.prototype.height = 250;
+  NewQuestionViewModel.prototype.width = 500;
+  NewQuestionViewModel.prototype.height = 'auto';
 
   NewQuestionViewModel.prototype.showAddNewMeaning = function(filterText) {
     var _this = this,
@@ -80,13 +151,39 @@ define('src/survey/question.new.vm', [
       if (!model) {
         return;
       }
-      var item = _this.qmComboVM.addItem({
-        value: _this.surveyTypeVM.addQuestionMeaning(model),
-        text: model.Name,
-      });
-      _this.qmComboVM.selectItem(item);
+      _this.surveyTypeVM.addQuestionMeaning(model);
+      var item = _this.data.QuestionMeaningCvm.addItem(model);
+      _this.data.QuestionMeaningCvm.selectItem(item);
     });
   };
+
+  NewQuestionViewModel.prototype.comparisonOptions = [ //
+    {
+      text: 'Equal (==)',
+      value: '==',
+    }, {
+      text: 'Not Equal (!=)',
+      value: '!=',
+      // }, {
+      //   text: 'Strict Equal (===)',
+      //   value: '===',
+      // }, {
+      //   text: 'Strict not Equal (!==)',
+      //   value: '!==',
+    }, {
+      text: 'Greater than (>)',
+      value: '>',
+    }, {
+      text: 'Greater than or Equal (>=)',
+      value: '>=',
+    }, {
+      text: 'Less than (<)',
+      value: '<',
+    }, {
+      text: 'Less than or Equal (<=)',
+      value: '<=',
+    },
+  ];
 
   function createComboList(surveyVM, allQuestionMeanings) {
     var map = {},
@@ -107,10 +204,7 @@ define('src/survey/question.new.vm', [
       if (map[vm.model.QuestionMeaningID]) {
         return;
       }
-      result.push({
-        value: vm,
-        text: vm.model.Name,
-      });
+      result.push(vm.model);
     });
     return result;
   }

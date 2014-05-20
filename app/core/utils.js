@@ -39,6 +39,8 @@ define('src/core/utils', [
             successFn(err, resp, ctx);
           }
         } catch (ex) {
+          console.error(ex.message);
+          console.error(ex.stack);
           err = {
             Message: ex.message
           };
@@ -64,6 +66,9 @@ define('src/core/utils', [
     },
     isNum: function(obj) {
       return typeof(obj) === 'number' || (obj instanceof Number);
+    },
+    isDate: function(obj) {
+      return (obj instanceof Date);
     },
 
   };

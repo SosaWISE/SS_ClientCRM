@@ -2,46 +2,48 @@ define('src/survey/question.vm', [
   'src/survey/qpossibleanswermap.vm',
   'src/dataservice',
   'ko',
+  'src/core/strings',
   'src/core/notify',
   'src/core/utils',
-  'src/core/controller.vm',
+  'src/survey/questions.parent.vm', //'src/core/controller.vm',
 ], function(
   QPossibleAnswerMapViewModel,
   dataservice,
   ko,
+  strings,
   notify,
   utils,
-  ControllerViewModel
+  QuestionsParentViewModel
 ) {
   'use strict';
 
   function QuestionViewModel(options) {
     var _this = this;
     QuestionViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['surveyVM', 'possibleAnswersVM', 'questionMeaningVM']);
-    ControllerViewModel.ensureProps(_this.model, ['childs']);
+    _this.surveyVM = _this.topVm;
+    QuestionsParentViewModel.ensureProps(_this, ['topVm', 'possibleAnswersVM', 'questionMeaningVM']);
+    QuestionsParentViewModel.ensureProps(_this.model, ['childs']);
 
     _this.id = _this.model.QuestionID;
     _this.possibleAnswerMaps = _this.childs;
 
-    // observables
-    _this.parent = ko.observable(_this.parent);
-    _this.questions = ko.observableArray(_this.model.childs);
-    _this.groupOrder = ko.observable(_this.model.GroupOrder);
     // computed observables
     _this.translations = ko.computed(_this.computeTranslations, _this);
-    _this.name = ko.computed(function() {
-      return getName(_this.parent(), _this.groupOrder());
-    });
-    _this.nextName = ko.computed(function() { // next child name
-      return getName(_this, _this.nextGroupOrder());
-    });
     _this.noAddSubQuestion = ko.computed(function() {
       return !_this.possibleAnswerMaps().length;
     });
+    _this.conditionText = ko.computed(function() {
+      var json = _this.model.ConditionJson;
+      if (!json) {
+        return 'none';
+      } else {
+        return strings.format('({0} {1} \'{2}\')', _this.topVm.tokensVM.getToken(json.TokenId).Token, json.Comparison, json.Value);
+      }
+    });
   }
-  utils.inherits(QuestionViewModel, ControllerViewModel);
+  utils.inherits(QuestionViewModel, QuestionsParentViewModel);
   QuestionViewModel.prototype.viewTmpl = 'tmpl-question';
+  QuestionViewModel.prototype.show = true;
 
   QuestionViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
@@ -69,7 +71,7 @@ define('src/survey/question.vm', [
   QuestionViewModel.prototype.computeTranslations = function() {
     var _this = this,
       results = [];
-    _this.surveyVM.translations().forEach(function(surveyTranslationVM) {
+    _this.topVm.translations().forEach(function(surveyTranslationVM) {
       // update whenever list changes
       surveyTranslationVM.list();
       // get vm
@@ -81,19 +83,42 @@ define('src/survey/question.vm', [
     return results;
   };
 
-  QuestionViewModel.prototype.nextGroupOrder = function() {
-    return this.questions().length + 1;
-  };
-
   QuestionViewModel.prototype.addPossibleAnswerMap = function(model) {
     var _this = this;
     _this.possibleAnswerMaps.push(createPossibleAnswerMap(_this.possibleAnswersVM, model));
   };
 
-  function getName(parent, index) {
-    var pName = parent ? parent.name() : '';
-    return pName + index + '.';
-  }
+  QuestionViewModel.prototype.addQuestion = function(topVm, model, parent, cb) {
+    var _this = this,
+      vm;
+    model.childs = model.childs || [];
+    vm = new QuestionViewModel({
+      topVm: topVm,
+      possibleAnswersVM: topVm.possibleAnswersVM,
+      questionMeaningVM: topVm.surveyTypeVM.getQuestionMeaning(model.QuestionMeaningId),
+      model: model,
+      parent: parent,
+    });
+
+    // make sure it is loaded
+    vm.load({}, null, function(errResp) {
+      if (utils.isFunc(cb)) {
+        cb(errResp);
+      }
+      if (errResp) {
+        return notify.notify('error', errResp.Message);
+      }
+    });
+    // add to list
+    _this.questions.push(vm);
+    _this.updateChildNames();
+    return vm;
+  };
+
+  // function getName(parent, index) {
+  //   var pName = parent ? parent.name() : '';
+  //   return pName + index + '.';
+  // }
 
   function createPossibleAnswerMap(possibleAnswersVM, model) {
     return new QPossibleAnswerMapViewModel({

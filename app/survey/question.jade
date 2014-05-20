@@ -6,20 +6,28 @@ table(class="question")
     td(class="content")
       <!-- ko with:questionMeaningVM -->
       span(class="qm",data-bind="text:model.Name")
-      div(style="color:black;") Tokens:
+      div
+        span(style="color:black;") Condition:
+        |&nbsp;
+        span(data-bind="text:$parent.conditionText")
       ul(class="sv tlist cf")
         li
-          a(class="btn small add-btn",data-bind="click:$parent.surveyVM.clickAddToken") Add
+          a(class="btn small add-btn",data-bind="click:$parent.topVm.clickAddToken") Add
+        li
+          span(style="color:black;") Tokens:
+          |&nbsp;
         <!-- ko foreach:tokenMaps -->
         li
           span(data-bind="text:'{'+$index()+'}'+token.Token")
           |&nbsp;&nbsp;
         <!-- /ko -->
       <!-- /ko -->
-      div(style="color:black;") Possible Answers:
       ul(class="sv tlist cf")
         li
-          a(class="btn small add-btn",data-bind="click:surveyVM.clickAddPossibleAnswer") Add
+          a(class="btn small add-btn",data-bind="click:topVm.clickAddPossibleAnswer") Add
+        li
+          span(style="color:black;") Possible Answers:
+          |&nbsp;
         <!-- ko foreach:possibleAnswerMaps -->
         li(data-bind="cmd:cmdToggle")
           a(class="btn small",
@@ -42,5 +50,5 @@ table(class="question")
         ul(class="sv")
           li
             a(class="btn add-btn",
-              data-bind="click:surveyVM.clickAddQuestion,cssDisabled:noAddSubQuestion,attr:{title:noAddSubQuestion()?'add a possible answer first':'add sub question'}")
+              data-bind="click:topVm.clickAddQuestion,cssDisabled:noAddSubQuestion,attr:{title:noAddSubQuestion()?'add a possible answer first':'add sub question'}")
               span(data-bind="text:nextName")

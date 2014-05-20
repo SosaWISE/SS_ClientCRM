@@ -1,8 +1,10 @@
 define('src/survey/takesurvey.vm', [
+  'src/core/treehelper',
   'src/survey/surveyhelper',
   'underscore',
   'src/survey/tokens.vm',
   'src/survey/possibleanswers.vm',
+  'src/survey/questions.parent.vm',
   'src/survey/takequestion.vm',
   'src/ukov',
   'ko',
@@ -13,10 +15,12 @@ define('src/survey/takesurvey.vm', [
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  treehelper,
   surveyhelper,
   underscore,
   TokensViewModel,
   PossibleAnswersViewModel,
+  QuestionsParentViewModel,
   TakeQuestionViewModel,
   ukov,
   ko,
@@ -207,54 +211,70 @@ define('src/survey/takesurvey.vm', [
     }));
   }
 
-  function createSurvey(surveyData, paMap, tokenMap, data, retake) {
-    var survey, questions, ukovModel;
+  function createSurvey(surveyData, paMap, tokenMap, dataContext, retake) {
+    var topVm, questionOptions, ukovModel;
 
     ukovModel = ukov.wrap({}, {
       _model: true
     });
 
-    questions = createTakeQuestions(
+    questionOptions = createTakeQuestionsOptions(
       ukovModel,
       surveyData.questions,
       paMap,
       surveyData.surveyType.questionMeanings,
       surveyData.surveyTranslation.questionTranslations,
       tokenMap,
-      data,
+      dataContext,
       surveyData.resultAnswers,
       retake
     );
     ukovModel.validate();
     ukovModel.update();
 
-    survey = {
+    topVm = new QuestionsParentViewModel({
+      model: {
+        SurveyID: 1,
+      },
       version: surveyData.Version,
       locale: surveyData.surveyTranslation.LocalizationCode,
-      questions: makeTree(questions),
       ukovModel: ukovModel,
-    };
+    });
+    topVm.addQuestion = TakeQuestionViewModel.prototype.addQuestion;
+    treehelper.makeTree(questionOptions, 'QuestionID', 'ParentId', function(options, parentVM /*, parent*/ ) {
+      options.topVm = topVm;
+      var vm = new TakeQuestionViewModel(options);
+      if (options.show) {
+        // only add if showing
+        (parentVM || topVm).addQuestion(vm);
+      }
+      return vm;
+    });
 
-    return survey;
+    return topVm;
   }
 
-  function createTakeQuestions(ukovModel, questions, paMap, meanings, translations, tokenMap, data, resultAnswers, retake) {
+  function createTakeQuestionsOptions(ukovModel, questions, paMap, meanings, translations, tokenMap, dataContext, resultAnswers, retake) {
     var getTokenValue,
       meaningMap = {},
       questionTokenValuesMap = {},
       questionHtmlMap = {},
-      answerTextMap = {};
+      answerTextMap = {},
+      questionOptions = [];
 
-    if (!data) {
-      throw new Error('missing data context');
+    if (!dataContext) {
+      throw new Error('missing dataContext context');
     }
 
     // function for looking up data context values
+    function getTokenIdValue(tokenId) {
+      return getTokenValue(tokenMap[tokenId].Token);
+    }
     getTokenValue = underscore.memoize(function(token) {
       var parts = token.split('.'),
         result;
       if (parts.length) {
-        result = data;
+        result = dataContext;
         if (parts.some(function(part) {
           result = result[part];
           // break if part wasn't found in result
@@ -277,7 +297,7 @@ define('src/survey/takesurvey.vm', [
     questions.forEach(function(q) {
       var qm = meaningMap[q.QuestionMeaningId];
       questionTokenValuesMap[q.QuestionID] = qm.questionMeaningTokenMaps.map(function(qmTokenMap) {
-        return getTokenValue(tokenMap[qmTokenMap.TokenId].Token);
+        return getTokenIdValue(qmTokenMap.TokenId);
       });
     });
     translations.forEach(function(translation) {
@@ -294,13 +314,18 @@ define('src/survey/takesurvey.vm', [
       });
     }
 
-    // create question view models
-    return questions.map(function(q) {
+    // create question options for creating a view model
+    questions.forEach(function(q) {
       q.questionPossibleAnswerMaps.forEach(function(qpa) {
         qpa.text = paMap[qpa.PossibleAnswerId].AnswerText;
       });
 
-      var vm = new TakeQuestionViewModel({
+      // if (!evaluateCondition(q.ConditionJson, getTokenIdValue)) {
+      //   return;
+      // }
+
+      questionOptions.push({
+        model: q,
         ukovModel: ukovModel,
         QuestionID: q.QuestionID,
         ParentId: q.ParentId,
@@ -309,29 +334,59 @@ define('src/survey/takesurvey.vm', [
         html: questionHtmlMap[q.QuestionID] || '<strong>[No Translation]</strong>',
         answerText: answerTextMap[q.QuestionID],
         readonly: (!!resultAnswers) && !retake, // readonly if there are answers and not retaking the survey
+        show: evaluateCondition(q.ConditionJson, getTokenIdValue),
       });
-
-      return vm;
     });
+    return questionOptions;
   }
 
-  function makeTree(questions, parent) {
-    var childs = [];
-    questions.forEach(function(vm) {
-      if (parent && vm.ParentId !== parent.QuestionID) {
-        return;
+  function evaluateCondition(conditionJson, getTokenIdValue) {
+    /* jshint eqeqeq:false */
+    var tokenValue, value, show = true;
+    if (conditionJson) {
+      tokenValue = getTokenIdValue(conditionJson.TokenId);
+      value = conditionJson.Value;
+      switch (conditionJson.Comparison) {
+        case '==':
+          show = tokenValue == value;
+          break;
+        case '!=':
+          show = tokenValue != value;
+          break;
+        case '>':
+          show = tokenValue > value;
+          break;
+        case '>=':
+          show = tokenValue >= value;
+          break;
+        case '<':
+          show = tokenValue < value;
+          break;
+        case '<=':
+          show = tokenValue <= value;
+          break;
       }
-      if (!parent && vm.ParentId != null) {
-        return;
-      }
-      vm.parent(parent);
-      childs.push(vm);
-      // start recursion
-      vm.questions = makeTree(questions, vm);
-      vm.childs = vm.questions; // needed inorder to walk with treehelper
-    });
-    return childs;
+    }
+    return show;
   }
+
+  // function makeTree(questions, parent) {
+  //   var childs = [];
+  //   questions.forEach(function(vm) {
+  //     if (parent && vm.ParentId !== parent.QuestionID) {
+  //       return;
+  //     }
+  //     if (!parent && vm.ParentId != null) {
+  //       return;
+  //     }
+  //     vm.parent(parent);
+  //     childs.push(vm);
+  //     // start recursion
+  //     vm.questions = makeTree(questions, vm);
+  //     vm.childs = vm.questions; // needed inorder to walk with treehelper
+  //   });
+  //   return childs;
+  // }
 
   //
   // load survey data

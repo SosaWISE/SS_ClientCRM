@@ -1,14 +1,32 @@
 div(data-bind="if:cmdAdd.busy")
   div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
 
-h2(class="title", data-bind="text:nextName")
+h2(class="title")
+  span(data-bind="text:nextName")
+  |&nbsp;
+  span Question
 ul(class="edit-form")
   li
-    span(class="label") Question Meaning
-    div(data-bind="template:{name:qmComboVM.viewTmpl,data:qmComboVM}")
+    span(class="label") Meaning
+    div(data-bind="template:{name:data.QuestionMeaningCvm.viewTmpl,data:data.QuestionMeaningCvm}")
+  li(data-bind="with:data.ConditionJson")
+    div(class="checkbox",data-bind="cmd:function(){Use(!Use())}")
+      a(class="btn small",data-bind="active:Use")
+      span Condition
+    ul(class="edit-form condition",data-bind="visible:Use")
+      li
+        span(class="label") Token
+        div(data-bind="template:{name:TokenCvm.viewTmpl,data:TokenCvm}")
+      li
+        span(class="label") Comparison
+        div(data-bind="template:{name:ComparisonCvm.viewTmpl,data:ComparisonCvm}")
+      li
+        span(class="label") Value
+        input(type="text",data-bind="ukov:Value,value:Value,valueUpdate:'keyup'")
+
 
 ul(class="actions")
   li
     a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
   li
-    a(class="btn",tabindex="0",data-bind="cmd:cmdAdd") Add Question
+    a(class="btn",tabindex="0",data-bind="cmd:cmdAdd") Save Question

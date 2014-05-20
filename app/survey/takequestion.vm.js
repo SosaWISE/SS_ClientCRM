@@ -5,7 +5,7 @@ define('src/survey/takequestion.vm', [
   'src/core/combo.vm',
   'src/core/strings',
   'src/core/notify',
-  'src/core/base.vm',
+  'src/survey/questions.parent.vm', //'src/core/base.vm',
   'src/core/utils',
 ], function(
   ukov,
@@ -14,7 +14,7 @@ define('src/survey/takequestion.vm', [
   ComboViewModel,
   strings,
   notify,
-  BaseViewModel,
+  QuestionsParentViewModel,
   utils
 ) {
   'use strict';
@@ -34,19 +34,12 @@ define('src/survey/takequestion.vm', [
   function TakeQuestionViewModel(options) {
     var _this = this;
     TakeQuestionViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, ['ukovModel', 'QuestionID']);
+    QuestionsParentViewModel.ensureProps(_this, ['ukovModel', 'QuestionID', 'show']);
 
     _this.showSubs = ko.observable(false);
     initAnswer(_this);
-    _this.parent = ko.observable();
 
     // computed observables
-    _this.name = ko.computed({
-      deferEvaluation: true,
-      read: function() {
-        return getName(_this.parent(), _this.GroupOrder);
-      },
-    });
     _this.isComplete = ko.computed({
       deferEvaluation: true,
       read: function() {
@@ -54,7 +47,7 @@ define('src/survey/takequestion.vm', [
         var complete = _this.answer.isValid();
         if (complete && _this.showSubs() && _this.questions.length) {
           complete = _this.questions.every(function(q) {
-            return q.isComplete();
+            return !_this.show || q.isComplete();
           });
         }
         return complete;
@@ -68,7 +61,8 @@ define('src/survey/takequestion.vm', [
       _this.answer(paMap.text);
     };
   }
-  utils.inherits(TakeQuestionViewModel, BaseViewModel);
+  // utils.inherits(TakeQuestionViewModel, BaseViewModel);
+  utils.inherits(TakeQuestionViewModel, QuestionsParentViewModel);
   TakeQuestionViewModel.prototype.viewTmpl = 'tmpl-takequestion';
 
   // recursively add answers and return first error message
@@ -96,7 +90,7 @@ define('src/survey/takequestion.vm', [
     return errMsg;
   };
 
-  TakeQuestionViewModel.prototype.findPaMap = function(answerText) {
+  TakeQuestionViewModel.prototype.findPam = function(answerText) {
     var _this = this,
       result;
     if (_this.questionPossibleAnswerMaps.length) {
@@ -110,10 +104,14 @@ define('src/survey/takequestion.vm', [
     return result;
   };
 
-  function getName(parent, index) {
-    var pName = parent ? parent.name() : '';
-    return pName + index + '.';
-  }
+  TakeQuestionViewModel.prototype.addQuestion = function(vm) {
+    var _this = this;
+    // add to list
+    _this.questions.push(vm);
+    //
+    _this.updateChildNames();
+    return vm;
+  };
 
   function initAnswer(_this) {
     if (_this.answer) {
@@ -149,7 +147,7 @@ define('src/survey/takequestion.vm', [
 
     // update childs when answer is set
     _this.answer.subscribe(function(answerText) {
-      var paMap = _this.findPaMap(answerText),
+      var paMap = _this.findPam(answerText),
         expands = !!paMap && paMap.Expands;
 
       _this.showSubs(expands);
