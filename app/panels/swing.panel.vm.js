@@ -276,12 +276,12 @@ define('src/panels/swing.panel.vm', [
 
     var msAccountSearch = vm.data.getValue();
 
-    console.log('vm data value:'+JSON.stringify(msAccountSearch));
-    console.log('Swing Equipment value: '+msAccountSearch.SwingEquipment);
+    console.log('vm data value:' + JSON.stringify(msAccountSearch));
+    console.log('Swing Equipment value: ' + msAccountSearch.SwingEquipment);
 
     dataservice.swingaccountsrv.CustomerSwingInterim.post(null, {
       InterimAccountId: msAccountSearch.AccountID,
-      SwingEquipment : msAccountSearch.SwingEquipment
+      SwingEquipment: msAccountSearch.SwingEquipment
     }, null, utils.safeCallback(null, function(err, resp) {
 
       //debugging
