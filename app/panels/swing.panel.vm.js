@@ -280,7 +280,8 @@ define('src/panels/swing.panel.vm', [
     console.log('Swing Equipment value: '+msAccountSearch.SwingEquipment);
 
     dataservice.swingaccountsrv.CustomerSwingInterim.post(null, {
-      InterimAccountId: msAccountSearch.AccountID
+      InterimAccountId: msAccountSearch.AccountID,
+      SwingEquipment : msAccountSearch.SwingEquipment
     }, null, utils.safeCallback(null, function(err, resp) {
 
       //debugging
