@@ -137,7 +137,7 @@ define('src/survey/takesurvey.vm', [
   TakeSurveyViewModel.prototype.reloadSurvey = function() {
     var _this = this;
     if (_this.surveyData) {
-      _this.survey(createSurvey(_this.surveyData, _this.possibleAnswersVM.paMap, _this.tokensVM.tokenMap, _this.dataContext, _this.retake));
+      _this.survey(createSurvey(_this.surveyData, _this.possibleAnswersVM.paMap, _this.tokensVM, _this.dataContext, _this.retake));
     }
   };
 
@@ -211,7 +211,7 @@ define('src/survey/takesurvey.vm', [
     }));
   }
 
-  function createSurvey(surveyData, paMap, tokenMap, dataContext, retake) {
+  function createSurvey(surveyData, paMap, tokensVM, dataContext, retake) {
     var topVm, questionOptions, ukovModel;
 
     ukovModel = ukov.wrap({}, {
@@ -224,7 +224,7 @@ define('src/survey/takesurvey.vm', [
       paMap,
       surveyData.surveyType.questionMeanings,
       surveyData.surveyTranslation.questionTranslations,
-      tokenMap,
+      tokensVM,
       dataContext,
       surveyData.resultAnswers,
       retake
@@ -254,7 +254,7 @@ define('src/survey/takesurvey.vm', [
     return topVm;
   }
 
-  function createTakeQuestionsOptions(ukovModel, questions, paMap, meanings, translations, tokenMap, dataContext, resultAnswers, retake) {
+  function createTakeQuestionsOptions(ukovModel, questions, paMap, meanings, translations, tokensVM, dataContext, resultAnswers, retake) {
     var getTokenValue,
       meaningMap = {},
       questionTokenValuesMap = {},
@@ -266,27 +266,15 @@ define('src/survey/takesurvey.vm', [
       throw new Error('missing dataContext context');
     }
 
-    // function for looking up data context values
+    //
+    // functions for looking up data context values
+    //
+    // uses memo-ize to remove redundant lookups
+    getTokenValue = underscore.memoize(tokensVM.createTokenValueFunc(dataContext));
+    //
     function getTokenIdValue(tokenId) {
-      return getTokenValue(tokenMap[tokenId].Token);
+      return getTokenValue(tokensVM.getToken(tokenId).Token);
     }
-    getTokenValue = underscore.memoize(function(token) {
-      var parts = token.split('.'),
-        result;
-      if (parts.length) {
-        result = dataContext;
-        if (parts.some(function(part) {
-          result = result[part];
-          // break if part wasn't found in result
-          return !result;
-        })) {
-          // broke loop early
-          // ensure result is the default value
-          result = undefined;
-        }
-      }
-      return result;
-    });
 
     //
     // create lookup mappings

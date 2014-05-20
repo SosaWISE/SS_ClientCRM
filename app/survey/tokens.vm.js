@@ -106,6 +106,12 @@ define('src/survey/tokens.vm', [
     return dataContext;
   };
 
+  TokensViewModel.prototype.createTokenValueFunc = function(dataContext) {
+    return function(token, valueToSet) {
+      return walkToToken(dataContext, token, valueToSet);
+    };
+  };
+
   function walkToToken(dataContext, token, valueToSet) {
     var parts = token.split('.'),
       createMissing = arguments.length > 2,
