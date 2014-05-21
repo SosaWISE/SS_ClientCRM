@@ -78,7 +78,8 @@ define('src/panels/swing.panel.vm', [
     Customer2: customerSchema,
     Address: addressSchema,
     SystemDetail: systemDetailSchema,
-    SwingEquipment: {}
+    SwingEquipment: {},
+    InterimAccountId: {}
   };
 
 
@@ -93,6 +94,9 @@ define('src/panels/swing.panel.vm', [
     _this.data = ukov.wrap({}, schema);
 
     // console.log(_this.data);
+
+    //initialize hide the AccountID label    
+    _this.isVisible = ko.observable(false);
 
     //Emergency Contact List
     _this.swingEmGvm = new SlickGridViewModel({
@@ -218,6 +222,8 @@ define('src/panels/swing.panel.vm', [
     _this.data.setValue(data);
     _this.swingEmGvm.list([]);
     _this.swingEquipmentGvm.list([]);
+
+    _this.isVisible(false);
 
   };
 
@@ -515,6 +521,27 @@ define('src/panels/swing.panel.vm', [
       }
 
     }, utils.no_op));*/
+
+
+
+    //Get Info from Swung table
+    dataservice.swingaccountsrv.CustomerSwungInfo.read({
+        id: msAccount.AccountID
+      },
+      null, utils.safeCallback(cb, function(err, resp) {
+
+        if (err) {
+          notify.notify('warn', err.Message, 10);
+          return;
+        }
+        if (resp.Value) {          
+          //AccountID is found on swung table -  disable swing button and show label [AccountID]   
+          console.log("Match found.");
+
+          vm.isVisible(true);
+          vm.data.InterimAccountId(resp.Value.AccountID_Old);
+        }
+      }, utils.no_op));
 
 
 

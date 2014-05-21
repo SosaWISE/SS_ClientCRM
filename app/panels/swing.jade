@@ -75,9 +75,11 @@ div(class="swing_wrapper")
            
                
 
-  ul(class="content" id="right_content")          
+  ul(class="content" id="right_content")
     li(style="text-align:right;")
-      button(type="button" class="btn-swing" data-bind="cmd:cmdSwing") Swing System 
+      label(class='created_account_wrapper' data-bind="visible: isVisible") New Account Created:
+        span(class='created_account' data-bind="text: data.InterimAccountId")
+      button(class="btn-swing" data-bind="cmd:cmdSwing, enable: !isVisible()") Swing System 
     li
       div(class="outer_panes_right")
          ul(style="list-style-type: none;")
