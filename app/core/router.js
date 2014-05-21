@@ -140,6 +140,13 @@ define('src/core/router', [
     return _this.goToPath(route.toPath(routeData), extraData, allowHistory);
   };
 
+  Router.prototype.findRoute = function(routeName) {
+    var _this = this,
+      user = _this.getUser(),
+      routes = user ? _this.routes : _this.anonRoutes;
+    return findRouteByName(routes, routeName);
+  };
+
 
   function addRoute(router, routes, controller, routeName, routePath, defaultRouteData) {
     var route = Route.create(router, controller, routeName, routePath, defaultRouteData);
@@ -155,13 +162,25 @@ define('src/core/router', [
     // activate the first route that matches the path
     routes.some(function(route) {
       if (route.fromPath(path)) {
-        routeFound = route;
-        // break out of loop
-        return routeFound;
+        // break out of loop if found
+        return (routeFound = route);
       }
     });
     return routeFound;
   }
+
+  function findRouteByName(routes, routeName) {
+    var routeFound;
+    // activate the first route that matches the path
+    routes.some(function(route) {
+      if (route.name === routeName) {
+        // break out of loop if found
+        return (routeFound = route);
+      }
+    });
+    return routeFound;
+  }
+
 
   var bodyEl = jquery('body'),
     siteLoadingEl = jquery('#siteLoading'),

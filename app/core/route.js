@@ -3,7 +3,6 @@ define('src/core/route', [], function() {
 
   function Route(router, topController, name, regx, parts, defaultRouteData) {
     var _this = this;
-    topController.setRoute(_this);
 
     _this.router = router;
     _this.topController = topController;
@@ -17,6 +16,9 @@ define('src/core/route', [], function() {
     _this.parts.forEach(function(part, index) {
       _this.partsIndexMap[part] = index;
     });
+
+    // add route to top controller
+    topController.addRoute(_this);
   }
 
 
@@ -165,12 +167,17 @@ define('src/core/route', [], function() {
 
 
 
-  Route.prototype.removeExtraRouteData = function(routeData, afterRoutePart) {
+  Route.prototype.resetRouteData = function(routeData, afterRoutePart) {
     var _this = this,
       remove = false;
     if (afterRoutePart == null) {
       return;
     }
+    // routes have changed so remove everything...
+    if (routeData.route && _this.name !== routeData.route) {
+      remove = true;
+    }
+    // remove parts after passed in routePart
     _this.parts.some(function(part) {
       if (remove) {
         delete routeData[part];
@@ -178,6 +185,8 @@ define('src/core/route', [], function() {
         remove = (part === afterRoutePart);
       }
     });
+    // ensure the route name is set
+    routeData.route = _this.name;
     return routeData;
   };
 

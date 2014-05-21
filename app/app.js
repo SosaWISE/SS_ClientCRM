@@ -93,6 +93,7 @@ define('src/app', [
 
   //
   router.addRoute(app.panelMap.accounts, 'accounts', ':masterid/:id/:tab/:p1', {});
+  router.addRoute(app.panelMap.accounts, 'leads', ':id/:tab/:p1', {});
   router.addRoute(app.panelMap.home, 'home', '', {});
   router.addRoute(app.panelMap.surveys, 'surveys', ':surveytypeid/:surveyid/:locale', {
     locale: 'en',

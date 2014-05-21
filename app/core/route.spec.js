@@ -10,7 +10,8 @@ define('src/core/route.spec', [
       route = Route.create({
         goTo: function() {},
       }, {
-        setRoute: function() {},
+        // fake controller with addRoute function
+        addRoute: function() {},
       }, 'devices', ':tab/:id/:action', {
         tab: 'index',
         id: '',

@@ -51,11 +51,12 @@ define('src/panels/accounts.panel.vm', [
       // _this.selectChild(vm);
     };
     _this.clickNew = function() {
-      newCount++;
+      newCount--; // negative number are unsaved leads
       var vm = new deps.ChecklistViewModel({
+        routeName: 'leads',
         pcontroller: _this,
-        id: 'qualify' + newCount,
-        title: 'Qualify ' + newCount,
+        id: newCount,
+        title: 'Qualify' + newCount, // the negative number adds a dash which seems to work
       });
       _this.list.push(vm);
       _this.selectChild(vm);
@@ -70,6 +71,7 @@ define('src/panels/accounts.panel.vm', [
 
     ensureDeps(function() {
       _this.searchVM = new deps.AccountSearchViewModel({
+        routeName: 'accounts',
         pcontroller: _this,
         id: 'search',
         title: 'Search',
@@ -122,6 +124,7 @@ define('src/panels/accounts.panel.vm', [
 
   function createMasterAccountVM(pcontroller, id, name) {
     return new deps.MasterAccountViewModel({
+      routeName: 'accounts',
       pcontroller: pcontroller,
       id: id,
       title: name,
