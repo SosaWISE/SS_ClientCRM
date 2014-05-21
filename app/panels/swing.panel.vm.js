@@ -95,7 +95,7 @@ define('src/panels/swing.panel.vm', [
 
     // console.log(_this.data);
 
-    //initialize hide the AccountID label    
+    //initialize hide the AccountID label
     _this.isVisible = ko.observable(false);
 
     //Emergency Contact List
@@ -534,8 +534,8 @@ define('src/panels/swing.panel.vm', [
           notify.notify('warn', err.Message, 10);
           return;
         }
-        if (resp.Value) {          
-          //AccountID is found on swung table -  disable swing button and show label [AccountID]   
+        if (resp.Value) {
+          //AccountID is found on swung table -  disable swing button and show label [AccountID]
           console.log("Match found.");
 
           vm.isVisible(true);
