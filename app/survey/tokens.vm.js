@@ -80,10 +80,12 @@ define('src/survey/tokens.vm', [
       } else {
         // save leaf values
         var token = tokenNameMap[name];
-        if (!token) {
-          throw new Error('no token named `' + name + '`');
+        // silently exclude unknown token
+        if (token) {
+          compactObj[token.TokenID] = obj;
+        } else {
+          // throw new Error('no token named `' + name + '`');
         }
-        compactObj[token.TokenID] = obj;
       }
     })(dataContext, '');
 

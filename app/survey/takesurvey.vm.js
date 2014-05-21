@@ -40,17 +40,18 @@ define('src/survey/takesurvey.vm', [
 
     if (_this.surveyResult) {
       _this.resultid = _this.surveyResult.ResultID;
-      if (!_this.retake || !_this.dataContext) {
-        _this.dataContext = _this.tokensVM.parseContext(_this.surveyResult.Context);
-      }
+      // parse dataContext in onLoad
+      // if (!_this.retake || !_this.dataContext) {
+      //   _this.dataContext = _this.tokensVM.parseContext(_this.surveyResult.Context);
+      // }
       _this.surveyid = _this.surveyResult.SurveyId;
       if (!_this.retake || !_this.locale) {
         _this.locale = _this.surveyResult.LocalizationCode;
       }
 
-      if (!_this.dataContext) {
-        throw new Error('missing dataContext');
-      }
+      // if (!_this.dataContext) {
+      //   throw new Error('missing dataContext');
+      // }
       if (!_this.surveyid) {
         throw new Error('missing surveyid');
       }
@@ -88,14 +89,15 @@ define('src/survey/takesurvey.vm', [
 
   TakeSurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
-      tempSurveyType, surveyData, tempResultAnswers;
+      tempSurveyType, surveyData, tempResultAnswers,
+      tokensCb = join.add();
 
-    if (!_this.dataContext) {
-      join.add()({ // Code: ???,
-        Message: 'missing dataContext',
-      });
-      return;
-    }
+    // if (!_this.dataContext) {
+    //   join.add()({ // Code: ???,
+    //     Message: 'missing dataContext',
+    //   });
+    //   return;
+    // }
 
     loadSurveyType(_this.surveyid, function(val) {
       tempSurveyType = val;
@@ -112,7 +114,19 @@ define('src/survey/takesurvey.vm', [
     }
 
     // ensure tokens and PAs are loaded
-    _this.tokensVM.load({}, {}, join.add());
+    _this.tokensVM.load({}, {}, function() {
+      if (_this.surveyResult && (!_this.retake || !_this.dataContext)) {
+        _this.dataContext = _this.tokensVM.parseContext(_this.surveyResult.Context);
+      }
+      //
+      if (!_this.dataContext) {
+        tokensCb({ // Code: ???,
+          Message: 'missing dataContext',
+        });
+      } else {
+        tokensCb();
+      }
+    });
     _this.possibleAnswersVM.load({}, {}, join.add());
 
     join.when(function(err) {
@@ -152,7 +166,7 @@ define('src/survey/takesurvey.vm', [
       }
 
       // gather answers
-      _this.survey().questions.forEach(function(vm) {
+      _this.survey().questions().forEach(function(vm) {
         var errResult = vm.addAnswers(answers);
         // only store first error message
         if (!errMsg && errResult) {

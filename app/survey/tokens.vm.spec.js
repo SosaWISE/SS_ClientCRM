@@ -44,6 +44,15 @@ define('src/survey/tokens.vm.spec', [
           }
         })).toBe('{"1":1,"21":21}');
       });
+      it('should exclude unknown tokens', function() {
+        expect(vm.stringifyContext({
+          Prop1: 1,
+          Prop2: {
+            Prop1: 21,
+          },
+          UnknownProp: 123,
+        })).toBe('{"1":1,"21":21}');
+      });
     });
 
     describe('parseContext', function() {
