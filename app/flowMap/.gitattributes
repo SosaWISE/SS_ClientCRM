@@ -1,0 +1,2 @@
+# tells git to not modify line endings in this directory
+* -text
