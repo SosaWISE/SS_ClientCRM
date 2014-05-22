@@ -1,4 +1,4 @@
-define('src/account/security/equipment.editor.vm', [
+define('src/account/security/existingequipment.editor.vm', [
   'src/dataservice',
   'src/core/combo.vm',
   'src/core/notify',
@@ -26,24 +26,19 @@ define('src/account/security/equipment.editor.vm', [
 
   schema = {
     _model: true,
+    EquipmentItem: {},
     Zone: {
       converter: strConverter,
     },
     ZoneEventType: {},
     ItemLocation: {},
-    AssignTo: {},
-    IsUpgrade: {},
-    UpgradePrice: {
-      converter: ukov.converters.number(2),
-    },
     IsExistingWiring: {},
-    MainPanel: {},
   };
 
 
-  function EquipmentEditorViewModel(options) {
+  function ExistingEquipmentEditorViewModel(options) {
     var _this = this;
-    EquipmentEditorViewModel.super_.call(_this, options);
+    ExistingEquipmentEditorViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
       // 'customerId',
       'accountId',
@@ -54,15 +49,21 @@ define('src/account/security/equipment.editor.vm', [
     _this.searchKey = ukov.wrap('', searchKeySchema);
 
     _this.data = ukov.wrap(_this.item || {
+      EquipmentItem: null,
       Zone: '',
       ZoneEventType: null,
       ItemLocation: null,
-      AssignTo: null,
-      IsUpgrade: null,
-      UpgradePrice: '',
       IsExistingWiring: null,
-      MainPanel: null,
     }, schema);
+
+
+    _this.data.EquipmentItemCvm = new ComboViewModel({
+      selectedValue: _this.data.EquipmentItem,
+      fields: {
+        value: 'EquipmentItemID',
+        text: 'Descrption',
+      },
+    });
 
     _this.data.ZoneEventTypeCvm = new ComboViewModel({
       selectedValue: _this.data.ZoneEventType,
@@ -78,35 +79,11 @@ define('src/account/security/equipment.editor.vm', [
         text: 'AccountZoneType',
       },
     });
-    _this.data.AssignToCvm = new ComboViewModel({
-      selectedValue: _this.data.AssignTo,
-      nullable: true,
-      list: [ //
-        {
-          value: 1,
-          text: '1',
-        }, {
-          value: 2,
-          text: '2',
-        },
-      ],
-    });
-    _this.data.IsUpgradeCvm = new ComboViewModel({
-      selectedValue: _this.data.IsUpgrade,
-      nullable: true,
-      list: _this.isUpgradeOptions,
-    });
     _this.data.IsExistingWiringCvm = new ComboViewModel({
       selectedValue: _this.data.IsExistingWiring,
       nullable: true,
       list: _this.yesNoOptions,
     });
-    _this.data.MainPanelCvm = new ComboViewModel({
-      selectedValue: _this.data.MainPanel,
-      nullable: true,
-      list: _this.yesNoOptions,
-    });
-
     //
     // events
     //
@@ -117,49 +94,10 @@ define('src/account/security/equipment.editor.vm', [
       return !busy && !_this.cmdSave.busy();
     });
     _this.cmdSave = ko.command(function(cb) {
+      alert("@TODO");
       // closeLayer(result);
       cb();
     });
-    _this.cmdSearch = ko.command(function(cb) {
-      //   search(cb);
-    });
-
-    //@TODO: search for barcode/part#
-    //         "MsAccountSetupSrv/Equipments/" + equipment1 + "/ByPartNumber?id=" + accountValue.AccountID + "&tId=SOSA001",
-
-    //trying to implement search function - i am not sure if this is the right place for 
-    //search function reagan 05/22/2014
-    /* function search(cb){
-      var searchKey =_this.searchKey.getValue();
-      console.log(searchKey);
-      console.log(_this.data); 
-      //need to determine here if it is a search by part # / barcode
-      //test search by part # 
-      dataservice.msaccountsetupsrv.equipments.read({
-        id: searchKey,
-        link: 'ByPartNumber',
-        query: { 
-          //partNumber: searchKey, 
-          //id: _this.accountId, 
-          id: 10000,
-          tid:'SOSA001' 
-        }
-      }, null, utils.safeCallback(cb, function(err, resp) {
-         console.log(resp.Value);
-      }, function(err) {
-        notify.notify('error', err.Message);
-      }));
-     
-
-    }*/
-
-
-
-
-
-
-    //@TODO: get real values for AssignToCvm
-    //@TODO:
 
     function closeLayer(result) {
       if (_this.layer) {
@@ -167,31 +105,34 @@ define('src/account/security/equipment.editor.vm', [
       }
     }
   }
-  utils.inherits(EquipmentEditorViewModel, BaseViewModel);
-  EquipmentEditorViewModel.prototype.viewTmpl = 'tmpl-security-equipment_editor';
-  EquipmentEditorViewModel.prototype.width = 550;
-  EquipmentEditorViewModel.prototype.height = 'auto';
+  utils.inherits(ExistingEquipmentEditorViewModel, BaseViewModel);
+  ExistingEquipmentEditorViewModel.prototype.viewTmpl = 'tmpl-security-existing_equipment_editor';
+  ExistingEquipmentEditorViewModel.prototype.width = 290;
+  ExistingEquipmentEditorViewModel.prototype.height = 'auto';
 
-  // ?????????
-  EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
-    {
-      value: null,
-      text: 'null',
-    }, {
-      value: true,
-      text: 'Tech',
-    }, {
-      value: false,
-      text: 'Rep',
-    },
-  ];
 
-  EquipmentEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
+  ExistingEquipmentEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
 
+    load_equipmentItem(_this.data.EquipmentItemCvm, _this.monitoringStationOS, join.add());
     load_zoneEventTypes(_this.data.ZoneEventTypeCvm, _this.monitoringStationOS, join.add());
     load_accountZoneTypes(_this.data.ItemLocationCvm, _this.monitoringStationOS, join.add());
   };
+
+  function load_equipmentItem(cvm, monitoringStationOS, cb) {
+    /*dataservice.msaccountsetupsrv.monitoringStationOS.read({
+      id: id,
+      link: link,
+      query: query,
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      cvm.setList(resp.Value);
+      // cvm.selectItem(cvm.list()[0]); // select first
+    }, utils.no_op));*/
+
+    //????  where to call equipment item
+
+    cb();
+  }
 
   function load_zoneEventTypes(cvm, monitoringStationOS, cb) {
     readMonitoringStationOS(cvm, monitoringStationOS, 'zoneEventTypes', {
@@ -214,5 +155,5 @@ define('src/account/security/equipment.editor.vm', [
     }, utils.no_op));
   }
 
-  return EquipmentEditorViewModel;
+  return ExistingEquipmentEditorViewModel;
 });

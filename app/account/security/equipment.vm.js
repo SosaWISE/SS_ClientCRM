@@ -1,6 +1,7 @@
 define('src/account/security/equipment.vm', [
   'ko',
   'src/account/security/equipment.editor.vm',
+  'src/account/security/existingequipment.editor.vm',
   'src/account/security/equipment.gvm',
   'src/core/layers.vm',
   'src/core/notify',
@@ -9,6 +10,7 @@ define('src/account/security/equipment.vm', [
 ], function(
   ko,
   EquipmentEditorViewModel,
+  ExistingEquipmentEditorViewModel,
   EquipmentGridViewModel,
   LayersViewModel,
   notify,
@@ -38,8 +40,7 @@ define('src/account/security/equipment.vm', [
       showEquipmentEditor(_this, false, cb);
     });
     _this.cmdAddExistingEquipment = ko.command(function(cb) {
-      alert('@TODO: add existing equipment');
-      cb();
+      showExistingEquipmentEditor(_this, cb);
     });
   }
   utils.inherits(EquipmentViewModel, ControllerViewModel);
@@ -62,6 +63,11 @@ define('src/account/security/equipment.vm', [
     _this.layersVm.show(createEquipmentEditor(_this, byPart), createEquipmentEditorCb(_this, cb));
   }
 
+  function showExistingEquipmentEditor(_this, cb) {
+    _this.layersVm.show(createExistingEquipmentEditor(_this), createExistingEquipmentEditorCb(_this, cb));
+  }
+
+
   function createEquipmentEditor(_this, byPart) {
     return new EquipmentEditorViewModel({
       byPart: byPart,
@@ -80,7 +86,38 @@ define('src/account/security/equipment.vm', [
     });
   }
 
+
   function createEquipmentEditorCb(_this, cb) {
+    return function(result) {
+      if (result && result.Items) {
+        _this.partsGrid.list(result.Items);
+      }
+      if (utils.isFunc(cb)) {
+        cb();
+      }
+    };
+  }
+
+
+  function createExistingEquipmentEditor(_this) {
+    return new ExistingEquipmentEditorViewModel({
+
+      accountId: _this.accountId,
+      //@TODO: get real monitoringStationOS
+      monitoringStationOS: 'MI_DICE',
+      //@TODO: get real salesman and technician
+      salesman: {
+        id: 'SALS001',
+        name: 'SALS001',
+      },
+      // technician: {
+      //   id: 'FRANK002',
+      //   name: 'Frank',
+      // },
+    });
+  }
+
+  function createExistingEquipmentEditorCb(_this, cb) {
     return function(result) {
       if (result && result.Items) {
         _this.partsGrid.list(result.Items);

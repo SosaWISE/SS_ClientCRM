@@ -1,0 +1,31 @@
+div(class="existing-equipment-editor")
+  div(data-bind="if:loading")
+    div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+ 
+  h2(class="title") Add Third Party Equipment
+
+  div(class="line-top")
+    ul(class="edit-form limit-width")      
+      li
+        span(class="label") Equipment Item
+        div(data-bind="cvm:data.EquipmentItemCvm")
+      li
+        span(class="label") Zone
+        input(type="text",placeholder="",data-bind="ukov:data.Zone,value:data.Zone,valueUpdate:'keyup'")
+      li
+        span(class="label") Zone Event Type
+        div(data-bind="cvm:data.ZoneEventTypeCvm")
+      li
+        span(class="label") Location
+        div(data-bind="cvm:data.ItemLocationCvm")      
+      li
+        span(class="label") Existing Wiring
+        div(data-bind="cvm:data.IsExistingWiringCvm")
+
+
+  div(class="line-top")
+    ul(class="actions")
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdCancel") Cancel
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
