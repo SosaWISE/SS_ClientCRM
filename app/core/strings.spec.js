@@ -9,8 +9,10 @@ define('src/core/strings.spec', [
     // beforeEach(function() {});
 
     it('should have an `format` function', function() {
-      expect(strings.format).toBeDefined();
       expect(typeof(strings.format)).toBe('function');
+    });
+    it('should have an `joinTrimmed` function', function() {
+      expect(typeof(strings.joinTrimmed)).toBe('function');
     });
 
     describe('format params', function() {
@@ -44,6 +46,19 @@ define('src/core/strings.spec', [
         it('should insert non-breaking spaces between each character', function() {
           expect(strings.format('{0:space}', 'A A')).toBe('A&nbsp; &nbsp;A');
         });
+      });
+    });
+
+    describe('joinTrimmed', function() {
+      it('should join on first param', function() {
+        expect(strings.joinTrimmed(':', 'a', 'b')).toBe('a:b');
+        expect(strings.joinTrimmed('', 'a', 'b')).toBe('ab');
+      });
+      it('should accept an array as the second param', function() {
+        expect(strings.joinTrimmed(':', ['a', 'b'], 'ignored')).toBe('a:b');
+      });
+      it('should exclude falsey values from join', function() {
+        expect(strings.joinTrimmed(' ', '  ', ' ', undefined, null, 'a', 'b  ', 'c', 'd')).toBe('a b c d');
       });
     });
   });

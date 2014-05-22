@@ -1,4 +1,5 @@
 define('src/slick/slickgrid.vm', [
+  'moment',
   'slick',
   'jquery',
   'ko',
@@ -7,6 +8,7 @@ define('src/slick/slickgrid.vm', [
   'src/core/utils',
   'src/core/base.vm',
 ], function(
+  moment,
   Slick,
   jquery,
   ko,
@@ -190,16 +192,22 @@ define('src/slick/slickgrid.vm', [
 
   SlickGridViewModel.formatters = {
     currency: function(row, cell, value /*, columnDef, dataContext*/ ) {
-      return strings.decorators.c(value);
+      return strings.formatters.currency(value);
     },
     likecurrency: function(row, cell, value /*, columnDef, dataContext*/ ) {
-      return strings.decorators.c(value).replace('$', '');
+      return strings.formatters.likecurrency(value);
     },
     yesNoFormatter: function(row, cell, value) {
       return value ? 'yes' : 'no';
     },
     xFormatter: function(row, cell, value) {
       return value ? 'X' : '';
+    },
+    date: function(row, cell, value) {
+      return strings.formatters.date(value);
+    },
+    datetime: function(row, cell, value) {
+      return strings.formatters.datetime(value);
     },
   };
 

@@ -16,7 +16,7 @@ define('src/core/ko.bindingHandlers.formatters', [
   function makeFormattedCurrencyValueAccessor(valueAccessor, html) {
     return function() {
       var value = ko.unwrap(valueAccessor());
-      value = strings.decorators.c(value);
+      value = strings.formatters.currency(value);
       if (html) {
         value = value.replace(/\$/, '<b>$</b>');
       }
@@ -49,7 +49,7 @@ define('src/core/ko.bindingHandlers.formatters', [
   function makeFormattedLikeCurrencyValueAccessor(valueAccessor) {
     return function() {
       var value = ko.unwrap(valueAccessor());
-      value = strings.decorators.c(value).replace(/\$/, '');
+      value = strings.formatters.likecurrency(value);
       return value;
     };
   }
@@ -84,8 +84,7 @@ define('src/core/ko.bindingHandlers.formatters', [
     return function() {
       var value = ko.unwrap(valueAccessor());
       if (value instanceof Date) {
-        // dates should be in UTC
-        value = moment.utc(value).format('MM/DD/YYYY');
+        value = strings.formatters.date(value);
       }
       return value;
     };
@@ -121,8 +120,7 @@ define('src/core/ko.bindingHandlers.formatters', [
     return function() {
       var value = ko.unwrap(valueAccessor());
       if (value instanceof Date) {
-        // datetime should be Local
-        value = moment(value).format('MM/DD/YYYY hh:mm:ss.SSS A');
+        value = strings.formatters.datetime(value);
       }
       return value;
     };

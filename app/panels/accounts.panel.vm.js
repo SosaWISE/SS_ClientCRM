@@ -1,10 +1,12 @@
 define('src/panels/accounts.panel.vm', [
   'src/core/helpers',
+  'src/core/strings',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
   helpers,
+  strings,
   notify,
   utils,
   ControllerViewModel
@@ -52,12 +54,8 @@ define('src/panels/accounts.panel.vm', [
     };
     _this.clickNew = function() {
       newCount--; // negative number are unsaved leads
-      var vm = new deps.ChecklistViewModel({
-        routeName: 'leads',
-        pcontroller: _this,
-        id: newCount,
-        title: 'Qualify' + newCount, // the negative number adds a dash which seems to work
-      });
+      // the negative number adds a dash before Qualify which seems to work
+      var vm = createChecklistVM(_this, newCount, 'Qualify' + newCount);
       _this.list.push(vm);
       _this.selectChild(vm);
     };
@@ -110,11 +108,15 @@ define('src/panels/accounts.panel.vm', [
       result = AccountsPanelViewModel.super_.prototype.findChild.call(_this, routeData);
       if (!result) {
         // get child id
-        id = routeData[_this.getChildRoutePart()];
+        id = routeData[_this.getChildRoutePart(routeData.route)];
         /* jshint eqeqeq:false */
-        if (typeof(id) !== 'undefined' && parseInt(id, 10) == id) {
-          // create child and add to list
-          result = createMasterAccountVM(_this, parseInt(id, 10), id + '');
+        if (typeof(id) !== 'undefined' && parseInt(id, 10) == id && id > 0) {
+          if (routeData.route === 'leads') {
+            // create child and add to list
+            result = createChecklistVM(_this, parseInt(id, 10), strings.format('{0}(Lead)', id));
+          } else {
+            result = createMasterAccountVM(_this, parseInt(id, 10), id + '');
+          }
           _this.list.push(result);
         }
       }
@@ -129,6 +131,15 @@ define('src/panels/accounts.panel.vm', [
       id: id,
       title: name,
       name: name,
+    });
+  }
+
+  function createChecklistVM(pcontroller, id, name) {
+    return new deps.ChecklistViewModel({
+      routeName: 'leads',
+      pcontroller: pcontroller,
+      id: id,
+      title: name,
     });
   }
 

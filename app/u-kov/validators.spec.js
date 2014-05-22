@@ -1,4 +1,4 @@
-/*global describe,it,expect*/
+/*global describe,it,expect,beforeEach*/
 define('src/u-kov/validators.spec', [
   'src/u-kov/validators',
   'moment',
@@ -19,16 +19,29 @@ define('src/u-kov/validators.spec', [
     };
 
     describe('minAge', function() {
-      var tenAndOlder = validators.minAge('MM/DD/YYYY HH:mm', false, 10);
-
-      it('should return falsey value when valid', function() {
-        expect(tenAndOlder('1/11/2000 1:00')).toBeUndefined();
-        expect(tenAndOlder('6/15/2000 9:30')).toBeUndefined();
-        expect(tenAndOlder('6/15/2000 9:31')).toBeUndefined();
+      var tenAndOlder;
+      beforeEach(function() {
+        tenAndOlder = validators.minAge(false, 10);
       });
-      it('should return truthy value when invalid', function() {
-        expect(tenAndOlder('1/11/2001 1:00')).toBeDefined();
-        expect(tenAndOlder('6/16/2000 1:00')).toBeDefined();
+
+      describe('when valid', function() {
+        it('should return falsey value', function() {
+          expect(tenAndOlder(moment('1/11/2000 1:00').toDate())).toBeFalsy();
+          expect(tenAndOlder(moment('6/15/2000 9:29').toDate())).toBeFalsy();
+          expect(tenAndOlder(moment('6/15/2000 9:30').toDate())).toBeFalsy();
+          expect(tenAndOlder(moment('6/15/2000 9:31').toDate())).toBeFalsy();
+        });
+      });
+      describe('when invalid', function() {
+        it('should return truthy value', function() {
+          expect(tenAndOlder(moment('1/11/2001 1:00').toDate())).toBeTruthy();
+          expect(tenAndOlder(moment('6/16/2000 1:00').toDate())).toBeTruthy();
+        });
+      });
+      describe('when invalid input', function() {
+        it('should return an error', function() {
+          expect(tenAndOlder('1/11/2001 1:00') instanceof Error).toBe(true);
+        });
       });
     });
   });

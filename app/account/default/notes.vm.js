@@ -123,9 +123,7 @@ define('src/account/default/notes.vm', [
           field: 'CreatedOn',
           width: 20,
           cssClass: 'wrap-cell',
-          formatter: function(row, cell, value) {
-            return moment(value).format('MM/DD/YYYY hh:mm a');
-          }
+          formatter: SlickGridViewModel.formatters.datetime,
         }, {
           id: 'CreatedBy',
           name: 'User',

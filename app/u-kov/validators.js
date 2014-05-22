@@ -1,8 +1,10 @@
 define('src/u-kov/validators', [
   'src/core/strings',
+  'src/core/utils',
   'moment'
 ], function(
   strings,
+  utils,
   moment
 ) {
   "use strict";
@@ -167,23 +169,19 @@ define('src/u-kov/validators', [
       return moment.utc();
     }
   };
-  validators.minAge = function(format, isLocal, min, message) {
+  validators.minAge = function(isLocal, min, message) {
     message = message || minAgeMsg;
     return function(bday /*, model*/ ) {
       if (bday == null) {
         return;
       }
-
-      //parse bday
-      if (isLocal) {
-        bday = moment(bday, format);
-      } else {
-        bday = moment.utc(bday, format);
+      if (!utils.isDate(bday)) {
+        return new Error('invalid date');
       }
 
       // get `now`, move back N years, and the person's birthday is all day
       var cutOffDay = validators.now(isLocal).subtract('years', min).endOf('day');
-      if (bday.isAfter(cutOffDay)) {
+      if (cutOffDay.isBefore(bday)) {
         return strings.format(message, min);
       }
     };

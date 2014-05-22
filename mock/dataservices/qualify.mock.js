@@ -42,6 +42,7 @@ define('mock/dataservices/qualify.mock', [
         SeasonId: data.SeasonId,
         TeamLocationId: data.TeamLocationId,
         TimeZoneId: data.TimeZoneId || 8,
+        TimeZone: data.TimeZone || 'TimeZoneGoesHere',
 
         // IsActive: false,
         // ModifiedOn: '0001-01-01T00:00:00',
@@ -132,6 +133,40 @@ define('mock/dataservices/qualify.mock', [
         // IsDeleted: false,
         // CreatedBy: 'bbobbins',
         // CreatedOn: 'today',
+      }), setter, cb);
+    };
+
+    dataservice.qualify.qualifyCustomerInfos.read = function(params, setter, cb) {
+      send(0, mockery.fromTemplate({
+        LeadID: (params.link === 'lead') ? params.id : '@NUMBER(1,7)', // long
+        SeasonId: '@NUMBER(1,7)', // int
+        CustomerName: '@NAME', // string
+        CustomerEmail: '@EMAIL', // string
+        AddressID: '@NUMBER(1,7)', // long
+        StreetAddress: '@NUMBER(1000,2000) @LASTNAME Rd', // string
+        StreetAddress2: '#@NUMBER(10,100)', // string
+        City: '@LASTNAME()ton', // string
+        StateId: 'UT', // string
+        County: '@LASTNAME County', // string
+        TimeZoneId: '@NUMBER(1,9)', // int
+        TimeZoneName: 'TimeZoneName', // string
+        PostalCode: '@NUMBER(10000,99999)', // string
+        Phone: '@PHONE', // string
+        CreditReportID: '@NUMBER(1,7)', // long
+        CRStatus: 'CRStatus', // string
+        Score: '@NUMBER(500,850)', // int
+        BureauName: 'BureauName', // string
+        UserID: null, // int
+        CompanyID: 'CompanyID', // string
+        FirstName: 'FirstName', // string
+        MiddleName: 'MiddleName', // string
+        LastName: 'LastName', // string
+        PreferredName: 'PreferredName', // string
+        RepEmail: 'RepEmail', // string
+        PhoneCell: 'PhoneCell', // string
+        PhoneCellCarrierID: 'PhoneCellCarrierID', // short?
+        PhoneCellCarrier: 'PhoneCellCarrier', // string
+        SeasonName: 'SeasonName', // string
       }), setter, cb);
     };
   }

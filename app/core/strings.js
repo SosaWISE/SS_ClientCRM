@@ -1,14 +1,16 @@
 define('src/core/strings', [
+  'moment',
   'src/core/arrays',
   'src/core/utils',
 ], function(
+  moment,
   arrays,
   utils
 ) {
   "use strict";
 
   var strings = {},
-    formatRegex = /\{([0-9]+)(?::([0-9A-Z]+))?\}/gi, // {0} or {0:decoratorName}
+    formatRegex = /\{([0-9]+)(?::([0-9A-Z$]+))?\}/gi, // {0} or {0:decoratorName}
     usdFormatter;
 
   // e.g.: strings.format('{0} {1}', 'bob', 'bobbins') === 'bob bobbins'
@@ -46,8 +48,8 @@ define('src/core/strings', [
     });
   };
 
-  strings.decorators = {
-    c: function(val) {
+  strings.formatters = {
+    currency: function(val) {
       if (!usdFormatter) {
         if (window.Intl) {
           usdFormatter = new Intl.NumberFormat("en-US", {
@@ -66,11 +68,47 @@ define('src/core/strings', [
       }
       return usdFormatter.format(val);
     },
+    likecurrency: function(val) {
+      return strings.formatters.currency(val).replace('$', '');
+    },
+    date: function(dt, isLocal) {
+      // UTC by default ???
+      if (isLocal) {
+        dt = moment(dt);
+      } else {
+        dt = moment.utc(dt);
+      }
+      return dt.format('MM/DD/YYYY');
+    },
+    datetime: function(dt, isUtc) {
+      // Local by default ???
+      //@REVEIW: the web server should always return UTC dates, so i don't know about this default...
+      if (isUtc) {
+        dt = moment.utc(dt);
+      } else {
+        dt = moment(dt);
+      }
+      return dt.format('MM/DD/YYYY hh:mm a');
+    },
+  };
+  strings.decorators = {
+    // wrap formatters in case they are modified outside of this file
+    c: function(val) {
+      return strings.formatters.currency(val);
+    },
+    d: function(val) {
+      return strings.formatters.date(val);
+    },
+    dt: function(val) {
+      return strings.formatters.datetime(val);
+    },
     space: function(val) {
       val = val || '';
       return val.split('').join('&nbsp;');
     },
   };
+  // alias c with $
+  strings.decorators.$ = strings.decorators.c;
 
   strings.trim = function(text) {
     if (text) {
@@ -79,6 +117,21 @@ define('src/core/strings', [
       text = null;
     }
     return text;
+  };
+  strings.joinTrimmed = function(joinOn, args /*...*/ ) {
+    var list = [];
+    // args is an array or everything after joinOn becomes and array
+    if (!Array.isArray(args)) {
+      args = arrays.argsToArray(arguments, 1);
+    }
+    // only include truthy args
+    args.forEach(function(val) {
+      val = strings.trim(val);
+      if (val) {
+        list.push(val);
+      }
+    });
+    return list.join(joinOn);
   };
 
   // from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions

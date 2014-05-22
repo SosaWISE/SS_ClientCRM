@@ -38,9 +38,7 @@ define('src/account/security/clist.survey.gvm', [
           id: 'CreatedOn',
           name: 'Survey Date',
           field: 'CreatedOn',
-          formatter: function(row, cell, value) {
-            return moment.utc(value).format('MM/DD/YYYY hh:mm a');
-          },
+          formatter: SlickGridViewModel.formatters.datetime,
         }, {
           id: 'Caller',
           name: 'Caller',

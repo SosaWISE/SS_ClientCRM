@@ -33,6 +33,8 @@ define('src/account/security/checklist.vm', [
     var _this = this;
     ChecklistViewModel.super_.call(_this, options);
 
+    _this.title = ko.observable(_this.title);
+
     _this.checklist = _this.childs;
 
     _this.layersVm = new LayersViewModel({

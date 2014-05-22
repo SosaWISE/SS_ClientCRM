@@ -111,10 +111,21 @@ define('src/account/default/search.vm', [
         new RowEvent({
           eventName: 'onDblClick',
           fn: function(acct) {
-            _this.goTo({
-              route: 'accounts',
-              masterid: acct.CustomerMasterFileID,
-            });
+            //@HACK: there is an array of AccountTypes, but not an array of FkId. so we're going to assume that
+            //       if there is an AccountType of `LEAD` in the array then the FkId is a LeadID........
+            if (acct.AccountTypes.some(function(t) {
+              return t === 'LEAD';
+            })) {
+              _this.goTo({
+                route: 'leads',
+                id: acct.FkId,
+              });
+            } else {
+              _this.goTo({
+                route: 'accounts',
+                masterid: acct.CustomerMasterFileID,
+              });
+            }
           },
         }),
       ],

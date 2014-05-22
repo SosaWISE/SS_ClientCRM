@@ -1,6 +1,7 @@
 define('src/account/default/runcredit.vm', [
   'src/config',
   'src/core/combo.vm',
+  'src/core/strings',
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
@@ -11,6 +12,7 @@ define('src/account/default/runcredit.vm', [
 ], function(
   config,
   ComboViewModel,
+  strings,
   notify,
   utils,
   BaseViewModel,
@@ -69,6 +71,7 @@ define('src/account/default/runcredit.vm', [
     max50 = ukov.validators.maxLength(50),
     max256 = ukov.validators.maxLength(256),
     strConverter = ukov.converters.string(),
+    nullStrConverter = ukov.converters.nullString(),
     validationGroup;
 
   validationGroup = {
@@ -107,7 +110,7 @@ define('src/account/default/runcredit.vm', [
       ],
     },
     Salutation: {
-      converter: strConverter,
+      converter: nullStrConverter,
       validators: [max50],
     },
     FirstName: {
@@ -129,7 +132,7 @@ define('src/account/default/runcredit.vm', [
       ],
     },
     Suffix: {
-      converter: strConverter,
+      converter: nullStrConverter,
       validators: [max50],
     },
     SSN: {
@@ -139,15 +142,13 @@ define('src/account/default/runcredit.vm', [
     DOB: {
       converter: ukov.converters.date(),
       validators: [
-        ukov.validators.minAge('MM/DD/YYYY', false, 0, 'Can\'t run credit on the unborn'),
+        ukov.validators.minAge(false, 0, 'Can\'t run credit on the unborn'),
       ],
       validationGroup: validationGroup,
     },
     Email: {
       converter: strConverter,
-      validators: [
-        max256
-      ],
+      validators: [max256, ukov.validators.isEmail()],
     },
   };
 
@@ -204,7 +205,22 @@ define('src/account/default/runcredit.vm', [
     //
     _this.cmdAccept = ko.command(function(cb) {
       if (_this.layer) {
-        _this.layer.close(customerModel, _this.creditResult());
+        var customerResult = {
+            SSN: customerModel.SSN,
+            DOB: customerModel.DOB,
+            Email: customerModel.Email,
+            CustomerName: strings.joinTrimmed(' ', customerModel.Salutation, customerModel.FirstName, customerModel.MiddleName, customerModel.LastName, customerModel.Suffix),
+          },
+          tmpCreditResult;
+
+        //@HACK: to allow closing
+        tmpCreditResult = _this.creditResult();
+        _this.creditResult(null);
+
+        _this.layer.close(customerResult, tmpCreditResult);
+
+        // undo hack
+        _this.creditResult(tmpCreditResult);
       }
       cb();
     }, function(busy) {
@@ -240,6 +256,14 @@ define('src/account/default/runcredit.vm', [
   RunCreditViewModel.prototype.viewTmpl = 'tmpl-acct-default-runcredit';
   RunCreditViewModel.prototype.width = 550;
   RunCreditViewModel.prototype.height = 'auto';
+
+  RunCreditViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this;
+    if (_this.creditResult() && _this.creditResult().IsHit) {
+      return 'Close using OK button';
+    }
+    return null;
+  };
 
   RunCreditViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
     var _this = this;

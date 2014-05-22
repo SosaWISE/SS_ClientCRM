@@ -1,5 +1,5 @@
 div(class="info")
-  div(class="name",data-bind="text:[Salutation,FirstName,MiddleName,LastName,Suffix].join(' ')")
+  div(class="name",data-bind="text:CustomerName")
   div(class="ssn", data-bind="text:SSN")
-  div(class="dob", data-bind="text:DOB")
+  div(class="dob", data-bind="datetext:DOB")
   div(class="email", data-bind="text:Email")
