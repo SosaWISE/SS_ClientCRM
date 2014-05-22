@@ -120,36 +120,36 @@ define('src/account/security/equipment.editor.vm', [
       // closeLayer(result);
       cb();
     });
-    _this.cmdSearch = ko.command(function(cb) {
+    _this.cmdSearch = ko.command(function( /*cb*/ ) {
       //   search(cb);
     });
 
     //@TODO: search for barcode/part#
     //         "MsAccountSetupSrv/Equipments/" + equipment1 + "/ByPartNumber?id=" + accountValue.AccountID + "&tId=SOSA001",
 
-    //trying to implement search function - i am not sure if this is the right place for 
+    //trying to implement search function - i am not sure if this is the right place for
     //search function reagan 05/22/2014
     /* function search(cb){
       var searchKey =_this.searchKey.getValue();
       console.log(searchKey);
-      console.log(_this.data); 
+      console.log(_this.data);
       //need to determine here if it is a search by part # / barcode
-      //test search by part # 
+      //test search by part #
       dataservice.msaccountsetupsrv.equipments.read({
         id: searchKey,
         link: 'ByPartNumber',
-        query: { 
-          //partNumber: searchKey, 
-          //id: _this.accountId, 
+        query: {
+          //partNumber: searchKey,
+          //id: _this.accountId,
           id: 10000,
-          tid:'SOSA001' 
+          tid:'SOSA001'
         }
       }, null, utils.safeCallback(cb, function(err, resp) {
          console.log(resp.Value);
       }, function(err) {
         notify.notify('error', err.Message);
       }));
-     
+
 
     }*/
 

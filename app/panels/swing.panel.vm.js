@@ -159,10 +159,10 @@ define('src/panels/swing.panel.vm', [
       _this.swing(vm, cb);
     });
 
-    //Add to DNC list    
-    _this.cmdAddDnc = ko.command(function(cb, vm){
-        alert("@TODO Add DNC list");
-        cb();
+    //Add to DNC list
+    _this.cmdAddDnc = ko.command(function(cb /*, vm*/ ) {
+      alert("@TODO Add DNC list");
+      cb();
     });
 
 
@@ -306,7 +306,7 @@ define('src/panels/swing.panel.vm', [
 
           //disable swing button and display label New Accounted created
           vm.isVisible(true);
-          vm.data.InterimAccountId(resp.Value.AccountID_New);          
+          vm.data.InterimAccountId(resp.Value.AccountID_New);
 
           notify.notify('ok', 'Swing Successful!');
         } else {
