@@ -297,6 +297,11 @@ define('src/panels/swing.panel.vm', [
         notify.notify('warn', err.Message, 10);
       } else if (resp.Value) {
         if (resp.Value.SwingStatus === "1") {
+
+          //disable swing button and display label New Accounted created
+          vm.isVisible(true);
+          vm.data.InterimAccountId(resp.Value.AccountID_New);          
+
           notify.notify('ok', 'Swing Successful!');
         } else {
 
@@ -539,7 +544,7 @@ define('src/panels/swing.panel.vm', [
           console.log("Match found.");
 
           vm.isVisible(true);
-          vm.data.InterimAccountId(resp.Value.AccountID_Old);
+          vm.data.InterimAccountId(resp.Value.AccountID_New);
         }
       }, utils.no_op));
 
