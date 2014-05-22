@@ -159,6 +159,12 @@ define('src/panels/swing.panel.vm', [
       _this.swing(vm, cb);
     });
 
+    //Add to DNC list    
+    _this.cmdAddDnc = ko.command(function(cb, vm){
+        alert("@TODO Add DNC list");
+        cb();
+    });
+
 
   }
 

@@ -71,7 +71,10 @@ div(class="swing_wrapper")
             li  
               input(type="text" class="boxes" id="txtPostalCode" placeholder="[Postal Code]", data-bind="ukov:data.Address.PostalCode, value:data.Address.PostalCode, valueUpdate:'keyup'")
             li  
-              input(type="text" class="boxes" placeholder="[State]", data-bind="ukov:data.Address.State, value:data.Address.State, valueUpdate:'keyup'")      
+              input(type="text" class="boxes" placeholder="[State]", data-bind="ukov:data.Address.State, value:data.Address.State, valueUpdate:'keyup'")
+    li
+      div(class="outer_panes_left")              
+        button(class="btn-swing" data-bind="cmd: cmdAddDnc") Add to DNC List
            
                
 
