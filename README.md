@@ -40,7 +40,7 @@ Committing code
 ---------------
 
 Before checking in any code, this command should not have any errors
-(If you're not on Windows you can use the `setup-hooks.sh` script to set up a pre-commit hook to automatically run this command for you when every you're committing):
+(If you're not on Windows you can use the `setup-hooks.sh` script to set up a pre-commit hook to automatically run this command for you when ever you're committing):
 
     grunt precommit
 

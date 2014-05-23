@@ -12,7 +12,7 @@ div(class="survey")
       li
         a(data-bind="click:clickTakeSurvey") Test Survey
       li(style="padding-left:5px;")
-        div(style="min-width:50px;",data-bind="cvm:takeVm.localeCvm")
+        div(style="min-width:70px;white-space:nowrap;",data-bind="cvm:takeVm.localeCvm")
 
   div(class="content")
     div(data-bind="foreach:questions")
@@ -26,3 +26,6 @@ div(class="survey")
             span(data-bind="text:nextName")
 
   div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
+
+div(data-bind="if:loading")
+  div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
