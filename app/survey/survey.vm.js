@@ -88,9 +88,8 @@ define('src/survey/survey.vm', [
     };
     _this.clickTakeSurvey = _this.takeVm.clickTake;
 
-    _this.clickAddQuestion = function(parentVM) {
-      var parent = (parentVM === _this.topVm) ? null : parentVM;
-      newQuestion(_this, parent);
+    _this.clickAddQuestion = function(parentVm) {
+      newQuestion(_this, parentVm);
     };
   }
   utils.inherits(SurveyViewModel, QuestionsParentViewModel);
@@ -127,18 +126,11 @@ define('src/survey/survey.vm', [
       link: 'questions',
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Value) {
-        // var treeTrunk =
         treehelper.makeTree(resp.Value, 'QuestionID', 'ParentId', function(model, parentVM /*, parent*/ ) {
-          // var vm = QuestionsParentViewModel.createQuestion(surveyVM, model, parentVM);
-          // vm.load(routeData, extraData, join.add());
           parentVM = parentVM || surveyVM;
-
           var vm = parentVM.addQuestion(surveyVM, model, parentVM, join.add());
           return vm;
         });
-        // surveyVM.setQuestions(treeTrunk);
-      } else {
-        // surveyVM.setQuestions([]);
       }
     }, utils.no_op));
   }
@@ -174,24 +166,6 @@ define('src/survey/survey.vm', [
     });
   };
 
-  // SurveyViewModel.prototype.computeNextName = function() {
-  //   return this.nextGroupOrder() + '.';
-  // };
-  //
-  // SurveyViewModel.prototype.nextGroupOrder = function() {
-  //   return this.questions().length + 1;
-  // };
-  //
-  // function createQuestion(surveyVM, model, parent) {
-  //   return new QuestionViewModel({
-  //     surveyVM: surveyVM,
-  //     possibleAnswersVM: surveyVM.possibleAnswersVM,
-  //     questionMeaningVM: surveyVM.surveyTypeVM.getQuestionMeaning(model.QuestionMeaningId),
-  //     model: model,
-  //     parent: parent,
-  //   });
-  // }
-
   function createSurveyTranslation(surveyVM, model) {
     return new SurveyTranslationViewModel({
       surveyVM: surveyVM,
@@ -200,15 +174,15 @@ define('src/survey/survey.vm', [
   }
 
   function newQuestion(surveyVM, parentVm) {
-    var vm;
-    if (parentVm && parentVm.noAddSubQuestion()) {
+    var vm, parent = (parentVm === surveyVM) ? null : parentVm;
+    if (parent && parent.noAddSubQuestion()) {
       return;
     }
     vm = new NewQuestionViewModel({
       surveyVM: surveyVM,
       surveyTypeVM: surveyVM.surveyTypeVM,
       tokensVM: surveyVM.tokensVM,
-      parent: parentVm,
+      parent: parent,
       nextName: parentVm.nextName(),
       groupOrder: parentVm.nextGroupOrder(),
     });
