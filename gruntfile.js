@@ -21,6 +21,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-jsbeautifier');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-exec');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -230,6 +231,10 @@ module.exports = function(grunt) {
         jshintrc: '.jshintrc',
       },
     },
+
+    exec: {
+      npm_install: 'npm install',
+    },
   });
 
   grunt.registerTask('init', [
@@ -253,6 +258,7 @@ module.exports = function(grunt) {
 
 
   grunt.registerTask('precommit', [
+    'exec:npm_install', // before running make sure node_modules match package.json
     'jsbeautifier:test', // faster than jshint
     'jshint',
   ]);
