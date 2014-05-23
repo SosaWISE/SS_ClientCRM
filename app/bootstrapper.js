@@ -59,8 +59,12 @@ define('src/bootstrapper', [
   ControllerViewModel.titlePrefix = config.titlePrefix;
   ControllerViewModel.titlePostfix = config.titlePostfix;
   notify.init(LayersViewModel, DialogViewModel, resources);
-  // overwrite jquery's parseJSON
-  jquery.parseJSON = jsonhelpers.parse;
+  // overwrite jquery's JSON parsing
+  jquery.ajaxSetup({
+    converters: {
+      'text json': jsonhelpers.parse,
+    },
+  });
   // set timeouts
   DataserviceBase.prototype.timeout = config.apiTimeout;
   joiner.Joiner.prototype.timeout = config.joinerTimeout;

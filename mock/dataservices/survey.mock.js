@@ -483,11 +483,13 @@ define('mock/dataservices/survey.mock', [
             PremisePhone: '(801) 123-1234',
           },
           ContractTerms: {
-            ContractLength: '60 months',
+            ContractLength: 60,
             BillingMethod: 2,
             MonthlyMonitoringFee: 49.99,
             TotalActivationFee: 199.99,
+            ActivationFeePaymentMethod: 1,
             BillingDate: '15th',
+            HasSalesUpgrades: true,
           },
           SalesRep: {
             FirstName: 'RepName',
