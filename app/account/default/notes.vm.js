@@ -128,7 +128,7 @@ define('src/account/default/notes.vm', [
           id: 'CreatedBy',
           name: 'User',
           field: 'CreatedBy',
-          width: 30,
+          width: 35,
         }, {
           //   id: 'NoteCategory1Id',
           //   name: 'Primary Reason',
@@ -148,7 +148,7 @@ define('src/account/default/notes.vm', [
           formatter: function(row, cell, value, columnDef, dataCtx) {
             //@NOTE: for this to work we need a list of all category1 and category2.
             //       currently we only have filtered lists
-            return dataCtx.Category1 + ': ' + dataCtx.Category2;
+            return dataCtx.Category1 + ':<br />' + dataCtx.Category2;
           },
         }, {
           id: 'Note',
