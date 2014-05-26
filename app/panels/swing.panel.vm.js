@@ -306,7 +306,7 @@ define('src/panels/swing.panel.vm', [
 
           //disable swing button and display label New Accounted created
           vm.isVisible(true);
-          vm.data.InterimAccountId(resp.Value.AccountID_New);
+          vm.data.InterimAccountId(resp.Value.MsAccountID);
 
           notify.notify('ok', 'Swing Successful!');
         } else {
@@ -550,7 +550,7 @@ define('src/panels/swing.panel.vm', [
           console.log("Match found.");
 
           vm.isVisible(true);
-          vm.data.InterimAccountId(resp.Value.AccountID_New);
+          vm.data.InterimAccountId(resp.Value.MsAccountID);
         }
       }, utils.no_op));
 
