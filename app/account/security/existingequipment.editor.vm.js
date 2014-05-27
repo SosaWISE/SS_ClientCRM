@@ -57,11 +57,11 @@ define('src/account/security/existingequipment.editor.vm', [
     }, schema);
 
 
-    _this.data.EquipmentItemCvm = new ComboViewModel({
+    _this.data.EquipmentCvm = new ComboViewModel({
       selectedValue: _this.data.EquipmentItem,
       fields: {
-        value: 'EquipmentItemID',
-        text: 'Descrption',
+        value: 'EquipmentID',
+        text: 'ShortName',
       },
     });
 
@@ -114,24 +114,18 @@ define('src/account/security/existingequipment.editor.vm', [
   ExistingEquipmentEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
 
-    load_equipmentItem(_this.data.EquipmentItemCvm, _this.monitoringStationOS, join.add());
+    load_equipment(_this.data.EquipmentCvm, _this.monitoringStationOS, join.add());
     load_zoneEventTypes(_this.data.ZoneEventTypeCvm, _this.monitoringStationOS, join.add());
     load_accountZoneTypes(_this.data.ItemLocationCvm, _this.monitoringStationOS, join.add());
   };
 
-  function load_equipmentItem(cvm, monitoringStationOS, cb) {
-    /*dataservice.msaccountsetupsrv.monitoringStationOS.read({
-      id: id,
-      link: link,
-      query: query,
+  function load_equipment(cvm, monitoringStationOS, cb) {
+    dataservice.msaccountsetupsrv.monitoringStationOS.read({
+      link: 'EquipmentList'
     }, null, utils.safeCallback(cb, function(err, resp) {
       cvm.setList(resp.Value);
-      // cvm.selectItem(cvm.list()[0]); // select first
-    }, utils.no_op));*/
-
-    //????  where to call equipment item
-
-    cb();
+    }, utils.no_op));
+  
   }
 
   function load_zoneEventTypes(cvm, monitoringStationOS, cb) {
