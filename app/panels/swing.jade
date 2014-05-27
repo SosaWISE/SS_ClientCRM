@@ -80,8 +80,8 @@ div(class="swing_wrapper")
 
   ul(class="content" id="right_content")
     li(style="text-align:right;")
-      label(class='created_account_wrapper' data-bind="visible: isVisible") New Account Created:
-        span(class='created_account' data-bind="text: data.InterimAccountId")
+      label(class='created_account_wrapper' data-bind="visible: isVisible") New Customer # Created: &nbsp;&nbsp;
+        span(class='created_account' data-bind="text: data.CustomerMasterFileID")
       button(class="btn-swing" data-bind="cmd:cmdSwing, enable: !isVisible(), visible:!isVisible()") Swing System
     li
       div(class="outer_panes_right")

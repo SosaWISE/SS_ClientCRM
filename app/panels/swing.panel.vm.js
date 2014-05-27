@@ -79,7 +79,8 @@ define('src/panels/swing.panel.vm', [
     Address: addressSchema,
     SystemDetail: systemDetailSchema,
     SwingEquipment: {},
-    InterimAccountId: {}
+    InterimAccountId: {},
+    CustomerMasterFileID: {}
   };
 
 
@@ -551,6 +552,7 @@ define('src/panels/swing.panel.vm', [
 
           vm.isVisible(true);
           vm.data.InterimAccountId(resp.Value.MsAccountID);
+          vm.data.CustomerMasterFileID(resp.Value.CustomerMasterFileID);
         }
       }, utils.no_op));
 
