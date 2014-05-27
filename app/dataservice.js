@@ -1,4 +1,6 @@
 define('src/dataservice', [
+  'src/core/dataservice.base',
+  'src/config',
   'src/dataservices/user',
   'src/dataservices/session',
   'src/dataservices/qualify',
@@ -11,6 +13,8 @@ define('src/dataservice', [
   'src/dataservices/invoicesrv',
   'src/dataservices/swingaccountsrv'
 ], function(
+  DataserviceBase,
+  config,
   UserDataservice,
   SessionDataservice,
   QualifyDataservice,
@@ -25,6 +29,7 @@ define('src/dataservice', [
 ) {
   "use strict";
   return {
+    base: new DataserviceBase(null, config.serviceDomain),
     user: new UserDataservice(),
     session: new SessionDataservice(),
     qualify: new QualifyDataservice(),

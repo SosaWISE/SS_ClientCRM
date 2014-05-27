@@ -1,4 +1,4 @@
-window.onerror = function(message, url, line, column, err) {
+function formatError(message, url, line, column, err) {
   "use strict";
   var text = [];
   text.push('Line ' + line + ', Column ' + column);
@@ -8,7 +8,11 @@ window.onerror = function(message, url, line, column, err) {
   text.push('');
   // err = err;
   text.push('StackTrace: ' + err.stack);
-  alert(text.join('\n'));
+  return text.join('\n');
+}
+window.onerror = function(message, url, line, column, err) {
+  "use strict";
+  alert(formatError(message, url, line, column, err));
 };
 
 define('src/bootstrapper', [
@@ -32,6 +36,7 @@ define('src/bootstrapper', [
   'src/core/joiner',
   'src/dataservice',
   'src/ping',
+  'src/apilogger',
   'src/app'
 ], function(
   jquery, ko, // main libs
@@ -49,16 +54,31 @@ define('src/bootstrapper', [
   joiner,
   dataservice,
   ping,
+  apilogger,
   app
 ) {
   "use strict";
-  console.log("Bootstrapping version: ", config.version);
+  console.log("Version: ", config.version);
   console.log("Application Token: " + config.token);
   console.log("CORS Domain: " + config.serviceDomain);
 
   ControllerViewModel.titlePrefix = config.titlePrefix;
   ControllerViewModel.titlePostfix = config.titlePostfix;
   notify.init(LayersViewModel, DialogViewModel, resources);
+  // overwrite onerror function set above
+  window.onerror = function(message, url, line, column, err) {
+    var msg = formatError(message, url, line, column, err);
+    // save error
+    apilogger.error({
+      Header: 'Unhandled error',
+      Message: msg,
+      Version: config.version,
+      // ComputerName: '',
+      SourceView: url,
+    });
+    // show error
+    notify.notify('error', msg);
+  };
   // overwrite jquery's JSON parsing
   jquery.ajaxSetup({
     converters: {

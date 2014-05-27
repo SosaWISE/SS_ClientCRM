@@ -1,14 +1,13 @@
 define('src/ping', [
-  'src/core/dataservice.base',
+  'src/dataservice',
   'src/config'
 ], function(
-  DataserviceBase,
+  dataservice,
   config
 ) {
   "use strict";
 
-  var dataservice = new DataserviceBase(null, config.serviceDomain),
-    run, timeoutId;
+  var run, timeoutId;
 
   function ping(url) {
     // we've stopped
@@ -21,7 +20,7 @@ define('src/ping', [
     }
 
     timeoutId = setTimeout(function() {
-      dataservice.read({
+      dataservice.base.read({
         link: url,
       }, null, function(err) {
         if (err) {

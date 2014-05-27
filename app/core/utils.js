@@ -6,7 +6,7 @@ define('src/core/utils', [
   "use strict";
 
   var utils = {
-    no_op: function() {},
+    noop: function() {},
 
     inherits: function(ctor, superCtor) {
       ctor.super_ = superCtor;
@@ -22,7 +22,7 @@ define('src/core/utils', [
 
     safeCallback: function(cb, successFn, errorFn) {
       if (!utils.isFunc(cb)) {
-        cb = utils.no_op;
+        cb = utils.noop;
       }
       if (!utils.isFunc(successFn)) {
         throw new Error('successFn must be a function');
@@ -72,6 +72,7 @@ define('src/core/utils', [
     },
 
   };
+  utils.no_op = utils.noop; // only for backwards compatibiltiy
 
   return utils;
 });
