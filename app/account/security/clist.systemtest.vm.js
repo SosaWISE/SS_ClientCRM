@@ -37,13 +37,8 @@ define('src/account/security/clist.systemtest.vm', [
   CListSystemTestViewModel.prototype.viewTmpl = 'tmpl-security-clist_systemtest';
 
   CListSystemTestViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    // var _this = this,
-    var cb = join.add();
-    setTimeout(function() {
-      //@TODO: load real data
-
-      cb();
-    }, 2000);
+    var _this = this;
+    _this.signalHistoryVm.load(routeData, extraData, join);
   };
 
   return CListSystemTestViewModel;

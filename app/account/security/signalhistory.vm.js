@@ -1,4 +1,5 @@
 define('src/account/security/signalhistory.vm', [
+  'src/dataservice',
   'moment',
   'ko',
   'src/slick/slickgrid.vm',
@@ -7,6 +8,7 @@ define('src/account/security/signalhistory.vm', [
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  dataservice,
   moment,
   ko,
   SlickGridViewModel,
@@ -110,15 +112,13 @@ define('src/account/security/signalhistory.vm', [
     // events
     //
     _this.cmdSixMonthsHistory = ko.command(function(cb) {
-      //LoadSignalHistory(DateTime.Now.Subtract(new TimeSpan(183, 0, 0, 0)));
-      load_signalHistory(_this.historyGvm, moment().subtract('months', 6), cb);
+      load_signalHistory(_this.accountId, 180, _this.historyGvm, cb);
       cb();
     }, function(busy) {
       return !busy && !_this.cmdFullHistory.busy();
     });
     _this.cmdFullHistory = ko.command(function(cb) {
-      //LoadSignalHistory(new DateTime(2007, 1, 1));
-      load_signalHistory(_this.historyGvm, null, cb);
+      load_signalHistory(_this.accountId, -1, _this.historyGvm, cb);
       cb();
     }, function(busy) {
       return !busy && !_this.cmdSixMonthsHistory.busy();
@@ -135,18 +135,26 @@ define('src/account/security/signalhistory.vm', [
   SignalHistoryViewModel.prototype.viewTmpl = 'tmpl-security-signalhistory';
 
   SignalHistoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    // var _this = this;
+    var _this = this;
+    _this.accountId = routeData.id;
+
     join = join;
     //@TODO: load real data
   };
 
-  function load_signalHistory(gvm, from, cb) {
-    //@TODO: load history
+  function load_signalHistory(id, days, gvm, cb) {
     gvm.list([]);
-    setTimeout(function() {
-      gvm.list([]);
-      cb();
-    }, 1000);
+    dataservice.monitoringstationsrv.msAccounts.read({
+      id: id,
+      link: 'signalhistory',
+      query: {
+        days: days,
+      }
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      gvm.list(resp.Value);
+    }, function(err) {
+      notify.notify('error', err.Message);
+    }));
   }
 
 
