@@ -125,7 +125,7 @@ define('src/account/security/existingequipment.editor.vm', [
     }, null, utils.safeCallback(cb, function(err, resp) {
       cvm.setList(resp.Value);
     }, utils.no_op));
-  
+
   }
 
   function load_zoneEventTypes(cvm, monitoringStationOS, cb) {
