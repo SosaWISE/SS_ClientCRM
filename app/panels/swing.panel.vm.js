@@ -30,8 +30,9 @@ define('src/panels/swing.panel.vm', [
   ukov
 ) {
   "use strict";
-  var schema, customerSchema, addressSchema, systemDetailSchema; //,
+  var schema, customerSchema, addressSchema, systemDetailSchema;
   // nullStrConverter = ukov.converters.nullString();
+  
 
   //we need nested customer objects inorder easier display of the 2 customer information
   customerSchema = {
@@ -80,7 +81,10 @@ define('src/panels/swing.panel.vm', [
     SystemDetail: systemDetailSchema,
     SwingEquipment: {},
     InterimAccountId: {},
-    CustomerMasterFileID: {}
+    CustomerMasterFileID: {},
+    PhoneNumber: {
+      converter: ukov.converters.phone()
+    },    
   };
 
 
@@ -161,9 +165,8 @@ define('src/panels/swing.panel.vm', [
     });
 
     //Add to DNC list
-    _this.cmdAddDnc = ko.command(function(cb /*, vm*/ ) {
-      alert("@TODO Add DNC list");
-      cb();
+    _this.cmdAddDnc = ko.command(function(cb, vm) {      
+      _this.addDnc(vm, cb);            
     });
 
 
@@ -559,6 +562,49 @@ define('src/panels/swing.panel.vm', [
 
 
   } //end of load_msaccount_details function
+
+  //Add to DNC list
+  SwingViewModel.prototype.addDnc = function(vm, cb) {
+
+    //Retrieve data from UI
+    var dataUI = vm.data.getValue(),
+    
+    cPhoneNumber = dataUI.PhoneNumber;    
+    
+    //Remove parenthesis and dash. Copied the parsing from here: http://stackoverflow.com/questions/5407223/javascript-regex-parsing    
+    cPhoneNumber = cPhoneNumber.replace(/\)\s*|\(\s*|-/g, '');
+
+    console.log("PhoneNumber:"+cPhoneNumber);     
+
+    //Call api to add Phone number to DNC list
+    dataservice.swingaccountsrv.CustomerSwingAddDnc.read({
+        id: cPhoneNumber
+      },
+      null, utils.safeCallback(cb, function(err, resp) {
+
+        if (err) {
+          notify.notify('warn', err.Message, 10);
+          return;
+        }
+        if (resp.Value) {
+          
+          //Debugging display of response value
+          console.log(JSON.stringify(resp.Value));
+
+          if(resp.Value.Dnc_Status=="Success"){
+            notify.notify('ok','Success: Added to DNC list.' );
+            vm.data.PhoneNumber.setValue(null);
+          }else{
+            notify.notify('error',resp.Value.Dnc_Status);
+          }
+
+
+        }
+      }, utils.no_op));    
+
+      cb();
+
+  };// adding of DNC list
 
   return SwingViewModel;
 });

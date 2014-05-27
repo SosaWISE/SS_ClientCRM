@@ -18,7 +18,8 @@ define('src/dataservices/swingaccountsrv', [
       'CustomerSwingEquipmentInfo',
       'CustomerSwingSystemDetails',
       'CustomerSwungInfo',
-      'CustomerSwingInterim'
+      'CustomerSwingInterim',
+      'CustomerSwingAddDnc'
       /* 'msAccount',
       'msAccountCustomer',
       'msAccountPremiseAddress',
