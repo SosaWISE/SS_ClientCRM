@@ -604,7 +604,7 @@ define('src/panels/swing.panel.vm', [
             //Debugging display of response value
             console.log(JSON.stringify(resp.Value));
 
-            if(resp.Value.Dnc_Status=="Success"){
+            if(resp.Value.Dnc_Status==="Success"){
               notify.notify('ok','Success: Added to DNC list.' );
               vm.data.PhoneNumber.setValue(null);
             }else{
