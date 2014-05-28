@@ -565,46 +565,61 @@ define('src/panels/swing.panel.vm', [
 
   //Add to DNC list
   SwingViewModel.prototype.addDnc = function(vm, cb) {
-
+    
     //Retrieve data from UI
-    var dataUI = vm.data.getValue(),
+    var dataUI = vm.data.getValue(),    
+    cPhoneNumber = dataUI.PhoneNumber; 
+  
+    /** Add additional validation **/
 
-      cPhoneNumber = dataUI.PhoneNumber;
+    //Check if Phone Number is null
+    if(cPhoneNumber==null){
+      notify.notify('error','Phone Number can\'t be empty.');
+      cb();
+    //If Phone number is invalid, it will return an object. Not sure how to return specifically the error  
+    }else if(typeof(cPhoneNumber) === 'object'){
+      notify.notify('error',cPhoneNumber);
+      cb();
+    }else{
 
-    //Remove parenthesis and dash. Copied the parsing from here: http://stackoverflow.com/questions/5407223/javascript-regex-parsing
-    cPhoneNumber = cPhoneNumber.replace(/\)\s*|\(\s*|-/g, '');
+      //If Phone number returns a string, it is valid
 
-    console.log("PhoneNumber:" + cPhoneNumber);
+      //Remove parenthesis and dash. Copied the parsing from here: http://stackoverflow.com/questions/5407223/javascript-regex-parsing    
+      cPhoneNumber = cPhoneNumber.replace(/\)\s*|\(\s*|-/g, '');
+    
+      console.log("PhoneNumber:"+cPhoneNumber);     
 
-    //Call api to add Phone number to DNC list
-    dataservice.swingaccountsrv.CustomerSwingAddDnc.read({
-        id: cPhoneNumber
-      },
-      null, utils.safeCallback(cb, function(err, resp) {
+      //Call api to add Phone number to DNC list
+      dataservice.swingaccountsrv.CustomerSwingAddDnc.read({
+          id: cPhoneNumber
+        },
+        null, utils.safeCallback(cb, function(err, resp) {
 
-        if (err) {
-          notify.notify('warn', err.Message, 10);
-          return;
-        }
-        if (resp.Value) {
-
-          //Debugging display of response value
-          console.log(JSON.stringify(resp.Value));
-
-          if (resp.Value.Dnc_Status === "Success") {
-            notify.notify('ok', 'Success: Added to DNC list.');
-            vm.data.PhoneNumber.setValue(null);
-          } else {
-            notify.notify('error', resp.Value.Dnc_Status);
+          if (err) {
+            notify.notify('warn', err.Message, 10);
+            return;
           }
+          if (resp.Value) {
+          
+            //Debugging display of response value
+            console.log(JSON.stringify(resp.Value));
+
+            if(resp.Value.Dnc_Status=="Success"){
+              notify.notify('ok','Success: Added to DNC list.' );
+              vm.data.PhoneNumber.setValue(null);
+            }else{
+              notify.notify('error',resp.Value.Dnc_Status);
+            }
 
 
-        }
-      }, utils.no_op));
+          }
+        }, utils.no_op));    
 
-    cb();
+        cb();
 
-  }; // adding of DNC list
+    } //end else  
 
+  };// adding of DNC list
+  
   return SwingViewModel;
 });
