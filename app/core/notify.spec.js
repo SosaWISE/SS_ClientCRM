@@ -50,7 +50,7 @@ define('src/core/notify.spec', [
     describe('add notification', function() {
       var item;
       beforeEach(function() {
-        n.notify('typeVal', 'messageVal');
+        n.notify('typeVal', 'title', 'messageVal');
         item = n.list()[0];
       });
 
@@ -61,12 +61,15 @@ define('src/core/notify.spec', [
       it('added item should have correct fields', function() {
         expect(item.minTimeout).toBe(5);
         expect(item.type).toBe('typeVal');
+        expect(item.title).toBe('title');
         expect(item.message).toBe('messageVal');
         expect(item.actions).toBeDefined();
         expect(ko.isObservable(item.seconds)).toBe(true);
       });
-      it('dismiss should remove it from the list', function() {
+      it('dismiss should remove it from the list after 1 second', function() {
+        jasmine.Clock.useMock();
         item.dismiss();
+        jasmine.Clock.tick(1000 * 1);
         expect(n.list().length).toBe(0);
       });
     });
@@ -76,7 +79,7 @@ define('src/core/notify.spec', [
       beforeEach(function() {
         jasmine.Clock.useMock();
 
-        n.notify('typeVal', 'messageVal', 10);
+        n.notify('typeVal', 'title', 'messageVal', 10);
         item = n.list()[0];
 
         jasmine.Clock.tick(1000 * 9);
@@ -112,7 +115,7 @@ define('src/core/notify.spec', [
       beforeEach(function() {
         actionObj = jasmine.createSpyObj('actionObj', ['view', 'retry']);
 
-        n.notify('typeVal', 'messageVal', 0, actionObj);
+        n.notify('typeVal', 'title', 'messageVal', 0, actionObj);
         actions = n.list()[0].actions;
       });
 
