@@ -93,7 +93,7 @@ define('src/survey/takesurveytranslation.vm', [
             Name: 'Bob',
             LastName: 'Bobbins',
             FullName: 'Bob Bobbins',
-            Phone1: '(801) 555-1234',
+            Phone1: '8015551234',
           },
           PremiseAddress: {
             Street: '111 Technology Way',

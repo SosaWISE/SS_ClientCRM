@@ -17,11 +17,11 @@ div(class="acct-item sales-info")
               div(class="letter",data-bind="text:letter()")
               div(class="question")
                 |Is the activation fee&nbsp;
-                span(data-bind="currency:data.ActivationFee")
+                span(data-bind="currencytext:data.ActivationFee")
                 |?
               div(class="answer")
                 input(type="text",class="inputField",name="activationFeeActual",
-                  data-bind="ukov:data.ActivationFeeActual,currencyvalue:data.ActivationFeeActual")
+                  data-bind="ukov:data.ActivationFeeActual,likecurrencyvalue:data.ActivationFeeActual")
             div(class="line")
               div(class="letter",data-bind="text:letter()")
               div(class="question") Is Activation over 3 months?
@@ -49,11 +49,11 @@ div(class="acct-item sales-info")
               div(class="letter",data-bind="text:letter()")
               div(class="question")
                 |Will the monthly monitoring rate be&nbsp;
-                span(data-bind="currency:data.MonthlyMonitoringRate")
+                span(data-bind="currencytext:data.MonthlyMonitoringRate")
                 |?
               div(class="answer")
                 input(type="text",class="inputField",name="mmr",
-                  data-bind="ukov:data.MonthlyMonitoringRateActual,currencyvalue:data.MonthlyMonitoringRateActual")
+                  data-bind="ukov:data.MonthlyMonitoringRateActual,likecurrencyvalue:data.MonthlyMonitoringRateActual")
             div(class="line")
               div(class="letter",data-bind="text:letter()")
               div(class="question") What is the contract length?
@@ -84,10 +84,10 @@ div(class="acct-item sales-info")
             div(class="totals")
               div
                 div(class="name") Points Given:
-                div(class="value",data-bind="likecurrency:partsGvm.pointsGiven")
+                div(class="value",data-bind="likecurrencytext:partsGvm.pointsGiven")
               div
                 div(class="name") Points Available:
-                div(class="value",data-bind="likecurrency:pointsAvailable")
+                div(class="value",data-bind="likecurrencytext:pointsAvailable")
               div
                 div(class="name") Total:
-                div(class="value",data-bind="currency:partsGvm.estimateTotal")
+                div(class="value",data-bind="currencytext:partsGvm.estimateTotal")

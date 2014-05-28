@@ -25,19 +25,27 @@ div(data-bind="if:!loadErr()&&!loading()")
           div(class="section")
             span(class="title") Contract Owner
             div(class="contents")
-              div(class="info userinfo")
+              div(class="info userinfo",data-bind="with:customerData")
                 div(class="img-wrap")
                   div(class="img", style="background-image:url(https://secure.gravatar.com/avatar/f47bda756ab7abfaeb7b5e1b59d5edc9?s=80&r=pg&d=https%3A%2F%2Fkanbanflow.com%2Fimg%2Fgd.png);")
-                div(class="name",data-bind="text:customerName")
-                div(class="address", data-bind="text:streetAddress")
-                div(class="address") Suite 1100, Bldg A
-                div(class="address") Orem, UT 84057
+                div(class="name",data-bind="text:FullName")
+                div(class="address", data-bind="text:StreetAddress")
+                div(class="address", data-bind="text:StreetAddress2")
+                div(class="address")
+                  span(data-bind="text:City")
+                  |,&nbsp;
+                  span(data-bind="text:StateId")
+                  |&nbsp;
+                  span(data-bind="text:PostalCode")
                 div(class="separator")
-                div(class="phone mobile", data-bind="text:phoneMobile")
-                div(class="phone work", data-bind="text:phoneWork")
-                div(class="phone home", data-bind="text:phoneHome")
-                div(class="email", data-bind="text:email")
-                div(class="credit-score excellent") Credit Score: TU Excellent
+                div(class="phone mobile", data-bind="phonetext:PhoneMobile")
+                div(class="phone work", data-bind="phonetext:PhoneWork")
+                div(class="phone home", data-bind="phonetext:PhoneHome")
+                div(class="email", data-bind="text:Email")
+                div(class="credit-score excellent")
+                  |Credit Score:&nbsp;
+                  |????????????
+                  //- span(data-bind="text:???")
 
           div(class="section")
             div(class="title")

@@ -71,12 +71,49 @@ define('mock/dataservices/accountingengine.mock', [
               City: (data.City || '@LASTNAME(citycb)') + ', ' +
                 (data.StateId || 'UT') + ' ' +
                 (data.PostalCode || '8@NUMBER(3000,5999)') + '-@NUMBER(1000,9999)',
-              Phone: 'H: ' + (data.PhoneNumber || '@PHONE'),
+              Phone: /*'H: ' + */ (data.PhoneNumber || '@PHONE'),
               Email: strings.format('{0}.{1}@@LASTNAME(cb).com', fname, lname),
               'AccountTypes|1-5': ['@ACCT_TYPE'],
             },
           ];
           result = mockery.fromTemplate(template).list;
+          break;
+      }
+      send(0, result, setter, cb);
+    };
+
+    dataservice.accountingengine.customerCardInfos.read = function(params, setter, cb) {
+      var result;
+      switch (params.link || null) {
+        case null:
+          result = mockery.fromTemplate({
+            AddressID: 68,
+            City: '@LASTNAME(city)ton',
+            CityStateZip: '@LASTNAME(city)ton @CHAR_UPPER(state1)@CHAR_UPPER(tate2) 8@NUMBER(1000,9999)',
+            // CustomerID: '???',
+            CustomerMasterFileID: params.id,
+            DOB: '@DATE',
+            Email: '@EMAIL',
+            FirstName: '@NAME',
+            FullName: '@NAME @LASTNAME',
+            Gender: 'Male',
+            LastName: '@LASTNAME',
+            MiddleName: null,
+            Password: 'PasswordGoesHere',
+            PhoneHome: '@PHONE(home)',
+            PhoneMobile: '@PHONE(mobile)',
+            PhoneWork: '@PHONE(work)',
+            PlusFour: null,
+            PostFix: null,
+            PostalCode: '8@NUMBER(1000,9999)',
+            Prefix: null,
+            ResultType: 'LEAD',
+            SSN: null,
+            StateId: '@CHAR_UPPER(state1)@CHAR_UPPER(tate2)',
+            StreetAddress: '@NUMBER(100,1999,north) N @NUMBER(100,1999,east) E',
+            StreetAddress2: '#@NUMBER(10,300,apt)',
+            Username: null,
+          });
           break;
       }
       send(0, result, setter, cb);

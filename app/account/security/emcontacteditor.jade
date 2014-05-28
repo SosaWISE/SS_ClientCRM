@@ -41,17 +41,17 @@ div(class="acct-emcontacteditor")
       li
         span(class="label") Primary Phone
         input(type="text", placeholder="(123) 123-1234",class="limit-width",
-          data-bind="ukov:data.Phone1,value:data.Phone1,valueUpdate:'keyup'")
+          data-bind="ukov:data.Phone1,phonevalue:data.Phone1,valueUpdate:'keyup'")
         div(class="limit-width right-side",data-bind="cvm:data.Phone1TypeCvm")
       li
         span(class="label") Secondary Phone
         input(type="text", placeholder="(123) 123-1234",class="limit-width",
-          data-bind="ukov:data.Phone2,value:data.Phone2,valueUpdate:'keyup'")
+          data-bind="ukov:data.Phone2,phonevalue:data.Phone2,valueUpdate:'keyup'")
         div(class="limit-width right-side",data-bind="cvm:data.Phone2TypeCvm")
       li
         span(class="label") Alternate Phone
         input(type="text", placeholder="(123) 123-1234",class="limit-width",
-          data-bind="ukov:data.Phone3,value:data.Phone3,valueUpdate:'keyup'")
+          data-bind="ukov:data.Phone3,phonevalue:data.Phone3,valueUpdate:'keyup'")
         div(class="limit-width right-side",data-bind="cvm:data.Phone3TypeCvm")
 
   div(class="line-top")

@@ -1,7 +1,9 @@
 define('src/core/ko.bindingHandlers.value', [
+  'src/core/utils',
   'jquery',
   'ko'
 ], function(
+  utils,
   jquery,
   ko
 ) {
@@ -14,7 +16,8 @@ define('src/core/ko.bindingHandlers.value', [
     // call default
     oldInit(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
 
-    var hasFocus = false;
+    var hasFocus = false,
+      updateValue = getUpdateValueFunc(valueAccessor());
 
     //
     // Select all input text when text input is clicked
@@ -56,7 +59,21 @@ define('src/core/ko.bindingHandlers.value', [
           // // i thought this would work for firefoxes bug,
           // // but in chrome this prevents the blur
           // element.selectionEnd = element.selectionStart;
+
+          // set prop to converted value when element loses focus
+          updateValue();
         });
     }
   };
+
+  function getUpdateValueFunc(prop) {
+    if (prop && prop.doc && prop.doc.converter && utils.isFunc(prop.updateValue)) {
+      // prop must have a converter and an updateValue function
+      return prop.updateValue.bind(prop);
+    } else {
+      return noop;
+    }
+  }
+
+  function noop() {}
 });

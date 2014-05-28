@@ -140,9 +140,18 @@ define('src/core/combo.vm', [
         }, 0);
       }
     };
+    // must use keydown since keypress doesn't fire for arrow and enter keys and probably other as well
     _this.inputKeydown = function(vm, evt) {
       var keyCode = evt.keyCode;
+      switch (keyCode) {
+        // composition keycode for chrome, it is sent when user either hit a key or hit a selection. (https://code.google.com/p/chromium/issues/detail?id=118639#c7)
+        // we don't want anything to do with it since it messes up what the actual key does
+        //  e.g.: when closed, pressing the enter key will open then immediately close the combo box
+        case 229:
+          return true; // do default action
+      }
       // console.log(keyCode);
+
       if (!_this.isOpen()) {
         // ignore keys
         switch (keyCode) {
@@ -176,7 +185,7 @@ define('src/core/combo.vm', [
           return false; // prevent default action
         case 13: // enter
         case 9: // tab
-          _this.selectItem(_this.list()[_this.activeIndex]);
+          _this.selectItem(_this.list.peek()[_this.activeIndex]);
           return keyCode === 9; // for tab key do default action
         case 38: // up arrow
           _this.activateNext(false);
@@ -190,8 +199,11 @@ define('src/core/combo.vm', [
     _this.selectItem = function(wrappedItem) {
       if (wrappedItem) {
         _this.selectedValue(wrappedItem.value);
-      } else {
+      } else if (_this.nullable) {
         _this.selectedValue(null);
+      } else {
+        // if not nullable don't set to null and don't close
+        return;
       }
       _this.clickClose();
     };
@@ -213,7 +225,7 @@ define('src/core/combo.vm', [
 
   ComboViewModel.prototype.selectFirst = function() {
     var _this = this;
-    _this.selectItem(_this.list()[0]);
+    _this.selectItem(_this.list.peek()[0]);
   };
   ComboViewModel.prototype.selectedItem = function() {
     var _this = this,
@@ -240,7 +252,7 @@ define('src/core/combo.vm', [
       wrapList.unshift(_this.noneItem);
     }
     _this.list(wrapList);
-    filterList(_this.list(), _this.filterText(), _this.matchStart);
+    filterList(_this.list.peek(), _this.filterText(), _this.matchStart);
 
     // re-set selected value
     _this.selectedValue(selectedValue);
@@ -265,7 +277,7 @@ define('src/core/combo.vm', [
 
   ComboViewModel.prototype.deactivateCurrent = function() {
     var _this = this,
-      activeItem = _this.list()[_this.activeIndex];
+      activeItem = _this.list.peek()[_this.activeIndex];
     if (activeItem) {
       activeItem.active(false);
     }
@@ -273,7 +285,7 @@ define('src/core/combo.vm', [
   };
   ComboViewModel.prototype.activateNext = function(down) {
     var _this = this,
-      list = _this.list(),
+      list = _this.list.peek(),
       item;
     item = list[_this.activeIndex];
     if (item) {

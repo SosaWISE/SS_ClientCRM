@@ -68,8 +68,7 @@ define('src/account/default/payby.credit.vm', [
   };
   expirationValidationGroup = {
     keys: ['ExpirationMonth', 'ExpirationYear'],
-    validators: [
-      //
+    validators: [ //
       function(group) {
         if (!paymenthelper.isValidExpiration(group.ExpirationYear, group.ExpirationMonth)) {
           return 'Invalid expiration date';

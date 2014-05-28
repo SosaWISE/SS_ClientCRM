@@ -120,6 +120,7 @@ define('src/bootstrapper', [
     dataservice.session.start(config.token, function(err, resp) {
       if (err) {
         console.error(err);
+        notify.notify('error', err.Message);
       } else {
         // start ko
         ko.applyBindings(app, document.getElementById('main'));

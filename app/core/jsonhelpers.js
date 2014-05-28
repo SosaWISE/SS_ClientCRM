@@ -19,10 +19,11 @@ define('src/core/jsonhelpers', [
       var tmp;
       /* jshint validthis:true */
       if (isDateFieldRegx.test(key)) {
-        tmp = this[key];
-        if (tmp instanceof Date) {
-          value = tmp.getTime();
-        }
+        // since the webservice wants the date string, don't do anything...
+        // tmp = this[key];
+        // if (tmp instanceof Date) {
+        //   value = tmp.getTime();
+        // }
       } else if (isJSONStringRegx.test(key)) {
         tmp = this[key];
         value = jsonhelpers.stringify(tmp);

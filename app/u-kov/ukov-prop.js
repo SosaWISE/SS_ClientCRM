@@ -85,6 +85,27 @@ define('src/u-kov/ukov-prop', [
     var _this = this;
     return _this.model[_this.key];
   };
+  fn.updateValue = function() {
+    var _this = this,
+      value = _this.getValue();
+    if (!(value instanceof Error)) {
+      //
+      // force notification so value formatters can do their thang
+      // - essentially the same code as when setting an observable,
+      //   but we only want to notify when the values are equal
+      //   since the built in code will notify when the values are not equal
+      //
+      if (!_this.equalityComparer || !_this.equalityComparer(_this.peek(), value)) {
+        // set value - knockout will notify subscribers
+        _this(value);
+      } else {
+        _this.valueWillMutate();
+        // set value - knockout will NOT notify subscribers
+        _this(value);
+        _this.valueHasMutated();
+      }
+    }
+  };
   fn.getNameInGroup = function() {
     var _this = this;
     return _this.doc.nameInGroup || _this.key;
@@ -136,7 +157,7 @@ define('src/u-kov/ukov-prop', [
   fn.validateGroup = function() {
     var _this = this,
       validationGroup = _this.doc.validationGroup,
-      prop, validIndividually = true,
+      validIndividually = true,
       groupUkovProps = [],
       groupVal = {},
       errMsg;
@@ -146,7 +167,7 @@ define('src/u-kov/ukov-prop', [
 
     // validate each field in the group individually
     validationGroup.keys.forEach(function(key) {
-      prop = _this.ukovModel[key];
+      var prop = _this.ukovModel[key];
       // validate individual field
       validIndividually &= prop.validateSingle();
       // store for later
@@ -158,10 +179,21 @@ define('src/u-kov/ukov-prop', [
     if (validIndividually) {
       errMsg = getValidationMsg(validationGroup.validators, groupVal, _this.model, _this.ukovModel, _this);
       if (errMsg) {
-        // mark each with the group error
-        groupUkovProps.forEach(function(prop) {
-          prop.errMsg(errMsg);
-        });
+        if (typeof(errMsg) === 'string') {
+          // mark each with the group error
+          groupUkovProps.forEach(function(prop) {
+            prop.errMsg(errMsg);
+          });
+        } else {
+          // assume errMsg is an object in this format:{nameInGroup:'error message', nameInGroup2:'error message'}
+          // mark each with their individual error
+          groupUkovProps.forEach(function(prop) {
+            var msg = errMsg[prop.getNameInGroup()];
+            if (msg) {
+              prop.errMsg(msg);
+            }
+          });
+        }
       }
     }
 

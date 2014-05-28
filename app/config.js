@@ -35,6 +35,7 @@ define('src/config', [
   // set('serviceDomain', 'cs1.dev.nexsense.com'); // Dev Environment
   // set('serviceDomain', 'cs1.tst.nexsense.com'); // Test Environment
   // set('serviceDomain', 'cs1.stg.nexsense.com'); // Stage Environment
+  set('logErrors', true);
   set('titlePrefix', '');
   set('titlePostfix', '| CRM');
   set('leadSourceId', 1);

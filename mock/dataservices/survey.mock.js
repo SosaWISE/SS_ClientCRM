@@ -496,7 +496,7 @@ define('mock/dataservices/survey.mock', [
           },
         }),
         CreatedBy: 'auser',
-        CreatedOn: '@DATE',
+        CreatedOn: '@DATETIME',
       }
     ],
   }).list;

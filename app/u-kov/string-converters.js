@@ -67,6 +67,10 @@ define('src/u-kov/string-converters', [
         return;
       }
 
+      // remove non-number characters
+      // (- and . are needed for negative and decimals. more than one or wrong position will make val NaN)
+      val = val.replace(/[^-.0-9]/g, '');
+
       var num = parseFloat(val);
       if (isNaN(val) || isNaN(num)) {
         return new Error(errMsg);
@@ -186,8 +190,7 @@ define('src/u-kov/string-converters', [
       }
     };
   };
-  converters.phone = function(outputFormat) {
-    outputFormat = outputFormat || '({0}) {1}-{2}';
+  converters.phone = function() {
     return function convPhone(val) {
       val = trim(val);
       if (!val) {
@@ -196,9 +199,9 @@ define('src/u-kov/string-converters', [
 
       var matches = phoneRegx.exec(val);
       if (!matches) {
-        return new Error('Invalid phone number. Expected format: ' + strings.format(outputFormat, '123', '123', '1234'));
+        return new Error('Invalid phone number. Expected format: (123) 123-1234');
       } else {
-        return strings.format(outputFormat, matches[1], matches[2], matches[3]);
+        return matches[1] + matches[2] + matches[3];
       }
     };
   };

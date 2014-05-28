@@ -209,6 +209,9 @@ define('src/slick/slickgrid.vm', [
     datetime: function(row, cell, value) {
       return strings.formatters.datetime(value);
     },
+    phone: function(row, cell, value) {
+      return strings.formatters.phone(value);
+    },
   };
 
   return SlickGridViewModel;

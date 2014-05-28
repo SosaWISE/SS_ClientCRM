@@ -40,8 +40,7 @@ define('src/account/default/notes.vm', [
       ],
     },
     NoteCategory2Id: {
-      validators: [
-        // //
+      validators: [ //
         // function(val, model) {
         //   return null;
         // },

@@ -92,8 +92,7 @@ define('src/account/security/parts.editor.vm', [
     _this.data.AssignToCvm = new ComboViewModel({
       // try to select first item in assignToList
       selectedValue: ukov.wrap(assignToList.length ? assignToList[0].value : '', {
-        validators: [
-          //
+        validators: [ //
           function(value) {
             value = value || null;
 

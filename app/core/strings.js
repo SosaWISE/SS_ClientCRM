@@ -11,6 +11,7 @@ define('src/core/strings', [
 
   var strings = {},
     formatRegex = /\{([0-9]+)(?::([0-9A-Z$]+))?\}/gi, // {0} or {0:decoratorName}
+    phoneRegx = /^\(?\b([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
     usdFormatter;
 
   // e.g.: strings.format('{0} {1}', 'bob', 'bobbins') === 'bob bobbins'
@@ -90,6 +91,17 @@ define('src/core/strings', [
       }
       return dt.format('MM/DD/YYYY hh:mm a');
     },
+    phone: function(val, outputFormat) {
+      if (!val) {
+        return val;
+      }
+      var matches = phoneRegx.exec(val);
+      if (!matches) {
+        return val;
+      } else {
+        return strings.format(outputFormat || '({0}) {1}-{2}', matches[1], matches[2], matches[3]);
+      }
+    },
   };
   strings.decorators = {
     // wrap formatters in case they are modified outside of this file
@@ -105,6 +117,9 @@ define('src/core/strings', [
     space: function(val) {
       val = val || '';
       return val.split('').join('&nbsp;');
+    },
+    phone: function(val) {
+      return strings.formatters.phone(val);
     },
   };
   // alias c with $

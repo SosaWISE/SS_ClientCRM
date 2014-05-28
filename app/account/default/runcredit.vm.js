@@ -76,8 +76,7 @@ define('src/account/default/runcredit.vm', [
 
   validationGroup = {
     keys: ['SSN', 'DOB', ],
-    validators: [
-      //
+    validators: [ //
       function(val) {
         if (!val.SSN && !val.DOB) {
           return 'A valid Social Security # OR a valid Date of Birth must be provided';

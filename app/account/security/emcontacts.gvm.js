@@ -3,12 +3,14 @@ define('src/account/security/emcontacts.gvm', [
   'src/slick/moverows',
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
+  'src/core/strings',
   'src/core/utils',
 ], function(
   ko,
   MoveRows,
   RowEvent,
   SlickGridViewModel,
+  strings,
   utils
 ) {
   "use strict";
@@ -107,7 +109,7 @@ define('src/account/security/emcontacts.gvm', [
     function formatPhoneAndType(phone, type) {
       type = options.getPhoneType(type);
       if (type && type.MsPhoneTypeId && phone) {
-        return type.MsPhoneTypeId + ': ' + phone;
+        return type.MsPhoneTypeId + ': ' + strings.formatters.phone(phone);
       }
       return phone;
     }

@@ -54,6 +54,9 @@ define('src/account/default/search.vm', [
     },
     PageSize: {
       converter: ukov.converters.number(0),
+      validators: [
+        ukov.validators.isRequired('Results per Page is required'),
+      ],
     },
     PageNumber: {
       converter: ukov.converters.number(0),
@@ -155,6 +158,7 @@ define('src/account/default/search.vm', [
           id: 'Phone',
           name: 'Phone',
           field: 'Phone',
+          formatter: SlickGridViewModel.formatters.phone,
         }, {
           id: 'City',
           name: 'City',

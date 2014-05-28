@@ -80,11 +80,14 @@ define('src/core/mockery', [
       }
       return results.join('. ');
     },
-    PHONE: function(cache) {
-      return fromTemplate('(@NUMBER(200,999)) @NUMBER(100,999)-@NUMBER(1000,9999)', cache);
+    PHONE: function(cache, busterKey) {
+      // prepend comma
+      busterKey = (busterKey) ? ',' + busterKey : '';
+      // return fromTemplate('(@NUMBER(200,999)) @NUMBER(100,999)-@NUMBER(1000,9999)', cache);
+      return fromTemplate('@NUMBER(200,999' + busterKey + ')@NUMBER(100,999' + busterKey + ')@NUMBER(1000,9999' + busterKey + ')', cache);
     },
     EMAIL: function(cache) {
-      return fromTemplate('@NAME.@LASTNAME@@LASTNAME(cb).com', cache).toLowerCase();
+      return fromTemplate('@NAME.@LASTNAME@@LASTNAME(cb)inc.com', cache).toLowerCase();
     },
     FULLNAME: function(cache) {
       return fromTemplate('@NAME @LASTNAME', cache);
@@ -115,6 +118,10 @@ define('src/core/mockery', [
       return new Date();
     },
     DATE: function() {
+      //@TODO: correctly
+      return randomDate();
+    },
+    DATETIME: function() {
       return randomDate();
     },
     DATE_YYYY: function() {

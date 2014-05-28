@@ -153,8 +153,10 @@ define('src/core/mockery.spec', [
         expect(resp.txtLong.length).toBe(600);
       });
       it('@PHONE should match pattern', function() {
-        // (123) 123-1234
-        expect(/^\([0-9]{3}\) [0-9]{3}-[0-9]{4}$/.test(resp.phone)).toBe(true);
+        // // (123) 123-1234
+        // expect(/^\([0-9]{3}\) [0-9]{3}-[0-9]{4}$/.test(resp.phone)).toBe(true);
+        // 1231231234
+        expect(/^[0-9]{10}$/.test(resp.phone)).toBe(true);
       });
       it('@EMAIL should match pattern', function() {
         // a.b@c.d

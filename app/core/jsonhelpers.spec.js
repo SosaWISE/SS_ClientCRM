@@ -15,36 +15,76 @@ define('src/core/jsonhelpers.spec', [
       expect(typeof jsonhelpers.reviver).toBe('function');
     });
 
+    // describe('replacer', function() {
+    //   describe('should replace dates with the number of milliseconds since 1 January 1970 (unix offset) when the key', function() {
+    //     it('ends with `On`', function() {
+    //       expect(jsonhelpers.stringify({
+    //         bob: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)), // doesn't get converted to a unix offset
+    //         bobOn: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
+    //       })).toBe('{"bob":"2000-06-10T09:08:07.006Z","bobOn":960628087006}');
+    //     });
+    //     it('starts with `Date`', function() {
+    //       expect(jsonhelpers.stringify({
+    //         DateBob: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
+    //       })).toBe('{"DateBob":960628087006}');
+    //     });
+    //     it('ends with `Date`', function() {
+    //       expect(jsonhelpers.stringify({
+    //         bobDate: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
+    //       })).toBe('{"bobDate":960628087006}');
+    //     });
+    //     it('ends with `DateTime`', function() {
+    //       expect(jsonhelpers.stringify({
+    //         bobDateTime: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
+    //       })).toBe('{"bobDateTime":960628087006}');
+    //     });
+    //     it('equals `DOB`', function() {
+    //       expect(jsonhelpers.stringify({
+    //         DOB: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
+    //       })).toBe('{"DOB":960628087006}');
+    //     });
+    //   });
+    //   describe('when name ends with Json', function() {
+    //     it('should replace the javascript object with a JSON string', function() {
+    //       expect(jsonhelpers.stringify({
+    //         bobJson: {
+    //           id: 1,
+    //           name: "bob",
+    //           bobOn: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
+    //         },
+    //       })).toBe('{"bobJson":"{\\"id\\":1,\\"name\\":\\"bob\\",\\"bobOn\\":960628087006}"}');
+    //     });
+    //   });
+    // });
     describe('replacer', function() {
-      describe('should replace dates with the number of milliseconds since 1 January 1970 (unix offset) when the key', function() {
+      describe('should replace dates with date string when the key', function() {
         it('ends with `On`', function() {
           expect(jsonhelpers.stringify({
             bob: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)), // doesn't get converted to a unix offset
             bobOn: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
-          })).toBe('{"bob":"2000-06-10T09:08:07.006Z","bobOn":960628087006}');
+          })).toBe('{"bob":"2000-06-10T09:08:07.006Z","bobOn":"2000-06-10T09:08:07.006Z"}');
         });
         it('starts with `Date`', function() {
           expect(jsonhelpers.stringify({
             DateBob: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
-          })).toBe('{"DateBob":960628087006}');
+          })).toBe('{"DateBob":"2000-06-10T09:08:07.006Z"}');
         });
         it('ends with `Date`', function() {
           expect(jsonhelpers.stringify({
             bobDate: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
-          })).toBe('{"bobDate":960628087006}');
+          })).toBe('{"bobDate":"2000-06-10T09:08:07.006Z"}');
         });
         it('ends with `DateTime`', function() {
           expect(jsonhelpers.stringify({
             bobDateTime: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
-          })).toBe('{"bobDateTime":960628087006}');
+          })).toBe('{"bobDateTime":"2000-06-10T09:08:07.006Z"}');
         });
         it('equals `DOB`', function() {
           expect(jsonhelpers.stringify({
             DOB: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
-          })).toBe('{"DOB":960628087006}');
+          })).toBe('{"DOB":"2000-06-10T09:08:07.006Z"}');
         });
       });
-
       describe('when name ends with Json', function() {
         it('should replace the javascript object with a JSON string', function() {
           expect(jsonhelpers.stringify({
@@ -53,10 +93,11 @@ define('src/core/jsonhelpers.spec', [
               name: "bob",
               bobOn: new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6)),
             },
-          })).toBe('{"bobJson":"{\\"id\\":1,\\"name\\":\\"bob\\",\\"bobOn\\":960628087006}"}');
+          })).toBe('{"bobJson":"{\\"id\\":1,\\"name\\":\\"bob\\",\\"bobOn\\":\\"2000-06-10T09:08:07.006Z\\"}"}');
         });
       });
     });
+
     describe('reviver', function() {
       describe('should replace the number of milliseconds since 1 January 1970 (unix offset) with dates when the key', function() {
         it('ends with `On`', function() {

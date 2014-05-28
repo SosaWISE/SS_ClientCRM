@@ -15,7 +15,7 @@ div(class="dispatchagency-editor")
       li
         span(class="label") Phone Number
         input(type="text",placeholder="",
-          data-bind="ukov:data.DispatchPhone,value:data.DispatchPhone,valueUpdate:'keyup',enter:cmdSave")
+          data-bind="ukov:data.DispatchPhone,phonevalue:data.DispatchPhone,valueUpdate:'keyup',enter:cmdSave")
       li
         span(class="label") Agency Type
         div(data-bind="cvm:data.DispatchAgencyTypeCvm")

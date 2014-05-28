@@ -29,7 +29,7 @@ define('mock/dataservices/qualify.mock', [
         AddressID: '@INC(addresss)',
         DealerId: data.DealerId,
         StreetAddress: (data.StreetAddress || '').toUpperCase(),
-        StreetAddress2: (data.StreetAddress2 || '').toUpperCase(),
+        StreetAddress2: data.StreetAddress2 ? data.StreetAddress2.toUpperCase() : null,
         City: data.City || 'Orem',
         StateId: data.State || 'UT',
         PostalCode: data.PostalCode,

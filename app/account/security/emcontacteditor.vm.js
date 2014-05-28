@@ -19,7 +19,37 @@ define('src/account/security/emcontacteditor.vm', [
 
   var schema,
     strConverter = ukov.converters.string(),
-    phoneConverter = ukov.converters.phone();
+    phoneConverter = ukov.converters.phone(),
+    phone2ValidationGroup, phone3ValidationGroup;
+
+  function createPhoneAndTypeValidationGroup(phoneName, typeName) {
+    return {
+      keys: [phoneName, typeName],
+      validators: [ //
+        function(group) {
+          var errName, errMsgObj,
+            phone = group[phoneName],
+            type = group[typeName];
+          if (!phone && type) {
+            // type is set but phone is not
+            errName = phoneName;
+          } else if (phone && !type) {
+            // phone is set but type is not
+            errName = typeName;
+          } else {
+            // no errors
+            return null;
+          }
+
+          errMsgObj = {};
+          errMsgObj[errName] = 'Both phone and type must be set.';
+          return errMsgObj;
+        },
+      ],
+    };
+  }
+  phone2ValidationGroup = createPhoneAndTypeValidationGroup('Phone2', 'Phone2TypeId');
+  phone3ValidationGroup = createPhoneAndTypeValidationGroup('Phone3', 'Phone3TypeId');
 
   schema = {
     _model: true,
@@ -84,12 +114,18 @@ define('src/account/security/emcontacteditor.vm', [
     },
     Phone2: {
       converter: phoneConverter,
+      validationGroup: phone2ValidationGroup,
     },
-    Phone2TypeId: {},
+    Phone2TypeId: {
+      validationGroup: phone2ValidationGroup,
+    },
     Phone3: {
       converter: phoneConverter,
+      validationGroup: phone3ValidationGroup,
     },
-    Phone3TypeId: {},
+    Phone3TypeId: {
+      validationGroup: phone3ValidationGroup,
+    },
   };
 
 

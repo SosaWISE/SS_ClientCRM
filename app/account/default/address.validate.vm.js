@@ -39,6 +39,12 @@ define('src/account/default/address.validate.vm', [
 
     TeamLocationId: {},
 
+    PhoneNumber: {
+      converter: ukov.converters.phone(),
+      validators: [
+        ukov.validators.isRequired('Premise phone is required'),
+      ],
+    },
     PostalCode: {
       converter: strConverter,
       validators: [
@@ -54,10 +60,8 @@ define('src/account/default/address.validate.vm', [
       ],
     },
     StreetAddress2: {
+      converter: nullStrConverter,
       validators: [max50],
-    },
-    PhoneNumber: {
-      converter: ukov.converters.phone(),
     },
 
     // Manual/Extensions

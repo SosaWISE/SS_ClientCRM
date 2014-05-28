@@ -10,16 +10,16 @@ define('src/u-kov/bindings', [
   var exports = {};
 
   ko.bindingHandlers.ukov = {
-    init: function(element, valueAccessor) {
-      var prop = valueAccessor();
-      // set prop to converted value when element loses focus
-      jquery(element).blur(function setProp() {
-        var value = prop.getValue();
-        if (!(value instanceof Error)) {
-          prop(value);
-        }
-      });
-    },
+    // init: function(element, valueAccessor) {
+    //   var prop = valueAccessor();
+    //   // set prop to converted value when element loses focus
+    //   jquery(element).blur(function setProp() {
+    //     var value = prop.getValue();
+    //     if (!(value instanceof Error)) {
+    //       prop(value);
+    //     }
+    //   });
+    // },
     update: function(element, valueAccessor) {
       exports.updateElement(element, valueAccessor());
     }

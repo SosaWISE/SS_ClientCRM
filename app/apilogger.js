@@ -1,7 +1,9 @@
 define('src/apilogger', [
+  'src/config',
   'src/dataservice',
   'src/core/notify',
 ], function(
+  config,
   dataservice,
   notify
 ) {
@@ -20,7 +22,7 @@ define('src/apilogger', [
 
 
   function saveLog(typeId, msgObj) {
-    if (!msgObj) {
+    if (!config.logErrors || !msgObj) {
       return false;
     }
 
