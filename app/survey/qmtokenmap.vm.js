@@ -29,7 +29,7 @@ define('src/survey/qmtokenmap.vm', [
     //     model.IsDeleted = !model.IsDeleted;
     //     dataservice.survey.questionMeaningTokenMaps.save({data:model,}, null, function(err, resp) {
     //       if (err) {
-    //         notify.notify('warn', err.Message, 10);
+    //         notify.notify('error', 'Error', err.Message, 10);
     //       } else {
     //         _this.model = resp.Value;
     //         _this.active(!_this.model.IsDeleted);

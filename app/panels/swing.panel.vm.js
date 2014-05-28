@@ -256,7 +256,7 @@ define('src/panels/swing.panel.vm', [
 
     join.when(function( /*err*/ ) {
       /*if (err) {
-          notify.notify('warn', "Account ID not found", 10);
+          notify.notify('warn', "Account ID not found", null, 10);
         }else{
           console.log("no error");
         }*/
@@ -264,7 +264,7 @@ define('src/panels/swing.panel.vm', [
       //check if customer1 first name is available it means -- account id is available in the old db
       //also we were able to minimize API calls
       if (customer1.FirstName === "") {
-        notify.notify('warn', "Account ID not found", 10);
+        notify.notify('warn', "Account ID not found", null, 10);
       } else {
         //we only call the following APIs once Account
         //load info for the secondary customer
@@ -304,7 +304,7 @@ define('src/panels/swing.panel.vm', [
       console.log('Value:' + JSON.stringify(resp.Value));
 
       if (err) {
-        notify.notify('warn', err.Message, 10);
+        notify.notify('error', 'Error', err.Message, 10);
       } else if (resp.Value) {
         if (resp.Value.SwingStatus === "1") {
 
@@ -316,12 +316,12 @@ define('src/panels/swing.panel.vm', [
         } else {
 
           //temporarily display exception error from database. can't figure out how to return the exception returned by c# yet
-          notify.notify('error', resp.Value.SwingStatus);
+          notify.notify('error', 'Error', resp.Value.SwingStatus);
         }
       } else {
         //vm.data.setVal(null);
         vm.data.markClean(resp.Value, true);
-        notify.notify('warn', 'Account ID not found', 7);
+        notify.notify('warn', 'Account ID not found', null, 7);
         vm.clearData();
       }
 
@@ -338,7 +338,7 @@ define('src/panels/swing.panel.vm', [
 
         if (err) {
           cb(err);
-          // notify.notify('warn', err.Message, 10);
+          // notify.notify('error', 'Error', err.Message, 10);
           // console.log("error in load_customer_swing_info");
           return;
         }
@@ -354,7 +354,7 @@ define('src/panels/swing.panel.vm', [
             vm.data.Customer1.setValue(customer);
             //console.log("true in load_customer_swing_info");
           } else {
-            notify.notify('warn', 'Account ID not found', 3);
+            notify.notify('warn', 'Account ID not found', null, 3);
           }
         } else {
           // console.log("false resp.Value in load_customer_swing_info");
@@ -368,7 +368,7 @@ define('src/panels/swing.panel.vm', [
         null, utils.safeCallback(cb, function(err, resp) {
           if (err) {
             //cb(error);
-            notify.notify('warn', err.Message, 10);
+            notify.notify('error', 'Error', err.Message, 10);
             //console.log("error in load_customer_swing_info");
             return;
           }
@@ -384,7 +384,7 @@ define('src/panels/swing.panel.vm', [
               vm.data.Customer2.setValue(customer);
               //console.log("true in load_customer_swing_info");
             } else {
-              notify.notify('warn', 'Account ID not found', 3);
+              notify.notify('warn', 'Account ID not found', null, 3);
             }
           } else {
             //console.log("false resp.Value in load_customer_swing_info");
@@ -408,7 +408,7 @@ define('src/panels/swing.panel.vm', [
       },
       null, utils.safeCallback(cb, function(err, resp) {
         if (err) {
-          notify.notify('warn', err.Message, 10);
+          notify.notify('error', 'Error', err.Message, 10);
           return;
         }
 
@@ -428,7 +428,7 @@ define('src/panels/swing.panel.vm', [
       id: msAccount.AccountID
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (err) {
-        notify.notify('warn', err.Message, 10);
+        notify.notify('error', 'Error', err.Message, 10);
         return;
       }
       if (resp.Value) {
@@ -443,7 +443,7 @@ define('src/panels/swing.panel.vm', [
       id: msAccount.AccountID
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (err) {
-        notify.notify('warn', err.Message, 10);
+        notify.notify('error', 'Error', err.Message, 10);
         return;
       }
       if (resp.Value) {
@@ -482,7 +482,7 @@ define('src/panels/swing.panel.vm', [
       null, utils.safeCallback(cb, function(err, resp) {
 
         if (err) {
-          notify.notify('warn', err.Message, 10);
+          notify.notify('error', 'Error', err.Message, 10);
           return;
         }
         if (resp.Value) {
@@ -497,7 +497,7 @@ define('src/panels/swing.panel.vm', [
       id: msAccount.AccountID
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (err) {
-        notify.notify('warn', err.Message, 10);
+        notify.notify('error', 'Error', err.Message, 10);
         return;
       }
       if (resp.Value) {
@@ -509,7 +509,7 @@ define('src/panels/swing.panel.vm', [
       id: msAccount.AccountID
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (err) {
-        notify.notify('warn', err.Message, 10);
+        notify.notify('error', 'Error', err.Message, 10);
         return;
       }
       if (resp.Value) {
@@ -546,7 +546,7 @@ define('src/panels/swing.panel.vm', [
       null, utils.safeCallback(cb, function(err, resp) {
 
         if (err) {
-          notify.notify('warn', err.Message, 10);
+          notify.notify('error', 'Error', err.Message, 10);
           return;
         }
         if (resp.Value) {
@@ -574,11 +574,11 @@ define('src/panels/swing.panel.vm', [
 
     //Check if Phone Number is null
     if (cPhoneNumber == null) {
-      notify.notify('error', 'Phone Number can\'t be empty.');
+      notify.notify('warn', 'Phone Number can\'t be empty.');
       cb();
       //If Phone number is invalid, it will return an object. Not sure how to return specifically the error
     } else if (typeof(cPhoneNumber) === 'object') {
-      notify.notify('error', cPhoneNumber);
+      notify.notify('warn', cPhoneNumber);
       cb();
     } else {
 
@@ -596,7 +596,7 @@ define('src/panels/swing.panel.vm', [
         null, utils.safeCallback(cb, function(err, resp) {
 
           if (err) {
-            notify.notify('warn', err.Message, 10);
+            notify.notify('error', 'Error', err.Message, 10);
             return;
           }
           if (resp.Value) {
@@ -608,7 +608,7 @@ define('src/panels/swing.panel.vm', [
               notify.notify('ok', 'Success: Added to DNC list.');
               vm.data.PhoneNumber.setValue(null);
             } else {
-              notify.notify('error', resp.Value.Dnc_Status);
+              notify.notify('warn', resp.Value.Dnc_Status);
             }
 
 

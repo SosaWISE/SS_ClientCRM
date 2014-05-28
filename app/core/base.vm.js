@@ -142,7 +142,7 @@ define('src/core/base.vm', [
       _this.onLoad(routeData, extraData, join);
       join.when(function(errResp) {
         if (errResp) {
-          notify.notify('error', errResp.Message);
+          notify.notify('error', 'Error', errResp.Message);
         }
         // tell the loader we're done
         // - we already showed the error so don't pass it along

@@ -229,7 +229,7 @@ define('src/account/default/runcredit.vm', [
       _this.data.validate();
       _this.data.update();
       if (!_this.data.isValid()) {
-        notify.notify('warn', _this.data.errMsg(), 7);
+        notify.notify('warn', _this.data.errMsg(), null, 7);
         return cb();
       }
 
@@ -238,7 +238,7 @@ define('src/account/default/runcredit.vm', [
       _this.data.markClean(customerModel, true);
       dataservice.qualify.runcredit.post(null, customerModel, null, function(err, resp) {
         if (err) {
-          notify.notify('warn', resp.Message, 10);
+          notify.notify('error', 'Error', resp.Message, 10);
           return cb();
         }
         _this.creditResult(resp.Value);

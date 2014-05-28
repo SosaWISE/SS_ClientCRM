@@ -100,7 +100,7 @@ define('src/account/security/clist.qualify.vm', [
         leadId: _this.creditResult().LeadId
       }, null, function(err, resp) {
         if (err) {
-          notify.notify('error', resp.Message);
+          notify.notify('error', 'Error', err.Message);
           return;
         }
         var checklistVm = _this.pcontroller;

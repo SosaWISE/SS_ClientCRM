@@ -167,7 +167,7 @@ define('src/account/security/alarmdotcom.vm', [
       link: 'unregister',
     }, null, function(err, resp) {
       if (err) {
-        notify.notify('error', err.Message);
+        notify.notify('error', 'Error', err.Message);
         cb();
       } else if (!resp.Value) {
         notify.notify('warn', 'Failed to unregister, but there wasn\'t and error...');

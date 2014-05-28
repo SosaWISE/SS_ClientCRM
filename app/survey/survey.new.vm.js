@@ -63,14 +63,14 @@ define('src/survey/survey.new.vm', [
       }
       _this.sData.update();
       if (!_this.sData.isValid()) {
-        notify.notify('warn', _this.sData.errMsg(), 10);
+        notify.notify('warn', _this.sData.errMsg(), null, 10);
         return cb();
       }
       dataservice.survey.surveys.save({
         data: _this.sData.model,
       }, null, function(err, resp) {
         if (err) {
-          notify.notify('error', err.Message);
+          notify.notify('error', 'Error', err.Message);
         } else {
           _this.layer.close(resp.Value);
         }

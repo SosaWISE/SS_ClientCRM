@@ -7,17 +7,26 @@ define('src/core/notify', [
 ) {
   "use strict";
 
+  var titleMap = {
+    'error': 'Error',
+    'warn': 'Warn',
+    'info': 'Info',
+    'success': 'Success',
+  };
+
   //
-  // Notification
+  // UiMessage
   //
 
-  function Notification(type, message, timeoutSec, actionsObj, onRemove) {
+  function UiMessage(type, title, message, timeoutSec, actionsObj, usePre, onRemove) {
     var _this = this,
       interval,
+      dismissed = false,
       seconds;
 
     _this.resources = {};
     _this.type = type;
+    _this.title = title;
     _this.message = message;
     _this.actions = [];
     _this.seconds = seconds = ko.observable(0);
@@ -25,10 +34,15 @@ define('src/core/notify', [
       // set seconds
       seconds(Math.max(_this.minTimeout, timeoutSec));
     }
+    _this.usePre = usePre;
 
     function dismiss() {
       _this.pause();
-      onRemove();
+      // onRemove();
+      seconds(1);
+      dismissed = true;
+      // try to start the timeout
+      _this.resume();
     }
     if (actionsObj) {
       // add actions
@@ -36,8 +50,9 @@ define('src/core/notify', [
         _this.actions.push({
           name: key,
           action: function() {
-            actionsObj[key]();
-            dismiss();
+            if (!actionsObj[key]()) {
+              dismiss();
+            }
           },
         });
       });
@@ -53,11 +68,16 @@ define('src/core/notify', [
     //
     _this.dismiss = dismiss;
     _this.pause = function() {
+      if (dismissed) {
+        return false;
+      }
+
       clearInterval(interval);
       interval = null;
       if (seconds() > 0 && seconds() <= _this.minTimeout) {
         seconds(_this.minTimeout + 1);
       }
+      return true;
     };
     _this.resume = function() {
       if (interval || seconds() <= 0) {
@@ -77,7 +97,8 @@ define('src/core/notify', [
     // try to start the timeout
     _this.resume();
   }
-  Notification.prototype.minTimeout = 5;
+  UiMessage.prototype.minTimeout = 5;
+  UiMessage.prototype.title = 'This is a title';
 
 
 
@@ -107,11 +128,11 @@ define('src/core/notify', [
     return new Notifier();
   };
 
-  Notifier.prototype.notify = function(type, message, timeoutSec, actionsObj) {
+  Notifier.prototype.notify = function(type, title, message, timeoutSec, actionsObj, usePre) {
     var list = this.list,
       notification;
 
-    notification = new Notification(type, message, timeoutSec, actionsObj, function() {
+    notification = new UiMessage(type, title || titleMap[type], message, timeoutSec, actionsObj, usePre, function() {
       list.remove(notification);
     });
 

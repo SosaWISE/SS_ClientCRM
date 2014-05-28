@@ -106,7 +106,7 @@ define('src/survey/question.vm', [
         cb(errResp);
       }
       if (errResp) {
-        return notify.notify('error', errResp.Message);
+        return notify.notify('error', 'Error', errResp.Message);
       }
     });
     // add to list

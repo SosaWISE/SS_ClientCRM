@@ -147,7 +147,7 @@ define('src/account/security/equipment.editor.vm', [
       }, null, utils.safeCallback(cb, function(err, resp) {
          console.log(resp.Value);
       }, function(err) {
-        notify.notify('error', err.Message);
+        notify.notify('error', 'Error', err.Message);
       }));
 
 

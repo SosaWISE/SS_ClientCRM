@@ -64,14 +64,14 @@ define('src/survey/surveytranslation.new.vm', [
       }
       _this.stData.update();
       if (!_this.stData.isValid()) {
-        notify.notify('warn', _this.stData.errMsg(), 7);
+        notify.notify('warn', _this.stData.errMsg(), null, 7);
         return cb();
       }
       dataservice.survey.surveyTranslations.save({
         data: _this.stData.model,
       }, null, function(err, resp) {
         if (err) {
-          notify.notify('error', err.Message);
+          notify.notify('error', 'Error', err.Message);
         } else {
           _this.layer.close(resp.Value);
         }

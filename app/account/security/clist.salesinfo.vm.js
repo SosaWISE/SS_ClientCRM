@@ -114,7 +114,7 @@ define('src/account/security/clist.salesinfo.vm', [
             _this.refreshInvoice();
           }
         }, function(err) {
-          notify.notify('error', err.Message);
+          notify.notify('error', 'Error', err.Message);
         }));
       },
     });
@@ -138,7 +138,7 @@ define('src/account/security/clist.salesinfo.vm', [
           _this.contractLengthsCvm.setList(resp.Value);
         }
       }, function(err) {
-        notify.notify('error', err.Message);
+        notify.notify('error', 'Error', err.Message);
       }));
     });
 
@@ -148,7 +148,7 @@ define('src/account/security/clist.salesinfo.vm', [
     //
     _this.refreshInvoice = function(cb) {
       if (!_this.data.isValid()) {
-        notify.notify('warn', _this.data.errMsg(), 7);
+        notify.notify('warn', _this.data.errMsg(), null, 7);
         return;
       }
 
@@ -171,7 +171,7 @@ define('src/account/security/clist.salesinfo.vm', [
           _this.partsGvm.list(resp.Value.Items);
         }
       }, function(err) {
-        notify.notify('error', err.Message);
+        notify.notify('error', 'Error', err.Message);
       }));
     };
     _this.cmdAddByPart = ko.command(function(cb) {
@@ -238,7 +238,7 @@ define('src/account/security/clist.salesinfo.vm', [
         data.markClean(resp.Value, true);
       }
     }, function(err) {
-      notify.notify('error', err.Message);
+      notify.notify('error', 'Error', err.Message);
     }));
   }
 

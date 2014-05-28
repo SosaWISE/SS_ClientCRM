@@ -125,7 +125,7 @@ define('src/account/security/parts.editor.vm', [
     });
     _this.cmdSave = ko.command(function(cb) {
       if (!_this.data.isValid()) {
-        notify.notify('warn', _this.data.errMsg(), 7);
+        notify.notify('warn', _this.data.errMsg(), null, 7);
         cb();
         return;
       }
@@ -136,7 +136,7 @@ define('src/account/security/parts.editor.vm', [
       }, null, utils.safeCallback(cb, function(err, resp) {
         closeLayer(resp.Value);
       }, function(err) {
-        notify.notify('error', err.Message);
+        notify.notify('error', 'Error', err.Message);
       }));
     });
 

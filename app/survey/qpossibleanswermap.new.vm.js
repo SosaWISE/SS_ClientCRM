@@ -48,7 +48,7 @@ define('src/survey/qpossibleanswermap.new.vm', [
     _this.cmdAdd = ko.command(function(cb) {
       var possibleAnswer = _this.paComboVM.selectedValue();
       if (!possibleAnswer) {
-        notify.notify('warn', 'No possible answer selected', 10);
+        notify.notify('warn', 'No possible answer selected', null, 10);
         return cb();
       }
       dataservice.survey.questionPossibleAnswerMaps.save({
@@ -59,7 +59,7 @@ define('src/survey/qpossibleanswermap.new.vm', [
         },
       }, null, function(err, resp) {
         if (err) {
-          notify.notify('error', err.Message);
+          notify.notify('error', 'Error', err.Message);
         } else {
           _this.questionVM.addPossibleAnswerMap(resp.Value);
           _this.layer.close();

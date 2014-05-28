@@ -30,12 +30,12 @@ define('src/account/security/clist.industrynums.vm', [
         // console.log(resp);
         load_industryAccounts(_this, function(err) {
           if (err) {
-            notify.notify('error', err.Message);
+            notify.notify('error', 'Error', err.Message);
           }
           cb();
         });
       }, function(err) {
-        notify.notify('error', err.Message);
+        notify.notify('error', 'Error', err.Message);
         cb();
       }));
     });

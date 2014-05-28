@@ -36,7 +36,7 @@ define('src/survey/qmtokenmap.new.vm', [
     _this.cmdAdd = ko.command(function(cb) {
       var selectedValue = _this.tokenComboVM.selectedValue();
       if (!selectedValue) {
-        notify.notify('warn', 'No token selected', 10);
+        notify.notify('warn', 'No token selected', null, 10);
         return cb();
       }
       dataservice.survey.questionMeaningTokenMaps.save({
@@ -47,7 +47,7 @@ define('src/survey/qmtokenmap.new.vm', [
         },
       }, null, function(err, resp) {
         if (err) {
-          notify.notify('error', err.Message);
+          notify.notify('error', 'Error', err.Message);
         } else {
           _this.questionMeaningVM.addTokenMap(resp.Value);
           _this.layer.close();

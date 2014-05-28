@@ -56,7 +56,7 @@ define('src/account/default/rep.find.vm', [
 
       _this.repData.validate();
       if (!_this.repData.isValid()) {
-        notify.notify('warn', _this.repData.errMsg(), 7);
+        notify.notify('warn', _this.repData.errMsg(), null, 7);
         return cb();
       }
 
@@ -69,7 +69,7 @@ define('src/account/default/rep.find.vm', [
           _this.repResult(resp.Value);
         }
       }, function(err) {
-        notify.notify('error', err.Message);
+        notify.notify('error', 'Error', err.Message);
         _this.focusFirst(true);
       }));
     });

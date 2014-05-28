@@ -216,7 +216,7 @@ define('src/account/security/emcontacteditor.vm', [
         return;
       }
       if (!_this.data.isValid()) {
-        notify.notify('warn', _this.data.errMsg(), 7);
+        notify.notify('warn', _this.data.errMsg(), null, 7);
         cb();
         return;
       }
@@ -228,7 +228,7 @@ define('src/account/security/emcontacteditor.vm', [
       }, null, utils.safeCallback(cb, function(err, resp) {
         _this.layer.close(resp.Value, false);
       }, function(err) {
-        notify.notify('error', err.Message);
+        notify.notify('error', 'Error', err.Message);
       }));
     }, function(busy) {
       return !busy && !_this.cmdDelete.busy();
@@ -241,7 +241,7 @@ define('src/account/security/emcontacteditor.vm', [
       dataservice.msaccountsetupsrv.emergencyContacts.del(_this.data.model.EmergencyContactID, null, utils.safeCallback(cb, function(err, resp) {
         _this.layer.close(resp.Value, true);
       }, function(err) {
-        notify.notify('error', err.Message);
+        notify.notify('error', 'Error', err.Message);
       }));
     }, function(busy) {
       return !busy && _this.item && !_this.cmdSave.busy();

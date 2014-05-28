@@ -120,7 +120,7 @@ define('src/survey/question.new.vm', [
     };
     _this.cmdAdd = ko.command(function(cb) {
       if (!_this.data.isValid()) {
-        notify.notify('warn', _this.data.errMsg(), 10);
+        notify.notify('warn', _this.data.errMsg(), null, 10);
         return cb();
       }
       var model = _this.data.getValue(false, true);
@@ -128,7 +128,7 @@ define('src/survey/question.new.vm', [
         data: model,
       }, null, function(err, resp) {
         if (err) {
-          notify.notify('error', err.Message);
+          notify.notify('error', 'Error', err.Message);
         } else {
           _this.layer.close(resp.Value);
         }

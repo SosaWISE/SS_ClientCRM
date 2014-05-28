@@ -51,7 +51,7 @@ define('src/panels/login.panel.vm', [
         }, function(err, resp) {
           if (err) {
             console.error(err);
-            notify.notify('warn', err.Message, 10);
+            notify.notify('error', 'Error', err.Message, 10);
           } else {
             config.user(resp.Value);
             router.useDestPath();

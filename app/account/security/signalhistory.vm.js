@@ -153,7 +153,7 @@ define('src/account/security/signalhistory.vm', [
     }, null, utils.safeCallback(cb, function(err, resp) {
       gvm.list(resp.Value);
     }, function(err) {
-      notify.notify('error', err.Message);
+      notify.notify('error', 'Error', err.Message);
     }));
   }
 
