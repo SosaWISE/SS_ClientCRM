@@ -1,7 +1,11 @@
-/* global describe, it, expect, beforeEach, spyOn */
+/* global describe,it,expect,beforeEach,spyOn,jasmine */
 define('src/core/mockery.spec', [
+  'src/core/utils',
   'src/core/mockery'
-], function(mockery) {
+], function(
+  utils,
+  mockery
+) {
   "use strict";
 
   // mockery.random = Math.random;
@@ -42,7 +46,7 @@ define('src/core/mockery.spec', [
         var expectedCache = {
           'NUMBER(1,2)': 10
         };
-        expect(mockery.fn.NUMBER).toHaveBeenCalledWith(expectedCache, '1', '2');
+        expect(mockery.fn.NUMBER).toHaveBeenCalledWith(jasmine.objectContaining(expectedCache), '1', '2');
       });
     });
 
@@ -125,6 +129,12 @@ define('src/core/mockery.spec', [
     describe('built-in function', function() {
       var resp;
       beforeEach(function() {
+        // temporarily override NOW function
+        var tmpNOW = mockery.fn.NOW;
+        mockery.fn.NOW = function() {
+          return new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6));
+        };
+
         resp = mockery.fromTemplate({
           bool: '@BOOL',
           num: '@NUMBER',
@@ -136,7 +146,14 @@ define('src/core/mockery.spec', [
           id1: '@INC(bob)',
           id2: '@INC(bob,cachebuster)',
           id3: '@INC(frank)',
-        });
+          datetime: '@DATETIME',
+          datetimeParams1: '@DATETIME(0,10)', // between now and 10 days in the future
+          datetimeParams2: '@DATETIME(-10,0)', // between 10 days in the past and now
+          datetimeParams3: '@DATETIME(-10,10)', // between 10 days in the past and 10 days in the future
+        }, Math.random);
+
+        // re-set NOW function
+        mockery.fn.NOW = tmpNOW;
       });
 
       it('@BOOL should return a boolean', function() {
@@ -166,6 +183,23 @@ define('src/core/mockery.spec', [
         expect(typeof(resp.id1)).toBe('number');
         expect(resp.id2).toBe(resp.id1 + 1);
         expect(resp.id3).toBeLessThan(resp.id1);
+      });
+
+      it('@DATETIME with zero params should return a random date', function() {
+        expect(utils.isDate(resp.datetime)).toBe(true);
+      });
+      it('@DATETIME with two params should return a random date within the parameters', function() {
+        expect(utils.isDate(resp.datetimeParams1)).toBe(true);
+        expect(resp.datetimeParams1 >= new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6))).toBe(true, 'datetimeParams1 not >= now');
+        expect(resp.datetimeParams1 <= new Date(Date.UTC(2000, 5, 20, 9, 8, 7, 6))).toBe(true, 'datetimeParams1 not <= 10 days in the future');
+
+        expect(utils.isDate(resp.datetimeParams2)).toBe(true);
+        expect(resp.datetimeParams2 >= new Date(Date.UTC(2000, 4, 31, 9, 8, 7, 6))).toBe(true, 'datetimeParams2 not >= 10 days in the past');
+        expect(resp.datetimeParams2 <= new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6))).toBe(true, 'datetimeParams2 not <= now');
+
+        expect(utils.isDate(resp.datetimeParams3)).toBe(true);
+        expect(resp.datetimeParams3 >= new Date(Date.UTC(2000, 4, 31, 9, 8, 7, 6))).toBe(true, 'datetimeParams3 not >= 10 days in the past');
+        expect(resp.datetimeParams3 <= new Date(Date.UTC(2000, 5, 20, 9, 8, 7, 6))).toBe(true, 'datetimeParams3 not <= 10 days in the future');
       });
     });
   });

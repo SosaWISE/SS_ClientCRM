@@ -13,16 +13,16 @@ define('src/core/mockery', [
     incMap = {};
 
   mockery.fn = {
-    BOOL: function() {
-      return mockery.random() >= 0.5;
+    BOOL: function(cache) {
+      return cache.__funcs.random() >= 0.5;
     },
     NUMBER: function(cache, min, max) {
-      return randomFromRange(min, max, 0, 10);
+      return randomFromRange(cache, min, max, 0, 10);
     },
     MONEY: function(cache, min, max) {
       min = (min) ? parseInt(min, 10) : 1;
       max = (max) ? parseInt(max, 10) : 100;
-      return randomFromRange(min * 100, max * 100, 100, 10000) / 100;
+      return randomFromRange(cache, min * 100, max * 100, 100, 10000) / 100;
     },
     INC: function(cache, key, idSeed) {
       var val, obj = incMap[key];
@@ -41,7 +41,7 @@ define('src/core/mockery', [
       return val;
     },
     INC_NULLABLE: function(cache, key) {
-      if (mockery.random() >= 0.8) {
+      if (cache.__funcs.random() >= 0.8) {
         return null; // top level
       } else {
         return mockery.fn.INC(cache, key + 'NULLABLE');
@@ -62,12 +62,12 @@ define('src/core/mockery', [
     },
     TEXT: function(cache, min, max) {
       var results = [],
-        num = randomFromRange(min, max, 10, 50),
+        num = randomFromRange(cache, min, max, 10, 50),
         length = 0,
         splitIndex,
         str = loremIpsum,
         tmpStr;
-      splitIndex = Math.floor((loremIpsum.length - 2) * mockery.random());
+      splitIndex = Math.floor((loremIpsum.length - 2) * cache.__funcs.random());
       str = loremIpsum.substr(splitIndex) + loremIpsum.substr(0, splitIndex);
       while (length < num) {
         if ((length + str.length) < num) {
@@ -117,31 +117,31 @@ define('src/core/mockery', [
     NOW: function() {
       return new Date();
     },
-    DATE: function() {
+    DATE: function(cache) {
       //@TODO: correctly
-      return randomDate();
+      return randomDate(cache);
     },
-    DATETIME: function() {
-      return randomDate();
+    DATETIME: function(cache, startDaysFromNow, endDaysFromNow) {
+      return randomDate(cache, startDaysFromNow, endDaysFromNow);
     },
-    DATE_YYYY: function() {
-      var yyyy = randomDate().getFullYear();
+    DATE_YYYY: function(cache) {
+      var yyyy = randomDate(cache).getFullYear();
       return yyyy + '';
     },
-    DATE_DD: function() {
-      return padLeft(randomDate().getDate(), '0', 2);
+    DATE_DD: function(cache) {
+      return padLeft(randomDate(cache).getDate(), '0', 2);
     },
-    DATE_MM: function() {
-      return padLeft(randomDate().getMonth() + 1, '0', 2);
+    DATE_MM: function(cache) {
+      return padLeft(randomDate(cache).getMonth() + 1, '0', 2);
     },
-    TIME_HH: function() {
-      return padLeft(randomDate().getHours(), '0', 2);
+    TIME_HH: function(cache) {
+      return padLeft(randomDate(cache).getHours(), '0', 2);
     },
-    TIME_MM: function() {
-      return padLeft(randomDate().getMinutes(), '0', 2);
+    TIME_MM: function(cache) {
+      return padLeft(randomDate(cache).getMinutes(), '0', 2);
     },
-    TIME_SS: function() {
-      return padLeft(randomDate().getSeconds(), '0', 2);
+    TIME_SS: function(cache) {
+      return padLeft(randomDate(cache).getSeconds(), '0', 2);
     },
   };
   mockery.fn.NAME = [].concat(mockery.fn.MNAME).concat(mockery.fn.FEMNAME);
@@ -171,11 +171,15 @@ define('src/core/mockery', [
   function fromArrayTemplate(template, cache, range) {
     var result = [];
 
-    range = getRangeValue(range, 1, 10);
+    range = getRangeValue(cache, range, 1, 10);
 
     template = template[0];
     while (range > 0) {
-      cache = {}; // reset cache for each result value
+      // reset cache for each result value
+      cache = {
+        // copy __funcs
+        __funcs: cache.__funcs,
+      };
       result.push(fromTemplate(template, cache));
       range--;
     }
@@ -208,7 +212,7 @@ define('src/core/mockery', [
           template = template.replace(key, getData(key.substr(1), cache));
         });
 
-        repeatRange = getRangeValue(repeatRange, 1, 1);
+        repeatRange = getRangeValue(cache, repeatRange, 1, 1);
         while (repeatRange > 0) {
           repeatRange--;
           result += template;
@@ -220,14 +224,14 @@ define('src/core/mockery', [
     return result;
   }
 
-  function getRangeValue(range, defaultMin, defaultMax) {
+  function getRangeValue(cache, range, defaultMin, defaultMax) {
     var result,
       matches = (range || '').match(/(\d+)-(\d+)/);
 
     if (matches) {
-      result = randomFromRange(matches[1], matches[2], defaultMin, defaultMax);
+      result = randomFromRange(cache, matches[1], matches[2], defaultMin, defaultMax);
     } else {
-      result = randomFromRange(defaultMin, defaultMax);
+      result = randomFromRange(cache, defaultMin, defaultMax);
     }
     return result;
   }
@@ -285,7 +289,7 @@ define('src/core/mockery', [
 
       // must be an array or a function
       if (Array.isArray(fnValue)) {
-        result = fnValue[Math.floor(fnValue.length * mockery.random())];
+        result = fnValue[Math.floor(fnValue.length * cache.__funcs.random())];
       } else {
         result = fnValue.apply(null, params);
       }
@@ -321,7 +325,7 @@ define('src/core/mockery', [
     return (refCount % count) + obj.idSeed;
   }
 
-  function randomFromRange(min, max, defaultMin, defaultMax) {
+  function randomFromRange(cache, min, max, defaultMin, defaultMax) {
     min = (min) ? parseInt(min, 10) : (defaultMin || 0);
     max = (max) ? parseInt(max, 10) : (defaultMax || 10);
     if (max < min) {
@@ -329,11 +333,22 @@ define('src/core/mockery', [
       max = min;
       min = tmp;
     }
-    return Math.round(mockery.random() * (max - min)) + min;
+    return Math.round(cache.__funcs.random() * (max - min)) + min;
   }
 
-  function randomDate() {
-    return new Date(Math.floor(mockery.random() * new Date().valueOf()));
+  function randomDate(cache, startDaysFromNow, endDaysFromNow) {
+    // startDaysFromNow/endDaysFromNow: number of days before or after now
+    //   - positive number goes into the future
+    //   - negative number goes into the past
+    startDaysFromNow = parseInt(startDaysFromNow, 10);
+    endDaysFromNow = parseInt(endDaysFromNow, 10);
+    if (!isNaN(startDaysFromNow) && !isNaN(endDaysFromNow)) {
+      var nowTimestamp = mockery.fn.NOW().valueOf(),
+        val = randomFromRange(cache, nowTimestamp + (startDaysFromNow * 86400000), nowTimestamp + (endDaysFromNow * 86400000));
+      return new Date(val);
+    } else {
+      return new Date(Math.floor(cache.__funcs.random() * Date.now()));
+    }
   }
 
   // set to Math.random if you want more random
@@ -344,8 +359,12 @@ define('src/core/mockery', [
     return x;
   };
   mockery.randomIndex = 1;
-  mockery.fromTemplate = function(template) {
-    return fromTemplate(template, {});
+  mockery.fromTemplate = function(template, randomFn) {
+    return fromTemplate(template, {
+      __funcs: {
+        random: randomFn || mockery.random,
+      },
+    });
   };
   mockery.log = false;
   mockery.getData = getData;
@@ -399,7 +418,11 @@ define('src/core/mockery', [
       // replace old value with new value
       list.splice(index, 1, newValue);
     } else {
-      newValue[idName] = mockery.fromTemplate(idTemplate);
+      newValue[idName] = mockery.fromTemplate(idTemplate, {
+        __funcs: {
+          random: mockery.random,
+        },
+      });
       // add new value
       list.push(newValue);
     }

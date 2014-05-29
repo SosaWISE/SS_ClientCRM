@@ -66,39 +66,130 @@ define('src/account/security/signalhistory.vm', [
         forceFitColumns: true,
         rowHeight: 27,
       },
+      // columns: [ //
+      //   {
+      //     id: 'SignalType',
+      //     name: 'SignalType',
+      //     field: 'SignalType',
+      //   }, {
+      //     id: 'EventDate',
+      //     name: 'EventDate',
+      //     field: 'EventDate',
+      //   }, {
+      //     id: 'TwoWayTest',
+      //     name: 'TwoWayTest',
+      //     field: 'TwoWayTest',
+      //   }, {
+      //     id: 'IndustryNumber',
+      //     name: 'IndustryNumber',
+      //     field: 'IndustryNumber',
+      //   }, {
+      //     id: 'ZoneNumber',
+      //     name: 'ZoneNumber',
+      //     field: 'ZoneNumber',
+      //   }, {
+      //     id: 'EventCode',
+      //     name: 'EventCode',
+      //     field: 'EventCode',
+      //   }, {
+      //     id: 'EventDetails',
+      //     name: 'EventDetails',
+      //     field: 'EventDetails',
+      //   }, {
+      //     id: 'Computed',
+      //     name: 'Computed',
+      //     field: 'Computed',
+      //   },
+      // ],
       columns: [ //
         {
-          id: 'SignalType',
-          name: 'SignalType',
-          field: 'SignalType',
+          id: 'HistoryDate',
+          name: 'HistoryDate',
+          field: 'HistoryDate',
         }, {
-          id: 'EventDate',
-          name: 'EventDate',
-          field: 'EventDate',
+          id: 'UTCDate',
+          name: 'UTCDate',
+          field: 'UTCDate',
         }, {
-          id: 'TwoWayTest',
-          name: 'TwoWayTest',
-          field: 'TwoWayTest',
+          id: 'TransmitterCode',
+          name: 'TransmitterCode',
+          field: 'TransmitterCode',
         }, {
-          id: 'IndustryNumber',
-          name: 'IndustryNumber',
-          field: 'IndustryNumber',
-        }, {
-          id: 'ZoneNumber',
-          name: 'ZoneNumber',
-          field: 'ZoneNumber',
+          id: 'SiteName',
+          name: 'SiteName',
+          field: 'SiteName',
         }, {
           id: 'EventCode',
           name: 'EventCode',
           field: 'EventCode',
         }, {
-          id: 'EventDetails',
-          name: 'EventDetails',
-          field: 'EventDetails',
+          id: 'EventCodeDescription',
+          name: 'EventCodeDescription',
+          field: 'EventCodeDescription',
         }, {
-          id: 'Computed',
-          name: 'Computed',
-          field: 'Computed',
+          id: 'OpAct',
+          name: 'OpAct',
+          field: 'OpAct',
+        }, {
+          id: 'OpActDescription',
+          name: 'OpActDescription',
+          field: 'OpActDescription',
+        }, {
+          id: 'SignalCode',
+          name: 'SignalCode',
+          field: 'SignalCode',
+        }, {
+          id: 'Point',
+          name: 'Point',
+          field: 'Point',
+        }, {
+          id: 'PointDescription',
+          name: 'PointDescription',
+          field: 'PointDescription',
+        }, {
+          id: 'Comment',
+          name: 'Comment',
+          field: 'Comment',
+        }, {
+          id: 'AlarmNum',
+          name: 'AlarmNum',
+          field: 'AlarmNum',
+        }, {
+          id: 'AreaNum',
+          name: 'AreaNum',
+          field: 'AreaNum',
+        }, {
+          id: 'TestNum',
+          name: 'TestNum',
+          field: 'TestNum',
+        }, {
+          id: 'RawMessage',
+          name: 'RawMessage',
+          field: 'RawMessage',
+        }, {
+          id: 'Phone',
+          name: 'Phone',
+          field: 'Phone',
+        }, {
+          id: 'FullClearFlag',
+          name: 'FullClearFlag',
+          field: 'FullClearFlag',
+        }, {
+          id: 'UserId',
+          name: 'UserId',
+          field: 'UserId',
+        }, {
+          id: 'UserName',
+          name: 'UserName',
+          field: 'UserName',
+        }, {
+          id: 'Latitude',
+          name: 'Latitude',
+          field: 'Latitude',
+        }, {
+          id: 'Longitude',
+          name: 'Longitude',
+          field: 'Longitude',
         },
       ],
     });
@@ -149,7 +240,7 @@ define('src/account/security/signalhistory.vm', [
       link: 'signalhistory',
       query: {
         days: days,
-      }
+      },
     }, null, utils.safeCallback(cb, function(err, resp) {
       gvm.list(resp.Value);
     }, function(err) {
