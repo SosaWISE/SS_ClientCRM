@@ -6,7 +6,8 @@ define('src/account/security/equipment.vm', [
   'src/core/layers.vm',
   'src/core/notify',
   'src/core/utils',
-  'src/core/controller.vm',
+  'src/core/controller.vm',  
+   
 ], function(
   ko,
   EquipmentEditorViewModel,
@@ -15,9 +16,11 @@ define('src/account/security/equipment.vm', [
   LayersViewModel,
   notify,
   utils,
-  ControllerViewModel
+  ControllerViewModel  
 ) {
   "use strict";
+
+  var CompanyId;
 
   function EquipmentViewModel(options) {
     var _this = this;
@@ -28,16 +31,26 @@ define('src/account/security/equipment.vm', [
       controller: _this,
     });
 
+
     _this.gvm = new EquipmentGridViewModel();
+
+
+    //Retrieve the Technician ID to be used for Adding by Barcode/Part#
+    CompanyId = _this.repCompanyID;
+    console.log("CompanyId: "+JSON.stringify(CompanyId));  
+
 
     //
     // events
     //
+
+
+
     _this.cmdAddByPart = ko.command(function(cb) {
-      showEquipmentEditor(_this, true, cb);
+      showEquipmentEditor(_this, true, cb, CompanyId);
     });
     _this.cmdAddByBarcode = ko.command(function(cb) {
-      showEquipmentEditor(_this, false, cb);
+      showEquipmentEditor(_this, false, cb, CompanyId);
     });
     _this.cmdAddExistingEquipment = ko.command(function(cb) {
       showExistingEquipmentEditor(_this, cb);
@@ -59,8 +72,9 @@ define('src/account/security/equipment.vm', [
   };
 
 
-  function showEquipmentEditor(_this, byPart, cb) {
-    _this.layersVm.show(createEquipmentEditor(_this, byPart), createEquipmentEditorCb(_this, cb));
+
+  function showEquipmentEditor(_this, byPart, cb, CompanyId) {    
+    _this.layersVm.show(createEquipmentEditor(_this, byPart, CompanyId), createEquipmentEditorCb(_this, cb));
   }
 
   function showExistingEquipmentEditor(_this, cb) {
@@ -68,7 +82,8 @@ define('src/account/security/equipment.vm', [
   }
 
 
-  function createEquipmentEditor(_this, byPart) {
+  function createEquipmentEditor(_this, byPart, CompanyId) { 
+
     return new EquipmentEditorViewModel({
       byPart: byPart,
       accountId: _this.accountId,
@@ -79,6 +94,7 @@ define('src/account/security/equipment.vm', [
         id: 'SALS001',
         name: 'SALS001',
       },
+      tId: CompanyId
       // technician: {
       //   id: 'FRANK002',
       //   name: 'Frank',

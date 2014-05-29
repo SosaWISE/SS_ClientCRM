@@ -4,14 +4,16 @@ define('src/account/default/rep.find.vm', [
   'src/core/base.vm',
   'ko',
   'src/ukov',
-  'src/dataservice'
+  'src/dataservice',
+  'src/account/security/equipment.vm'
 ], function(
   notify,
   utils,
   BaseViewModel,
   ko,
   ukov,
-  dataservice
+  dataservice,
+  EquipmentViewModel
 ) {
   "use strict";
 
@@ -66,7 +68,17 @@ define('src/account/default/rep.find.vm', [
       }, null, utils.safeCallback(cb, function(err, resp) {
         _this.repData.markClean(model);
         if (resp && resp.Value) {
-          _this.repResult(resp.Value);
+          _this.repResult(resp.Value); 
+          
+          
+          //Extract TechnicianID - I'm not sure if this is the right way of passing value to EquipmentViewModel
+          return new EquipmentViewModel({          
+            //repResult:resp.Value
+            repCompanyID:resp.Value.CompanyID
+          }); 
+
+
+
         }
       }, function(err) {
         notify.notify('error', 'Error', err.Message);

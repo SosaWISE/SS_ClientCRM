@@ -29,7 +29,7 @@ div(class="equipment-editor")
     ul(class="edit-form limit-width")
       li
         span(class="label") Item
-        span(class="label") Item name goes here
+        span(class="label" data-bind="text: itemName") Item name goes here
       li
         span(class="label") Zone
         input(type="text",placeholder="",data-bind="ukov:data.Zone,value:data.Zone,valueUpdate:'keyup'")
@@ -45,7 +45,7 @@ div(class="equipment-editor")
     ul(class="edit-form limit-width right-side")
       li
         span(class="label") Part #
-        span(class="label") Part # goes here
+        span(class="label" data-bind="text: partNumber") Part # goes here
       li
         span(class="label") Upgrade
         div(data-bind="cvm:data.IsUpgradeCvm")
