@@ -11,14 +11,14 @@ Dependencies
   * [Node.js](http://nodejs.org/)
   * [Grunt.js](https://github.com/gruntjs/grunt-cli) (you will need sudo/admin privileges)
 
-        npm install -g grunt-cli
+        npm install -g grunt-cli@0.1.13
 
 
 
 Setup
 -----
 
-* Install required node modules.
+* (DO NOT DO THIS STEP - node modules are not checked in)Install required node modules.
 
         npm install
 
@@ -64,7 +64,7 @@ All javascript code should pass jshint. Linting rules are specified in `.jshintr
 You can install it with the command below (you will need sudo/admin privileges). If you have Sublime Text you can make it easier to use by installing the packages below.
 Although, you will still need to install this node module.
 
-    npm install -g jshint
+    npm install -g jshint@2.4.4
 
 
 Run
@@ -202,7 +202,7 @@ Javascript linting
       * Select Package Control: Install Package (type: pcip, then press: enter)
       * Select SublimeLinter-jshint package (type: sublimelinter-jshint, then press: enter)
       * globally install jshint (you will need sudo/admin privileges)
-          * `npm install -g jshint`
+          * `npm install -g jshint@2.4.4`
       * Preferences > Package Settings > SublimeLinter > Settings - User
           * change `"show_errors_on_save": false,` to `"show_errors_on_save": true,`
 

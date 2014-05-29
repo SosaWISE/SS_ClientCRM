@@ -232,9 +232,9 @@ module.exports = function(grunt) {
       },
     },
 
-    exec: {
-      npm_install: 'npm install',
-    },
+    // exec: {
+    //   npm_install: 'npm install',
+    // },
   });
 
   grunt.registerTask('init', [
@@ -258,7 +258,7 @@ module.exports = function(grunt) {
 
 
   grunt.registerTask('precommit', [
-    'exec:npm_install', // before running make sure node_modules match package.json
+    // 'exec:npm_install', // before running make sure node_modules match package.json
     'jsbeautifier:test', // faster than jshint
     'jshint',
   ]);
