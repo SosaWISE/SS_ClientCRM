@@ -172,7 +172,7 @@ pip-log.txt
 ##############
 ## Node.js
 ##############
-node_modules
+#node_modules
 
 
 ##############
