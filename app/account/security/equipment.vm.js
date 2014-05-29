@@ -6,8 +6,8 @@ define('src/account/security/equipment.vm', [
   'src/core/layers.vm',
   'src/core/notify',
   'src/core/utils',
-  'src/core/controller.vm',  
-   
+  'src/core/controller.vm',
+
 ], function(
   ko,
   EquipmentEditorViewModel,
@@ -16,7 +16,7 @@ define('src/account/security/equipment.vm', [
   LayersViewModel,
   notify,
   utils,
-  ControllerViewModel  
+  ControllerViewModel
 ) {
   "use strict";
 
@@ -37,7 +37,7 @@ define('src/account/security/equipment.vm', [
 
     //Retrieve the Technician ID to be used for Adding by Barcode/Part#
     CompanyId = _this.repCompanyID;
-    console.log("CompanyId: "+JSON.stringify(CompanyId));  
+    console.log("CompanyId: " + JSON.stringify(CompanyId));
 
 
     //
@@ -73,7 +73,7 @@ define('src/account/security/equipment.vm', [
 
 
 
-  function showEquipmentEditor(_this, byPart, cb, CompanyId) {    
+  function showEquipmentEditor(_this, byPart, cb, CompanyId) {
     _this.layersVm.show(createEquipmentEditor(_this, byPart, CompanyId), createEquipmentEditorCb(_this, cb));
   }
 
@@ -82,7 +82,7 @@ define('src/account/security/equipment.vm', [
   }
 
 
-  function createEquipmentEditor(_this, byPart, CompanyId) { 
+  function createEquipmentEditor(_this, byPart, CompanyId) {
 
     return new EquipmentEditorViewModel({
       byPart: byPart,

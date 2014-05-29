@@ -35,11 +35,11 @@ define('src/account/security/equipment.editor.vm', [
     AssignTo: {},
     IsUpgrade: {},
     //UpgradePrice: {
-      //converter: ukov.converters.number(2),
+    //converter: ukov.converters.number(2),
     //},
     Price: {
       converter: ukov.converters.number(2),
-    },    
+    },
     IsExistingWiring: {},
     //MainPanel: {},
     IsMainPanel: {},
@@ -56,7 +56,7 @@ define('src/account/security/equipment.editor.vm', [
     ]);
     _this.mixinLoad();
 
-    _this.searchKey = ukov.wrap('', searchKeySchema);  
+    _this.searchKey = ukov.wrap('', searchKeySchema);
 
     _this.data = ukov.wrap(_this.item || {
       Zone: '',
@@ -128,15 +128,15 @@ define('src/account/security/equipment.editor.vm', [
       // closeLayer(result);
       cb();
     });
-    _this.cmdSearch = ko.command(function( cb ) {
-         search(cb);
+    _this.cmdSearch = ko.command(function(cb) {
+      search(cb);
     });
 
 
-      //Initially set Item name and part# labels
-     _this.itemName = ko.observable();
-     _this.partNumber = ko.observable();
-     
+    //Initially set Item name and part# labels
+    _this.itemName = ko.observable();
+    _this.partNumber = ko.observable();
+
 
     //@TODO: search for barcode/part#
     //         "MsAccountSetupSrv/Equipments/" + equipment1 + "/ByPartNumber?id=" + accountValue.AccountID + "&tId=SOSA001",
@@ -144,33 +144,33 @@ define('src/account/security/equipment.editor.vm', [
     //trying to implement search function - i am not sure if this is the right place for
     //search function reagan 05/22/2014
 
-  function search(cb){
-      var searchKey =_this.searchKey.getValue();
+    function search(cb) {
+      var searchKey = _this.searchKey.getValue();
       //console.log(searchKey);
       //console.log(_this.data);
-      console.log("accountId:"+_this.accountId);
+      console.log("accountId:" + _this.accountId);
 
-      console.log("tId:" +_this.tId);
-      
+      console.log("tId:" + _this.tId);
+
       //For now, do search only by part#
       dataservice.msaccountsetupsrv.equipments.read({
         id: searchKey,
         link: 'ByPartNumber',
-        query: {          
-          id: _this.accountId,  
-          //id: '150923',        
+        query: {
+          id: _this.accountId,
+          //id: '150923',
           tid: _this.tId
         }
       }, null, utils.safeCallback(cb, function(err, resp) {
-         
-         console.log(resp.Value);
 
-         //Set Item Name and Part# to UI         
-         _this.itemName(resp.Value.ItemDesc);
-         _this.partNumber(searchKey);
-         
-         _this.data.setValue(resp.Value); 
-    
+        console.log(resp.Value);
+
+        //Set Item Name and Part# to UI
+        _this.itemName(resp.Value.ItemDesc);
+        _this.partNumber(searchKey);
+
+        _this.data.setValue(resp.Value);
+
 
       }, function(err) {
 
