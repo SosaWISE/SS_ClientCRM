@@ -157,8 +157,8 @@ define('src/account/security/equipment.editor.vm', [
         id: searchKey,
         link: 'ByPartNumber',
         query: {          
-          //id: _this.accountId,  
-          id: '150923',        
+          id: _this.accountId,  
+          //id: '150923',        
           tid: _this.tId
         }
       }, null, utils.safeCallback(cb, function(err, resp) {
