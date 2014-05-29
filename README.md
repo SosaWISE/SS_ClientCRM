@@ -18,7 +18,7 @@ Dependencies
 Setup
 -----
 
-* (DO NOT DO THIS STEP - node modules are not checked in)Install required node modules.
+* (DO NOT DO THIS STEP - node modules are now checked in) Install required node modules.
 
         npm install
 
