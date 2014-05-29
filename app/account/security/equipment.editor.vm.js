@@ -30,14 +30,19 @@ define('src/account/security/equipment.editor.vm', [
       converter: strConverter,
     },
     ZoneEventType: {},
-    ItemLocation: {},
+    //ItemLocation: {},
+    AccountZoneTypeId: {},
     AssignTo: {},
     IsUpgrade: {},
-    UpgradePrice: {
+    //UpgradePrice: {
+      //converter: ukov.converters.number(2),
+    //},
+    Price: {
       converter: ukov.converters.number(2),
-    },
+    },    
     IsExistingWiring: {},
-    MainPanel: {},
+    //MainPanel: {},
+    IsMainPanel: {},
   };
 
 
@@ -56,12 +61,15 @@ define('src/account/security/equipment.editor.vm', [
     _this.data = ukov.wrap(_this.item || {
       Zone: '',
       ZoneEventType: null,
-      ItemLocation: null,
+      //ItemLocation: null,
+      AccountZoneTypeId: null,
       AssignTo: null,
       IsUpgrade: null,
-      UpgradePrice: '',
+      //UpgradePrice: '',
+      Price: '',
       IsExistingWiring: null,
-      MainPanel: null,
+      //MainPanel: null,
+      IsMainPanel: null,
     }, schema);
 
     _this.data.ZoneEventTypeCvm = new ComboViewModel({
@@ -72,7 +80,7 @@ define('src/account/security/equipment.editor.vm', [
       },
     });
     _this.data.ItemLocationCvm = new ComboViewModel({
-      selectedValue: _this.data.ItemLocation,
+      selectedValue: _this.data.AccountZoneTypeId,
       fields: {
         value: 'AccountZoneTypeID',
         text: 'AccountZoneType',
@@ -102,7 +110,7 @@ define('src/account/security/equipment.editor.vm', [
       list: _this.yesNoOptions,
     });
     _this.data.MainPanelCvm = new ComboViewModel({
-      selectedValue: _this.data.MainPanel,
+      selectedValue: _this.data.IsMainPanel,
       nullable: true,
       list: _this.yesNoOptions,
     });
@@ -126,8 +134,9 @@ define('src/account/security/equipment.editor.vm', [
 
 
       //Initially set Item name and part# labels
-     _this.itemName = ko.observable(' ');
-     _this.partNumber = ko.observable(' ');
+     _this.itemName = ko.observable();
+     _this.partNumber = ko.observable();
+     
 
     //@TODO: search for barcode/part#
     //         "MsAccountSetupSrv/Equipments/" + equipment1 + "/ByPartNumber?id=" + accountValue.AccountID + "&tId=SOSA001",
@@ -139,6 +148,7 @@ define('src/account/security/equipment.editor.vm', [
       var searchKey =_this.searchKey.getValue();
       //console.log(searchKey);
       //console.log(_this.data);
+      console.log("accountId:"+_this.accountId);
 
       console.log("tId:" +_this.tId);
       
@@ -146,12 +156,9 @@ define('src/account/security/equipment.editor.vm', [
       dataservice.msaccountsetupsrv.equipments.read({
         id: searchKey,
         link: 'ByPartNumber',
-        query: {
-          //partNumber: searchKey,
-          id: _this.accountId,
-          //id: '150939',
-          //id: 10000,
-          //tid:'SOSA001'
+        query: {          
+          //id: _this.accountId,  
+          id: '150923',        
           tid: _this.tId
         }
       }, null, utils.safeCallback(cb, function(err, resp) {
@@ -161,6 +168,9 @@ define('src/account/security/equipment.editor.vm', [
          //Set Item Name and Part# to UI         
          _this.itemName(resp.Value.ItemDesc);
          _this.partNumber(searchKey);
+         
+         _this.data.setValue(resp.Value); 
+    
 
       }, function(err) {
 
