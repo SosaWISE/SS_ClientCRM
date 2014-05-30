@@ -11,6 +11,5 @@ git --git-dir=/home/user/crm.git --work-tree=${DIR} checkout -f master
 
 # install and build
 cd ${DIR}
-npm install
 grunt init
 grunt build
