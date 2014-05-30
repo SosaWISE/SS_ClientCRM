@@ -304,22 +304,22 @@ define('src/panels/swing.panel.vm', [
       //debugging
       console.log('Value:' + JSON.stringify(resp.Value));
 
-      if (err) {        
-        notify.notify('error', 'Error', err.Message, 10);        
+      if (err) {
+        notify.notify('error', 'Error', err.Message, 10);
       } else if (resp.Value) {
-        //if (resp.Value.SwingStatus === "1") {          
-          
-          //disable swing button and display label New Accounted created
-          vm.isVisible(true);
-          vm.data.InterimAccountId(resp.Value.MsAccountID);
-          vm.data.CustomerMasterFileID(resp.Value.CustomerMasterFileID);
-          
-          notify.notify('ok', 'Swing Successful!');
-          
+        //if (resp.Value.SwingStatus === "1") {
+
+        //disable swing button and display label New Accounted created
+        vm.isVisible(true);
+        vm.data.InterimAccountId(resp.Value.MsAccountID);
+        vm.data.CustomerMasterFileID(resp.Value.CustomerMasterFileID);
+
+        notify.notify('ok', 'Swing Successful!');
+
         //} else {
 
-          //temporarily display exception error from database. can't figure out how to return the exception returned by c# yet
-          //notify.notify('error', 'Error', resp.Value.SwingStatus);
+        //temporarily display exception error from database. can't figure out how to return the exception returned by c# yet
+        //notify.notify('error', 'Error', resp.Value.SwingStatus);
         //}
       } else {
         //vm.data.setVal(null);
@@ -328,9 +328,9 @@ define('src/panels/swing.panel.vm', [
         vm.clearData();
       }
 
-    //}, utils.no_op));
-    }, function(err){        
-        notify.notify('error', err.Message);               
+      //}, utils.no_op));
+    }, function(err) {
+      notify.notify('error', err.Message);
     }));
 
     cb();
@@ -438,18 +438,18 @@ define('src/panels/swing.panel.vm', [
         return;
       }
       if (resp.Value) {
-        
+
         //Insert the first occurence of phone number to Add Dnc phone number field
-        if(resp.Value.length>0) {
+        if (resp.Value.length > 0) {
           vm.data.PhoneNumber(resp.Value[0].PhoneNumber1);
-        }  
+        }
 
         //Update Emergency Contact List
         vm.swingEmGvm.list(resp.Value);
       }
     }, utils.no_op));
 
-  
+
     //load data on UI for System Details
     dataservice.swingaccountsrv.CustomerSwingSystemDetails.read({
         id: msAccount.AccountID
@@ -480,7 +480,7 @@ define('src/panels/swing.panel.vm', [
       }
 
     }, utils.no_op));
-  
+
 
     //Get Info from Swung table
     dataservice.swingaccountsrv.CustomerSwungInfo.read({
