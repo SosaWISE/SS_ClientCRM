@@ -434,53 +434,18 @@ define('src/panels/swing.panel.vm', [
         return;
       }
       if (resp.Value) {
-
+        
         //Insert the first occurence of phone number to Add Dnc phone number field
-        vm.data.PhoneNumber(resp.Value[0].PhoneNumber1);
+        if(resp.Value.length>0) {
+          vm.data.PhoneNumber(resp.Value[0].PhoneNumber1);
+        }  
 
         //Update Emergency Contact List
         vm.swingEmGvm.list(resp.Value);
       }
     }, utils.no_op));
 
-
-    /*
-    dataservice.swingaccountsrv.CustomerSwingEmergencyContact.read({
-      id: msAccount.AccountID
-    }, null, utils.safeCallback(cb, function(err, resp) {
-      if (err) {
-        notify.notify('error', 'Error', err.Message, 10);
-        return;
-      }
-      if (resp.Value) {
-
-        var customer = resp.Value,
-          len = customer.length,
-          data = [],
-          mi = '',
-          x;
-
-        if (len > 0) {
-          for (x = 0; x < len; x++) {
-
-            mi = customer[x].MiddleInit == null ? customer[x].FirstName + " " + customer[x].LastName : customer[x].FirstName + " " + customer[x].MiddleInit + " " + customer[x].LastName;
-
-            data.push({
-              Name: mi,
-              Relationship: customer[x].Relationship,
-              Phone: customer[x].PhoneNumber1,
-            });
-
-          }
-        }
-
-        //Update Emergency Contact List
-        vm.swingEmGvm.list(data);
-      }
-    }, utils.no_op));
-    */
-
-
+  
     //load data on UI for System Details
     dataservice.swingaccountsrv.CustomerSwingSystemDetails.read({
         id: msAccount.AccountID
@@ -511,39 +476,7 @@ define('src/panels/swing.panel.vm', [
       }
 
     }, utils.no_op));
-    /*dataservice.swingaccountsrv.CustomerSwingEquipmentInfo.read({
-      id: msAccount.AccountID
-    }, null, utils.safeCallback(cb, function(err, resp) {
-      if (err) {
-        notify.notify('error', 'Error', err.Message, 10);
-        return;
-      }
-      if (resp.Value) {
-
-        var customer = resp.Value,
-          len = customer.length,
-          data = [],
-          x;
-
-        if (len > 0) {
-          for (x = 0; x < len; x++) {
-
-            data.push({
-              Zone: customer[x].ZoneTypeName,
-              Equipment: customer[x].FullName,
-              'Location': customer[x].EquipmentLocationDesc,
-            });
-
-          }
-        }
-
-        //Update Equipment Info List
-        vm.swingEquipmentGvm.list(data);
-      }
-
-    }, utils.no_op));*/
-
-
+  
 
     //Get Info from Swung table
     dataservice.swingaccountsrv.CustomerSwungInfo.read({
