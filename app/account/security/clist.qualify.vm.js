@@ -162,18 +162,19 @@ define('src/account/security/clist.qualify.vm', [
       dataservice.qualify.addressValidation.read({
         id: data.AddressID,
       }, function(val) {
-        // attempt to Normalize data
-        val.PhoneNumber = val.Phone || '[Missing Phone]';
-        val.TimeZone = data.TimeZoneName;
+        // normalize data
+        val.PhoneNumber = val.PhoneNumber || data.Phone;
+        val.TimeZone = val.TimeZone || data.TimeZoneName;
         _this.addressModel(val);
       }, join.add());
 
       // load customer
       _this.customerModel({
+        // normalize data
         CustomerName: data.CustomerName,
         SSN: data.SSN,
         DOB: data.DOB,
-        Email: data.Email,
+        Email: data.CustomerEmail,
       });
 
       // load credit
@@ -181,11 +182,9 @@ define('src/account/security/clist.qualify.vm', [
       //   id: data.CreditReportID,
       // }, _this.creditResult, join.add());
       _this.creditResult({
-        // attempt to Normalize data
         LeadId: data.LeadID,
-        IsHit: data.CRStatus === 'Report Found',
-        CreditGroup: '???',
-        BureauId: data.BureauName, //?????
+        IsHit: data.IsHit,
+        CreditGroup: data.CreditGroup,
         BureauName: data.BureauName,
       });
 
