@@ -226,7 +226,8 @@ define('src/panels/swing.panel.vm', [
       Customer2: customer,
       Address: address,
       SystemDetail: systemDetail,
-      SwingEquipment: null
+      SwingEquipment: null,
+      PhoneNumber: null
     };
 
     _this.data.setValue(data);
@@ -433,6 +434,10 @@ define('src/panels/swing.panel.vm', [
         return;
       }
       if (resp.Value) {
+
+        //Insert the first occurence of phone number to Add Dnc phone number field
+        vm.data.PhoneNumber(resp.Value[0].PhoneNumber1);
+
         //Update Emergency Contact List
         vm.swingEmGvm.list(resp.Value);
       }
