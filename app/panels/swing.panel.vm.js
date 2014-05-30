@@ -311,6 +311,7 @@ define('src/panels/swing.panel.vm', [
           //disable swing button and display label New Accounted created
           vm.isVisible(true);
           vm.data.InterimAccountId(resp.Value.MsAccountID);
+          vm.data.CustomerMasterFileID(resp.Value.CustomerMasterFileID);
 
           notify.notify('ok', 'Swing Successful!');
         } else {
