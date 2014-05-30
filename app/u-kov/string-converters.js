@@ -44,7 +44,7 @@ define('src/u-kov/string-converters', [
     return function convNumText(val) {
       val = trim(val);
       if (!val) {
-        return;
+        return null;
       }
 
       // return val.replace(/[^\d]/g, '');
@@ -64,7 +64,7 @@ define('src/u-kov/string-converters', [
     var roundingMagnitude = Math.pow(10, precision || 0);
     return function convNumber(val) {
       if (!val) {
-        return;
+        return null;
       }
 
       // remove non-number characters
@@ -84,7 +84,7 @@ define('src/u-kov/string-converters', [
     return function convDate(val) {
       val = trim(val);
       if (!val) {
-        return;
+        return null;
       }
 
       var day;
@@ -139,7 +139,7 @@ define('src/u-kov/string-converters', [
     return function convDatetime(val) {
       val = trim(val);
       if (!val) {
-        return;
+        return null;
       }
 
       var day, replacementValue;
@@ -209,7 +209,7 @@ define('src/u-kov/string-converters', [
     return function convCCard(val) {
       val = trim(val);
       if (!val) {
-        return;
+        return null;
       }
 
       val = val.replace(/[^\d]/g, '');

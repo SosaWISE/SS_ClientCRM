@@ -243,11 +243,13 @@ define('src/account/default/search.vm', [
       return;
     }
 
-    if (_this.data.CMFID()) {
+    model = _this.data.CMFID.getValue();
+    if (model) {
       // if it's a Customer Number open a tab or select an open tab
       _this.goTo({
-        masterid: _this.data.CMFID(),
+        masterid: model,
       });
+      _this.data.CMFID.markClean(model, true);
       cb();
       return;
     }
