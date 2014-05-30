@@ -304,22 +304,23 @@ define('src/panels/swing.panel.vm', [
       //debugging
       console.log('Value:' + JSON.stringify(resp.Value));
 
-      if (err) {
-        notify.notify('error', 'Error', err.Message, 10);
+      if (err) {        
+        notify.notify('error', 'Error', err.Message, 10);        
       } else if (resp.Value) {
-        if (resp.Value.SwingStatus === "1") {
-
+        //if (resp.Value.SwingStatus === "1") {          
+          
           //disable swing button and display label New Accounted created
           vm.isVisible(true);
           vm.data.InterimAccountId(resp.Value.MsAccountID);
           vm.data.CustomerMasterFileID(resp.Value.CustomerMasterFileID);
-
+          
           notify.notify('ok', 'Swing Successful!');
-        } else {
+          
+        //} else {
 
           //temporarily display exception error from database. can't figure out how to return the exception returned by c# yet
-          notify.notify('error', 'Error', resp.Value.SwingStatus);
-        }
+          //notify.notify('error', 'Error', resp.Value.SwingStatus);
+        //}
       } else {
         //vm.data.setVal(null);
         vm.data.markClean(resp.Value, true);
@@ -327,7 +328,10 @@ define('src/panels/swing.panel.vm', [
         vm.clearData();
       }
 
-    }, utils.no_op));
+    //}, utils.no_op));
+    }, function(err){        
+        notify.notify('error', err.Message);               
+    }));
 
     cb();
   };
