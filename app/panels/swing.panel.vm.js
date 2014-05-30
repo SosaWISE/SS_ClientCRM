@@ -110,24 +110,26 @@ define('src/panels/swing.panel.vm', [
         forceFitColumns: true,
         rowHeight: 27,
       },
-      columns: [{
-        id: 'Name',
-        name: 'Name',
-        formatter: function(row, cell, value, columnDef, dataCtx) {
-          var name;
-          // name concatenations goes here
-          name = dataCtx.MiddleInit == null ? dataCtx.FirstName + " " + dataCtx.LastName : dataCtx.FirstName + " " + dataCtx.MiddleInit + " " + dataCtx.LastName;
-          return name;
+      columns: [ //
+        {
+          id: 'Name',
+          name: 'Name',
+          formatter: function(row, cell, value, columnDef, dataCtx) {
+            var name;
+            // name concatenations goes here
+            name = dataCtx.MiddleInit == null ? dataCtx.FirstName + " " + dataCtx.LastName : dataCtx.FirstName + " " + dataCtx.MiddleInit + " " + dataCtx.LastName;
+            return name;
+          },
+        }, {
+          id: 'Relationship',
+          name: 'Relationship',
+          field: 'Relationship',
+        }, {
+          id: 'Phone',
+          name: 'Phone',
+          field: 'PhoneNumber1',
         },
-      }, {
-        id: 'Relationship',
-        name: 'Relationship',
-        field: 'Relationship',
-      }, {
-        id: 'Phone',
-        name: 'Phone',
-        field: 'PhoneNumber1',
-      }, ],
+      ],
     });
 
 
@@ -138,19 +140,21 @@ define('src/panels/swing.panel.vm', [
         forceFitColumns: true,
         rowHeight: 27,
       },
-      columns: [{
-        id: 'Zone',
-        name: 'Zone',
-        field: 'ZoneTypeName',
-      }, {
-        id: 'Equipment',
-        name: 'Equipment',
-        field: 'FullName',
-      }, {
-        id: 'Location',
-        name: 'Location',
-        field: 'EquipmentLocationDesc',
-      }, ],
+      columns: [ //
+        {
+          id: 'Zone',
+          name: 'Zone',
+          field: 'ZoneTypeName',
+        }, {
+          id: 'Equipment',
+          name: 'Equipment',
+          field: 'FullName',
+        }, {
+          id: 'Location',
+          name: 'Location',
+          field: 'EquipmentLocationDesc',
+        },
+      ],
     });
 
     //events
@@ -169,7 +173,15 @@ define('src/panels/swing.panel.vm', [
       _this.addDnc(vm, cb);
     });
 
-
+    _this.cmdOpenMasterFile = ko.command(function(cb) {
+      _this.goTo({
+        route: 'accounts',
+        masterid: _this.data.CustomerMasterFileID(),
+      });
+      cb();
+    }, function(busy) {
+      return !busy && _this.data.CustomerMasterFileID();
+    });
   }
 
   utils.inherits(SwingViewModel, ControllerViewModel);
@@ -537,11 +549,6 @@ define('src/panels/swing.panel.vm', [
           id: cPhoneNumber
         },
         null, utils.safeCallback(cb, function(err, resp) {
-
-          if (err) {
-            notify.notify('error', 'Error', err.Message, 10);
-            return;
-          }
           if (resp.Value) {
 
             //Debugging display of response value
@@ -556,7 +563,9 @@ define('src/panels/swing.panel.vm', [
 
 
           }
-        }, utils.no_op));
+        }, function(err) {
+          notify.notify('error', 'Error', err.Message, 10);
+        }));
 
       cb();
 

@@ -7,6 +7,7 @@ define('mock/index', [
   'mock/dataservices/salessummary.mock',
   'mock/dataservices/session.mock',
   'mock/dataservices/survey.mock',
+  'mock/dataservices/swingaccountsrv.mock',
   'mock/dataservices/user.mock',
 ], function() {
   "use strict";

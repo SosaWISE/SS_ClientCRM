@@ -143,6 +143,22 @@ define('src/core/mockery', [
     TIME_SS: function(cache) {
       return padLeft(randomDate(cache).getSeconds(), '0', 2);
     },
+
+    ADDRESS: function(cache) {
+      return fromTemplate('@NUMBER(100,1999,North) North @NUMBER(100,1999,East) East', cache);
+    },
+    CITY: function(cache) {
+      return fromTemplate('@LASTNAME(City)ton', cache);
+    },
+    STATEAB: function(cache) {
+      return fromTemplate('@CHAR_UPPER(StateA)@CHAR_UPPER(StateB)', cache);
+    },
+    ZIP: function(cache) {
+      return fromTemplate('8@NUMBER(1000,9999)', cache);
+    },
+    COUNTY: function(cache) {
+      return fromTemplate('@LASTNAME(County) County', cache);
+    },
   };
   mockery.fn.NAME = [].concat(mockery.fn.MNAME).concat(mockery.fn.FEMNAME);
 

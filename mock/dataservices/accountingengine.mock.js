@@ -88,8 +88,8 @@ define('mock/dataservices/accountingengine.mock', [
         case null:
           result = mockery.fromTemplate({
             AddressID: 68,
-            City: '@LASTNAME(city)ton',
-            CityStateZip: '@LASTNAME(city)ton @CHAR_UPPER(state1)@CHAR_UPPER(tate2) 8@NUMBER(1000,9999)',
+            City: '@CITY',
+            CityStateZip: '@CITY @STATEAB @ZIP',
             // CustomerID: '???',
             CustomerMasterFileID: params.id,
             DOB: '@DATE',
@@ -105,12 +105,12 @@ define('mock/dataservices/accountingengine.mock', [
             PhoneWork: '@PHONE(work)',
             PlusFour: null,
             PostFix: null,
-            PostalCode: '8@NUMBER(1000,9999)',
+            PostalCode: '@ZIP',
             Prefix: null,
             ResultType: 'LEAD',
             SSN: null,
-            StateId: '@CHAR_UPPER(state1)@CHAR_UPPER(tate2)',
-            StreetAddress: '@NUMBER(100,1999,north) N @NUMBER(100,1999,east) E',
+            StateId: '@STATEAB',
+            StreetAddress: '@ADDRESS',
             StreetAddress2: '#@NUMBER(10,300,apt)',
             Username: null,
           });
