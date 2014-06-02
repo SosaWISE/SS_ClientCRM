@@ -64,8 +64,8 @@ define('src/u-kov/string-converters.spec', [
         expect(precision3Converter('-123.5678')).toBe(-123.568);
         expect(precision0Converter('-123.5678')).toBe(-124);
       });
-      it('should return undefined for falsy values', function() {
-        expect(precision3Converter('')).toBeUndefined();
+      it('should return null for falsy values', function() {
+        expect(precision3Converter('')).toBe(null);
       });
       it('should remove invalid characters', function() {
         expect(precision3Converter('a-123.56b78')).toBe(-123.568);
