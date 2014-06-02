@@ -26,22 +26,22 @@ define('src/account/security/equipment.editor.vm', [
 
   schema = {
     _model: true,
-    AccountId:{},
-    ItemId:{},
-    ItemDesc:{},
+    AccountId: {},
+    ItemId: {},
+    ItemDesc: {},
 
-    AccountEquipmentID:{},
+    AccountEquipmentID: {},
     Zone: {
       converter: strConverter,
     },
     ZoneEventType: {},
     //ItemLocation: {},
-    EquipmentLocationId:{},
+    EquipmentLocationId: {},
     AccountZoneTypeId: {},
     //AssignTo: {},
-    AccountZoneAssignmentID:{},
+    AccountZoneAssignmentID: {},
     //IsUpgrade: {},
-    AccountEquipmentUpgradeTypeId:{},
+    AccountEquipmentUpgradeTypeId: {},
     //UpgradePrice: {
     //converter: ukov.converters.number(2),
     //},
@@ -67,19 +67,19 @@ define('src/account/security/equipment.editor.vm', [
     _this.searchKey = ukov.wrap('', searchKeySchema);
 
     _this.data = ukov.wrap(_this.item || {
-      AccountId:null,
-      ItemId:null,
-      ItemDesc:null,
-      AccountEquipmentID:null,
+      AccountId: null,
+      ItemId: null,
+      ItemDesc: null,
+      AccountEquipmentID: null,
       Zone: '',
       ZoneEventType: null,
       //ItemLocation: null,
-      EquipmentLocationId:null,
+      EquipmentLocationId: null,
       AccountZoneTypeId: null,
       //AssignTo: null,
-      AccountZoneAssignmentID:null,
+      AccountZoneAssignmentID: null,
       //IsUpgrade: null,
-      AccountEquipmentUpgradeTypeId:null,
+      AccountEquipmentUpgradeTypeId: null,
       //UpgradePrice: '',
       Price: '',
       IsExistingWiring: null,
@@ -116,9 +116,9 @@ define('src/account/security/equipment.editor.vm', [
       ],
     });
     _this.data.IsUpgradeCvm = new ComboViewModel({
-    //  selectedValue: _this.data.IsUpgrade,
+      //  selectedValue: _this.data.IsUpgrade,
       selectedValue: _this.data.AccountEquipmentUpgradeTypeId,
-    
+
       nullable: true,
       list: _this.isUpgradeOptions,
     });
@@ -143,25 +143,25 @@ define('src/account/security/equipment.editor.vm', [
       return !busy && !_this.cmdSave.busy();
     });
     _this.cmdSave = ko.command(function(cb) {
-       if (!_this.layer) {
-          cb();
-          return;
-        }
-        if (!_this.data.isValid()) {
-          notify.notify('warn', _this.data.errMsg(), null, 7);
-          cb();
-          return;
-        }
-        var model = _this.data.getValue();
-        //alert(JSON.stringify(model));
-        _this.data.markClean(model, true);
-        dataservice.msaccountsetupsrv.equipments.save({
-          data: model,
-          }, null, utils.safeCallback(cb, function(err, resp) {
-          _this.layer.close(resp.Value, false);
-          }, function(err) {
-          notify.notify('error', 'Error', err.Message);
-        }));
+      if (!_this.layer) {
+        cb();
+        return;
+      }
+      if (!_this.data.isValid()) {
+        notify.notify('warn', _this.data.errMsg(), null, 7);
+        cb();
+        return;
+      }
+      var model = _this.data.getValue();
+      //alert(JSON.stringify(model));
+      _this.data.markClean(model, true);
+      dataservice.msaccountsetupsrv.equipments.save({
+        data: model,
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        _this.layer.close(resp.Value, false);
+      }, function(err) {
+        notify.notify('error', 'Error', err.Message);
+      }));
     });
 
 
@@ -242,24 +242,21 @@ define('src/account/security/equipment.editor.vm', [
   //SALESREP  Sales Rep
   //TECH  Technician
   //commented by reagan/junryl match upgrade type from crm db
-   EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
+  EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
     {
       value: null,
       text: 'null',
-    }, 
-    {
+    }, {
       value: 'CUST',
       text: 'Customer',
-    }, 
-    {
+    }, {
       value: 'SALESREP',
       text: 'Sales Rep',
-    },
-    {
+    }, {
       value: 'TECH',
       text: 'Technician',
     },
-    
+
   ];
   /*EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
     {

@@ -31,7 +31,7 @@ define('src/panels/swing.panel.vm', [
 ) {
   "use strict";
   var schema, customerSchema, addressSchema, systemDetailSchema;
-  
+
 
   //we need nested customer objects inorder easier display of the 2 customer information
   customerSchema = {
@@ -269,7 +269,7 @@ define('src/panels/swing.panel.vm', [
     }, join.add());
 
     join.when(function( /*err*/ ) {
-      
+
       customer1 = vm.data.Customer1.getValue();
 
       //check if customer1 first name is available it means -- account id is available in the old db
@@ -317,7 +317,7 @@ define('src/panels/swing.panel.vm', [
 
       if (err) {
         notify.notify('error', 'Error', err.Message, 10);
-      } else if (resp.Value) {        
+      } else if (resp.Value) {
 
         //disable swing button and display label New Accounted created
         vm.isVisible(true);
@@ -327,7 +327,7 @@ define('src/panels/swing.panel.vm', [
         notify.notify('ok', 'Swing Successful!');
 
       } else {
-        
+
         vm.data.markClean(resp.Value, true);
         notify.notify('warn', 'Account ID not found', null, 7);
         vm.clearData();
@@ -411,7 +411,7 @@ define('src/panels/swing.panel.vm', [
   //system details
   function load_msaccount_details(vm, msAccount, cb) {
 
-    //Load data on UI for Premise Address    
+    //Load data on UI for Premise Address
     dataservice.swingaccountsrv.CustomerSwingPremiseAddress.read({
         id: msAccount.AccountID
       },
