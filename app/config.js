@@ -30,6 +30,8 @@ define('src/config', [
   // Property Defaults (overrideable)
   //
   set('useMocks', false);
+  set('canMockLogin', true); // only relevant if `useMocks` is true
+  //
   set('token', 'SSE_CMS_CORS');
   set('serviceDomain', 'sse.services.cmscors'); // Local
   // set('serviceDomain', 'cs1.dev.nexsense.com'); // Dev Environment

@@ -28,6 +28,34 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
         case 'surveyresults':
           result = survey_mock.getAccountSurveyResultViews(id);
           break;
+        case 'equipment':
+          result = mockery.fromTemplate({
+            'list|5-9': [ //
+              {
+                AccountZoneAssignmentID: 'AccountZoneAssignmentID',
+                AccountEquipmentID: 'AccountEquipmentID',
+                AccountId: id,
+                ItemId: 'ItemId',
+                ItemSKU: 'ItemSKU',
+                ItemDesc: 'ItemDesc',
+                Zone: '@ACCOUNT_ZONE_TYPE',
+                AccountZoneTypeId: 'AccountZoneTypeId',
+                EquipmentLocationId: '@NUMBER(1,30)',
+                GPEmployeeId: '@COMPANYID',
+                AccountEquipmentUpgradeTypeId: 'AccountEquipmentUpgradeTypeId',
+                ActualPoints: '@MONEY(0,3)',
+                Price: '@MONEY(19,50)',
+                IsExisting: '@BOOL(IsExisting)',
+                BarcodeId: '@NUMBER(710010000,719999999)',
+                IsServiceUpgrade: '@BOOL(IsServiceUpgrade)',
+                IsExistingWiring: '@BOOL(IsExistingWiring)',
+                IsMainPanel: '@BOOL(IsMainPanel)',
+                EquipmentLocationDesc: 'EquipmentLocationDesc',
+                ShowPrice: '@BOOL(ShowPrice)',
+              },
+            ],
+          }).list;
+          break;
       }
       send(0, result, setter, cb);
     };
@@ -232,6 +260,14 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
 
     mockery.addModulusValueFunc('DSLSEIZURE_TYPE_ID', [1, 2, 3]);
     mockery.addModulusValueFunc('DSLSEIZURE_TYPE_NAME', ['No', 'DSL', 'Yes']);
+
+    mockery.addModulusValueFunc('ACCOUNT_ZONE_TYPE', [
+      'Fire',
+      'Medical',
+      '[No Zone]',
+      'Panel',
+      'Police',
+    ]);
   })();
 
   // data used in mock function

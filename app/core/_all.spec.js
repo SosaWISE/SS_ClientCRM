@@ -7,6 +7,7 @@ define('src/core/_all.spec', [
   'src/core/jsonhelpers.spec',
   'src/core/mockery.spec',
   'src/core/notify.spec',
+  'src/core/numbers.spec',
   'src/core/paymenthelper.spec',
   'src/core/route.spec',
   'src/core/router.spec',

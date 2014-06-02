@@ -7,7 +7,11 @@ define('mock/dataservices/session.mock', [
 ) {
   "use strict";
 
-  return function(settings) {
+  return function(settings, config) {
+    if (!config.canMockLogin) {
+      return;
+    }
+
     SessionDataservice.prototype.start = function(appToken, cb) {
       setTimeout(function() {
         var resp = mockery.fromTemplate({

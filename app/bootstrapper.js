@@ -190,7 +190,7 @@ define('src/bootstrapper', [
       mock({
         // timeout: 1000 * 2,
         // timeout: 500,
-      });
+      }, config);
     }
 
     config.user.subscribe(function(user) {

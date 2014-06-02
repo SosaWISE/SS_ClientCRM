@@ -14,7 +14,7 @@ define('mock/index', [
 
   var args = arguments; // all required mocks
 
-  return function(settings) {
+  return function(settings, config) {
     settings = {
       timeout: settings.timeout || 0,
     };
@@ -23,7 +23,7 @@ define('mock/index', [
       i, mock;
     for (i = 0; i < length; i++) {
       mock = args[i];
-      mock(settings);
+      mock(settings, config);
     }
   };
 });

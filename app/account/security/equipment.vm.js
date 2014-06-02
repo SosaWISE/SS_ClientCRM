@@ -1,5 +1,6 @@
 define('src/account/security/equipment.vm', [
   'ko',
+  'src/dataservice',
   'src/account/security/equipment.editor.vm',
   'src/account/security/existingequipment.editor.vm',
   'src/account/security/equipment.gvm',
@@ -10,6 +11,7 @@ define('src/account/security/equipment.vm', [
 
 ], function(
   ko,
+  dataservice,
   EquipmentEditorViewModel,
   ExistingEquipmentEditorViewModel,
   EquipmentGridViewModel,
@@ -60,18 +62,22 @@ define('src/account/security/equipment.vm', [
   EquipmentViewModel.prototype.viewTmpl = 'tmpl-security-equipment';
 
   EquipmentViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this,
-      cb = join.add();
+    var _this = this;
 
     _this.accountId = routeData.id;
 
-    setTimeout(function() {
-      //@TODO: load real data
-      cb();
-    }, 0);
+    load_equipment(_this.gvm, _this.accountId, join.add());
   };
 
-
+  function load_equipment(gvm, accountId, cb) {
+    gvm.list([]);
+    dataservice.msaccountsetupsrv.accounts.read({
+      id: accountId,
+      link: 'equipment',
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      gvm.list(resp.Value);
+    }, utils.no_op));
+  }
 
   function showEquipmentEditor(_this, byPart, cb, CompanyId) {
     _this.layersVm.show(createEquipmentEditor(_this, byPart, CompanyId), createEquipmentEditorCb(_this, cb));

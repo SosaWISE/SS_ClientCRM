@@ -25,17 +25,18 @@ define('src/account/security/clist.equipment.vm', [
   utils.inherits(CListEquipmentViewModel, EquipmentViewModel);
   // CListEquipmentViewModel.prototype.viewTmpl = 'tmpl-security-clist_equipment';
 
-  CListEquipmentViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this,
-      cb = join.add();
-
-    _this.accountId = routeData.id;
-
-    setTimeout(function() {
-      //@TODO: load real data
-      cb();
-    }, 0);
-  };
+  // don't override base since we're not doing anything different.
+  // CListEquipmentViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+  //   var _this = this,
+  //     cb = join.add();
+  //
+  //   _this.accountId = routeData.id;
+  //
+  //   setTimeout(function() {
+  //     //@TODO: load real data
+  //     cb();
+  //   }, 0);
+  // };
 
   return CListEquipmentViewModel;
 });

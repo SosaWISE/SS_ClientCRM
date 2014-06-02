@@ -2,11 +2,15 @@ define('src/account/security/equipment.gvm', [
   'ko',
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
+  'src/core/numbers',
+  'src/core/strings',
   'src/core/utils',
 ], function(
   ko,
   RowEvent,
   SlickGridViewModel,
+  numbers,
+  strings,
   utils
 ) {
   "use strict";
@@ -35,72 +39,65 @@ define('src/account/security/equipment.gvm', [
         }, {
           id: 'Points',
           name: 'Points',
-          field: 'Points',
+          field: 'ActualPoints',
         }, {
           id: 'Equipment',
           name: 'Equipment',
-          field: 'Equipment',
+          field: 'ItemDesc',
         }, {
           id: 'PartNumber',
           name: 'Part #',
-          field: 'PartNumber',
+          field: 'ItemSKU',
         }, {
           id: 'Location',
           name: 'Location',
-          field: 'Location',
+          field: 'EquipmentLocationDesc',
         }, {
           id: 'Barcode',
           name: 'Barcode',
-          field: 'Barcode',
+          field: 'BarcodeId',
         }, {
           id: 'AssignedTo',
           name: 'Assigned To',
-          field: 'AssignedTo',
+          field: 'GPEmployeeId',
         }, {
           id: 'ExistingWiring',
           name: 'Existing Wiring',
-          field: 'ExistingWiring',
+          field: 'IsExistingWiring',
           minWidth: 15,
+          width: 30,
           formatter: SlickGridViewModel.formatters.xFormatter,
         }, {
           id: 'ExistingEquipment',
           name: 'Existing Equipment',
-          field: 'ExistingEquipment',
+          field: 'IsExisting',
           minWidth: 15,
+          width: 30,
           formatter: SlickGridViewModel.formatters.xFormatter,
         }, {
           id: 'TechUpgrade',
           name: 'Tech Upgrade',
-          field: 'TechUpgrade',
+          field: 'IsServiceUpgrade',
           minWidth: 15,
+          width: 30,
           formatter: SlickGridViewModel.formatters.xFormatter,
         }, {
           id: 'UpgradePrice',
           name: 'Upgrade Price',
-          field: 'UpgradePrice',
+          field: 'Price',
+          formatter: function(row, cell, value, columnDef, dataCtx) {
+            // return (dataCtx.ShowPrice) ? value : '';
+            return (value > 0 && dataCtx.IsServiceUpgrade) ? strings.formatters.currency(value) : '';
+          },
         },
       ],
     });
-    while (_this.list().length < 13) {
-      _this.list().push({
-        Zone: '00' + (_this.list().length + 1),
-        Points: (_this.list().length + 1),
-        Equipment: 'Equipment ' + (_this.list().length + 1),
-        PartNumber: 'PartNumber ' + (_this.list().length + 1),
-        Location: 'Location ' + (_this.list().length + 1),
-        Barcode: 'Barcode ' + (_this.list().length + 1),
-        AssignedTo: 'AssignedTo ' + (_this.list().length + 1),
-        ExistingWiring: (_this.list().length % 3) === 0,
-        ExistingEquipment: (_this.list().length % 2) === 0,
-        TechUpgrade: (_this.list().length % 7) === 2,
-        UpgradePrice: (_this.list().length % 7) === 2 ? 29.99 : 0,
-      });
-    }
 
     _this.totalPoints = ko.computed(function() {
-      return _this.list().reduce(function(total, item) {
-        return (item.Points) ? total + item.Points : total;
+      var result = _this.list().reduce(function(total, item) {
+        return (item.ActualPoints) ? total + item.ActualPoints : total;
       }, 0);
+      return numbers.roundTo(result, 2);
     });
   }
   utils.inherits(EquipmentGridViewModel, SlickGridViewModel);
