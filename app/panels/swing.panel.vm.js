@@ -31,8 +31,7 @@ define('src/panels/swing.panel.vm', [
 ) {
   "use strict";
   var schema, customerSchema, addressSchema, systemDetailSchema;
-  // nullStrConverter = ukov.converters.nullString();
-
+  
 
   //we need nested customer objects inorder easier display of the 2 customer information
   customerSchema = {
@@ -98,9 +97,7 @@ define('src/panels/swing.panel.vm', [
     //Validate inputs
     _this.data = ukov.wrap({}, schema);
 
-    // console.log(_this.data);
-
-    //initialize hide the AccountID label
+    //This variable show/hide the Customer# label / swing button / Open Customer button
     _this.isVisible = ko.observable(false);
 
     //Emergency Contact List
@@ -159,6 +156,7 @@ define('src/panels/swing.panel.vm', [
 
     //events
     //
+    //Search customer by AccountID
     _this.cmdSearch = ko.command(function(cb, vm) {
       _this.search(vm, cb);
     });
@@ -173,6 +171,7 @@ define('src/panels/swing.panel.vm', [
       _this.addDnc(vm, cb);
     });
 
+    //Go to CRM by Customer #
     _this.cmdOpenMasterFile = ko.command(function(cb) {
       _this.goTo({
         route: 'accounts',
@@ -191,6 +190,8 @@ define('src/panels/swing.panel.vm', [
   //
 
   SwingViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
+
+    //Emergency Contacts/Equipment Info: intialize with empty slickgrid
     this.swingEmGvm.list([]);
     this.swingEquipmentGvm.list([]);
 
@@ -268,12 +269,9 @@ define('src/panels/swing.panel.vm', [
     }, join.add());
 
     join.when(function( /*err*/ ) {
-      /*if (err) {
-          notify.notify('warn', "Account ID not found", null, 10);
-        }else{
-          console.log("no error");
-        }*/
+      
       customer1 = vm.data.Customer1.getValue();
+
       //check if customer1 first name is available it means -- account id is available in the old db
       //also we were able to minimize API calls
       if (customer1.FirstName === "") {
@@ -308,6 +306,7 @@ define('src/panels/swing.panel.vm', [
     console.log('vm data value:' + JSON.stringify(msAccountSearch));
     console.log('Swing Equipment value: ' + msAccountSearch.SwingEquipment);
 
+    //Swing api is called here
     dataservice.swingaccountsrv.CustomerSwingInterim.post(null, {
       InterimAccountId: msAccountSearch.AccountID,
       SwingEquipment: msAccountSearch.SwingEquipment
@@ -318,8 +317,7 @@ define('src/panels/swing.panel.vm', [
 
       if (err) {
         notify.notify('error', 'Error', err.Message, 10);
-      } else if (resp.Value) {
-        //if (resp.Value.SwingStatus === "1") {
+      } else if (resp.Value) {        
 
         //disable swing button and display label New Accounted created
         vm.isVisible(true);
@@ -328,19 +326,14 @@ define('src/panels/swing.panel.vm', [
 
         notify.notify('ok', 'Swing Successful!');
 
-        //} else {
-
-        //temporarily display exception error from database. can't figure out how to return the exception returned by c# yet
-        //notify.notify('error', 'Error', resp.Value.SwingStatus);
-        //}
       } else {
-        //vm.data.setVal(null);
+        
         vm.data.markClean(resp.Value, true);
         notify.notify('warn', 'Account ID not found', null, 7);
         vm.clearData();
       }
 
-      //}, utils.no_op));
+      //Display any error message encountered during the swing process
     }, function(err) {
       notify.notify('error', err.Message);
     }));
@@ -418,9 +411,7 @@ define('src/panels/swing.panel.vm', [
   //system details
   function load_msaccount_details(vm, msAccount, cb) {
 
-    //load data on UI for Premise Address
-    //alert(msAccount.AccountID);
-
+    //Load data on UI for Premise Address    
     dataservice.swingaccountsrv.CustomerSwingPremiseAddress.read({
         id: msAccount.AccountID
       },
@@ -440,7 +431,7 @@ define('src/panels/swing.panel.vm', [
       }, utils.no_op));
 
 
-    //load data on UI for Emergency Contact
+    //Load data on UI for Emergency Contact
     //SlickGrid columns can have a formatter so for concatenating the full name of an emergency contact
     dataservice.swingaccountsrv.CustomerSwingEmergencyContact.read({
       id: msAccount.AccountID
@@ -462,7 +453,7 @@ define('src/panels/swing.panel.vm', [
     }, utils.no_op));
 
 
-    //load data on UI for System Details
+    //Load data on UI for System Details
     dataservice.swingaccountsrv.CustomerSwingSystemDetails.read({
         id: msAccount.AccountID
       },
@@ -479,7 +470,7 @@ define('src/panels/swing.panel.vm', [
 
       }, utils.no_op));
 
-    //load data on UI for Equipment Info
+    //Load data on UI for Equipment Info
     dataservice.swingaccountsrv.CustomerSwingEquipmentInfo.read({
       id: msAccount.AccountID
     }, null, utils.safeCallback(cb, function(err, resp) {
@@ -505,7 +496,7 @@ define('src/panels/swing.panel.vm', [
           return;
         }
         if (resp.Value) {
-          //AccountID is found on swung table -  disable swing button and show label [AccountID]
+          //AccountID is found on swung table -  hide swing button, show label for Customer# and unhide Open Customer button
           console.log("Match found.");
 
           vm.isVisible(true);
