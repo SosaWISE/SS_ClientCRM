@@ -26,14 +26,22 @@ define('src/account/security/equipment.editor.vm', [
 
   schema = {
     _model: true,
+    AccountId:{},
+    ItemId:{},
+    ItemDesc:{},
+
+    AccountEquipmentID:{},
     Zone: {
       converter: strConverter,
     },
     ZoneEventType: {},
     //ItemLocation: {},
+    EquipmentLocationId:{},
     AccountZoneTypeId: {},
-    AssignTo: {},
-    IsUpgrade: {},
+    //AssignTo: {},
+    AccountZoneAssignmentID:{},
+    //IsUpgrade: {},
+    AccountEquipmentUpgradeTypeId:{},
     //UpgradePrice: {
     //converter: ukov.converters.number(2),
     //},
@@ -59,12 +67,19 @@ define('src/account/security/equipment.editor.vm', [
     _this.searchKey = ukov.wrap('', searchKeySchema);
 
     _this.data = ukov.wrap(_this.item || {
+      AccountId:null,
+      ItemId:null,
+      ItemDesc:null,
+      AccountEquipmentID:null,
       Zone: '',
       ZoneEventType: null,
       //ItemLocation: null,
+      EquipmentLocationId:null,
       AccountZoneTypeId: null,
-      AssignTo: null,
-      IsUpgrade: null,
+      //AssignTo: null,
+      AccountZoneAssignmentID:null,
+      //IsUpgrade: null,
+      AccountEquipmentUpgradeTypeId:null,
       //UpgradePrice: '',
       Price: '',
       IsExistingWiring: null,
@@ -87,7 +102,8 @@ define('src/account/security/equipment.editor.vm', [
       },
     });
     _this.data.AssignToCvm = new ComboViewModel({
-      selectedValue: _this.data.AssignTo,
+      //selectedValue: _this.data.AssignTo,
+      selectedValue: _this.data.AccountZoneAssignmentID,
       nullable: true,
       list: [ //
         {
@@ -100,7 +116,9 @@ define('src/account/security/equipment.editor.vm', [
       ],
     });
     _this.data.IsUpgradeCvm = new ComboViewModel({
-      selectedValue: _this.data.IsUpgrade,
+    //  selectedValue: _this.data.IsUpgrade,
+      selectedValue: _this.data.AccountEquipmentUpgradeTypeId,
+    
       nullable: true,
       list: _this.isUpgradeOptions,
     });
@@ -125,9 +143,29 @@ define('src/account/security/equipment.editor.vm', [
       return !busy && !_this.cmdSave.busy();
     });
     _this.cmdSave = ko.command(function(cb) {
-      // closeLayer(result);
-      cb();
+       if (!_this.layer) {
+          cb();
+          return;
+        }
+        if (!_this.data.isValid()) {
+          notify.notify('warn', _this.data.errMsg(), null, 7);
+          cb();
+          return;
+        }
+        var model = _this.data.getValue();
+        //alert(JSON.stringify(model));
+        _this.data.markClean(model, true);
+        dataservice.msaccountsetupsrv.equipments.save({
+          data: model,
+          }, null, utils.safeCallback(cb, function(err, resp) {
+          _this.layer.close(resp.Value, false);
+          }, function(err) {
+          notify.notify('error', 'Error', err.Message);
+        }));
     });
+
+
+
     _this.cmdSearch = ko.command(function(cb) {
       search(cb);
     });
@@ -163,7 +201,7 @@ define('src/account/security/equipment.editor.vm', [
         }
       }, null, utils.safeCallback(cb, function(err, resp) {
 
-        console.log(resp.Value);
+        //alert(JSON.stringify(resp.Value));
 
         //Set Item Name and Part# to UI
         _this.itemName(resp.Value.ItemDesc);
@@ -200,7 +238,30 @@ define('src/account/security/equipment.editor.vm', [
   EquipmentEditorViewModel.prototype.height = 'auto';
 
   // ?????????
-  EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
+  //CUST  Customer
+  //SALESREP  Sales Rep
+  //TECH  Technician
+  //commented by reagan/junryl match upgrade type from crm db
+   EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
+    {
+      value: null,
+      text: 'null',
+    }, 
+    {
+      value: 'CUST',
+      text: 'Customer',
+    }, 
+    {
+      value: 'SALESREP',
+      text: 'Sales Rep',
+    },
+    {
+      value: 'TECH',
+      text: 'Technician',
+    },
+    
+  ];
+  /*EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
     {
       value: null,
       text: 'null',
@@ -211,7 +272,7 @@ define('src/account/security/equipment.editor.vm', [
       value: false,
       text: 'Rep',
     },
-  ];
+  ];*/
 
   EquipmentEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
