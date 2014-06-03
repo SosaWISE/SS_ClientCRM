@@ -106,6 +106,10 @@ define('src/account/security/clist.systemdetails.vm', [
       _this.systemDetails = results;
     }, join);
 
+    load_technicianDetails(routeData.id, function(result) {
+      _this.repData(result);
+    }, join);
+
     join.when(function(err) {
       if (err) {
         return;
@@ -162,6 +166,17 @@ define('src/account/security/clist.systemdetails.vm', [
       id: accountId,
     }, null, utils.safeCallback(cb, function(err, resp) {
       setter(resp.Value);
+    }));
+  }
+
+  function load_technicianDetails(accountId, setter, join) {
+    var cb = join.add();
+    dataservice.msaccountsetupsrv.techDetails.read({
+      id: accountId
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Code === 0) {
+        setter(resp.Value);
+      }
     }));
   }
 

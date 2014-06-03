@@ -135,7 +135,7 @@ define('src/account/security/clist.qualify.vm', [
     var _this = this,
       link, id;
     if (routeData.route === 'accounts') {
-      link = 'customer';
+      link = 'account';
       id = routeData.id; //@TODO: get CustomerID.... or fix qualifyCustomerInfos endpoint
     } else if (routeData.id > 0) {
       link = 'lead';

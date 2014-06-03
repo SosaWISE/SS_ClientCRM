@@ -19,6 +19,7 @@ define('src/dataservices/msaccountsetupsrv', [
       'monitoringStationOS',
       'equipments',
       'systemDetails',
+      'techDetails',
       'serviceTypes',
       'panelTypes',
       'dslSeizureTypes',
