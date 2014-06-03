@@ -10,17 +10,6 @@ table(class="question")
         span(style="color:black;") Condition:
         |&nbsp;
         span(data-bind="text:$parent.conditionText")
-      ul(class="sv tlist cf")
-        li
-          a(class="btn small add-btn",data-bind="click:$parent.topVm.clickAddToken") Add
-        li
-          span(style="color:black;") Tokens:
-          |&nbsp;
-        <!-- ko foreach:tokenMaps -->
-        li
-          span(data-bind="text:'{'+$index()+'}'+token.Token")
-          |&nbsp;&nbsp;
-        <!-- /ko -->
       <!-- /ko -->
       ul(class="sv tlist cf")
         li
@@ -34,6 +23,19 @@ table(class="question")
             data-bind="active:active,busy:cmdToggle.busy,attr:{title:active()?'shows sub questions':'sub questions hidden'}")
             span(data-bind="text:possibleAnswer.AnswerText")
         <!-- /ko -->
+      <!-- ko with:questionMeaningVM -->
+      ul(class="sv tlist cf")
+        li
+          a(class="btn small add-btn",data-bind="click:$parent.topVm.clickAddToken") Add
+        li
+          span(style="color:black;") Tokens:
+          |&nbsp;
+        <!-- ko foreach:tokenMaps -->
+        li
+          span(data-bind="text:'{'+$index()+'}'+token.Token")
+          |&nbsp;&nbsp;
+        <!-- /ko -->
+      <!-- /ko -->
       <!-- ko foreach:translations -->
       div(class="translation",data-bind="active:show")
         div(data-bind="template:viewTmpl")
