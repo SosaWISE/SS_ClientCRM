@@ -468,10 +468,11 @@ define('mock/dataservices/survey.mock', [
           CompanyName: 'Nexsense',
           ADUserDisplayName: 'auser',
           PrimaryCustomer: {
-            Name: 'Bob',
+            FirstName: 'Bob',
             LastName: 'Bobbins',
             FullName: 'Bob Bobbins',
             Phone1: '(801) 555-1234',
+            Email: 'bobe@mail.com',
           },
           PremiseAddress: {
             Street: '111 Technology Way',
@@ -481,6 +482,8 @@ define('mock/dataservices/survey.mock', [
           },
           SystemDetails: {
             PremisePhone: '(801) 123-1234',
+            PanelType: 'Concord',
+            Password: 'BobRules',
           },
           ContractTerms: {
             ContractLength: 60,

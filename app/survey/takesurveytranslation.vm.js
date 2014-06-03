@@ -90,10 +90,11 @@ define('src/survey/takesurveytranslation.vm', [
           CompanyName: 'Nexsense',
           ADUserDisplayName: 'ADUserDisplayName',
           PrimaryCustomer: {
-            Name: 'Bob',
+            FirstName: 'Bob',
             LastName: 'Bobbins',
             FullName: 'Bob Bobbins',
             Phone1: '8015551234',
+            Email: 'bobe@mail.com',
           },
           PremiseAddress: {
             Street: '111 Technology Way',
@@ -103,6 +104,8 @@ define('src/survey/takesurveytranslation.vm', [
           },
           SystemDetails: {
             PremisePhone: 'PremisePhone',
+            PanelType: 'Concord',
+            Password: 'BobRules',
           },
           ContractTerms: {
             ContractLength: 60,

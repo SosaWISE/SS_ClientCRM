@@ -34,7 +34,7 @@ define('src/survey/question.vm', [
     });
     _this.conditionText = ko.computed(function() {
       var json = _this.model.ConditionJson;
-      if (!json) {
+      if (!json || !json.TokenId || !json.Comparison) {
         return 'none';
       } else {
         return strings.format('({0} {1} \'{2}\')', _this.topVm.tokensVM.getToken(json.TokenId).Token, json.Comparison, json.Value);
