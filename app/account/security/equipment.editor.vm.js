@@ -36,7 +36,11 @@ define('src/account/security/equipment.editor.vm', [
     },
     ZoneEventType: {},
     //ItemLocation: {},
+<<<<<<< HEAD
+    EquipmentLocationID:{},
+=======
     EquipmentLocationId: {},
+>>>>>>> dc83dc39d8b16fdc53f3adcb6a1c20082e8d5933
     AccountZoneTypeId: {},
     //AssignTo: {},
     AccountZoneAssignmentID: {},
@@ -74,7 +78,11 @@ define('src/account/security/equipment.editor.vm', [
       Zone: '',
       ZoneEventType: null,
       //ItemLocation: null,
+<<<<<<< HEAD
+      EquipmentLocationID:null,
+=======
       EquipmentLocationId: null,
+>>>>>>> dc83dc39d8b16fdc53f3adcb6a1c20082e8d5933
       AccountZoneTypeId: null,
       //AssignTo: null,
       AccountZoneAssignmentID: null,
@@ -94,13 +102,22 @@ define('src/account/security/equipment.editor.vm', [
         text: 'Descrption',
       },
     });
-    _this.data.ItemLocationCvm = new ComboViewModel({
+    _this.data.EquipmentLocationCvm = new ComboViewModel({
+      selectedValue: _this.data.EquipmentLocationID,
+      fields: {
+        value: 'EquipmentLocationID',
+        text: 'EquipmentLocationDesc',
+      },
+    });
+
+    _this.data.ZoneTypeCvm = new ComboViewModel({
       selectedValue: _this.data.AccountZoneTypeId,
       fields: {
         value: 'AccountZoneTypeID',
         text: 'AccountZoneType',
       },
     });
+
     _this.data.AssignToCvm = new ComboViewModel({
       //selectedValue: _this.data.AssignTo,
       selectedValue: _this.data.AccountZoneAssignmentID,
@@ -275,7 +292,9 @@ define('src/account/security/equipment.editor.vm', [
     var _this = this;
 
     load_zoneEventTypes(_this.data.ZoneEventTypeCvm, _this.monitoringStationOS, join.add());
-    load_accountZoneTypes(_this.data.ItemLocationCvm, _this.monitoringStationOS, join.add());
+    load_accountZoneTypes(_this.data.ZoneTypeCvm, _this.monitoringStationOS, join.add());
+    load_equipmentLocation(_this.data.EquipmentLocationCvm, _this.monitoringStationOS, join.add());
+    
   };
 
   function load_zoneEventTypes(cvm, monitoringStationOS, cb) {
@@ -287,6 +306,11 @@ define('src/account/security/equipment.editor.vm', [
   function load_accountZoneTypes(cvm, monitoringStationOS, cb) {
     readMonitoringStationOS(cvm, monitoringStationOS, 'accountZoneTypes', {}, cb);
   }
+
+  function load_equipmentLocation(cvm, monitoringStationOS, cb) {
+    readMonitoringStationOS(cvm, monitoringStationOS, 'EquipmentLocations', {}, cb);
+  }
+
 
   function readMonitoringStationOS(cvm, id, link, query, cb) {
     dataservice.msaccountsetupsrv.monitoringStationOS.read({
