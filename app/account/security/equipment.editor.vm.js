@@ -38,9 +38,7 @@ define('src/account/security/equipment.editor.vm', [
     //ItemLocation: {},
 
     EquipmentLocationID:{},
-
-    EquipmentLocationId: {},
-
+    
     AccountZoneTypeId: {},
     //AssignTo: {},
     AccountZoneAssignmentID: {},
@@ -78,11 +76,10 @@ define('src/account/security/equipment.editor.vm', [
       Zone: '',
       ZoneEventType: null,
       //ItemLocation: null,
-<<<<<<< HEAD
+
       EquipmentLocationID:null,
-=======
-      EquipmentLocationId: null,
->>>>>>> dc83dc39d8b16fdc53f3adcb6a1c20082e8d5933
+
+
       AccountZoneTypeId: null,
       //AssignTo: null,
       AccountZoneAssignmentID: null,
