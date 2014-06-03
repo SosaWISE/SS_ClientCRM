@@ -48,9 +48,9 @@ define('src/survey/question.new.vm', [
         ],
       },
       Value: {
-        validators: [
-          ukov.validators.isRequired('Value is required'),
-        ],
+        // validators: [
+        //   ukov.validators.isRequired('Value is required'),
+        // ],
       },
     },
   };
