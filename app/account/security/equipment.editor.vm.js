@@ -37,8 +37,8 @@ define('src/account/security/equipment.editor.vm', [
     ZoneEventType: {},
     //ItemLocation: {},
 
-    EquipmentLocationID:{},
-    
+    EquipmentLocationID: {},
+
     AccountZoneTypeId: {},
     //AssignTo: {},
     AccountZoneAssignmentID: {},
@@ -77,7 +77,7 @@ define('src/account/security/equipment.editor.vm', [
       ZoneEventType: null,
       //ItemLocation: null,
 
-      EquipmentLocationID:null,
+      EquipmentLocationID: null,
 
 
       AccountZoneTypeId: null,
@@ -291,7 +291,7 @@ define('src/account/security/equipment.editor.vm', [
     load_zoneEventTypes(_this.data.ZoneEventTypeCvm, _this.monitoringStationOS, join.add());
     load_accountZoneTypes(_this.data.ZoneTypeCvm, _this.monitoringStationOS, join.add());
     load_equipmentLocation(_this.data.EquipmentLocationCvm, _this.monitoringStationOS, join.add());
-    
+
   };
 
   function load_zoneEventTypes(cvm, monitoringStationOS, cb) {
