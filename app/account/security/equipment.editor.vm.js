@@ -36,11 +36,11 @@ define('src/account/security/equipment.editor.vm', [
     },
     ZoneEventType: {},
     //ItemLocation: {},
-<<<<<<< HEAD
+
     EquipmentLocationID:{},
-=======
+
     EquipmentLocationId: {},
->>>>>>> dc83dc39d8b16fdc53f3adcb6a1c20082e8d5933
+
     AccountZoneTypeId: {},
     //AssignTo: {},
     AccountZoneAssignmentID: {},
