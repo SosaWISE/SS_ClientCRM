@@ -15,7 +15,9 @@ define('spec/runner', [
           'mock/index'
         ], function(mock) {
           if (mockSettings) {
-            mock(mockSettings);
+            mock(mockSettings, {
+              // empty config
+            });
           }
 
           var jasmineEnv = jasmine.getEnv(),
