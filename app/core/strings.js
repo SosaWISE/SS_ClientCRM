@@ -161,5 +161,30 @@ define('src/core/strings', [
   //   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
   // }
 
+
+  function pad(isLeft, txt, letter, minLength) {
+    if (!txt && txt !== 0) {
+      txt = '';
+    }
+    txt += '';
+    if (isLeft) {
+      while (txt.length < minLength) {
+        txt = letter + txt;
+      }
+    } else {
+      while (txt.length < minLength) {
+        txt += letter;
+      }
+    }
+    return txt;
+  }
+  strings.padLeft = function(txt, letter, minLength) {
+    return pad(true, txt, letter, minLength);
+  };
+  strings.padRight = function(txt, letter, minLength) {
+    return pad(false, txt, letter, minLength);
+  };
+
+
   return strings;
 });

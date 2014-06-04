@@ -124,25 +124,6 @@ define('src/core/mockery', [
     DATETIME: function(cache, startDaysFromNow, endDaysFromNow) {
       return randomDate(cache, startDaysFromNow, endDaysFromNow);
     },
-    DATE_YYYY: function(cache) {
-      var yyyy = randomDate(cache).getFullYear();
-      return yyyy + '';
-    },
-    DATE_DD: function(cache) {
-      return padLeft(randomDate(cache).getDate(), '0', 2);
-    },
-    DATE_MM: function(cache) {
-      return padLeft(randomDate(cache).getMonth() + 1, '0', 2);
-    },
-    TIME_HH: function(cache) {
-      return padLeft(randomDate(cache).getHours(), '0', 2);
-    },
-    TIME_MM: function(cache) {
-      return padLeft(randomDate(cache).getMinutes(), '0', 2);
-    },
-    TIME_SS: function(cache) {
-      return padLeft(randomDate(cache).getSeconds(), '0', 2);
-    },
 
     ADDRESS: function(cache) {
       return fromTemplate('@NUMBER(100,1999,North) North @NUMBER(100,1999,East) East', cache);
@@ -318,22 +299,6 @@ define('src/core/mockery', [
     return result;
   }
 
-  function padLeft(txt, letter, length) {
-    txt += '';
-    while (txt.length < length) {
-      txt = letter + txt;
-    }
-    return txt;
-  }
-
-  function padRight(txt, letter, length) {
-    txt += '';
-    while (txt.length < length) {
-      txt += letter;
-    }
-    return txt;
-  }
-
   function incModulus(cache, refKey, key) {
     var obj = incMap[refKey],
       count = obj.val - obj.idSeed + 1,
@@ -385,8 +350,6 @@ define('src/core/mockery', [
   mockery.log = false;
   mockery.getData = getData;
   mockery.randomFromRange = randomFromRange;
-  mockery.padLeft = padLeft;
-  mockery.padRight = padRight;
   mockery.incModulus = incModulus;
   mockery.addModulusValueFunc = function(name, values) {
     if (mockery.fn[name]) {

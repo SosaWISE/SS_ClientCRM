@@ -38,7 +38,8 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
                 ItemId: 'ItemId',
                 ItemSKU: 'ItemSKU',
                 ItemDesc: 'ItemDesc',
-                Zone: '@ACCOUNT_ZONE_TYPE',
+                // Zone: '0@ZERO_TO_ONE@ONE_TO_NINE',
+                Zone: '00@ONE_TO_NINE',
                 AccountZoneTypeId: 'AccountZoneTypeId',
                 EquipmentLocationId: '@NUMBER(1,30)',
                 GPEmployeeId: '@COMPANYID',
@@ -51,7 +52,7 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
                 IsExistingWiring: '@BOOL(IsExistingWiring)',
                 IsMainPanel: '@BOOL(IsMainPanel)',
                 EquipmentLocationDesc: 'EquipmentLocationDesc',
-                ShowPrice: '@BOOL(ShowPrice)',
+                AccountZoneType: '@ACCOUNT_ZONE_TYPE',
               },
             ],
           }).list;
@@ -261,6 +262,21 @@ define('mock/dataservices/msaccountsetupsrv.mock', [
     mockery.addModulusValueFunc('DSLSEIZURE_TYPE_ID', [1, 2, 3]);
     mockery.addModulusValueFunc('DSLSEIZURE_TYPE_NAME', ['No', 'DSL', 'Yes']);
 
+    mockery.addModulusValueFunc('ZERO_TO_ONE', [
+      '0',
+      '1',
+    ]);
+    mockery.addModulusValueFunc('ONE_TO_NINE', [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+    ]);
     mockery.addModulusValueFunc('ACCOUNT_ZONE_TYPE', [
       'Fire',
       'Medical',

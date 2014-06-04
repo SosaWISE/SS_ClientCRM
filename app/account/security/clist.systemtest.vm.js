@@ -38,7 +38,7 @@ define('src/account/security/clist.systemtest.vm', [
 
   CListSystemTestViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
-    _this.signalHistoryVm.load(routeData, extraData, join);
+    _this.signalHistoryVm.load(routeData, extraData, join.add());
   };
 
   return CListSystemTestViewModel;

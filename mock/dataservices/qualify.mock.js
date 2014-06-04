@@ -223,7 +223,7 @@ define('mock/dataservices/qualify.mock', [
         Seasons: [ //
           {
             SeasonID: '@INC(seasons)',
-            SeasonName: '@SEASON @DATE_YYYY',
+            SeasonName: '@SEASON @NUMBER(2012,2015,Year)',
           },
         ],
         PhoneCell: '@PHONE',

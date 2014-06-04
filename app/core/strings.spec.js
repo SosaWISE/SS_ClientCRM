@@ -61,5 +61,32 @@ define('src/core/strings.spec', [
         expect(strings.joinTrimmed(' ', '  ', ' ', undefined, null, 'a', 'b  ', 'c', 'd')).toBe('a b c d');
       });
     });
+
+    describe('padLeft', function() {
+      it('should prepend text', function() {
+        expect(strings.padLeft('9', '0', 3)).toBe('009');
+        expect(strings.padLeft('9', '00', 4)).toBe('00009');
+      });
+      it('should convert number to text before prepending', function() {
+        expect(strings.padLeft(9, '0', 3)).toBe('009');
+        expect(strings.padLeft(0, '1', 3)).toBe('110');
+      });
+      it('null and undefined should be treated as empty string', function() {
+        expect(strings.padLeft(null, '1', 3)).toBe('111');
+      });
+    });
+    describe('padRight', function() {
+      it('should append text', function() {
+        expect(strings.padRight('9', '0', 3)).toBe('900');
+        expect(strings.padRight('9', '00', 4)).toBe('90000');
+      });
+      it('should convert number to text before appending', function() {
+        expect(strings.padRight(9, '0', 3)).toBe('900');
+        expect(strings.padRight(0, '1', 3)).toBe('011');
+      });
+      it('null and undefined should be treated as empty string', function() {
+        expect(strings.padRight(null, '1', 3)).toBe('111');
+      });
+    });
   });
 });

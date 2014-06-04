@@ -129,6 +129,7 @@ define('src/account/security/clist.survey.vm', [
         PremisePhone: 'PremisePhone',
         PanelType: 'Concord',
         Password: 'BobRules',
+        IsTwoWay: true,
       },
       ContractTerms: {
         ContractLength: 60,

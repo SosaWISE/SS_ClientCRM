@@ -86,7 +86,6 @@ define('src/account/security/equipment.gvm', [
           name: 'Upgrade Price',
           field: 'Price',
           formatter: function(row, cell, value, columnDef, dataCtx) {
-            // return (dataCtx.ShowPrice) ? value : '';
             return (value > 0 && dataCtx.IsServiceUpgrade) ? strings.formatters.currency(value) : '';
           },
         },

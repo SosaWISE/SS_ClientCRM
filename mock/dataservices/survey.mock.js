@@ -484,6 +484,7 @@ define('mock/dataservices/survey.mock', [
             PremisePhone: '(801) 123-1234',
             PanelType: 'Concord',
             Password: 'BobRules',
+            IsTwoWay: true,
           },
           ContractTerms: {
             ContractLength: 60,

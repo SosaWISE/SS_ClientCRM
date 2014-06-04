@@ -19,12 +19,6 @@ define('mock/dataservices/monitoringstationsrv.mock', [
       switch (params.link || null) {
         case null:
         case 'signalhistory':
-          result = mockery.fromTemplate({
-            'list|3-3': [ //
-              {}
-            ],
-          }).list;
-
           // one per day??
           days = params.query.days;
 
@@ -44,7 +38,7 @@ define('mock/dataservices/monitoringstationsrv.mock', [
               PointDescription: 'PointDescription',
               Comment: 'Comment',
               AlarmNum: 'AlarmNum',
-              AreaNum: 'AreaNum',
+              AreaNum: '00@ONE_TO_NINE',
               TestNum: 'TestNum',
               RawMessage: 'RawMessage',
               Phone: 'Phone',

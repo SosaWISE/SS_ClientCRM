@@ -106,6 +106,7 @@ define('src/survey/takesurveytranslation.vm', [
             PremisePhone: 'PremisePhone',
             PanelType: 'Concord',
             Password: 'BobRules',
+            IsTwoWay: true,
           },
           ContractTerms: {
             ContractLength: 60,

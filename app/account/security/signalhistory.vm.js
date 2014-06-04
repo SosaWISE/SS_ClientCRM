@@ -42,19 +42,19 @@ define('src/account/security/signalhistory.vm', [
         }, {
           id: 'Equipment',
           name: 'Equipment',
-          field: 'Equipment',
+          field: 'ItemDesc',
         }, {
           id: 'ZoneType',
           name: 'Zone Type',
-          field: 'ZoneType',
+          field: 'AccountZoneType',
         }, {
           id: 'Location',
           name: 'Location',
-          field: 'Location',
+          field: 'EquipmentLocationDesc',
         }, {
           id: 'Barcode',
           name: 'Barcode',
-          field: 'Barcode',
+          field: 'BarcodeId',
         },
       ],
     });
@@ -194,7 +194,7 @@ define('src/account/security/signalhistory.vm', [
       ],
     });
 
-    _this.accountSignals = ko.observableArray();
+    // _this.accountSignals = ko.observableArray();
     _this.missingSignals = ko.observableArray();
     _this.missingZones = ko.observableArray();
 
@@ -203,14 +203,12 @@ define('src/account/security/signalhistory.vm', [
     // events
     //
     _this.cmdSixMonthsHistory = ko.command(function(cb) {
-      load_signalHistory(_this.accountId, 180, _this.historyGvm, cb);
-      cb();
+      _this.refresh(180, cb);
     }, function(busy) {
       return !busy && !_this.cmdFullHistory.busy();
     });
     _this.cmdFullHistory = ko.command(function(cb) {
-      load_signalHistory(_this.accountId, -1, _this.historyGvm, cb);
-      cb();
+      _this.refresh(-1, cb);
     }, function(busy) {
       return !busy && !_this.cmdSixMonthsHistory.busy();
     });
@@ -229,9 +227,31 @@ define('src/account/security/signalhistory.vm', [
     var _this = this;
     _this.accountId = routeData.id;
 
-    join = join;
-    //@TODO: load real data
+    load_equipment(_this.equipmentGvm, _this.accountId, join.add());
   };
+
+  SignalHistoryViewModel.prototype.refresh = function(days, cb) {
+    var _this = this;
+
+    // clear missing
+    _this.missingSignals([]);
+    _this.missingZones([]);
+
+    load_signalHistory(_this.accountId, days, _this.historyGvm, function(err) {
+      if (!err) {
+        refreshMissing(_this.historyGvm.list(), _this.equipmentGvm.list(), _this.missingSignals, _this.missingZones);
+      }
+      cb();
+    });
+  };
+
+  function load_equipment(gvm, accountId, cb) {
+    gvm.list([]);
+    dataservice.msaccountsetupsrv.accounts.read({
+      id: accountId,
+      link: 'equipment',
+    }, gvm.list, cb);
+  }
 
   function load_signalHistory(id, days, gvm, cb) {
     gvm.list([]);
@@ -239,13 +259,57 @@ define('src/account/security/signalhistory.vm', [
       id: id,
       link: 'signalhistory',
       query: {
-        days: days,
+        // days: days,
+        days: 8,
       },
     }, null, utils.safeCallback(cb, function(err, resp) {
       gvm.list(resp.Value);
     }, function(err) {
       notify.notify('error', 'Error', err.Message);
     }));
+  }
+
+  function refreshMissing(signalHistoryList, equipmentList, setMissingSignals, setMissingZones) {
+    setMissingSignals = setMissingSignals;
+
+    var signalHistoryZonesMap = {},
+      equipmentZonesMap = {},
+      missingList;
+
+    // create map of all zones in history
+    signalHistoryList.forEach(function(item) {
+      var zone = item.AreaNum;
+      if (!signalHistoryZonesMap[zone]) {
+        signalHistoryZonesMap[zone] = true;
+      }
+    });
+    // create map of all zones in equipment
+    equipmentList.forEach(function(item) {
+      var zone = item.Zone;
+      if (!equipmentZonesMap[zone]) {
+        equipmentZonesMap[zone] = true;
+      }
+    });
+
+    // build a list of missing signals
+    missingList = [];
+    Object.keys(equipmentZonesMap).forEach(function(zone) {
+      if (!signalHistoryZonesMap[zone]) {
+        missingList.push(zone);
+      }
+    });
+    missingList.sort();
+    setMissingSignals(missingList);
+
+    // build a list of missing zones
+    missingList = [];
+    Object.keys(signalHistoryZonesMap).forEach(function(zone) {
+      if (!equipmentZonesMap[zone]) {
+        missingList.push(zone);
+      }
+    });
+    missingList.sort();
+    setMissingZones(missingList);
   }
 
 
@@ -255,20 +319,20 @@ define('src/account/security/signalhistory.vm', [
   //   //Add in Zones from Equipment
   //   foreach (int item in AccountModel.AccountEquipmentModel.ZoneList) {
   //     string formattedZone = string.Format("{0:000}", item);
-  //     if (!oSignalHistory.HashZones.ContainsKey(formattedZone)) {
-  //       oSignalHistory.HashZones.Add(formattedZone, item);
+  //     if (!equipmentZonesMap.ContainsKey(formattedZone)) {
+  //       equipmentZonesMap.Add(formattedZone, item);
   //     }
   //   }
   //   // Build a list of missing signals
-  //   foreach (DictionaryEntry zone in oSignalHistory.HashZones) {
-  //     if (!oSignalHistory.HashSignals.ContainsKey(zone.Key)) {
+  //   foreach (DictionaryEntry zone in equipmentZonesMap) {
+  //     if (!signalHistoryZonesMap.ContainsKey(zone.Key)) {
   //       MissingSignals.Add(zone.Key.ToString());
   //     }
   //   }
   //   MissingSignals = new ObservableCollection<string>(MissingSignals.OrderBy(x => x));
   //   // Build a list of missing zones
-  //   foreach (DictionaryEntry signal in oSignalHistory.HashSignals) {
-  //     if (!oSignalHistory.HashZones.ContainsKey(signal.Key)) {
+  //   foreach (DictionaryEntry signal in signalHistoryZonesMap) {
+  //     if (!equipmentZonesMap.ContainsKey(signal.Key)) {
   //       //If State is in TX then don't add the missing Zone
   //       if ((int)AccountModel.Account.PremiseAddress.StateID != 132) {
   //         MissingZones.Add(signal.Key.ToString());
