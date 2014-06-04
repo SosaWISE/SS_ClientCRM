@@ -462,6 +462,7 @@ define('src/survey/takesurvey.vm', [
       link: 'questions',
     }, setter, function(err, resp) {
       if (!err) {
+        resp.Value.sort(surveyhelper.questionsSorter);
         resp.Value.forEach(function(question) {
           loadQuestionPossibleAnswerMaps(question.QuestionID, function(val) {
             question.questionPossibleAnswerMaps = val;

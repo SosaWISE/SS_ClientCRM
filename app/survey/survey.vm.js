@@ -1,4 +1,5 @@
 define('src/survey/survey.vm', [
+  'src/survey/surveyhelper',
   'src/core/treehelper',
   'src/survey/takesurveytranslation.vm',
   'src/core/joiner',
@@ -16,6 +17,7 @@ define('src/survey/survey.vm', [
   'src/survey/questions.parent.vm', //'src/core/controller.vm',
   'src/core/utils',
 ], function(
+  surveyhelper,
   treehelper,
   TakeSurveyTranslationViewModel,
   joiner,
@@ -134,6 +136,7 @@ define('src/survey/survey.vm', [
       link: 'questions',
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Value) {
+        resp.Value.sort(surveyhelper.questionsSorter);
         treehelper.makeTree(resp.Value, 'QuestionID', 'ParentId', function(model, parentVM /*, parent*/ ) {
           parentVM = parentVM || surveyVM;
           var vm = parentVM.addQuestion(surveyVM, model, parentVM, join.add());

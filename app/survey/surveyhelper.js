@@ -16,5 +16,9 @@ define('src/survey/surveyhelper', [
       var html = markdown.toHTML(textFormat);
       return strings.aformat(html, tokenValues, missingParamText);
     },
+
+    questionsSorter: function(a, b) {
+      return a.GroupOrder - b.GroupOrder;
+    },
   };
 });
