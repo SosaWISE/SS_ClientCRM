@@ -485,6 +485,8 @@ define('mock/dataservices/survey.mock', [
             PanelType: 'Concord',
             Password: 'BobRules',
             IsTwoWay: true,
+            HasExistingEquipment: false,
+            Interactive: false,
           },
           ContractTerms: {
             ContractLength: 60,

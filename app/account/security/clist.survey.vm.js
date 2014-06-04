@@ -130,6 +130,8 @@ define('src/account/security/clist.survey.vm', [
         PanelType: 'Concord',
         Password: 'BobRules',
         IsTwoWay: true,
+        HasExistingEquipment: false,
+        Interactive: false,
       },
       ContractTerms: {
         ContractLength: 60,

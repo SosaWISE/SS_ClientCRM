@@ -107,6 +107,8 @@ define('src/survey/takesurveytranslation.vm', [
             PanelType: 'Concord',
             Password: 'BobRules',
             IsTwoWay: true,
+            HasExistingEquipment: false,
+            Interactive: false,
           },
           ContractTerms: {
             ContractLength: 60,
