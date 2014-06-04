@@ -115,7 +115,7 @@ define('src/core/strings', [
       return strings.formatters.datetime(val);
     },
     space: function(val) {
-      val = val || '';
+      val = (val || '') + ''; // make sure it's not null, undefined, or something other than a string
       return val.split('').join('&nbsp;');
     },
     phone: function(val) {

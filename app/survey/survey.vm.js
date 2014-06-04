@@ -3,6 +3,7 @@ define('src/survey/survey.vm', [
   'src/survey/takesurveytranslation.vm',
   'src/core/joiner',
   'src/core/layers.vm',
+  'src/survey/markdownhelp.vm',
   'src/survey/qpossibleanswermap.new.vm',
   'src/survey/qmtokenmap.new.vm',
   'src/survey/question.vm',
@@ -19,6 +20,7 @@ define('src/survey/survey.vm', [
   TakeSurveyTranslationViewModel,
   joiner,
   LayersViewModel,
+  MarkdownHelpViewModel,
   NewQPossibleAnswerMapViewModel,
   NewQMTokenMapViewModel,
   QuestionViewModel,
@@ -90,6 +92,12 @@ define('src/survey/survey.vm', [
 
     _this.clickAddQuestion = function(parentVm) {
       newQuestion(_this, parentVm);
+    };
+    _this.clickHelp = function() {
+      if (!_this.helpVm) {
+        _this.helpVm = new MarkdownHelpViewModel();
+      }
+      _this.layersVm.show(_this.helpVm);
     };
   }
   utils.inherits(SurveyViewModel, QuestionsParentViewModel);

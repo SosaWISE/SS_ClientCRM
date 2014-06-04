@@ -245,4 +245,17 @@
     },
   };
 
+  // get initial value from element and set on observable
+  //---------------------------
+  ko.bindingHandlers.getInitValue = {
+    init: function(element, valueAccessor) {
+      var observable = valueAccessor();
+      // set if it's an observable and doesn't have a value
+      if (ko.isObservable(observable) && !observable.peek()) {
+        // pass value of element to observable
+        observable(jquery(element).val());
+      }
+    },
+  };
+
 });

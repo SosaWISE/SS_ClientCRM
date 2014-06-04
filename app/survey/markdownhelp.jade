@@ -1,0 +1,71 @@
+div(class="md-helper")
+  div(class="left")
+    //- . trick found here: http://stackoverflow.com/a/13189902
+    textarea(data-bind="getInitValue:inputText,value:inputText,valueUpdate:'input'",spellcheck="false").
+      # Header 1
+      ## Header 2
+      ### Header 3
+      #### Header 4
+      ##### Header 5
+      ###### Header 6
+
+
+      ### Horizontal line (3 or more dashes)
+      ---
+
+
+      ### Line breaks:
+      End line with two spaces adds a newline in the paragraph&#32;&#32;
+      Or two carriage returns(e.g.: enter, enter)
+
+      starts a new paragraph.
+      But one carriage return just adds a space.
+
+
+      ### Font styles:
+
+      *italics*
+
+      **bold**
+
+      ** *bold and italics* **
+
+
+      ### Lists (*, -, or +)
+      * item with *
+      - item with -
+      + item with +
+        * sub item 1 (use 2 spaces for indentation)
+        * sub item 2
+          with long text...
+
+
+      ### Numbered Lists
+      1. item 1
+      1. item 2
+      1. item 3
+      4. item 4
+      5. item 5
+        1. sub item 1
+
+
+      ### Block quotes
+      > block quote
+      > > nested block quote
+      > > > nested nested block quote
+      >
+      > * nested list
+      > # nested header 1
+
+
+      ### Token Value Decorating
+
+      {0} - normal(no decorating)
+
+      {0:$} or {0:c} - currency
+
+      {0:phone} - phone
+
+      {0:space} - spaces between letters
+
+  div(class="right md-html",data-bind="html:ouputHtml")
