@@ -43,7 +43,7 @@ define('src/account/security/clist.systemdetails.vm', [
         /** Andres. */
         var model = {
           MsAccountId: _this.accountId,
-          CompanyId: result.CompanyId
+          CompanyID: result.CompanyID
         };
         dataservice.qualify.technician.post(null, model, null, utils.safeCallback(cb, function(err, resp) {
           if (resp && resp.Code !== 0) {
