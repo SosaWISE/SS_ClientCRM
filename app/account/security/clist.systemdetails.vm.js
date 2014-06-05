@@ -2,6 +2,7 @@ define('src/account/security/clist.systemdetails.vm', [
   'src/account/default/rep.find.vm',
   'src/account/security/systemdetails.editor.vm',
   'src/account/security/clist.equipment.vm',
+  'src/core/notify',
   'src/dataservice',
   'ko',
   'src/core/utils',
@@ -10,6 +11,7 @@ define('src/account/security/clist.systemdetails.vm', [
   RepFindViewModel,
   SystemDetailsEditorViewModel,
   CListEquipmentViewModel,
+  notify,
   dataservice,
   ko,
   utils,
@@ -38,6 +40,18 @@ define('src/account/security/clist.systemdetails.vm', [
         title: 'Technician',
       }), function onClose(result) {
         _this.repData(result);
+        /** Andres. */
+        var model = {
+          MsAccountId: _this.accountId,
+          CompanyId: result.CompanyId
+        };
+        dataservice.qualify.technician.post(null, model, null, utils.safeCallback(cb, function(err, resp) {
+          if (resp && resp.Code !== 0) {
+            notify.notify('error', 'Error', resp.Message);
+          }
+        }, function(err) {
+          notify.notify('error', 'Error', err.Message);
+        }));
       });
       cb();
     }, function(busy) {
