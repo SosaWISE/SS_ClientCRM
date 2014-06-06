@@ -22,6 +22,10 @@ define('src/survey/tokens.vm.spec', [
         TokenID: 21,
         Token: 'Prop2.Prop1',
       };
+      vm.tokenMap[3] = {
+        TokenID: 3,
+        Token: 'Prop3',
+      };
     });
 
     it('should have an `stringifyContext` function', function() {
@@ -41,8 +45,9 @@ define('src/survey/tokens.vm.spec', [
           Prop1: 1,
           Prop2: {
             Prop1: 21,
-          }
-        })).toBe('{"1":1,"21":21}');
+          },
+          Prop3: null,
+        })).toBe('{"1":1,"3":null,"21":21}'); // keys get put in incrementing order
       });
       it('should exclude unknown tokens', function() {
         expect(vm.stringifyContext({
@@ -50,18 +55,20 @@ define('src/survey/tokens.vm.spec', [
           Prop2: {
             Prop1: 21,
           },
+          Prop3: null,
           UnknownProp: 123,
-        })).toBe('{"1":1,"21":21}');
+        })).toBe('{"1":1,"3":null,"21":21}');
       });
     });
 
     describe('parseContext', function() {
       it('should parse and unflatten the context', function() {
-        expect(vm.parseContext('{"1":1,"21":21}')).toEqual({
+        expect(vm.parseContext('{"1":1,"3":null,"21":21}')).toEqual({
           Prop1: 1,
           Prop2: {
             Prop1: 21,
-          }
+          },
+          Prop3: null,
         });
       });
     });
@@ -72,7 +79,8 @@ define('src/survey/tokens.vm.spec', [
             Prop1: 1,
             Prop2: {
               Prop1: 21,
-            }
+            },
+            Prop3: null,
           },
           tokenValueFunc = vm.createTokenValueFunc(dataContext);
         expect(tokenValueFunc('Prop1')).toEqual(1);
@@ -83,7 +91,8 @@ define('src/survey/tokens.vm.spec', [
             Prop1: 1,
             Prop2: {
               Prop1: 21,
-            }
+            },
+            Prop3: null,
           },
           tokenValueFunc = vm.createTokenValueFunc(dataContext);
         tokenValueFunc('Prop3', 3);

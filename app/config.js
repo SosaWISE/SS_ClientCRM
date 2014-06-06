@@ -46,5 +46,11 @@ define('src/config', [
   set('joinerTimeout', 1000 * 60);
   set('pingInterval', 1000 * 60 * 29); // One minute less than the session timeout (30 min).
 
+  //
+  set('accounts', {
+    hideNav: false,
+    hideNotes: false,
+  });
+
   return config;
 });

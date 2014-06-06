@@ -3,6 +3,7 @@ define('src/account/default/masteraccount.vm', [
   'src/dataservice',
   'src/account/security/account.vm',
   'ko',
+  'src/config',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
@@ -11,6 +12,7 @@ define('src/account/default/masteraccount.vm', [
   dataservice,
   AccountViewModel,
   ko,
+  config,
   notify,
   utils,
   ControllerViewModel
@@ -32,12 +34,8 @@ define('src/account/default/masteraccount.vm', [
     ControllerViewModel.ensureProps(_this, ['id', 'title']);
 
     _this.title = ko.observable(_this.title);
-    _this.hideNotes = ko.observable(false);
-    _this.hideNav = ko.observable(false);
-
-    //////////TESTING////////////////////
-    // _this.hideNav(true);
-    //////////TESTING////////////////////
+    _this.hideNotes = ko.observable(config.accounts.hideNotes);
+    _this.hideNav = ko.observable(config.accounts.hideNav);
 
     _this.customerData = ko.observable();
 

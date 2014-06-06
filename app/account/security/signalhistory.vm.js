@@ -4,6 +4,7 @@ define('src/account/security/signalhistory.vm', [
   'ko',
   'src/slick/slickgrid.vm',
   'src/core/layers.vm',
+  'src/core/strings',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
@@ -13,6 +14,7 @@ define('src/account/security/signalhistory.vm', [
   ko,
   SlickGridViewModel,
   LayersViewModel,
+  strings,
   notify,
   utils,
   ControllerViewModel
@@ -103,45 +105,48 @@ define('src/account/security/signalhistory.vm', [
       // ],
       columns: [ //
         {
-          id: 'HistoryDate',
-          name: 'HistoryDate',
-          field: 'HistoryDate',
-        }, {
           id: 'UTCDate',
-          name: 'UTCDate',
+          name: 'Date',
           field: 'UTCDate',
+          formatter: SlickGridViewModel.formatters.datetime,
+        }, {
+          id: 'AreaNum',
+          name: 'Zone',
+          field: 'AreaNum',
+          width: 30,
+          formatter: function(row, cell, value) {
+            return zoneString(value);
+          },
         }, {
           id: 'TransmitterCode',
-          name: 'TransmitterCode',
+          name: 'Csid',
           field: 'TransmitterCode',
+          width: 30,
         }, {
           id: 'SiteName',
-          name: 'SiteName',
+          name: 'Site Name',
           field: 'SiteName',
-        }, {
-          id: 'EventCode',
-          name: 'EventCode',
-          field: 'EventCode',
-        }, {
-          id: 'EventCodeDescription',
-          name: 'EventCodeDescription',
-          field: 'EventCodeDescription',
-        }, {
-          id: 'OpAct',
-          name: 'OpAct',
-          field: 'OpAct',
-        }, {
-          id: 'OpActDescription',
-          name: 'OpActDescription',
-          field: 'OpActDescription',
         }, {
           id: 'SignalCode',
           name: 'SignalCode',
           field: 'SignalCode',
         }, {
+          id: 'EventCode',
+          name: 'Event',
+          formatter: function(row, cell, value, columnDef, dataCtx) {
+            return strings.format('{0} - {1}', dataCtx.EventCode, dataCtx.EventCodeDescription);
+          },
+        }, {
+          id: 'OpAct',
+          name: 'OpAct',
+          formatter: function(row, cell, value, columnDef, dataCtx) {
+            return strings.format('{0} - {1}', dataCtx.OpAct, dataCtx.OpActDescription);
+          },
+        }, {
           id: 'Point',
           name: 'Point',
           field: 'Point',
+          width: 30,
         }, {
           id: 'PointDescription',
           name: 'PointDescription',
@@ -154,43 +159,49 @@ define('src/account/security/signalhistory.vm', [
           id: 'AlarmNum',
           name: 'AlarmNum',
           field: 'AlarmNum',
-        }, {
-          id: 'AreaNum',
-          name: 'AreaNum',
-          field: 'AreaNum',
+          width: 60,
         }, {
           id: 'TestNum',
           name: 'TestNum',
           field: 'TestNum',
-        }, {
-          id: 'RawMessage',
-          name: 'RawMessage',
-          field: 'RawMessage',
+          width: 30,
         }, {
           id: 'Phone',
           name: 'Phone',
           field: 'Phone',
+          width: 60,
+          formatter: SlickGridViewModel.formatters.phone,
         }, {
           id: 'FullClearFlag',
-          name: 'FullClearFlag',
+          name: 'Full Clear',
           field: 'FullClearFlag',
+          width: 30,
         }, {
           id: 'UserId',
           name: 'UserId',
           field: 'UserId',
-        }, {
-          id: 'UserName',
-          name: 'UserName',
-          field: 'UserName',
-        }, {
-          id: 'Latitude',
-          name: 'Latitude',
-          field: 'Latitude',
-        }, {
-          id: 'Longitude',
-          name: 'Longitude',
-          field: 'Longitude',
+          width: 30,
         },
+        // {
+        //   id: 'UserName',
+        //   name: 'UserName',
+        //   field: 'UserName',
+        // },
+        {
+          id: 'RawMessage',
+          name: 'RawMessage',
+          field: 'RawMessage',
+          width: 30,
+        },
+        // {
+        //   id: 'Latitude',
+        //   name: 'Latitude',
+        //   field: 'Latitude',
+        // }, {
+        //   id: 'Longitude',
+        //   name: 'Longitude',
+        //   field: 'Longitude',
+        // },
       ],
     });
 
@@ -278,15 +289,15 @@ define('src/account/security/signalhistory.vm', [
 
     // create map of all zones in history
     signalHistoryList.forEach(function(item) {
-      var zone = item.AreaNum;
-      if (!signalHistoryZonesMap[zone]) {
+      var zone = zoneString(item.AreaNum);
+      if (zone && !signalHistoryZonesMap[zone]) {
         signalHistoryZonesMap[zone] = true;
       }
     });
     // create map of all zones in equipment
     equipmentList.forEach(function(item) {
-      var zone = item.Zone;
-      if (!equipmentZonesMap[zone]) {
+      var zone = zoneString(item.Zone);
+      if (zone && !equipmentZonesMap[zone]) {
         equipmentZonesMap[zone] = true;
       }
     });
@@ -310,6 +321,18 @@ define('src/account/security/signalhistory.vm', [
     });
     missingList.sort();
     setMissingZones(missingList);
+  }
+
+  function zoneString(zoneVal) {
+    if (!zoneVal && zoneVal !== 0) {
+      // no zone
+      return null;
+    } else if (utils.isStr(zoneVal) || utils.isNum(zoneVal)) {
+      // ensure correct zone format
+      return strings.padLeft(zoneVal, '0', 3);
+    } else {
+      throw new Error('invalid zone `' + zoneVal + '`');
+    }
   }
 
 

@@ -71,7 +71,7 @@ define('src/survey/tokens.vm', [
     });
 
     (function recurse(obj, name) {
-      if (typeof(obj) === 'object' && !Array.isArray(obj)) {
+      if (obj && typeof(obj) === 'object' && !Array.isArray(obj)) {
         // do recursion on object properties
         Object.keys(obj).forEach(function(propName) {
           var fullname = (name) ? (name + '.' + propName) : propName;

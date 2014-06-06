@@ -1,16 +1,22 @@
 define('src/account/security/clist.survey.vm', [
+  'src/config',
   'ko',
   'src/dataservice',
   'src/survey/takesurvey.vm',
   'src/account/security/clist.survey.gvm',
+  'src/core/strings',
+  'src/core/joiner',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  config,
   ko,
   dataservice,
   TakeSurveyViewModel,
   CListSurveyGridViewModel,
+  strings,
+  joiner,
   notify,
   utils,
   ControllerViewModel
@@ -22,25 +28,14 @@ define('src/account/security/clist.survey.vm', [
     CListSurveyViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['surveyTypeId']);
 
+    _this.loadingSurvey = ko.observable();
+
     _this.loadedResultVmMap = {};
     _this.gvm = new CListSurveyGridViewModel({
       onClick: function(item) {
-        _this.checkForCurrentSurvey(function() {
+        checkForCurrentSurvey(_this, function() {
           loadResult(item);
         });
-        // if (_this.currentSurveyVm) {
-        //   notify.confirm('Are you sure?', 'Do you want to scrap the current survey?', function(result) {
-        //     if (result === 'yes') {
-        //       _this.currentSurveyVm = null;
-        //       loadResult(item);
-        //     } else {
-        //       _this.gvm.setSelectedRows([]);
-        //       _this.gvm.resetActiveCell();
-        //     }
-        //   });
-        // } else {
-        //   loadResult(item);
-        // }
       },
     });
 
@@ -82,6 +77,8 @@ define('src/account/security/clist.survey.vm', [
     var _this = this;
 
     _this.accountid = routeData.id;
+    //@REVIEW: how to get correct LocalizatonID
+    _this.locale = 'en';
 
     load_accountSurveys(_this.accountid, _this.gvm, join.add());
     load_activeSurvey(_this.surveyTypeId, function(survey) {
@@ -90,62 +87,24 @@ define('src/account/security/clist.survey.vm', [
   };
   CListSurveyViewModel.prototype.onActivate = function( /*routeCtx*/ ) { // overrides base
     var _this = this;
-    if (!!_this.gvm.list().length && !_this.activeChild.peek()) {
-      // take the survey since it hasn't been taken yet
-      _this.takeSurvey();
+    if (!_this.gvm.list().length) {
+      if (_this.currentSurveyVm) {
+        _this.activeChild(_this.currentSurveyVm);
+      } else {
+        // take the survey since it hasn't been taken yet
+        _this.cmdTakeSurvey.execute();
+      }
     }
     // CListSurveyViewModel.super_.prototype.onActivate.call(_this, routeCtx);
   };
 
   CListSurveyViewModel.prototype.takeSurvey = function(cb) {
     var _this = this;
-    //@REVIEW: how to get correct LocalizatonID
-    showTakeSurvey(_this, _this.surveyid, 'en', null, false, cb);
+    showTakeSurvey(_this, _this.surveyid, _this.locale, null, false, cb);
   };
   CListSurveyViewModel.prototype.retakeSurvey = function(surveyResultView, cb) {
     var _this = this;
     showTakeSurvey(_this, null, null, surveyResultView, true, cb);
-  };
-
-  CListSurveyViewModel.prototype.getDataContext = function() {
-    //@TODO: get real data context
-    return {
-      CompanyName: 'Nexsense',
-      ADUserDisplayName: 'ADUserDisplayName',
-      PrimaryCustomer: {
-        FirstName: 'Bob',
-        LastName: 'Bobbins',
-        FullName: 'Bob Bobbins',
-        Phone1: '8015551234',
-        Email: 'bobe@mail.com',
-      },
-      PremiseAddress: {
-        Street: '111 Technology Way',
-        City: 'Orem',
-        State: 'UT',
-        Zip: '84059',
-      },
-      SystemDetails: {
-        PremisePhone: 'PremisePhone',
-        PanelType: 'Concord',
-        Password: 'BobRules',
-        IsTwoWay: true,
-        HasExistingEquipment: false,
-        Interactive: false,
-      },
-      ContractTerms: {
-        ContractLength: 60,
-        BillingMethod: 2,
-        MonthlyMonitoringFee: 49.99,
-        TotalActivationFee: 199.99,
-        ActivationFeePaymentMethod: 1,
-        BillingDate: '15th',
-        HasSalesUpgrades: true,
-      },
-      SalesRep: {
-        FirstName: 'RepName',
-      },
-    };
   };
 
   CListSurveyViewModel.prototype.reloadAccountSurveys = function() {
@@ -157,8 +116,150 @@ define('src/account/security/clist.survey.vm', [
     });
   };
 
-  CListSurveyViewModel.prototype.checkForCurrentSurvey = function(yesCb, noCb) {
-    var _this = this;
+  CListSurveyViewModel.prototype.getDataContext = function(cb) {
+    //@TODO: get real data context
+
+    var _this = this,
+      join = joiner(),
+      priCustomer, premAddress, salesRep, details;
+
+    // load primary customer
+    dataservice.monitoringstationsrv.accounts.read({
+      id: _this.accountid,
+      link: 'customers/pri',
+    }, function(val) {
+      priCustomer = val;
+
+      // load premise address
+      dataservice.accountingengine.customers.read({
+        id: priCustomer.CustomerID,
+        link: 'addresses/prem',
+      }, function(val) {
+        premAddress = val;
+      }, join.add());
+    }, join.add());
+
+    // load salesrep
+    dataservice.monitoringstationsrv.accounts.read({
+      id: _this.accountid,
+      link: 'salesrep',
+    }, function(val) {
+      salesRep = val;
+    }, join.add());
+
+    // load details
+    dataservice.monitoringstationsrv.accounts.read({
+      id: _this.accountid,
+      link: 'details',
+    }, function(val) {
+      details = val;
+    }, join.add());
+
+
+    join.when(function(err) {
+      if (err) {
+        cb(err);
+        return;
+      }
+      var dataContext;
+      dataContext = {
+        CompanyName: 'Nexsense',
+        ADUserDisplayName: config.user().Firstname,
+        PrimaryCustomer: {
+          FirstName: priCustomer.FirstName,
+          LastName: priCustomer.LastName,
+          FullName: strings.joinTrimmed(' ', priCustomer.Prefix, priCustomer.FirstName, priCustomer.MiddleName, priCustomer.LastName, priCustomer.Postfix),
+          Phone1: priCustomer.PhoneHome || priCustomer.PhoneMobile || priCustomer.PhoneWork,
+          Email: priCustomer.Email,
+        },
+        PremiseAddress: {
+          Street: premAddress.StreetAddress,
+          City: premAddress.City,
+          State: premAddress.StateId,
+          Zip: premAddress.PostalCode,
+        },
+        SystemDetails: {
+          PremisePhone: premAddress.Phone || priCustomer.PhoneHome || priCustomer.PhoneMobile || priCustomer.PhoneWork, //@REVIEW: PremisePhone????
+          PanelType: details.PanelTypeName,
+          Password: details.AccountPassword,
+          IsTwoWay: details.SystemTypeId === '2WAY',
+          //@TODO: set these values below
+          HasExistingEquipment: false,
+          Interactive: false,
+          // no tokens for these values
+          // Csid: details.Csid,
+          // ReceiverLineId: details.ReceiverLineId,
+          // SystemTypeName: details.SystemTypeName,
+          // CellularTypeName: details.CellularTypeName,
+          // DslSeizure: details.DslSeizure,
+        },
+        ContractTerms: { //@TODO: load contract terms
+          ContractLength: 60,
+          BillingMethod: 2,
+          MonthlyMonitoringFee: 49.99,
+          TotalActivationFee: 199.99,
+          ActivationFeePaymentMethod: 1,
+          BillingDate: '15th',
+          HasSalesUpgrades: true,
+        },
+        SalesRep: {
+          FirstName: salesRep.PreferredName || salesRep.FirstName,
+        },
+      };
+
+      cb(null, dataContext);
+    });
+  };
+
+  function showTakeSurvey(_this, surveyid, locale, surveyResultView, retake, cb) {
+    if (_this.loadingSurvey()) {
+      cb();
+      return;
+    }
+
+    function wrappedCb(err) {
+      _this.loadingSurvey(false);
+      cb(err);
+    }
+    _this.loadingSurvey(true);
+
+    checkForCurrentSurvey(_this, function() {
+      _this.getDataContext(function(err, dataContext) {
+        if (err) {
+          notify.notify('error', 'Error', err.Message);
+          // don't pass along error, just notify we're done
+          wrappedCb();
+          return;
+        }
+        var vm = new TakeSurveyViewModel({
+          accountid: _this.accountid,
+          dataContext: dataContext,
+          onSaved: function() {
+            _this.currentSurveyVm = null;
+            _this.reloadAccountSurveys();
+          },
+
+          // options for first time
+          surveyid: surveyid,
+          locale: locale,
+
+          // options for retaking
+          surveyResult: surveyResultView,
+          retake: retake,
+        });
+        _this.activeChild(vm);
+        vm.load({}, {}, wrappedCb);
+
+        _this.gvm.setSelectedRows([]);
+        _this.gvm.resetActiveCell();
+
+        // store survey being taken
+        _this.currentSurveyVm = vm;
+      });
+    }, wrappedCb);
+  }
+
+  function checkForCurrentSurvey(_this, yesCb, noCb) {
     if (_this.currentSurveyVm) {
       notify.confirm('Are you sure?', 'Do you want to scrap the current survey?', function(result) {
         if (result === 'yes') {
@@ -178,36 +279,6 @@ define('src/account/security/clist.survey.vm', [
     } else {
       yesCb();
     }
-  };
-
-
-  function showTakeSurvey(_this, surveyid, locale, surveyResultView, retake, cb) {
-    _this.checkForCurrentSurvey(function() {
-      var vm, dataContext = _this.getDataContext();
-      vm = new TakeSurveyViewModel({
-        accountid: _this.accountid,
-        dataContext: dataContext,
-        onSaved: function() {
-          _this.currentSurveyVm = null;
-          _this.reloadAccountSurveys();
-        },
-
-        // options for first time
-        surveyid: surveyid,
-        locale: locale,
-
-        // options for retaking
-        surveyResult: surveyResultView,
-        retake: retake,
-      });
-      _this.activeChild(vm);
-      vm.load({}, {}, cb);
-
-      _this.gvm.setSelectedRows([]);
-      _this.gvm.resetActiveCell();
-
-      _this.currentSurveyVm = vm;
-    }, cb);
   }
 
 
@@ -230,7 +301,6 @@ define('src/account/security/clist.survey.vm', [
       link: 'surveyresults',
     }, gvm.list, cb);
   }
-
 
   return CListSurveyViewModel;
 });

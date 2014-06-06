@@ -118,6 +118,7 @@ define('mock/dataservices/qualify.mock', [
         CreditReportID: 1,
         LeadId: 1,
         BureauId: 1,
+        BureauName: 'BureauName',
         SeasonId: 1,
         CreditReportVendorId: 1,
         CreditReportVendorAbaraId: 1,

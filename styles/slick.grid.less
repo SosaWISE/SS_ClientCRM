@@ -25,3 +25,22 @@
   background: url(stuff/img/drag-handle.png) no-repeat center center;
   cursor: pointer;
 }
+
+// this is kind of hacky but it works...
+.grid-wrap {
+  &.rv {
+    resize: vertical;
+    overflow: auto;
+    .slickgrid {
+      resize: initial; // not resizeable
+      bottom: 12px;
+    }
+  }
+}
+
+// show resize handle when hovering over column header
+.slick-header-column:hover {
+  .slick-resizable-handle {
+    background-color: #777;
+  }
+}
