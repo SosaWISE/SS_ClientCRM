@@ -4,58 +4,96 @@ div(class="acct-item sales-info")
       tr
         td(class="fh-header")
           div(class="title") Sales Information
-          div(class="edit-form border")
-            div(class="subHeader") System Type Information
-            div(class="line")
-              div(class="letter",data-bind="text:letter(1)")
-              div(class="question") Is this a 6.5 or 8 Point system?
-              div(class="answer")
-                div(data-bind="cvm:pointSystemsCvm")
+          div(class="edit-form")
+            //- div(class="subHeader") System Type Information
+            //- div(class="line")
+            //-   div(class="letter",data-bind="text:letter(1)")
+            //-   div(class="question") Is this a 6.5 or 8 Point system?
+            //-   div(class="answer")
+            //-     div(data-bind="cvm:pointSystemsCvm")
 
-            div(class="subHeader") Monitoring And Service Information
+            div(class="subHeader") Billing Information
             div(class="line")
-              div(class="letter",data-bind="text:letter()")
+              div(class="letter",data-bind="text:num(1)")
               div(class="question")
-                |Is the activation fee&nbsp;
-                span(data-bind="currencytext:data.ActivationFee")
-                |?
-              div(class="answer")
-                input(type="text",class="inputField",name="activationFeeActual",
-                  data-bind="ukov:data.ActivationFeeActual,likecurrencyvalue:data.ActivationFeeActual")
-            div(class="line")
-              div(class="letter",data-bind="text:letter()")
-              div(class="question") Is Activation over 3 months?
-              div(class="answer")
-                input(type="checkbox",class="inputField",name="over3Months",
-                  data-bind="checked:data.Over3Months")
-            div(class="line")
-              div(class="letter",data-bind="text:letter()")
-              div(class="question") What is the panel type?
-              div(class="answer")
-                div(data-bind="cvm:data.PanelTypeCvm")
-            div(class="line")
-              div(class="letter",data-bind="text:letter()")
-              div(class="question") What is the cell type?
-              div(class="answer")
-                div(data-bind="cvm:data.CellularTypeCvm")
-            div(class="line")
-              div(class="letter",data-bind="text:letter()")
-              div(class="question") Which Alarm.com package are we going with?
-              div(class="answer")
-                div(data-bind="cvm:data.AlarmComPackageCvm")
-
-            div(class="subHeader") Monthly Monitoring
-            div(class="line")
-              div(class="letter",data-bind="text:letter()")
-              div(class="question")
-                |Will the monthly monitoring rate be&nbsp;
+                |Is the Monthly Monitoring Rate&nbsp;
                 span(data-bind="currencytext:data.MonthlyMonitoringRate")
                 |?
               div(class="answer")
                 input(type="text",class="inputField",name="mmr",
                   data-bind="ukov:data.MonthlyMonitoringRateActual,likecurrencyvalue:data.MonthlyMonitoringRateActual")
             div(class="line")
-              div(class="letter",data-bind="text:letter()")
+              div(class="letter",data-bind="text:num()")
+              div(class="question")
+                |Is the Activation Fee&nbsp;
+                span(data-bind="currencytext:data.ActivationFee")
+                |?
+              div(class="answer")
+                input(type="text",class="inputField",name="activationFeeActual",
+                  data-bind="ukov:data.ActivationFeeActual,likecurrencyvalue:data.ActivationFeeActual")
+            div(class="line")
+              div(class="letter",data-bind="text:num()")
+              //- div(class="question") Is the Activation over 3 months or paid in full?
+              div(class="question")
+                |Is the Activation&nbsp;
+                span(data-bind="text:data.DefaultActivationPayment")
+                |?
+              div(class="answer")
+                div(data-bind="cvm:data.ActivationPaymentCvm")
+            div(class="line")
+              div(class="letter",data-bind="text:num()")
+              //- div(class="question") Is the billing method ACH?
+              div(class="question")
+                |Is the billing method&nbsp;
+                span(data-bind="text:data.DefaultBillingMethod")
+                |?
+              div(class="answer")
+                div(data-bind="cvm:data.BillingMethodCvm")
+            div(class="line")
+              div(class="letter",data-bind="text:num()")
+              //- div(class="question") Is the billing date the 5th?
+              div(class="question")
+                |Is the billing date the&nbsp;
+                span(data-bind="text:data.DefaultBillingDate")
+                |?
+              div(class="answer")
+                div(data-bind="cvm:data.BillingDateCvm")
+            div(class="line")
+              div(class="letter",data-bind="text:num()")
+              div(class="question") Is this a new install or a takeover?
+              //- div(class="question")
+              //-   |Is this a&nbsp;
+              //-   span(data-bind="text:data.DefaultInstallationType")
+              //-   |?
+              div(class="answer")
+                div(data-bind="cvm:data.InstallationTypeCvm")
+            div(class="line")
+              div(class="letter",data-bind="text:num()")
+              div(class="question") Is the customer the Home Owner or a Renter
+              div(class="answer")
+                div(data-bind="cvm:data.HomeOwnershipCvm")
+
+
+            div(class="subHeader") Monitoring And Service Information
+            div(class="line")
+              div(class="letter",data-bind="text:num()")
+              div(class="question") What is the panel type?
+              div(class="answer")
+                div(data-bind="cvm:data.PanelTypeCvm")
+            div(class="line")
+              div(class="letter",data-bind="text:num()")
+              div(class="question") What is the cell type?
+              div(class="answer")
+                div(data-bind="cvm:data.CellularTypeCvm")
+            div(class="line")
+              div(class="letter",data-bind="text:num()")
+              div(class="question") Which Alarm.com package are we going with?
+              div(class="answer")
+                div(data-bind="cvm:data.AlarmComPackageCvm")
+
+            div(class="subHeader") Monthly Monitoring
+            div(class="line")
+              div(class="letter",data-bind="text:num()")
               div(class="question") What is the contract length?
               div(class="answer")
                 div(data-bind="cvm:contractLengthsCvm")

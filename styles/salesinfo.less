@@ -33,7 +33,7 @@
     }
 
     .edit-form {
-      @letterWidth:15px;
+      @letterWidth:20px;
       @answerWidth:200px;
 
       width: @middle;
@@ -47,6 +47,7 @@
       }
       .letter {
         width:@letterWidth;
+        padding-right: 2px;
       }
       .question {
         width:@middle - @letterWidth - @answerWidth;
@@ -55,6 +56,7 @@
       .answer {
         display:inline-block;
         width:@answerWidth;
+        padding-bottom: 5px;
       }
     }
   }
