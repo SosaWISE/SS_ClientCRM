@@ -171,8 +171,8 @@ define('src/core/combo.vm', [
         // only open and don't do other actions below
         switch (keyCode) {
           case 13: // enter
-          case 38: // up arrow
-          case 40: // down arrow
+            // case 38: // up arrow
+            // case 40: // down arrow
             return false; // prevent default action
         }
       }
@@ -180,6 +180,7 @@ define('src/core/combo.vm', [
       switch (keyCode) {
         default: return true;
         case 27: // escape
+          _this.resetActive();
           _this.clickClose();
           evt.stopPropagation(); // cancel bubble
           return false; // prevent default action
@@ -296,6 +297,16 @@ define('src/core/combo.vm', [
     if (item) {
       item.active(true);
     }
+  };
+  ComboViewModel.prototype.resetActive = function() {
+    var _this = this,
+      selected = _this.selected();
+    _this.deactivateCurrent();
+    if (selected) {
+      selected.active(true);
+      _this.activeIndex = _this.list().indexOf(selected) - 1;
+    }
+    _this.activateNext(true);
   };
 
   function wrapItem(item, fields) {
