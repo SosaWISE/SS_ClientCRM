@@ -120,6 +120,7 @@ define('src/core/controller.vm', [
     _this._lastRouteData = routeCtx.routeData;
     // load self
     _this.load(routeCtx.routeData, routeCtx.extraData, function() {
+      // console.log(_this.constructor.name, 'loaded!');
       // check if routeCtx is still active
       if (!routeCtx.active()) {
         return;

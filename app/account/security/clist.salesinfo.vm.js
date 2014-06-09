@@ -324,14 +324,14 @@ define('src/account/security/clist.salesinfo.vm', [
     });
   };
 
-  CListSalesInfoViewModel.prototype.letter = function(first) {
-    var _this = this;
-    if (first) {
-      // reset to first letter
-      _this._char = 'A'.charCodeAt(0);
-    }
-    return String.fromCharCode(_this._char++) + '.';
-  };
+  // CListSalesInfoViewModel.prototype.letter = function(first) {
+  //   var _this = this;
+  //   if (first) {
+  //     // reset to first letter
+  //     _this._char = 'A'.charCodeAt(0);
+  //   }
+  //   return String.fromCharCode(_this._char++) + '.';
+  // };
   CListSalesInfoViewModel.prototype.num = function(first) {
     var _this = this;
     if (first) {

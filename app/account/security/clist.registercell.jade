@@ -7,8 +7,8 @@ div(class="acct-item acct-registercell")
       br
       a(class="btn",tabindex="0",data-bind="cmd:function(){alert('hah! i do nothing! assolutamente niente!');}") Retry
 
-  div(data-bind="if:vm()&&!cellErrMsg()")
-   div(data-bind="template:{name:vm().viewTmpl,data:vm}")
+  div(data-bind="if:activeChild()&&!cellErrMsg()")
+   div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild}")
 
-  div(data-bind="if:active()&&!allLoaded()")
+  div(data-bind="if:active()&&!loaded()")
     div(class="spinner-wrap black", data-bind="template:'tmpl-spinner'")

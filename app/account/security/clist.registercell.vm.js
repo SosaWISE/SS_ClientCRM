@@ -1,13 +1,19 @@
 define('src/account/security/clist.registercell.vm', [
+  'src/account/security/telguard.vm',
   'src/account/security/alarmdotcom.vm',
   'src/account/security/alarmnet.vm',
   'ko',
+  'src/dataservice',
+  'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  TelguardViewModel,
   AlarmDotComViewModel,
   AlarmNetViewModel,
   ko,
+  dataservice,
+  notify,
   utils,
   ControllerViewModel
 ) {
@@ -19,15 +25,6 @@ define('src/account/security/clist.registercell.vm', [
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
     _this.cellErrMsg = ko.observable();
-    _this.vm = ko.observable();
-
-    _this.allLoaded = ko.computed({
-      deferEvaluation: true,
-      read: function() {
-        var vm = _this.vm();
-        return _this.loaded() && vm && vm.loaded();
-      }
-    });
 
     //
     // events
@@ -40,33 +37,45 @@ define('src/account/security/clist.registercell.vm', [
   CListRegisterCellViewModel.prototype.viewTmpl = 'tmpl-security-clist_registercell';
 
   CListRegisterCellViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this,
-      cb = join.add();
-    setTimeout(function() {
-      //@TODO: load real data
+    var _this = this;
 
-      var success = true;
-      if (!success) {
-        _this.cellErrMsg('asdf');
-      } else {
-        //@TODO: decide which system (alarm.com or alarmnet)
-        _this.vm(new AlarmDotComViewModel({
+    _this.accountId = routeData.id;
+
+    load_msAccountSalesInformations(_this.accountId, utils.safeCallback(join.add(), function(err, resp) {
+      var Ctor, vm;
+      switch (resp.Value.CellType) {
+        case 'Alarm.com':
+          Ctor = AlarmDotComViewModel;
+          break;
+        case 'Alarm.net':
+          Ctor = AlarmNetViewModel;
+          break;
+        case 'Telguard':
+          Ctor = TelguardViewModel;
+          break;
+      }
+      if (Ctor) {
+        vm = new Ctor({
           id: _this.id,
           pcontroller: _this.pcontroller,
           layersVm: _this.layersVm,
-        }));
-        // _this.vm(new AlarmNetViewModel({
-        //   id: _this.id,
-        //   pcontroller: _this.pcontroller,
-        //   layersVm: _this.layersVm,
-        // }));
-
-        _this.vm().load(routeData, extraData, join.add());
+        });
+        // set as only child
+        _this.childs([vm]);
+        // vm.load will be called in controller.vm.js
+        // vm.load(routeData, extraData, join.add());
+      } else {
+        notify.notify('warn', 'Invalid CellType: ' + resp.Value.CellType);
       }
-
-      cb();
-    }, 100);
+    }, utils.noop));
   };
+
+
+  function load_msAccountSalesInformations(accountId, cb) {
+    dataservice.monitoringstationsrv.msAccountSalesInformations.read({
+      id: accountId,
+    }, null, cb);
+  }
 
   return CListRegisterCellViewModel;
 });
