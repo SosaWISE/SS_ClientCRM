@@ -5,6 +5,7 @@ define('src/app', [
   'src/panels/accounts.panel.vm',
   'src/panels/surveys.panel.vm',
   'src/panels/swing.panel.vm',
+  'src/panels/inventory.panel.vm',
   'src/core/notify'
 ], function(
   router,
@@ -13,6 +14,7 @@ define('src/app', [
   AccountsPanelViewModel,
   SurveysPanelViewModel,
   SwingViewModel,
+  InventoryViewModel,
   notify
 ) {
   "use strict";
@@ -69,6 +71,12 @@ define('src/app', [
       name: 'Swing',
       ico: '&#128101;',
     }),
+    new InventoryViewModel({
+      routePart: routePart,
+      id: 'inventory',
+      name: 'Inventory',
+      ico: '&#128101;',
+    }),    
   ]);
   setTemplate(app.panels, 'viewTmpl', 'panel_');
 
@@ -100,6 +108,7 @@ define('src/app', [
   });
 
   router.addRoute(app.panelMap.swing, 'swing', '', {});
+  router.addRoute(app.panelMap.inventory, 'inventory', '', {});
 
   return app;
 });
