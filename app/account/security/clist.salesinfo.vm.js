@@ -54,6 +54,22 @@ define('src/account/security/clist.salesinfo.vm', [
     },
     MonthlyMonitoringRateItemId: {},
     Over3Months: {},
+
+
+
+    ActivationPayment: {},
+    DefaultActivationPayment: {},
+
+    BillingMethod: {},
+    DefaultBillingMethod: {},
+
+    BillingDate: {},
+    DefaultBillingDate: {},
+
+    InstallationType: {},
+    DefaultInstallationType: {},
+
+    HomeOwnership: {},
   };
 
   function CListSalesInfoViewModel(options) {
@@ -101,6 +117,45 @@ define('src/account/security/clist.salesinfo.vm', [
         value: 'ContractTemplateID',
       }
     });
+
+
+    /////////////
+    _this.data.ActivationPayment(1);
+    _this.data.ActivationPaymentCvm = new ComboViewModel({
+      selectedValue: _this.data.ActivationPayment,
+      list: _this.activationPaymentOptions,
+    });
+    _this.data.DefaultActivationPayment(_this.data.ActivationPaymentCvm.selectedItem().text);
+
+    _this.data.BillingMethod(1);
+    _this.data.BillingMethodCvm = new ComboViewModel({
+      selectedValue: _this.data.BillingMethod,
+      list: _this.billingMethodOptions,
+    });
+    _this.data.DefaultBillingMethod(_this.data.BillingMethodCvm.selectedItem().text);
+
+    _this.data.BillingDate(5);
+    _this.data.BillingDateCvm = new ComboViewModel({
+      selectedValue: _this.data.BillingDate,
+      list: _this.billingDateOptions,
+    });
+    _this.data.DefaultBillingDate(_this.data.BillingDateCvm.selectedItem().text);
+
+    _this.data.InstallationType(1);
+    _this.data.InstallationTypeCvm = new ComboViewModel({
+      selectedValue: _this.data.InstallationType,
+      list: _this.installationTypeOptions,
+    });
+    _this.data.DefaultInstallationType(_this.data.InstallationTypeCvm.selectedItem().text);
+
+    _this.data.HomeOwnership(1);
+    _this.data.HomeOwnershipCvm = new ComboViewModel({
+      selectedValue: _this.data.HomeOwnership,
+      list: _this.homeOwnershipOptions,
+    });
+    /////////////
+
+
 
     _this.frequentGvm = new FrequentGridViewModel({
       addPart: function(part) {
@@ -225,6 +280,13 @@ define('src/account/security/clist.salesinfo.vm', [
     }
     return String.fromCharCode(_this._char++) + '.';
   };
+  CListSalesInfoViewModel.prototype.num = function(first) {
+    var _this = this;
+    if (first) {
+      _this._num = first;
+    }
+    return (_this._num++) + '.';
+  };
 
 
   function load_invoice(data, cb) {
@@ -313,6 +375,125 @@ define('src/account/security/clist.salesinfo.vm', [
       }
     };
   }
+
+
+  CListSalesInfoViewModel.prototype.activationPaymentOptions = [ //
+    {
+      value: 1,
+      text: 'Over 3 Months'
+    }, {
+      value: 2,
+      text: 'Paid in Full'
+    },
+  ];
+  CListSalesInfoViewModel.prototype.billingMethodOptions = [ //
+    {
+      value: 1,
+      text: 'ACH'
+    }, {
+      value: 2,
+      text: 'Credit Card'
+    }, {
+      value: 3,
+      text: 'Invoice'
+    },
+  ];
+  CListSalesInfoViewModel.prototype.billingDateOptions = [ //
+    {
+      value: 1,
+      text: '1st'
+    }, {
+      value: 2,
+      text: '2nd'
+    }, {
+      value: 3,
+      text: '3rd'
+    }, {
+      value: 4,
+      text: '4th'
+    }, {
+      value: 5,
+      text: '5th'
+    }, {
+      value: 6,
+      text: '6th'
+    }, {
+      value: 7,
+      text: '7th'
+    }, {
+      value: 8,
+      text: '8th'
+    }, {
+      value: 9,
+      text: '9th'
+    }, {
+      value: 10,
+      text: '10th'
+    }, {
+      value: 11,
+      text: '11th'
+    }, {
+      value: 12,
+      text: '12th'
+    }, {
+      value: 13,
+      text: '13th'
+    }, {
+      value: 14,
+      text: '14th'
+    }, {
+      value: 15,
+      text: '15th'
+    }, {
+      value: 16,
+      text: '16th'
+    }, {
+      value: 17,
+      text: '17th'
+    }, {
+      value: 18,
+      text: '18th'
+    }, {
+      value: 19,
+      text: '19th'
+    }, {
+      value: 20,
+      text: '20th'
+    }, {
+      value: 21,
+      text: '21st'
+    }, {
+      value: 22,
+      text: '22nd'
+    }, {
+      value: 23,
+      text: '23rd'
+    }, {
+      value: 24,
+      text: '24th'
+    }, {
+      value: 25,
+      text: '25th'
+    },
+  ];
+  CListSalesInfoViewModel.prototype.installationTypeOptions = [ //
+    {
+      value: 1,
+      text: 'New Install'
+    }, {
+      value: 2,
+      text: 'Takeover'
+    },
+  ];
+  CListSalesInfoViewModel.prototype.homeOwnershipOptions = [ //
+    {
+      value: 1,
+      text: 'Home Owner'
+    }, {
+      value: 2,
+      text: 'Renter'
+    },
+  ];
 
   return CListSalesInfoViewModel;
 });
