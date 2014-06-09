@@ -13,6 +13,7 @@ define('src/core/_all.spec', [
   'src/core/router.spec',
   'src/core/strings.spec',
   'src/core/treehelper.spec',
+  'src/core/utils.spec',
 ], function() {
   'use strict';
 });

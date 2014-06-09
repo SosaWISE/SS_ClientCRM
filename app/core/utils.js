@@ -71,6 +71,13 @@ define('src/core/utils', [
       return (obj instanceof Date);
     },
 
+    // actually sets if null or undefined...
+    setIfNull: function(val, propName, defaultValue) {
+      if (val[propName] == null) {
+        val[propName] = defaultValue;
+      }
+    },
+
   };
   utils.no_op = utils.noop; // only for backwards compatibiltiy
 

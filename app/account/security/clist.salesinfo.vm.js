@@ -7,6 +7,7 @@ define('src/account/security/clist.salesinfo.vm', [
   'src/account/security/clist.salesinfo.gvm',
   'src/ukov',
   'src/dataservice',
+  'src/core/strings',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
@@ -21,6 +22,7 @@ define('src/account/security/clist.salesinfo.vm', [
   CListSalesInfoGridViewModel,
   ukov,
   dataservice,
+  strings,
   notify,
   utils,
   ControllerViewModel,
@@ -34,6 +36,24 @@ define('src/account/security/clist.salesinfo.vm', [
   schema = {
     _model: true,
     DealerId: {},
+
+    //
+    // From Invoice
+    //
+    // AccountId: 130532,
+    // ActivationFee: 99,
+    // ActivationFeeActual: 5,
+    // ActivationFeeItemId: "SETUP_FEE_99",
+    // AlarmComPackageId: "ADVINT",
+    // CellularTypeId: "CELLPRI",
+    // ContractTemplateId: null,
+    // InvoiceID: 10020170,
+    // MonthlyMonitoringRate: 39.95,
+    // MonthlyMonitoringRateActual: 1,
+    // MonthlyMonitoringRateItemId: "MON_CONT_5001",
+    // Over3Months: true,
+    // PanelTypeId: "CONCORD",
+
     AccountId: {},
     ActivationFee: {},
     ActivationFeeActual: {
@@ -44,7 +64,6 @@ define('src/account/security/clist.salesinfo.vm', [
     },
     ActivationFeeItemId: {},
     AlarmComPackageId: {},
-    PanelTypeId: {},
     CellularTypeId: {},
     ContractTemplateId: {},
     InvoiceID: {},
@@ -54,22 +73,43 @@ define('src/account/security/clist.salesinfo.vm', [
     },
     MonthlyMonitoringRateItemId: {},
     Over3Months: {},
+    PanelTypeId: {},
 
 
+    //
+    // From MsAccountSalesInformation
+    //
+    // AccountID: 130532,
+    // BillingDay: null,
+    // CellPackageItemId: "CELL_SRV_AC_AI",
+    // CellServicePackage: "Advanced Interactive",
+    // CellType: "Alarm.com",
+    // ContractLength: null,
+    // IsOwner: null,
+    // IsTakeOver: null,
+    // MMR: 1,
+    // Over3Months: true,
+    // PanelItemId: "S911BRC-CE",
+    // PanelTypeId: "CONCORD",
+    // PaymentTypeId: null,
+    // Setup1stMonth: 2,
+    // SetupFee: 5,
 
-    ActivationPayment: {},
-    DefaultActivationPayment: {},
-
-    BillingMethod: {},
-    DefaultBillingMethod: {},
-
-    BillingDate: {},
-    DefaultBillingDate: {},
-
-    InstallationType: {},
-    DefaultInstallationType: {},
-
-    HomeOwnership: {},
+    // AccountID: {},
+    BillingDay: {},
+    CellPackageItemId: {},
+    CellServicePackage: {},
+    CellType: {},
+    ContractLength: {},
+    IsOwner: {},
+    IsTakeOver: {},
+    // MMR: {},
+    // Over3Months: {},
+    PanelItemId: {},
+    // PanelTypeId:  {},
+    PaymentTypeId: {},
+    Setup1stMonth: {},
+    SetupFee: {},
   };
 
   function CListSalesInfoViewModel(options) {
@@ -105,6 +145,33 @@ define('src/account/security/clist.salesinfo.vm', [
       }
     });
 
+    _this.data.Over3MonthsCvm = new ComboViewModel({
+      selectedValue: _this.data.Over3Months,
+      list: _this.over3MonthsOptions,
+    });
+    _this.data.PaymentTypeCvm = new ComboViewModel({
+      selectedValue: _this.data.PaymentTypeId,
+      list: _this.paymentTypeOptions,
+    });
+    _this.data.BillingDayCvm = new ComboViewModel({
+      selectedValue: _this.data.BillingDay,
+      list: _this.billingDayOptions,
+    });
+    _this.data.IsTakeOverCvm = new ComboViewModel({
+      selectedValue: _this.data.IsTakeOver,
+      list: _this.isTakeOverOptions,
+    });
+    _this.data.IsOwnerCvm = new ComboViewModel({
+      selectedValue: _this.data.IsOwner,
+      list: _this.isOwnerOptions,
+    });
+    _this.data.CellTypeCvm = new ComboViewModel({
+      selectedValue: _this.data.CellType,
+      list: _this.cellTypeOptions,
+    });
+
+
+
     _this.pointSystemsCvm = new ComboViewModel({
       fields: {
         text: 'TemplateName',
@@ -117,43 +184,6 @@ define('src/account/security/clist.salesinfo.vm', [
         value: 'ContractTemplateID',
       }
     });
-
-
-    /////////////
-    _this.data.ActivationPayment(1);
-    _this.data.ActivationPaymentCvm = new ComboViewModel({
-      selectedValue: _this.data.ActivationPayment,
-      list: _this.activationPaymentOptions,
-    });
-    _this.data.DefaultActivationPayment(_this.data.ActivationPaymentCvm.selectedItem().text);
-
-    _this.data.BillingMethod(1);
-    _this.data.BillingMethodCvm = new ComboViewModel({
-      selectedValue: _this.data.BillingMethod,
-      list: _this.billingMethodOptions,
-    });
-    _this.data.DefaultBillingMethod(_this.data.BillingMethodCvm.selectedItem().text);
-
-    _this.data.BillingDate(5);
-    _this.data.BillingDateCvm = new ComboViewModel({
-      selectedValue: _this.data.BillingDate,
-      list: _this.billingDateOptions,
-    });
-    _this.data.DefaultBillingDate(_this.data.BillingDateCvm.selectedItem().text);
-
-    _this.data.InstallationType(1);
-    _this.data.InstallationTypeCvm = new ComboViewModel({
-      selectedValue: _this.data.InstallationType,
-      list: _this.installationTypeOptions,
-    });
-    _this.data.DefaultInstallationType(_this.data.InstallationTypeCvm.selectedItem().text);
-
-    _this.data.HomeOwnership(1);
-    _this.data.HomeOwnershipCvm = new ComboViewModel({
-      selectedValue: _this.data.HomeOwnership,
-      list: _this.homeOwnershipOptions,
-    });
-    /////////////
 
 
 
@@ -198,6 +228,21 @@ define('src/account/security/clist.salesinfo.vm', [
     });
 
 
+    _this.isAlarmCom = ko.observable(false);
+    _this.hasCell = ko.observable(false);
+    _this.data.CellType.subscribe(function(cellType) {
+      var tmp;
+
+      tmp = cellType === 3;
+      _this.isAlarmCom(tmp);
+      _this.data.CellularTypeId.ignore(!tmp, true);
+
+      tmp = cellType && cellType !== 1;
+      _this.hasCell(tmp);
+      _this.data.AlarmComPackageId.ignore(!tmp, true);
+    });
+
+
     //
     // events
     //
@@ -207,7 +252,7 @@ define('src/account/security/clist.salesinfo.vm', [
         return;
       }
 
-      var data = _this.data.getValue();
+      var data = _this.data.getValue(false, true);
       data.CellTypeId = data.CellularTypeId; //@HACK: to save CellularTypeId
       if (underscore.isEqual(_this.currData, data)) {
         // no need to re-save the same data
@@ -242,11 +287,26 @@ define('src/account/security/clist.salesinfo.vm', [
   CListSalesInfoViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       subjoin = join.create(),
-      refreshInvoiceCb = join.add();
+      cb = join.add();
+
+    function onLoadComplete(err) {
+      if (!err) {
+        _this.data.markClean({}, true);
+
+        // subscribe to updates after everyting has been set
+        _this.data.ActivationFeeActual.subscribe(_this.refreshInvoice);
+        _this.data.PanelTypeId.subscribe(_this.refreshInvoice);
+        _this.data.CellularTypeId.subscribe(_this.refreshInvoice);
+        _this.data.Over3Months.subscribe(_this.refreshInvoice);
+        _this.data.AlarmComPackageId.subscribe(_this.refreshInvoice);
+        _this.data.MonthlyMonitoringRateActual.subscribe(_this.refreshInvoice);
+      }
+      cb(err);
+    }
 
     _this.data.AccountId(routeData.id);
 
-    load_invoice(_this.data, subjoin.add());
+    load_invoice(_this.data, subjoin);
     load_vendorAlarmComPackages(_this.data.AlarmComPackageCvm, subjoin.add());
     load_pointSystems(_this.pointSystemsCvm, subjoin.add());
     load_panelTypes(_this.data.PanelTypeCvm, subjoin.add());
@@ -255,20 +315,12 @@ define('src/account/security/clist.salesinfo.vm', [
 
     subjoin.when(function(err) {
       if (err) {
-        refreshInvoiceCb();
-        return;
+        onLoadComplete(err);
+      } else {
+        //@REVIEW: why is the invoice being refreshed after it was just loaded???? possibly for new invoices???
+        /** Refresh the invoice. */
+        _this.refreshInvoice(onLoadComplete);
       }
-      //@REVIEW: why is the invoice being refreshed after it was just loaded???? possibly for new invoices???
-      /** Refresh the invoice. */
-      _this.refreshInvoice(refreshInvoiceCb);
-
-      // subscribe to updates after everyting has been set
-      _this.data.ActivationFeeActual.subscribe(_this.refreshInvoice);
-      _this.data.PanelTypeId.subscribe(_this.refreshInvoice);
-      _this.data.CellularTypeId.subscribe(_this.refreshInvoice);
-      _this.data.Over3Months.subscribe(_this.refreshInvoice);
-      _this.data.AlarmComPackageId.subscribe(_this.refreshInvoice);
-      _this.data.MonthlyMonitoringRateActual.subscribe(_this.refreshInvoice);
     });
   };
 
@@ -285,19 +337,53 @@ define('src/account/security/clist.salesinfo.vm', [
     if (first) {
       _this._num = first;
     }
-    return (_this._num++) + '.';
+    // reset subnum
+    _this._subnum = 1;
+    //
+    return strings.format('{0}.', _this._num++);
+  };
+  CListSalesInfoViewModel.prototype.subnum = function() {
+    var _this = this;
+    return strings.format('{0}.{1}.', _this._num - 1, _this._subnum++);
   };
 
 
-  function load_invoice(data, cb) {
+  function load_invoice(data, join) {
     dataservice.salessummary.invoiceMsIsntalls.read({
       id: data.AccountId(),
       link: 'accountid'
-    }, null, utils.safeCallback(cb, function(err, resp) {
+    }, null, utils.safeCallback(join.add(), function(err, resp) {
       if (resp.Value) {
-        // console.log(resp.Value);
+        console.log('load_invoice:', resp.Value);
         data.setValue(resp.Value);
-        data.markClean(resp.Value, true);
+
+        load_msAccountSalesInformations(data, join.add());
+      }
+    }, function(err) {
+      notify.notify('error', 'Error', err.Message);
+    }));
+  }
+
+  function load_msAccountSalesInformations(data, cb) {
+    dataservice.monitoringstationsrv.msAccountSalesInformations.read({
+      id: data.AccountId(),
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      var val = resp.Value;
+      if (val) {
+        console.log('load_msAccountSalesInformations:', val);
+
+        // set defaults
+        utils.setIfNull(val, 'Over3Months', true);
+        utils.setIfNull(val, 'PaymentTypeId', 1);
+        utils.setIfNull(val, 'BillingDay', 5); // 5th of month
+        utils.setIfNull(val, 'IsTakeOver', false);
+        utils.setIfNull(val, 'IsOwner', true);
+        utils.setIfNull(val, 'CellType', 1);
+        // utils.setIfNull(val, 'ContractLength', 60); // ?????????????
+        // utils.setIfNull(val, 'Setup1stMonth', 199.00); // ?????????????
+        // utils.setIfNull(val, 'SetupFee', 199.00); // ?????????????
+
+        data.setValue(val);
       }
     }, function(err) {
       notify.notify('error', 'Error', err.Message);
@@ -377,16 +463,16 @@ define('src/account/security/clist.salesinfo.vm', [
   }
 
 
-  CListSalesInfoViewModel.prototype.activationPaymentOptions = [ //
+  CListSalesInfoViewModel.prototype.over3MonthsOptions = [ //
     {
-      value: 1,
+      value: true,
       text: 'Over 3 Months'
     }, {
-      value: 2,
+      value: false,
       text: 'Paid in Full'
     },
   ];
-  CListSalesInfoViewModel.prototype.billingMethodOptions = [ //
+  CListSalesInfoViewModel.prototype.paymentTypeOptions = [ //
     {
       value: 1,
       text: 'ACH'
@@ -398,7 +484,7 @@ define('src/account/security/clist.salesinfo.vm', [
       text: 'Invoice'
     },
   ];
-  CListSalesInfoViewModel.prototype.billingDateOptions = [ //
+  CListSalesInfoViewModel.prototype.billingDayOptions = [ //
     {
       value: 1,
       text: '1st'
@@ -476,22 +562,37 @@ define('src/account/security/clist.salesinfo.vm', [
       text: '25th'
     },
   ];
-  CListSalesInfoViewModel.prototype.installationTypeOptions = [ //
+  CListSalesInfoViewModel.prototype.isTakeOverOptions = [ //
     {
-      value: 1,
+      value: false,
       text: 'New Install'
     }, {
-      value: 2,
+      value: true,
       text: 'Takeover'
     },
   ];
-  CListSalesInfoViewModel.prototype.homeOwnershipOptions = [ //
+  CListSalesInfoViewModel.prototype.isOwnerOptions = [ //
     {
-      value: 1,
+      value: true,
       text: 'Home Owner'
     }, {
-      value: 2,
+      value: false,
       text: 'Renter'
+    },
+  ];
+  CListSalesInfoViewModel.prototype.cellTypeOptions = [ //
+    {
+      value: 1,
+      text: '[No Cell]'
+    }, {
+      value: 2,
+      text: 'Telguard'
+    }, {
+      value: 3,
+      text: 'Alarm.com'
+    }, {
+      value: 4,
+      text: 'Alarm.net'
     },
   ];
 
