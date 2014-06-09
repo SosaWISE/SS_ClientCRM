@@ -7,6 +7,10 @@ table(class="question")
       <!-- ko with:questionMeaningVM -->
       span(class="qm",data-bind="text:model.Name")
       div
+        span(style="color:black;") Map Answer To Token:
+        |&nbsp;
+        span(data-bind="text:$parent.mapToTokenName")
+      div
         span(style="color:black;") Condition:
         |&nbsp;
         span(data-bind="text:$parent.conditionText")

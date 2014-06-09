@@ -32,14 +32,10 @@ define('src/survey/question.vm', [
     _this.noAddSubQuestion = ko.computed(function() {
       return !_this.possibleAnswerMaps().length;
     });
-    _this.conditionText = ko.computed(function() {
-      var json = _this.model.ConditionJson;
-      if (!json || !json.TokenId || !json.Comparison) {
-        return 'none';
-      } else {
-        return strings.format('({0} {1} \'{2}\')', _this.topVm.tokensVM.getToken(json.TokenId).Token, json.Comparison, json.Value);
-      }
-    });
+
+    // observables
+    _this.conditionText = ko.observable(calcConditionText(_this));
+    _this.mapToTokenName = ko.observable(getMapToTokenName(_this));
   }
   utils.inherits(QuestionViewModel, QuestionsParentViewModel);
   QuestionViewModel.prototype.viewTmpl = 'tmpl-question';
@@ -125,6 +121,24 @@ define('src/survey/question.vm', [
       possibleAnswersVM: possibleAnswersVM,
       model: model,
     });
+  }
+
+  function calcConditionText(_this) {
+    var json = _this.model.ConditionJson;
+    if (!json || !json.TokenId || !json.Comparison) {
+      return 'none';
+    } else {
+      return strings.format('({0} {1} \'{2}\')', _this.topVm.tokensVM.getToken(json.TokenId).Token, json.Comparison, json.Value);
+    }
+  }
+
+  function getMapToTokenName(_this) {
+    var tokenId = _this.model.MapToTokenId;
+    if (!tokenId) {
+      return 'none';
+    } else {
+      return _this.topVm.tokensVM.getToken(tokenId).Token;
+    }
   }
 
   return QuestionViewModel;

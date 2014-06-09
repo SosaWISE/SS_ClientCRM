@@ -1,4 +1,5 @@
 define('src/survey/question.new.vm', [
+  'src/survey/questionschemas',
   'src/ukov',
   'src/dataservice',
   'ko',
@@ -8,6 +9,7 @@ define('src/survey/question.new.vm', [
   'src/core/base.vm',
   'src/core/utils',
 ], function(
+  questionschemas,
   ukov,
   dataservice,
   ko,
@@ -80,7 +82,7 @@ define('src/survey/question.new.vm', [
         value: 'QuestionMeaningID',
         text: 'Name'
       },
-      list: createComboList(_this.surveyVM, _this.surveyTypeVM.questionMeanings())
+      list: createComboList(_this.surveyVM, _this.surveyTypeVM.questionMeanings()),
     });
     _this.data.QuestionMeaningCvm.actions([ //
       {
@@ -95,7 +97,7 @@ define('src/survey/question.new.vm', [
         value: 'TokenID',
         text: 'Token',
       },
-      list: _this.tokensVM.list(),
+      list: _this.tokensVM.list.peek(),
       nullable: true,
     });
     _this.data.ConditionJson.ComparisonCvm = new ComboViewModel({
@@ -108,6 +110,18 @@ define('src/survey/question.new.vm', [
       _this.data.ConditionJson.ignore(!use, true);
     });
     // _this.data.ConditionJson.Use(false);
+
+    _this.data.MapToTokenCvm = new ComboViewModel({
+      selectedValue: _this.data.MapToTokenId,
+      fields: {
+        value: 'TokenID',
+        text: 'Token'
+      },
+      list: _this.tokensVM.list.peek().filter(function(item) {
+        // include mappable tokens
+        return questionschemas[item.Token];
+      }),
+    });
 
     //
     // events

@@ -117,8 +117,6 @@ define('src/account/security/clist.survey.vm', [
   };
 
   CListSurveyViewModel.prototype.getDataContext = function(cb) {
-    //@TODO: get real data context
-
     var _this = this,
       join = joiner(),
       priCustomer, premAddress, salesRep, details;

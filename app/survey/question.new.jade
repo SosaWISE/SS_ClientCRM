@@ -9,6 +9,9 @@ ul(class="edit-form")
   li
     span(class="label") Meaning
     div(data-bind="template:{name:data.QuestionMeaningCvm.viewTmpl,data:data.QuestionMeaningCvm}")
+  li
+    span(class="label") Map Answer To Token
+    div(data-bind="template:{name:data.MapToTokenCvm.viewTmpl,data:data.MapToTokenCvm}")
   li(data-bind="with:data.ConditionJson")
     div(class="checkbox",data-bind="cmd:function(){Use(!Use())}")
       a(class="btn small",data-bind="active:Use")

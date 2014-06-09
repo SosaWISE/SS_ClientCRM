@@ -1,4 +1,5 @@
 define('src/survey/takequestion.vm', [
+  'src/survey/questionschemas',
   'src/ukov',
   'ko',
   'src/core/treehelper',
@@ -8,6 +9,7 @@ define('src/survey/takequestion.vm', [
   'src/survey/questions.parent.vm', //'src/core/base.vm',
   'src/core/utils',
 ], function(
+  questionschemas,
   ukov,
   ko,
   treehelper,
@@ -18,18 +20,6 @@ define('src/survey/takequestion.vm', [
   utils
 ) {
   'use strict';
-
-  var schemas, required = ukov.validators.isRequired();
-
-  schemas = {
-    'default': {
-      validators: [required],
-    },
-    'email': {
-      converter: ukov.converters.string(),
-      validators: [required, ukov.validators.isEmail()],
-    },
-  };
 
   function TakeQuestionViewModel(options) {
     var _this = this;
@@ -128,7 +118,7 @@ define('src/survey/takequestion.vm', [
       if (_this.answerMode === 'text') {
         //@TODO: use MapToToken observable
         // BaseViewModel.ensureProps(_this, ['mapToTokenObservable']);
-        _this.answer = createChildProp(_this, 'email');
+        _this.answer = createChildProp(_this, _this.MapToToken || 'default');
       } else {
         _this.answer = createChildProp(_this);
 
@@ -165,15 +155,21 @@ define('src/survey/takequestion.vm', [
     _this.answer.markClean();
   }
 
-  function createChildProp(_this, schemaName) {
+  function createChildProp(_this, tokenName) {
     var key = _this.QuestionID,
       doc = _this.ukovModel.doc,
       child;
     if (doc[key]) {
       console.warn('duplicate question ' + key);
     }
+
     // add this prop's schema to the parent doc
-    doc[key] = schemas[schemaName || 'default'] || schemas['default'];
+    if (!questionschemas[tokenName]) {
+      console.warn('questionschemas does not have token: ' + tokenName);
+      doc[key] = {}; // empty schema???
+    } else {
+      doc[key] = questionschemas[tokenName];
+    }
 
     child = _this.ukovModel.createChild(key); // value will default to null
     return (_this.ukovModel[key] = child);

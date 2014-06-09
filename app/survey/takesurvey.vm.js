@@ -332,6 +332,7 @@ define('src/survey/takesurvey.vm', [
         QuestionID: q.QuestionID,
         ParentId: q.ParentId,
         GroupOrder: q.GroupOrder,
+        MapToToken: q.MapToTokenId ? tokensVM.getToken(q.MapToTokenId).Token : null,
         questionPossibleAnswerMaps: q.questionPossibleAnswerMaps,
         html: questionHtmlMap[q.QuestionID] || '<strong>[No Translation]</strong>',
         answerText: answerTextMap[q.QuestionID],
