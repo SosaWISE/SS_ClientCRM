@@ -48,7 +48,7 @@ define('src/panels/inventory.panel.vm', [
         {
           id: 'SKU',
           name: 'SKU',
-          field: 'SKU',           
+          field: 'SKU',
         }, {
           id: 'Quantity',
           name: 'Quantity',
@@ -56,38 +56,38 @@ define('src/panels/inventory.panel.vm', [
         }, {
           id: 'Remain',
           name: 'Remain',
-          field: 'Remain',        
+          field: 'Remain',
         }, {
           id: 'Received',
           name: 'Received',
-          text: 'Received',        
+          text: 'Received',
         }, {
           id: 'Description',
           name: 'Description',
           field: 'Description',
-        },{        
+        }, {
           id: 'Enter Barcode',
           name: 'Enter Barcode',
           field: 'Enter Barcode',
-        },        
+        },
       ],
     });
 
 
     //For dummy purposes
     //while (_this.inventoryListGvm.list().length < 15) {
-      //_this.inventoryListGvm.list().push({
-        //SKU: 'Dummy' + (_this.inventoryListGvm.list().length + 1),
-        //Quantity: 'Dummy' + (_this.inventoryListGvm.list().length + 1),
-        //Remain: 'Dummy' + (_this.inventoryListGvm.list().length + 1),
-        //Received: 'Dummy' + (_this.inventoryListGvm.list().length + 1),        
-        //Description: 'Dummy' + (_this.inventoryListGvm.list().length + 1),        
-      //});
-    //}    
+    //_this.inventoryListGvm.list().push({
+    //SKU: 'Dummy' + (_this.inventoryListGvm.list().length + 1),
+    //Quantity: 'Dummy' + (_this.inventoryListGvm.list().length + 1),
+    //Remain: 'Dummy' + (_this.inventoryListGvm.list().length + 1),
+    //Received: 'Dummy' + (_this.inventoryListGvm.list().length + 1),
+    //Description: 'Dummy' + (_this.inventoryListGvm.list().length + 1),
+    //});
+    //}
 
     //events
-    // 
- 
+    //
+
   }
 
   utils.inherits(InventoryViewModel, ControllerViewModel);
@@ -96,7 +96,7 @@ define('src/panels/inventory.panel.vm', [
   // members
   //
 
-  InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me    
+  InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
     this.inventoryListGvm.list([]);
 
     join = join;

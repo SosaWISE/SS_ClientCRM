@@ -76,7 +76,7 @@ define('src/app', [
       id: 'inventory',
       name: 'Inventory',
       ico: '&#128101;',
-    }),    
+    }),
   ]);
   setTemplate(app.panels, 'viewTmpl', 'panel_');
 
