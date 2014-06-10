@@ -42,7 +42,7 @@ define('src/panels/inventory.panel.vm', [
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
-        rowHeight: 27,
+        rowHeight: 35,
       },
       columns: [ //
         {
@@ -60,30 +60,18 @@ define('src/panels/inventory.panel.vm', [
         }, {
           id: 'Received',
           name: 'Received',
-          text: 'Received',
+          formatter: SlickGridViewModel.formatters.textbox,
         }, {
           id: 'Description',
           name: 'Description',
           field: 'Description',
         }, {
           id: 'Enter Barcode',
-          name: 'Enter Barcode',
-          field: 'Enter Barcode',
+          name: 'Enter Barcode',          
+          formatter: SlickGridViewModel.formatters.button,
         },
       ],
     });
-
-
-    //For dummy purposes
-    //while (_this.inventoryListGvm.list().length < 15) {
-    //_this.inventoryListGvm.list().push({
-    //SKU: 'Dummy' + (_this.inventoryListGvm.list().length + 1),
-    //Quantity: 'Dummy' + (_this.inventoryListGvm.list().length + 1),
-    //Remain: 'Dummy' + (_this.inventoryListGvm.list().length + 1),
-    //Received: 'Dummy' + (_this.inventoryListGvm.list().length + 1),
-    //Description: 'Dummy' + (_this.inventoryListGvm.list().length + 1),
-    //});
-    //}
 
     //events
     //
@@ -97,7 +85,23 @@ define('src/panels/inventory.panel.vm', [
   //
 
   InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-    this.inventoryListGvm.list([]);
+    
+    //For dummy purposes
+    var tempList = [];
+
+    while (tempList.length < 15) {
+        tempList.push({
+        SKU: 'Dummy' + (tempList.length + 1),
+        Quantity: 'Dummy' + (tempList.length + 1),
+        Remain: 'Dummy' + (tempList.length + 1),
+        Received: 'Dummy' + (tempList.length + 1),
+        Description: 'Dummy' + (tempList.length + 1),
+        'Enter Barcode': 'Dummy' + (tempList.length + 1),
+      });
+    }
+
+    //dummy data for grid
+    this.inventoryListGvm.list(tempList);
 
     join = join;
 
