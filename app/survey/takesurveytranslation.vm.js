@@ -80,7 +80,7 @@ define('src/survey/takesurveytranslation.vm', [
       surveyid: _this.surveyid,
       locale: locale,
       onSaved: function() {
-        alert('yay! saved!');
+        notify.notify('ok', 'yay! saved!', null, 7);
       },
     });
 

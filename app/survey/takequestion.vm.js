@@ -66,7 +66,7 @@ define('src/survey/takequestion.vm', [
       });
       if (_this.showSubs()) {
         // begin recursion
-        _this.questions.forEach(function(vm) {
+        _this.questions.peek().forEach(function(vm) {
           var result = vm.addAnswers(list);
           // only store first error message
           if (!errMsg) {
@@ -116,8 +116,6 @@ define('src/survey/takequestion.vm', [
       // editable
       _this.answerMode = calcAnswerMode(_this.questionPossibleAnswerMaps.length);
       if (_this.answerMode === 'text') {
-        //@TODO: use MapToToken observable
-        // BaseViewModel.ensureProps(_this, ['mapToTokenObservable']);
         _this.answer = createChildProp(_this, _this.MapToToken || 'default');
       } else {
         _this.answer = createChildProp(_this);

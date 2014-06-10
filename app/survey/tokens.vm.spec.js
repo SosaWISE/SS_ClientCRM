@@ -28,6 +28,9 @@ define('src/survey/tokens.vm.spec', [
       };
     });
 
+    it('should have an `deflateContext` function', function() {
+      expect(typeof vm.deflateContext).toBe('function');
+    });
     it('should have an `stringifyContext` function', function() {
       expect(typeof vm.stringifyContext).toBe('function');
     });
@@ -37,6 +40,36 @@ define('src/survey/tokens.vm.spec', [
     it('should have an `createTokenValueFunc` function', function() {
       // this function could be static but it's easier to have it a member function
       expect(typeof vm.createTokenValueFunc).toBe('function');
+    });
+
+    describe('deflateContext', function() {
+      it('should flatten the context', function() {
+        expect(vm.deflateContext({
+          Prop1: 1,
+          Prop2: {
+            Prop1: 21,
+          },
+          Prop3: null,
+        })).toEqual({ // keys get put in incrementing order
+          '1': 1,
+          '3': null,
+          '21': 21
+        });
+      });
+      it('should exclude unknown tokens', function() {
+        expect(vm.deflateContext({
+          Prop1: 1,
+          Prop2: {
+            Prop1: 21,
+          },
+          Prop3: null,
+          UnknownProp: 123,
+        })).toEqual({
+          '1': 1,
+          '3': null,
+          '21': 21
+        });
+      });
     });
 
     describe('stringifyContext', function() {
@@ -59,6 +92,13 @@ define('src/survey/tokens.vm.spec', [
           UnknownProp: 123,
         })).toBe('{"1":1,"3":null,"21":21}');
       });
+      it('should stringify an already flattened context', function() {
+        expect(vm.stringifyContext({
+          '1': 1,
+          '3': null,
+          '21': 21
+        }, true)).toBe('{"1":1,"3":null,"21":21}'); // keys get put in incrementing order
+      });
     });
 
     describe('parseContext', function() {
@@ -74,31 +114,56 @@ define('src/survey/tokens.vm.spec', [
     });
 
     describe('createTokenValueFunc', function() {
-      it('should get token values', function() {
-        var dataContext = {
-            Prop1: 1,
-            Prop2: {
-              Prop1: 21,
-            },
-            Prop3: null,
+      var dataContext,
+        tokenValueFunc;
+      beforeEach(function() {
+        dataContext = {
+          Prop1: 1,
+          Prop2: {
+            Prop1: 21,
           },
-          tokenValueFunc = vm.createTokenValueFunc(dataContext);
-        expect(tokenValueFunc('Prop1')).toEqual(1);
-        expect(tokenValueFunc('Prop2.Prop1')).toEqual(21);
+          Prop3: null,
+        };
+        tokenValueFunc = vm.createTokenValueFunc(dataContext);
+      });
+
+      it('should get token values', function() {
+        expect(tokenValueFunc('Prop1')).toBe(1);
+        expect(tokenValueFunc('Prop2.Prop1')).toBe(21);
       });
       it('should set token values', function() {
-        var dataContext = {
-            Prop1: 1,
-            Prop2: {
-              Prop1: 21,
-            },
-            Prop3: null,
-          },
-          tokenValueFunc = vm.createTokenValueFunc(dataContext);
         tokenValueFunc('Prop3', 3);
+        expect(tokenValueFunc('Prop3')).toBe(3);
+      });
+      it('should not set invalid token values', function() {
         tokenValueFunc('Prop2.Prop2', 22);
-        expect(tokenValueFunc('Prop3')).toEqual(3);
-        expect(tokenValueFunc('Prop2.Prop2')).toEqual(22);
+        expect(tokenValueFunc('Prop2.Prop2')).toBeUndefined();
+      });
+    });
+
+    describe('createTokenValueFunc(flat)', function() {
+      var flatContext,
+        tokenValueFunc;
+      beforeEach(function() {
+        flatContext = {
+          '1': 1,
+          '3': null,
+          '21': 21
+        };
+        tokenValueFunc = vm.createTokenValueFunc(flatContext, true);
+      });
+
+      it('should get token values', function() {
+        expect(tokenValueFunc('Prop1')).toBe(1);
+        expect(tokenValueFunc('Prop2.Prop1')).toBe(21);
+      });
+      it('should set token values', function() {
+        tokenValueFunc('Prop3', 3);
+        expect(tokenValueFunc('Prop3')).toBe(3);
+      });
+      it('should not set invalid token values', function() {
+        tokenValueFunc('Prop2.Prop2', 22);
+        expect(tokenValueFunc('Prop2.Prop2')).toBeUndefined();
       });
     });
   });

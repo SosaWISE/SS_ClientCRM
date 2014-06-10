@@ -59,16 +59,12 @@ define('src/survey/tokens.vm', [
     return result;
   };
 
-  // flatten and stringify context
-  TokensViewModel.prototype.stringifyContext = function(dataContext) {
+
+  // flatten context
+  TokensViewModel.prototype.deflateContext = function(dataContext) {
     var _this = this,
       compactObj = {},
-      tokenNameMap = {};
-
-    Object.keys(_this.tokenMap).forEach(function(id) {
-      var token = _this.tokenMap[id];
-      tokenNameMap[token.Token] = token;
-    });
+      tokenNameMap = createTokenNameMap(_this.tokenMap);
 
     (function recurse(obj, name) {
       if (obj && typeof(obj) === 'object' && !Array.isArray(obj)) {
@@ -89,33 +85,94 @@ define('src/survey/tokens.vm', [
       }
     })(dataContext, '');
 
+    return compactObj;
+  };
+  // flatten and stringify context
+  TokensViewModel.prototype.stringifyContext = function(dataContext, isFlat) {
+    var _this = this,
+      compactObj;
+    if (isFlat) {
+      // test that the context is actually flat
+      flatTest(dataContext);
+      compactObj = dataContext;
+    } else {
+      compactObj = _this.deflateContext(dataContext);
+    }
     return jsonhelpers.stringify(compactObj);
   };
-  // parse and unflatten context
-  TokensViewModel.prototype.parseContext = function(str) {
+  // inflate flattened dataContext
+  TokensViewModel.prototype.inflateContext = function(flatContext) {
     var _this = this,
-      dataContext = {},
-      compactObj = (utils.isStr(str)) ? jsonhelpers.parse(str) : str;
+      dataContext = {};
 
-    Object.keys(compactObj).forEach(function(tokenID) {
+    Object.keys(flatContext).forEach(function(tokenID) {
       var token = _this.getToken(tokenID);
       if (!token) {
         throw new Error('no token with id `' + tokenID + '`');
       }
-      walkToToken(dataContext, token.Token, compactObj[tokenID]);
+      walkToToken(dataContext, token.Token, flatContext[tokenID]);
     });
 
     return dataContext;
   };
+  // parse and unflatten context
+  TokensViewModel.prototype.parseContext = function(str) {
+    var _this = this,
+      compactObj = (utils.isStr(str)) ? jsonhelpers.parse(str) : str;
 
-  TokensViewModel.prototype.createTokenValueFunc = function(dataContext) {
-    return function(token, valueToSet) {
-      return walkToToken(dataContext, token, valueToSet);
-    };
+    return _this.inflateContext(compactObj);
   };
 
-  function walkToToken(dataContext, token, valueToSet) {
-    var parts = token.split('.'),
+  TokensViewModel.prototype.createTokenValueFunc = function(dataContext, isFlat) {
+    var _this = this,
+      tokenNameMap = createTokenNameMap(_this.tokenMap);
+
+    function func(tokenName, valueToSet) {
+      var tokenObj = tokenNameMap[tokenName];
+      if (!tokenObj) {
+        // only do something if it's a valid token
+        return;
+      }
+      if (isFlat) {
+        return flatWalkToToken(dataContext, tokenObj.TokenID, valueToSet);
+      } else {
+        return walkToToken(dataContext, tokenObj.Token, valueToSet);
+      }
+    }
+
+    if (isFlat) {
+      flatTest(dataContext);
+    }
+    return func;
+  };
+
+  function createTokenNameMap(tokenMap) {
+    var tokenNameMap = {};
+    Object.keys(tokenMap).forEach(function(id) {
+      var token = tokenMap[id];
+      tokenNameMap[token.Token] = token;
+    });
+    return tokenNameMap;
+  }
+
+  function flatWalkToToken(flatContext, tokenId, valueToSet) {
+    var createMissing = arguments.length > 2,
+      result;
+    if (tokenId) {
+      if (flatContext[tokenId]) {
+        result = flatContext[tokenId];
+      } else if (createMissing) {
+        flatContext[tokenId] = result = valueToSet;
+      } else {
+        // set result to the default value
+        result = undefined;
+      }
+    }
+    return result;
+  }
+
+  function walkToToken(dataContext, tokenName, valueToSet) {
+    var parts = tokenName.split('.'),
       createMissing = arguments.length > 2,
       result;
     if (parts.length) {
@@ -140,6 +197,21 @@ define('src/survey/tokens.vm', [
       });
     }
     return result;
+  }
+
+  function flatTest(dataContext) {
+    Object.keys(dataContext).forEach(function(key) {
+      /* jshint eqeqeq:false */
+      // test for all number keys
+      if (parseInt(key, 10) != key) {
+        throw new Error('Invalid flat dataContext: property names must be integers');
+      }
+      // test for nesting
+      var obj = dataContext[key];
+      if (obj && typeof(obj) === 'object' && !Array.isArray(obj)) {
+        throw new Error('Invalid flat dataContext: objects cannot be nested');
+      }
+    });
   }
 
   return TokensViewModel;

@@ -297,7 +297,15 @@ define('src/account/security/clist.survey.vm', [
     dataservice.msaccountsetupsrv.accounts.read({
       id: accountid,
       link: 'surveyresults',
-    }, gvm.list, cb);
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Value) {
+        // sort descending by date
+        resp.Value.sort(function(a, b) {
+          return b.CreatedOn - a.CreatedOn;
+        });
+        gvm.list(resp.Value);
+      }
+    }, utils.noop));
   }
 
   return CListSurveyViewModel;

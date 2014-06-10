@@ -120,7 +120,9 @@ define('src/account/security/alarmdotcom.vm', [
   AlarmDotComViewModel.prototype.viewTmpl = 'tmpl-security-alarmdotcom';
 
   AlarmDotComViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this;
+    var _this = this,
+      detailsData,
+      invoice;
 
     _this.accountid = routeData.id;
 
@@ -128,30 +130,57 @@ define('src/account/security/alarmdotcom.vm', [
       _this.alarmComPackages = result;
     }, join.add());
 
-    //@TODO: load real data
-    _this.receiverData({
-      AccountNumber: 'AccountNumber goes here',
-      IndustryNumber: 'IndustryNumber goes here',
-      ReceiverNumber: 'ReceiverNumber goes here',
-    });
+    load_industryAccounts(_this.accountid, utils.safeCallback(join.add(), function(err, resp) {
+      var first = resp.Value[0];
+      _this.receiverData({
+        AccountNumber: first.AccountId,
+        IndustryNumber: first.IndustryAccount,
+        ReceiverNumber: first.ReceiverNumber,
+      });
+    }, utils.noop));
 
-    load_alarmcom(_this.accountid, 'accountStatus', function(result) {
+    load_alarmcom(_this.accountid, 'accountStatus', null, utils.safeCallback(join.add(), function(err, resp) {
+      var result = resp.Value;
+
       _this.isRegistered(result.RegistrationStatus === 1);
-      _this.detailsData({
+      detailsData = {
         SerialNumber: result.ModemSerial,
         AlarmDotComCustomerNumber: result.CustomerId,
-        AlarmPackageId: result.ServicePlanType,
+        AlarmPackageId: result.ServicePlanPackageId,
+        AlarmPackage: result.ServicePlanType,
         EnableTwoWay: result.EnableTwoWay,
         IsDemo: result.IsDemo,
-      });
-    }, join.add());
+      };
+
+      if (!_this.isRegistered.peek()) {
+        load_invoice(_this.accountid, function(val) {
+          invoice = val;
+        }, join.add());
+      }
+    }, utils.noop));
+
+    join.when(function(err) {
+      if (err) {
+        return;
+      }
+      if (invoice) {
+        detailsData.AlarmPackageId = invoice.AlarmComPackageId;
+        _this.alarmComPackages.some(function(item) {
+          if (item.AlarmComPackageID === invoice.AlarmComPackageId) {
+            detailsData.AlarmPackage = item.PackageName;
+            return true;
+          }
+        });
+      }
+      _this.detailsData(detailsData);
+    });
   };
 
 
   function load_vendorAlarmComPackages(setter, cb) {
     dataservice.salessummary.vendorAlarmcomPacakges.read({}, null, utils.safeCallback(cb, function(err, resp) {
       setter(resp.Value);
-    }, utils.no_op));
+    }, utils.noop));
   }
 
   function load_alarmcom(id, link, setter, cb) {
@@ -159,6 +188,20 @@ define('src/account/security/alarmdotcom.vm', [
       id: id,
       link: link,
     }, setter, cb);
+  }
+
+  function load_invoice(id, setter, cb) {
+    dataservice.salessummary.invoiceMsIsntalls.read({
+      id: id,
+      link: 'accountid'
+    }, setter, cb);
+  }
+
+  function load_industryAccounts(id, cb) {
+    dataservice.monitoringstationsrv.msAccounts.read({
+      id: id,
+      link: 'IndustryAccounts',
+    }, null, cb);
   }
 
   function unregister(_this, cb) {

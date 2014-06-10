@@ -149,9 +149,11 @@ define('src/survey/takesurvey.vm', [
   };
 
   TakeSurveyViewModel.prototype.reloadSurvey = function() {
-    var _this = this;
+    var _this = this,
+      flatContext;
     if (_this.surveyData) {
-      _this.survey(createSurvey(_this.surveyData, _this.possibleAnswersVM.paMap, _this.tokensVM, _this.dataContext, _this.retake));
+      flatContext = _this.tokensVM.deflateContext(_this.dataContext);
+      _this.survey(createSurvey(_this.surveyData, _this.possibleAnswersVM.paMap, _this.tokensVM, flatContext, _this.retake));
     }
   };
 
@@ -225,7 +227,7 @@ define('src/survey/takesurvey.vm', [
     }));
   }
 
-  function createSurvey(surveyData, paMap, tokensVM, dataContext, retake) {
+  function createSurvey(surveyData, paMap, tokensVM, flatContext, retake) {
     var topVm, questionOptions, ukovModel;
 
     ukovModel = ukov.wrap({}, {
@@ -239,7 +241,7 @@ define('src/survey/takesurvey.vm', [
       surveyData.surveyType.questionMeanings,
       surveyData.surveyTranslation.questionTranslations,
       tokensVM,
-      dataContext,
+      flatContext,
       surveyData.resultAnswers,
       retake
     );
@@ -268,26 +270,15 @@ define('src/survey/takesurvey.vm', [
     return topVm;
   }
 
-  function createTakeQuestionsOptions(ukovModel, questions, paMap, meanings, translations, tokensVM, dataContext, resultAnswers, retake) {
-    var getTokenValue,
-      meaningMap = {},
+  function createTakeQuestionsOptions(ukovModel, questions, paMap, meanings, translations, tokensVM, flatContext, resultAnswers, retake) {
+    var meaningMap = {},
       questionTokenValuesMap = {},
       questionHtmlMap = {},
       answerTextMap = {},
       questionOptions = [];
 
-    if (!dataContext) {
+    if (!flatContext) {
       throw new Error('missing dataContext context');
-    }
-
-    //
-    // functions for looking up data context values
-    //
-    // uses memo-ize to remove redundant lookups
-    getTokenValue = underscore.memoize(tokensVM.createTokenValueFunc(dataContext));
-    //
-    function getTokenIdValue(tokenId) {
-      return getTokenValue(tokensVM.getToken(tokenId).Token);
     }
 
     //
@@ -299,7 +290,7 @@ define('src/survey/takesurvey.vm', [
     questions.forEach(function(q) {
       var qm = meaningMap[q.QuestionMeaningId];
       questionTokenValuesMap[q.QuestionID] = qm.questionMeaningTokenMaps.map(function(qmTokenMap) {
-        return getTokenIdValue(qmTokenMap.TokenId);
+        return flatContext[qmTokenMap.TokenId];
       });
     });
     translations.forEach(function(translation) {
@@ -337,17 +328,17 @@ define('src/survey/takesurvey.vm', [
         html: questionHtmlMap[q.QuestionID] || '<strong>[No Translation]</strong>',
         answerText: answerTextMap[q.QuestionID],
         readonly: (!!resultAnswers) && !retake, // readonly if there are answers and not retaking the survey
-        show: evaluateCondition(q.ConditionJson, getTokenIdValue),
+        show: evaluateCondition(q.ConditionJson, flatContext),
       });
     });
     return questionOptions;
   }
 
-  function evaluateCondition(conditionJson, getTokenIdValue) {
+  function evaluateCondition(conditionJson, flatContext) {
     /* jshint eqeqeq:false */
     var tokenValue, value, show = true;
     if (conditionJson) {
-      tokenValue = getTokenIdValue(conditionJson.TokenId);
+      tokenValue = flatContext[conditionJson.TokenId];
       value = conditionJson.Value;
       switch (conditionJson.Comparison) {
         case '==':
