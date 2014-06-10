@@ -39,6 +39,10 @@ define('src/account/security/clist.systemdetails.vm', [
       _this.layersVm.show(new RepFindViewModel({
         title: 'Technician',
       }), function onClose(result) {
+        if (!result) {
+          cb();
+          return;
+        }
         _this.repData(result);
         /** Andres. */
         var model = {
@@ -53,9 +57,8 @@ define('src/account/security/clist.systemdetails.vm', [
           notify.notify('error', 'Error', err.Message);
         }));
       });
-      cb();
     }, function(busy) {
-      return !busy && !_this.repData();
+      return !busy;
     });
     _this.cmdEditSystemDetails = ko.command(function(cb) {
       _this.layersVm.show(new SystemDetailsEditorViewModel({
@@ -90,7 +93,7 @@ define('src/account/security/clist.systemdetails.vm', [
       });
       cb();
     }, function(busy) {
-      return !busy && !_this.repData();
+      return !busy;
     });
   }
   utils.inherits(CListSystemDetailsViewModel, ControllerViewModel);

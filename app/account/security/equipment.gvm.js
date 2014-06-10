@@ -26,7 +26,8 @@ define('src/account/security/equipment.gvm', [
       plugins: [
         new RowEvent({
           eventName: 'onDblClick',
-          fn: function() {
+          fn: function(item) {
+            console.log("Item double clicked: ", item);
             alert('double clicked');
           },
         }),
