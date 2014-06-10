@@ -5,9 +5,9 @@ ul(class="edit-form")
         li
           label PO#
         li  
-          input(type="text")
+          input(type="text" placeholder="" data-bind="ukov:data.PurchaseOrderID,value:data.PurchaseOrderID,valueUpdate:'keyup'")
         li  
-          button(type="button" class="btn-inventory") Submit
+          button(type="button" class="btn-inventory"  data-bind="cmd:cmdSearch") Submit
     
     div(class="header_right")
       ul(class="header_ul")

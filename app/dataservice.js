@@ -11,7 +11,9 @@ define('src/dataservice', [
   'src/dataservices/monitoringstationsrv',
   'src/dataservices/msaccountsetupsrv',
   'src/dataservices/invoicesrv',
-  'src/dataservices/swingaccountsrv'
+  'src/dataservices/swingaccountsrv',
+  'src/dataservices/inventoryenginesrv',
+  
 ], function(
   DataserviceBase,
   config,
@@ -25,7 +27,9 @@ define('src/dataservice', [
   createMonitoringStationSrv,
   createMsAccountSetupSrv,
   createInvoicesrv,
-  createSwingAccountSrv
+  createSwingAccountSrv,
+  createInventoryEngineSrv
+
 ) {
   "use strict";
   return {
@@ -40,6 +44,7 @@ define('src/dataservice', [
     monitoringstationsrv: createMonitoringStationSrv(),
     msaccountsetupsrv: createMsAccountSetupSrv(),
     invoicesrv: createInvoicesrv(),
-    swingaccountsrv: createSwingAccountSrv()
+    swingaccountsrv: createSwingAccountSrv(),
+    inventoryenginesrv: createInventoryEngineSrv()
   };
 });

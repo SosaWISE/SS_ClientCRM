@@ -12,7 +12,7 @@ define('src/panels/inventory.panel.vm', [
   'src/slick/slickgrid.vm',
   //'src/config',
   //'src/slick/rowevent',
-  //'src/ukov',
+  'src/ukov',
 ], function(
   AddressValidateViewModel,
   ComboViewModel,
@@ -24,12 +24,27 @@ define('src/panels/inventory.panel.vm', [
   ControllerViewModel,
   dataservice,
   router,
-  SlickGridViewModel
+  SlickGridViewModel,
   //config,
   //RowEvent,
-  //ukov
+  ukov
 ) {
   "use strict";
+
+
+ var schema;
+
+  schema = {
+    _model: true,
+    PurchaseOrderID: {
+      converter: ukov.converters.number(0),
+      validators: [
+        ukov.validators.isRequired('PurchaseOrder ID is required')
+      ]
+    }
+  };
+
+
 
   function InventoryViewModel(options) {
     var _this = this;
@@ -37,6 +52,11 @@ define('src/panels/inventory.panel.vm', [
     InventoryViewModel.super_.call(_this, options);
 
     _this.title = 'Inventory';
+
+    _this.data = ukov.wrap(_this.item || {
+      PurchaseOrderID: null,
+    }, schema);
+
 
     _this.inventoryListGvm = new SlickGridViewModel({
       gridOptions: {
@@ -75,6 +95,11 @@ define('src/panels/inventory.panel.vm', [
 
     //events
     //
+      //Search PO by PurchaseOrderID
+    _this.cmdSearch = ko.command(function(cb, vm) {
+      _this.search(vm, cb);
+    });
+
 
   }
 
@@ -110,6 +135,24 @@ define('src/panels/inventory.panel.vm', [
 
     routeData.action = 'inventory';
   };
+
+  InventoryViewModel.prototype.search = function(vm ,cb) {
+      var iePurchaseOrder = vm.data.getValue();
+      //alert(iePurchaseOrder.PurchaseOrderID);
+      dataservice.inventoryenginesrv.PurchaseOrder.read({
+        id: iePurchaseOrder.PurchaseOrderID
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        if (resp.Code === 0) {
+          var purchaseOrder = resp.Value;
+          purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
+          alert(JSON.stringify(purchaseOrder));
+        }else{
+          notify.notify('warn', 'PurchaseOrderID not found', null, 3);
+        }
+      }));
+
+  };
+
 
 
   return InventoryViewModel;
