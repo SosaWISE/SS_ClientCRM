@@ -13,7 +13,7 @@ define('src/dataservice', [
   'src/dataservices/invoicesrv',
   'src/dataservices/swingaccountsrv',
   'src/dataservices/inventoryenginesrv',
-  
+
 ], function(
   DataserviceBase,
   config,

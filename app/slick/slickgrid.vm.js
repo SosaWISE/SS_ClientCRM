@@ -212,12 +212,12 @@ define('src/slick/slickgrid.vm', [
     phone: function(row, cell, value) {
       return strings.formatters.phone(value);
     },
-    button: function(row, cell, value, columnDef, dataContext) {
+    button: function() {
       return "<input type='button' value='Submit'/>";
     },
-    textbox: function(row, cell, value, columnDef, dataContext) {
+    textbox: function() {
       return "<input type='text' />";
-    },    
+    },
 
   };
 

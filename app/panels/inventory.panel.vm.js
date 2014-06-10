@@ -32,7 +32,7 @@ define('src/panels/inventory.panel.vm', [
   "use strict";
 
 
- var schema;
+  var schema;
 
   schema = {
     _model: true,
@@ -87,7 +87,7 @@ define('src/panels/inventory.panel.vm', [
           field: 'Description',
         }, {
           id: 'Enter Barcode',
-          name: 'Enter Barcode',          
+          name: 'Enter Barcode',
           formatter: SlickGridViewModel.formatters.button,
         },
       ],
@@ -95,7 +95,7 @@ define('src/panels/inventory.panel.vm', [
 
     //events
     //
-      //Search PO by PurchaseOrderID
+    //Search PO by PurchaseOrderID
     _this.cmdSearch = ko.command(function(cb, vm) {
       _this.search(vm, cb);
     });
@@ -110,12 +110,12 @@ define('src/panels/inventory.panel.vm', [
   //
 
   InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-    
+
     //For dummy purposes
     var tempList = [];
 
     while (tempList.length < 15) {
-        tempList.push({
+      tempList.push({
         SKU: 'Dummy' + (tempList.length + 1),
         Quantity: 'Dummy' + (tempList.length + 1),
         Remain: 'Dummy' + (tempList.length + 1),
@@ -136,20 +136,20 @@ define('src/panels/inventory.panel.vm', [
     routeData.action = 'inventory';
   };
 
-  InventoryViewModel.prototype.search = function(vm ,cb) {
-      var iePurchaseOrder = vm.data.getValue();
-      //alert(iePurchaseOrder.PurchaseOrderID);
-      dataservice.inventoryenginesrv.PurchaseOrder.read({
-        id: iePurchaseOrder.PurchaseOrderID
-      }, null, utils.safeCallback(cb, function(err, resp) {
-        if (resp.Code === 0) {
-          var purchaseOrder = resp.Value;
-          purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
-          alert(JSON.stringify(purchaseOrder));
-        }else{
-          notify.notify('warn', 'PurchaseOrderID not found', null, 3);
-        }
-      }));
+  InventoryViewModel.prototype.search = function(vm, cb) {
+    var iePurchaseOrder = vm.data.getValue();
+    //alert(iePurchaseOrder.PurchaseOrderID);
+    dataservice.inventoryenginesrv.PurchaseOrder.read({
+      id: iePurchaseOrder.PurchaseOrderID
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Code === 0) {
+        var purchaseOrder = resp.Value;
+        purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
+        alert(JSON.stringify(purchaseOrder));
+      } else {
+        notify.notify('warn', 'PurchaseOrderID not found', null, 3);
+      }
+    }));
 
   };
 

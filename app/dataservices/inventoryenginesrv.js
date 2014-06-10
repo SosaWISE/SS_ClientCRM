@@ -11,10 +11,10 @@ define('src/dataservices/inventoryenginesrv', [
     var serviceDomain = config.serviceDomain + '/inventoryenginesrv',
       result = {};
     [
-     
+
       'PurchaseOrder',
       'PurchaseOrderItem'
-   
+
     ].forEach(function(collectionName) {
       result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
     });
