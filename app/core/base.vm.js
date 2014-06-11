@@ -66,11 +66,21 @@ define('src/core/base.vm', [
     return {};
   };
   BaseViewModel.prototype.reload = function(cb) {
-    var _this = this;
-    if (!_this.loader.reset()) {
-      return;
+    var _this = this,
+      canReload = _this.canReload();
+    if (canReload) {
+      _this.loader.reset();
+      _this.load(_this.getRouteData(), {}, cb);
+    } else {
+      // call now
+      cb();
     }
-    _this.load(_this.getRouteData(), {}, cb);
+    // return true if reloaded
+    return canReload;
+  };
+  BaseViewModel.prototype.canReload = function() {
+    var _this = this;
+    return _this.reloadable && _this.loader.canReset();
   };
   // this will be over written when mixinLoad is called
   BaseViewModel.prototype.load = function(routeData, extraData, cb) {
@@ -128,6 +138,13 @@ define('src/core/base.vm', [
   };
 
   function load(routeData, extraData, cb) {
+    ///////TESTING////////////////////////////
+    // all too often i pass a join instead of a callback function...
+    if (cb && !utils.isFunc(cb)) {
+      throw new Error('load callback must be a function');
+    }
+    ///////TESTING////////////////////////////
+
     /* jshint validthis:true */
     var _this = this,
       loader = _this.loader,

@@ -28,15 +28,14 @@ define('src/config', [
 
   //
   // Property Defaults (overrideable)
+  // ONLY CONFIG DEFAULTS GO IN THIS FILE
+  // ALL OTHER CONFIG SETTINGS GO IN webconfig.js
   //
   set('useMocks', false);
   set('canMockLogin', true); // only relevant if `useMocks` is true
   //
   set('token', 'SSE_CMS_CORS');
-  set('serviceDomain', 'sse.services.cmscors'); // Local
-  // set('serviceDomain', 'cs1.dev.nexsense.com'); // Dev Environment
-  // set('serviceDomain', 'cs1.tst.nexsense.com'); // Test Environment
-  // set('serviceDomain', 'cs1.stg.nexsense.com'); // Stage Environment
+  // set('serviceDomain', 'sse.services.cmscors'); // every environment should have this set in webconfig.js
   set('logErrors', true);
   set('titlePrefix', '');
   set('titlePostfix', '| CRM');

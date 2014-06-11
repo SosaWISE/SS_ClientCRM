@@ -82,6 +82,7 @@ define('src/account/security/emcontacts.vm', [
       tempContacts = list;
     }, _this.accountId, join.add());
 
+    _this.gvm.list([]); // incase of reload
     join.when(function(err) {
       if (err) {
         return;

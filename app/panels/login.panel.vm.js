@@ -22,7 +22,7 @@ define('src/panels/login.panel.vm', [
     LoginViewModel.super_.call(_this, options);
 
     _this.signupVM = ko.observable();
-    _this.title = ko.observable(_this.name);
+    _this.title = ko.observable(_this.title);
     _this.username = ko.observable('');
     _this.password = ko.observable('');
     _this.rememberMe = ko.observable(false);
@@ -37,7 +37,7 @@ define('src/panels/login.panel.vm', [
         if (index > list.length) {
           index = 0;
         }
-        alert(list[index]);
+        notify.notify('warn', list[index], '', 10);
         index++;
       };
     })();

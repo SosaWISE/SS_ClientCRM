@@ -1,10 +1,12 @@
 define('src/panels/accounts.panel.vm', [
+  'ko',
   'src/core/helpers',
   'src/core/strings',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  ko,
   helpers,
   strings,
   notify,
@@ -42,7 +44,7 @@ define('src/panels/accounts.panel.vm', [
     // events
     //
     _this.clickSearch = function() {
-      _this.selectChild(_this.searchVM);
+      _this.selectChild(_this.searchVm);
     };
     _this.clickItem = function(vm) {
       _this.selectChild(vm);
@@ -68,13 +70,13 @@ define('src/panels/accounts.panel.vm', [
       cb = join.add();
 
     ensureDeps(function() {
-      _this.searchVM = new deps.AccountSearchViewModel({
+      _this.searchVm = new deps.AccountSearchViewModel({
         routeName: 'accounts',
         pcontroller: _this,
         id: 'search',
         title: 'Search',
       });
-      _this.defaultChild = _this.searchVM;
+      _this.defaultChild = _this.searchVm;
 
       // ////////////////TESTING//////////////////////////////////
       // _this.list([
@@ -102,8 +104,8 @@ define('src/panels/accounts.panel.vm', [
   AccountsPanelViewModel.prototype.findChild = function(routeData) {
     var _this = this,
       result, id;
-    if (routeData[_this.searchVM.routePart] === _this.searchVM.id) {
-      result = _this.searchVM;
+    if (routeData[_this.searchVm.routePart] === _this.searchVm.id) {
+      result = _this.searchVm;
     } else {
       result = AccountsPanelViewModel.super_.prototype.findChild.call(_this, routeData);
       if (!result) {

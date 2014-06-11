@@ -98,6 +98,7 @@ define('src/account/security/clist.initialpayment.vm', [
   }
   utils.inherits(CListInitialPaymentViewModel, ControllerViewModel);
   CListInitialPaymentViewModel.prototype.viewTmpl = 'tmpl-security-clist_initialpayment';
+  CListInitialPaymentViewModel.prototype.reloadable = true;
 
   CListInitialPaymentViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,

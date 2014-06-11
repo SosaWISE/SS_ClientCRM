@@ -118,6 +118,7 @@ define('src/account/security/alarmdotcom.vm', [
   }
   utils.inherits(AlarmDotComViewModel, ControllerViewModel);
   AlarmDotComViewModel.prototype.viewTmpl = 'tmpl-security-alarmdotcom';
+  AlarmDotComViewModel.prototype.reloadable = true;
 
   AlarmDotComViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,

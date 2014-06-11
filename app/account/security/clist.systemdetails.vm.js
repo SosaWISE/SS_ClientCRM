@@ -98,6 +98,7 @@ define('src/account/security/clist.systemdetails.vm', [
   }
   utils.inherits(CListSystemDetailsViewModel, ControllerViewModel);
   CListSystemDetailsViewModel.prototype.viewTmpl = 'tmpl-security-clist_systemdetails';
+  CListSystemDetailsViewModel.prototype.reloadable = true;
 
   CListSystemDetailsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;

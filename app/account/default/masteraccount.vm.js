@@ -77,9 +77,7 @@ define('src/account/default/masteraccount.vm', [
       _this.selectChild(vm);
     };
     _this.clickReload = function() {
-      if (_this.loader.reset() && _this.notesVm.loader.reset()) {
-        _this.goTo(_this.getRouteData(), {});
-      }
+      _this.reload();
     };
     _this.clickNewAccount = function() {
       alert('I do nothing');
@@ -87,6 +85,7 @@ define('src/account/default/masteraccount.vm', [
   }
   utils.inherits(MasterAccountViewModel, ControllerViewModel);
   MasterAccountViewModel.prototype.viewTmpl = 'tmpl-acct-default-masteraccount';
+  MasterAccountViewModel.prototype.reloadable = true;
 
   MasterAccountViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,

@@ -126,6 +126,7 @@ define('src/account/security/clist.qualify.vm', [
   }
   utils.inherits(CListQualifyViewModel, ControllerViewModel);
   CListQualifyViewModel.prototype.viewTmpl = 'tmpl-security-clist_qualify';
+  CListQualifyViewModel.prototype.reloadable = true;
 
   CListQualifyViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
     // var _this = this,

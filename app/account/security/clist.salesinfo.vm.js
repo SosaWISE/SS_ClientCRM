@@ -117,6 +117,7 @@ define('src/account/security/clist.salesinfo.vm', [
     CListSalesInfoViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
+    _this.subs = [];
     _this.title = ko.observable(_this.title);
     _this.data = ukov.wrap({
       DealerId: config.user().DealerId,
@@ -214,6 +215,10 @@ define('src/account/security/clist.salesinfo.vm', [
     });
 
     _this.pointSystemsCvm.selectedValue.subscribe(function(psValue) {
+      // psValue can be null...
+      if (!psValue) {
+        return;
+      }
       _this.contractLengthsCvm.setList([]);
       dataservice.salessummary.contractLengthsGet.read({
         id: psValue,
@@ -249,6 +254,7 @@ define('src/account/security/clist.salesinfo.vm', [
     _this.refreshInvoice = function(cb) {
       if (!_this.data.isValid()) {
         notify.notify('warn', _this.data.errMsg(), null, 7);
+        cb();
         return;
       }
 
@@ -256,6 +262,7 @@ define('src/account/security/clist.salesinfo.vm', [
       data.CellTypeId = data.CellularTypeId; //@HACK: to save CellularTypeId
       if (underscore.isEqual(_this.currData, data)) {
         // no need to re-save the same data
+        cb();
         return;
       }
       _this.currData = data;
@@ -283,36 +290,46 @@ define('src/account/security/clist.salesinfo.vm', [
   }
   utils.inherits(CListSalesInfoViewModel, ControllerViewModel);
   CListSalesInfoViewModel.prototype.viewTmpl = 'tmpl-security-clist_salesinfo';
+  CListSalesInfoViewModel.prototype.reloadable = true;
 
   CListSalesInfoViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       subjoin = join.create(),
-      cb = join.add();
+      cb;
+
+    // remove old subscriptions
+    _this.subs.forEach(function(s) {
+      s.dispose();
+    });
+    _this.subs = [];
 
     function onLoadComplete(err) {
       if (!err) {
         _this.data.markClean({}, true);
 
         // subscribe to updates after everyting has been set
-        _this.data.ActivationFeeActual.subscribe(_this.refreshInvoice);
-        _this.data.PanelTypeId.subscribe(_this.refreshInvoice);
-        _this.data.CellularTypeId.subscribe(_this.refreshInvoice);
-        _this.data.Over3Months.subscribe(_this.refreshInvoice);
-        _this.data.AlarmComPackageId.subscribe(_this.refreshInvoice);
-        _this.data.MonthlyMonitoringRateActual.subscribe(_this.refreshInvoice);
+        _this.subs.push(_this.data.ActivationFeeActual.subscribe(_this.refreshInvoice));
+        _this.subs.push(_this.data.PanelTypeId.subscribe(_this.refreshInvoice));
+        _this.subs.push(_this.data.CellularTypeId.subscribe(_this.refreshInvoice));
+        _this.subs.push(_this.data.Over3Months.subscribe(_this.refreshInvoice));
+        _this.subs.push(_this.data.AlarmComPackageId.subscribe(_this.refreshInvoice));
+        _this.subs.push(_this.data.MonthlyMonitoringRateActual.subscribe(_this.refreshInvoice));
       }
       cb(err);
     }
 
+    _this.currData = null; // clear (incase of reload)
+
     _this.data.AccountId(routeData.id);
 
     load_invoice(_this.data, subjoin);
-    load_vendorAlarmComPackages(_this.data.AlarmComPackageCvm, subjoin.add());
-    load_pointSystems(_this.pointSystemsCvm, subjoin.add());
-    load_panelTypes(_this.data.PanelTypeCvm, subjoin.add());
-    load_cellularTypes(_this.data.CellularTypeCvm, subjoin.add());
-    load_frequentlyInstalledEquipmentGet(_this.frequentGvm, subjoin.add());
+    load_vendorAlarmComPackages(_this.data.AlarmComPackageCvm, subjoin.add('2'));
+    load_pointSystems(_this.pointSystemsCvm, subjoin.add('3'));
+    load_panelTypes(_this.data.PanelTypeCvm, subjoin.add('4'));
+    load_cellularTypes(_this.data.CellularTypeCvm, subjoin.add('5'));
+    load_frequentlyInstalledEquipmentGet(_this.frequentGvm, subjoin.add('6'));
 
+    cb = join.add('1');
     subjoin.when(function(err) {
       if (err) {
         onLoadComplete(err);
@@ -352,25 +369,25 @@ define('src/account/security/clist.salesinfo.vm', [
     dataservice.salessummary.invoiceMsIsntalls.read({
       id: data.AccountId(),
       link: 'accountid'
-    }, null, utils.safeCallback(join.add(), function(err, resp) {
+    }, null, utils.safeCallback(join.add('7'), function(err, resp) {
       if (resp.Value) {
-        console.log('load_invoice:', resp.Value);
-        data.setValue(resp.Value);
-
-        load_msAccountSalesInformations(data, join.add());
+        load_msAccountSalesInformations(resp.Value, data, join.add('8'));
       }
     }, function(err) {
       notify.notify('error', 'Error', err.Message);
     }));
   }
 
-  function load_msAccountSalesInformations(data, cb) {
+  function load_msAccountSalesInformations(invoice, data, cb) {
     dataservice.monitoringstationsrv.msAccountSalesInformations.read({
       id: data.AccountId(),
     }, null, utils.safeCallback(cb, function(err, resp) {
       var val = resp.Value;
       if (val) {
-        console.log('load_msAccountSalesInformations:', val);
+        // console.log('load_invoice:', invoice);
+        data.setValue(invoice);
+
+        // console.log('load_msAccountSalesInformations:', val);
 
         // set defaults
         utils.setIfNull(val, 'Over3Months', true);
@@ -391,6 +408,7 @@ define('src/account/security/clist.salesinfo.vm', [
   }
 
   function load_pointSystems(cvm, cb) {
+    cvm.setList([]);
     // ** Pull pointSystems
     dataservice.salessummary.pointSystems.read({}, null, utils.safeCallback(cb, function(err, resp) {
       // ** Bind data
@@ -400,12 +418,14 @@ define('src/account/security/clist.salesinfo.vm', [
   }
 
   function load_panelTypes(cvm, cb) {
+    cvm.setList([]);
     dataservice.salessummary.panelTypes.read({}, null, utils.safeCallback(cb, function(err, resp) {
       cvm.setList(resp.Value);
     }, utils.no_op));
   }
 
   function load_cellularTypes(cvm, cb) {
+    cvm.setList([]);
     // ** Pull Cellular Types
     dataservice.salessummary.cellularTypes.read({}, null, utils.safeCallback(cb, function(err, resp) {
       // ** Bind data
@@ -414,6 +434,7 @@ define('src/account/security/clist.salesinfo.vm', [
   }
 
   function load_vendorAlarmComPackages(cvm, cb) {
+    cvm.setList([]);
     // ** Pull alarm.com packages
     dataservice.salessummary.vendorAlarmcomPacakges.read({}, null, utils.safeCallback(cb, function(err, resp) {
       // ** Bind Data
@@ -422,6 +443,7 @@ define('src/account/security/clist.salesinfo.vm', [
   }
 
   function load_frequentlyInstalledEquipmentGet(gvm, cb) {
+    gvm.list([]);
     // ** Pull data
     dataservice.salessummary.frequentlyInstalledEquipmentGet.read({}, null, utils.safeCallback(cb, function(err, resp) {
       // ** Bind data to table

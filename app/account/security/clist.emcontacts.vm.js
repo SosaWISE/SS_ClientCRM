@@ -31,13 +31,12 @@ define('src/account/security/clist.emcontacts.vm', [
   }
   utils.inherits(CListEmcontactsViewModel, ControllerViewModel);
   CListEmcontactsViewModel.prototype.viewTmpl = 'tmpl-security-clist_emcontacts';
+  CListEmcontactsViewModel.prototype.reloadable = true;
 
   CListEmcontactsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
-
+    _this.emcontactsVm.loader.reset(); // incase of reload
     _this.emcontactsVm.load(routeData, extraData, join.add());
-
-    //@TODO: load real data
   };
 
   return CListEmcontactsViewModel;

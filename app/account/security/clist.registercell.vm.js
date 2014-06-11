@@ -35,6 +35,7 @@ define('src/account/security/clist.registercell.vm', [
   }
   utils.inherits(CListRegisterCellViewModel, ControllerViewModel);
   CListRegisterCellViewModel.prototype.viewTmpl = 'tmpl-security-clist_registercell';
+  CListRegisterCellViewModel.prototype.reloadable = true;
 
   CListRegisterCellViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;

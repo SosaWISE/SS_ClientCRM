@@ -10,9 +10,11 @@ div(class="notice-wrap", data-bind="foreach:list")
             a(data-bind="text:name,click:action")
       div(class="content-wrap")
         div(class="content")
-          div(data-bind="if:usePre")
-            pre(class="msg", data-bind="text:message")
-          div(data-bind="if:!usePre")
-            span(class="msg", data-bind="text:message")
+          <!-- ko if:usePre -->
+          pre(class="msg", data-bind="text:message")
+          <!-- /ko -->
+          <!-- ko if:!usePre -->
+          span(class="msg", data-bind="text:message")
+          <!-- /ko -->
 
 div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

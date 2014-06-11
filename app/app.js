@@ -29,9 +29,9 @@ define('src/app', [
     return map;
   }
 
-  function setTemplate(panels, name, prefix, postfix) {
+  function setTemplate(panels, title, prefix, postfix) {
     panels.forEach(function(panel) {
-      panel[name] = 'tmpl-' + (prefix || '') + panel.id + (postfix || '');
+      panel[title] = 'tmpl-' + (prefix || '') + panel.id + (postfix || '');
     });
   }
 
@@ -43,7 +43,7 @@ define('src/app', [
   app.login = new LoginViewModel({
     routePart: routePart,
     id: 'login',
-    name: 'Secure Login',
+    title: 'Secure Login',
     ico: null,
   });
   setTemplate([app.login], 'viewTmpl', 'panel_');
@@ -52,37 +52,37 @@ define('src/app', [
     new HomePanelViewModel({
       routePart: routePart,
       id: 'home',
-      name: 'Home',
+      title: 'Home',
       ico: '&#8962;',
     }),
     new AccountsPanelViewModel({
       routePart: routePart,
       id: 'accounts',
-      name: 'Accounts',
+      title: 'Accounts',
       ico: '&#128101;',
     }),
     new SurveysPanelViewModel({
       routePart: routePart,
       id: 'surveys',
-      name: 'Surveys',
+      title: 'Surveys',
       ico: '&#128101;',
     }),
     new SwingViewModel({
       routePart: routePart,
       id: 'swing',
-      name: 'Swing',
+      title: 'Swing',
       ico: '&#128101;',
     }),
     new InventoryViewModel({
       routePart: routePart,
       id: 'inventory',
-      name: 'Inventory',
+      title: 'Inventory',
       ico: '&#128101;',
     }),
     new EnterBarcodeViewModel({
       routePart: routePart,
       id: 'barcode',
-      name: 'Enter Barcode',
+      title: 'Enter Barcode',
       ico: '&#128101;',
     }),
   ]);

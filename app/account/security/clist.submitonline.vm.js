@@ -67,7 +67,7 @@ define('src/account/security/clist.submitonline.vm', [
 
         if (resp && resp.Value) {
           if (resp.Value.WasSuccessfull) {
-            notify.notify('success', 'Successfully submitted online!', null, 7);
+            notify.notify('ok', 'Successfully submitted online!', null, 7);
             resp.Value.Msg = 'Submission Succeeded!';
           } else {
             notify.notify('warn', 'Failed to submit account online.', null, 7);
@@ -82,6 +82,7 @@ define('src/account/security/clist.submitonline.vm', [
   }
   utils.inherits(CListSubmitOnlineViewModel, ControllerViewModel);
   CListSubmitOnlineViewModel.prototype.viewTmpl = 'tmpl-security-clist_submitonline';
+  CListSubmitOnlineViewModel.prototype.reloadable = true;
 
   CListSubmitOnlineViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;

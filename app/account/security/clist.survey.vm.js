@@ -72,6 +72,7 @@ define('src/account/security/clist.survey.vm', [
   }
   utils.inherits(CListSurveyViewModel, ControllerViewModel);
   CListSurveyViewModel.prototype.viewTmpl = 'tmpl-security-clist_survey';
+  CListSurveyViewModel.prototype.reloadable = true;
 
   CListSurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
@@ -79,6 +80,9 @@ define('src/account/security/clist.survey.vm', [
     _this.accountid = routeData.id;
     //@REVIEW: how to get correct LocalizatonID
     _this.locale = 'en';
+
+    // remove current survey (incase of reload)
+    _this.activeChild(_this.currentSurveyVm = null);
 
     load_accountSurveys(_this.accountid, _this.gvm, join.add());
     load_activeSurvey(_this.surveyTypeId, function(survey) {

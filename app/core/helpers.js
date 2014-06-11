@@ -53,17 +53,22 @@ define('src/core/helpers', [
         callbacks = [];
         return true;
       }
+
+      function canReset() {
+        return !loading();
+      }
+
       once.loadCb = loadCb;
       once.loaded = loaded;
       once.loading = loading;
       once.loadErr = loadErr;
+      once.canReset = canReset;
       once.reset = function() {
-        if (loading()) {
-          return;
+        if (canReset()) {
+          loaded(false);
+          loadErr(false);
+          return true;
         }
-        loaded(false);
-        loadErr(false);
-        return true;
       };
       return once;
     },

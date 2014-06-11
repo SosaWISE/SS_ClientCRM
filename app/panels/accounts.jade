@@ -3,7 +3,7 @@ div(class="accounts",data-bind="if:loaded")
     tr
       td(class="fh-header")
         ul(class="tabs cf")
-          li(class="tab",data-bind="active:searchVM.active")
+          li(class="tab",data-bind="active:searchVm.active")
             a(data-bind="click:clickSearch") Search
           <!-- ko foreach:list -->
           li(class="tab",data-bind="active:active")
@@ -16,8 +16,8 @@ div(class="accounts",data-bind="if:loaded")
     tr
       td(class="fh-body")
         div(class="fh-contents")
-          <!-- ko if:searchVM.loaded()&&searchVM.active() -->
-          div(class="tab", data-bind="template:{name:searchVM.viewTmpl,data:searchVM},active:searchVM.active")
+          <!-- ko if:searchVm.loaded()&&searchVm.active() -->
+          div(class="tab", data-bind="template:{name:searchVm.viewTmpl,data:searchVm},active:searchVm.active")
           <!-- /ko -->
           <!-- ko foreach:list -->
           <!-- ko if:active -->

@@ -42,6 +42,7 @@ define('src/account/security/clist.industrynums.vm', [
   }
   utils.inherits(CListIndustryViewModel, ControllerViewModel);
   CListIndustryViewModel.prototype.viewTmpl = 'tmpl-security-clist_industrynums';
+  CListIndustryViewModel.prototype.reloadable = true;
 
   CListIndustryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
@@ -50,6 +51,7 @@ define('src/account/security/clist.industrynums.vm', [
   };
 
   function load_industryAccounts(_this, cb) {
+    _this.industryAccounts([]);
     dataservice.monitoringstationsrv.msAccounts.read({
       id: _this.accountId,
       link: 'IndustryAccounts',

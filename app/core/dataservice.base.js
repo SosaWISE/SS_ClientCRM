@@ -229,7 +229,7 @@ define('src/core/dataservice.base', [
 
 
   function frontSlash(text) {
-    return text ? ('/' + text) : '';
+    return (text || text === 0) ? ('/' + text) : '';
   }
 
   return DataserviceBase;

@@ -14,6 +14,7 @@ define('src/bootstrapper', [
   'src/resources',
   'src/core/dialog.vm',
   'src/core/layers.vm',
+  'src/core/strings',
   'src/core/notify',
   'src/core/router',
   'src/core/controller.vm',
@@ -32,6 +33,7 @@ define('src/bootstrapper', [
   resources,
   DialogViewModel,
   LayersViewModel,
+  strings,
   notify,
   router,
   ControllerViewModel,
@@ -211,4 +213,44 @@ define('src/bootstrapper', [
       }
     });
   });
+
+  //
+  document.addEventListener("click", function(evt) {
+    if (!evt.shiftKey || !evt.ctrlKey /*|| !evt.altKey*/ ) {
+      return;
+    }
+    // stop the event from firing
+    evt.stopPropagation();
+
+    var vm, title, el = evt.target;
+    // find the first view model that can be reloaded
+    while (!vm && el) {
+      vm = ko.dataFor(el);
+      // only ControllerViewModels can be reloaded
+      if (!vm || !vm.reloadable || !(vm instanceof ControllerViewModel)) {
+        vm = null;
+        // go up one level
+        el = el.parentNode;
+      }
+    }
+    if (vm) {
+      title = ko.unwrap(vm.title);
+      if (vm.canReload()) {
+        console.log('reloading');
+        notify.confirm('Reload Section?',
+          strings.format('Do you want to reload {0}?', title),
+          function(result) {
+            if (result === 'yes') {
+              if (!vm.reload()) {
+                notify.notify('warn', strings.format('Failed to reload {0}?', title));
+              }
+            }
+          });
+      } else if (vm.reloadable) {
+        notify.notify('warn', strings.format('Currently can\'t reload {0}?', title));
+      } else {
+        console.log(title, 'reload disabled');
+      }
+    }
+  }, true); // useCapture - this event is called before all other clicks
 });

@@ -26,3 +26,5 @@ div(data-bind="if:!loadErr()&&!loading()")
 
     div(class="actions")
       span(class="btn",tabindex="0",data-bind="cmd:cmdCreateAccount") Create Account
+
+div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
