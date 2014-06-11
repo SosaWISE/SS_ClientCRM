@@ -6,6 +6,7 @@ define('src/app', [
   'src/panels/surveys.panel.vm',
   'src/panels/swing.panel.vm',
   'src/panels/inventory.panel.vm',
+  'src/panels/enterBarcode.panel.vm',
   'src/core/notify'
 ], function(
   router,
@@ -15,6 +16,7 @@ define('src/app', [
   SurveysPanelViewModel,
   SwingViewModel,
   InventoryViewModel,
+  EnterBarcodeViewModel,
   notify
 ) {
   "use strict";
@@ -77,6 +79,12 @@ define('src/app', [
       name: 'Inventory',
       ico: '&#128101;',
     }),
+    new EnterBarcodeViewModel({
+      routePart: routePart,
+      id: 'barcode',
+      name: 'Enter Barcode',
+      ico: '&#128101;',
+    }),    
   ]);
   setTemplate(app.panels, 'viewTmpl', 'panel_');
 
@@ -109,6 +117,7 @@ define('src/app', [
 
   router.addRoute(app.panelMap.swing, 'swing', '', {});
   router.addRoute(app.panelMap.inventory, 'inventory', '', {});
+  router.addRoute(app.panelMap.barcode, 'barcode', '', {});
 
   return app;
 });
