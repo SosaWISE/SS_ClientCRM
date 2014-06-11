@@ -211,7 +211,7 @@ define('src/slick/slickgrid.vm', [
     },
     phone: function(row, cell, value) {
       return strings.formatters.phone(value);
-    },    
+    },
   };
 
   return SlickGridViewModel;

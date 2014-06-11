@@ -10,7 +10,7 @@ define('src/panels/inventory.panel.vm', [
   'src/dataservice',
   'src/core/router',
   'src/slick/slickgrid.vm',
-  'src/slick/buttonscolumn',  
+  'src/slick/buttonscolumn',
   //'src/config',
   //'src/slick/rowevent',
   'src/ukov',
@@ -26,7 +26,7 @@ define('src/panels/inventory.panel.vm', [
   dataservice,
   router,
   SlickGridViewModel,
-  ButtonsColumn,  
+  ButtonsColumn,
   //config,
   //RowEvent,
   ukov
@@ -43,7 +43,7 @@ define('src/panels/inventory.panel.vm', [
       validators: [
         ukov.validators.isRequired('PurchaseOrder ID is required')
       ]
-    }    
+    }
   };
 
 
@@ -61,9 +61,9 @@ define('src/panels/inventory.panel.vm', [
     }, schema);
 
 
-      //Notes:
-      // app/account/security/clist.salesinfo.gvm.js has an example of using ButtonsColumn
-      // and http://mleibman.github.io/SlickGrid/examples/example3-editing.html has examples of editing   
+    //Notes:
+    // app/account/security/clist.salesinfo.gvm.js has an example of using ButtonsColumn
+    // and http://mleibman.github.io/SlickGrid/examples/example3-editing.html has examples of editing
 
     _this.inventoryListGvm = new SlickGridViewModel({
       gridOptions: {
@@ -75,7 +75,7 @@ define('src/panels/inventory.panel.vm', [
       columns: [ //
         {
           id: 'ProductSkwId',
-          name: 'SKU',          
+          name: 'SKU',
           field: 'ProductSkwId',
         }, {
           id: 'Quantity',
@@ -88,10 +88,10 @@ define('src/panels/inventory.panel.vm', [
         }, {
           id: 'Received',
           name: 'Received',
-          field: 'Received', //Still need to change using slickgrid editor          
+          field: 'Received', //Still need to change using slickgrid editor
         }, {
           id: 'ItemDesc',
-          name: 'Description',          
+          name: 'Description',
           field: 'ItemDesc',
         },
         new ButtonsColumn({
@@ -104,7 +104,7 @@ define('src/panels/inventory.panel.vm', [
               cssClass: 'btn small btn-black',
             },
           ]
-        }),       
+        }),
       ],
     });
 
@@ -127,7 +127,7 @@ define('src/panels/inventory.panel.vm', [
   InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
 
     //For dummy purposes
-   /* var tempList = [];
+    /* var tempList = [];
 
     while (tempList.length < 15) {
       tempList.push({
@@ -172,18 +172,18 @@ define('src/panels/inventory.panel.vm', [
     dataservice.inventoryenginesrv.PurchaseOrderItems.read({
       id: iePurchaseOrder.PurchaseOrderID
     }, null, utils.safeCallback(cb, function(err, resp) {
-      if (resp.Code === 0) {       
+      if (resp.Code === 0) {
 
         //Update inventoryListGvm grid
-        for(var x=0; x < resp.Value.length; x++){
+        for (var x = 0; x < resp.Value.length; x++) {
           vm.inventoryListGvm.list.push(resp.Value[x]);
-        }       
-        
+        }
+
 
       } else {
         notify.notify('warn', 'PurchaseOrderID not found', null, 3);
       }
-    }));    
+    }));
 
   };
 
