@@ -22,7 +22,6 @@ define('src/survey/question.vm', [
     QuestionViewModel.super_.call(_this, options);
     _this.surveyVM = _this.topVm;
     QuestionsParentViewModel.ensureProps(_this, ['topVm', 'possibleAnswersVM', 'questionMeaningVM']);
-    QuestionsParentViewModel.ensureProps(_this.model, ['childs']);
 
     _this.id = _this.model.QuestionID;
     _this.possibleAnswerMaps = _this.childs;
@@ -87,7 +86,6 @@ define('src/survey/question.vm', [
   QuestionViewModel.prototype.addQuestion = function(topVm, model, parent, cb) {
     var _this = this,
       vm;
-    model.childs = model.childs || [];
     vm = new QuestionViewModel({
       topVm: topVm,
       possibleAnswersVM: topVm.possibleAnswersVM,
@@ -102,7 +100,8 @@ define('src/survey/question.vm', [
         cb(errResp);
       }
       if (errResp) {
-        return notify.notify('error', 'Error', errResp.Message);
+        notify.notify('error', 'Error', errResp.Message);
+        return;
       }
     });
     // add to list

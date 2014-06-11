@@ -49,7 +49,7 @@ define('src/survey/questions.parent.vm', [
     return getName(this, this.nextGroupOrder());
   };
   QuestionsParentViewModel.prototype.nextGroupOrder = function() {
-    return this.questions().length + 1;
+    return this.questions.peek().length + 1;
   };
 
 
@@ -58,7 +58,7 @@ define('src/survey/questions.parent.vm', [
   };
   QuestionsParentViewModel.prototype.updateChildNames = function() {
     var _this = this,
-      questions = _this.questions(),
+      questions = _this.questions.peek(),
       num = 1;
     questions.forEach(function(q) {
       q.name(getName(_this, num));

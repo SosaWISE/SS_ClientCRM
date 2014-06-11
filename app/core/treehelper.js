@@ -7,7 +7,11 @@ define('src/core/treehelper', [
 ) {
   'use strict';
 
-  function walkTree_Helper(list, fn, parent) {
+  function walkTree_Helper(item, listName, fn, parent) {
+    if (!item) {
+      return;
+    }
+    var list = item[listName];
     if (!list) {
       return;
     }
@@ -15,32 +19,23 @@ define('src/core/treehelper', [
     list.forEach(function(item) {
       var stop = fn(item, parent);
       if (!stop) {
-        walkTree_Helper(item.childs, fn, item);
+        walkTree_Helper(item, listName, fn, item);
       }
     });
   }
 
-  function walkTree(list, fn) {
-    walkTree_Helper(list, fn, null);
+  function walkTree(item, propName, fn) {
+    walkTree_Helper(item, propName, fn, null);
   }
 
-  function passThrough(item /*, mappedParent, parent*/ ) {
-    return item;
-  }
-
-  function makeTree(list, idKey, parentIdKey, mapFn, sortFn, postSort) {
-    var treeTrunk = [],
+  function makeTree(list, idKey, parentIdKey, mapFn) {
+    var treeTrunk,
       tempParents = [],
       tempChildsMap = {},
-      toVisitMap = {},
-      preSort;
+      toVisitMap = {};
     if (!utils.isFunc(mapFn)) {
-      mapFn = passThrough;
-    }
-    if (utils.isFunc(sortFn)) {
-      preSort = !postSort;
-    } else {
-      preSort = postSort = false;
+      treeTrunk = [];
+      mapFn = null;
     }
 
     // prep before recursion
@@ -53,8 +48,10 @@ define('src/core/treehelper', [
         return;
       }
 
-      // set childs
-      item.childs = [];
+      if (!mapFn) {
+        // set childs when there's not a mapping function
+        item.childs = [];
+      }
 
       if (parentId) {
         // map parentId to temp childs list
@@ -82,41 +79,30 @@ define('src/core/treehelper', [
       }
       delete toVisitMap[id];
 
-      // map item
-      mappedItem = mapFn(item, mappedParent, parent);
+      if (!mapFn) {
+        mappedItem = item;
+      } else {
+        // map item
+        mappedItem = mapFn(item, mappedParent, parent);
+      }
       // try to map temp childs
       tempChilds = tempChildsMap[id];
       if (tempChilds) {
-        // pre-sort childs
-        if (preSort) {
-          tempChilds.sort(sortFn);
-        }
         //@NOTE: item is now the parent
         tempChilds.forEach(function(child) {
           // recursion happens here
           buildBranch(child, item.childs, mappedItem, item);
         });
-        // post-sort childs
-        if (postSort) {
-          item.childs.sort(sortFn);
-        }
       }
 
-      // add item to child list
-      childList.push(mappedItem);
+      if (!mapFn && childList) {
+        childList.push(mappedItem);
+      }
     }
 
     // start recursion
-    // pre-sort parents
-    if (preSort) {
-      tempParents.sort(sortFn);
-    }
     tempParents.forEach(function(item) {
       buildBranch(item, treeTrunk, null, null);
-      // post-sort parents
-      if (postSort) {
-        treeTrunk.sort(sortFn);
-      }
     });
 
     // show which items aren't connected to the tree trunk

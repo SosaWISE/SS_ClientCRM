@@ -364,24 +364,6 @@ define('src/survey/takesurvey.vm', [
     return show;
   }
 
-  // function makeTree(questions, parent) {
-  //   var childs = [];
-  //   questions.forEach(function(vm) {
-  //     if (parent && vm.ParentId !== parent.QuestionID) {
-  //       return;
-  //     }
-  //     if (!parent && vm.ParentId != null) {
-  //       return;
-  //     }
-  //     vm.parent(parent);
-  //     childs.push(vm);
-  //     // start recursion
-  //     vm.questions = makeTree(questions, vm);
-  //     vm.childs = vm.questions; // needed inorder to walk with treehelper
-  //   });
-  //   return childs;
-  // }
-
   //
   // load survey data
   //

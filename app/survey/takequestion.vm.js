@@ -34,9 +34,11 @@ define('src/survey/takequestion.vm', [
       deferEvaluation: true,
       read: function() {
         // complete if valid and children are complete
-        var complete = _this.answer.isValid();
-        if (complete && _this.showSubs() && _this.questions.length) {
-          complete = _this.questions.every(function(q) {
+        var showSubs = _this.showSubs(),
+          questions = _this.questions(),
+          complete = _this.answer.isValid();
+        if (showSubs && questions.length) {
+          complete = questions.every(function(q) {
             return !_this.show || q.isComplete();
           });
         }
@@ -116,7 +118,7 @@ define('src/survey/takequestion.vm', [
       // editable
       _this.answerMode = calcAnswerMode(_this.questionPossibleAnswerMaps.length);
       if (_this.answerMode === 'text') {
-        _this.answer = createChildProp(_this, _this.MapToToken || 'default');
+        _this.answer = createChildProp(_this, _this.MapToToken);
       } else {
         _this.answer = createChildProp(_this);
 
@@ -142,7 +144,7 @@ define('src/survey/takequestion.vm', [
 
       // recursively update child questions to make ukovModel match showSubs and isComplete
       // ukovModel questions are flat so ignoring just this question's questions won't work
-      treehelper.walkTree(_this.childs, function(vm) {
+      treehelper.walkTree(_this, 'questions', function(vm) {
         vm.answer.ignore(!expands);
       });
       _this.ukovModel.update();
@@ -161,11 +163,11 @@ define('src/survey/takequestion.vm', [
       console.warn('duplicate question ' + key);
     }
 
+    tokenName = tokenName || 'default';
+
     // add this prop's schema to the parent doc
-    if (!tokenName || !questionschemas[tokenName]) {
-      if (tokenName) {
-        console.warn('questionschemas does not have token: ' + tokenName);
-      }
+    if (!questionschemas[tokenName]) {
+      console.warn('questionschemas does not have token: ' + tokenName);
       doc[key] = {}; // empty schema???
     } else {
       doc[key] = questionschemas[tokenName];

@@ -104,7 +104,7 @@ define('src/core/ko.bindingHandlers.spinner', [
     delete map[id];
     removeFromShowList(id);
 
-    log();
+    // log();
   }
 
   function updateShowList(id, show) {
@@ -123,7 +123,7 @@ define('src/core/ko.bindingHandlers.spinner', [
       jquery(item.element).hide();
     }
 
-    log();
+    // log();
   }
 
   function removeFromShowList(id) {
@@ -135,9 +135,15 @@ define('src/core/ko.bindingHandlers.spinner', [
     });
   }
 
-  function log() {
-    // console.log('total spinners:', Object.keys(map).length);
-    // console.log('spinners spinning:', showList.length);
+  function log(verbose) {
+    console.log('spinners -');
+    if (!verbose) {
+      console.log('     total:', Object.keys(map).length);
+      console.log('  spinning:', showList.length);
+    } else {
+      console.log('     total:', Object.keys(map).length, map);
+      console.log('  spinning:', showList.length, showList);
+    }
   }
 
 
@@ -187,5 +193,14 @@ define('src/core/ko.bindingHandlers.spinner', [
     ctx.rotate(rotateBy);
     ctx.translate(-hwidth, -hwidth);
   }
+
+  //
+  // set global functions
+  //
+  window.spinner = {
+    print: function(verbose) {
+      log(verbose);
+    },
+  };
 
 });
