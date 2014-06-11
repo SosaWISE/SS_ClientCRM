@@ -162,8 +162,10 @@ define('src/survey/takequestion.vm', [
     }
 
     // add this prop's schema to the parent doc
-    if (!questionschemas[tokenName]) {
-      console.warn('questionschemas does not have token: ' + tokenName);
+    if (!tokenName || !questionschemas[tokenName]) {
+      if (tokenName) {
+        console.warn('questionschemas does not have token: ' + tokenName);
+      }
       doc[key] = {}; // empty schema???
     } else {
       doc[key] = questionschemas[tokenName];

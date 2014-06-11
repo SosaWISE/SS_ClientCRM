@@ -19,8 +19,6 @@ div(class="dispatchagencys-finder")
   div(class="grid-wrap relative")
     div(class="slickgrid",data-bind="slickgrid:gvm")
 
-    div(data-bind="if:cmdFind.busy")
-      div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+    div(data-bind="spinner:cmdFind.busy,spinner-rgb:'white'")
 
-  div(data-bind="if:cmdSelect.busy")
-    div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+  div(data-bind="spinner:cmdSelect.busy,spinner-rgb:'white'")

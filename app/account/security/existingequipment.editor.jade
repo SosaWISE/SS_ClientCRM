@@ -1,11 +1,10 @@
 div(class="existing-equipment-editor")
-  div(data-bind="if:loading")
-    div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
- 
+  div(data-bind="spinner:loading,spinner-rgb:'white'")
+
   h2(class="title") Add Third Party Equipment
 
   div(class="line-top")
-    ul(class="edit-form limit-width")      
+    ul(class="edit-form limit-width")
       li
         span(class="label") Equipment Item
         div(data-bind="cvm:data.EquipmentCvm")
@@ -17,7 +16,7 @@ div(class="existing-equipment-editor")
         div(data-bind="cvm:data.ZoneEventTypeCvm")
       li
         span(class="label") Location
-        div(data-bind="cvm:data.ItemLocationCvm")      
+        div(data-bind="cvm:data.ItemLocationCvm")
       li
         span(class="label") Existing Wiring
         div(data-bind="cvm:data.IsExistingWiringCvm")

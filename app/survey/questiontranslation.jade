@@ -1,5 +1,4 @@
-div(data-bind="if:cmdSave.busy")
-  div(class="spinner-wrap black", data-bind="template:'tmpl-spinner'")
+div(data-bind="spinner:cmdSave.busy,spinner-rgb:'black'")
 
 div(class="locale")
   span(data-bind="text:LocalizationCode")

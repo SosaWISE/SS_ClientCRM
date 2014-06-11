@@ -5,6 +5,7 @@
   'src/core/ko.bindingHandlers.formatters',
   'src/core/ko.bindingHandlers.notice',
   'src/core/ko.bindingHandlers.value',
+  'src/core/ko.bindingHandlers.spinner',
 ], function(
   jquery,
   ko

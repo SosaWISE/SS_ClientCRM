@@ -29,5 +29,4 @@ div(class="survey")
 
   div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
 
-div(data-bind="if:loading")
-  div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+div(data-bind="spinner:loading,spinner-rgb:'white'")

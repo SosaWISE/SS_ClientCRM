@@ -98,5 +98,4 @@ div(data-bind="if:!loadErr()&&!loading()")
       div(class="contents",data-bind="template:{name:notesVm.viewTmpl,data:notesVm}")
       div(class="title", data-bind="click:clickToggleNotes") Notes:
 
-div(data-bind="if:loading")
-  div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+div(data-bind="spinner:loading,spinner-rgb:'white'")

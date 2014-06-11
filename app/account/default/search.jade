@@ -50,5 +50,4 @@ div(class="acct-search")
             div(class="slickgrid",style="background:white;margin:10px;color:black",
               data-bind="slickgrid:gvm")
 
-          div(data-bind="if:cmdSearch.busy")
-            div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+          div(data-bind="spinner:cmdSearch.busy,spinner-rgb:'white'")

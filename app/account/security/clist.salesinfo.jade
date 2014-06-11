@@ -141,5 +141,4 @@ div(class="acct-item sales-info")
                 div(class="name") Total:
                 div(class="value",data-bind="currencytext:partsGvm.estimateTotal")
 
-  div(data-bind="if:active()&&!loaded()")
-    div(class="spinner-wrap black", data-bind="template:'tmpl-spinner'")
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")

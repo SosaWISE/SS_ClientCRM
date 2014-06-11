@@ -23,5 +23,4 @@ table(class="fh-wrap")
         div(style="padding-top:30px;padding-bottom:30px;",data-bind="if:showSave")
           div(class="btn",tabindex="0",data-bind="cmd:cmdSaveSurvey") Save
 
-div(data-bind="if:active()&&!loaded()")
-  div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+div(data-bind="spinner:!loaded(),spinner-rgb:'white'")

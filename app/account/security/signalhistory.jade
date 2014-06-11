@@ -25,8 +25,7 @@ div(class="signalhistory",style="margin-bottom:10px;")
       ul(class="data",data-bind="foreach:missingSignals")
         li(data-bind="text:$data")
 
-  div(data-bind="if:active()&&!loaded()")
-    div(class="spinner-wrap black", data-bind="template:'tmpl-spinner'")
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
 
 
   //- div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

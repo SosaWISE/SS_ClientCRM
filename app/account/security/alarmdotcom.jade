@@ -54,5 +54,4 @@ div(class="alarmdotcom")
                 div(class="fh-contents")
                   div(class="slickgrid",data-bind="slickgrid:equipmentGvm")
 
-  div(data-bind="if:active()&&!loaded()")
-    div(class="spinner-wrap black", data-bind="template:'tmpl-spinner'")
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")

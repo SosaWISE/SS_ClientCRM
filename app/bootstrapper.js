@@ -1,20 +1,5 @@
-function formatError(message, url, line, column, err) {
-  "use strict";
-  var text = [];
-  text.push('Line ' + line + ', Column ' + column);
-  text.push('Url: ' + url);
-  text.push('');
-  text.push('Message: ' + message);
-  text.push('');
-  // err = err;
-  text.push('StackTrace: ' + err.stack);
-  return text.join('\n');
-}
-window.onerror = function(message, url, line, column, err) {
-  "use strict";
-  alert(formatError(message, url, line, column, err));
-};
-
+// `formatError` is defined in index.js
+/* global formatError */
 define('src/bootstrapper', [
   // load main libs
   'jquery',
@@ -58,15 +43,12 @@ define('src/bootstrapper', [
   app
 ) {
   "use strict";
-  console.log("Version: ", config.version);
-  console.log("Application Token: " + config.token);
-  console.log("CORS Domain: " + config.serviceDomain);
-  console.log("Log Errors: " + config.logErrors);
 
-  ControllerViewModel.titlePrefix = config.titlePrefix;
-  ControllerViewModel.titlePostfix = config.titlePostfix;
-  notify.init(LayersViewModel, DialogViewModel, resources);
-  // overwrite onerror function set above
+  // ////////////////////////TESTING////////////////////////////////////////////////
+  // throw new Error('test error');
+  // ////////////////////////TESTING////////////////////////////////////////////////
+
+  // overwrite onerror function set in index.js
   window.onerror = function(message, url, line, column, err) {
     var msg = formatError(message, url, line, column, err);
     // save error
@@ -139,16 +121,6 @@ define('src/bootstrapper', [
     // notify.notify('info', 'Error', 'crm.nexsense.com:1024/app/bootstrapper.js', 0, null, false);
     // ////////////////////////TESTING////////////////////////////////////////////////
   };
-  // overwrite jquery's JSON parsing
-  jquery.ajaxSetup({
-    converters: {
-      'text json': jsonhelpers.parse,
-    },
-  });
-  // set timeouts
-  DataserviceBase.prototype.timeout = config.apiTimeout;
-  joiner.Joiner.prototype.timeout = config.joinerTimeout;
-
   // ////////////////////////TESTING////////////////////////////////////////////////
   // setTimeout(function() {
   //   function a() {
@@ -178,6 +150,24 @@ define('src/bootstrapper', [
   //   f();
   // }, 1000);
   // ////////////////////////TESTING////////////////////////////////////////////////
+
+  console.log("Version: ", config.version);
+  console.log("Application Token: " + config.token);
+  console.log("CORS Domain: " + config.serviceDomain);
+  console.log("Log Errors: " + config.logErrors);
+
+  ControllerViewModel.titlePrefix = config.titlePrefix;
+  ControllerViewModel.titlePostfix = config.titlePostfix;
+  notify.init(LayersViewModel, DialogViewModel, resources);
+  // overwrite jquery's JSON parsing
+  jquery.ajaxSetup({
+    converters: {
+      'text json': jsonhelpers.parse,
+    },
+  });
+  // set timeouts
+  DataserviceBase.prototype.timeout = config.apiTimeout;
+  joiner.Joiner.prototype.timeout = config.joinerTimeout;
 
   var deps = [];
   if (config.useMocks) {

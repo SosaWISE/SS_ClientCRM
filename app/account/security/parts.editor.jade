@@ -1,6 +1,5 @@
 div(class="parts-editor")
-  div(data-bind="if:cmdSave.busy")
-    div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+  div(data-bind="spinner:cmdSave.busy,spinner-rgb:'white'")
 
   h2(class="title") Add Part
   div(class="line-top")

@@ -26,5 +26,4 @@ div(class="acct-item acct-clist-submitonline")
       span(data-bind="datetimetext:DateSubmitted")
 
 
-  div(data-bind="if:active()&&!loaded()")
-    div(class="spinner-wrap black", data-bind="template:'tmpl-spinner'")
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")

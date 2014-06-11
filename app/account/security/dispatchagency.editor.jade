@@ -37,5 +37,4 @@ div(class="dispatchagency-editor")
     //- div(class="actions")
     span(class="btn-bg", tabindex="0", data-bind="cmd:cmdSave") Save
 
-  div(data-bind="if:busy")
-    div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+  div(data-bind="spinner:busy,spinner-rgb:'white'")

@@ -5,19 +5,15 @@ html
     meta(http-equiv='X-UA-Compatible', content='IE=Edge,chrome=1')
     meta(http-equiv='content-type', content='text/html; charset=utf-8')
     link(rel="stylesheet", type='text/css', media='screen', href="index.css")
+    //- script(src="index.js")
+    //- include contents of index.js
+    script
+      include index.js
   body
-    div(id="siteLoading")
-      div(class="spinner-wrap white")
-        //- same jade as in spinner.jade
-        div(class="spinner")
-          div(class="bar bar_01")
-          div(class="bar bar_02")
-          div(class="bar bar_03")
-          div(class="bar bar_04")
-          div(class="bar bar_05")
-          div(class="bar bar_06")
-          div(class="bar bar_07")
-          div(class="bar bar_08")
+    div(id="siteLoading",style="background-color:#772E6D;color:#fff;height:100%;width:100%;display:table;text-align:center;")
+      span(style="display:table-cell;vertical-align:middle;font-weight:500;")
+        |Loading...
+        span(id="loadingSeconds")
 
     div(id="main")
 

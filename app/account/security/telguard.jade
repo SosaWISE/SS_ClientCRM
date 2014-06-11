@@ -19,5 +19,4 @@ div(class="telguard")
             tr
               td(class="fh-body")
 
-  div(data-bind="if:active()&&!loaded()")
-    div(class="spinner-wrap black", data-bind="template:'tmpl-spinner'")
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")

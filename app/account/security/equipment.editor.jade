@@ -8,8 +8,7 @@
   MainPanel
 
 div(class="equipment-editor")
-  div(data-bind="if:loading")
-    div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+  div(data-bind="spinner:loading,spinner-rgb:'white'")
 
   //- ul(class="actions")
     li
