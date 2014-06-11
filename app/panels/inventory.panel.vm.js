@@ -10,6 +10,7 @@ define('src/panels/inventory.panel.vm', [
   'src/dataservice',
   'src/core/router',
   'src/slick/slickgrid.vm',
+  'src/slick/buttonscolumn',  
   //'src/config',
   //'src/slick/rowevent',
   'src/ukov',
@@ -25,6 +26,7 @@ define('src/panels/inventory.panel.vm', [
   dataservice,
   router,
   SlickGridViewModel,
+  ButtonsColumn,  
   //config,
   //RowEvent,
   ukov
@@ -41,13 +43,14 @@ define('src/panels/inventory.panel.vm', [
       validators: [
         ukov.validators.isRequired('PurchaseOrder ID is required')
       ]
-    }
+    }    
   };
-
 
 
   function InventoryViewModel(options) {
     var _this = this;
+
+    //SlickGridViewModel.ensureProps(options, ['enterBarcode']);
 
     InventoryViewModel.super_.call(_this, options);
 
@@ -58,17 +61,22 @@ define('src/panels/inventory.panel.vm', [
     }, schema);
 
 
+      //Notes:
+      // app/account/security/clist.salesinfo.gvm.js has an example of using ButtonsColumn
+      // and http://mleibman.github.io/SlickGrid/examples/example3-editing.html has examples of editing   
+
     _this.inventoryListGvm = new SlickGridViewModel({
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
-        rowHeight: 35,
+        rowHeight: 27,
       },
+
       columns: [ //
         {
-          id: 'SKU',
-          name: 'SKU',
-          field: 'SKU',
+          id: 'ProductSkwId',
+          name: 'SKU',          
+          field: 'ProductSkwId',
         }, {
           id: 'Quantity',
           name: 'Quantity',
@@ -80,16 +88,23 @@ define('src/panels/inventory.panel.vm', [
         }, {
           id: 'Received',
           name: 'Received',
-          formatter: SlickGridViewModel.formatters.textbox,
+          field: 'Received', //Still need to change using slickgrid editor          
         }, {
-          id: 'Description',
-          name: 'Description',
-          field: 'Description',
-        }, {
-          id: 'Enter Barcode',
-          name: 'Enter Barcode',
-          formatter: SlickGridViewModel.formatters.button,
+          id: 'ItemDesc',
+          name: 'Description',          
+          field: 'ItemDesc',
         },
+        new ButtonsColumn({
+          id: 'enterBarcode',
+          name: 'Enter Barcode',
+          buttons: [ //
+            {
+              text: 'Submit',
+              fn: options.enterBarcode,
+              cssClass: 'btn small btn-black',
+            },
+          ]
+        }),       
       ],
     });
 
@@ -112,7 +127,7 @@ define('src/panels/inventory.panel.vm', [
   InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
 
     //For dummy purposes
-    var tempList = [];
+   /* var tempList = [];
 
     while (tempList.length < 15) {
       tempList.push({
@@ -127,6 +142,8 @@ define('src/panels/inventory.panel.vm', [
 
     //dummy data for grid
     this.inventoryListGvm.list(tempList);
+    */
+    this.inventoryListGvm.list([]);
 
     join = join;
 
@@ -145,11 +162,28 @@ define('src/panels/inventory.panel.vm', [
       if (resp.Code === 0) {
         var purchaseOrder = resp.Value;
         purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
-        alert(JSON.stringify(purchaseOrder));
+        //console.log(JSON.stringify(purchaseOrder));
       } else {
         notify.notify('warn', 'PurchaseOrderID not found', null, 3);
       }
     }));
+
+    //Purchange Order Items
+    dataservice.inventoryenginesrv.PurchaseOrderItems.read({
+      id: iePurchaseOrder.PurchaseOrderID
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Code === 0) {       
+
+        //Update inventoryListGvm grid
+        for(var x=0; x < resp.Value.length; x++){
+          vm.inventoryListGvm.list.push(resp.Value[x]);
+        }       
+        
+
+      } else {
+        notify.notify('warn', 'PurchaseOrderID not found', null, 3);
+      }
+    }));    
 
   };
 

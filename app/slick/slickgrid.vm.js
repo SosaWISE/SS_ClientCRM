@@ -211,16 +211,7 @@ define('src/slick/slickgrid.vm', [
     },
     phone: function(row, cell, value) {
       return strings.formatters.phone(value);
-    },
-    button: function() {
-      return "<input type='button' value='Submit'/>";
-    },
-    textbox: function() {
-      return "<input type='text' value='formatters should not be used for buttons and textboxes' />";
-      // app/account/security/clist.salesinfo.gvm.js has an example of using ButtonsColumn
-      // and http://mleibman.github.io/SlickGrid/examples/example3-editing.html has examples of editing
-    },
-
+    },    
   };
 
   return SlickGridViewModel;

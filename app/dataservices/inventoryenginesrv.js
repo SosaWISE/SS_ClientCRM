@@ -13,7 +13,7 @@ define('src/dataservices/inventoryenginesrv', [
     [
 
       'PurchaseOrder',
-      'PurchaseOrderItem'
+      'PurchaseOrderItems'
 
     ].forEach(function(collectionName) {
       result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
