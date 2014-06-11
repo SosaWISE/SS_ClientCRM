@@ -84,7 +84,7 @@ define('src/app', [
       id: 'barcode',
       name: 'Enter Barcode',
       ico: '&#128101;',
-    }),    
+    }),
   ]);
   setTemplate(app.panels, 'viewTmpl', 'panel_');
 
