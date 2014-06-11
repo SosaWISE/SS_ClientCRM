@@ -110,6 +110,13 @@ define('src/account/security/clist.salesinfo.vm', [
     PaymentTypeId: {},
     Setup1stMonth: {},
     SetupFee: {},
+    Email: {
+      validators: [
+        ukov.validators.isRequired('Email is required'),
+        ukov.validators.isEmail(),
+      ]
+    },
+    CurrentMonitoringStation: {},
   };
 
   function CListSalesInfoViewModel(options) {
@@ -169,6 +176,11 @@ define('src/account/security/clist.salesinfo.vm', [
     _this.data.CellTypeCvm = new ComboViewModel({
       selectedValue: _this.data.CellType,
       list: _this.cellTypeOptions,
+    });
+
+    _this.data.CurrentMonitoringStationCvm = new ComboViewModel({
+      selectedValue: _this.data.CurrentMonitoringStation,
+      list: _this.monitoringStationOptions,
     });
 
 
@@ -615,6 +627,15 @@ define('src/account/security/clist.salesinfo.vm', [
     }, {
       value: 4,
       text: 'Alarm.net'
+    },
+  ];
+  CListSalesInfoViewModel.prototype.monitoringStationOptions = [ //
+    {
+      value: 2,
+      text: 'Monitronics'
+    }, {
+      value: 1,
+      text: 'Other'
     },
   ];
 

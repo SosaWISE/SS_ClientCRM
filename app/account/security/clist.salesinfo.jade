@@ -72,6 +72,12 @@ div(class="acct-item sales-info")
               //-   |?
               div(class="answer")
                 div(data-bind="cvm:data.IsTakeOverCvm")
+            div(class="subline")
+              div(class="line",data-bind="visible:data.IsTakeOver")
+                div(class="letter",data-bind="text:subnum()")
+                div(class="question") Who is currently monitoring the account?
+                div(class="answer")
+                  div(data-bind="cvm:data.CurrentMonitoringStationCvm")
             div(class="line")
               div(class="letter",data-bind="text:num()")
               div(class="question") Is the customer the Home Owner or a Renter
@@ -95,6 +101,12 @@ div(class="acct-item sales-info")
                 div(class="question") Which Alarm.com package are we going with?
                 div(class="answer")
                   div(data-bind="cvm:data.AlarmComPackageCvm")
+              div(class="line",data-bind="visible:isAlarmCom")
+                div(class="letter",data-bind="text:subnum()")
+                div(class="question") What is you email address?
+                div(class="answer")
+                  input(type="text",class="inputField",
+                    data-bind="ukov:data.Email,value:data.Email")
 
             div(class="subHeader") Contract Information
             div(class="line")
