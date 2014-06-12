@@ -24,6 +24,7 @@ define('src/account/security/clist.initialpayment.vm', [
     CListInitialPaymentViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
+    _this.mayReload = ko.observable(false);
     _this.breakdown = ko.observable();
     _this.initialPaymentMethod = ko.observable();
     _this.recurringSame = ko.observable(true);
@@ -98,7 +99,6 @@ define('src/account/security/clist.initialpayment.vm', [
   }
   utils.inherits(CListInitialPaymentViewModel, ControllerViewModel);
   CListInitialPaymentViewModel.prototype.viewTmpl = 'tmpl-security-clist_initialpayment';
-  CListInitialPaymentViewModel.prototype.reloadable = true;
 
   CListInitialPaymentViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,

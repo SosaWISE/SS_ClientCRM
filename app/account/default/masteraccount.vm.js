@@ -33,6 +33,7 @@ define('src/account/default/masteraccount.vm', [
     MasterAccountViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['id', 'title']);
 
+    _this.mayReload = ko.observable(false);
     _this.title = ko.observable(_this.title);
     _this.hideNotes = ko.observable(config.accounts.hideNotes);
     _this.hideNav = ko.observable(config.accounts.hideNav);
@@ -85,7 +86,6 @@ define('src/account/default/masteraccount.vm', [
   }
   utils.inherits(MasterAccountViewModel, ControllerViewModel);
   MasterAccountViewModel.prototype.viewTmpl = 'tmpl-acct-default-masteraccount';
-  MasterAccountViewModel.prototype.reloadable = true;
 
   MasterAccountViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,

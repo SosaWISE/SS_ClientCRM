@@ -24,6 +24,7 @@ define('src/account/security/clist.registercell.vm', [
     CListRegisterCellViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
+    _this.mayReload = ko.observable(false);
     _this.cellErrMsg = ko.observable();
 
     //
@@ -35,7 +36,6 @@ define('src/account/security/clist.registercell.vm', [
   }
   utils.inherits(CListRegisterCellViewModel, ControllerViewModel);
   CListRegisterCellViewModel.prototype.viewTmpl = 'tmpl-security-clist_registercell';
-  CListRegisterCellViewModel.prototype.reloadable = true;
 
   CListRegisterCellViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;

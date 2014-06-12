@@ -28,6 +28,7 @@ define('src/account/security/clist.survey.vm', [
     CListSurveyViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['surveyTypeId']);
 
+    _this.mayReload = ko.observable(false);
     _this.loadingSurvey = ko.observable();
 
     _this.loadedResultVmMap = {};
@@ -72,7 +73,6 @@ define('src/account/security/clist.survey.vm', [
   }
   utils.inherits(CListSurveyViewModel, ControllerViewModel);
   CListSurveyViewModel.prototype.viewTmpl = 'tmpl-security-clist_survey';
-  CListSurveyViewModel.prototype.reloadable = true;
 
   CListSurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;

@@ -24,6 +24,7 @@ define('src/account/security/alarmdotcom.vm', [
     AlarmDotComViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
+    _this.mayReload = ko.observable(false);
     _this.isRegistered = ko.observable(false);
     _this.receiverData = ko.observable();
     _this.detailsData = ko.observable();
@@ -118,7 +119,6 @@ define('src/account/security/alarmdotcom.vm', [
   }
   utils.inherits(AlarmDotComViewModel, ControllerViewModel);
   AlarmDotComViewModel.prototype.viewTmpl = 'tmpl-security-alarmdotcom';
-  AlarmDotComViewModel.prototype.reloadable = true;
 
   AlarmDotComViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,

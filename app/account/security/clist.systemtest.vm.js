@@ -16,6 +16,7 @@ define('src/account/security/clist.systemtest.vm', [
     CListSystemTestViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
+    _this.mayReload = ko.observable(false);
     _this.signalHistoryVm = new SignalHistoryViewModel({
       layersVm: _this.layersVm,
     });
@@ -35,7 +36,6 @@ define('src/account/security/clist.systemtest.vm', [
   }
   utils.inherits(CListSystemTestViewModel, ControllerViewModel);
   CListSystemTestViewModel.prototype.viewTmpl = 'tmpl-security-clist_systemtest';
-  CListSystemTestViewModel.prototype.reloadable = true;
 
   CListSystemTestViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;

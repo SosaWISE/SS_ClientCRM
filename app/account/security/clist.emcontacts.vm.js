@@ -18,6 +18,7 @@ define('src/account/security/clist.emcontacts.vm', [
     CListEmcontactsViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
+    _this.mayReload = ko.observable(false);
     _this.data = ko.observable();
     _this.repModel = ko.observable();
 
@@ -31,7 +32,6 @@ define('src/account/security/clist.emcontacts.vm', [
   }
   utils.inherits(CListEmcontactsViewModel, ControllerViewModel);
   CListEmcontactsViewModel.prototype.viewTmpl = 'tmpl-security-clist_emcontacts';
-  CListEmcontactsViewModel.prototype.reloadable = true;
 
   CListEmcontactsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;

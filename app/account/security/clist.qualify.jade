@@ -1,4 +1,4 @@
-div(class="acct-item acct-clist-qualify load-err", data-bind="if:loadErr")
+div(class="acct-item acct-clist-qualify load-err", data-bind="if:loadErr,toggle:{'may-reload':mayReload}")
   div(class="col")
     div Failed to load lead
     //- ul(class="actions")
@@ -8,7 +8,7 @@ div(class="acct-item acct-clist-qualify load-err", data-bind="if:loadErr")
         a(class="btn small",tabindex="0",data-bind="cmd:close") Close
 
 div(data-bind="if:!loadErr()&&!loading()")
-  div(class="acct-item acct-clist-qualify")
+  div(class="acct-item acct-clist-qualify",data-bind="toggle:{'may-reload':mayReload}")
     div(class="col")
       div(class="section",data-bind="cmd:cmdFindRep,toggle:{empty:!repModel()}")
         span(class="title") Sales Rep

@@ -24,6 +24,7 @@ define('src/account/security/clist.submitonline.vm', [
     CListSubmitOnlineViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
+    _this.mayReload = ko.observable(false);
     _this.gvm = new DispatchAgencysGridViewModel({
       edit: function(agency, cb) {
         showDispatchAgencyEditor(_this, agency, cb);
@@ -82,7 +83,6 @@ define('src/account/security/clist.submitonline.vm', [
   }
   utils.inherits(CListSubmitOnlineViewModel, ControllerViewModel);
   CListSubmitOnlineViewModel.prototype.viewTmpl = 'tmpl-security-clist_submitonline';
-  CListSubmitOnlineViewModel.prototype.reloadable = true;
 
   CListSubmitOnlineViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;

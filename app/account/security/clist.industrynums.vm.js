@@ -17,6 +17,7 @@ define('src/account/security/clist.industrynums.vm', [
     var _this = this;
     CListIndustryViewModel.super_.call(_this, options);
 
+    _this.mayReload = ko.observable(false);
     _this.industryAccounts = ko.observableArray();
 
     //
@@ -42,7 +43,6 @@ define('src/account/security/clist.industrynums.vm', [
   }
   utils.inherits(CListIndustryViewModel, ControllerViewModel);
   CListIndustryViewModel.prototype.viewTmpl = 'tmpl-security-clist_industrynums';
-  CListIndustryViewModel.prototype.reloadable = true;
 
   CListIndustryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;

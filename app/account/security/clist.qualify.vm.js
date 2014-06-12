@@ -26,6 +26,7 @@ define('src/account/security/clist.qualify.vm', [
     CListQualifyViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
+    _this.mayReload = ko.observable(false);
     _this.title = ko.observable(_this.title);
     // _this.hideNotes = ko.observable(false);
     _this.step = ko.observable(0);
@@ -126,7 +127,6 @@ define('src/account/security/clist.qualify.vm', [
   }
   utils.inherits(CListQualifyViewModel, ControllerViewModel);
   CListQualifyViewModel.prototype.viewTmpl = 'tmpl-security-clist_qualify';
-  CListQualifyViewModel.prototype.reloadable = true;
 
   CListQualifyViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
     // var _this = this,

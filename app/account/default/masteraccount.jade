@@ -1,4 +1,4 @@
-div(class="panel account active load-err", data-bind="if:loadErr")
+div(class="panel account active load-err", data-bind="if:loadErr,toggle:{'may-reload':mayReload}")
   div(class="p-module")
     div Failed to load customer account
     ul(class="actions")
@@ -8,7 +8,7 @@ div(class="panel account active load-err", data-bind="if:loadErr")
         a(class="btn small",tabindex="0",data-bind="cmd:close") Close
 
 div(data-bind="if:!loadErr()&&!loading()")
-  div(class="panel account", data-bind="active:active,toggle:{'hide-nav':hideNav,'hide-notes':hideNotes}")
+  div(class="panel account", data-bind="active:active,toggle:{'hide-nav':hideNav,'hide-notes':hideNotes,'may-reload':mayReload}")
 
     //- div(class="p-module",data-bind="if:activeChild")
     //-   div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild}")

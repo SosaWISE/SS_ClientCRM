@@ -1,10 +1,12 @@
 define('src/core/base.vm', [
+  'src/core/strings',
   'src/core/helpers',
   'src/core/joiner',
   'src/core/notify',
   'src/core/utils',
   'ko'
 ], function(
+  strings,
   helpers,
   joiner,
   notify,
@@ -80,7 +82,28 @@ define('src/core/base.vm', [
   };
   BaseViewModel.prototype.canReload = function() {
     var _this = this;
-    return _this.reloadable && _this.loader.canReset();
+    return ko.isObservable(_this.mayReload) && _this.loader.canReset();
+  };
+  BaseViewModel.prototype.attemptReload = function() {
+    var _this = this,
+      title = ko.unwrap(_this.title);
+    if (_this.canReload()) {
+      _this.mayReload(true);
+      notify.confirm('Reload Section?',
+        strings.format('Do you want to reload {0}?', title),
+        function(result) {
+          _this.mayReload(false);
+          if (result === 'yes') {
+            if (!_this.reload()) {
+              notify.notify('warn', strings.format('Failed to reload {0}?', title));
+            }
+          }
+        });
+    } else if (ko.isObservable(_this.mayReload)) {
+      notify.notify('warn', strings.format('Currently can\'t reload {0}?', title), null, 5);
+    } else {
+      console.log(title, 'reload not enabled');
+    }
   };
   // this will be over written when mixinLoad is called
   BaseViewModel.prototype.load = function(routeData, extraData, cb) {

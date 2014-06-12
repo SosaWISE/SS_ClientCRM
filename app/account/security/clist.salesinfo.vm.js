@@ -124,6 +124,7 @@ define('src/account/security/clist.salesinfo.vm', [
     CListSalesInfoViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
+    _this.mayReload = ko.observable(false);
     _this.subs = [];
     _this.title = ko.observable(_this.title);
     _this.data = ukov.wrap({
@@ -302,7 +303,6 @@ define('src/account/security/clist.salesinfo.vm', [
   }
   utils.inherits(CListSalesInfoViewModel, ControllerViewModel);
   CListSalesInfoViewModel.prototype.viewTmpl = 'tmpl-security-clist_salesinfo';
-  CListSalesInfoViewModel.prototype.reloadable = true;
 
   CListSalesInfoViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
