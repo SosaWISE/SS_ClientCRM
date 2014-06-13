@@ -57,11 +57,14 @@ define('src/panels/surveys.panel.vm', [
       cb = join.add(),
       depJoin = join.create();
 
+    _this.surveyTypes([]);
     ensureDeps(function() {
       tokensVM = new deps.TokensViewModel();
       possibleAnswersVM = new deps.PossibleAnswersViewModel();
 
+      tokensVM.loader.reset(); //incase of reload
       tokensVM.load(routeData, extraData, depJoin.add());
+      possibleAnswersVM.loader.reset(); //incase of reload
       possibleAnswersVM.load(routeData, extraData, depJoin.add());
 
       dataservice.survey.surveyTypes.read({}, null, function(err, resp) {

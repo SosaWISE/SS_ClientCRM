@@ -97,6 +97,7 @@ define('src/account/default/masteraccount.vm', [
         return;
       }
 
+      _this.notesVm.loader.reset(); //incase of reload
       _this.notesVm.load(routeData, extraData, function(err) {
         if (err) {
           cb(err);

@@ -105,6 +105,7 @@ define('src/account/security/clist.systemdetails.vm', [
 
     _this.accountId = routeData.id;
 
+    _this.equipmentVm.loader.reset(); //incase of reload
     _this.equipmentVm.load(routeData, extraData, join.add());
 
     load_types('panelTypes', function(results) {

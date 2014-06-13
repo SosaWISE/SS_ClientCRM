@@ -1,10 +1,12 @@
 define('src/account/security/summary.vm', [
+  'ko',
   'src/account/security/emcontacts.vm',
   'src/core/layers.vm',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  ko,
   EmContactsViewModel,
   LayersViewModel,
   notify,
@@ -17,6 +19,7 @@ define('src/account/security/summary.vm', [
     var _this = this;
     SummaryViewModel.super_.call(_this, options);
 
+    _this.mayReload = ko.observable(false);
     _this.layersVm = new LayersViewModel({
       controller: _this,
     });
@@ -35,6 +38,7 @@ define('src/account/security/summary.vm', [
   SummaryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
+    _this.emcontactsVm.loader.reset(); //incase of reload
     _this.emcontactsVm.load(routeData, extraData, join.add());
 
     //@TODO: load real account

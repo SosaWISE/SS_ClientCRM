@@ -45,6 +45,7 @@ define('src/survey/surveytranslation.vm', [
     var _this = this,
       cb = join.add();
 
+    _this.list([]);
     dataservice.survey.surveyTranslations.read({
       id: _this.id,
       link: 'questionTranslations',
