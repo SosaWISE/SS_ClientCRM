@@ -12,6 +12,7 @@ define('src/panels/inventory.panel.vm', [
   'src/slick/slickgrid.vm',
   'src/slick/buttonscolumn',  
   'slick',
+  'src/inventory/inventory.gvm',
   //'src/config',
   //'src/slick/rowevent',
   'src/ukov',
@@ -29,6 +30,7 @@ define('src/panels/inventory.panel.vm', [
   SlickGridViewModel,
   ButtonsColumn,  
   Slick,
+  InventoryGridViewModel,
   //config,
   //RowEvent,
   ukov
@@ -47,8 +49,8 @@ define('src/panels/inventory.panel.vm', [
       ]
     }
   };
-
-    function numberFieldValidator(value) {
+/*
+  function numberFieldValidator(value) {
     if (isNaN(value)) {
       notify.notify('error','Please input a number only.');
       return {valid: false, msg: "Please input a number only."};
@@ -56,13 +58,11 @@ define('src/panels/inventory.panel.vm', [
       return {valid: true, msg: null};
     }
   }
-
+*/
 
   function InventoryViewModel(options) {
     var _this = this;
-
-    //SlickGridViewModel.ensureProps(options, ['enterBarcode']);
-
+    
     InventoryViewModel.super_.call(_this, options);
 
     _this.title = 'Inventory';
@@ -71,8 +71,8 @@ define('src/panels/inventory.panel.vm', [
       PurchaseOrderID: null,
     }, schema);
 
-
-    _this.inventoryListGvm = new SlickGridViewModel({
+    //Commented to use GVM as different file
+    /*_this.inventoryListGvm = new SlickGridViewModel({
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
@@ -110,13 +110,22 @@ define('src/panels/inventory.panel.vm', [
           buttons: [ //
             {
               text: 'Submit',
-              fn: options.enterBarcode,
+              fn: options.enterBarcodes,
               cssClass: 'btn small btn-black',
             },
           ]
         }),
-      ],
+      ],  
+
+    });*/
+
+    //Display Inventory Grid
+    _this.inventoryListGvm = new InventoryGridViewModel({
+      enterBarcode: function(/*part*/) {
+        
+      },
     });
+    
 
     //events
     //
