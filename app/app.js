@@ -5,7 +5,7 @@ define('src/app', [
   'src/panels/accounts.panel.vm',
   'src/panels/surveys.panel.vm',
   'src/panels/swing.panel.vm',
-  'src/panels/inventory.panel.vm',  
+  'src/panels/inventory.panel.vm',
   'src/core/notify'
 ], function(
   router,
@@ -14,7 +14,7 @@ define('src/app', [
   AccountsPanelViewModel,
   SurveysPanelViewModel,
   SwingViewModel,
-  InventoryViewModel,  
+  InventoryViewModel,
   notify
 ) {
   "use strict";
@@ -109,6 +109,6 @@ define('src/app', [
 
   router.addRoute(app.panelMap.swing, 'swing', '', {});
   router.addRoute(app.panelMap.inventory, 'inventory', '', {});
-  
+
   return app;
 });
