@@ -89,6 +89,8 @@ define('src/panels/inventory.panel.vm', [
       _this.search(vm, cb);
     });
 
+    //For testing only
+    /*
     _this.showEnterBarcode = ko.command(function(cb) {
       alert("@TODO show screen2");
 
@@ -102,7 +104,7 @@ define('src/panels/inventory.panel.vm', [
       });
 
     });
-
+    */
 
   }
 
