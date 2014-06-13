@@ -1,13 +1,13 @@
 define('src/inventory/inventory.gvm', [
   'ko',
-  'src/slick/buttonscolumn',  
+  'src/slick/buttonscolumn',
   'src/slick/slickgrid.vm',
   'src/core/utils',
   'slick',
   'src/core/notify',
 ], function(
   ko,
-  ButtonsColumn,  
+  ButtonsColumn,
   SlickGridViewModel,
   utils,
   Slick,
@@ -17,14 +17,20 @@ define('src/inventory/inventory.gvm', [
 
   function numberFieldValidator(value) {
     if (isNaN(value)) {
-      notify.notify('error','Please input a number only.');
-      return {valid: false, msg: "Please input a number only."};
+      notify.notify('error', 'Please input a number only.');
+      return {
+        valid: false,
+        msg: "Please input a number only."
+      };
     } else {
-      return {valid: true, msg: null};
+      return {
+        valid: true,
+        msg: null
+      };
     }
   }
 
-  function InventoryGridViewModel(options) {    
+  function InventoryGridViewModel(options) {
     var _this = this;
     SlickGridViewModel.ensureProps(options, ['enterBarcode']);
     InventoryGridViewModel.super_.call(_this, {
@@ -48,13 +54,13 @@ define('src/inventory/inventory.gvm', [
           id: 'WithoutBarcodeCount',
           name: 'Remain',
           field: 'WithoutBarcodeCount',
-        },{
+        }, {
           id: 'Received',
-          name: 'Received', 
+          name: 'Received',
           field: 'Received',
           editor: Slick.Editors.Text,
           validator: numberFieldValidator
-        },{              
+        }, {
           id: 'ItemDesc',
           name: 'Description',
           field: 'ItemDesc',
@@ -70,7 +76,7 @@ define('src/inventory/inventory.gvm', [
             },
           ]
         }),
-      ],  
+      ],
 
     });
 

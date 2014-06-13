@@ -10,7 +10,7 @@ define('src/panels/inventory.panel.vm', [
   'src/dataservice',
   'src/core/router',
   'src/slick/slickgrid.vm',
-  'src/slick/buttonscolumn',  
+  'src/slick/buttonscolumn',
   'slick',
   'src/inventory/inventory.gvm',
   //'src/config',
@@ -28,7 +28,7 @@ define('src/panels/inventory.panel.vm', [
   dataservice,
   router,
   SlickGridViewModel,
-  ButtonsColumn,  
+  ButtonsColumn,
   Slick,
   InventoryGridViewModel,
   //config,
@@ -49,7 +49,7 @@ define('src/panels/inventory.panel.vm', [
       ]
     }
   };
-/*
+  /*
   function numberFieldValidator(value) {
     if (isNaN(value)) {
       notify.notify('error','Please input a number only.');
@@ -62,7 +62,7 @@ define('src/panels/inventory.panel.vm', [
 
   function InventoryViewModel(options) {
     var _this = this;
-    
+
     InventoryViewModel.super_.call(_this, options);
 
     _this.title = 'Inventory';
@@ -95,11 +95,11 @@ define('src/panels/inventory.panel.vm', [
           field: 'Remain',
         },{
           id: 'Received',
-          name: 'Received', 
+          name: 'Received',
           field: 'Received',
           editor: Slick.Editors.Text,
           validator: numberFieldValidator
-        },{              
+        },{
           id: 'ItemDesc',
           name: 'Description',
           field: 'ItemDesc',
@@ -115,17 +115,17 @@ define('src/panels/inventory.panel.vm', [
             },
           ]
         }),
-      ],  
+      ],
 
     });*/
 
     //Display Inventory Grid
     _this.inventoryListGvm = new InventoryGridViewModel({
-      enterBarcode: function(/*part*/) {
-        
+      enterBarcode: function( /*part*/ ) {
+
       },
     });
-    
+
 
     //events
     //
@@ -143,7 +143,7 @@ define('src/panels/inventory.panel.vm', [
   //
 
   InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-  
+
     this.inventoryListGvm.list([]);
 
     join = join;
