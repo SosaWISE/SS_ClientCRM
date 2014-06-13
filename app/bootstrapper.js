@@ -216,7 +216,8 @@ define('src/bootstrapper', [
 
   //
   document.addEventListener("click", function(evt) {
-    if (!evt.shiftKey || !evt.ctrlKey /*|| !evt.altKey*/ ) {
+    // shift+ctrl or shift+alt or shift+ctrl+alt should get passed this
+    if (!evt.shiftKey || !(evt.ctrlKey || evt.altKey)) {
       return;
     }
     // stop the event from firing
