@@ -95,6 +95,7 @@ module.exports = function(grunt) {
           'tparty/slick.core.js',
           'tparty/slick.grid.js',
           'tparty/slick.rowselectionmodel.js',
+          'tparty/slick.editors.js',
           'tparty/slick-production.js',
           // actual package
           'app/slick/**/*.js', '!app/slick/**/*.spec.js',
@@ -172,6 +173,8 @@ module.exports = function(grunt) {
         options: {
           data: {
             release: true,
+            // release: false,
+            // debug: true,
           },
         },
         files: {

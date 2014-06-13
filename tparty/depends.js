@@ -22,11 +22,15 @@
   if (!config.pkgs) {
     pkgs = [];
   } else {
-    pkgs = Object.keys(config.pkgs).map(function(name) {
+    pkgs = Object.keys(config.pkgs).map(function(path) {
+      var aliases = config.pkgs[path];
+      if (!Array.isArray(aliases)) {
+        aliases = [aliases];
+      }
       return {
-        // name: name,
-        parts: pathParts(name),
-        path: config.pkgs[name],
+        aliasesParts: aliases.map(pathParts),
+        path: path,
+        loaded: false,
       };
     });
     delete config.pkgs;
@@ -179,16 +183,19 @@
     var result,
       parts = pathParts(name);
     pkgs.some(function(pkg) {
-      if (pkg.parts.length > parts.length) {
-        return false;
-      }
-      // every package part should match path parts
-      if (pkg.parts.every(function(part, index) {
-        return part === parts[index];
-      })) {
-        result = pkg;
-        return true;
-      }
+      // there can be multiple aliases per package
+      return pkg.aliasesParts.some(function(aliasParts) {
+        if (aliasParts.length > parts.length) {
+          return false;
+        }
+        // every package part should match path parts
+        if (aliasParts.every(function(part, index) {
+          return part === parts[index];
+        })) {
+          result = pkg;
+          return true;
+        }
+      });
     });
     return result;
   }
