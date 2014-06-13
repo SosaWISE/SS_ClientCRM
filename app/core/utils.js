@@ -39,10 +39,9 @@ define('src/core/utils', [
             successFn(err, resp, ctx);
           }
         } catch (ex) {
-          console.error(ex.message);
           console.error(ex.stack);
           err = {
-            Message: ex.message
+            Message: ex.stack,
           };
         } finally {
           cb(err, resp);

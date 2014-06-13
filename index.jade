@@ -43,6 +43,7 @@ html
               div(data-bind="template:viewTmpl,attr:{id:id+'-panel'}")
 
       div(data-bind="template:{name:'tmpl-notices',data:notify}")
+      div(class="notify-position-toggle",data-bind="click:notify.clickToggle")
 
     //- templates
     div(style="display:none")

@@ -1,4 +1,4 @@
-div(class="notice-wrap", data-bind="foreach:list")
+div(class="notice-wrap", data-bind="foreach:list,toggle:{top:atTop},visible:list().length")
   div(data-bind="notice:$data", class="notice-item-wrap")
     div(class="notice-item")
       span(data-bind="attr:{'class':'ico '+type}")

@@ -1,14 +1,43 @@
 
+.notify-position-toggle {
+  cursor: pointer;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 80px;
+  height: 40px;
+}
+
 .notice-wrap {
+  @width: 900px;
+  @menuWidth: 80px;
+  margin-left: (@menuWidth - @width)/2; // center in page (excluding menu)
+  width: @width;
+
+  top: auto;
+  bottom: 40px;
+  &.top {
+    top: 40px;
+    bottom: auto;
+  }
+
+  left: 50%;
+  right: auto;
+
   z-index: 9999;
   position: fixed;
-  margin-left: -260px; // center in panel area. excludes menu bar on left. 600/2 - 80/2
-  width: 600px;
-  left: 50%;
-  bottom: 20px;
-  top: auto;
-  right: auto;
   text-align: left;
+
+  padding: 2px 5px 5px 5px;
+  background-color: rgba(255,255,255,0.5);
+  .box-shadow(0px 3px 5px 5px rgba(255,255,255,0.5));
+}
+// if the screen is less than 1000 pixels wide then use these to calulate the width
+@media(max-width:1000px) {
+  .notice-wrap {
+    width: ~"calc(100% - 120px)";
+    margin-left: ~"calc(100px - 50%)";
+  }
 }
 
 .notice-item-wrap {
@@ -25,7 +54,7 @@
     @delay: 4.5s;
     transition: opacity 3s 3s, max-height 0.5s linear @delay, margin-top 0.5s linear @delay;
     .opacity(0.2);
-    margin-top: 0px;
+    margin-top: -2px;
     max-height: 0px;
   }
   &.fast {

@@ -186,5 +186,18 @@ define('src/core/strings', [
   };
 
 
+  function strWithTest(str, val, atStart) {
+    str = (str == null) ? '' : ('' + str);
+    val = (val == null) ? '' : ('' + val);
+    return str.length >= val.length &&
+      (atStart ? str.slice(0, val.length) : str.slice(str.length - val.length)) === val;
+  }
+  strings.startsWith = function(str, val) {
+    return strWithTest(str, val, true);
+  };
+  strings.endsWith = function(str, val) {
+    return strWithTest(str, val, false);
+  };
+
   return strings;
 });

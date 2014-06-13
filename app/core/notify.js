@@ -20,7 +20,7 @@ define('src/core/notify', [
 
   function UiMessage(type, title, message, timeoutSec, actionsObj, usePre, onRemove) {
     var _this = this,
-      interval,
+      intervalId,
       dismissed = false,
       seconds;
 
@@ -39,7 +39,7 @@ define('src/core/notify', [
     function dismiss() {
       _this.pause();
       // onRemove();
-      seconds(1);
+      seconds(0.5);
       dismissed = true;
       // try to start the timeout
       _this.resume();
@@ -72,18 +72,19 @@ define('src/core/notify', [
         return false;
       }
 
-      clearInterval(interval);
-      interval = null;
+      clearInterval(intervalId);
+      intervalId = null;
       if (seconds() > 0 && seconds() <= _this.minTimeout) {
         seconds(_this.minTimeout + 1);
       }
       return true;
     };
     _this.resume = function() {
-      if (interval || seconds() <= 0) {
+      var s = seconds();
+      if (intervalId || s <= 0) {
         return;
       }
-      interval = setInterval(function() {
+      intervalId = setInterval(function() {
         // decrement seconds remaining
         var s = seconds() - 1;
         seconds(s);
@@ -91,7 +92,7 @@ define('src/core/notify', [
           // remove from list
           onRemove();
         }
-      }, 1000);
+      }, s < 1 ? (s * 1000) : 1000);
     };
 
     // try to start the timeout
@@ -109,7 +110,15 @@ define('src/core/notify', [
   function Notifier() {
     var _this = this;
     _this.list = ko.observableArray();
-    _this.addAtTop = true;
+    // _this.addAtTop = true; // when notices appear at bottom
+    _this.atTop = ko.observable(false);
+
+    //
+    // events
+    //
+    _this.clickToggle = function() {
+      _this.atTop(!_this.atTop());
+    };
   }
   Notifier.prototype.init = function(LayersViewModel, DialogViewModel, resources) {
     var _this = this;
@@ -129,19 +138,20 @@ define('src/core/notify', [
   };
 
   Notifier.prototype.notify = function(type, title, message, timeoutSec, actionsObj, usePre) {
-    var list = this.list,
+    var _this = this,
+      list = _this.list,
       notification;
 
     notification = new UiMessage(type, title || titleMap[type], message, timeoutSec, actionsObj, usePre, function() {
       list.remove(notification);
     });
 
-    if (this.addAtTop) {
-      // add at top
-      list.unshift(notification);
-    } else {
-      // add at bottom
+    if (_this.atTop()) {
+      // at top - add to end
       list.push(notification);
+    } else {
+      // at bottom - add to start
+      list.unshift(notification);
     }
   };
 
