@@ -258,6 +258,7 @@ define('src/account/security/clist.salesinfo.vm', [
       tmp = cellType && cellType !== 1;
       _this.hasCell(tmp);
       _this.data.AlarmComPackageId.ignore(!tmp, true);
+      _this.data.Email.ignore(!tmp, true);
     });
 
 

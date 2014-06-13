@@ -203,6 +203,8 @@ define('src/core/dataservice.base', [
         }
       } else {
         err = responseData;
+        // prepend requestUrl
+        err.Message = context.requestUrl + '\n' + (err.Message || '');
       }
       // call callback function
       context.callback(err, responseData, context);
