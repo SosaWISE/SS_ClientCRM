@@ -69,11 +69,11 @@ define('src/panels/inventory.panel.vm', [
     }, schema);
 
 
-   _this.layersVm = new LayersViewModel({
-    controller: _this,
-   });
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
+    });
 
-  
+
     //Display Inventory Grid
     _this.inventoryListGvm = new InventoryGridViewModel({
       enterBarcode: function( /*part*/ ) {
@@ -89,7 +89,7 @@ define('src/panels/inventory.panel.vm', [
       _this.search(vm, cb);
     });
 
-    _this.showEnterBarcode = ko.command(function(cb) {      
+    _this.showEnterBarcode = ko.command(function(cb) {
       alert("@TODO show screen2");
 
       _this.layersVm.show(new EnterBarcodeViewModel({
@@ -100,8 +100,8 @@ define('src/panels/inventory.panel.vm', [
           return;
         }
       });
-      
-    });    
+
+    });
 
 
   }

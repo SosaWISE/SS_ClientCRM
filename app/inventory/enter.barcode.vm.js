@@ -4,15 +4,15 @@ define('src/inventory/enter.barcode.vm', [
   'src/core/base.vm',
   'ko',
   //'src/ukov',
-  //'src/dataservice', 
+  //'src/dataservice',
 ], function(
   notify,
   utils,
   BaseViewModel,
   ko
- // ukov,
- // dataservice,
- 
+  // ukov,
+  // dataservice,
+
 ) {
   "use strict";
 
@@ -26,14 +26,14 @@ define('src/inventory/enter.barcode.vm', [
     //
     // events
     //
-    
+
     _this.clickClose = function() {
       if (_this.layer) {
         _this.layer.close(_this.repResult());
       }
     };
 
-/*
+    /*
     _this.active.subscribe(function(active) {
       if (active) {
         // this timeout makes it possible to focus the rep id
@@ -44,7 +44,7 @@ define('src/inventory/enter.barcode.vm', [
     });*/
 
   }
-  
+
   utils.inherits(EnterBarcodeViewModel, BaseViewModel);
   EnterBarcodeViewModel.prototype.viewTmpl = 'tmpl-inventory-enter-barcode';
   EnterBarcodeViewModel.prototype.width = 400;
