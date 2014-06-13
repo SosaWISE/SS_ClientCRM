@@ -50,6 +50,7 @@ define('src/panels/inventory.panel.vm', [
 
     function numberFieldValidator(value) {
     if (isNaN(value)) {
+      notify.notify('error','Please input a number only.');
       return {valid: false, msg: "Please input a number only."};
     } else {
       return {valid: true, msg: null};
@@ -123,7 +124,6 @@ define('src/panels/inventory.panel.vm', [
     _this.cmdSearch = ko.command(function(cb, vm) {
       _this.search(vm, cb);
     });
-
 
   }
 
