@@ -66,17 +66,29 @@ define('src/account/security/clist.salesinfo.gvm', [
     });
 
     _this.pointsGiven = ko.observable(0);
+    _this.pointsAvailable = ko.observable(0);
     _this.estimateTotal = ko.observable(0);
+    _this.estimateTotal2 = ko.observable(0);
     _this.list.subscribe(function(list) {
-      /** Calculate points and estimate total price. */
       var totalPrice = 0,
-        pointsGiven = 0;
-      list.map(function(item) {
-        // console.log("Invoice Item Refreshed:", item);
-        totalPrice += item.RetailPrice;
-        pointsGiven += item.SystemPoints;
+        pointsGiven = 0,
+        pointsAvailable;
+      list.forEach(function(item) {
+        //@TODO: use new field for determing whether to use points or use price
+        if (item.SystemPoints) {
+          // use points
+          pointsGiven += item.SystemPoints;
+        } else {
+          // use price
+          totalPrice += item.RetailPrice;
+        }
       });
       _this.pointsGiven(pointsGiven);
+      pointsAvailable = 8 - pointsGiven;
+      _this.pointsAvailable(pointsAvailable);
+      if (pointsAvailable < 0) {
+        totalPrice += 30 * (-1 * _this.pointsAvailable());
+      }
       _this.estimateTotal(totalPrice);
     });
   }

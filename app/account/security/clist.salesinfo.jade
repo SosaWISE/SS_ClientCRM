@@ -89,7 +89,7 @@ div(class="acct-item sales-info",data-bind="toggle:{'may-reload':mayReload}")
               div(class="letter",data-bind="text:num()")
               div(class="question") If there is a cell unit, who is the vendor?
               div(class="answer")
-                div(data-bind="cvm:data.CellTypeCvm")
+                div(data-bind="cvm:data.cellServiceCvm")
             div(class="subline")
               div(class="line",data-bind="visible:hasCell")
                 div(class="letter",data-bind="text:subnum()")
@@ -100,10 +100,10 @@ div(class="acct-item sales-info",data-bind="toggle:{'may-reload':mayReload}")
                 div(class="letter",data-bind="text:subnum()")
                 div(class="question") Which Alarm.com package are we going with?
                 div(class="answer")
-                  div(data-bind="cvm:data.AlarmComPackageCvm")
+                  div(data-bind="cvm:data.CellPackageItemCvm")
               div(class="line",data-bind="visible:isAlarmCom")
                 div(class="letter",data-bind="text:subnum()")
-                div(class="question") What is you email address?
+                div(class="question") What is your email address?
                 div(class="answer")
                   input(type="text",class="inputField",
                     data-bind="ukov:data.Email,value:data.Email")
@@ -113,7 +113,7 @@ div(class="acct-item sales-info",data-bind="toggle:{'may-reload':mayReload}")
               div(class="letter",data-bind="text:num()")
               div(class="question") Is the agreement for 60 Months?
               div(class="answer")
-                div(data-bind="cvm:contractLengthsCvm")
+                div(data-bind="cvm:data.ContractLengthsCvm")
 
             div(class="subHeader") Equipment
             div(class="line")
@@ -148,7 +148,7 @@ div(class="acct-item sales-info",data-bind="toggle:{'may-reload':mayReload}")
                 div(class="value",data-bind="likecurrencytext:partsGvm.pointsGiven")
               div
                 div(class="name") Points Available:
-                div(class="value",data-bind="likecurrencytext:pointsAvailable")
+                div(class="value",data-bind="likecurrencytext:partsGvm.pointsAvailable")
               div
                 div(class="name") Total:
                 div(class="value",data-bind="currencytext:partsGvm.estimateTotal")
