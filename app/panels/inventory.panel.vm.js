@@ -10,7 +10,7 @@ define('src/panels/inventory.panel.vm', [
   'src/dataservice',
   'src/core/router',
   'src/slick/slickgrid.vm',
-  'src/slick/buttonscolumn',  
+  'src/slick/buttonscolumn',
   'slick',
   'src/inventory/inventory.gvm',
   'src/inventory/enter.barcode.vm',
@@ -30,7 +30,7 @@ define('src/panels/inventory.panel.vm', [
   dataservice,
   router,
   SlickGridViewModel,
-  ButtonsColumn,  
+  ButtonsColumn,
   Slick,
   InventoryGridViewModel,
   EnterBarcodeViewModel,
@@ -54,9 +54,10 @@ define('src/panels/inventory.panel.vm', [
     }
   };
 
+
   function InventoryViewModel(options) {
     var _this = this;
-    
+
     InventoryViewModel.super_.call(_this, options);
 
     //ControllerViewModel.ensureProps(_this, ['layersVm']);
@@ -67,6 +68,7 @@ define('src/panels/inventory.panel.vm', [
       PurchaseOrderID: null,
     }, schema);
 
+
    _this.layersVm = new LayersViewModel({
     controller: _this,
    });
@@ -74,11 +76,11 @@ define('src/panels/inventory.panel.vm', [
   
     //Display Inventory Grid
     _this.inventoryListGvm = new InventoryGridViewModel({
-      enterBarcode: function(/*part*/) {
-        
+      enterBarcode: function( /*part*/ ) {
+
       },
     });
-       
+
 
     //events
     //
@@ -111,7 +113,7 @@ define('src/panels/inventory.panel.vm', [
   //
 
   InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-  
+
     this.inventoryListGvm.list([]);
 
     join = join;
