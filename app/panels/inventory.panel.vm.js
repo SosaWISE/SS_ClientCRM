@@ -10,7 +10,8 @@ define('src/panels/inventory.panel.vm', [
   'src/dataservice',
   'src/core/router',
   'src/slick/slickgrid.vm',
-  'src/slick/buttonscolumn',
+  'src/slick/buttonscolumn',  
+  'slick',
   //'src/config',
   //'src/slick/rowevent',
   'src/ukov',
@@ -26,7 +27,8 @@ define('src/panels/inventory.panel.vm', [
   dataservice,
   router,
   SlickGridViewModel,
-  ButtonsColumn,
+  ButtonsColumn,  
+  Slick,
   //config,
   //RowEvent,
   ukov
@@ -46,6 +48,14 @@ define('src/panels/inventory.panel.vm', [
     }
   };
 
+    function numberFieldValidator(value) {
+    if (isNaN(value)) {
+      return {valid: false, msg: "Please input a number only."};
+    } else {
+      return {valid: true, msg: null};
+    }
+  }
+
 
   function InventoryViewModel(options) {
     var _this = this;
@@ -61,15 +71,12 @@ define('src/panels/inventory.panel.vm', [
     }, schema);
 
 
-    //Notes:
-    // app/account/security/clist.salesinfo.gvm.js has an example of using ButtonsColumn
-    // and http://mleibman.github.io/SlickGrid/examples/example3-editing.html has examples of editing
-
     _this.inventoryListGvm = new SlickGridViewModel({
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
         rowHeight: 27,
+        editable: true,
       },
 
       columns: [ //
@@ -85,11 +92,13 @@ define('src/panels/inventory.panel.vm', [
           id: 'Remain',
           name: 'Remain',
           field: 'Remain',
-        }, {
+        },{
           id: 'Received',
-          name: 'Received',
-          field: 'Received', //Still need to change using slickgrid editor
-        }, {
+          name: 'Received', 
+          field: 'Received',
+          editor: Slick.Editors.Text,
+          validator: numberFieldValidator
+        },{              
           id: 'ItemDesc',
           name: 'Description',
           field: 'ItemDesc',
@@ -125,24 +134,7 @@ define('src/panels/inventory.panel.vm', [
   //
 
   InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-
-    //For dummy purposes
-    /* var tempList = [];
-
-    while (tempList.length < 15) {
-      tempList.push({
-        SKU: 'Dummy' + (tempList.length + 1),
-        Quantity: 'Dummy' + (tempList.length + 1),
-        Remain: 'Dummy' + (tempList.length + 1),
-        Received: 'Dummy' + (tempList.length + 1),
-        Description: 'Dummy' + (tempList.length + 1),
-        'Enter Barcode': 'Dummy' + (tempList.length + 1),
-      });
-    }
-
-    //dummy data for grid
-    this.inventoryListGvm.list(tempList);
-    */
+  
     this.inventoryListGvm.list([]);
 
     join = join;
@@ -176,6 +168,9 @@ define('src/panels/inventory.panel.vm', [
 
         //Update inventoryListGvm grid
         for (var x = 0; x < resp.Value.length; x++) {
+
+          console.log(JSON.stringify(resp.Value[x]));
+
           vm.inventoryListGvm.list.push(resp.Value[x]);
         }
 
