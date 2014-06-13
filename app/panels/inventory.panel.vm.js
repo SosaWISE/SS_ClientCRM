@@ -13,6 +13,8 @@ define('src/panels/inventory.panel.vm', [
   'src/slick/buttonscolumn',  
   'slick',
   'src/inventory/inventory.gvm',
+  'src/inventory/enter.barcode.vm',
+  'src/core/layers.vm',
   //'src/config',
   //'src/slick/rowevent',
   'src/ukov',
@@ -31,6 +33,8 @@ define('src/panels/inventory.panel.vm', [
   ButtonsColumn,  
   Slick,
   InventoryGridViewModel,
+  EnterBarcodeViewModel,
+  LayersViewModel,
   //config,
   //RowEvent,
   ukov
@@ -49,21 +53,13 @@ define('src/panels/inventory.panel.vm', [
       ]
     }
   };
-/*
-  function numberFieldValidator(value) {
-    if (isNaN(value)) {
-      notify.notify('error','Please input a number only.');
-      return {valid: false, msg: "Please input a number only."};
-    } else {
-      return {valid: true, msg: null};
-    }
-  }
-*/
 
   function InventoryViewModel(options) {
     var _this = this;
     
     InventoryViewModel.super_.call(_this, options);
+
+    //ControllerViewModel.ensureProps(_this, ['layersVm']);
 
     _this.title = 'Inventory';
 
@@ -71,61 +67,18 @@ define('src/panels/inventory.panel.vm', [
       PurchaseOrderID: null,
     }, schema);
 
-    //Commented to use GVM as different file
-    /*_this.inventoryListGvm = new SlickGridViewModel({
-      gridOptions: {
-        enableColumnReorder: false,
-        forceFitColumns: true,
-        rowHeight: 27,
-        editable: true,
-      },
+   _this.layersVm = new LayersViewModel({
+    controller: _this,
+   });
 
-      columns: [ //
-        {
-          id: 'ProductSkwId',
-          name: 'SKU',
-          field: 'ProductSkwId',
-        }, {
-          id: 'Quantity',
-          name: 'Quantity',
-          field: 'Quantity',
-        }, {
-          id: 'Remain',
-          name: 'Remain',
-          field: 'Remain',
-        },{
-          id: 'Received',
-          name: 'Received', 
-          field: 'Received',
-          editor: Slick.Editors.Text,
-          validator: numberFieldValidator
-        },{              
-          id: 'ItemDesc',
-          name: 'Description',
-          field: 'ItemDesc',
-        },
-        new ButtonsColumn({
-          id: 'enterBarcode',
-          name: 'Enter Barcode',
-          buttons: [ //
-            {
-              text: 'Submit',
-              fn: options.enterBarcodes,
-              cssClass: 'btn small btn-black',
-            },
-          ]
-        }),
-      ],  
-
-    });*/
-
+  
     //Display Inventory Grid
     _this.inventoryListGvm = new InventoryGridViewModel({
       enterBarcode: function(/*part*/) {
         
       },
     });
-    
+       
 
     //events
     //
@@ -133,6 +86,21 @@ define('src/panels/inventory.panel.vm', [
     _this.cmdSearch = ko.command(function(cb, vm) {
       _this.search(vm, cb);
     });
+
+    _this.showEnterBarcode = ko.command(function(cb) {      
+      alert("@TODO show screen2");
+
+      _this.layersVm.show(new EnterBarcodeViewModel({
+        title: 'Enter Barcodes',
+      }), function onClose(result) {
+        if (!result) {
+          cb();
+          return;
+        }
+      });
+      
+    });    
+
 
   }
 
