@@ -47,6 +47,10 @@ Before checking in any code, this command should not have any errors
 If there are jsbeautifier errors you can run `grunt jsformat` to format all javascript files
 If there are jshint errors you'll probably have to edit the files by hand
 
+Also, the code needs to run after the files have been concatenated.
+Which should only be a problem when new third party files are added or any other changes are made that my require modifications in gruntfile.js.
+So if you're adding new files you should run `grunt build` and then test your changes at `prod-crm.nexsense.com` (assuming you have that pointing at ../crm-www).
+
 
 Javascript formatting
 -----------------------------
