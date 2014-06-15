@@ -51,6 +51,12 @@ define('src/panels/inventory.panel.vm', [
       validators: [
         ukov.validators.isRequired('PurchaseOrder ID is required')
       ]
+    },
+    PackingSlipID: {
+      converter: ukov.converters.number(0),
+      validators: [
+        ukov.validators.isRequired('PackingSlip ID is required')
+      ]
     }
   };
 
@@ -66,6 +72,7 @@ define('src/panels/inventory.panel.vm', [
 
     _this.data = ukov.wrap(_this.item || {
       PurchaseOrderID: null,
+      PackingSlipID: null
     }, schema);
 
 
@@ -136,6 +143,19 @@ define('src/panels/inventory.panel.vm', [
         var purchaseOrder = resp.Value;
         purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
         //console.log(JSON.stringify(purchaseOrder));
+        dataservice.inventoryenginesrv.PackingSlip.read({
+            id: purchaseOrder.PurchaseOrderID,
+            link: 'POID'
+          },
+          null, utils.safeCallback(cb, function(err, resp) {
+            if (resp.Code === 0) {
+              var packingSlip = resp.Value;
+              vm.data.PackingSlipID.setValue(packingSlip.PackingSlipID);
+            } else {
+              notify.notify('warn', 'PurchaseOrderID not found', 10);
+            }
+          }, utils.no_op));
+
       } else {
         notify.notify('warn', 'PurchaseOrderID not found', null, 3);
       }
