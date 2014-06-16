@@ -77,7 +77,7 @@ div(class="acct-item sales-info",data-bind="toggle:{'may-reload':mayReload}")
                 div(class="letter",data-bind="text:subnum()")
                 div(class="question") Who is currently monitoring the account?
                 div(class="answer")
-                  div(data-bind="cvm:data.CurrentMonitoringStationCvm")
+                  div(data-bind="cvm:data.IsMoniCvm")
             div(class="line")
               div(class="letter",data-bind="text:num()")
               div(class="question") Is the customer the Home Owner or a Renter
@@ -113,7 +113,7 @@ div(class="acct-item sales-info",data-bind="toggle:{'may-reload':mayReload}")
               div(class="letter",data-bind="text:num()")
               div(class="question") Is the agreement for 60 Months?
               div(class="answer")
-                div(data-bind="cvm:data.ContractLengthsCvm")
+                div(data-bind="cvm:data.ContractTemplatesCvm")
 
             div(class="subHeader") Equipment
             div(class="line")

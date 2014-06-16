@@ -84,7 +84,7 @@ define('src/account/security/clist.salesinfo.vm', [
     // CellPackageItemId: "CELL_SRV_AC_AI",
     // CellServicePackage: "Advanced Interactive",
     // CellType: "Alarm.com",
-    // ContractLength: null,
+    // ContractTemplate: null,
     // IsOwner: null,
     // IsTakeOver: null,
     // MMR: 1,
@@ -96,32 +96,57 @@ define('src/account/security/clist.salesinfo.vm', [
     // SetupFee: 5,
 
     // AccountID: {},
+    PaymentTypeId: {},
     BillingDay: {},
-    CellPackageItemId: {},
-    // CellServicePackage: {},
-    // CellType: {}, // display value for CellPackageItemId
-    ContractLength: {},
-    IsOwner: {},
-    IsTakeOver: {},
     // MMR: {},
     // Over3Months: {},
-    PanelItemId: {},
-    // PanelTypeId:  {},
-    PaymentTypeId: {},
     Setup1stMonth: {},
     SetupFee: {},
+
+    PanelItemId: {},
+    // PanelTypeId:  {},
+
+    IsTakeOver: {},
+    IsMoni: {
+      // only required if IsTakeOver
+      validators: [ //
+        function(val, model) {
+          if (!val && model.IsTakeOver) {
+            return 'Current Monitoring Station is required';
+          }
+        },
+      ],
+      // re-run validators when IsTakeOver changes
+      validationGroup: {
+        keys: ['IsTakeOver'],
+        validators: [],
+      },
+    },
+
+    IsOwner: {},
+
+    CellPackageItemId: {},
+    // CellServicePackage: {},
+    // CellularTypeId: {},
+    // CellularTypeName: {},
     Email: {
       validators: [
         // only required if Alarm.com
         function(val, model) {
-          if (!val && model) {
+          if (!val && strings.startsWith(model.CellPackageItemId, 'CELL_SRV_AC')) { // Alarm.com
             return 'Email is required';
           }
         },
         ukov.validators.isEmail(),
-      ]
+      ],
+      // re-run validators when CellPackageItemId changes
+      validationGroup: {
+        keys: ['CellPackageItemId'],
+        validators: [],
+      },
     },
-    CurrentMonitoringStation: {},
+    // ContractLength: {},
+    // ContractTemplateId: {},
   };
 
   function CListSalesInfoViewModel(options) {
@@ -188,8 +213,8 @@ define('src/account/security/clist.salesinfo.vm', [
       list: _this.cellPackageItemOptions,
     });
 
-    _this.data.CurrentMonitoringStationCvm = new ComboViewModel({
-      selectedValue: _this.data.CurrentMonitoringStation,
+    _this.data.IsMoniCvm = new ComboViewModel({
+      selectedValue: _this.data.IsMoni,
       list: _this.monitoringStationOptions,
     });
 
@@ -201,8 +226,8 @@ define('src/account/security/clist.salesinfo.vm', [
         value: 'InvoiceTemplateID',
       }
     });
-    _this.data.ContractLengthsCvm = new ComboViewModel({
-      selectedValue: _this.data.ContractLength,
+    _this.data.ContractTemplatesCvm = new ComboViewModel({
+      selectedValue: _this.data.ContractTemplateId,
       fields: {
         text: 'ContractName',
         value: 'ContractTemplateID',
@@ -233,13 +258,13 @@ define('src/account/security/clist.salesinfo.vm', [
       if (!psValue) {
         return;
       }
-      _this.data.ContractLengthsCvm.setList([]);
+      _this.data.ContractTemplatesCvm.setList([]);
       dataservice.salessummary.contractLengthsGet.read({
         id: psValue,
       }, null, utils.safeCallback(null, function(err, resp) {
         // only set cl if same as current selected psValue
         if (_this.pointSystemsCvm.selectedValue() === psValue) {
-          _this.data.ContractLengthsCvm.setList(resp.Value);
+          _this.data.ContractTemplatesCvm.setList(resp.Value);
         }
       }, function(err) {
         notify.notify('error', 'Error', err.Message);
@@ -283,6 +308,10 @@ define('src/account/security/clist.salesinfo.vm', [
     _this.cmdAddByBarcode = ko.command(function(cb) {
       showPartsEditor(_this, false, null, cb);
     });
+
+
+    // bind scope and don't rapid fire requests
+    _this.refreshInvoice = underscore.debounce(_this.refreshInvoice.bind(_this), 100);
   }
   utils.inherits(CListSalesInfoViewModel, ControllerViewModel);
   CListSalesInfoViewModel.prototype.viewTmpl = 'tmpl-security-clist_salesinfo';
@@ -302,7 +331,7 @@ define('src/account/security/clist.salesinfo.vm', [
       if (!err) {
         // subscribe to updates after everyting has been set
         Object.keys(_this.data.doc).forEach(function(key) {
-          _this.subs.push(_this.data[key].subscribe(_this.refreshInvoice, _this));
+          _this.subs.push(_this.data[key].subscribe(_this.refreshInvoice));
         });
       }
       cb(err);
@@ -384,7 +413,7 @@ define('src/account/security/clist.salesinfo.vm', [
     data.CellTypeId = data.CellularTypeId;
     //@HACK: to save CellPackageItemId
     data.AlarmComPackageId = data.CellPackageItemId;
-    delete data.CellPackageItemId;
+    // delete data.CellPackageItemId;
 
     dataservice.salessummary.invoiceRefresh.save({
       data: data,
@@ -444,7 +473,9 @@ define('src/account/security/clist.salesinfo.vm', [
         utils.setIfNull(val, 'BillingDay', 5); // 5th of month
         utils.setIfNull(val, 'IsTakeOver', false);
         utils.setIfNull(val, 'IsOwner', true);
-        // utils.setIfNull(val, 'ContractLength', 60); // ?????????????
+        // utils.setIfNull(val, 'IsMoni', false);
+
+        // utils.setIfNull(val, 'ContractTemplate', 60); // ?????????????
         // utils.setIfNull(val, 'Setup1stMonth', 199.00); // ?????????????
         // utils.setIfNull(val, 'SetupFee', 199.00); // ?????????????
         data.setValue(val);

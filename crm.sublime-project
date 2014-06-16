@@ -1,10 +1,10 @@
 {
-  "folders": [
-    {
-      "follow_symlinks": true,
-      "path": "./"
-    }
-  ],
+  "folders": [{
+    "follow_symlinks": true,
+    "file_exclude_patterns": [],
+    "folder_exclude_patterns": [],
+    "path": "./"
+  }],
   "settings": {
     "ensure_newline_at_eof_on_save": true,
     "detect_indentation": false,
