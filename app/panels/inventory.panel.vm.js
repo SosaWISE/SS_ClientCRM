@@ -68,6 +68,8 @@ define('src/panels/inventory.panel.vm', [
 
     _this.title = 'Inventory';
 
+    _this.focusFirst = ko.observable(false);
+
     _this.data = ukov.wrap(_this.item || {
       PurchaseOrderID: null,
       PackingSlipID: null
@@ -124,6 +126,15 @@ define('src/panels/inventory.panel.vm', [
       });
 
     });*/
+
+  _this.active.subscribe(function(active) {
+      if (active) {
+       // this timeout makes it possible to focus the po#
+       setTimeout(function() {
+         _this.focusFirst(true);
+       }, 100);
+     }
+  });
     
 
   }

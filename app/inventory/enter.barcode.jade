@@ -14,7 +14,7 @@ div(class="barcode_wrapper")
       label(data-bind="text: EnteredBarcode")
     li
       label Barcode 
-      input(type="text")
-  button(type="button" class="btn-enterBarcode" style="width: 100%;") Done Entering Barcodes   
+      input(type="text" data-bind="select:focusFirst")
+  //-button(type="button" class="btn-enterBarcode" style="width: 100%;") Done Entering Barcodes
   div(class="actions")    
-      span(class="btn-bg", tabindex="0", data-bind="cmd:clickClose") Close
+      span(class="btn-bg", tabindex="0", data-bind="cmd:clickClose") Done Entering Barcodes

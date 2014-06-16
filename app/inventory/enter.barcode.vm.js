@@ -22,12 +22,14 @@ define('src/inventory/enter.barcode.vm', [
     
     _this.title = _this.title || 'Enter Barcodes';
 
+    _this.focusFirst = ko.observable(true);
+
     //Display data  on UI
     _this.PurchaseOrderId = _this.poNumber;    
     _this.PackingSlipID = _this.packingSlipID;
     _this.Count = _this.count;
     _this.EnteredBarcode = _this.enteredBarcode;
-
+    
 
     _this.repResult = ko.observable(null);
     //
@@ -40,15 +42,15 @@ define('src/inventory/enter.barcode.vm', [
       }
     };
 
-    /*
+    
     _this.active.subscribe(function(active) {
       if (active) {
-        // this timeout makes it possible to focus the rep id
+        // this timeout makes it possible to focus the barcode field
         setTimeout(function() {
           _this.focusFirst(true);
         }, 100);
       }
-    });*/
+    });
 
   }
 
