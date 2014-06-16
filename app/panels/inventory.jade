@@ -17,4 +17,5 @@ ul(class="edit-form")
           input(type="text" data-bind="ukov:data.PackingSlipID,value:data.PackingSlipID,valueUpdate:'keyup'")
 div(class="inventory_body")  
   div(class="slickgrid",style="background:white;color:black; min-height: 500px; position: relative;", data-bind="slickgrid:inventoryListGvm")  
-  //-button(type="button" class="btn-inventory"  data-bind="cmd:showEnterBarcode") Show Enter Barcode Screen
+  button(type="button" class="btn-inventory"  data-bind="cmd:showEnterBarcode") Show Enter Barcode Screen
+  div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

@@ -97,9 +97,8 @@ define('src/panels/inventory.panel.vm', [
     });
 
     //For testing only
-    /*
-    _this.showEnterBarcode = ko.command(function(cb) {
-      alert("@TODO show screen2");
+    
+    _this.showEnterBarcode = ko.command(function(cb) {      
 
       _this.layersVm.show(new EnterBarcodeViewModel({
         title: 'Enter Barcodes',
@@ -111,7 +110,7 @@ define('src/panels/inventory.panel.vm', [
       });
 
     });
-    */
+    
 
   }
 

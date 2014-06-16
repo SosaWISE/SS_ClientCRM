@@ -19,7 +19,7 @@ define('src/inventory/enter.barcode.vm', [
   function EnterBarcodeViewModel(options) {
     var _this = this;
     EnterBarcodeViewModel.super_.call(_this, options);
-    alert(_this.title);
+    
     _this.title = _this.title || 'Enter Barcodes';
 
     _this.repResult = ko.observable(null);
