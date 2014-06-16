@@ -141,11 +141,13 @@ define('src/u-kov/ukov-model', [
       prop;
     Object.keys(_this.doc).forEach(function(key) {
       prop = _this[key];
-      if (
-        (!onlyDirty || !prop.isClean()) &&
-        (!excludeIgnored || !prop.ignore())
-      ) {
-        result[key] = prop.getValue();
+      if (!onlyDirty || !prop.isClean()) {
+        if (!excludeIgnored || !prop.ignore()) {
+          result[key] = prop.getValue();
+        } else {
+          // use null for ignored values
+          result[key] = null;
+        }
       }
     }, _this);
     return result;
