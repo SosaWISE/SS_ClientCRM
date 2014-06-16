@@ -94,6 +94,7 @@ define('src/panels/inventory.panel.vm', [
           packingSlipID: _this.data.PackingSlipID,
           count: part.Received,
           enteredBarcode: 0,
+          purchaseOrderItemID: part.PurchaseOrderItemID,
         }), function onClose(result) {
           if (!result) {            
             return;
