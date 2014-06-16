@@ -14,7 +14,7 @@ define('src/panels/inventory.panel.vm', [
   'slick',
   'src/inventory/inventory.gvm',
   'src/inventory/enter.barcode.vm',
-  'src/core/layers.vm',
+  'src/core/layers.vm',  
   //'src/config',
   //'src/slick/rowevent',
   'src/ukov',
@@ -34,7 +34,7 @@ define('src/panels/inventory.panel.vm', [
   Slick,
   InventoryGridViewModel,
   EnterBarcodeViewModel,
-  LayersViewModel,
+  LayersViewModel,  
   //config,
   //RowEvent,
   ukov
@@ -64,9 +64,7 @@ define('src/panels/inventory.panel.vm', [
   function InventoryViewModel(options) {
     var _this = this;
 
-    InventoryViewModel.super_.call(_this, options);
-
-    //ControllerViewModel.ensureProps(_this, ['layersVm']);
+    InventoryViewModel.super_.call(_this, options);    
 
     _this.title = 'Inventory';
 
@@ -82,10 +80,26 @@ define('src/panels/inventory.panel.vm', [
 
 
     //Display Inventory Grid
-    _this.inventoryListGvm = new InventoryGridViewModel({
-      enterBarcode: function( /*part*/ ) {
+    _this.inventoryListGvm = new InventoryGridViewModel({           
+      
+      enterBarcode: function( part) {         
+
+        //console.log(JSON.stringify(part));        
+        //Go to Enter Barcodes screen
+        _this.layersVm.show(new EnterBarcodeViewModel({
+          title: 'Enter Barcodes',
+          poNumber: part.PurchaseOrderId,          
+          packingSlipID: _this.data.PackingSlipID,
+          count: part.Received,
+          enteredBarcode: 0,
+        }), function onClose(result) {
+          if (!result) {            
+            return;
+        }
+      });      
 
       },
+
     });
 
 
@@ -97,7 +111,7 @@ define('src/panels/inventory.panel.vm', [
     });
 
     //For testing only
-    
+    /*
     _this.showEnterBarcode = ko.command(function(cb) {      
 
       _this.layersVm.show(new EnterBarcodeViewModel({
@@ -109,7 +123,7 @@ define('src/panels/inventory.panel.vm', [
         }
       });
 
-    });
+    });*/
     
 
   }
@@ -165,6 +179,9 @@ define('src/panels/inventory.panel.vm', [
       id: iePurchaseOrder.PurchaseOrderID
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Code === 0) {
+
+        //Empty grid before inserting new data
+        vm.inventoryListGvm.list([]);
 
         //Update inventoryListGvm grid
         for (var x = 0; x < resp.Value.length; x++) {

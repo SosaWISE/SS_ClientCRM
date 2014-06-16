@@ -75,10 +75,15 @@ define('src/slick/buttonscolumn', [
         // find index of anchor tag
         var index = jquery(e.target).index();
         // get button using index and call button function
-        _options.buttons[index].fn(args.grid.getDataItem(args.row), e);
+        //added try catch to trap undefined "fn". This happens when a cell of a row is in editing mode and button is clicked. 
+        try{
+          _options.buttons[index].fn(args.grid.getDataItem(args.row), e);
 
-        e.stopPropagation();
-        e.stopImmediatePropagation();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+        }catch(ex){
+
+        }
       }
     }
 

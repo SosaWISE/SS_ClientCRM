@@ -2,16 +2,16 @@ div(class="barcode_wrapper")
   ul(class="edit-form")
     li
       label PO#: 
-      label XXXXX
+      label(data-bind="text: PurchaseOrderId")
     li
       label Packing Slip#: 
-      label XXXXX
+      label(data-bind="text: PackingSlipID")
     li
       label Count#  
-      label XXXXX
+      label(data-bind="text: Count")
     li
       label Enter#  
-      label XXXXX
+      label(data-bind="text: EnteredBarcode")
     li
       label Barcode 
       input(type="text")

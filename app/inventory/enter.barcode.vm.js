@@ -22,6 +22,13 @@ define('src/inventory/enter.barcode.vm', [
     
     _this.title = _this.title || 'Enter Barcodes';
 
+    //Display data  on UI
+    _this.PurchaseOrderId = _this.poNumber;    
+    _this.PackingSlipID = _this.packingSlipID;
+    _this.Count = _this.count;
+    _this.EnteredBarcode = _this.enteredBarcode;
+
+
     _this.repResult = ko.observable(null);
     //
     // events
