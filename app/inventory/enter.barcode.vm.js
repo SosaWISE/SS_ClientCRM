@@ -19,15 +19,15 @@ define('src/inventory/enter.barcode.vm', [
   var schema, param = {};
 
   schema = {
-    _model: true,    
-    productBarcodeID: {},    
+    _model: true,
+    productBarcodeID: {},
   };
-  
+
 
   function EnterBarcodeViewModel(options) {
     var _this = this;
     EnterBarcodeViewModel.super_.call(_this, options);
-    
+
     //Set title
     _this.title = _this.title || 'Enter Barcodes';
 
@@ -39,36 +39,36 @@ define('src/inventory/enter.barcode.vm', [
 
 
     _this.data = ukov.wrap(_this.item || {
-      productBarcodeID: null    
+      productBarcodeID: null
     }, schema);
 
     //Display data  on UI
-    _this.PurchaseOrderId = _this.poNumber;    
+    _this.PurchaseOrderId = _this.poNumber;
     _this.PackingSlipID = _this.packingSlipID;
     _this.Count = _this.count;
     _this.barcodeCount(0);
 
     //Call api for adding barcodes
-    _this.processBarcode = function(cb){      
-      
-      //Retrieve current barcode counts and increment by 1    
-      var count = parseInt(_this.barcodeCount())+1;
+    _this.processBarcode = function(cb) {
+
+      //Retrieve current barcode counts and increment by 1
+      var count = parseInt(_this.barcodeCount()) + 1;
 
       //Set of parameters used on api call
       param = {
         ProductBarcodeID: _this.data.productBarcodeID(),
         PurchaseOrderItemId: _this.purchaseOrderItemID
-      };      
+      };
 
       //This is the api for adding barcodes
-      dataservice.inventoryenginesrv.ProductBarcode.post(null, param, null, utils.safeCallback(cb, function(err, resp) {        
+      dataservice.inventoryenginesrv.ProductBarcode.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
         if (err) {
-          cb(err);          
+          cb(err);
           return;
-        }       
-          
-        if (resp.Code === 0) {         
+        }
+
+        if (resp.Code === 0) {
 
           //Increment entered barcodes count
           _this.barcodeCount(count.toString());
@@ -79,25 +79,25 @@ define('src/inventory/enter.barcode.vm', [
         } else {
           notify.notify('warn', 'Error adding barcode...', null, 3);
         }
-        
-      }, utils.no_op));      
-      
 
-    };    
-    
+      }, utils.no_op));
+
+
+    };
+
 
     _this.repResult = ko.observable(null);
     //
     // events
     //
 
-    _this.clickClose = function() {      
+    _this.clickClose = function() {
       if (_this.layer) {
         _this.layer.close(_this.repResult());
       }
     };
 
-    
+
     _this.active.subscribe(function(active) {
       if (active) {
         // this timeout makes it possible to focus the barcode field

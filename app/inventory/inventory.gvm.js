@@ -31,7 +31,7 @@ define('src/inventory/inventory.gvm', [
   }
 
   function InventoryGridViewModel(options) {
-    var _this = this;  
+    var _this = this;
     SlickGridViewModel.ensureProps(options, ['enterBarcode']);
     InventoryGridViewModel.super_.call(_this, {
       gridOptions: {

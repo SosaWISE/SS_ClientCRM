@@ -14,7 +14,7 @@ define('src/panels/inventory.panel.vm', [
   'slick',
   'src/inventory/inventory.gvm',
   'src/inventory/enter.barcode.vm',
-  'src/core/layers.vm',  
+  'src/core/layers.vm',
   //'src/config',
   //'src/slick/rowevent',
   'src/ukov',
@@ -34,7 +34,7 @@ define('src/panels/inventory.panel.vm', [
   Slick,
   InventoryGridViewModel,
   EnterBarcodeViewModel,
-  LayersViewModel,  
+  LayersViewModel,
   //config,
   //RowEvent,
   ukov
@@ -64,7 +64,7 @@ define('src/panels/inventory.panel.vm', [
   function InventoryViewModel(options) {
     var _this = this;
 
-    InventoryViewModel.super_.call(_this, options);    
+    InventoryViewModel.super_.call(_this, options);
 
     _this.title = 'Inventory';
 
@@ -82,24 +82,24 @@ define('src/panels/inventory.panel.vm', [
 
 
     //Display Inventory Grid
-    _this.inventoryListGvm = new InventoryGridViewModel({           
-      
-      enterBarcode: function( part) {         
+    _this.inventoryListGvm = new InventoryGridViewModel({
 
-        //console.log(JSON.stringify(part));        
+      enterBarcode: function(part) {
+
+        //console.log(JSON.stringify(part));
         //Go to Enter Barcodes screen
         _this.layersVm.show(new EnterBarcodeViewModel({
           title: 'Enter Barcodes',
-          poNumber: part.PurchaseOrderId,          
+          poNumber: part.PurchaseOrderId,
           packingSlipID: _this.data.PackingSlipID,
           count: part.Received,
           enteredBarcode: 0,
           purchaseOrderItemID: part.PurchaseOrderItemID,
         }), function onClose(result) {
-          if (!result) {            
+          if (!result) {
             return;
-        }
-      });      
+          }
+        });
 
       },
 
@@ -115,7 +115,7 @@ define('src/panels/inventory.panel.vm', [
 
     //For testing only
     /*
-    _this.showEnterBarcode = ko.command(function(cb) {      
+    _this.showEnterBarcode = ko.command(function(cb) {
 
       _this.layersVm.show(new EnterBarcodeViewModel({
         title: 'Enter Barcodes',
@@ -128,15 +128,15 @@ define('src/panels/inventory.panel.vm', [
 
     });*/
 
-  _this.active.subscribe(function(active) {
+    _this.active.subscribe(function(active) {
       if (active) {
-       // this timeout makes it possible to focus the po#
-       setTimeout(function() {
-         _this.focusFirst(true);
-       }, 100);
-     }
-  });
-    
+        // this timeout makes it possible to focus the po#
+        setTimeout(function() {
+          _this.focusFirst(true);
+        }, 100);
+      }
+    });
+
 
   }
 
