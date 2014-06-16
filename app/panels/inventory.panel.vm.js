@@ -52,10 +52,10 @@ define('src/panels/inventory.panel.vm', [
         ukov.validators.isRequired('PurchaseOrder ID is required')
       ]
     },
-    PackingSlipID: {
+    PackingSlipNumber: {
       converter: ukov.converters.number(0),
       validators: [
-        ukov.validators.isRequired('PackingSlip ID is required')
+        ukov.validators.isRequired('PackingSlipNumber ID is required')
       ]
     }
   };
@@ -72,7 +72,7 @@ define('src/panels/inventory.panel.vm', [
 
     _this.data = ukov.wrap(_this.item || {
       PurchaseOrderID: null,
-      PackingSlipID: null
+      PackingSlipNumber: null
     }, schema);
 
 
@@ -91,7 +91,7 @@ define('src/panels/inventory.panel.vm', [
         _this.layersVm.show(new EnterBarcodeViewModel({
           title: 'Enter Barcodes',
           poNumber: part.PurchaseOrderId,
-          packingSlipID: _this.data.PackingSlipID,
+          packingSlipID: _this.data.PackingSlipNumber,
           count: part.Received,
           enteredBarcode: 0,
           purchaseOrderItemID: part.PurchaseOrderItemID,
@@ -175,7 +175,44 @@ define('src/panels/inventory.panel.vm', [
           null, utils.safeCallback(cb, function(err, resp) {
             if (resp.Code === 0) {
               var packingSlip = resp.Value;
-              vm.data.PackingSlipID.setValue(packingSlip.PackingSlipID);
+              
+              if(packingSlip.PackingSlipNumber == null){
+                                   
+
+                 if(vm.data.PackingSlipNumber() == null){
+                  //alert(vm.data.PackingSlipNumber());
+                  notify.notify('info', 'Please input a Packing Slip#!');
+
+                }else{
+
+                  var param = {
+                    PurchaseOrderId: purchaseOrder.PurchaseOrderID,
+                    PackingSlipNumber: vm.data.PackingSlipNumber()
+                  };
+
+                  //alert(JSON.stringify(param));
+
+                  dataservice.inventoryenginesrv.PackingSlip.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+
+                    if (err) {
+                      cb(err);
+                      return;
+                    }
+
+                    if (resp.Code === 0) {                       
+                       //alert("PackingSlip-Post:"+JSON.stringify(resp.Value));
+                    }
+
+                  }, utils.no_op));
+
+                }
+                
+
+              }else{
+                vm.data.PackingSlipNumber.setValue(packingSlip.PackingSlipNumber); 
+              }              
+
+
             } else {
               notify.notify('warn', 'PurchaseOrderID not found', 10);
             }
