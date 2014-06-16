@@ -174,18 +174,18 @@ define('src/panels/inventory.panel.vm', [
           },
           null, utils.safeCallback(cb, function(err, resp) {
             if (resp.Code === 0) {
-              var packingSlip = resp.Value;
-              
-              if(packingSlip.PackingSlipNumber == null){
-                                   
+              var param, packingSlip = resp.Value;
 
-                 if(vm.data.PackingSlipNumber() == null){
+              if (packingSlip.PackingSlipNumber == null) {
+
+
+                if (vm.data.PackingSlipNumber() == null) {
                   //alert(vm.data.PackingSlipNumber());
                   notify.notify('info', 'Please input a Packing Slip#!');
 
-                }else{
+                } else {
 
-                  var param = {
+                  param = {
                     PurchaseOrderId: purchaseOrder.PurchaseOrderID,
                     PackingSlipNumber: vm.data.PackingSlipNumber()
                   };
@@ -199,18 +199,18 @@ define('src/panels/inventory.panel.vm', [
                       return;
                     }
 
-                    if (resp.Code === 0) {                       
-                       //alert("PackingSlip-Post:"+JSON.stringify(resp.Value));
+                    if (resp.Code === 0) {
+                      //alert("PackingSlip-Post:"+JSON.stringify(resp.Value));
                     }
 
                   }, utils.no_op));
 
                 }
-                
 
-              }else{
-                vm.data.PackingSlipNumber.setValue(packingSlip.PackingSlipNumber); 
-              }              
+
+              } else {
+                vm.data.PackingSlipNumber.setValue(packingSlip.PackingSlipNumber);
+              }
 
 
             } else {
