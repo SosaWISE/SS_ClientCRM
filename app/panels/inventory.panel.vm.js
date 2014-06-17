@@ -70,6 +70,9 @@ define('src/panels/inventory.panel.vm', [
 
     _this.focusFirst = ko.observable(false);
 
+    //holds the packing slip id - to be used on addPackingSlipItems
+    _this.PackingSlipID = ko.observable();
+
     _this.data = ukov.wrap(_this.item || {
       PurchaseOrderID: null,
       PackingSlipNumber: null
@@ -84,9 +87,24 @@ define('src/panels/inventory.panel.vm', [
     //Display Inventory Grid
     _this.inventoryListGvm = new InventoryGridViewModel({
 
-      enterBarcode: function(part) {
+      enterBarcode: function(part,cb) {        
 
-        //console.log(JSON.stringify(part));
+        //parameters for packingslipitems
+        var param = {
+          PackingSlipId: _this.PackingSlipID(),
+          ProductSkwId: part.ProductSkwId,
+          ItemId: part.ItemId,
+          Quantity: part.Quantity
+        };          
+
+        if(typeof _this.PackingSlipID() === "undefined"){
+          //do not call packing slip items api          
+        }else{
+          //add to packing slip items
+          addPackingSlipItems(param, cb);          
+        }
+
+
         //Go to Enter Barcodes screen
         _this.layersVm.show(new EnterBarcodeViewModel({
           title: 'Enter Barcodes',
@@ -198,7 +216,7 @@ define('src/panels/inventory.panel.vm', [
         //Update inventoryListGvm grid
         for (var x = 0; x < resp.Value.length; x++) {
 
-          console.log(JSON.stringify(resp.Value[x]));
+          //console.log(JSON.stringify(resp.Value[x]));
 
           vm.inventoryListGvm.list.push(resp.Value[x]);
         }
@@ -215,13 +233,17 @@ define('src/panels/inventory.panel.vm', [
 
     dataservice.inventoryenginesrv.PackingSlip.read(param, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Code === 0) {
-        var param, packingSlip = resp.Value;
+        
+        //Get value of packing slip Id from api
+        vm.PackingSlipID(resp.Value.PackingSlipID);
+
+        var packingSlip = resp.Value;
         vm.data.PackingSlipNumber.setValue(packingSlip.PackingSlipNumber);
 
       } else {
         notify.notify('warn', 'PurchaseOrderID not found', 10);
       }
-    }, function(err) {
+    }, function(/*err*/) {
 
       var param2, packingSlipNumber;
 
@@ -234,14 +256,12 @@ define('src/panels/inventory.panel.vm', [
       //alert(packingSlipNumber);
 
       if (packingSlipNumber !== null && packingSlipNumber !== "") {
-        alert(JSON.stringify(param2));
+        //alert(JSON.stringify(param2));
         createPackingSlipNumber(param2, cb);
-      } else {
-        //   alert("test");
+      } else {       
         notify.notify('info', 'Please input a Packing Slip#!');
       }
-
-      //notify.notify('error', err.Message);
+      
     }));
 
 
@@ -253,8 +273,7 @@ define('src/panels/inventory.panel.vm', [
 
     dataservice.inventoryenginesrv.PackingSlip.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
-      if (resp.Code === 0) {
-        //alert("PackingSlip-Post:"+JSON.stringify(resp.Value));
+      if (resp.Code === 0) {        
       }
 
     }, function(err) {
@@ -263,6 +282,20 @@ define('src/panels/inventory.panel.vm', [
 
 
   } //end createPackingSlipNumber
+
+  //add to packing slip items
+  function addPackingSlipItems(param,cb){   
+
+    dataservice.inventoryenginesrv.PackingSlipItem.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+        console.log("PackingSlipItems-Result:"+JSON.stringify(resp.Value));
+      }
+
+    }, function(err) {
+      notify.notify('error', err.Message);
+    }));    
+  }
 
 
   return InventoryViewModel;

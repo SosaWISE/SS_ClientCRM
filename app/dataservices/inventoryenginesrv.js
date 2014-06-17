@@ -15,7 +15,8 @@ define('src/dataservices/inventoryenginesrv', [
       'PurchaseOrder',
       'PurchaseOrderItems',
       'PackingSlip',
-      'ProductBarcode'
+      'ProductBarcode',
+      'PackingSlipItem'
     ].forEach(function(collectionName) {
       result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
     });
