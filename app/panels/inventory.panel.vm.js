@@ -113,7 +113,7 @@ define('src/panels/inventory.panel.vm', [
       _this.search(vm, cb);
     });
 
-   
+
     _this.active.subscribe(function(active) {
       if (active) {
         // this timeout makes it possible to focus the po#
@@ -145,32 +145,47 @@ define('src/panels/inventory.panel.vm', [
   };
 
   InventoryViewModel.prototype.search = function(vm, cb) {
-    
-    var iePurchaseOrder = vm.data.getValue();
-    
+
+    var iePurchaseOrder = vm.data.getValue(),
+      //add joiner since we need to call cb when all api calls have returned
+      join = joiner();
+
     //Getting PurchaseOrderID api call
     dataservice.inventoryenginesrv.PurchaseOrder.read({
       id: iePurchaseOrder.PurchaseOrderID
-    }, null, utils.safeCallback(cb, function(err, resp) {
+    }, null, utils.safeCallback(join.add(), function(err, resp) {
 
       if (resp.Code === 0) {
         var purchaseOrder = resp.Value;
-        purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));        
+        purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
+
+
 
         //parameters for reading packingslip api
         var param = {
-            id: purchaseOrder.PurchaseOrderID,
-            link: 'POID'  
+          id: purchaseOrder.PurchaseOrderID,
+          link: 'POID'
         };
 
+        //Populate PurchaseOrderItems
+        loadPurchaseOrderItems(vm, join.add());
+
         //function that calls packing slip api
-        loadPackingSlipInfo(param, vm);       
+        loadPackingSlipInfo(param, vm, join.add());
 
       } else {
         notify.notify('warn', 'PurchaseOrderID not found', null, 3);
       }
     }));
 
+    //since we are using joiner. invoked cb only once
+    cb();
+
+  };
+
+
+  function loadPurchaseOrderItems(vm, cb) {
+    var iePurchaseOrder = vm.data.getValue();
     //Purchange Order Items
     dataservice.inventoryenginesrv.PurchaseOrderItems.read({
       id: iePurchaseOrder.PurchaseOrderID
@@ -193,67 +208,61 @@ define('src/panels/inventory.panel.vm', [
         notify.notify('warn', 'PurchaseOrderID not found', null, 3);
       }
     }));
-
-  };
-
-
-function loadPackingSlipInfo(param, vm){
-
-dataservice.inventoryenginesrv.PackingSlip.read(param,null, utils.safeCallback(null, function(err, resp) {
-
-            alert(JSON.stringify(resp.Value));         
-
-            if (resp.Code === 0) {
-              var param, packingSlip = resp.Value;
-
-              if (packingSlip.PackingSlipNumber == null) {                  
-
-                if (vm.data.PackingSlipNumber() == null) {                  
-                  
-                  notify.notify('info', 'Please input a Packing Slip#!');
-
-                } else {
-                  
-                  param = {
-                    PurchaseOrderId: param.PurchaseOrderID,
-                    PackingSlipNumber: vm.data.PackingSlipNumber()
-                  };
-
-                  createPackingSlipNumber(param);
-
-                }
-
-              } else {
-                vm.data.PackingSlipNumber.setValue(packingSlip.PackingSlipNumber);
-              }
+  }
 
 
-            } else {
-              notify.notify('warn', 'PurchaseOrderID not found', 10);
-            }
-          }, function(err) {
-            notify.notify('error', err.Message);
-          }));
+  function loadPackingSlipInfo(param, vm, cb) {
+
+    dataservice.inventoryenginesrv.PackingSlip.read(param, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Code === 0) {
+        var param, packingSlip = resp.Value;
+        vm.data.PackingSlipNumber.setValue(packingSlip.PackingSlipNumber);
+
+      } else {
+        notify.notify('warn', 'PurchaseOrderID not found', 10);
+      }
+    }, function(err) {
+
+      var param2, packingSlipNumber;
+
+      packingSlipNumber = vm.data.PackingSlipNumber();
+      param2 = {
+        PurchaseOrderId: param.id,
+        PackingSlipNumber: packingSlipNumber
+      };
+
+      //alert(packingSlipNumber);
+
+      if (packingSlipNumber !== null && packingSlipNumber !== "") {
+        alert(JSON.stringify(param2));
+        createPackingSlipNumber(param2, cb);
+      } else {
+        //   alert("test");
+        notify.notify('info', 'Please input a Packing Slip#!');
+      }
+
+      //notify.notify('error', err.Message);
+    }));
 
 
-} //end function loadPackingSlipInfo
+  } //end function loadPackingSlipInfo
 
 
- //Create packing slip number if not available - pull this from UI
-function createPackingSlipNumber(param){
-                 
-  dataservice.inventoryenginesrv.PackingSlip.post(null, param, null, utils.safeCallback(null, function(err, resp) {
+  //Create packing slip number if not available - pull this from UI
+  function createPackingSlipNumber(param, cb) {
 
-    if (resp.Code === 0) {
-      //alert("PackingSlip-Post:"+JSON.stringify(resp.Value));
-    }
+    dataservice.inventoryenginesrv.PackingSlip.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+        //alert("PackingSlip-Post:"+JSON.stringify(resp.Value));
+      }
 
     }, function(err) {
       notify.notify('error', err.Message);
     }));
 
 
-} //end createPackingSlipNumber
+  } //end createPackingSlipNumber
 
 
   return InventoryViewModel;
