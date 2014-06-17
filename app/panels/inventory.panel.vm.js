@@ -41,7 +41,6 @@ define('src/panels/inventory.panel.vm', [
 ) {
   "use strict";
 
-
   var schema;
 
   schema = {
@@ -87,7 +86,7 @@ define('src/panels/inventory.panel.vm', [
     //Display Inventory Grid
     _this.inventoryListGvm = new InventoryGridViewModel({
 
-      enterBarcode: function(part,cb) {        
+      enterBarcode: function(part, cb) {
 
         //parameters for packingslipitems
         var param = {
@@ -95,13 +94,13 @@ define('src/panels/inventory.panel.vm', [
           ProductSkwId: part.ProductSkwId,
           ItemId: part.ItemId,
           Quantity: part.Quantity
-        };          
+        };
 
-        if(typeof _this.PackingSlipID() === "undefined"){
-          //do not call packing slip items api          
-        }else{
+        if (typeof _this.PackingSlipID() === "undefined") {
+          //do not call packing slip items api
+        } else {
           //add to packing slip items
-          addPackingSlipItems(param, cb);          
+          addPackingSlipItems(param, cb);
         }
 
 
@@ -166,8 +165,8 @@ define('src/panels/inventory.panel.vm', [
 
     var iePurchaseOrder = vm.data.getValue(),
 
-    //add joiner since we need to call cb when all api calls have returned
-    join = joiner();
+      //add joiner since we need to call cb when all api calls have returned
+      join = joiner();
 
     //clear PackingSlipNumber everytime we do search
     vm.data.PackingSlipNumber(null);
@@ -178,13 +177,13 @@ define('src/panels/inventory.panel.vm', [
     }, null, utils.safeCallback(join.add(), function(err, resp) {
 
       if (resp.Code === 0) {
-        var purchaseOrder = resp.Value;
+        var param, purchaseOrder = resp.Value;
         purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
 
 
 
         //parameters for reading packingslip api
-        var param = {
+        param = {
           id: purchaseOrder.PurchaseOrderID,
           link: 'POID'
         };
@@ -237,7 +236,7 @@ define('src/panels/inventory.panel.vm', [
 
     dataservice.inventoryenginesrv.PackingSlip.read(param, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Code === 0) {
-        
+
         //Get value of packing slip Id from api
         vm.PackingSlipID(resp.Value.PackingSlipID);
 
@@ -247,7 +246,7 @@ define('src/panels/inventory.panel.vm', [
       } else {
         notify.notify('warn', 'PurchaseOrderID not found', 10);
       }
-    }, function(/*err*/) {
+    }, function( /*err*/ ) {
 
       var param2, packingSlipNumber;
 
@@ -262,10 +261,10 @@ define('src/panels/inventory.panel.vm', [
       if (packingSlipNumber !== null && packingSlipNumber !== "") {
         //alert(JSON.stringify(param2));
         createPackingSlipNumber(param2, cb);
-      } else {       
+      } else {
         notify.notify('info', 'Please input a Packing Slip#!');
       }
-      
+
     }));
 
 
@@ -277,8 +276,7 @@ define('src/panels/inventory.panel.vm', [
 
     dataservice.inventoryenginesrv.PackingSlip.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
-      if (resp.Code === 0) {        
-      }
+      if (resp.Code === 0) {}
 
     }, function(err) {
       notify.notify('error', err.Message);
@@ -288,17 +286,17 @@ define('src/panels/inventory.panel.vm', [
   } //end createPackingSlipNumber
 
   //add to packing slip items
-  function addPackingSlipItems(param,cb){   
+  function addPackingSlipItems(param, cb) {
 
     dataservice.inventoryenginesrv.PackingSlipItem.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
-        console.log("PackingSlipItems-Result:"+JSON.stringify(resp.Value));
+        console.log("PackingSlipItems-Result:" + JSON.stringify(resp.Value));
       }
 
     }, function(err) {
       notify.notify('error', err.Message);
-    }));    
+    }));
   }
 
 
