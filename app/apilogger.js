@@ -44,7 +44,7 @@ define('src/apilogger', [
         console.warn(err.Message);
         notify.notify('error', 'Error', err.Message);
       } else {
-        notify.notify('warn', 'Error logged - ID: ' + resp.Value);
+        notify.notify('warn', 'Error logged - MessageID: ' + resp.Value);
       }
     });
     return true;

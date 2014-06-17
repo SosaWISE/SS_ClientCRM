@@ -340,12 +340,11 @@ define('src/core/mockery', [
     return x;
   };
   mockery.randomIndex = 1;
-  mockery.fromTemplate = function(template, randomFn) {
-    return fromTemplate(template, {
-      __funcs: {
-        random: randomFn || mockery.random,
-      },
-    });
+  mockery.fromTemplate = function(template, randomFn, cache) {
+    cache = cache || {};
+    cache.__funcs = cache.__funcs || {};
+    cache.__funcs.random = randomFn || cache.__funcs.random || mockery.random;
+    return fromTemplate(template, cache);
   };
   mockery.log = false;
   mockery.getData = getData;
