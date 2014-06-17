@@ -113,21 +113,7 @@ define('src/panels/inventory.panel.vm', [
       _this.search(vm, cb);
     });
 
-    //For testing only
-    /*
-    _this.showEnterBarcode = ko.command(function(cb) {
-
-      _this.layersVm.show(new EnterBarcodeViewModel({
-        title: 'Enter Barcodes',
-      }), function onClose(result) {
-        if (!result) {
-          cb();
-          return;
-        }
-      });
-
-    });*/
-
+   
     _this.active.subscribe(function(active) {
       if (active) {
         // this timeout makes it possible to focus the po#
@@ -159,64 +145,26 @@ define('src/panels/inventory.panel.vm', [
   };
 
   InventoryViewModel.prototype.search = function(vm, cb) {
+    
     var iePurchaseOrder = vm.data.getValue();
-    //alert(iePurchaseOrder.PurchaseOrderID);
+    
+    //Getting PurchaseOrderID api call
     dataservice.inventoryenginesrv.PurchaseOrder.read({
       id: iePurchaseOrder.PurchaseOrderID
     }, null, utils.safeCallback(cb, function(err, resp) {
+
       if (resp.Code === 0) {
         var purchaseOrder = resp.Value;
-        purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
-        //console.log(JSON.stringify(purchaseOrder));
-        dataservice.inventoryenginesrv.PackingSlip.read({
+        purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));        
+
+        //parameters for reading packingslip api
+        var param = {
             id: purchaseOrder.PurchaseOrderID,
-            link: 'POID'
-          },
-          null, utils.safeCallback(cb, function(err, resp) {
-            if (resp.Code === 0) {
-              var param, packingSlip = resp.Value;
+            link: 'POID'  
+        };
 
-              if (packingSlip.PackingSlipNumber == null) {
-
-
-                if (vm.data.PackingSlipNumber() == null) {
-                  //alert(vm.data.PackingSlipNumber());
-                  notify.notify('info', 'Please input a Packing Slip#!');
-
-                } else {
-
-                  param = {
-                    PurchaseOrderId: purchaseOrder.PurchaseOrderID,
-                    PackingSlipNumber: vm.data.PackingSlipNumber()
-                  };
-
-                  //alert(JSON.stringify(param));
-
-                  dataservice.inventoryenginesrv.PackingSlip.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
-
-                    if (err) {
-                      cb(err);
-                      return;
-                    }
-
-                    if (resp.Code === 0) {
-                      //alert("PackingSlip-Post:"+JSON.stringify(resp.Value));
-                    }
-
-                  }, utils.no_op));
-
-                }
-
-
-              } else {
-                vm.data.PackingSlipNumber.setValue(packingSlip.PackingSlipNumber);
-              }
-
-
-            } else {
-              notify.notify('warn', 'PurchaseOrderID not found', 10);
-            }
-          }, utils.no_op));
+        //function that calls packing slip api
+        loadPackingSlipInfo(param, vm);       
 
       } else {
         notify.notify('warn', 'PurchaseOrderID not found', null, 3);
@@ -248,6 +196,64 @@ define('src/panels/inventory.panel.vm', [
 
   };
 
+
+function loadPackingSlipInfo(param, vm){
+
+dataservice.inventoryenginesrv.PackingSlip.read(param,null, utils.safeCallback(null, function(err, resp) {
+
+            alert(JSON.stringify(resp.Value));         
+
+            if (resp.Code === 0) {
+              var param, packingSlip = resp.Value;
+
+              if (packingSlip.PackingSlipNumber == null) {                  
+
+                if (vm.data.PackingSlipNumber() == null) {                  
+                  
+                  notify.notify('info', 'Please input a Packing Slip#!');
+
+                } else {
+                  
+                  param = {
+                    PurchaseOrderId: param.PurchaseOrderID,
+                    PackingSlipNumber: vm.data.PackingSlipNumber()
+                  };
+
+                  createPackingSlipNumber(param);
+
+                }
+
+              } else {
+                vm.data.PackingSlipNumber.setValue(packingSlip.PackingSlipNumber);
+              }
+
+
+            } else {
+              notify.notify('warn', 'PurchaseOrderID not found', 10);
+            }
+          }, function(err) {
+            notify.notify('error', err.Message);
+          }));
+
+
+} //end function loadPackingSlipInfo
+
+
+ //Create packing slip number if not available - pull this from UI
+function createPackingSlipNumber(param){
+                 
+  dataservice.inventoryenginesrv.PackingSlip.post(null, param, null, utils.safeCallback(null, function(err, resp) {
+
+    if (resp.Code === 0) {
+      //alert("PackingSlip-Post:"+JSON.stringify(resp.Value));
+    }
+
+    }, function(err) {
+      notify.notify('error', err.Message);
+    }));
+
+
+} //end createPackingSlipNumber
 
 
   return InventoryViewModel;
