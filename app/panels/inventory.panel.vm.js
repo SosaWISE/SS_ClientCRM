@@ -165,8 +165,12 @@ define('src/panels/inventory.panel.vm', [
   InventoryViewModel.prototype.search = function(vm, cb) {
 
     var iePurchaseOrder = vm.data.getValue(),
-      //add joiner since we need to call cb when all api calls have returned
-      join = joiner();
+
+    //add joiner since we need to call cb when all api calls have returned
+    join = joiner();
+
+    //clear PackingSlipNumber everytime we do search
+    vm.data.PackingSlipNumber(null);
 
     //Getting PurchaseOrderID api call
     dataservice.inventoryenginesrv.PurchaseOrder.read({
