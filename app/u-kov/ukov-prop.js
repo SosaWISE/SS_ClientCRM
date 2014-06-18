@@ -85,25 +85,29 @@ define('src/u-kov/ukov-prop', [
     var _this = this;
     return _this.model[_this.key];
   };
+
+  function setAndNotify(_this, value) {
+    //
+    // force notification so value formatters can do their thang
+    // - essentially the same code as when setting an observable,
+    //   but we only want to notify when the values are equal
+    //   since the built in code will notify when the values are not equal
+    //
+    if (!_this.equalityComparer || !_this.equalityComparer(_this.peek(), value)) {
+      // set value - knockout will notify subscribers
+      _this(value);
+    } else {
+      _this.valueWillMutate();
+      // set value - knockout will NOT notify subscribers
+      _this(value);
+      _this.valueHasMutated();
+    }
+  }
   fn.updateValue = function() {
     var _this = this,
       value = _this.getValue();
     if (!(value instanceof Error)) {
-      //
-      // force notification so value formatters can do their thang
-      // - essentially the same code as when setting an observable,
-      //   but we only want to notify when the values are equal
-      //   since the built in code will notify when the values are not equal
-      //
-      if (!_this.equalityComparer || !_this.equalityComparer(_this.peek(), value)) {
-        // set value - knockout will notify subscribers
-        _this(value);
-      } else {
-        _this.valueWillMutate();
-        // set value - knockout will NOT notify subscribers
-        _this(value);
-        _this.valueHasMutated();
-      }
+      setAndNotify(_this, value);
     }
   };
   fn.getNameInGroup = function() {
@@ -126,10 +130,16 @@ define('src/u-kov/ukov-prop', [
     var _this = this;
     if (arguments.length) {
       _this._ignore = !!ignoreVal;
-      // rerun validations
-      _this.validate();
-      if (allowParentUpdate) {
-        _this.updateParent();
+      if (_this.ignore) {
+        // rerun validations
+        _this.validate();
+        if (allowParentUpdate) {
+          _this.updateParent();
+        }
+      } else {
+        // re-set value, which will rerun validations
+        // this will always update the parent
+        setAndNotify(_this, _this.peek());
       }
     }
     return _this._ignore;

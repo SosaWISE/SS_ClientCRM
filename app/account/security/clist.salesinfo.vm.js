@@ -31,7 +31,13 @@ define('src/account/security/clist.salesinfo.vm', [
 ) {
   "use strict";
 
-  var schema;
+  var schema,
+    emailDependsOnCellPackageItemIdVg;
+
+  emailDependsOnCellPackageItemIdVg = {
+    keys: ['Email', 'CellPackageItemId'],
+    validators: [],
+  };
 
   schema = {
     _model: true,
@@ -108,42 +114,32 @@ define('src/account/security/clist.salesinfo.vm', [
 
     IsTakeOver: {},
     IsMoni: {
-      // only required if IsTakeOver
-      validators: [ //
-        function(val, model) {
-          if (!val && model.IsTakeOver) {
-            return 'Current Monitoring Station is required';
-          }
-        },
+      validators: [
+        ukov.validators.isRequired('Current Monitoring Station is Required'),
       ],
-      // re-run validators when IsTakeOver changes
-      validationGroup: {
-        keys: ['IsTakeOver'],
-        validators: [],
-      },
     },
 
     IsOwner: {},
 
-    CellPackageItemId: {},
+    CellPackageItemId: {
+      // re-run Email validators when CellPackageItemId changes
+      validationGroup: emailDependsOnCellPackageItemIdVg,
+    },
     // CellServicePackage: {},
     // CellularTypeId: {},
     // CellularTypeName: {},
     Email: {
+      // re-run Email validators when CellPackageItemId changes
+      validationGroup: emailDependsOnCellPackageItemIdVg,
       validators: [
         // only required if Alarm.com
-        function(val, model) {
-          if (!val && strings.startsWith(model.CellPackageItemId, 'CELL_SRV_AC')) { // Alarm.com
+        function(val, model, ukovModel) {
+          if (!val && strings.startsWith(ukovModel.CellPackageItemId.peek(), 'CELL_SRV_AC')) { // Alarm.com
             return 'Email is required';
           }
         },
         ukov.validators.isEmail(),
       ],
-      // re-run validators when CellPackageItemId changes
-      validationGroup: {
-        keys: ['CellPackageItemId'],
-        validators: [],
-      },
     },
     // ContractLength: {},
     // ContractTemplateId: {},
@@ -170,7 +166,6 @@ define('src/account/security/clist.salesinfo.vm', [
     });
     _this.data.CellularTypeCvm = new ComboViewModel({
       selectedValue: _this.data.CellularTypeId,
-      nullable: true,
       fields: {
         text: 'CellularTypeName',
         value: 'CellularTypeID',
@@ -274,30 +269,44 @@ define('src/account/security/clist.salesinfo.vm', [
 
     _this.isAlarmCom = ko.observable(false);
     _this.hasCell = ko.observable(false);
+    _this.cellularTypes = ko.observableArray();
     //
     function cellServiceChanged(cellService) {
-      var tmp;
+      _this.isAlarmCom(cellService === 'CELL_SRV_AC'); // Alarm.com
 
-      tmp = cellService === 'CELL_SRV_AC'; // Alarm.com
-      _this.isAlarmCom(tmp);
-      _this.data.CellularTypeId.ignore(!tmp, true);
-      _this.data.Email.ignore(!tmp, true);
-
-      tmp = !!cellService; // no cell package item
-      _this.hasCell(tmp);
-      // _this.data.AlarmComPackageId.ignore(!tmp, true);
+      _this.hasCell(!!cellService); // false if no cell package item
+      if (_this.hasCell.peek()) {
+        // all if there is a cell service
+        _this.data.CellularTypeCvm.setList(_this.cellularTypes.peek());
+      } else {
+        // only No Cell
+        _this.data.CellularTypeCvm.setList(_this.cellularTypes.peek().filter(function(type) {
+          return type.CellularTypeID === 'NOCELL';
+        }));
+      }
+      if (!_this.data.CellularTypeCvm.selectedValue.peek()) {
+        // select first item if one isn't selected
+        _this.data.CellularTypeCvm.selectFirst();
+      }
 
       // filter Cell Packages by the selected Cell Service
       _this.data.CellPackageItemCvm.setList(_this.cellPackageItemOptions.filter(function(item) {
-        return strings.startsWith(item.value, cellService);
+        return cellService && strings.startsWith(item.value, cellService);
       }));
-      // select first item if one isn't selected
-      if (!_this.data.CellPackageItemCvm.selectedValue()) {
+      if (!_this.data.CellPackageItemCvm.selectedValue.peek()) {
+        // select first item if one isn't selected
         _this.data.CellPackageItemCvm.selectFirst();
       }
     }
     _this.data.cellServiceCvm.selectedValue.subscribe(cellServiceChanged);
     cellServiceChanged();
+
+    //
+    function isTakeOverChanged(isTakeOver) {
+      _this.data.IsMoni.ignore(!isTakeOver, true);
+    }
+    _this.data.IsTakeOver.subscribe(isTakeOverChanged);
+    isTakeOverChanged();
 
     //
     // events
@@ -333,6 +342,9 @@ define('src/account/security/clist.salesinfo.vm', [
         Object.keys(_this.data.doc).forEach(function(key) {
           _this.subs.push(_this.data[key].subscribe(_this.refreshInvoice));
         });
+        // try to refresh whenever the cell service changes
+        //  - only needed when there's an error on a previous refresh
+        _this.subs.push(_this.data.cellServiceCvm.selectedValue.subscribe(_this.refreshInvoice));
       }
       cb(err);
     }
@@ -345,8 +357,9 @@ define('src/account/security/clist.salesinfo.vm', [
     // load_vendorAlarmComPackages(_this.data.AlarmComPackageCvm, subjoin.add('2'));
     load_pointSystems(_this.pointSystemsCvm, subjoin.add('3'));
     load_panelTypes(_this.data.PanelTypeCvm, subjoin.add('4'));
-    load_cellularTypes(_this.data.CellularTypeCvm, subjoin.add('5'));
     load_frequentlyInstalledEquipmentGet(_this.frequentGvm, subjoin.add('6'));
+    _this.data.CellularTypeCvm.setList([]);
+    load_cellularTypes(_this.cellularTypes, subjoin.add('5'));
 
     cb = join.add('1');
     subjoin.when(function(err) {
@@ -412,9 +425,10 @@ define('src/account/security/clist.salesinfo.vm', [
     //@HACK: to save CellularTypeId
     data.CellTypeId = data.CellularTypeId;
     //@HACK: to save CellPackageItemId
-    data.AlarmComPackageId = data.CellPackageItemId;
+    // data.AlarmComPackageId = data.CellPackageItemId;
     // delete data.CellPackageItemId;
 
+    console.log('currData:', JSON.stringify(_this.currData, null, '  '));
     dataservice.salessummary.invoiceRefresh.save({
       data: data,
     }, null, utils.safeCallback(cb, function(err, resp) {
@@ -502,13 +516,9 @@ define('src/account/security/clist.salesinfo.vm', [
     }, utils.no_op));
   }
 
-  function load_cellularTypes(cvm, cb) {
-    cvm.setList([]);
+  function load_cellularTypes(setter, cb) {
     // ** Pull Cellular Types
-    dataservice.salessummary.cellularTypes.read({}, null, utils.safeCallback(cb, function(err, resp) {
-      // ** Bind data
-      cvm.setList(resp.Value);
-    }, utils.no_op));
+    dataservice.salessummary.cellularTypes.read({}, setter, cb);
   }
 
   // function load_vendorAlarmComPackages(cvm, cb) {

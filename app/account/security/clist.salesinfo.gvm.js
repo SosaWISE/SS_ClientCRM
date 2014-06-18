@@ -57,7 +57,7 @@ define('src/account/security/clist.salesinfo.gvm', [
           name: 'Actions',
           buttons: [ //
             {
-              text: 'Del',
+              text: 'Delete',
               fn: options.deletePart,
             },
           ]
@@ -67,12 +67,14 @@ define('src/account/security/clist.salesinfo.gvm', [
 
     _this.pointsGiven = ko.observable(0);
     _this.pointsAvailable = ko.observable(0);
+    _this.pointsTotal = ko.observable(0);
+    _this.retailTotal = ko.observable(0);
     _this.estimateTotal = ko.observable(0);
-    _this.estimateTotal2 = ko.observable(0);
     _this.list.subscribe(function(list) {
-      var totalPrice = 0,
-        pointsGiven = 0,
-        pointsAvailable;
+      var pointsGiven = 0,
+        pointsAvailable = 0,
+        pointsTotal = 0,
+        retailTotal = 0;
       list.forEach(function(item) {
         //@TODO: use new field for determing whether to use points or use price
         if (item.SystemPoints) {
@@ -80,16 +82,18 @@ define('src/account/security/clist.salesinfo.gvm', [
           pointsGiven += item.SystemPoints;
         } else {
           // use price
-          totalPrice += item.RetailPrice;
+          retailTotal += item.RetailPrice;
         }
       });
       _this.pointsGiven(pointsGiven);
       pointsAvailable = 8 - pointsGiven;
       _this.pointsAvailable(pointsAvailable);
       if (pointsAvailable < 0) {
-        totalPrice += 30 * (-1 * _this.pointsAvailable());
+        pointsTotal = 30 * (-1 * pointsAvailable);
       }
-      _this.estimateTotal(totalPrice);
+      _this.pointsTotal(pointsTotal);
+      _this.retailTotal(retailTotal);
+      _this.estimateTotal(pointsTotal + retailTotal);
     });
   }
   utils.inherits(CListSalesInfoGridViewModel, SlickGridViewModel);

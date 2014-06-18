@@ -118,8 +118,7 @@ div(class="acct-item sales-info",data-bind="toggle:{'may-reload':mayReload}")
             div(class="subHeader") Equipment
             div(class="line")
               div(class="letter",data-bind="text:num()")
-              div(class="question") What Equipment did you give the customer?
-              div(class="answer")
+              div(class="question noanswer") What Equipment did you give the customer?
 
             div(class="subHeader") Frequently Installed Equipment
       tr
@@ -142,15 +141,22 @@ div(class="acct-item sales-info",data-bind="toggle:{'may-reload':mayReload}")
           div(class="fh-contents")
             div(class="slickgrid",
               data-bind="slickgrid:partsGvm")
-            div(class="totals")
+            div(class="points")
               div
                 div(class="name") Points Given:
                 div(class="value",data-bind="likecurrencytext:partsGvm.pointsGiven")
               div
                 div(class="name") Points Available:
                 div(class="value",data-bind="likecurrencytext:partsGvm.pointsAvailable")
+            div(class="totals")
+              div
+                div(class="name") Retail:
+                div(class="value",data-bind="currencytext:partsGvm.retailTotal")
+              div
+                div(class="name") Points:
+                div(class="value",data-bind="currencytext:partsGvm.pointsTotal")
               div
                 div(class="name") Total:
-                div(class="value",data-bind="currencytext:partsGvm.estimateTotal")
+                div(class="value total",data-bind="currencytext:partsGvm.estimateTotal")
 
   div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")

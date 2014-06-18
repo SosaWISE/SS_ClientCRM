@@ -52,6 +52,9 @@
       .question {
         width:@middle - @letterWidth - @answerWidth;
         padding-right: 2px;
+        &.noanswer {
+          width:@middle - @letterWidth;
+        }
       }
       .answer {
         display:inline-block;
@@ -74,7 +77,7 @@
     // Style
     position: absolute;
     top:0;right:@pad;bottom:0;left:@middle + (@pad * 2);
-    min-width: 330px;
+    min-width: 530px;
     min-height:600px;
 
     // ** Inner Elements
@@ -96,12 +99,8 @@
       bottom:100px;
     }
 
+    .points,
     .totals {
-      position:absolute;
-      height:100px;
-      right:45px;
-      bottom:0;
-
       .name,
       .value {
         display:inline-block;
@@ -111,7 +110,26 @@
         width:130px;
       }
       .value {
-        width:90px;
+        width:60px;
+      }
+    }
+    .points {
+      position:absolute;
+      height:100px;
+      right:200px;
+      bottom:0;
+    }
+    .totals {
+      position:absolute;
+      height:100px;
+      right:30px;
+      bottom:0;
+
+      .total {
+        margin: 2px 0px;
+        padding: 3px 0px;
+        border-top: 1px solid @account-bg;
+        border-bottom: 4px double @account-bg;
       }
     }
   }

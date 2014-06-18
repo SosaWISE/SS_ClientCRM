@@ -63,7 +63,7 @@ define('src/core/combo.vm', [
     _this.deselectInput = ko.observable(false);
 
     _this.filterText.subscribe(function(filterText) {
-      filterList(_this.list(), filterText, _this.matchStart);
+      filterList(_this.list.peek(), filterText, _this.matchStart);
       _this.deactivateCurrent();
       _this.activateNext(true);
     });
@@ -72,36 +72,31 @@ define('src/core/combo.vm', [
     //    verify the value is in the list of items
     //    update selected
     _this.selectedValue.subscribe(function(selectedValue) {
-      if (selectedValue != null) {
-        var wrappedItem;
-        _this.list().some(function(listItem) {
-          if (listItem.value === selectedValue) {
-            wrappedItem = listItem;
-            return true;
-          }
-        });
-        if (wrappedItem) {
-          _this.selected(wrappedItem);
+      // always try to find in list, even if selectedValue is null/undefined
+      var wrappedItem = findWrappedItemByValue(_this.list.peek(), selectedValue);
+      if (wrappedItem) {
+        _this.selected(wrappedItem);
 
-          if (wrappedItem.item !== _this.list()[_this.activeIndex]) {
-            _this.deactivateCurrent();
-            if (wrappedItem.value != null) {
-              _this.activeIndex = _this.list().indexOf(wrappedItem) - 1;
-              _this.activateNext(true);
-            }
+        if (wrappedItem.item !== _this.list.peek()[_this.activeIndex]) {
+          _this.deactivateCurrent();
+          if (wrappedItem.value != null) {
+            _this.activeIndex = _this.list.peek().indexOf(wrappedItem) - 1;
+            _this.activateNext(true);
           }
-
-          ko.utils.arrayRemoveItem(_this.selectionHistory, selectedValue);
-          _this.selectionHistory.push(selectedValue);
-          while (_this.selectionHistory.length > 5) {
-            _this.selectionHistory.shift(); // remove first item
-          }
-        } else {
-          // console.log('selectedValue not in list:', selectedValue);
-          //@NOTE: this will call this function again
-          // and set `selected` to `noItemSelected`
-          _this.selectedValue(null);
         }
+
+        ko.utils.arrayRemoveItem(_this.selectionHistory, selectedValue);
+        _this.selectionHistory.push(selectedValue);
+        while (_this.selectionHistory.length > 10) {
+          _this.selectionHistory.shift(); // remove first item
+        }
+      } else if (selectedValue !== null) { // in this case, undefined is not null
+        // console.log('selectedValue not in list:', selectedValue);
+        //@NOTE: this will call this function again
+        // and set `selected` to `noItemSelected` or it will select the first item (if not nullable)
+        _this.selectedValue(null);
+      } else if (!_this.nullable && _this.list.peek().length) {
+        _this.selectFirst();
       } else {
         _this.selected(_this.noItemSelected);
         _this.deactivateCurrent();
@@ -200,11 +195,8 @@ define('src/core/combo.vm', [
     _this.selectItem = function(wrappedItem) {
       if (wrappedItem) {
         _this.selectedValue(wrappedItem.value);
-      } else if (_this.nullable) {
-        _this.selectedValue(null);
       } else {
-        // if not nullable don't set to null and don't close
-        return;
+        _this.selectedValue(null);
       }
       _this.clickClose();
     };
@@ -223,6 +215,7 @@ define('src/core/combo.vm', [
   }
   utils.inherits(ComboViewModel, BaseViewModel);
   ComboViewModel.prototype.viewTmpl = 'tmpl-combo';
+  ComboViewModel.prototype.nullable = false;
 
   ComboViewModel.prototype.selectFirst = function() {
     var _this = this;
@@ -240,11 +233,7 @@ define('src/core/combo.vm', [
     list = list || [];
     var _this = this,
       wrapList = new Array(list.length),
-      selectedValue = _this.selectedValue.peek(),
       i;
-
-    // un-set selected value
-    _this.selectedValue(null);
 
     list.forEach(function(item, index) {
       wrapList[index] = wrapItem(item, _this.fields);
@@ -255,18 +244,24 @@ define('src/core/combo.vm', [
     _this.list(wrapList);
     filterList(_this.list.peek(), _this.filterText(), _this.matchStart);
 
-    // re-set selected value
-    _this.selectedValue(selectedValue);
-
-    // try to select the most recently used value (loop in reverse order)
+    //
+    // set selected value to item in the new list
+    //
+    // try to find the most recently used value in the list (loop in reverse order)
     i = _this.selectionHistory.length;
-    while (_this.selectedValue() == null && i--) {
+    while (i--) {
       // console.log('try selection:', _this.selectionHistory[i]);
-      _this.selectedValue(_this.selectionHistory[i]);
+      if (findWrappedItemByValue(wrapList, _this.selectionHistory[i])) {
+        _this.selectedValue(_this.selectionHistory[i]);
+        return;
+      }
     }
     // try to select the clean value
-    if (_this.selectedValue() == null && ko.isObservable(_this.selectedValue.cleanVal)) {
-      _this.selectedValue(_this.selectedValue.cleanVal());
+    if (ko.isObservable(_this.selectedValue.cleanVal)) {
+      _this.selectedValue(_this.selectedValue.cleanVal.peek());
+    } else {
+      // deselect value (set to undefined when value is null)
+      _this.selectedValue(_this.selectedValue.peek() === null ? undefined : null);
     }
   };
   ComboViewModel.prototype.addItem = function(item) {
@@ -304,7 +299,7 @@ define('src/core/combo.vm', [
     _this.deactivateCurrent();
     if (selected) {
       selected.active(true);
-      _this.activeIndex = _this.list().indexOf(selected) - 1;
+      _this.activeIndex = _this.list.peek().indexOf(selected) - 1;
     }
     _this.activateNext(true);
   };
@@ -324,6 +319,17 @@ define('src/core/combo.vm', [
       matches: ko.observable(false),
       active: ko.observable(false),
     };
+  }
+
+  function findWrappedItemByValue(list, value) {
+    var wrappedItem;
+    list.some(function(listItem) {
+      if (listItem.value === value) {
+        wrappedItem = listItem;
+        return true;
+      }
+    });
+    return wrappedItem;
   }
 
   defaultNoItemSelected = wrapItem({
