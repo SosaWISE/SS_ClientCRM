@@ -7,7 +7,7 @@ define('src/panels/inventory.panel.vm', [
   'src/core/controller.vm',
   'src/core/joiner',
   'ko',
-  'src/ukov',  
+  'src/ukov',
 ], function(
   dataservice,
   ComboViewModel,
@@ -23,7 +23,7 @@ define('src/panels/inventory.panel.vm', [
 
   var schema;
 
-    schema = {
+  schema = {
     _model: true,
     TransferLocation: {},
     productBarcodeID: {},
@@ -43,50 +43,50 @@ define('src/panels/inventory.panel.vm', [
     _this.data = ukov.wrap(_this.item || {
       TransferLocation: null,
       productBarcodeID: null,
-    }, schema);    
+    }, schema);
 
     _this.data.TransferLocationCvm = new ComboViewModel({
       selectedValue: _this.data.TransferLocation,
       fields: {
         value: 'TeamLocationID',
-        text: 'City',       
+        text: 'City',
       },
-    });        
+    });
 
     //events
     //
 
-   //Call api for adding barcodes
-    _this.processBarcode = function(data, event) {      
-      
+    //Call api for adding barcodes
+    _this.processBarcode = function(data, event) {
+
       var join = joiner();
 
       //when enter key is hit, call the APIs
-      if(event.keyCode === 13){                   
+      if (event.keyCode === 13) {
 
         var param1 = {},
-            param2 = {};
-            
+          param2 = {};
 
-          //set parameters
-          param1 = {
-            id: _this.data.productBarcodeID(),
-            link: 'PBID'
-          };
 
-          param2 = {
-            TransferToWarehouseSiteId : _this.data.TransferLocation(),
-            ProductBarcodeId: _this.data.productBarcodeID()
-          };
+        //set parameters
+        param1 = {
+          id: _this.data.productBarcodeID(),
+          link: 'PBID'
+        };
 
-          //Load product barcode
-          load_productBarcode(param1, join.add());          
+        param2 = {
+          TransferToWarehouseSiteId: _this.data.TransferLocation(),
+          ProductBarcodeId: _this.data.productBarcodeID()
+        };
 
-          //Post ProductBarcodeTracking
-          post_productBarcodeTracking(param2, join.add());
+        //Load product barcode
+        load_productBarcode(param1, join.add());
 
-      }   
-    };   
+        //Post ProductBarcodeTracking
+        post_productBarcodeTracking(param2, join.add());
+
+      }
+    };
 
     _this.active.subscribe(function(active) {
       if (active) {
@@ -109,18 +109,18 @@ define('src/panels/inventory.panel.vm', [
     var _this = this;
     join = join;
 
-    load_transferLocations(_this.data.TransferLocationCvm, join.add());    
+    load_transferLocations(_this.data.TransferLocationCvm, join.add());
 
   };
 
 
-function load_transferLocations(cvm, cb) {
+  function load_transferLocations(cvm, cb) {
 
     dataservice.humanresourcesrv.RuTeamLocationList.read({}, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
 
-        console.log("RuTeamLocationList-transfer:"+JSON.stringify(resp.Value));
+        console.log("RuTeamLocationList-transfer:" + JSON.stringify(resp.Value));
 
         //Set result to Location combo list
         cvm.setList(resp.Value);
@@ -128,57 +128,57 @@ function load_transferLocations(cvm, cb) {
         notify.notify('warn', 'PurchaseOrderID not found', null, 3);
       }
     }));
-}
+  }
 
 
-function load_productBarcode(param, cb){
+  function load_productBarcode(param, cb) {
 
-  dataservice.inventoryenginesrv.ProductBarcode.read(param, null, utils.safeCallback(cb, function(err, resp) {
+    dataservice.inventoryenginesrv.ProductBarcode.read(param, null, utils.safeCallback(cb, function(err, resp) {
 
-    if (resp.Code === 0) {
-      console.log("ProductBarcode:"+JSON.stringify(resp.Value));
+      if (resp.Code === 0) {
+        console.log("ProductBarcode:" + JSON.stringify(resp.Value));
 
-          // If ProductBarcodeTrackingID not null, Load ProductBarcodeTracking
-          if(resp.Value.ProductBarcodeTrackingID != null){
-            load_productBarcodeTracking(resp.Value.ProductBarcodeTrackingID, cb); 
-          }          
+        // If ProductBarcodeTrackingID not null, Load ProductBarcodeTracking
+        if (resp.Value.ProductBarcodeTrackingID != null) {
+          load_productBarcodeTracking(resp.Value.ProductBarcodeTrackingID, cb);
+        }
 
 
-    } else {
-      notify.notify('error', err.Message);
-    }
-  }));  
+      } else {
+        notify.notify('error', err.Message);
+      }
+    }));
 
-}
+  }
 
-function load_productBarcodeTracking(ProductBarcodeTrackingID, cb){
+  function load_productBarcodeTracking(ProductBarcodeTrackingID, cb) {
 
-  dataservice.inventoryenginesrv.ProductBarcodeTracking.read({
-    id: ProductBarcodeTrackingID
-  }, null, utils.safeCallback(cb, function(err, resp) {
+    dataservice.inventoryenginesrv.ProductBarcodeTracking.read({
+      id: ProductBarcodeTrackingID
+    }, null, utils.safeCallback(cb, function(err, resp) {
 
-    if (resp.Code === 0) {
-      console.log("ProductBarcodeTracking-Read:"+JSON.stringify(resp.Value));      
+      if (resp.Code === 0) {
+        console.log("ProductBarcodeTracking-Read:" + JSON.stringify(resp.Value));
 
-    } else {
-      notify.notify('error', err.Message);
-    }
-  }));  
+      } else {
+        notify.notify('error', err.Message);
+      }
+    }));
 
-}
+  }
 
-function post_productBarcodeTracking(param, cb){
+  function post_productBarcodeTracking(param, cb) {
 
-  dataservice.inventoryenginesrv.ProductBarcodeTracking.post(null, param, null, utils.safeCallback(cb, function(err, resp) {    
+    dataservice.inventoryenginesrv.ProductBarcodeTracking.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
-    if (resp.Code === 0) {
-      console.log("ProductBarcodeTracking-Post:"+JSON.stringify(resp.Value));
-    } else {
-      notify.notify('error', err.Message);
-    }
-  }));   
+      if (resp.Code === 0) {
+        console.log("ProductBarcodeTracking-Post:" + JSON.stringify(resp.Value));
+      } else {
+        notify.notify('error', err.Message);
+      }
+    }));
 
-}
+  }
 
   return InventoryViewModel;
 });
