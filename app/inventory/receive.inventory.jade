@@ -1,0 +1,20 @@
+ul(class="edit-form")
+  li(class="inventory_header")
+    div(class="header_left")
+      ul(class="header_ul")
+        li
+          label PO#
+        li  
+          input(type="text" placeholder="" data-bind="ukov:data.PurchaseOrderID,value:data.PurchaseOrderID,valueUpdate:'keyup',select:focusFirst")
+        li  
+          button(type="button" class="btn-inventory"  data-bind="cmd:cmdSearch") Submit
+    
+    div(class="header_right")
+      ul(class="header_ul")
+        li
+          label Packing Slip #
+        li
+          input(type="text" data-bind="ukov:data.PackingSlipNumber,value:data.PackingSlipNumber,valueUpdate:'keyup'")
+div(class="inventory_body")
+  div(class="slickgrid",style="background:white;color:black; min-height: 500px; position: relative;", data-bind="slickgrid:inventoryListGvm")  
+  div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
