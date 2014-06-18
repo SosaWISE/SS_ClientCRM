@@ -98,7 +98,7 @@ define('src/inventory/receive.inventory.vm', [
         };
 
         if (typeof _this.PackingSlipID() === "undefined") {
-          //do not call packing slip items api          
+          //do not call packing slip items api
         } else {
           //add to packing slip items
           addPackingSlipItems(param, cb);
@@ -179,13 +179,14 @@ define('src/inventory/receive.inventory.vm', [
     }, null, utils.safeCallback(join.add(), function(err, resp) {
 
       if (resp.Code === 0) {
-        var purchaseOrder = resp.Value;
+        var param,
+          purchaseOrder = resp.Value;
         purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
 
 
 
         //parameters for reading packingslip api
-        var param = {
+        param = {
           id: purchaseOrder.PurchaseOrderID,
           link: 'POID'
         };

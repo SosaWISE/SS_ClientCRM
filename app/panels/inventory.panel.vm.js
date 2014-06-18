@@ -59,12 +59,11 @@ define('src/panels/inventory.panel.vm', [
     //Call api for adding barcodes
     _this.processBarcode = function(data, event) {
 
-      var join = joiner();
-
       //when enter key is hit, call the APIs
       if (event.keyCode === 13) {
 
-        var param1 = {},
+        var join = joiner(),
+          param1 = {},
           param2 = {};
 
 
