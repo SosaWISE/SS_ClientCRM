@@ -38,7 +38,7 @@ define('src/config', [
   // set('serviceDomain', 'sse.services.cmscors'); // every environment should have this set in webconfig.js
   set('logErrors', true);
   set('titlePrefix', '');
-  set('titlePostfix', '| CRM');
+  set('titlePostfix', 'CRM');
   set('leadSourceId', 1);
   set('leadDispositionId', 9);
   set('apiTimeout', 1000 * 30);

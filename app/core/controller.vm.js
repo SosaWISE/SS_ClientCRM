@@ -317,21 +317,27 @@ define('src/core/controller.vm', [
       parts.push(ControllerViewModel.titlePrefix);
     }
 
-    while (!title && controller) {
+    while (controller) {
       title = ko.unwrap(controller.title);
-      if (!title) {
-        // go up to parent controller
-        controller = controller.pcontroller;
+      if (title) {
+        parts.push(title);
+      } else {
+        // // only use first title
+        // break;
       }
+      // prevent infinite loop
+      if (controller === controller.pcontroller) {
+        break;
+      }
+      // go up to parent controller
+      controller = controller.pcontroller;
     }
-    if (title) {
-      parts.push(title);
-    }
+
     if (ControllerViewModel.titlePostfix) {
       parts.push(ControllerViewModel.titlePostfix);
     }
 
-    jquery('title').text(parts.join(' '));
+    jquery('title').text(parts.join(' - '));
   };
 
   return ControllerViewModel;
