@@ -240,7 +240,15 @@ define('src/account/security/clist.salesinfo.vm', [
       deletePart: function(part) {
         dataservice.invoicesrv.invoiceItems.del(part.InvoiceItemID, null, utils.safeCallback(null, function(err, resp) {
           if (resp.Value) {
-            _this.refreshInvoice();
+            // _this.refreshInvoice();
+            // reload invoice (without saving)
+            dataservice.invoicesrv.invoices.read({
+              id: part.InvoiceId,
+            }, null, utils.safeCallback(null, function(err, resp) {
+              _this.partsGvm.list(resp.Value.Items);
+            }, function(err) {
+              notify.error(err);
+            }));
           }
         }, function(err) {
           notify.error(err);
@@ -353,7 +361,7 @@ define('src/account/security/clist.salesinfo.vm', [
 
     _this.data.AccountId(routeData.id);
 
-    load_invoice(_this.data, subjoin);
+    load_invoiceMsInstalls(_this.data, subjoin);
     // load_vendorAlarmComPackages(_this.data.AlarmComPackageCvm, subjoin.add('2'));
     load_pointSystems(_this.pointSystemsCvm, subjoin.add('3'));
     load_panelTypes(_this.data.PanelTypeCvm, subjoin.add('4'));
@@ -404,7 +412,7 @@ define('src/account/security/clist.salesinfo.vm', [
     }
 
     if (!_this.data.isValid()) {
-      notify.notify('warn', _this.data.errMsg(), null, 7);
+      notify.warn(_this.data.errMsg(), null, 7);
       cb();
       return;
     }
@@ -444,7 +452,7 @@ define('src/account/security/clist.salesinfo.vm', [
   };
 
 
-  function load_invoice(data, join) {
+  function load_invoiceMsInstalls(data, join) {
     dataservice.salessummary.invoiceMsIsntalls.read({
       id: data.AccountId(),
       link: 'accountid'
