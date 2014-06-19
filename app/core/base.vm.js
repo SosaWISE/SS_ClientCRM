@@ -95,12 +95,12 @@ define('src/core/base.vm', [
           _this.mayReload(false);
           if (result === 'yes') {
             if (!_this.reload()) {
-              notify.notify('warn', strings.format('Failed to reload {0}?', title));
+              notify.warn(strings.format('Failed to reload {0}?', title));
             }
           }
         });
     } else if (ko.isObservable(_this.mayReload)) {
-      notify.notify('warn', strings.format('Currently can\'t reload {0}?', title), null, 5);
+      notify.warn(strings.format('Currently can\'t reload {0}?', title), null, 5);
     } else {
       console.log(title, 'reload not enabled');
     }
@@ -182,8 +182,7 @@ define('src/core/base.vm', [
       _this.onLoad(routeData, extraData, join);
       join.when(function(errResp) {
         if (errResp) {
-          // notify.notify('error', 'Error', errResp.Message);
-          notify.notify('error', 'Error', errResp.Message, 0, null, true);
+          notify.error(errResp);
         }
         // tell the loader we're done
         // - we already showed the error so don't pass it along

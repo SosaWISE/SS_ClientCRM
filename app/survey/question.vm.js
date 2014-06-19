@@ -95,12 +95,12 @@ define('src/survey/question.vm', [
     });
 
     // make sure it is loaded
-    vm.load({}, null, function(errResp) {
+    vm.load({}, null, function(err) {
       if (utils.isFunc(cb)) {
-        cb(errResp);
+        cb(err);
       }
-      if (errResp) {
-        notify.notify('error', 'Error', errResp.Message);
+      if (err) {
+        notify.error(err);
         return;
       }
     });

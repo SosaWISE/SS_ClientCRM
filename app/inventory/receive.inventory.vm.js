@@ -198,7 +198,7 @@ define('src/inventory/receive.inventory.vm', [
         loadPackingSlipInfo(param, vm, join.add());
 
       } else {
-        notify.notify('warn', 'PurchaseOrderID not found', null, 3);
+        notify.warn('PurchaseOrderID not found', null, 3);
       }
     }));
 
@@ -229,7 +229,7 @@ define('src/inventory/receive.inventory.vm', [
 
 
       } else {
-        notify.notify('warn', 'PurchaseOrderID not found', null, 3);
+        notify.warn('PurchaseOrderID not found', null, 3);
       }
     }));
   }
@@ -247,7 +247,7 @@ define('src/inventory/receive.inventory.vm', [
         vm.data.PackingSlipNumber.setValue(packingSlip.PackingSlipNumber);
 
       } else {
-        notify.notify('warn', 'PurchaseOrderID not found', 10);
+        notify.warn('PurchaseOrderID not found', null, 10);
       }
     }, function( /*err*/ ) {
 
@@ -265,7 +265,7 @@ define('src/inventory/receive.inventory.vm', [
         //alert(JSON.stringify(param2));
         createPackingSlipNumber(param2, cb);
       } else {
-        notify.notify('info', 'Please input a Packing Slip#!');
+        notify.warn('Please input a Packing Slip#!');
       }
 
     }));
@@ -282,7 +282,7 @@ define('src/inventory/receive.inventory.vm', [
       if (resp.Code === 0) {}
 
     }, function(err) {
-      notify.notify('error', err.Message);
+      notify.error(err);
     }));
 
 
@@ -298,7 +298,7 @@ define('src/inventory/receive.inventory.vm', [
       }
 
     }, function(err) {
-      notify.notify('error', err.Message);
+      notify.error(err);
     }));
   }
 

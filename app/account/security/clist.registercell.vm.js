@@ -66,7 +66,7 @@ define('src/account/security/clist.registercell.vm', [
         // vm.load will be called in controller.vm.js
         // vm.load(routeData, extraData, join.add());
       } else {
-        notify.notify('warn', 'Invalid CellType: ' + resp.Value.CellType);
+        notify.warn('Invalid CellType: ' + resp.Value.CellType);
       }
     }, utils.noop));
   };

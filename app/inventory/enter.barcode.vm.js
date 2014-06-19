@@ -77,7 +77,7 @@ define('src/inventory/enter.barcode.vm', [
           _this.data.productBarcodeID.setValue(null);
 
         } else {
-          notify.notify('warn', 'Error adding barcode...', null, 3);
+          notify.warn('Error adding barcode...', null, 3);
         }
 
       }, utils.no_op));

@@ -207,7 +207,7 @@ define('src/core/combo.vm', [
     };
 
     if (options && options.list) {
-      _this.setList(options.list);
+      _this.setList(options.list, true);
     } else {
       // start with nothing selected
       _this.selectedValue(null);
@@ -229,7 +229,7 @@ define('src/core/combo.vm', [
     }
     return null;
   };
-  ComboViewModel.prototype.setList = function(list) {
+  ComboViewModel.prototype.setList = function(list, stopSetValue) {
     list = list || [];
     var _this = this,
       wrapList = new Array(list.length),
@@ -243,6 +243,11 @@ define('src/core/combo.vm', [
     }
     _this.list(wrapList);
     filterList(_this.list.peek(), _this.filterText(), _this.matchStart);
+
+    // don't select a value if stopSetValue is true and it's nullable
+    if (stopSetValue && _this.nullable) {
+      return;
+    }
 
     //
     // set selected value to item in the new list

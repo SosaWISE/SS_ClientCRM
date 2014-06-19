@@ -133,11 +133,11 @@ define('src/core/dataservice.base', [
 
   DataserviceBase.prototype.onError = function(xhr, textStatus, errorThrown, context) {
     xhr = xhr || {};
-    if (xhr.readyState === 0 && textStatus === 'error') {
-      // ignore the error if readyState is UNSENT.
-      // page is probably refreshing or closing
-      return;
-    }
+    // if (xhr.readyState === 0 && textStatus === 'error') {
+    //   // ignore the error if readyState is UNSENT.
+    //   // page is probably refreshing or closing
+    //   return;
+    // }
 
     var value, code, msg, msgParts, responseData;
     try {
@@ -151,10 +151,13 @@ define('src/core/dataservice.base', [
 
       if (textStatus === 'timeout') {
         code = 990003;
-        msg = 'Request Timeout Error';
+        msg = 'Request timed out';
+      } else if (xhr.readyState === 0) {
+        code = 990000;
+        msg = 'Unabled to connect to server';
       } else {
         code = 990002;
-        msg = 'Server Error';
+        msg = 'Error making request';
       }
       msgParts.push(msg);
 
@@ -171,10 +174,10 @@ define('src/core/dataservice.base', [
         Value: value,
       };
     } catch (ex) {
-      console.log(ex);
+      console.error(ex);
       responseData = {
         Code: 990001,
-        Message: 'Error processing response',
+        Message: ex.stack,
         Value: null,
       };
     }
@@ -191,9 +194,13 @@ define('src/core/dataservice.base', [
       xhr: xhr,
     };
 
+    // set request url
+    responseData.Url = context.requestUrl;
+
     if (utils.isFunc(context.callback)) {
       // try to update session id
       DataserviceBase.sessionID(responseData.SessionId);
+
       var err;
       // check if there was an error
       if (responseData.Code === 0) {
@@ -203,8 +210,8 @@ define('src/core/dataservice.base', [
         }
       } else {
         err = responseData;
-        // prepend requestUrl
-        err.Message = context.requestUrl + '\n' + (err.Message || '');
+        // // prepend requestUrl
+        // err.Message = context.requestUrl + '\n' + (err.Message || '');
       }
       // call callback function
       context.callback(err, responseData, context);

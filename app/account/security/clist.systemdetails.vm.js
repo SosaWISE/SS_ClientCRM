@@ -50,12 +50,10 @@ define('src/account/security/clist.systemdetails.vm', [
           MsAccountId: _this.accountId,
           CompanyID: result.CompanyID
         };
-        dataservice.qualify.technician.post(null, model, null, utils.safeCallback(cb, function(err, resp) {
-          if (resp && resp.Code !== 0) {
-            notify.notify('error', 'Error', resp.Message);
+        dataservice.qualify.technician.post(null, model, null, utils.safeCallback(cb, function(err) {
+          if (err) {
+            notify.error(err);
           }
-        }, function(err) {
-          notify.notify('error', 'Error', err.Message);
         }));
       });
     }, function(busy) {

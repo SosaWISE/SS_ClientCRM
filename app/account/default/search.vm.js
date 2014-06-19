@@ -238,7 +238,7 @@ define('src/account/default/search.vm', [
     }
 
     if (!_this.data.isValid()) {
-      notify.notify('warn', _this.data.errMsg(), null, 7);
+      notify.warn(_this.data.errMsg(), null, 7);
       cb();
       return;
     }
@@ -256,7 +256,7 @@ define('src/account/default/search.vm', [
 
     if (_this.data.isClean() && _this.data.PageNumber() === page) {
       // only search if something has changed
-      notify.notify('warn', 'Nothing changed. No search made.', null, 3);
+      notify.warn('Nothing changed. No search made.', null, 3);
       cb();
       return;
     }
@@ -278,7 +278,7 @@ define('src/account/default/search.vm', [
       _this.gvm.list(resp.Value);
       _this.gvm.setSelectedRows([]);
     }, function(err) {
-      notify.notify('error', 'Error', err.Message, 30);
+      notify.error(err, 30);
     }));
   };
 

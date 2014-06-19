@@ -42,9 +42,9 @@ define('src/apilogger', [
     }, null, function(err, resp) {
       if (err) {
         console.warn(err.Message);
-        notify.notify('error', 'Error', err.Message);
+        notify.error(err);
       } else {
-        notify.notify('warn', 'Error logged - MessageID: ' + resp.Value);
+        notify.warn('Error logged - MessageID: ' + resp.Value);
       }
     });
     return true;

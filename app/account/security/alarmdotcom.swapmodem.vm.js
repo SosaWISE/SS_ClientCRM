@@ -52,7 +52,7 @@ define('src/account/security/alarmdotcom.swapmodem.vm', [
     //
     _this.cmdSwap = ko.command(function(cb) {
       if (!_this.data.isValid()) {
-        notify.notify('warn', _this.data.errMsg(), null, 7);
+        notify.warn(_this.data.errMsg(), null, 7);
         cb();
         return;
       }
@@ -65,7 +65,7 @@ define('src/account/security/alarmdotcom.swapmodem.vm', [
       }, null, utils.safeCallback(cb, function(err, resp) {
         closeLayer(resp.Value);
       }, function(err) {
-        notify.notify('error', 'Error', err.Message);
+        notify.error(err);
       }));
     });
 

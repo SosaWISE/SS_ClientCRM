@@ -60,7 +60,7 @@ define('src/survey/contexteditor.vm', [
 
     if (markClean) {
       if (!_this.contextStr.isValid()) {
-        notify.notify('warn', _this.contextStr.errMsg(), null, 7);
+        notify.warn(_this.contextStr.errMsg(), null, 7);
         return;
       }
       _this.contextStr.markClean();

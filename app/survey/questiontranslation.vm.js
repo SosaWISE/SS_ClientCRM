@@ -79,7 +79,7 @@ define('src/survey/questiontranslation.vm', [
       _this.qtData.TextFormat.validate();
       _this.qtData.update();
       if (!_this.qtData.isValid()) {
-        notify.notify('warn', _this.qtData.errMsg(), null, 10);
+        notify.warn(_this.qtData.errMsg(), null, 10);
         return cb();
       }
       dataservice.survey.questionTranslations.save({
@@ -87,7 +87,7 @@ define('src/survey/questiontranslation.vm', [
         data: _this.qtData.model,
       }, null, function(err, resp) {
         if (err) {
-          notify.notify('error', 'Error', err.Message);
+          notify.error(err);
         } else {
           _this.qtData.setValue(resp.Value);
           _this.qtData.markClean(resp.Value);

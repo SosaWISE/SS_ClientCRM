@@ -275,7 +275,7 @@ define('src/panels/swing.panel.vm', [
       //check if customer1 first name is available it means -- account id is available in the old db
       //also we were able to minimize API calls
       if (customer1.FirstName === "") {
-        notify.notify('warn', "Account ID not found", null, 10);
+        notify.warn("Account ID not found", null, 10);
       } else {
         //we only call the following APIs once Account
         //load info for the secondary customer
@@ -316,7 +316,7 @@ define('src/panels/swing.panel.vm', [
       console.log('Value:' + JSON.stringify(resp.Value));
 
       if (err) {
-        notify.notify('error', 'Error', err.Message, 10);
+        notify.error(err, 10);
       } else if (resp.Value) {
 
         //disable swing button and display label New Accounted created
@@ -324,18 +324,18 @@ define('src/panels/swing.panel.vm', [
         vm.data.InterimAccountId(resp.Value.MsAccountID);
         vm.data.CustomerMasterFileID(resp.Value.CustomerMasterFileID);
 
-        notify.notify('ok', 'Swing Successful!');
+        notify.ok('Swing Successful!');
 
       } else {
 
         vm.data.markClean(resp.Value, true);
-        notify.notify('warn', 'Account ID not found', null, 7);
+        notify.warn('Account ID not found', null, 7);
         vm.clearData();
       }
 
       //Display any error message encountered during the swing process
     }, function(err) {
-      notify.notify('error', err.Message);
+      notify.error(err);
     }));
 
     cb();
@@ -349,7 +349,7 @@ define('src/panels/swing.panel.vm', [
 
         if (err) {
           cb(err);
-          // notify.notify('error', 'Error', err.Message, 10);
+          // notify.error(err, 10);
           // console.log("error in load_customer_swing_info");
           return;
         }
@@ -365,7 +365,7 @@ define('src/panels/swing.panel.vm', [
             vm.data.Customer1.setValue(customer);
             //console.log("true in load_customer_swing_info");
           } else {
-            notify.notify('warn', 'Account ID not found', null, 3);
+            notify.warn('Account ID not found', null, 3);
           }
         } else {
           // console.log("false resp.Value in load_customer_swing_info");
@@ -379,7 +379,7 @@ define('src/panels/swing.panel.vm', [
         null, utils.safeCallback(cb, function(err, resp) {
           if (err) {
             //cb(error);
-            notify.notify('error', 'Error', err.Message, 10);
+            notify.error(err, 10);
             //console.log("error in load_customer_swing_info");
             return;
           }
@@ -395,7 +395,7 @@ define('src/panels/swing.panel.vm', [
               vm.data.Customer2.setValue(customer);
               //console.log("true in load_customer_swing_info");
             } else {
-              notify.notify('warn', 'Account ID not found', null, 3);
+              notify.warn('Account ID not found', null, 3);
             }
           } else {
             //console.log("false resp.Value in load_customer_swing_info");
@@ -417,7 +417,7 @@ define('src/panels/swing.panel.vm', [
       },
       null, utils.safeCallback(cb, function(err, resp) {
         if (err) {
-          notify.notify('error', 'Error', err.Message, 10);
+          notify.error(err, 10);
           return;
         }
 
@@ -437,7 +437,7 @@ define('src/panels/swing.panel.vm', [
       id: msAccount.AccountID
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (err) {
-        notify.notify('error', 'Error', err.Message, 10);
+        notify.error(err, 10);
         return;
       }
       if (resp.Value) {
@@ -460,7 +460,7 @@ define('src/panels/swing.panel.vm', [
       null, utils.safeCallback(cb, function(err, resp) {
 
         if (err) {
-          notify.notify('error', 'Error', err.Message, 10);
+          notify.error(err, 10);
           return;
         }
         if (resp.Value) {
@@ -475,7 +475,7 @@ define('src/panels/swing.panel.vm', [
       id: msAccount.AccountID
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (err) {
-        notify.notify('error', 'Error', err.Message, 10);
+        notify.error(err, 10);
         return;
       }
       if (resp.Value) {
@@ -492,7 +492,7 @@ define('src/panels/swing.panel.vm', [
       null, utils.safeCallback(cb, function(err, resp) {
 
         if (err) {
-          notify.notify('error', 'Error', err.Message, 10);
+          notify.error(err, 10);
           return;
         }
         if (resp.Value) {
@@ -520,11 +520,11 @@ define('src/panels/swing.panel.vm', [
 
     //Check if Phone Number is null
     if (cPhoneNumber == null) {
-      notify.notify('warn', 'Phone Number can\'t be empty.');
+      notify.warn('Phone Number can\'t be empty.');
       cb();
       //If Phone number is invalid, it will return an object. Not sure how to return specifically the error
     } else if (typeof(cPhoneNumber) === 'object') {
-      notify.notify('warn', cPhoneNumber);
+      notify.warn(cPhoneNumber);
       cb();
     } else {
 
@@ -546,16 +546,16 @@ define('src/panels/swing.panel.vm', [
             console.log(JSON.stringify(resp.Value));
 
             if (resp.Value.Dnc_Status === "Success") {
-              notify.notify('ok', 'Success: Added to DNC list.');
+              notify.ok('Success: Added to DNC list.');
               vm.data.PhoneNumber.setValue(null);
             } else {
-              notify.notify('warn', resp.Value.Dnc_Status);
+              notify.warn(resp.Value.Dnc_Status);
             }
 
 
           }
         }, function(err) {
-          notify.notify('error', 'Error', err.Message, 10);
+          notify.error(err, 10);
         }));
 
       cb();

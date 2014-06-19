@@ -72,7 +72,7 @@ define('src/survey/takesurveytranslation.vm', [
 
     locale = _this.localeCvm.selectedValue();
     if (!locale) {
-      notify.notify('warn', 'No localization code selected', null, 7);
+      notify.warn('No localization code selected', null, 7);
       return;
     }
     vm = new TakeSurveyViewModel({
@@ -80,7 +80,7 @@ define('src/survey/takesurveytranslation.vm', [
       surveyid: _this.surveyid,
       locale: locale,
       onSaved: function() {
-        notify.notify('ok', 'yay! saved!', null, 7);
+        notify.ok('yay! saved!', null, 7);
       },
     });
 

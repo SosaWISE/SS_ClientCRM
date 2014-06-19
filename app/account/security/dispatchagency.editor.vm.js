@@ -90,7 +90,7 @@ define('src/account/security/dispatchagency.editor.vm', [
     // });
     _this.cmdSave = ko.command(function(cb) {
       if (!_this.data.isValid()) {
-        notify.notify('warn', _this.data.errMsg(), null, 7);
+        notify.warn(_this.data.errMsg(), null, 7);
         cb();
         return;
       }
@@ -106,7 +106,7 @@ define('src/account/security/dispatchagency.editor.vm', [
       //   cb();
       //   closeLayer(resp.Value);
       // }, function(err) {
-      //   notify.notify('error', 'Error', err.Message);
+      //   notify.error(err);
       // }));
     }, function(busy) {
       return !busy && !_this.cmdDelete.busy();
@@ -123,7 +123,7 @@ define('src/account/security/dispatchagency.editor.vm', [
       //   closeLayer(1, true);
       //   closeLayer(resp.Value||1, true);
       // }, function(err) {
-      //   notify.notify('error', 'Error', err.Message);
+      //   notify.error(err);
       // }));
     }, function(busy) {
       return !busy && _this.item && !_this.cmdSave.busy();

@@ -124,7 +124,7 @@ define('src/panels/inventory.panel.vm', [
         //Set result to Location combo list
         cvm.setList(resp.Value);
       } else {
-        notify.notify('warn', 'PurchaseOrderID not found', null, 3);
+        notify.warn('PurchaseOrderID not found', null, 3);
       }
     }));
   }
@@ -144,7 +144,7 @@ define('src/panels/inventory.panel.vm', [
 
 
       } else {
-        notify.notify('error', err.Message);
+        notify.error(err);
       }
     }));
 
@@ -160,7 +160,7 @@ define('src/panels/inventory.panel.vm', [
         console.log("ProductBarcodeTracking-Read:" + JSON.stringify(resp.Value));
 
       } else {
-        notify.notify('error', err.Message);
+        notify.error(err);
       }
     }));
 
@@ -173,7 +173,7 @@ define('src/panels/inventory.panel.vm', [
       if (resp.Code === 0) {
         console.log("ProductBarcodeTracking-Post:" + JSON.stringify(resp.Value));
       } else {
-        notify.notify('error', err.Message);
+        notify.error(err);
       }
     }));
 

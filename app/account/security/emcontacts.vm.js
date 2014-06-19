@@ -44,7 +44,7 @@ define('src/account/security/emcontacts.vm', [
           data: model,
         }, null, function(err /*, resp*/ ) {
           if (err) {
-            notify.notify('error', 'Error', err.Message);
+            notify.error(err);
           }
         });
       },

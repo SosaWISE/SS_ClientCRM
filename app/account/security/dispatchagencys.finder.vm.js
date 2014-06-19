@@ -104,7 +104,7 @@ define('src/account/security/dispatchagencys.finder.vm', [
     // });
     _this.cmdFind = ko.command(function(cb) {
       if (!_this.data.isValid()) {
-        notify.notify('warn', _this.data.errMsg(), null, 7);
+        notify.warn(_this.data.errMsg(), null, 7);
         return cb(_this.data.errMsg());
       }
       var model = _this.data.getValue();
@@ -132,14 +132,14 @@ define('src/account/security/dispatchagencys.finder.vm', [
       //   cb();
       //   _this.gvm.list(resp.Value);
       // }, function(err) {
-      //   notify.notify('error', 'Error', err.Message);
+      //   notify.error(err);
       // }));
     }, function(busy) {
       return !busy && !_this.cmdSelect.busy();
     });
     _this.cmdSelect = ko.command(function(cb) {
       if (!_this.selectedAgency) {
-        notify.notify('warn', 'Please select a dispatch agency', null, 7);
+        notify.warn('Please select a dispatch agency', null, 7);
         cb();
         return;
       }
@@ -153,7 +153,7 @@ define('src/account/security/dispatchagencys.finder.vm', [
       //   cb();
       //   closeLayer(resp.Value);
       // }, function(err) {
-      //   notify.notify('error', 'Error', err.Message);
+      //   notify.error(err);
       // }));
     }, function(busy) {
       return !busy && _this.gvm.list().length;

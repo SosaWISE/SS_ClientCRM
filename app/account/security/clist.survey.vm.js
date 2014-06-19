@@ -59,7 +59,7 @@ define('src/account/security/clist.survey.vm', [
     _this.cmdRetakeLastSurvey = ko.command(function(cb) {
       var surveyResultView = _this.gvm.list()[0];
       if (!surveyResultView) {
-        notify.notify('warn', 'Please select a survey result', null, 7);
+        notify.warn('Please select a survey result', null, 7);
         cb();
         return;
       }
@@ -115,7 +115,7 @@ define('src/account/security/clist.survey.vm', [
     var _this = this;
     load_accountSurveys(_this.accountid, _this.gvm, function(err) {
       if (err) {
-        notify.notify('error', 'Error', err.Message);
+        notify.error(err);
       }
     });
   };
@@ -228,7 +228,7 @@ define('src/account/security/clist.survey.vm', [
     checkForCurrentSurvey(_this, function() {
       _this.getDataContext(function(err, dataContext) {
         if (err) {
-          notify.notify('error', 'Error', err.Message);
+          notify.error(err);
           // don't pass along error, just notify we're done
           wrappedCb();
           return;

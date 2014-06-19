@@ -162,7 +162,7 @@ define('src/account/security/equipment.editor.vm', [
         return;
       }
       if (!_this.data.isValid()) {
-        notify.notify('warn', _this.data.errMsg(), null, 7);
+        notify.warn(_this.data.errMsg(), null, 7);
         cb();
         return;
       }
@@ -174,7 +174,7 @@ define('src/account/security/equipment.editor.vm', [
       }, null, utils.safeCallback(cb, function(err, resp) {
         _this.layer.close(resp.Value, false);
       }, function(err) {
-        notify.notify('error', 'Error', err.Message);
+        notify.error(err);
       }));
     });
 
@@ -226,7 +226,7 @@ define('src/account/security/equipment.editor.vm', [
 
       }, function(err) {
 
-        notify.notify('error', 'Error', err.Message);
+        notify.error(err);
       }));
 
 

@@ -47,7 +47,7 @@ define('src/account/default/payby.vm', [
     _this.cmdSave = ko.command(function(cb) {
       var selectedVm = _this.selectedVm();
       if (!selectedVm.data.isValid()) {
-        notify.notify('warn', selectedVm.data.errMsg(), null, 7);
+        notify.warn(selectedVm.data.errMsg(), null, 7);
         cb();
         return;
       }

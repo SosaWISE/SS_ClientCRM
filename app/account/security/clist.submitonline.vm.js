@@ -68,16 +68,16 @@ define('src/account/security/clist.submitonline.vm', [
 
         if (resp && resp.Value) {
           if (resp.Value.WasSuccessfull) {
-            notify.notify('ok', 'Successfully submitted online!', null, 7);
+            notify.ok('Successfully submitted online!', null, 7);
             resp.Value.Msg = 'Submission Succeeded!';
           } else {
-            notify.notify('warn', 'Failed to submit account online.', null, 7);
+            notify.warn('Failed to submit account online.', null, 7);
             resp.Value.Msg = 'Submission Failed...';
           }
           _this.submissionData(resp.Value);
         }
       }, function(err) {
-        notify.notify('error', 'Error', err.Message);
+        notify.error(err);
       }));
     });
   }
@@ -114,7 +114,7 @@ define('src/account/security/clist.submitonline.vm', [
     // dataservice.boh.boh.read({}, null, utils.safeCallback(cb, function(err, resp) {
     //   _this.gvm.list(resp.Value);
     // }, function(err) {
-    //   notify.notify('error', 'Error', err.Message);
+    //   notify.error(err);
     // }));
   }
 

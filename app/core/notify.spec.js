@@ -50,7 +50,7 @@ define('src/core/notify.spec', [
     describe('add notification', function() {
       var item;
       beforeEach(function() {
-        n.notify('typeVal', 'title', 'messageVal');
+        n.ok('title', 'messageVal');
         item = n.list()[0];
       });
 
@@ -59,8 +59,7 @@ define('src/core/notify.spec', [
         expect(item).toBeDefined();
       });
       it('added item should have correct fields', function() {
-        expect(item.minTimeout).toBe(5);
-        expect(item.type).toBe('typeVal');
+        expect(item.type).toBe('ok');
         expect(item.title).toBe('title');
         expect(item.message).toBe('messageVal');
         expect(item.actions).toBeDefined();
@@ -79,7 +78,7 @@ define('src/core/notify.spec', [
       beforeEach(function() {
         jasmine.Clock.useMock();
 
-        n.notify('typeVal', 'title', 'messageVal', 10);
+        n.ok('title', 'messageVal', 10);
         item = n.list()[0];
 
         jasmine.Clock.tick(1000 * 9);
@@ -95,7 +94,7 @@ define('src/core/notify.spec', [
         jasmine.Clock.tick(1000 * 1);
         expect(n.list().length).toBe(1);
       });
-      it('when the seconds are less than or equal to minTimeout, pause should set seconds to minTimeout plus 1', function() {
+      it('when the seconds are less than or equal to 5(minimum timeout), pause should set seconds to 5(minimum timeout) plus 1', function() {
         expect(item.seconds()).toBe(1);
         item.pause();
         expect(item.seconds()).toBe(6);
@@ -115,7 +114,9 @@ define('src/core/notify.spec', [
       beforeEach(function() {
         actionObj = jasmine.createSpyObj('actionObj', ['view', 'retry']);
 
-        n.notify('typeVal', 'title', 'messageVal', 0, actionObj);
+        n.ok('title', 'messageVal', 0, {
+          actions: actionObj,
+        });
         actions = n.list()[0].actions;
       });
 

@@ -12,6 +12,7 @@ define('src/bootstrapper', [
   'src/core/jsonhelpers',
   'src/config',
   'src/resources',
+  'src/errorcodes',
   'src/core/dialog.vm',
   'src/core/layers.vm',
   'src/core/strings',
@@ -31,6 +32,7 @@ define('src/bootstrapper', [
   jsonhelpers,
   config,
   resources,
+  errorcodes,
   DialogViewModel,
   LayersViewModel,
   strings,
@@ -62,65 +64,63 @@ define('src/bootstrapper', [
       SourceView: url,
     });
     // show error
-    notify.notify('error', 'Error', msg, 0, null, true);
+    notify.error({
+      Code: -2,
+      Message: msg,
+    });
 
     // ////////////////////////TESTING////////////////////////////////////////////////
-    // notify.notify('info', 'Error', msg, 0, {
-    //   'alert1anddismiss': function() {
-    //     alert('alert1anddismiss!');
+    // notify.info('Error', msg, 0, {
+    //   actions: {
+    //     'alert1 and dismiss': function() {
+    //       alert('alert1 and dismiss!');
+    //     },
+    //     'alert2': function() {
+    //       alert('alert2!');
+    //       return true;
+    //     },
+    //     'alert3': function() {
+    //       alert('alert3!');
+    //       return true;
+    //     },
     //   },
-    //   'alert2': function() {
-    //     alert('alert2!');
-    //     return true;
+    //   pre: true,
+    // });
+    // notify.info('Error', msg, 0, {
+    //   actions: {
+    //     'alert1': function() {
+    //       alert('alert1!');
+    //       return true;
+    //     },
+    //     'alert2': function() {
+    //       alert('alert2!');
+    //       return true;
+    //     },
+    //     'alert3': function() {
+    //       alert('alert3!');
+    //       return true;
+    //     },
     //   },
-    //   'alert3': function() {
-    //     alert('alert3!');
-    //     return true;
+    //   pre: false,
+    // });
+    // notify.info('Error', 'Line 132, Column 13 Url: http://dev-crm.nexsense.com:1024/app/bootstrapper.js', 0, {
+    //   actions: {
+    //     'alert1': function() {
+    //       alert('alert1!');
+    //       return true;
+    //     },
+    //     'alert2': function() {
+    //       alert('alert2!');
+    //       return true;
+    //     },
+    //     'alert3': function() {
+    //       alert('alert3!');
+    //       return true;
+    //     },
     //   },
-    // }, true);
-    // notify.notify('info', 'Error', msg, 0, {
-    //   'alert1': function() {
-    //     alert('alert1!');
-    //     return true;
-    //   },
-    //   'alert2': function() {
-    //     alert('alert2!');
-    //     return true;
-    //   },
-    //   'alert3': function() {
-    //     alert('alert3!');
-    //     return true;
-    //   },
-    // }, false);
-    // notify.notify('info', 'Error', 'crm.nexsense.com:1024/app/bootstrapper.js', 0, {
-    //   'alert1': function() {
-    //     alert('alert1!');
-    //     return true;
-    //   },
-    //   'alert2': function() {
-    //     alert('alert2!');
-    //     return true;
-    //   },
-    //   'alert3': function() {
-    //     alert('alert3!');
-    //     return true;
-    //   },
-    // }, false);
-    // notify.notify('info', 'Error', 'Line 132, Column 13 Url: http://dev-crm.nexsense.com:1024/app/bootstrapper.js', 0, {
-    //   'alert1': function() {
-    //     alert('alert1!');
-    //     return true;
-    //   },
-    //   'alert2': function() {
-    //     alert('alert2!');
-    //     return true;
-    //   },
-    //   'alert3': function() {
-    //     alert('alert3!');
-    //     return true;
-    //   },
-    // }, false);
-    // notify.notify('info', 'Error', 'crm.nexsense.com:1024/app/bootstrapper.js', 0, null, false);
+    //   pre: false,
+    // });
+    // notify.info('Error', 'crm.nexsense.com:1024/app/bootstrapper.js');
     // ////////////////////////TESTING////////////////////////////////////////////////
   };
   // ////////////////////////TESTING////////////////////////////////////////////////
@@ -128,27 +128,27 @@ define('src/bootstrapper', [
   //   function a() {
   //     throw new Error('test error');
   //   }
-  //
+  //   //
   //   function b() {
   //     a();
   //   }
-  //
+  //   //
   //   function c() {
   //     b();
   //   }
-  //
+  //   //
   //   function d() {
   //     c();
   //   }
-  //
+  //   //
   //   function e() {
   //     d();
   //   }
-  //
+  //   //
   //   function f() {
   //     e();
   //   }
-  //
+  //   //
   //   f();
   // }, 1000);
   // ////////////////////////TESTING////////////////////////////////////////////////
@@ -160,7 +160,7 @@ define('src/bootstrapper', [
 
   ControllerViewModel.titlePrefix = config.titlePrefix;
   ControllerViewModel.titlePostfix = config.titlePostfix;
-  notify.init(LayersViewModel, DialogViewModel, resources);
+  notify.init(LayersViewModel, DialogViewModel, resources, errorcodes);
   // overwrite jquery's JSON parsing
   jquery.ajaxSetup({
     converters: {
@@ -200,12 +200,12 @@ define('src/bootstrapper', [
     });
 
     dataservice.session.start(config.token, function(err, resp) {
+      // start ko (since notify can't show anything without it)
+      ko.applyBindings(app, document.getElementById('main'));
+
       if (err) {
-        console.error(err);
-        notify.notify('error', 'Error', err.Message);
+        notify.error(err);
       } else {
-        // start ko
-        ko.applyBindings(app, document.getElementById('main'));
         // if we are authenticated, this will log us in
         config.user(resp.Value.AuthUser);
         // start router

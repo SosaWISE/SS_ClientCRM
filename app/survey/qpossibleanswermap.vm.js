@@ -30,7 +30,7 @@ define('src/survey/qpossibleanswermap.vm', [
         data: model,
       }, null, function(err, resp) {
         if (err) {
-          notify.notify('error', 'Error', err.Message);
+          notify.error(err);
         } else {
           _this.model = resp.Value;
           _this.active(_this.model.Expands);

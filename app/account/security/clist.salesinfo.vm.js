@@ -243,7 +243,7 @@ define('src/account/security/clist.salesinfo.vm', [
             _this.refreshInvoice();
           }
         }, function(err) {
-          notify.notify('error', 'Error', err.Message);
+          notify.error(err);
         }));
       },
     });
@@ -262,7 +262,7 @@ define('src/account/security/clist.salesinfo.vm', [
           _this.data.ContractTemplatesCvm.setList(resp.Value);
         }
       }, function(err) {
-        notify.notify('error', 'Error', err.Message);
+        notify.error(err);
       }));
     });
 
@@ -439,7 +439,7 @@ define('src/account/security/clist.salesinfo.vm', [
         _this.partsGvm.list(resp.Value.Items);
       }
     }, function(err) {
-      notify.notify('error', 'Error', err.Message);
+      notify.error(err);
     }));
   };
 
@@ -453,7 +453,7 @@ define('src/account/security/clist.salesinfo.vm', [
         load_msAccountSalesInformations(resp.Value, data, join.add('8'));
       }
     }, function(err) {
-      notify.notify('error', 'Error', err.Message);
+      notify.error(err);
     }));
   }
 
@@ -495,7 +495,7 @@ define('src/account/security/clist.salesinfo.vm', [
         data.setValue(val);
       }
     }, function(err) {
-      notify.notify('error', 'Error', err.Message);
+      notify.error(err);
     }));
   }
 

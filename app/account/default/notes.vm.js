@@ -111,7 +111,7 @@ define('src/account/default/notes.vm', [
         new RowEvent({
           eventName: 'onDblClick',
           fn: function(item) {
-            notify.notify('info', 'Note Details', item.Note, 5, null, true);
+            notify.info('Note Details', item.Note, 5, null, true);
           },
         }),
       ],
@@ -192,7 +192,7 @@ define('src/account/default/notes.vm', [
           _this.data.NoteCategory1IdCvm.setList(resp.Value);
         }
       }, function(err) {
-        notify.notify('error', 'Error', err.Message);
+        notify.error(err);
       }));
     });
     _this.data.NoteCategory1IdCvm.selectedValue.subscribe(function(selectedValue) {
@@ -209,7 +209,7 @@ define('src/account/default/notes.vm', [
           _this.data.NoteCategory2IdCvm.setList(resp.Value);
         }
       }, function(err) {
-        notify.notify('error', 'Error', err.Message);
+        notify.error(err);
       }));
     });
   }
@@ -248,11 +248,11 @@ define('src/account/default/notes.vm', [
 
   function appendNote(note, ukovData, cb) {
     if (!ukovData.isValid()) {
-      notify.notify('warn', ukovData.errMsg(), null, 7);
+      notify.warn(ukovData.errMsg(), null, 7);
       return cb(ukovData.errMsg());
     }
     if (!note.isValid()) {
-      notify.notify('warn', note.errMsg(), null, 7);
+      notify.warn(note.errMsg(), null, 7);
       return cb(note.errMsg());
     }
 

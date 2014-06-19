@@ -208,7 +208,7 @@ define('src/account/default/address.validate.vm', [
       _this.data.validate();
       _this.data.update();
       if (!_this.data.isValid()) {
-        notify.notify('warn', _this.data.errMsg(), null, 7);
+        notify.warn(_this.data.errMsg(), null, 7);
         return cb();
       }
 
@@ -222,7 +222,7 @@ define('src/account/default/address.validate.vm', [
           _this.result(resp.Value);
         }
       }, function(err) {
-        notify.notify('error', 'Error', err.Message);
+        notify.error(err);
       }));
     }, function(busy) {
       return !busy && !_this.data.isClean();

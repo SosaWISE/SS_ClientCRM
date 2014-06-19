@@ -8,12 +8,13 @@ div(class="notice-wrap", data-bind="foreach:list,toggle:{top:atTop},visible:list
         ul(class="actions", data-bind="foreach:actions")
           li
             a(data-bind="text:name,click:action")
+      span(class="url", data-bind="text:url,visible:url")
       div(class="content-wrap")
         div(class="content")
-          <!-- ko if:usePre -->
+          <!-- ko if:pre -->
           pre(class="msg", data-bind="text:message")
           <!-- /ko -->
-          <!-- ko if:!usePre -->
+          <!-- ko if:!pre -->
           span(class="msg", data-bind="text:message")
           <!-- /ko -->
 

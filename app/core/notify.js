@@ -7,102 +7,6 @@ define('src/core/notify', [
 ) {
   "use strict";
 
-  var titleMap = {
-    'error': 'Error',
-    'warn': 'Warn',
-    'info': 'Info',
-    'success': 'Success',
-  };
-
-  //
-  // UiMessage
-  //
-
-  function UiMessage(type, title, message, timeoutSec, actionsObj, usePre, onRemove) {
-    var _this = this,
-      intervalId,
-      dismissed = false,
-      seconds;
-
-    _this.resources = {};
-    _this.type = type;
-    _this.title = title;
-    _this.message = message;
-    _this.actions = [];
-    _this.seconds = seconds = ko.observable(0);
-    if (timeoutSec > 0) {
-      // set seconds
-      seconds(Math.max(_this.minTimeout, timeoutSec));
-    }
-    _this.usePre = usePre;
-
-    function dismiss() {
-      _this.pause();
-      // onRemove();
-      seconds(0.5);
-      dismissed = true;
-      // try to start the timeout
-      _this.resume();
-    }
-    if (actionsObj) {
-      // add actions
-      Object.keys(actionsObj).forEach(function(key) {
-        _this.actions.push({
-          name: key,
-          action: function() {
-            if (!actionsObj[key]()) {
-              dismiss();
-            }
-          },
-        });
-      });
-    }
-    _this.actions.push({
-      name: 'dismiss',
-      action: dismiss,
-    });
-
-
-    //
-    // events
-    //
-    _this.dismiss = dismiss;
-    _this.pause = function() {
-      if (dismissed) {
-        return false;
-      }
-
-      clearInterval(intervalId);
-      intervalId = null;
-      if (seconds() > 0 && seconds() <= _this.minTimeout) {
-        seconds(_this.minTimeout + 1);
-      }
-      return true;
-    };
-    _this.resume = function() {
-      var s = seconds();
-      if (intervalId || s <= 0) {
-        return;
-      }
-      intervalId = setInterval(function() {
-        // decrement seconds remaining
-        var s = seconds() - 1;
-        seconds(s);
-        if (s <= 0) {
-          // remove from list
-          onRemove();
-        }
-      }, s < 1 ? (s * 1000) : 1000);
-    };
-
-    // try to start the timeout
-    _this.resume();
-  }
-  UiMessage.prototype.minTimeout = 5;
-  UiMessage.prototype.title = 'This is a title';
-
-
-
   //
   // Notifier
   //
@@ -119,8 +23,19 @@ define('src/core/notify', [
     _this.clickToggle = function() {
       _this.atTop(!_this.atTop());
     };
+
+    //
+    // bind functions
+    //
+    _this.init = _this.init.bind(_this);
+    _this.error = _this.error.bind(_this);
+    _this.warn = _this.warn.bind(_this);
+    _this.ok = _this.ok.bind(_this);
+    _this.info = _this.info.bind(_this);
+    _this.alert = _this.alert.bind(_this);
+    _this.confirm = _this.confirm.bind(_this);
   }
-  Notifier.prototype.init = function(LayersViewModel, DialogViewModel, resources) {
+  Notifier.prototype.init = function(LayersViewModel, DialogViewModel, resources, errorCodeMap) {
     var _this = this;
     // default layers view model for dialogs
     _this.layersVm = new LayersViewModel({
@@ -132,40 +47,151 @@ define('src/core/notify', [
     });
     _this.DialogViewModel = DialogViewModel;
     _this.resources = resources;
+    _this.errorCodeMap = errorCodeMap;
   };
   Notifier.prototype.create = function() {
     return new Notifier();
   };
-
-  Notifier.prototype.notify = function(type, title, message, timeoutSec, actionsObj, usePre) {
-    var _this = this,
-      list = _this.list,
-      notification;
-
-    notification = new UiMessage(type, title || titleMap[type], message, timeoutSec, actionsObj, usePre, function() {
-      list.remove(notification);
-    });
-
-    if (_this.atTop()) {
-      // at top - add to end
-      list.push(notification);
-    } else {
-      // at bottom - add to start
-      list.unshift(notification);
+  Notifier.prototype.error = function(err, delay, options) {
+    var _this = this;
+    if (err) {
+      options = options || {};
+      options.pre = true;
+      notify(_this, 'error', err.Url, _this.errorCodeMap[err.Code] || 'Error (code not recognized)', err.Message, delay, options);
     }
   };
+  Notifier.prototype.warn = function(title, message, delay, options) {
+    notify(this, 'warn', null, title, message, delay, options);
+  };
+  Notifier.prototype.ok = function(title, message, delay, options) {
+    notify(this, 'ok', null, title, message, delay, options);
+  };
+  Notifier.prototype.info = function(title, message, delay, options) {
+    options = options || {};
+    options.pre = true;
+    notify(this, 'info', null, title, message, delay, options);
+  };
+
+  Notifier.prototype.notify = function(type, title, message, delay, actionsObj, usePre) {
+    var _this = this;
+    if (type === 'error' || type === 'warn' || type === 'ok' || type === 'info') {
+      alert('deprecated: use notify.' + type + '(...) instead of notify.notify(...)');
+    } else {
+      alert('invalid notify type `' + type + '`');
+    }
+    notify(_this, type, null, title, message, delay, {
+      actions: actionsObj,
+      pre: usePre,
+    });
+  };
+
+  var titleMap = {
+    'error': 'Error',
+    'warn': 'Warn',
+    'info': 'Info',
+    'success': 'Success',
+  };
+
+  function notify(notifier, type, url, title, message, delay, options) {
+    var list = notifier.list,
+      dismissed = false,
+      intervalId, n;
+
+    n = {
+      type: type,
+      url: url,
+      title: title || titleMap[type] || type,
+      message: message,
+      pre: options && options.pre || false,
+      onRemove: function() {
+        list.remove(n);
+      },
+      actions: [],
+      seconds: ko.observable((delay > 0) ? Math.max(5, delay) : 0),
+    };
+
+    function dismiss() {
+      n.pause();
+      n.seconds(0.5);
+      dismissed = true;
+      // start the timeout
+      n.resume();
+    }
+    if (options && options.actions) {
+      // add actions
+      Object.keys(options.actions).forEach(function(key) {
+        n.actions.push({
+          name: key,
+          action: function() {
+            if (!options.actions[key]()) {
+              dismiss();
+            }
+          },
+        });
+      });
+    }
+    n.actions.push({
+      name: 'dismiss',
+      action: dismiss,
+    });
+
+
+    //
+    // events
+    //
+    n.dismiss = dismiss;
+    n.pause = function() {
+      if (dismissed) {
+        return false;
+      }
+
+      clearInterval(intervalId);
+      intervalId = null;
+      if (n.seconds() > 0 && n.seconds() <= 5) {
+        n.seconds(6);
+      }
+      return true;
+    };
+    n.resume = function() {
+      var s = n.seconds();
+      if (intervalId || s <= 0) {
+        return;
+      }
+      intervalId = setInterval(function() {
+        // decrement seconds remaining
+        var s = n.seconds() - 1;
+        n.seconds(s);
+        if (s <= 0) {
+          // remove from list
+          n.onRemove();
+        }
+      }, s < 1 ? (s * 1000) : 1000);
+    };
+
+    // try to start the timeout
+    n.resume();
+
+    // add to list
+    if (notifier.atTop()) {
+      // at top - add to end
+      list.push(n);
+    } else {
+      // at bottom - add to start
+      list.unshift(n);
+    }
+  }
 
 
   //@REVIEW this needs to be rethought
-  // Notifier.prototype.send = function(type, resKey, messageArgs, timeoutSec, actionsObj) {
+  // Notifier.prototype.send = function(type, resKey, messageArgs, delay, options) {
   //   // lookup resource by key and replace {n} with messageArgs
   //   var msg = strings.aformat(this.resources[resKey] || ('invalid resource key `' + resKey + '`'), messageArgs || []);
-  //   this.notify(type, msg, timeoutSec, actionsObj);
+  //   this.notify(type, msg, delay, options);
   // };
   // // add helper functions
   // ['info', 'ok', 'warn', 'error'].forEach(function(type) {
-  //   Notifier.prototype[type] = function(resKey, messageArgs, timeoutSec, actionsObj) {
-  //     this.send(type, resKey, messageArgs, timeoutSec, actionsObj);
+  //   Notifier.prototype[type] = function(resKey, messageArgs, delay, options) {
+  //     this.send(type, resKey, messageArgs, delay, options);
   //   };
   // });
 

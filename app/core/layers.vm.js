@@ -112,7 +112,7 @@ define('src/core/layers.vm', [
 
         // check if the layer vm can be closed
         if (vm && (msg = vm.closeMsg())) {
-          notify.notify('warn', msg, null, 7);
+          notify.warn(msg, null, 7);
           return;
         }
 

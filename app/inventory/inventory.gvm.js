@@ -17,7 +17,7 @@ define('src/inventory/inventory.gvm', [
 
   function numberFieldValidator(value) {
     if (isNaN(value)) {
-      notify.notify('error', 'Please input a number only.');
+      notify.warn('Please input a number only.');
       return {
         valid: false,
         msg: "Please input a number only."

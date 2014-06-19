@@ -37,7 +37,7 @@ define('src/panels/login.panel.vm', [
         if (index > list.length) {
           index = 0;
         }
-        notify.notify('warn', list[index], '', 10);
+        notify.warn(list[index], '', 10);
         index++;
       };
     })();
@@ -51,7 +51,7 @@ define('src/panels/login.panel.vm', [
         }, function(err, resp) {
           if (err) {
             console.error(err);
-            notify.notify('error', 'Error', err.Message, 10);
+            notify.error(err, 10);
           } else {
             config.user(resp.Value);
             router.useDestPath();

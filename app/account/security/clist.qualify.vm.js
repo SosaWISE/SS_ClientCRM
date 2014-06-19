@@ -101,7 +101,7 @@ define('src/account/security/clist.qualify.vm', [
         leadId: _this.creditResult().LeadId
       }, null, function(err, resp) {
         if (err) {
-          notify.notify('error', 'Error', err.Message);
+          notify.error(err);
           return;
         }
         var checklistVm = _this.pcontroller;
@@ -117,7 +117,7 @@ define('src/account/security/clist.qualify.vm', [
 
           _this.canCreateAccount = false;
         } else {
-          notify.notify('warn', 'unable to close??');
+          notify.warn('unable to close??');
         }
         cb();
       });

@@ -131,7 +131,7 @@ define('src/survey/takesurvey.vm', [
 
     join.when(function(err) {
       if (err) {
-        notify.notify('error', 'Error', err.Message);
+        notify.error(err);
         return;
       }
 
@@ -162,7 +162,7 @@ define('src/survey/takesurvey.vm', [
       errMsg, answers = [];
     if (_this.surveyData) {
       if (!_this.showSave()) { // if (_this.resultid && !_this.retake) {
-        notify.notify('warn', strings.format('Survey {0} has already been saved.', _this.resultid), null, 7);
+        notify.warn(strings.format('Survey {0} has already been saved.', _this.resultid), null, 7);
         cb();
         return;
       }
@@ -178,7 +178,7 @@ define('src/survey/takesurvey.vm', [
 
       // check for errors
       if (errMsg) {
-        notify.notify('warn', errMsg, null, 7);
+        notify.warn(errMsg, null, 7);
         // allow for saving even if there are errors
         notify.confirm('Save incomplete survey?',
           'This survey is incomplete. Saving now will result in an automatic failure, ' +
@@ -223,7 +223,7 @@ define('src/survey/takesurvey.vm', [
       _this.reloadSurvey();
       _this.onSaved();
     }, function(err) {
-      notify.notify('error', 'Error', err.Message);
+      notify.error(err);
     }));
   }
 

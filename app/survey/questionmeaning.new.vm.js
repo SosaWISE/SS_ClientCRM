@@ -51,14 +51,14 @@ define('src/survey/questionmeaning.new.vm', [
       _this.qmData.Name.validate();
       _this.qmData.update();
       if (!_this.qmData.isValid()) {
-        notify.notify('warn', _this.qmData.errMsg(), null, 10);
+        notify.warn(_this.qmData.errMsg(), null, 10);
         return cb();
       }
       dataservice.survey.questionMeanings.save({
         data: _this.qmData.model,
       }, null, function(err, resp) {
         if (err) {
-          notify.notify('error', 'Error', err.Message);
+          notify.error(err);
         } else {
           _this.layer.close(resp.Value);
         }
