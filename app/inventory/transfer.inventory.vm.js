@@ -34,8 +34,6 @@ define('src/inventory/transfer.inventory.vm', [
     var _this = this;
 
     TransferInventoryViewModel.super_.call(_this, options);
-    _this.title = 'Inventory';
-
 
     //Set barcode field as first focusable
     _this.focusFirst = ko.observable(true);

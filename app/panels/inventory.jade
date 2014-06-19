@@ -2,16 +2,12 @@ div(class="inventory", data-bind="if:loaded")
   table(class="fh-wrap")
     tr
       td(class="fh-header")
-        ul(class="tabs cf")
-          li(class="tab",data-bind="active:receiveVm.active")
-            a(data-bind="click:clickReceive") Receive                    
-          li(class="tab",data-bind="active:transferVm.active")
-            a(data-bind="click:clickTransfer") Transfer          
+        ul(class="tabs cf",data-bind="foreach:list")
+          li(class="tab",data-bind="active:active")
+            a(data-bind="click:$parent.clickItem,text:title")
     tr
       td(class="fh-body")
-        div(class="fh-contents")          
-          div(class="tab", data-bind="template:{name:receiveVm.viewTmpl,data:receiveVm},active:receiveVm.active")
-          div(class="tab", data-bind="template:{name:transferVm.viewTmpl,data:transferVm},active:transferVm.active")
-          
-  
-  
+        div(class="fh-contents",data-bind="foreach:list")
+          <!-- ko if:active -->
+          div(class="tab", data-bind="template:viewTmpl,active:active")
+          <!-- /ko -->

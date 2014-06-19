@@ -66,8 +66,6 @@ define('src/inventory/receive.inventory.vm', [
 
     ReceiveInventoryViewModel.super_.call(_this, options);
 
-    _this.title = 'Inventory';
-
     _this.focusFirst = ko.observable(false);
 
     //holds the packing slip id - to be used on addPackingSlipItems
