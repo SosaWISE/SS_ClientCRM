@@ -69,10 +69,15 @@ define('src/core/base.vm', [
   };
   BaseViewModel.prototype.reload = function(cb) {
     var _this = this,
-      canReload = _this.canReload();
+      canReload = _this.canReload(),
+      routeData;
     if (canReload) {
       _this.loader.reset();
-      _this.load(_this.getRouteData(), {}, cb);
+      routeData = _this.getRouteData();
+      _this.load(routeData, {}, cb);
+      if (utils.isFunc(_this.goTo)) { // this is more controller.vm territory... but so is getRouteData...
+        _this.goTo(routeData);
+      }
     } else {
       // call now
       cb();
