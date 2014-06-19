@@ -324,7 +324,7 @@ define('src/panels/swing.panel.vm', [
         vm.data.InterimAccountId(resp.Value.MsAccountID);
         vm.data.CustomerMasterFileID(resp.Value.CustomerMasterFileID);
 
-        notify.ok('Swing Successful!');
+        notify.info('Swing Successful!');
 
       } else {
 
@@ -546,7 +546,7 @@ define('src/panels/swing.panel.vm', [
             console.log(JSON.stringify(resp.Value));
 
             if (resp.Value.Dnc_Status === "Success") {
-              notify.ok('Success: Added to DNC list.');
+              notify.info('Success: Added to DNC list.');
               vm.data.PhoneNumber.setValue(null);
             } else {
               notify.warn(resp.Value.Dnc_Status);

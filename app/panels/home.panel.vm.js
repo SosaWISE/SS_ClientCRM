@@ -43,7 +43,7 @@ define('src/panels/home.panel.vm', [
     // notify.counter = 0;
     // setInterval(function() {
     //   notify.counter++;
-    //   notify.info('message ' + notify.counter, null, 6);
+    //   notify.info('message ' + notify.counter, null, 1);
     // }, 1000 * 1);
 
     join.add()();

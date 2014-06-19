@@ -1,6 +1,7 @@
 define('src/account/security/emcontacteditor.vm', [
   'src/dataservice',
   'src/core/combo.vm',
+  'src/core/strings',
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
@@ -9,6 +10,7 @@ define('src/account/security/emcontacteditor.vm', [
 ], function(
   dataservice,
   ComboViewModel,
+  strings,
   notify,
   utils,
   BaseViewModel,
@@ -221,11 +223,16 @@ define('src/account/security/emcontacteditor.vm', [
         return;
       }
       var model = _this.data.getValue();
-      _this.data.markClean(model, true);
       dataservice.msaccountsetupsrv.emergencyContacts.save({
         id: model.EmergencyContactID,
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
+        notify.info('Saved ' + formatFullname(model), '', 3);
+        if (resp.Message && resp.Message !== 'Success') {
+          notify.error(resp, 3);
+        }
+        //
+        _this.data.markClean(model, true);
         _this.layer.close(resp.Value, false);
       }, function(err) {
         notify.error(err);
@@ -238,7 +245,13 @@ define('src/account/security/emcontacteditor.vm', [
         cb();
         return;
       }
-      dataservice.msaccountsetupsrv.emergencyContacts.del(_this.data.model.EmergencyContactID, null, utils.safeCallback(cb, function(err, resp) {
+      var model = _this.data.getValue();
+      dataservice.msaccountsetupsrv.emergencyContacts.del(model.EmergencyContactID, null, utils.safeCallback(cb, function(err, resp) {
+        notify.info('Deleted ' + formatFullname(model), '', 3);
+        if (resp.Message && resp.Message !== 'Success') {
+          notify.error(resp, 3);
+        }
+        //
         _this.layer.close(resp.Value, true);
       }, function(err) {
         notify.error(err);
@@ -249,6 +262,10 @@ define('src/account/security/emcontacteditor.vm', [
   }
   utils.inherits(EmContactEditorViewModel, BaseViewModel);
   EmContactEditorViewModel.prototype.viewTmpl = 'tmpl-security-emcontacteditor';
+
+  function formatFullname(d) {
+    return strings.joinTrimmed(' ', d.Prefix, d.FirstName, d.MiddleName, d.LastName, d.Postfix);
+  }
 
   return EmContactEditorViewModel;
 });

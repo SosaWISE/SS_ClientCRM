@@ -3,6 +3,7 @@ define('src/account/security/emcontacts.vm', [
   'src/dataservice',
   'src/account/security/emcontacteditor.vm',
   'src/account/security/emcontacts.gvm',
+  'src/core/strings',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
@@ -11,6 +12,7 @@ define('src/account/security/emcontacts.vm', [
   dataservice,
   EmContactEditorViewModel,
   EmContactsGridViewModel,
+  strings,
   notify,
   utils,
   ControllerViewModel
@@ -42,14 +44,17 @@ define('src/account/security/emcontacts.vm', [
         dataservice.msaccountsetupsrv.emergencyContacts.save({
           id: model.EmergencyContactID,
           data: model,
-        }, null, function(err /*, resp*/ ) {
-          if (err) {
-            notify.error(err);
+        }, null, utils.safeCallback(null, function(err, resp) {
+          notify.info('Saved ' + formatFullname(model), '', 3);
+          if (resp.Message && resp.Message !== 'Success') {
+            notify.error(resp, 3);
           }
-        });
+        }, function(err) {
+          notify.error(err);
+        }));
       },
       fullnameFormatter: function(row, cell, value, columnDef, dataCtx) {
-        return [dataCtx.Prefix, dataCtx.FirstName, dataCtx.MiddleName, dataCtx.LastName, dataCtx.Postfix].join(' ');
+        return formatFullname(dataCtx);
       },
       relationshipFormatter: function(row, cell, value) {
         var relationship = findById(_this.relationshipTypes, value, 'RelationshipID');
@@ -146,6 +151,11 @@ define('src/account/security/emcontacts.vm', [
       }
     });
     return result;
+  }
+
+
+  function formatFullname(d) {
+    return strings.joinTrimmed(' ', d.Prefix, d.FirstName, d.MiddleName, d.LastName, d.Postfix);
   }
 
 

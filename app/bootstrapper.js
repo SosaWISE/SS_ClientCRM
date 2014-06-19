@@ -1,5 +1,3 @@
-// `formatError` is defined in index.js
-/* global formatError */
 define('src/bootstrapper', [
   // load main libs
   'jquery',
@@ -53,11 +51,14 @@ define('src/bootstrapper', [
   // ////////////////////////TESTING////////////////////////////////////////////////
 
   // overwrite onerror function set in index.js
-  window.onerror = function(message, url, line, column, err) {
-    var msg = formatError(message, url, line, column, err);
+  window.onerror = function(msg, url, line, column, err) {
+    // overwrite message with message and stack trace
+    msg = err.stack;
+    // append line and column (same as first line of stack trace)
+    url += ':' + line + ':' + column;
     // save error
     apilogger.error({
-      Header: 'Unhandled error',
+      Header: 'Unhandled exception',
       Message: msg,
       Version: config.version,
       // ComputerName: '',
@@ -67,10 +68,11 @@ define('src/bootstrapper', [
     notify.error({
       Code: -2,
       Message: msg,
+      Url: url,
     });
 
     // ////////////////////////TESTING////////////////////////////////////////////////
-    // notify.info('Error', msg, 0, {
+    // notify.info('Info', msg, 0, {
     //   actions: {
     //     'alert1 and dismiss': function() {
     //       alert('alert1 and dismiss!');
@@ -84,9 +86,9 @@ define('src/bootstrapper', [
     //       return true;
     //     },
     //   },
-    //   pre: true,
+    //   noPre: false,
     // });
-    // notify.info('Error', msg, 0, {
+    // notify.info('Info', msg, 0, {
     //   actions: {
     //     'alert1': function() {
     //       alert('alert1!');
@@ -101,9 +103,9 @@ define('src/bootstrapper', [
     //       return true;
     //     },
     //   },
-    //   pre: false,
+    //   noPre: true,
     // });
-    // notify.info('Error', 'Line 132, Column 13 Url: http://dev-crm.nexsense.com:1024/app/bootstrapper.js', 0, {
+    // notify.info('Info', 'Line 132, Column 13 Url: http://dev-crm.nexsense.com:1024/app/bootstrapper.js', 0, {
     //   actions: {
     //     'alert1': function() {
     //       alert('alert1!');
@@ -118,9 +120,14 @@ define('src/bootstrapper', [
     //       return true;
     //     },
     //   },
-    //   pre: false,
+    //   noPre: true,
     // });
-    // notify.info('Error', 'crm.nexsense.com:1024/app/bootstrapper.js');
+    // notify.info('Info', 'crm.nexsense.com:1024/app/bootstrapper.js');
+    // notify.warn('Warn', 'crm.nexsense.com:1024/app/bootstrapper.js');
+    // notify.error({
+    //   Code: -1,
+    //   Message: 'crm.nexsense.com:1024/app/bootstrapper.js',
+    // });
     // ////////////////////////TESTING////////////////////////////////////////////////
   };
   // ////////////////////////TESTING////////////////////////////////////////////////

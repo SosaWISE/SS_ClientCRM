@@ -68,7 +68,7 @@ define('src/account/security/clist.submitonline.vm', [
 
         if (resp && resp.Value) {
           if (resp.Value.WasSuccessfull) {
-            notify.ok('Successfully submitted online!', null, 7);
+            notify.info('Successfully submitted online!', null, 7);
             resp.Value.Msg = 'Submission Succeeded!';
           } else {
             notify.warn('Failed to submit account online.', null, 7);

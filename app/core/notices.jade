@@ -3,7 +3,9 @@ div(class="notice-wrap", data-bind="foreach:list,toggle:{top:atTop},visible:list
     div(class="notice-item")
       span(data-bind="attr:{'class':'ico '+type}")
       span(class="seconds",data-bind="text:seconds")
-      span(class="title", data-bind="text:title")
+      div(class="title")
+        span(data-bind="text:title")
+        span(class="code",data-bind="text:code")
       div(class="actions-wrap")
         ul(class="actions", data-bind="foreach:actions")
           li
@@ -11,11 +13,6 @@ div(class="notice-wrap", data-bind="foreach:list,toggle:{top:atTop},visible:list
       span(class="url", data-bind="text:url,visible:url")
       div(class="content-wrap")
         div(class="content")
-          <!-- ko if:pre -->
-          pre(class="msg", data-bind="text:message")
-          <!-- /ko -->
-          <!-- ko if:!pre -->
-          span(class="msg", data-bind="text:message")
-          <!-- /ko -->
+          div(data-bind="text:message,css:{'pre-wrap':!noPre}")
 
 div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

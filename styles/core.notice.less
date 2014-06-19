@@ -51,8 +51,7 @@
   margin-top: 10px;
   max-height: 200px;
   &.fade {
-    @delay: 4.5s;
-    transition: opacity 3s 3s, max-height 0.5s linear @delay, margin-top 0.5s linear @delay;
+    transition: opacity 3s 1s, max-height 0.5s linear 2.5s, margin-top 0.5s linear 2.5s;
     .opacity(0.2);
     margin-top: -2px;
     max-height: 0px;
@@ -70,12 +69,27 @@
   color: #ffffff;
 
   > .ico {
-    color: #7FBB45;
     display: inline-block;
     font-size: 16px;
     position: absolute;
     top: 10px;
     left: -10px;
+
+    &:before {
+      font-family: 'entypo';
+    }
+    &.error:before {
+      color: #FF0000;
+      content: "\1f4a5";
+    }
+    &.warn:before {
+      color: #FFD800;
+      content: "\26a0";
+    }
+    &.info:before {
+      color: #7FBB45;
+      content: "\e705";
+    }
   }
   > .seconds {
     font-size: 0.8em;
@@ -89,19 +103,22 @@
     padding: 0px;
     display: table-cell;
     width: 100%;
-    // display:inline-block;
   }
+  > .title > .code,
   > .url {
     font-size:12px;
     font-weight:400;
     padding: 0px;
-    display: block;
-    width: 100%;
+    margin-left: 5px;
     .transition(opacity 0.2s);
     .opacity(0.2);
     &:hover {
       .opacity(0.8);
     }
+  }
+  > .url {
+    display: block;
+    width: 100%;
   }
   > .actions-wrap {
     display: table-cell;
@@ -134,6 +151,10 @@
     .content {
       display: block;
       width: 100%;
+
+      > div.pre-wrap {
+        white-space: pre-wrap; // from http://stackoverflow.com/a/20618776
+      }
     }
   }
 }

@@ -50,10 +50,11 @@ define('src/core/combo.vm', [
     _this.activeIndex = -1;
     _this.filterText = ko.observable('');
     _this.selected = ko.observable(_this.noItemSelected);
-    if (!_this.selectedValue) {
+    if (!_this.selectedValue || !ko.isObservable(_this.selectedValue)) {
       _this.selectedValue = ko.observable();
     }
-    _this.selectionHistory = [];
+    // start history with current item
+    _this.selectionHistory = [_this.selectedValue.peek()];
 
     _this.list = ko.observableArray();
     _this.actions = ko.observableArray();
@@ -102,6 +103,9 @@ define('src/core/combo.vm', [
         _this.deactivateCurrent();
       }
     });
+    _this.setSelectedValue = function(value) {
+      setAndNotify(_this.selectedValue, value);
+    };
 
     //
     // events
@@ -194,9 +198,9 @@ define('src/core/combo.vm', [
     };
     _this.selectItem = function(wrappedItem) {
       if (wrappedItem) {
-        _this.selectedValue(wrappedItem.value);
+        _this.setSelectedValue(wrappedItem.value);
       } else {
-        _this.selectedValue(null);
+        _this.setSelectedValue(null);
       }
       _this.clickClose();
     };
@@ -207,10 +211,10 @@ define('src/core/combo.vm', [
     };
 
     if (options && options.list) {
-      _this.setList(options.list, true);
+      _this.setList(options.list);
     } else {
       // start with nothing selected
-      _this.selectedValue(null);
+      _this.setSelectedValue(null);
     }
   }
   utils.inherits(ComboViewModel, BaseViewModel);
@@ -229,7 +233,7 @@ define('src/core/combo.vm', [
     }
     return null;
   };
-  ComboViewModel.prototype.setList = function(list, stopSetValue) {
+  ComboViewModel.prototype.setList = function(list) {
     list = list || [];
     var _this = this,
       wrapList = new Array(list.length),
@@ -244,11 +248,6 @@ define('src/core/combo.vm', [
     _this.list(wrapList);
     filterList(_this.list.peek(), _this.filterText(), _this.matchStart);
 
-    // don't select a value if stopSetValue is true and it's nullable
-    if (stopSetValue && _this.nullable) {
-      return;
-    }
-
     //
     // set selected value to item in the new list
     //
@@ -257,16 +256,16 @@ define('src/core/combo.vm', [
     while (i--) {
       // console.log('try selection:', _this.selectionHistory[i]);
       if (findWrappedItemByValue(wrapList, _this.selectionHistory[i])) {
-        _this.selectedValue(_this.selectionHistory[i]);
+        _this.setSelectedValue(_this.selectionHistory[i]);
         return;
       }
     }
     // try to select the clean value
     if (ko.isObservable(_this.selectedValue.cleanVal)) {
-      _this.selectedValue(_this.selectedValue.cleanVal.peek());
+      _this.setSelectedValue(_this.selectedValue.cleanVal.peek());
     } else {
       // deselect value (set to undefined when value is null)
-      _this.selectedValue(_this.selectedValue.peek() === null ? undefined : null);
+      _this.setSelectedValue(_this.selectedValue.peek() === null ? undefined : null);
     }
   };
   ComboViewModel.prototype.addItem = function(item) {
@@ -443,6 +442,26 @@ define('src/core/combo.vm', [
       results.push(text.substr(index));
     }
     return results.join('');
+  }
+
+
+  // copied from ukov-prop
+  function setAndNotify(_this, value) {
+    //
+    // force notification so value formatters can do their thang
+    // - essentially the same code as when setting an observable,
+    //   but we only want to notify when the values are equal
+    //   since the built in code will notify when the values are not equal
+    //
+    if (!_this.equalityComparer || !_this.equalityComparer(_this.peek(), value)) {
+      // set value - knockout will notify subscribers
+      _this(value);
+    } else {
+      _this.valueWillMutate();
+      // set value - knockout will NOT notify subscribers
+      _this(value);
+      _this.valueHasMutated();
+    }
   }
 
 

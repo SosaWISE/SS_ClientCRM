@@ -9,25 +9,29 @@ define('src/core/ko.bindingHandlers.notice', [
 
   ko.bindingHandlers.notice = {
     init: function(element, valueAccessor) {
-      var value = valueAccessor();
+      var value = valueAccessor(),
+        el = jquery(element),
+        sub;
 
-      element = jquery(element);
-
-      value.seconds.subscribe(function(seconds) {
-        if (0 < seconds && seconds <= 5 && !element.hasClass('fade')) {
+      sub = value.seconds.subscribe(function(seconds) {
+        if (0 < seconds && seconds <= 3 && !el.hasClass('fade')) {
           if (seconds <= 1) {
-            element.addClass('fast');
+            el.addClass('fast');
           }
-          element.addClass('fade');
+          el.addClass('fade');
         }
+      });
+      // dispose of subscription when removed
+      ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+        sub.dispose();
       });
 
-      element.mouseover(function() {
+      el.mouseover(function() {
         if (value.pause()) {
-          element.removeClass('fade');
+          el.removeClass('fade');
         }
       });
-      element.mouseout(function() {
+      el.mouseout(function() {
         value.resume();
       });
     }

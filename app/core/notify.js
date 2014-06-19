@@ -30,7 +30,6 @@ define('src/core/notify', [
     _this.init = _this.init.bind(_this);
     _this.error = _this.error.bind(_this);
     _this.warn = _this.warn.bind(_this);
-    _this.ok = _this.ok.bind(_this);
     _this.info = _this.info.bind(_this);
     _this.alert = _this.alert.bind(_this);
     _this.confirm = _this.confirm.bind(_this);
@@ -52,36 +51,33 @@ define('src/core/notify', [
   Notifier.prototype.create = function() {
     return new Notifier();
   };
+  // for displaying errors or warning messages returned from web server
   Notifier.prototype.error = function(err, delay, options) {
     var _this = this;
     if (err) {
-      options = options || {};
-      options.pre = true;
-      notify(_this, 'error', err.Url, _this.errorCodeMap[err.Code] || 'Error (code not recognized)', err.Message, delay, options);
+      notify(_this, (err.Code === 0 ? 'info' : 'error'), err.Url, err.Code,
+        _this.errorCodeMap[err.Code] || 'Error (code not recognized)', err.Message, delay, options);
     }
   };
+  // for displaying validation warnings
   Notifier.prototype.warn = function(title, message, delay, options) {
-    notify(this, 'warn', null, title, message, delay, options);
+    notify(this, 'warn', null, null, title, message, delay, options);
   };
-  Notifier.prototype.ok = function(title, message, delay, options) {
-    notify(this, 'ok', null, title, message, delay, options);
-  };
+  // for displaying information
   Notifier.prototype.info = function(title, message, delay, options) {
-    options = options || {};
-    options.pre = true;
-    notify(this, 'info', null, title, message, delay, options);
+    notify(this, 'info', null, null, title, message, delay, options);
   };
 
   Notifier.prototype.notify = function(type, title, message, delay, actionsObj, usePre) {
     var _this = this;
-    if (type === 'error' || type === 'warn' || type === 'ok' || type === 'info') {
+    if (type === 'error' || type === 'warn' || type === 'info') {
       alert('deprecated: use notify.' + type + '(...) instead of notify.notify(...)');
     } else {
       alert('invalid notify type `' + type + '`');
     }
-    notify(_this, type, null, title, message, delay, {
+    notify(_this, type, null, null, title, message, delay, {
       actions: actionsObj,
-      pre: usePre,
+      noPre: !usePre,
     });
   };
 
@@ -92,22 +88,29 @@ define('src/core/notify', [
     'success': 'Success',
   };
 
-  function notify(notifier, type, url, title, message, delay, options) {
+  function notify(notifier, type, url, code, title, message, delay, options) {
     var list = notifier.list,
       dismissed = false,
       intervalId, n;
 
+    delay = (delay > 0) ? Math.max(1.5, delay) : 0;
+
+    // removed unwanted html formatting
+    message = (message ? String(message) : '')
+      .replace('<li>', '').replace('</li>', '\n');
+
     n = {
       type: type,
       url: url,
+      code: code,
       title: title || titleMap[type] || type,
       message: message,
-      pre: options && options.pre || false,
+      noPre: options && options.noPre || false,
       onRemove: function() {
         list.remove(n);
       },
       actions: [],
-      seconds: ko.observable((delay > 0) ? Math.max(5, delay) : 0),
+      seconds: ko.observable(delay),
     };
 
     function dismiss() {
@@ -135,6 +138,12 @@ define('src/core/notify', [
       action: dismiss,
     });
 
+    //
+    if (delay < 2) {
+      delay = 2;
+    } else {
+      delay = 6;
+    }
 
     //
     // events
@@ -147,8 +156,8 @@ define('src/core/notify', [
 
       clearInterval(intervalId);
       intervalId = null;
-      if (n.seconds() > 0 && n.seconds() <= 5) {
-        n.seconds(6);
+      if (n.seconds() > 0 && n.seconds() < delay) {
+        n.seconds(delay);
       }
       return true;
     };
@@ -164,6 +173,8 @@ define('src/core/notify', [
         if (s <= 0) {
           // remove from list
           n.onRemove();
+          // make sure the interval stops
+          clearInterval(intervalId);
         }
       }, s < 1 ? (s * 1000) : 1000);
     };

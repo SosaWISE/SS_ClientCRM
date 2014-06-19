@@ -2,10 +2,10 @@ define('src/errorcodes', [], function() {
   "use strict";
 
   return {
-    '-1': 'Error (code unspecific -1)',
-    '-2': 'Unhandled Error',
+    '-1': 'Error',
+    '-2': 'Unhandled Exception',
 
-    '0': 'Success!!',
+    '0': 'Info',
 
     '990000': 'Connection Refused',
     '990001': 'Error processing response',
