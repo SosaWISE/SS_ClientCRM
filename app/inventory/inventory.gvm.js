@@ -55,9 +55,9 @@ define('src/inventory/inventory.gvm', [
           name: 'Remain',
           field: 'WithoutBarcodeCount',
         }, {
-          id: 'Received',
+          id: 'WithBarcodeCount',
           name: 'Received',
-          field: 'Received',
+          field: 'WithBarcodeCount',
           editor: Slick.Editors.Text,
           validator: numberFieldValidator
         }, {

@@ -108,10 +108,7 @@ define('src/app', [
   });
 
   router.addRoute(app.panelMap.swing, 'swing', '', {});
-  router.addRoute(app.panelMap.inventory, 'inventory', '', {});
-
-  //router.addRoute(app.panelMap.inventory, 'receive', ':masterid/:id/:tab/:p1', {});
-  //router.addRoute(app.panelMap.inventory, 'transfer',':id/:tab/:p1', {});  
+  router.addRoute(app.panelMap.inventory, 'inventory', ':tab', {});
 
   return app;
 });

@@ -110,7 +110,7 @@ define('src/inventory/receive.inventory.vm', [
           title: 'Enter Barcodes',
           poNumber: part.PurchaseOrderId,
           packingSlipID: _this.data.PackingSlipNumber,
-          count: part.Received,
+          count: part.WithBarcodeCount,
           enteredBarcode: 0,
           purchaseOrderItemID: part.PurchaseOrderItemID,
         }), function onClose(result) {
@@ -160,7 +160,7 @@ define('src/inventory/receive.inventory.vm', [
   };
   ReceiveInventoryViewModel.prototype.onActivate = function(routeData) {
 
-    routeData.action = 'inventory';
+    routeData.action = 'receive';
   };
 
   ReceiveInventoryViewModel.prototype.search = function(vm, cb) {

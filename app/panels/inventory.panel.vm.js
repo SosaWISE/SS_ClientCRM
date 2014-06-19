@@ -1,100 +1,62 @@
 define('src/panels/inventory.panel.vm', [
-  'src/dataservice',
-  'src/core/combo.vm',
+  'ko',
+  'src/core/helpers',
+  'src/core/strings',
   'src/core/notify',
   'src/core/utils',
-  'src/core/base.vm',
   'src/core/controller.vm',
-  'src/core/joiner',
-  'ko',
-  'src/ukov',
 ], function(
-  dataservice,
-  ComboViewModel,
+  ko,
+  helpers,
+  strings,
   notify,
   utils,
-  BaseViewModel,
-  ControllerViewModel,
-  joiner,
-  ko,
-  ukov
+  ControllerViewModel
 ) {
   "use strict";
 
-  var schema;
+  //load inventory dependencies    
+  var deps = {},
+    ensureDeps = helpers.onetimer(function loadDeps(cb) {
+      require([
+        'src/inventory/receive.inventory.vm',
+        'src/inventory/transfer.inventory.vm',
+      ], function() {
+        var args = arguments;
+        deps.ReceiveInventoryViewModel = args[0];
+        deps.TransferInventoryViewModel = args[1];
 
-  schema = {
-    _model: true,
-    TransferLocation: {},
-    productBarcodeID: {},
-  };
-
+        cb();
+      });
+    });
 
   function InventoryViewModel(options) {
     var _this = this;
 
     InventoryViewModel.super_.call(_this, options);
+
     _this.title = 'Inventory';
 
+    _this.list = _this.childs;
 
-    //Set barcode field as first focusable
-    _this.focusFirst = ko.observable(true);
+    //events for tabbing
+    _this.clickReceive = function() {
+      //alert("clickReceive");
+      _this.selectChild(_this.receiveVm);
+    };
 
-    _this.data = ukov.wrap(_this.item || {
-      TransferLocation: null,
-      productBarcodeID: null,
-    }, schema);
+    _this.clickTransfer = function() {
+      //alert("clickTransfer");
+      _this.selectChild(_this.transferVm);
+    };
 
-    _this.data.TransferLocationCvm = new ComboViewModel({
-      selectedValue: _this.data.TransferLocation,
-      fields: {
-        value: 'TeamLocationID',
-        text: 'City',
-      },
-    });
+    _this.clickItem = function(vm) {
+      _this.selectChild(vm);
+    };
+
 
     //events
     //
-
-    //Call api for adding barcodes
-    _this.processBarcode = function(data, event) {
-
-      //when enter key is hit, call the APIs
-      if (event.keyCode === 13) {
-
-        var join = joiner(),
-          param1 = {},
-          param2 = {};
-
-
-        //set parameters
-        param1 = {
-          id: _this.data.productBarcodeID(),
-          link: 'PBID'
-        };
-
-        param2 = {
-          TransferToWarehouseSiteId: _this.data.TransferLocation(),
-          ProductBarcodeId: _this.data.productBarcodeID()
-        };
-
-        //Load product barcode
-        load_productBarcode(param1, join.add());
-
-        //Post ProductBarcodeTracking
-        post_productBarcodeTracking(param2, join.add());
-
-      }
-    };
-
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the barcode field
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
-    });
 
   }
 
@@ -105,79 +67,45 @@ define('src/panels/inventory.panel.vm', [
   //
 
   InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-    var _this = this;
-    join = join;
 
-    load_transferLocations(_this.data.TransferLocationCvm, join.add());
+    var _this = this,
+      cb = join.add();
+
+    ensureDeps(function() {
+
+      _this.transferVm = new deps.TransferInventoryViewModel({
+        routeName: 'inventory',
+        pcontroller: _this,
+        id: 'transfer',
+        title: 'Inventory Transfer'
+      });
+
+      _this.receiveVm = new deps.ReceiveInventoryViewModel({
+        routeName: 'inventory',
+        pcontroller: _this,
+        route: 'receive',
+        id: 'receive',
+        title: 'Inventory Receive'
+      });
+      _this.defaultChild = _this.receiveVm;
+
+      cb();
+    });
 
   };
 
+  InventoryViewModel.prototype.findChild = function(routeData) {
 
-  function load_transferLocations(cvm, cb) {
+    var _this = this,
+      result;
 
-    dataservice.humanresourcesrv.RuTeamLocationList.read({}, null, utils.safeCallback(cb, function(err, resp) {
-
-      if (resp.Code === 0) {
-
-        console.log("RuTeamLocationList-transfer:" + JSON.stringify(resp.Value));
-
-        //Set result to Location combo list
-        cvm.setList(resp.Value);
-      } else {
-        notify.warn('PurchaseOrderID not found', null, 3);
-      }
-    }));
-  }
-
-
-  function load_productBarcode(param, cb) {
-
-    dataservice.inventoryenginesrv.ProductBarcode.read(param, null, utils.safeCallback(cb, function(err, resp) {
-
-      if (resp.Code === 0) {
-        console.log("ProductBarcode:" + JSON.stringify(resp.Value));
-
-        // If ProductBarcodeTrackingID not null, Load ProductBarcodeTracking
-        if (resp.Value.ProductBarcodeTrackingID != null) {
-          load_productBarcodeTracking(resp.Value.ProductBarcodeTrackingID, cb);
-        }
-
-
-      } else {
-        notify.error(err);
-      }
-    }));
-
-  }
-
-  function load_productBarcodeTracking(ProductBarcodeTrackingID, cb) {
-
-    dataservice.inventoryenginesrv.ProductBarcodeTracking.read({
-      id: ProductBarcodeTrackingID
-    }, null, utils.safeCallback(cb, function(err, resp) {
-
-      if (resp.Code === 0) {
-        console.log("ProductBarcodeTracking-Read:" + JSON.stringify(resp.Value));
-
-      } else {
-        notify.error(err);
-      }
-    }));
-
-  }
-
-  function post_productBarcodeTracking(param, cb) {
-
-    dataservice.inventoryenginesrv.ProductBarcodeTracking.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
-
-      if (resp.Code === 0) {
-        console.log("ProductBarcodeTracking-Post:" + JSON.stringify(resp.Value));
-      } else {
-        notify.error(err);
-      }
-    }));
-
-  }
+    if (routeData[_this.transferVm.routePart] === _this.transferVm.id) {
+      result = _this.transferVm;
+    } else {
+      result = _this.receiveVm;
+    }
+    return result;
+  };
 
   return InventoryViewModel;
 });

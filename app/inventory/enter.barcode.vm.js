@@ -37,6 +37,8 @@ define('src/inventory/enter.barcode.vm', [
     //This holds the current barcode count
     _this.barcodeCount = ko.observable();
 
+    //this will hold the original receive value
+    _this.receiveCount = _this.count;
 
     _this.data = ukov.wrap(_this.item || {
       productBarcodeID: null
@@ -60,27 +62,32 @@ define('src/inventory/enter.barcode.vm', [
         PurchaseOrderItemId: _this.purchaseOrderItemID
       };
 
-      //This is the api for adding barcodes
-      dataservice.inventoryenginesrv.ProductBarcode.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+      if (parseInt(_this.receiveCount) >= count) {
+        //This is the api for adding barcodes
+        dataservice.inventoryenginesrv.ProductBarcode.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
-        if (err) {
-          cb(err);
-          return;
-        }
+          if (err) {
+            cb(err);
+            return;
+          }
 
-        if (resp.Code === 0) {
+          if (resp.Code === 0) {
 
-          //Increment entered barcodes count
-          _this.barcodeCount(count.toString());
+            //Increment entered barcodes count
+            _this.barcodeCount(count.toString());
 
-          //clear barcode field
-          _this.data.productBarcodeID.setValue(null);
+            //clear barcode field
+            _this.data.productBarcodeID.setValue(null);
 
-        } else {
-          notify.warn('Error adding barcode...', null, 3);
-        }
+          } else {
+            notify.warn('Error adding barcode...', null, 3);
+          }
 
-      }, utils.no_op));
+        }, utils.no_op));
+
+      } else {
+        notify.warn('Entered barcode count must not exceed received count.');
+      }
 
 
     };
