@@ -10,7 +10,7 @@ ul(class="edit-form")
           input(type="text" placeholder="" data-bind="ukov:data.productBarcodeID, value:data.productBarcodeID,valueUpdate:'afterkeydown',select:focusFirst, event: { keyup: processBarcode}")
         li
           span(class="label") Previous Location
-          span(class="label") XXXXX
+          span(class="label" data-bind="text: prevLocation") XXXXX
         li
           span(class="label") New Location
-          span(class="label") XXXXX
+          span(class="label" data-bind="text: newLocation") XXXXX

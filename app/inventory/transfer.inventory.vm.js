@@ -43,11 +43,24 @@ define('src/inventory/transfer.inventory.vm', [
       productBarcodeID: null,
     }, schema);
 
+    //Intially set to NA
+    _this.prevLocation = ko.observable('NA');
+    _this.newLocation = ko.observable('NA');
+
+    // _this.data.TransferLocationCvm = new ComboViewModel({
+    //   selectedValue: _this.data.TransferLocation,
+    //   fields: {
+    //     value: 'TeamLocationID',
+    //     text: 'City',
+    //   },
+    // });
+
+    //This needs confirmation where to pull location either from Ru_Locations or WarehouseSite  - temporarily use WarehouseSite   
     _this.data.TransferLocationCvm = new ComboViewModel({
       selectedValue: _this.data.TransferLocation,
       fields: {
-        value: 'TeamLocationID',
-        text: 'City',
+        value: 'WarehouseSiteID',
+        text: 'WarehouseSiteName',
       },
     });
 
@@ -77,10 +90,8 @@ define('src/inventory/transfer.inventory.vm', [
         };
 
         //Load product barcode
-        load_productBarcode(param1, join.add());
+        load_productBarcode(param1, _this.data.TransferLocation(), _this, join.add());
 
-        //Post ProductBarcodeTracking
-        post_productBarcodeTracking(param2, join.add());
 
       }
     };
@@ -106,43 +117,67 @@ define('src/inventory/transfer.inventory.vm', [
   TransferInventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
     var _this = this;
     join = join;
-    load_transferLocations(_this.data.TransferLocationCvm, join.add());
 
+    //This needs confirmation where to pull location either from Ru_Locations or WarehouseSite  - temporarily use WarehouseSite   
+    //load_transferLocations(_this.data.TransferLocationCvm, join.add());
+    load_warehouseSite(_this.data.TransferLocationCvm, join.add());
   };
 
 
-  function load_transferLocations(cvm, cb) {
+  // function load_transferLocations(cvm, cb) {
 
-    dataservice.humanresourcesrv.RuTeamLocationList.read({}, null, utils.safeCallback(cb, function(err, resp) {
+  //   dataservice.humanresourcesrv.RuTeamLocationList.read({}, null, utils.safeCallback(cb, function(err, resp) {
+
+  //     if (resp.Code === 0) {
+
+  //       console.log("RuTeamLocationList-transfer:" + JSON.stringify(resp.Value));
+
+  //       //Set result to Location combo list
+  //       //cvm.setList(resp.Value);
+  //     } else {
+  //       notify.warn('No records found.', null, 3);
+  //     }
+  //   }));
+  // }
+
+  function load_warehouseSite(cvm, cb) {
+
+    dataservice.inventoryenginesrv.WarehouseSiteList.read({}, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
 
-        console.log("RuTeamLocationList-transfer:" + JSON.stringify(resp.Value));
+        console.log("inventoryenginesrv-load_warehouseSite:" + JSON.stringify(resp.Value));
 
         //Set result to Location combo list
         cvm.setList(resp.Value);
       } else {
-        notify.notify('warn', 'PurchaseOrderID not found', null, 3);
+        notify.warn('No records found.', null, 3);
       }
     }));
+
   }
 
 
-  function load_productBarcode(param, cb) {
+  function load_productBarcode(param, transferLocation, _this, cb) {
 
     dataservice.inventoryenginesrv.ProductBarcode.read(param, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
         console.log("ProductBarcode:" + JSON.stringify(resp.Value));
 
-        // If ProductBarcodeTrackingID not null, Load ProductBarcodeTracking
-        if (resp.Value.ProductBarcodeTrackingID != null) {
-          load_productBarcodeTracking(resp.Value.ProductBarcodeTrackingID, cb);
+        if (resp.Value.LastProductBarcodeTrackingId != null) {
+          load_productBarcodeTracking(resp.Value.LastProductBarcodeTrackingId, _this, cb);
         }
 
+        var param = {
+          TransferToWarehouseSiteId: transferLocation,
+          ProductBarcodeId: resp.Value.ProductBarcodeID
+        };
+
+        //Read/insert record in ProductBarcodeTracking table
+        post_productBarcodeTracking(param, _this, cb);
 
       } else {
-        //notify.notify('error', err.Message);
         notify.error({
           Message: 'Barcode not found.'
         });
@@ -152,8 +187,7 @@ define('src/inventory/transfer.inventory.vm', [
 
   }
 
-  function load_productBarcodeTracking(ProductBarcodeTrackingID, cb) {
-
+  function load_productBarcodeTracking(ProductBarcodeTrackingID, _this, cb) {
     dataservice.inventoryenginesrv.ProductBarcodeTracking.read({
       id: ProductBarcodeTrackingID
     }, null, utils.safeCallback(cb, function(err, resp) {
@@ -161,22 +195,28 @@ define('src/inventory/transfer.inventory.vm', [
       if (resp.Code === 0) {
         console.log("ProductBarcodeTracking-Read:" + JSON.stringify(resp.Value));
 
+        _this.prevLocation(resp.Value.Location);
+
       } else {
-        //notify.notify('error', err.Message);
+        //notify.notify('error', err.Message);        
         notify.error(err);
       }
     }));
 
   }
 
-  function post_productBarcodeTracking(param, cb) {
+  function post_productBarcodeTracking(param, _this, cb) {
+    console.log(JSON.stringify(param));
 
     dataservice.inventoryenginesrv.ProductBarcodeTracking.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
         console.log("ProductBarcodeTracking-Post:" + JSON.stringify(resp.Value));
+
+        _this.newLocation(resp.Value.Location);
+
+
       } else {
-        //notify.notify('error', err.Message);
         notify.error(err);
       }
     }));
