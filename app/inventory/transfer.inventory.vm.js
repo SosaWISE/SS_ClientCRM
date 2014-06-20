@@ -143,7 +143,10 @@ define('src/inventory/transfer.inventory.vm', [
 
       } else {
         //notify.notify('error', err.Message);
-        notify.error(err);
+        notify.error({
+          Message: 'Barcode not found.'
+        });
+
       }
     }));
 
