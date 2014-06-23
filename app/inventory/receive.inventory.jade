@@ -9,7 +9,7 @@ table(class="fh-wrap")
               li
                 label PO#
               li  
-                input(type="text" placeholder="" data-bind="ukov:data.PurchaseOrderID,value:data.PurchaseOrderID,valueUpdate:'keyup',select:focusFirst")
+                input(type="text" placeholder="" data-bind="ukov:data.PurchaseOrderID,value:data.PurchaseOrderID,valueUpdate:'keyup',select:focusFirst, event: { keyup: resetPage}")
               li  
                 button(type="button" class="btn-inventory"  data-bind="cmd:cmdSearch") Submit    
           div(class="header_right")
