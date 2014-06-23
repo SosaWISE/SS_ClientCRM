@@ -107,6 +107,7 @@ define('src/account/security/clist.qualify.vm', [
         var checklistVm = _this.pcontroller;
         if (checklistVm.close() > -1) {
           _this.goTo({
+            route: 'accounts', // need to specify route since the current route is 'leads'
             masterid: resp.Value.CustomerMasterFileId,
             id: resp.Value.AccountID,
             tab: 'checklist',

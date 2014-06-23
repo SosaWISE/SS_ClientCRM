@@ -35,6 +35,12 @@ define('src/core/controller.vm', [
     var _this = this;
     if (pcontroller) {
       _this.pcontroller = pcontroller;
+      // the pcontroller is changing, so clear out cached data
+      //@NOTE: this could be troublesome for manually set values...
+      _this.route = null;
+      _this.routeName = null;
+      _this.routePart = null;
+      _this._lastRouteData = null;
     }
     if (_this.pcontroller) {
       if (_this.routesMap) {
