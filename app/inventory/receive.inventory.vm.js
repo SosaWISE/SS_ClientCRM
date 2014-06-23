@@ -122,14 +122,14 @@ define('src/inventory/receive.inventory.vm', [
     });
 
     //Clear fields and grid when there's a change on PO#
-    _this.resetPage = function(data, event) {
+    _this.resetPage = function() {
 
-        //clear packing slip# field
-        _this.data.PackingSlipNumber(null);
+      //clear packing slip# field
+      _this.data.PackingSlipNumber(null);
 
-        //clear grid
-        _this.inventoryListGvm.list([]);
-    };    
+      //clear grid
+      _this.inventoryListGvm.list([]);
+    };
 
 
     //events
@@ -177,7 +177,7 @@ define('src/inventory/receive.inventory.vm', [
 
       //add joiner since we need to call cb when all api calls have returned
       join = joiner();
-    
+
     //Getting PurchaseOrderID api call
     dataservice.inventoryenginesrv.PurchaseOrder.read({
       id: iePurchaseOrder.PurchaseOrderID
@@ -186,7 +186,7 @@ define('src/inventory/receive.inventory.vm', [
       if (resp.Code === 0) {
         var param,
           purchaseOrder = resp.Value;
-          purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
+        purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
 
         //parameters for reading packingslip api
         param = {
@@ -238,32 +238,32 @@ define('src/inventory/receive.inventory.vm', [
   }
 
 
-  function loadPackingSlipInfo(param, vm, cb) {   
+  function loadPackingSlipInfo(param, vm, cb) {
 
     dataservice.inventoryenginesrv.PackingSlip.read(param, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Code === 0) {
-        
-        console.log("PackingSlipRead-Result:"+JSON.stringify(resp.Value));
+
+        console.log("PackingSlipRead-Result:" + JSON.stringify(resp.Value));
 
         //Get value of packing slip Id from api
         vm.PackingSlipID(resp.Value.PackingSlipID);
 
-        var packingSlip = resp.Value;              
+        var packingSlip = resp.Value;
 
         //If packing slip # from api not equal to null, set value.
-        if(packingSlip.PackingSlipNumber !== null){
+        if (packingSlip.PackingSlipNumber !== null) {
           vm.data.PackingSlipNumber.setValue(packingSlip.PackingSlipNumber);
-        }else{
+        } else {
 
           //Create packing slip # if packing slip# from UI not empty
-          if(packingSlip.PackingSlipNumber === null){
-            console.log("Packing slip number is empty. Creating packing slip number...");          
+          if (packingSlip.PackingSlipNumber === null) {
+            console.log("Packing slip number is empty. Creating packing slip number...");
             //Create packing slip#
             packingSlipNumberIsEmpty(vm, param.id, cb);
           }
 
         }
-     
+
 
       } else {
         notify.warn('PurchaseOrderID not found', null, 10);
@@ -272,7 +272,7 @@ define('src/inventory/receive.inventory.vm', [
 
       //Create packing slip#
       packingSlipNumberIsEmpty(vm, param.id, cb);
-      
+
       // var param2, packingSlipNumber;
 
       // packingSlipNumber = vm.data.PackingSlipNumber();
@@ -295,38 +295,38 @@ define('src/inventory/receive.inventory.vm', [
 
   } //end function loadPackingSlipInfo
 
-  function packingSlipNumberIsEmpty(vm, purchaseOrderID, cb){
+  function packingSlipNumberIsEmpty(vm, purchaseOrderID, cb) {
 
-      var param2, packingSlipNumberUI;
+    var param2, packingSlipNumberUI;
 
-      packingSlipNumberUI = vm.data.PackingSlipNumber();
+    packingSlipNumberUI = vm.data.PackingSlipNumber();
 
-      //alert(packingSlipNumberUI);   
+    //alert(packingSlipNumberUI);   
 
-      param2 = {
-        PurchaseOrderId: purchaseOrderID,
-        PackingSlipNumber: packingSlipNumberUI
-      };      
+    param2 = {
+      PurchaseOrderId: purchaseOrderID,
+      PackingSlipNumber: packingSlipNumberUI
+    };
 
-      console.log("createPackingSlipNumber-param:"+JSON.stringify(param2));
+    console.log("createPackingSlipNumber-param:" + JSON.stringify(param2));
 
-      if (packingSlipNumberUI !== null && packingSlipNumberUI !== "") {        
-        createPackingSlipNumber(param2, vm, cb);
-      } else {
-        notify.warn('Please input a Packing Slip#!');
-      }  
+    if (packingSlipNumberUI !== null && packingSlipNumberUI !== "") {
+      createPackingSlipNumber(param2, vm, cb);
+    } else {
+      notify.warn('Please input a Packing Slip#!');
+    }
 
   }
 
 
   //Create packing slip number if not available - pull this from UI
-  function createPackingSlipNumber(param, vm, cb) {   
+  function createPackingSlipNumber(param, vm, cb) {
 
     dataservice.inventoryenginesrv.PackingSlip.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {}
-        console.log("createPackingSlipNumber-Result:" + JSON.stringify(resp.Value));
-        vm.data.PackingSlipNumber.setValue(resp.Value.PackingSlipNumber);
+      console.log("createPackingSlipNumber-Result:" + JSON.stringify(resp.Value));
+      vm.data.PackingSlipNumber.setValue(resp.Value.PackingSlipNumber);
 
     }, function(err) {
       notify.error(err);
