@@ -58,6 +58,10 @@ define('src/account/security/equipment.editor.vm', [
 
   function EquipmentEditorViewModel(options) {
     var _this = this;
+    // ** Check to see if an item is passed
+    if (utils.isObject(options.item)) {
+      _this.item = options.item;
+    }
     EquipmentEditorViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
       // 'customerId',

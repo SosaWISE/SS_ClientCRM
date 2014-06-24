@@ -73,6 +73,9 @@ define('src/core/utils', [
     isDate: function(obj) {
       return (obj instanceof Date);
     },
+    isObject: function(obj) {
+      return typeof(obj) === 'object' || (obj instanceof Object);
+    },
 
     // actually sets if null or undefined...
     setIfNull: function(val, propName, defaultValue) {
