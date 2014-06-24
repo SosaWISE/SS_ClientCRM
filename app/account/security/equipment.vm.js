@@ -34,7 +34,11 @@ define('src/account/security/equipment.vm', [
     });
 
 
-    _this.gvm = new EquipmentGridViewModel();
+    _this.gvm = new EquipmentGridViewModel({
+      edit: function(agency, cb) {
+        showDispatchAgencyEditor(_this, agency, cb);
+      },
+    });
 
 
     //Retrieve the Technician ID to be used for Adding by Barcode/Part#

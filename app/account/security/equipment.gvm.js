@@ -15,7 +15,7 @@ define('src/account/security/equipment.gvm', [
 ) {
   "use strict";
 
-  function EquipmentGridViewModel() {
+  function EquipmentGridViewModel(options) {
     var _this = this;
     EquipmentGridViewModel.super_.call(_this, {
       gridOptions: {
@@ -27,6 +27,16 @@ define('src/account/security/equipment.gvm', [
         new RowEvent({
           eventName: 'onDblClick',
           fn: function(item) {
+            options.edit(item, function(model, deleted) {
+              if (!model) { // nothing changed
+                return;
+              }
+              if (deleted) { // remove deleted item
+                _this.list.remove(item);
+              } else { // update in place
+                _this.list.replace(item, model);
+              }
+            });
             console.log("Item double clicked: ", item);
             alert('double clicked');
           },
