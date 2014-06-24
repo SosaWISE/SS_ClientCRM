@@ -3,20 +3,20 @@ define('src/inventory/inventory-report-unscanned.gvm', [
   'src/slick/buttonscolumn',
   'src/slick/slickgrid.vm',
   'src/core/utils',
-  'slick',
-  'src/core/notify',
+  //'slick',
+  //'src/core/notify',
 ], function(
   ko,
   ButtonsColumn,
   SlickGridViewModel,
-  utils,
-  Slick,
-  notify
+  utils
+  //Slick,
+  //notify
 ) {
   "use strict";
 
-  function InventoryReportUnScannedGridViewModel(options) {
-    var _this = this;    
+  function InventoryReportUnScannedGridViewModel( /*options*/ ) {
+    var _this = this;
     InventoryReportUnScannedGridViewModel.super_.call(_this, {
       gridOptions: {
         enableColumnReorder: false,
@@ -30,7 +30,7 @@ define('src/inventory/inventory-report-unscanned.gvm', [
           id: 'Barcode',
           name: 'Barcode (Items that are in inventory but not scanned)',
           field: 'Barcode',
-         },
+        },
       ],
 
     });

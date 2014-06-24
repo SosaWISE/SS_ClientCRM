@@ -3,8 +3,8 @@ table(class="fh-wrap")
     td(class="fh-header relative")
       ul(class="edit-form")
         li(style="margin: 10px;")
-          div(class="header_left" style="width: 100%;")
-            ul(class="header_ul" style="color: white; width: 50%;")
+          div(class="header_left")
+            ul(class="header_ul" style="color: white;")
               li
                 span(class="label") Location Type
                 div(data-bind="cvm:data.LocationTypeCvm")         
@@ -14,19 +14,13 @@ table(class="fh-wrap")
               li
                 span(class="label") Enter Barcode           
                 input(type="text")
-                //-input(type="text" placeholder="" data-bind="ukov:data.productBarcodeID, value:data.productBarcodeID,valueUpdate:'afterkeydown',select:focusFirst, event: { keyup: processBarcode}")
-              li
-                input(type="submit" class="btn-bg")
+                //-input(type="text" placeholder="" data-bind="ukov:data.productBarcodeID, value:data.productBarcodeID,valueUpdate:'afterkeydown',select:focusFirst, event: { keyup: processBarcode}")              
   tr
-    td(class="fh-body" style="width: 50%;")
+    td(class="fh-body")
       div(class="fh-contents")
-          div(class="slickgrid", style="background:white;margin:10px;color:black;", data-bind="slickgrid:scannedListGvm")          
-    td(class="fh-body" style="width: 50%;")
-      div(class="fh-contents")
-        div(class="slickgrid", style="background:white;margin:10px;color:black;", data-bind="slickgrid:unScannedListGvm")
+        div(class="slickgrid", style="background:white;margin:10px;color:black;", data-bind="slickgrid:itemListGvm")
   tr
     td(class="fh-contents")
-      button(type="button" class="btn-bg" style="margin: 10px; width: 50%;") Print                         
-
-        
+      input(type="submit" class="btn-bg" style="margin: 10px; width: 25%;" data-bind="cmd: cmdDisplay")
+  div(data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")       
         

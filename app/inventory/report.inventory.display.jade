@@ -1,0 +1,15 @@
+table(class="fh-wrap")  
+  tr
+    td(class="fh-body" style="width: 50%;")
+      div(class="fh-contents")
+        div(class="slickgrid", style="background:white;margin:10px;color:black;", data-bind="slickgrid:scannedListGvm")                 
+    td(class="fh-body" style="width: 50%;")
+      div(class="fh-contents")
+        div(class="slickgrid", style="background:white;margin:10px;color:black;", data-bind="slickgrid:unScannedListGvm")
+  tr
+    td(style="text-align: center;" colspan="2")
+      button(type="button" class="btn-bg" style="margin: 10px; width: 25%; text-align: center; display: inline-block;") Print
+      button(type="button" class="btn-bg" style="margin: 10px; width: 25%; text-align: center; display: inline-block;" tabindex="0", data-bind="cmd:clickClose") Close
+
+        
+        

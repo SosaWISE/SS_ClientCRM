@@ -1,4 +1,4 @@
-define('src/inventory/inventory-report-scanned.gvm', [
+define('src/inventory/inventory-report-items.gvm', [
   'ko',
   'src/slick/buttonscolumn',
   'src/slick/slickgrid.vm',
@@ -15,9 +15,9 @@ define('src/inventory/inventory-report-scanned.gvm', [
 ) {
   "use strict";
 
-  function InventoryReportScannedGridViewModel( /*options*/ ) {
+  function InventoryItemsReportGridViewModel( /*options*/ ) {
     var _this = this;
-    InventoryReportScannedGridViewModel.super_.call(_this, {
+    InventoryItemsReportGridViewModel.super_.call(_this, {
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
@@ -28,8 +28,12 @@ define('src/inventory/inventory-report-scanned.gvm', [
       columns: [ //
         {
           id: 'Barcode',
-          name: 'Barcode (Items that are scanned but not shown in the inventory)',
+          name: 'Barcode (Inventory Items)',
           field: 'Barcode',
+        }, {
+          id: 'Scanned',
+          name: 'Scanned',
+          field: 'Yes/No',
         },
       ],
 
@@ -37,7 +41,7 @@ define('src/inventory/inventory-report-scanned.gvm', [
 
   }
 
-  utils.inherits(InventoryReportScannedGridViewModel, SlickGridViewModel);
+  utils.inherits(InventoryItemsReportGridViewModel, SlickGridViewModel);
 
-  return InventoryReportScannedGridViewModel;
+  return InventoryItemsReportGridViewModel;
 });

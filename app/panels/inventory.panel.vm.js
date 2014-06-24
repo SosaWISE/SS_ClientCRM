@@ -75,7 +75,7 @@ define('src/panels/inventory.panel.vm', [
           pcontroller: _this,
           id: 'report',
           title: 'Report'
-        }),        
+        }),
       ]);
       cb();
     });
