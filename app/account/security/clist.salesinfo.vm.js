@@ -369,6 +369,25 @@ define('src/account/security/clist.salesinfo.vm', [
     _this.data.CellularTypeCvm.setList([]);
     load_cellularTypes(_this.cellularTypes, subjoin.add('5'));
 
+    //
+    dataservice.qualify.qualifyCustomerInfos.read({
+      id: routeData.id,
+      link: 'account',
+    }, null, utils.safeCallback(subjoin.add(), function(err, resp) {
+      // load sales rep
+      dataservice.qualify.salesrep.read({
+        id: resp.Value.CompanyID,
+      }, null, utils.safeCallback(subjoin.add(), function(err, resp) {
+        var rep = resp.Value;
+        if (rep) {
+          _this.reps = [rep];
+        } else {
+          _this.reps = [];
+        }
+      }, utils.noop));
+    }, utils.no_op));
+
+
     cb = join.add('1');
     subjoin.when(function(err) {
       if (err) {
@@ -557,15 +576,8 @@ define('src/account/security/clist.salesinfo.vm', [
       itemSku: byPart ? id : null,
       barcode: !byPart ? id : null,
       invoiceID: _this.data.InvoiceID(),
-      //@TODO: get real salesman and technician
-      salesman: {
-        id: 'SALS001',
-        name: 'SALS001',
-      },
-      // technician: {
-      //   id: 'FRANK002',
-      //   name: 'Frank',
-      // },
+      layersVm: _this.layersVm,
+      reps: _this.reps,
     });
   }
 

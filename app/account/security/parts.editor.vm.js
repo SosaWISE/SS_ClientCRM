@@ -1,4 +1,5 @@
 define('src/account/security/parts.editor.vm', [
+  'src/account/default/rep.find.vm',
   'src/dataservice',
   'src/core/combo.vm',
   'src/core/strings',
@@ -8,6 +9,7 @@ define('src/account/security/parts.editor.vm', [
   'ko',
   'src/ukov',
 ], function(
+  RepFindViewModel,
   dataservice,
   ComboViewModel,
   strings,
@@ -57,8 +59,8 @@ define('src/account/security/parts.editor.vm', [
     BaseViewModel.ensureProps(_this, [
       'byPart',
       'invoiceID',
-      // 'salesman',
-      // 'technician',
+      'layersVm',
+      'reps',
     ]);
 
     _this.focusFirst = ko.observable();
@@ -97,12 +99,14 @@ define('src/account/security/parts.editor.vm', [
             value = value || null;
 
             //@REVIEW: not sure if setting the value in a validator is the best method...
-            if (value === _this.salesman.id) {
-              _this.data.SalesmanID(value);
-              _this.data.TechnicianID(null);
-            } else {
+            //@TODO: use the correct method for deciding whether the selected value is
+            //       a salesman or a technician...
+            if (false) {
               _this.data.SalesmanID(null);
               _this.data.TechnicianID(value);
+            } else {
+              _this.data.SalesmanID(value);
+              _this.data.TechnicianID(null);
             }
 
             if (!value) {
@@ -112,6 +116,30 @@ define('src/account/security/parts.editor.vm', [
         ]
       }),
       list: assignToList,
+      actions: [ //
+        {
+          text: 'Find Rep',
+          onClick: function(filterText) {
+            var vm = new RepFindViewModel({
+              title: 'Find Rep',
+              text: filterText,
+            });
+            if (filterText.length) {
+              vm.cmdFind.execute();
+            }
+            _this.layersVm.show(vm, function(rep) {
+              if (rep) {
+                var value = rep.CompanyID;
+                if (!_this.data.AssignToCvm.hasValue(value)) {
+                  _this.reps.push(rep);
+                  _this.data.AssignToCvm.setList(_this.getAssignToList());
+                }
+                _this.data.AssignToCvm.selectedValue(value);
+              }
+            });
+          },
+        }
+      ],
     });
 
     //
@@ -152,22 +180,14 @@ define('src/account/security/parts.editor.vm', [
   PartsEditorViewModel.prototype.height = 'auto';
 
   PartsEditorViewModel.prototype.getAssignToList = function() {
-    var _this = this,
-      result = [];
-
-    function addItem(obj, css) {
-      if (obj) {
-        result.push({
-          value: obj.id,
-          text: strings.format('{0} - {1}', obj.id, obj.name),
-          cssClass: css,
-        });
-      }
-    }
-    addItem(_this.salesman, 'salesman');
-    addItem(_this.technician, 'technician');
-
-    return result;
+    var _this = this;
+    return _this.reps.map(function(rep) {
+      return {
+        value: rep.CompanyID,
+        text: strings.format('{0} - {1}', rep.CompanyID, strings.joinTrimmed(' ', rep.FirstName, rep.LastName)),
+        // cssClass: css,
+      };
+    });
   };
 
   return PartsEditorViewModel;
