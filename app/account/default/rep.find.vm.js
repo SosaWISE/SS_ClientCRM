@@ -37,7 +37,7 @@ define('src/account/default/rep.find.vm', [
     _this.title = _this.title || 'Sales Rep';
     _this.focusFirst = ko.observable(false);
     _this.repData = ukov.wrap({
-      CompanyID: '',
+      CompanyID: _this.text || '',
     }, schema);
     _this.repResult = ko.observable(null);
 

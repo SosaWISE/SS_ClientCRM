@@ -35,9 +35,14 @@ define('src/account/security/equipment.vm', [
 
 
     _this.gvm = new EquipmentGridViewModel({
+<<<<<<< HEAD
       edit: function(eqItem, cb) {
         //showDispatchAgencyEditor(_this, agency, cb);
         showEquipmentEditor(_this, eqItem, cb, CompanyId);
+=======
+      edit: function( /*agency, cb*/ ) {
+        // showDispatchAgencyEditor(_this, agency, cb);
+>>>>>>> origin/master
       },
     });
 

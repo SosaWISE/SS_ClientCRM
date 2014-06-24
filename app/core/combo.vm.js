@@ -57,7 +57,7 @@ define('src/core/combo.vm', [
     _this.selectionHistory = [_this.selectedValue.peek()];
 
     _this.list = ko.observableArray();
-    _this.actions = ko.observableArray();
+    _this.actions = ko.observableArray(_this.actions);
     _this.isOpen = ko.observable(false);
     _this.focusInput = ko.observable(false);
     _this.selectInput = ko.observable(false);
@@ -225,6 +225,11 @@ define('src/core/combo.vm', [
     var _this = this;
     _this.selectItem(_this.list.peek()[0]);
   };
+  ComboViewModel.prototype.selectLast = function() {
+    var _this = this,
+      list = _this.list.peek();
+    _this.selectItem(list[list.length - 1]);
+  };
   ComboViewModel.prototype.selectedItem = function() {
     var _this = this,
       selected = _this.selected();
@@ -306,6 +311,11 @@ define('src/core/combo.vm', [
       _this.activeIndex = _this.list.peek().indexOf(selected) - 1;
     }
     _this.activateNext(true);
+  };
+  ComboViewModel.prototype.hasValue = function(value) {
+    var _this = this,
+      list = _this.list.peek();
+    return !!findWrappedItemByValue(list, value);
   };
 
   function wrapItem(item, fields) {
