@@ -21,10 +21,12 @@ define('src/panels/inventory.panel.vm', [
       require([
         'src/inventory/receive.inventory.vm',
         'src/inventory/transfer.inventory.vm',
+        'src/inventory/report.inventory.vm',
       ], function() {
         var args = arguments;
         deps.ReceiveInventoryViewModel = args[0];
         deps.TransferInventoryViewModel = args[1];
+        deps.ReportInventoryViewModel = args[2];
 
         cb();
       });
@@ -68,6 +70,12 @@ define('src/panels/inventory.panel.vm', [
           id: 'transfer',
           title: 'Transfer'
         }),
+        new deps.ReportInventoryViewModel({
+          routeName: 'inventory',
+          pcontroller: _this,
+          id: 'report',
+          title: 'Report'
+        }),        
       ]);
       cb();
     });
