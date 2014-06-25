@@ -343,7 +343,7 @@ define('src/core/controller.vm', [
       parts.push(ControllerViewModel.titlePostfix);
     }
 
-    jquery('title').text(parts.join(' - '));
+    jquery('title').text(parts.join(' < '));
   };
 
   return ControllerViewModel;
