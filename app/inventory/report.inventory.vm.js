@@ -5,11 +5,9 @@ define('src/inventory/report.inventory.vm', [
   'src/core/utils',
   'src/core/base.vm',
   'src/core/controller.vm',
-  'src/inventory/inventory-report-items.gvm',
-  'src/inventory/report.inventory.display.vm',
-  'src/core/layers.vm',
+  'src/inventory/inventory-report-scanned.gvm',
+  'src/inventory/inventory-report-unscanned.gvm',
   'src/core/joiner',
-  'src/core/router',
   'ko',
   'src/ukov',
 ], function(
@@ -19,11 +17,9 @@ define('src/inventory/report.inventory.vm', [
   utils,
   BaseViewModel,
   ControllerViewModel,
-  InventoryItemsReportGridViewModel,
-  DisplayReportInventoryViewModel,
-  LayersViewModel,
+  InventoryReportScannedGridViewModel,
+  InventoryReportUnScannedGridViewModel,
   joiner,
-  router,
   ko,
   ukov
 ) {
@@ -33,6 +29,7 @@ define('src/inventory/report.inventory.vm', [
     _model: true,
     LocationType: {},
     LocationData: {},
+    ProductBarcodeID: {},
   };
 
 
@@ -42,24 +39,33 @@ define('src/inventory/report.inventory.vm', [
 
     ReportInventoryViewModel.super_.call(_this, options);
 
+    //Set barcode field as first focusable
+    _this.focusFirst = ko.observable(true);
+
     _this.data = ukov.wrap(_this.item || {
       LocationType: null,
-      LocationData: null
+      LocationData: null,
+      ProductBarcodeID: null
     }, schema);
-
-    _this.layersVm = new LayersViewModel({
-      controller: _this,
-    });
 
 
     _this.data.LocationTypeCvm = new ComboViewModel({
       selectedValue: _this.data.LocationType,
+      nullable: true,
       fields: {
         value: 'LocationTypeID',
         text: 'LocationTypeName',
       },
     });
 
+    _this.data.LocationCvm = new ComboViewModel({
+      selectedValue: _this.data.LocationData,
+      nullable: true,
+      fields: {
+        value: 'LocationID',
+        text: 'LocationName',
+      },
+    });
 
     //Pre-populated with dummy data for now
     // _this.data.LocationTypeCvm = new ComboViewModel({      
@@ -75,48 +81,74 @@ define('src/inventory/report.inventory.vm', [
     //   ],
     // });
 
-    _this.data.LocationCvm = new ComboViewModel({
-      selectedValue: _this.data.LocationData,
-      list: [{
-        value: 1,
-        text: 'Location1',
-      }, {
-        value: 2,
-        text: 'Location2',
-      }, ],
+    // _this.data.LocationCvm = new ComboViewModel({      
+    //   selectedValue: _this.data.LocationData,    
+    //   nullable: true,  
+    //   list: [
+    //     {
+    //       value: 1,
+    //       text: 'Location1',
+    //     }, {
+    //       value: 2,
+    //       text: 'Location2',
+    //     },
+    //   ],
+    // });   
+
+
+    //Display Inventory Grids
+    _this.scannedListGvm = new InventoryReportScannedGridViewModel({
+
     });
 
-    //Display Inventory Grid
-    _this.itemListGvm = new InventoryItemsReportGridViewModel({
+    _this.unScannedListGvm = new InventoryReportUnScannedGridViewModel({
 
     });
 
-    //Fire up display page
-    _this.cmdDisplay = ko.command(function(cb) {
+    //Scan barcodes
+    _this.scanBarcode = function( /*cb*/ ) {
+      alert("@TODO scan barcodes");
+    };
 
-      _this.layersVm.show(new DisplayReportInventoryViewModel({
-        title: 'Report',
-      }), function onClose(result) {
-        if (!result) {
-          return;
-        }
-      });
-
-      cb();
-
+    //Print report
+    _this.cmdPrintReport = ko.command(function( /*cb, vm*/ ) {
+      alert("@TODO print report.");
     });
 
     //events
     //
 
-    //  _this.active.subscribe(function(active) {
-    //   if (active) {
-    //     // this timeout makes it possible to focus the barcode field
-    //     setTimeout(function() {
-    //       _this.focusFirst(true);
-    //     }, 100);
-    //   }
-    // });
+    //subscribe to change on LocationType and populate Location dropdown
+    _this.data.LocationType.subscribe(function(locationType, cb) {
+      if (locationType) {
+
+        dataservice.inventoryenginesrv.Locations.read({
+          id: locationType
+        }, null, utils.safeCallback(cb, function(err, resp) {
+          if (resp.Code === 0) {
+
+            console.log("Locations:" + JSON.stringify(resp.Value));
+
+            //Populate Locations dropdown
+            _this.data.LocationCvm.setList(resp.Value);
+
+          } else {
+            notify.warn('Location Type not found', null, 3);
+          }
+        }));
+
+
+      }
+    });
+
+    _this.active.subscribe(function(active) {
+      if (active) {
+        // this timeout makes it possible to focus the barcode field
+        setTimeout(function() {
+          _this.focusFirst(true);
+        }, 100);
+      }
+    });
 
   }
 
