@@ -67,34 +67,6 @@ define('src/inventory/report.inventory.vm', [
       },
     });
 
-    //Pre-populated with dummy data for now
-    // _this.data.LocationTypeCvm = new ComboViewModel({      
-    //   selectedValue: _this.data.LocationType,      
-    //   list: [
-    //     {
-    //       value: 1,
-    //       text: 'LocationType1',
-    //     }, {
-    //       value: 2,
-    //       text: 'LocationType2',
-    //     },
-    //   ],
-    // });
-
-    // _this.data.LocationCvm = new ComboViewModel({      
-    //   selectedValue: _this.data.LocationData,    
-    //   nullable: true,  
-    //   list: [
-    //     {
-    //       value: 1,
-    //       text: 'Location1',
-    //     }, {
-    //       value: 2,
-    //       text: 'Location2',
-    //     },
-    //   ],
-    // });   
-
 
     //Display Inventory Grids
     _this.scannedListGvm = new InventoryReportScannedGridViewModel({
@@ -107,12 +79,51 @@ define('src/inventory/report.inventory.vm', [
 
     //Scan barcodes
     _this.scanBarcode = function( /*cb*/ ) {
-      alert("@TODO scan barcodes");
+
+      var barcodeId = _this.data.ProductBarcodeID(),
+        itemList = _this.unScannedListGvm.list(),
+        found = false,
+        i,
+        index;
+
+      console.log(JSON.stringify(itemList));
+
+      if (barcodeId !== null && barcodeId !== "") {
+
+        //Check if barcode exist on the list, if found, remove from list.
+        for (i = 0; i < itemList.length; i++) {
+
+          if (itemList[i].Barcode === barcodeId) {
+
+            found = true;
+            index = i;
+            break;
+
+          } else {
+            console.log("Not Found");
+          }
+        }
+
+        if (found) {
+          _this.unScannedListGvm.deleteRow(index);
+        } else {
+          //If barcode scanned is not found on inventory list, add to the right grid.
+          _this.scannedListGvm.list.push({
+            Barcode: barcodeId
+          });
+        }
+
+        //clear barcode field
+        _this.data.ProductBarcodeID(null);
+
+      }
+
     };
 
     //Print report
-    _this.cmdPrintReport = ko.command(function( /*cb, vm*/ ) {
+    _this.cmdPrintReport = ko.command(function(cb) {
       alert("@TODO print report.");
+      cb();
     });
 
     //events
@@ -160,10 +171,20 @@ define('src/inventory/report.inventory.vm', [
   //
 
   ReportInventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-    var _this = this;
+    var _this = this,
+      x = 0;
     join = join;
 
     load_locationTypeList(_this.data.LocationTypeCvm, join.add());
+
+    //Create a dummy data for barcodes list
+    while (x <= 15) {
+      _this.unScannedListGvm.list.push({
+        Barcode: 'Barcode' + x,
+      });
+
+      x++;
+    }
 
   };
 

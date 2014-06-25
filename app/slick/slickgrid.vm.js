@@ -189,6 +189,17 @@ define('src/slick/slickgrid.vm', [
     }
   };
 
+  //Not sure if this is the right place to add this here.
+  SlickGridViewModel.prototype.deleteRow = function(row) {
+    var _this = this,
+      data = _this.grid.getData();
+
+    data.splice(row, 1);
+    _this.grid.setData(data);
+    _this.grid.render();
+
+  };
+
 
   SlickGridViewModel.formatters = {
     currency: function(row, cell, value /*, columnDef, dataContext*/ ) {
