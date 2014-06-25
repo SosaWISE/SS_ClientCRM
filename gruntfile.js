@@ -130,7 +130,8 @@ module.exports = function(grunt) {
         src: [
           'tparty/depends.js',
 
-          'tparty/jquery-*.js',
+          'tparty/jquery-1.10.2.js',
+          'tparty/jquery-ui-1.10.4.custom.js',
           'tparty/knockout.js',
           'tparty/moment.js',
           'tparty/underscore.js',

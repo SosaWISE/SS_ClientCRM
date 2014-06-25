@@ -10,7 +10,7 @@ define('slick', [
   '/tparty/slick.cellselectionmodel',
   '/tparty/slick.editors',
   '/tparty/slick.formatters',
-  '/tparty/jquery-ui-1.8.16.custom.min',  
+  '/tparty/jquery-ui-1.10.4.custom',
 ], function() {
   "use strict";
   return window.Slick;
