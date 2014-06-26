@@ -10,6 +10,7 @@ define('src/inventory/report.inventory.vm', [
   'src/core/joiner',
   'ko',
   'src/ukov',
+  'jquery'
 ], function(
   dataservice,
   ComboViewModel,
@@ -21,7 +22,8 @@ define('src/inventory/report.inventory.vm', [
   InventoryReportUnScannedGridViewModel,
   joiner,
   ko,
-  ukov
+  ukov,
+  $
 ) {
   "use strict";
 
@@ -78,7 +80,7 @@ define('src/inventory/report.inventory.vm', [
     });
 
     //subscribe to change on value for product barcode, if not empty do the some scan barcode stuff
-    _this.data.ProductBarcodeID.subscribe(function(ProductBarcodeID /*, cb*/ ) {
+    _this.data.ProductBarcodeID.subscribe(function(ProductBarcodeID, cb) {
 
       if (ProductBarcodeID) {
 
@@ -116,22 +118,28 @@ define('src/inventory/report.inventory.vm', [
           } else {
             //If barcode scanned is not found on inventory list, add to the right grid.
 
-            // dataservice.inventoryenginesrv.ProductBarcode.read({
-            //   id: barcodeId,
-            //   link: 'PBID'
-            // }, null, utils.safeCallback(cb, function(err, resp) {
-            //   if (resp.Code === 0 && resp.Value.length > 0) {
+            dataservice.inventoryenginesrv.ProductBarcodeLocations.read({
+              id: barcodeId,
+              link: 'PBID'
+            }, null, utils.safeCallback(cb, function(err, resp) {
 
-            //     console.log("Unknown barcode:" + JSON.stringify(resp.Value));         
+              if (resp.Code === 0) {
+                console.log("Unknown barcode:" + JSON.stringify(resp.Value));
+                console.log("Unknown barcode:" + resp.Value.ProductBarcodeId);
+                console.log("Unknown barcode:" + resp.Value.ItemDesc);
 
-            //   } else {
-            //     notify.warn('Barcode not found.', null, 3);          
-            //   }
-            // }));
+                _this.scannedListGvm.list.push({
+                  ItemDesc: resp.Value.ItemDesc
+                });
 
-            _this.scannedListGvm.list.push({
-              Barcode: barcodeId
-            });
+              } else {
+                notify.warn('Barcode not found.', null, 3);
+              }
+            }));
+
+            // _this.scannedListGvm.list.push({
+            //   Barcode: barcodeId
+            // });
           }
 
           //clear barcode field
@@ -144,8 +152,66 @@ define('src/inventory/report.inventory.vm', [
 
     //Print report
     _this.cmdPrintReport = ko.command(function(cb) {
-      alert("@TODO print report.");
+
+      //Bug: curently if the user close the print dialog using the "x" button of the pop up, no callback happens
+
+      var toAppend,
+        unScanItemList,
+        scanItemList,
+        unScanItems,
+        scanItems,
+        gridData,
+        printWindow,
+        inc;
+
+      //Root element for added elements
+      toAppend = "<div class='addedElements'></div>";
+
+      //Get data from grids            
+      unScanItemList = _this.unScannedListGvm.list();
+      scanItemList = _this.scannedListGvm.list();
+
+      //Initialize headers
+      unScanItems = "<b><u><div class='inventoryItems'>Items that are in inventory but not scanned</div></u></b><br />";
+      scanItems = "<b><u><div class='unknownItems'>Items that are scanned but not in the inventory</div></u></b><br />";
+
+      //loop all inventory items that are unscanned
+      for (inc = 0; inc < unScanItemList.length; inc++) {
+        unScanItems += "<div class='items'>" + unScanItemList[inc].ItemDesc + "</div>";
+      }
+
+      //Add break line for spacing
+      unScanItems += "<br />";
+
+      //now for unknown items            
+      for (inc = 0; inc < scanItemList.length; inc++) {
+        scanItems += "<div class='items'>" + scanItemList[inc].ItemDesc + "</div>";
+      }
+
+      //Add break line for spacing
+      scanItems += "<br />";
+
+      //Append data
+      $("#printDiv").append(toAppend);
+      $(".addedElements").append(unScanItems);
+      $(".addedElements").append(scanItems);
+
+      gridData = $("#printDiv").html();
+      printWindow = window.open('', '', 'height=' + screen.height + ', width=' + screen.width);
+      printWindow.document.write('<html><head><title>Audit Report</title>');
+      printWindow.document.write('</head><body >');
+      printWindow.document.write(gridData);
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      $("#printDiv .addedElements").remove();
+      printWindow.close();
+
       cb();
+
+      return false;
+
     });
 
     //events

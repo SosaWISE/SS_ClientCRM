@@ -27,9 +27,9 @@ define('src/inventory/inventory-report-scanned.gvm', [
 
       columns: [ //
         {
-          id: 'Barcode',
-          name: 'Barcode (Items that are scanned but not shown in the inventory)',
-          field: 'Barcode',
+          id: 'ItemDesc',
+          name: 'Items that are scanned but not shown in the inventory',
+          field: 'ItemDesc',
         },
       ],
 
