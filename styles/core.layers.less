@@ -33,8 +33,29 @@
         overflow: auto;
       }
 
+      // > .header {
+      //   .user-select(none);
+      //   background: rgba(0,0,0,0.15);
+      //   height: 15px;
+      //   > .handle.drag {
+      //     height: 100%;
+      //     cursor: move;
+      //     cursor: -webkit-grab;
+      //     &.dragging {
+      //       cursor: move;
+      //     }
+      //   }
+      // }
       > .content {
+        // padding: 5px 20px 20px 20px;
         padding: 20px;
+
+        .user-select(none);
+        cursor: move;
+        cursor: -webkit-grab;
+        &.dragging {
+          cursor: move;
+        }
 
         .actions ul,
         ul.actions {
