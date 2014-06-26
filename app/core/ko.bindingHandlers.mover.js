@@ -7,7 +7,7 @@ define('src/core/ko.bindingHandlers.mover', [
 ) {
   "use strict";
 
-  var pad = 10;
+  // var pad = 10;
 
   ko.bindingHandlers.mover = {
     init: function(element, valueAccessor) {
@@ -20,17 +20,25 @@ define('src/core/ko.bindingHandlers.mover', [
       }
 
       el.mousedown(function(evt) {
+        if (evt.button !== 0) {
+          // return if not a left click
+          return;
+        }
         el.addClass('dragging');
         var parent = moveEl.parent(),
-          maxHeight = (parent.height() - moveEl.height() - pad) / 2,
-          maxWidth = (parent.width() - moveEl.width() - pad) / 2,
+          height = moveEl.height(),
+          width = moveEl.width(),
+          pheight = parent.height(),
+          pwidth = parent.width(),
           top = parseInt(moveEl.css('top'), 10) || 0,
           left = parseInt(moveEl.css('left'), 10) || 0;
         info = {
-          maxY: maxHeight,
-          minY: maxHeight * -1,
-          maxX: maxWidth,
-          minX: maxWidth * -1,
+          // stop 10px before layer leaves page
+          maxY: (pheight - height - 10) / 2, // bottom
+          maxX: (pwidth - width - 10) / 2, // right
+          // leave 100px of layer showing
+          minY: (pheight + height - 100) / -2, // top
+          minX: (pwidth + width - 100) / -2, // left
           clientY: evt.clientY - top,
           clientX: evt.clientX - left,
         };

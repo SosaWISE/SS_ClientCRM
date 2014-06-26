@@ -81,7 +81,7 @@ define('src/survey/survey.new.vm', [
   utils.inherits(NewSurveyViewModel, BaseViewModel);
   NewSurveyViewModel.prototype.viewTmpl = 'tmpl-survey_new';
   NewSurveyViewModel.prototype.width = 300;
-  NewSurveyViewModel.prototype.height = 250;
+  NewSurveyViewModel.prototype.height = 'auto';
 
   return NewSurveyViewModel;
 });

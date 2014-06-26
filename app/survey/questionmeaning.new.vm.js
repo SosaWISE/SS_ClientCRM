@@ -69,7 +69,7 @@ define('src/survey/questionmeaning.new.vm', [
   utils.inherits(NewQuestionMeaningViewModel, BaseViewModel);
   NewQuestionMeaningViewModel.prototype.viewTmpl = 'tmpl-questionmeaning_new';
   NewQuestionMeaningViewModel.prototype.width = 300;
-  NewQuestionMeaningViewModel.prototype.height = 155;
+  NewQuestionMeaningViewModel.prototype.height = 'auto';
 
   return NewQuestionMeaningViewModel;
 });

@@ -44,7 +44,7 @@ define('src/survey/takesurveytranslation.vm', [
   utils.inherits(TakeSurveyTranslationViewModel, BaseViewModel);
   TakeSurveyTranslationViewModel.prototype.viewTmpl = 'tmpl-takesurveytranslation';
   TakeSurveyTranslationViewModel.prototype.width = 300;
-  TakeSurveyTranslationViewModel.prototype.height = 250;
+  TakeSurveyTranslationViewModel.prototype.height = 'auto';
 
   TakeSurveyTranslationViewModel.prototype.updateSurveyTranslations = function(surveyTranslationVMs) {
     var _this = this;

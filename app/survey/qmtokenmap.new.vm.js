@@ -59,7 +59,7 @@ define('src/survey/qmtokenmap.new.vm', [
   utils.inherits(NewQMTokenMapViewModel, BaseViewModel);
   NewQMTokenMapViewModel.prototype.viewTmpl = 'tmpl-qmtokenmap_new';
   NewQMTokenMapViewModel.prototype.width = 300;
-  NewQMTokenMapViewModel.prototype.height = 250;
+  NewQMTokenMapViewModel.prototype.height = 'auto';
 
   function createComboList(tokenMaps, tokens) {
     var map = {},
