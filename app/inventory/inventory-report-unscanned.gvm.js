@@ -27,9 +27,9 @@ define('src/inventory/inventory-report-unscanned.gvm', [
 
       columns: [ //
         {
-          id: 'Barcode',
+          id: 'ProductBarcodeId',
           name: 'Barcode (Items that are in inventory but not scanned)',
-          field: 'Barcode',
+          field: 'ItemDesc',
         },
       ],
 

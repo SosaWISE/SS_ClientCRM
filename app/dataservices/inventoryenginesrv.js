@@ -20,7 +20,8 @@ define('src/dataservices/inventoryenginesrv', [
       'ProductBarcodeTracking',
       'WarehouseSiteList',
       'LocationTypeList',
-      'Locations'
+      'Locations',
+      'ProductBarcodeLocations'
     ].forEach(function(collectionName) {
       result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
     });

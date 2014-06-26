@@ -77,48 +77,70 @@ define('src/inventory/report.inventory.vm', [
 
     });
 
-    //Scan barcodes
-    _this.scanBarcode = function( /*cb*/ ) {
+    //subscribe to change on value for product barcode, if not empty do the some scan barcode stuff
+    _this.data.ProductBarcodeID.subscribe(function(ProductBarcodeID /*, cb*/ ) {
 
-      var barcodeId = _this.data.ProductBarcodeID(),
-        itemList = _this.unScannedListGvm.list(),
-        found = false,
-        i,
-        index;
+      if (ProductBarcodeID) {
 
-      console.log(JSON.stringify(itemList));
+        if (_this.data.LocationType() === null || _this.data.LocationData() === null) {
+          notify.warn('Please select location type and location.', null, 3);
+          return;
+        }
 
-      if (barcodeId !== null && barcodeId !== "") {
+        var barcodeId = ProductBarcodeID,
+          itemList = _this.unScannedListGvm.list(),
+          found = false,
+          i,
+          index;
 
-        //Check if barcode exist on the list, if found, remove from list.
-        for (i = 0; i < itemList.length; i++) {
+        console.log(JSON.stringify(itemList));
 
-          if (itemList[i].Barcode === barcodeId) {
+        if (barcodeId !== null && barcodeId !== "") {
 
-            found = true;
-            index = i;
-            break;
+          //Check if barcode exist on the list, if found, remove from list.
+          for (i = 0; i < itemList.length; i++) {
 
-          } else {
-            console.log("Not Found");
+            if (itemList[i].ProductBarcodeId === barcodeId) {
+
+              found = true;
+              index = i;
+              break;
+
+            } else {
+              console.log("Not Found");
+            }
           }
-        }
 
-        if (found) {
-          _this.unScannedListGvm.deleteRow(index);
-        } else {
-          //If barcode scanned is not found on inventory list, add to the right grid.
-          _this.scannedListGvm.list.push({
-            Barcode: barcodeId
-          });
-        }
+          if (found) {
+            _this.unScannedListGvm.deleteRow(index);
+          } else {
+            //If barcode scanned is not found on inventory list, add to the right grid.
 
-        //clear barcode field
-        _this.data.ProductBarcodeID(null);
+            // dataservice.inventoryenginesrv.ProductBarcode.read({
+            //   id: barcodeId,
+            //   link: 'PBID'
+            // }, null, utils.safeCallback(cb, function(err, resp) {
+            //   if (resp.Code === 0 && resp.Value.length > 0) {
+
+            //     console.log("Unknown barcode:" + JSON.stringify(resp.Value));         
+
+            //   } else {
+            //     notify.warn('Barcode not found.', null, 3);          
+            //   }
+            // }));
+
+            _this.scannedListGvm.list.push({
+              Barcode: barcodeId
+            });
+          }
+
+          //clear barcode field
+          _this.data.ProductBarcodeID(null);
+
+        }
 
       }
-
-    };
+    });
 
     //Print report
     _this.cmdPrintReport = ko.command(function(cb) {
@@ -128,6 +150,35 @@ define('src/inventory/report.inventory.vm', [
 
     //events
     //
+
+    //subscribe to change on LocationCvm and populate grid
+    _this.data.LocationData.subscribe(function(location, cb) {
+      if (location) {
+
+        //clear grids when there's a change of location
+        _this.unScannedListGvm.list([]);
+        _this.scannedListGvm.list([]);
+
+        dataservice.inventoryenginesrv.ProductBarcodeLocations.read({
+          id: location
+        }, null, utils.safeCallback(cb, function(err, resp) {
+          if (resp.Code === 0 && resp.Value.length > 0) {
+
+            console.log("DataGrid:" + JSON.stringify(resp.Value));
+
+            //Populate Data grid
+            for (var x = 0; x < resp.Value.length; x++) {
+              _this.unScannedListGvm.list.push(resp.Value[x]);
+            }
+
+          } else {
+            notify.warn('No records found', null, 3);
+          }
+        }));
+
+
+      }
+    });
 
     //subscribe to change on LocationType and populate Location dropdown
     _this.data.LocationType.subscribe(function(locationType, cb) {
@@ -171,20 +222,10 @@ define('src/inventory/report.inventory.vm', [
   //
 
   ReportInventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-    var _this = this,
-      x = 0;
+    var _this = this;
     join = join;
 
     load_locationTypeList(_this.data.LocationTypeCvm, join.add());
-
-    //Create a dummy data for barcodes list
-    while (x <= 15) {
-      _this.unScannedListGvm.list.push({
-        Barcode: 'Barcode' + x,
-      });
-
-      x++;
-    }
 
   };
 

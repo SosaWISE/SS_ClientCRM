@@ -73,8 +73,8 @@ define('src/panels/inventory.panel.vm', [
         new deps.ReportInventoryViewModel({
           routeName: 'inventory',
           pcontroller: _this,
-          id: 'report',
-          title: 'Report'
+          id: 'audit',
+          title: 'Audit'
         }),
       ]);
       cb();

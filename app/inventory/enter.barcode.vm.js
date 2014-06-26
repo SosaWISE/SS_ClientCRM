@@ -51,10 +51,11 @@ define('src/inventory/enter.barcode.vm', [
     _this.barcodeCount(0);
 
     //Call api for adding barcodes
-    _this.processBarcode = function(cb) {
+    //_this.processBarcode = function(cb) {
+    _this.data.productBarcodeID.subscribe(function(cb) {
 
-      //Retrieve current barcode counts and increment by 1
-      var count = parseInt(_this.barcodeCount()) + 1;
+      //Retrieve current barcode counts
+      var count = parseInt(_this.barcodeCount());
 
       //Set of parameters used on api call
       param = {
@@ -74,9 +75,10 @@ define('src/inventory/enter.barcode.vm', [
           if (resp.Code === 0) {
 
             //Increment entered barcodes count
+            count++;
             _this.barcodeCount(count.toString());
 
-            //clear barcode field
+            //clear barcode field            
             _this.data.productBarcodeID.setValue(null);
 
           } else {
@@ -90,7 +92,7 @@ define('src/inventory/enter.barcode.vm', [
       }
 
 
-    };
+    });
 
 
     _this.repResult = ko.observable(null);
