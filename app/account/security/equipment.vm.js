@@ -82,7 +82,7 @@ define('src/account/security/equipment.vm', [
       _this.Csid2 = resp.Value.Csid2;
       _this.ReceiverLine2Id = resp.Value.ReceiverLine2Id;
       _this.SalesRepId = resp.Value.SalesRepId;
-      _this.SalesFullName = resp.Value.SalesFullName;
+      _this.SalesRepFullName = resp.Value.SalesRepFullName;
       _this.TechId = resp.Value.TechId;
       _this.TechFullName = resp.Value.TechFullName;
     }, utils.no_op));
@@ -98,8 +98,8 @@ define('src/account/security/equipment.vm', [
     }, utils.no_op));
   }
 
-  function showEquipmentEditor(_this, byPart, cb, CompanyId) {
-    _this.layersVm.show(createEquipmentEditor(_this, byPart, CompanyId), createEquipmentEditorCb(_this, cb));
+  function showEquipmentEditor(_this, byPart, item, cb) {
+    _this.layersVm.show(createEquipmentEditor(_this, byPart, item), createEquipmentEditorCb(_this, cb));
   }
 
   function showExistingEquipmentEditor(_this, cb) {
@@ -107,35 +107,17 @@ define('src/account/security/equipment.vm', [
   }
 
 
-  function createEquipmentEditor(_this, byPart, CompanyId) {
-    if (utils.isObject(byPart)) {
-      return new EquipmentEditorViewModel({
-        item: byPart,
-        accountId: _this.accountId,
-        monitoringStationOS: _this.MonitoringStationOSId,
-        salesRepId: _this.SalesRepId,
-        salesFullName: _this.SalesRepFullName,
-        techId: _this.TechId,
-        techFullName: _this.TechFullName
-      });
-    } else {
-      return new EquipmentEditorViewModel({
-        byPart: byPart,
-        accountId: _this.accountId,
-        //@TODO: get real monitoringStationOS
-        monitoringStationOS: 'MI_DICE',
-        //@TODO: get real salesman and technician
-        salesman: {
-          id: 'SALS001',
-          name: 'SALS001',
-        },
-        tId: CompanyId
-        // technician: {
-        //   id: 'FRANK002',
-        //   name: 'Frank',
-        // },
-      });
-    }
+  function createEquipmentEditor(_this, byPart, item) {
+    return new EquipmentEditorViewModel({
+      byPart: byPart,
+      item: item,
+      accountId: _this.accountId,
+      monitoringStationOS: _this.MonitoringStationOSId,
+      salesRepId: _this.SalesRepId,
+      salesRepFullName: _this.SalesRepFullName,
+      techId: _this.TechId,
+      techFullName: _this.TechFullName
+    });
   }
 
 

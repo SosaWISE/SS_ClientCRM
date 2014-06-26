@@ -36,7 +36,7 @@ define('src/account/security/equipment.editor.vm', [
     },
     ZoneEventType: {},
     //ItemLocation: {},
-
+    GPEmployeeId: {},
     EquipmentLocationID: {},
 
     AccountZoneTypeId: {},
@@ -80,6 +80,7 @@ define('src/account/security/equipment.editor.vm', [
       Zone: '',
       ZoneEventType: null,
       //ItemLocation: null,
+      GPEmployeeId: null,
 
       EquipmentLocationID: null,
 
@@ -121,15 +122,15 @@ define('src/account/security/equipment.editor.vm', [
 
     _this.data.AssignToCvm = new ComboViewModel({
       //selectedValue: _this.data.AssignTo,
-      selectedValue: _this.data.AccountZoneAssignmentID,
+      selectedValue: _this.data.GPEmployeeId,
       nullable: true,
       list: [ //
         {
-          value: 1,
-          text: '1',
+          value: options.techId,
+          text: options.techFullName,
         }, {
-          value: 2,
-          text: '2',
+          value: options.salesRepId,
+          text: options.salesRepFullName,
         },
       ],
     });

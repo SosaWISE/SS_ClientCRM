@@ -27,6 +27,7 @@ define('src/account/security/equipment.gvm', [
         new RowEvent({
           eventName: 'onDblClick',
           fn: function(item) {
+            console.log("Item double clicked: ", item);
             options.edit(item, function(model, deleted) {
               if (!model) { // nothing changed
                 return;
@@ -37,8 +38,7 @@ define('src/account/security/equipment.gvm', [
                 _this.list.replace(item, model);
               }
             });
-            console.log("Item double clicked: ", item);
-            alert('double clicked');
+            // alert('double clicked');
           },
         }),
       ],
