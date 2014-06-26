@@ -52,45 +52,50 @@ define('src/inventory/enter.barcode.vm', [
 
     //Call api for adding barcodes
     //_this.processBarcode = function(cb) {
-    _this.data.productBarcodeID.subscribe(function(cb) {
+    _this.data.productBarcodeID.subscribe(function(barcodeId, cb) {
 
-      //Retrieve current barcode counts
-      var count = parseInt(_this.barcodeCount());
+      //Check if barcode is not empty
+      if (barcodeId) {
 
-      //Set of parameters used on api call
-      param = {
-        ProductBarcodeID: _this.data.productBarcodeID(),
-        PurchaseOrderItemId: _this.purchaseOrderItemID
-      };
+        //Retrieve current barcode counts
+        var count = parseInt(_this.barcodeCount()) + 1;
 
-      if (parseInt(_this.receiveCount) >= count) {
-        //This is the api for adding barcodes
-        dataservice.inventoryenginesrv.ProductBarcode.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+        //Set of parameters used on api call
+        param = {
+          //ProductBarcodeID: _this.data.productBarcodeID(),
+          ProductBarcodeID: barcodeId,
+          PurchaseOrderItemId: _this.purchaseOrderItemID
+        };
 
-          if (err) {
-            cb(err);
-            return;
-          }
+        if (parseInt(_this.receiveCount) >= count) {
+          //This is the api for adding barcodes
+          dataservice.inventoryenginesrv.ProductBarcode.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
-          if (resp.Code === 0) {
+            if (err) {
+              cb(err);
+              return;
+            }
 
-            //Increment entered barcodes count
-            count++;
-            _this.barcodeCount(count.toString());
+            if (resp.Code === 0) {
 
-            //clear barcode field            
-            _this.data.productBarcodeID.setValue(null);
+              //Increment entered barcodes count
 
-          } else {
-            notify.warn('Error adding barcode...', null, 3);
-          }
+              _this.barcodeCount(count.toString());
 
-        }, utils.no_op));
+              //clear barcode field            
+              _this.data.productBarcodeID.setValue(null);
 
-      } else {
-        notify.warn('Entered barcode count must not exceed received count.');
+            } else {
+              notify.warn('Error adding barcode...', null, 3);
+            }
+
+          }, utils.no_op));
+
+        } else {
+          notify.warn('Entered barcode count must not exceed received count.');
+        }
+
       }
-
 
     });
 
