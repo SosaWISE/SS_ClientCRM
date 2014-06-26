@@ -206,7 +206,16 @@ define('src/core/dataservice.base', [
       if (responseData.Code === 0) {
         // try to set setter value,
         if (utils.isFunc(context.setter)) {
-          context.setter(responseData.Value);
+          try {
+            context.setter(responseData.Value);
+          } catch (ex) {
+            console.error(ex);
+            err = {
+              Code: 990004,
+              Message: ex.stack,
+              Value: null,
+            };
+          }
         }
       } else {
         err = responseData;

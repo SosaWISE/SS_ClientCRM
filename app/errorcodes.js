@@ -11,5 +11,6 @@ define('src/errorcodes', [], function() {
     '990001': 'Error processing response',
     '990002': 'Request Error',
     '990003': 'Request Timeout Error',
+    '990004': 'Error in setter callback',
   };
 });

@@ -42,7 +42,7 @@ define('src/account/security/existingequipment.editor.vm', [
     BaseViewModel.ensureProps(_this, [
       // 'customerId',
       'accountId',
-      'monitoringStationOS',
+      'monitoringStationOsId',
     ]);
     _this.mixinLoad();
 
@@ -114,12 +114,12 @@ define('src/account/security/existingequipment.editor.vm', [
   ExistingEquipmentEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
 
-    load_equipment(_this.data.EquipmentCvm, _this.monitoringStationOS, join.add());
-    load_zoneEventTypes(_this.data.ZoneEventTypeCvm, _this.monitoringStationOS, join.add());
-    load_accountZoneTypes(_this.data.ItemLocationCvm, _this.monitoringStationOS, join.add());
+    load_equipment(_this.data.EquipmentCvm, _this.monitoringStationOsId, join.add());
+    load_zoneEventTypes(_this.data.ZoneEventTypeCvm, _this.monitoringStationOsId, join.add());
+    load_accountZoneTypes(_this.data.ItemLocationCvm, _this.monitoringStationOsId, join.add());
   };
 
-  function load_equipment(cvm, monitoringStationOS, cb) {
+  function load_equipment(cvm, monitoringStationOsId, cb) {
     dataservice.msaccountsetupsrv.monitoringStationOS.read({
       link: 'EquipmentList'
     }, null, utils.safeCallback(cb, function(err, resp) {
@@ -128,14 +128,14 @@ define('src/account/security/existingequipment.editor.vm', [
 
   }
 
-  function load_zoneEventTypes(cvm, monitoringStationOS, cb) {
-    readMonitoringStationOS(cvm, monitoringStationOS, 'zoneEventTypes', {
+  function load_zoneEventTypes(cvm, monitoringStationOsId, cb) {
+    readMonitoringStationOS(cvm, monitoringStationOsId, 'zoneEventTypes', {
       'equipmentTypeId': 1,
     }, cb);
   }
 
-  function load_accountZoneTypes(cvm, monitoringStationOS, cb) {
-    readMonitoringStationOS(cvm, monitoringStationOS, 'accountZoneTypes', {}, cb);
+  function load_accountZoneTypes(cvm, monitoringStationOsId, cb) {
+    readMonitoringStationOS(cvm, monitoringStationOsId, 'accountZoneTypes', {}, cb);
   }
 
   function readMonitoringStationOS(cvm, id, link, query, cb) {

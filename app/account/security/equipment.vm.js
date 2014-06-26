@@ -4,6 +4,7 @@ define('src/account/security/equipment.vm', [
   'src/account/security/equipment.editor.vm',
   'src/account/security/existingequipment.editor.vm',
   'src/account/security/equipment.gvm',
+  'src/core/strings',
   'src/core/layers.vm',
   'src/core/notify',
   'src/core/utils',
@@ -15,14 +16,13 @@ define('src/account/security/equipment.vm', [
   EquipmentEditorViewModel,
   ExistingEquipmentEditorViewModel,
   EquipmentGridViewModel,
+  strings,
   LayersViewModel,
   notify,
   utils,
   ControllerViewModel
 ) {
   "use strict";
-
-  var CompanyId;
 
   function EquipmentViewModel(options) {
     var _this = this;
@@ -37,23 +37,19 @@ define('src/account/security/equipment.vm', [
     _this.gvm = new EquipmentGridViewModel({
       edit: function(eqItem, cb) {
         //showDispatchAgencyEditor(_this, agency, cb);
-        showEquipmentEditor(_this, eqItem, cb, CompanyId);
+        showEquipmentEditor(_this, false, utils.clone(eqItem), cb);
       },
     });
-
-    //Retrieve the Technician ID to be used for Adding by Barcode/Part#
-    CompanyId = _this.repCompanyID;
-    console.log("CompanyId: " + JSON.stringify(CompanyId));
 
     //
     // events
     //
 
     _this.cmdAddByPart = ko.command(function(cb) {
-      showEquipmentEditor(_this, true, cb, CompanyId);
+      showEquipmentEditor(_this, true, null, cb);
     });
     _this.cmdAddByBarcode = ko.command(function(cb) {
-      showEquipmentEditor(_this, false, cb, CompanyId);
+      showEquipmentEditor(_this, false, null, cb);
     });
     _this.cmdAddExistingEquipment = ko.command(function(cb) {
       showExistingEquipmentEditor(_this, cb);
@@ -67,25 +63,35 @@ define('src/account/security/equipment.vm', [
 
     _this.accountId = routeData.id;
 
-    load_accountDetails(_this, _this.accountId, join.add());
+    // clear cache
+    _this.cache = {};
+
+    load_accountDetails(_this.accountId, function(val) {
+      if (!val) {
+        _this.accountDetails = {};
+        _this.cache.reps = [];
+      } else {
+        val.MonitoringStationOsId = val.MonitoringStationOsId || 'MI_DICE'; //@HACK: for null value
+        _this.accountDetails = val;
+        _this.cache.reps = [ //
+          {
+            CompanyID: val.SalesRepId,
+            FullName: strings.format('{0} - {1}', val.SalesRepId, val.SalesRepFullName),
+          }, {
+            CompanyID: val.TechId,
+            FullName: strings.format('{0} - {1}', val.TechId, val.TechFullName),
+          },
+        ];
+      }
+    }, join.add());
     load_equipment(_this.gvm, _this.accountId, join.add());
   };
 
-  function load_accountDetails(_this, accountId, cb) {
+  function load_accountDetails(accountId, setter, cb) {
     dataservice.monitoringstationsrv.accounts.read({
       id: accountId,
       link: 'details'
-    }, null, utils.safeCallback(cb, function(err, resp) {
-      _this.MonitoringStationOSId = resp.Value.MonitoringStationOsId;
-      _this.Csid = resp.Value.Csid;
-      _this.ReceiverLineId = resp.Value.ReceiverLineId;
-      _this.Csid2 = resp.Value.Csid2;
-      _this.ReceiverLine2Id = resp.Value.ReceiverLine2Id;
-      _this.SalesRepId = resp.Value.SalesRepId;
-      _this.SalesRepFullName = resp.Value.SalesRepFullName;
-      _this.TechId = resp.Value.TechId;
-      _this.TechFullName = resp.Value.TechFullName;
-    }, utils.no_op));
+    }, setter, cb);
   }
 
   function load_equipment(gvm, accountId, cb) {
@@ -112,42 +118,27 @@ define('src/account/security/equipment.vm', [
       byPart: byPart,
       item: item,
       accountId: _this.accountId,
-      monitoringStationOS: _this.MonitoringStationOSId,
-      salesRepId: _this.SalesRepId,
-      salesRepFullName: _this.SalesRepFullName,
-      techId: _this.TechId,
-      techFullName: _this.TechFullName
+      monitoringStationOsId: _this.accountDetails.MonitoringStationOsId,
+      cache: _this.cache,
     });
   }
 
-
   function createEquipmentEditorCb(_this, cb) {
-    return function(result) {
+    return function(result, deleted) {
       if (result && result.Items) {
         _this.partsGrid.list(result.Items);
       }
       if (utils.isFunc(cb)) {
-        cb();
+        cb(result, deleted);
       }
     };
   }
 
-
   function createExistingEquipmentEditor(_this) {
     return new ExistingEquipmentEditorViewModel({
-
       accountId: _this.accountId,
-      //@TODO: get real monitoringStationOS
-      monitoringStationOS: 'MI_DICE',
-      //@TODO: get real salesman and technician
-      salesman: {
-        id: 'SALS001',
-        name: 'SALS001',
-      },
-      // technician: {
-      //   id: 'FRANK002',
-      //   name: 'Frank',
-      // },
+      monitoringStationOsId: _this.accountDetails.MonitoringStationOsId,
+      reps: _this.cache.reps,
     });
   }
 

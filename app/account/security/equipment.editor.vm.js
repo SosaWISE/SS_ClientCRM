@@ -1,5 +1,6 @@
 define('src/account/security/equipment.editor.vm', [
   'src/dataservice',
+  'src/core/strings',
   'src/core/combo.vm',
   'src/core/notify',
   'src/core/utils',
@@ -8,6 +9,7 @@ define('src/account/security/equipment.editor.vm', [
   'src/ukov',
 ], function(
   dataservice,
+  strings,
   ComboViewModel,
   notify,
   utils,
@@ -17,42 +19,52 @@ define('src/account/security/equipment.editor.vm', [
 ) {
   "use strict";
 
-  var searchKeySchema, schema,
+  var schema,
+    searchBarcodeSchema, searchPartNumSchema,
     strConverter = ukov.converters.string();
 
-  searchKeySchema = {
+  searchBarcodeSchema = {
     converter: strConverter,
+    validators: [
+      ukov.validators.isRequired('Please enter a barcode'),
+    ],
+  };
+  searchPartNumSchema = {
+    converter: strConverter,
+    validators: [
+      ukov.validators.isRequired('Please enter a part #'),
+    ],
   };
 
   schema = {
     _model: true,
-    AccountId: {},
-    ItemId: {},
-    ItemDesc: {},
-
     AccountEquipmentID: {},
-    Zone: {
-      converter: strConverter,
-    },
-    ZoneEventType: {},
-    //ItemLocation: {},
-    GPEmployeeId: {},
-    EquipmentLocationID: {},
-
-    AccountZoneTypeId: {},
-    //AssignTo: {},
-    AccountZoneAssignmentID: {},
-    //IsUpgrade: {},
     AccountEquipmentUpgradeTypeId: {},
-    //UpgradePrice: {
-    //converter: ukov.converters.number(2),
-    //},
+    AccountId: {},
+    AccountZoneAssignmentID: {},
+    // AccountZoneType: {},
+    AccountZoneTypeId: {},
+    // ActualPoints: 3,
+    BarcodeId: {},
+    // EquipmentLocationDesc: null,
+    EquipmentLocationId: {},
+    GPEmployeeId: {},
+    // IsExisting: false,
+    IsExistingWiring: {},
+    IsMainPanel: {},
+    // IsServiceUpgrade: false,
+    ItemDesc: {},
+    ItemId: {},
+    ItemSKU: {},
     Price: {
       converter: ukov.converters.number(2),
     },
-    IsExistingWiring: {},
-    //MainPanel: {},
-    IsMainPanel: {},
+    Zone: {
+      converter: strConverter,
+    },
+
+    //@NOTE: these are not returned in equipment item array... msaccountsetupsrv/accounts/151147/equipment
+    ZoneEventType: {},
   };
 
 
@@ -63,39 +75,52 @@ define('src/account/security/equipment.editor.vm', [
       _this.item = options.item;
     }
     EquipmentEditorViewModel.super_.call(_this, options);
+    _this.mixinLoad();
     BaseViewModel.ensureProps(_this, [
       // 'customerId',
       'accountId',
-      'monitoringStationOS',
+      'monitoringStationOsId',
+      'cache',
+      'byPart',
     ]);
-    _this.mixinLoad();
+    BaseViewModel.ensureProps(_this.cache, [
+      'reps',
+    ]);
 
-    _this.searchKey = ukov.wrap('', searchKeySchema);
+    _this.title = _this.byPart ? 'Part #' : 'Barcode';
+    _this.searchKey = ukov.wrap('', _this.byPart ? searchPartNumSchema : searchBarcodeSchema);
 
-    _this.data = ukov.wrap(_this.item || {
-      AccountId: null,
-      ItemId: null,
-      ItemDesc: null,
+    _this.item = _this.item || {
       AccountEquipmentID: null,
-      Zone: '',
-      ZoneEventType: null,
-      //ItemLocation: null,
-      GPEmployeeId: null,
-
-      EquipmentLocationID: null,
-
-
-      AccountZoneTypeId: null,
-      //AssignTo: null,
-      AccountZoneAssignmentID: null,
-      //IsUpgrade: null,
       AccountEquipmentUpgradeTypeId: null,
-      //UpgradePrice: '',
-      Price: '',
+      AccountId: null,
+      AccountZoneAssignmentID: null,
+      AccountZoneTypeId: null,
+      BarcodeId: null,
+      EquipmentLocationId: null,
+      GPEmployeeId: null,
       IsExistingWiring: null,
-      //MainPanel: null,
+      // IsExisting: null,
       IsMainPanel: null,
-    }, schema);
+      ItemDesc: null,
+      ItemId: null,
+      ItemSKU: null,
+      Price: '',
+      Zone: '',
+
+      // see schema
+      ZoneEventType: null,
+
+      //IsUpgrade: null,
+      //UpgradePrice: '',
+      //MainPanel: null,
+    };
+    _this.cleanItem = utils.clone(_this.item);
+
+    _this.data = ukov.wrap(_this.item, schema);
+    _this.hasItem = ko.computed(function() {
+      return !!_this.data.ItemId();
+    });
 
     _this.data.ZoneEventTypeCvm = new ComboViewModel({
       selectedValue: _this.data.ZoneEventType,
@@ -105,7 +130,8 @@ define('src/account/security/equipment.editor.vm', [
       },
     });
     _this.data.EquipmentLocationCvm = new ComboViewModel({
-      selectedValue: _this.data.EquipmentLocationID,
+      selectedValue: _this.data.EquipmentLocationId,
+      nullable: true,
       fields: {
         value: 'EquipmentLocationID',
         text: 'EquipmentLocationDesc',
@@ -124,20 +150,15 @@ define('src/account/security/equipment.editor.vm', [
       //selectedValue: _this.data.AssignTo,
       selectedValue: _this.data.GPEmployeeId,
       nullable: true,
-      list: [ //
-        {
-          value: options.techId,
-          text: options.techFullName,
-        }, {
-          value: options.salesRepId,
-          text: options.salesRepFullName,
-        },
-      ],
+      list: _this.cache.reps,
+      fields: {
+        value: 'CompanyID',
+        text: 'FullName',
+      },
     });
     _this.data.IsUpgradeCvm = new ComboViewModel({
       //  selectedValue: _this.data.IsUpgrade,
       selectedValue: _this.data.AccountEquipmentUpgradeTypeId,
-
       nullable: true,
       list: _this.isUpgradeOptions,
     });
@@ -156,98 +177,48 @@ define('src/account/security/equipment.editor.vm', [
     // events
     //
     _this.cmdCancel = ko.command(function(cb) {
-      closeLayer(null);
+      closeLayer();
       cb();
     }, function(busy) {
       return !busy && !_this.cmdSave.busy();
     });
+    _this.cmdAdd = ko.command(function(cb) {
+      addEquipment(_this, cb);
+    });
     _this.cmdSave = ko.command(function(cb) {
-      if (!_this.layer) {
-        cb();
-        return;
-      }
       if (!_this.data.isValid()) {
         notify.warn(_this.data.errMsg(), null, 7);
         cb();
         return;
       }
-      var model = _this.data.getValue();
-      //alert(JSON.stringify(model));
-      _this.data.markClean(model, true);
+      var model = _this.data.getValue(),
+        tmp = {
+          EquipmentLocationDesc: _this.data.EquipmentLocationCvm.selectedItem().EquipmentLocationDesc,
+          ItemSKU: _this.data.ItemSKU.getValue(),
+          ActualPoints: _this.data.model.ActualPoints,
+          IsServiceUpgrade: _this.data.model.IsServiceUpgrade,
+        };
       dataservice.msaccountsetupsrv.equipments.save({
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
-        _this.layer.close(resp.Value, false);
+        _this.data.markClean(model, true);
+
+        var data = resp.Value;
+        //@HACK: fix fields that don't get returned
+        data.EquipmentLocationDesc = tmp.EquipmentLocationDesc;
+        data.ItemSKU = tmp.ItemSKU;
+        data.ActualPoints = tmp.ActualPoints;
+        data.IsServiceUpgrade = tmp.IsServiceUpgrade;
+
+        closeLayer(data);
       }, function(err) {
         notify.error(err);
       }));
     });
 
-
-
-    _this.cmdSearch = ko.command(function(cb) {
-      search(cb);
-    });
-
-
-    //Initially set Item name and part# labels
-    _this.itemName = ko.observable();
-    _this.partNumber = ko.observable();
-
-
-    //@TODO: search for barcode/part#
-    //         "MsAccountSetupSrv/Equipments/" + equipment1 + "/ByPartNumber?id=" + accountValue.AccountID + "&tId=SOSA001",
-
-    //trying to implement search function - i am not sure if this is the right place for
-    //search function reagan 05/22/2014
-
-    function search(cb) {
-      var searchKey = _this.searchKey.getValue();
-      //console.log(searchKey);
-      //console.log(_this.data);
-      console.log("accountId:" + _this.accountId);
-
-      console.log("tId:" + _this.tId);
-
-      //For now, do search only by part#
-      dataservice.msaccountsetupsrv.equipments.read({
-        id: searchKey,
-        link: 'ByPartNumber',
-        query: {
-          id: _this.accountId,
-          //id: '150923',
-          tid: _this.tId
-        }
-      }, null, utils.safeCallback(cb, function(err, resp) {
-
-        //alert(JSON.stringify(resp.Value));
-
-        //Set Item Name and Part# to UI
-        _this.itemName(resp.Value.ItemDesc);
-        _this.partNumber(searchKey);
-
-        _this.data.setValue(resp.Value);
-
-
-      }, function(err) {
-
-        notify.error(err);
-      }));
-
-
-    }
-
-
-
-
-
-
-    //@TODO: get real values for AssignToCvm
-    //@TODO:
-
-    function closeLayer(result) {
+    function closeLayer(result, deleted) {
       if (_this.layer) {
-        _this.layer.close(result);
+        _this.layer.close(result, deleted);
       }
     }
   }
@@ -255,6 +226,22 @@ define('src/account/security/equipment.editor.vm', [
   EquipmentEditorViewModel.prototype.viewTmpl = 'tmpl-security-equipment_editor';
   EquipmentEditorViewModel.prototype.width = 550;
   EquipmentEditorViewModel.prototype.height = 'auto';
+
+  EquipmentEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
+    var _this = this;
+
+    load_zoneEventTypes(_this.cache, _this.data.ZoneEventTypeCvm, _this.monitoringStationOsId, join.add());
+    load_accountZoneTypes(_this.cache, _this.data.ZoneTypeCvm, _this.monitoringStationOsId, join.add());
+    load_equipmentLocation(_this.cache, _this.data.EquipmentLocationCvm, _this.monitoringStationOsId, join.add());
+
+    join.when(function(err) {
+      if (err) {
+        return;
+      }
+      // make everything clean
+      _this.data.markClean(_this.cleanItem, true);
+    });
+  };
 
   // ?????????
   //CUST  Customer
@@ -290,39 +277,61 @@ define('src/account/security/equipment.editor.vm', [
     },
   ];*/
 
-  EquipmentEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
-    var _this = this;
-
-    load_zoneEventTypes(_this.data.ZoneEventTypeCvm, _this.monitoringStationOS, join.add());
-    load_accountZoneTypes(_this.data.ZoneTypeCvm, _this.monitoringStationOS, join.add());
-    load_equipmentLocation(_this.data.EquipmentLocationCvm, _this.monitoringStationOS, join.add());
-
-  };
-
-  function load_zoneEventTypes(cvm, monitoringStationOS, cb) {
-    readMonitoringStationOS(cvm, monitoringStationOS, 'zoneEventTypes', {
+  function load_zoneEventTypes(cache, cvm, monitoringStationOsId, cb) {
+    readMonitoringStationOS(cache, cvm, monitoringStationOsId, 'zoneEventTypes', {
       'equipmentTypeId': 1,
     }, cb);
   }
 
-  function load_accountZoneTypes(cvm, monitoringStationOS, cb) {
-    readMonitoringStationOS(cvm, monitoringStationOS, 'accountZoneTypes', {}, cb);
+  function load_accountZoneTypes(cache, cvm, monitoringStationOsId, cb) {
+    readMonitoringStationOS(cache, cvm, monitoringStationOsId, 'accountZoneTypes', {}, cb);
   }
 
-  function load_equipmentLocation(cvm, monitoringStationOS, cb) {
-    readMonitoringStationOS(cvm, monitoringStationOS, 'EquipmentLocations', {}, cb);
+  function load_equipmentLocation(cache, cvm, monitoringStationOsId, cb) {
+    readMonitoringStationOS(cache, cvm, monitoringStationOsId, 'equipmentLocations', {}, cb);
   }
 
-
-  function readMonitoringStationOS(cvm, id, link, query, cb) {
+  function readMonitoringStationOS(cache, cvm, id, link, query, cb) {
+    if (cache[link]) {
+      cvm.setList(cache[link]);
+      cb();
+      return;
+    }
     dataservice.msaccountsetupsrv.monitoringStationOS.read({
       id: id,
       link: link,
       query: query,
+    }, function(val) {
+      cvm.setList(cache[link] = val);
+    }, cb);
+  }
+
+  function addEquipment(_this, cb) {
+    var searchKey = _this.searchKey.getValue();
+    console.log("accountId:" + _this.accountId);
+    console.log("tId:" + _this.tId);
+
+    dataservice.msaccountsetupsrv.equipments.read({
+      id: searchKey,
+      link: _this.byPart ? 'ByPartNumber' : 'ByBarcode',
+      query: {
+        id: _this.accountId,
+        tid: _this.tId
+      }
     }, null, utils.safeCallback(cb, function(err, resp) {
-      cvm.setList(resp.Value);
-      // cvm.selectItem(cvm.list()[0]); // select first
-    }, utils.no_op));
+      // //Set Item Name and Part# to UI
+      // _this.itemName(resp.Value.ItemDesc);
+      // _this.partNumber(searchKey);
+
+      var data = resp.Value;
+
+      if (_this.byPart) {
+        data.ItemDesc = searchKey; //@HACK: to set ItemDesc since is not returned.....
+      }
+
+      _this.data.setValue(data);
+      _this.data.markClean(data, true);
+    }, notify.error));
   }
 
   return EquipmentEditorViewModel;
