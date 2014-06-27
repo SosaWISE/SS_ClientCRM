@@ -70,30 +70,39 @@ define('src/inventory/transfer.inventory.vm', [
     //Call api for adding barcodes
     _this.processBarcode = function(data, event) {
 
-      //when enter key is hit, call the APIs
-      if (event.keyCode === 13) {
+      //Process barcode only if transfer location is not empty.
+      if (_this.data.TransferLocation()) {
 
-        var join = joiner(),
-          param1 = {},
-          param2 = {};
+        //when enter key is hit, call the APIs
+        if (event.keyCode === 13) {
 
-
-        //set parameters
-        param1 = {
-          id: _this.data.productBarcodeID(),
-          link: 'PBID'
-        };
-
-        param2 = {
-          TransferToWarehouseSiteId: _this.data.TransferLocation(),
-          ProductBarcodeId: _this.data.productBarcodeID()
-        };
-
-        //Load product barcode
-        load_productBarcode(param1, _this.data.TransferLocation(), _this, join.add());
+          var join = joiner(),
+            param1 = {},
+            param2 = {};
 
 
+          //set parameters
+          param1 = {
+            id: _this.data.productBarcodeID(),
+            link: 'PBID'
+          };
+
+          param2 = {
+            TransferToWarehouseSiteId: _this.data.TransferLocation(),
+            ProductBarcodeId: _this.data.productBarcodeID()
+          };
+
+          //Load product barcode
+          load_productBarcode(param1, _this.data.TransferLocation(), _this, join.add());
+
+
+        } //end of keycode event
+
+      } else {
+        notify.warn('Please select transfer location.', null, 3);
+        _this.data.productBarcodeID(null);
       }
+
     };
 
     _this.active.subscribe(function(active) {
@@ -181,6 +190,8 @@ define('src/inventory/transfer.inventory.vm', [
         notify.error({
           Message: 'Barcode not found.'
         });
+
+        _this.data.productBarcodeID(null);
 
       }
     }));

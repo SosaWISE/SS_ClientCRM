@@ -53,7 +53,7 @@ define('src/inventory/report.inventory.vm', [
 
     _this.data.LocationTypeCvm = new ComboViewModel({
       selectedValue: _this.data.LocationType,
-      nullable: true,
+      //nullable: true,
       fields: {
         value: 'LocationTypeID',
         text: 'LocationTypeName',
@@ -62,7 +62,7 @@ define('src/inventory/report.inventory.vm', [
 
     _this.data.LocationCvm = new ComboViewModel({
       selectedValue: _this.data.LocationData,
-      nullable: true,
+      //nullable: true,
       fields: {
         value: 'LocationID',
         text: 'LocationName',
@@ -86,6 +86,7 @@ define('src/inventory/report.inventory.vm', [
 
         if (_this.data.LocationType() === null || _this.data.LocationData() === null) {
           notify.warn('Please select location type and location.', null, 3);
+          _this.data.ProductBarcodeID(null);
           return;
         }
 
@@ -154,7 +155,7 @@ define('src/inventory/report.inventory.vm', [
     //Print report
     _this.cmdPrintReport = ko.command(function(cb) {
 
-      //Bug: curently if the user close the print dialog using the "x" button of the pop up, no callback happens
+      //Bug: currently if the user close the print dialog using the "x" button of the pop up, no callback happens
 
       var toAppend,
         unScanItemList,
@@ -178,7 +179,7 @@ define('src/inventory/report.inventory.vm', [
 
       //loop all inventory items that are unscanned
       for (inc = 0; inc < unScanItemList.length; inc++) {
-        unScanItems += "<div class='items'>" + unScanItemList[inc].ItemDesc + "</div>";
+        unScanItems += "<div class='items'>" + unScanItemList[inc].ProductBarcodeId + "|" + unScanItemList[inc].ItemDesc + "</div>";
       }
 
       //Add break line for spacing
@@ -186,7 +187,7 @@ define('src/inventory/report.inventory.vm', [
 
       //now for unknown items            
       for (inc = 0; inc < scanItemList.length; inc++) {
-        scanItems += "<div class='items'>" + scanItemList[inc].ItemDesc + "</div>";
+        scanItems += "<div class='items'>" + scanItemList[inc].ProductBarcodeId + "|" + scanItemList[inc].ItemDesc + "</div>";
       }
 
       //Add break line for spacing
