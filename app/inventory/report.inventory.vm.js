@@ -252,6 +252,10 @@ define('src/inventory/report.inventory.vm', [
     _this.data.LocationType.subscribe(function(locationType, cb) {
       if (locationType) {
 
+        //clear grids when there's a change of location type
+        _this.unScannedListGvm.list([]);
+        _this.scannedListGvm.list([]);
+
         dataservice.inventoryenginesrv.Locations.read({
           id: locationType
         }, null, utils.safeCallback(cb, function(err, resp) {
