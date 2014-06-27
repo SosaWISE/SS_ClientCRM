@@ -24,6 +24,11 @@ define('src/core/ko.bindingHandlers.mover', [
           // return if not a left click
           return;
         }
+        if (evt.target !== element) {
+          // only move if mover element is the target of the event
+          return;
+        }
+
         el.addClass('dragging');
         var parent = moveEl.parent(),
           height = moveEl.height(),

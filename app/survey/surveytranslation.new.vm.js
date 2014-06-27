@@ -51,10 +51,7 @@ define('src/survey/surveytranslation.new.vm', [
     // events
     //
     _this.clickCancel = function() {
-      if (_this.cmdAdd.busy()) {
-        return;
-      }
-      _this.layer.close();
+      closeLayer(_this);
     };
     _this.cmdAdd = ko.command(function(cb) {
       var localizationCode = _this.stData.LocalizationCode;
@@ -73,7 +70,8 @@ define('src/survey/surveytranslation.new.vm', [
         if (err) {
           notify.error(err);
         } else {
-          _this.layer.close(resp.Value);
+          _this.layerResult = resp.Value;
+          closeLayer(_this);
         }
         cb();
       });
@@ -83,6 +81,24 @@ define('src/survey/surveytranslation.new.vm', [
   NewSurveyTranslationViewModel.prototype.viewTmpl = 'tmpl-surveytranslation_new';
   NewSurveyTranslationViewModel.prototype.width = 300;
   NewSurveyTranslationViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  NewSurveyTranslationViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
+  NewSurveyTranslationViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdAdd.busy() && !_this.layerResult) {
+      msg = 'Please wait for add to finish.';
+    }
+    return msg;
+  };
 
   NewSurveyTranslationViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
     var _this = this;

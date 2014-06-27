@@ -83,8 +83,6 @@ define('src/account/security/equipment.editor.vm', [
       'reps',
     ]);
 
-    _this.newItem = ko.observable();
-
     _this.title = _this.byPart ? 'Part #' : 'Barcode';
     _this.searchKey = ukov.wrap('', _this.byPart ? searchPartNumSchema : searchBarcodeSchema);
 
@@ -119,7 +117,6 @@ define('src/account/security/equipment.editor.vm', [
     _this.hasItem = ko.computed(function() {
       return !!_this.data.ItemId();
     });
-
     _this.data.ZoneEventTypeCvm = new ComboViewModel({
       selectedValue: _this.data.ZoneEventType,
       fields: {
@@ -135,7 +132,6 @@ define('src/account/security/equipment.editor.vm', [
         text: 'EquipmentLocationDesc',
       },
     });
-
     _this.data.ZoneTypeCvm = new ComboViewModel({
       selectedValue: _this.data.AccountZoneTypeId,
       fields: {
@@ -143,9 +139,7 @@ define('src/account/security/equipment.editor.vm', [
         text: 'AccountZoneType',
       },
     });
-
     _this.data.AssignToCvm = new ComboViewModel({
-      //selectedValue: _this.data.AssignTo,
       selectedValue: _this.data.GPEmployeeId,
       nullable: true,
       fields: {
@@ -154,7 +148,6 @@ define('src/account/security/equipment.editor.vm', [
       },
     });
     _this.data.IsUpgradeCvm = new ComboViewModel({
-      //  selectedValue: _this.data.IsUpgrade,
       selectedValue: _this.data.AccountEquipmentUpgradeTypeId,
       nullable: true,
       list: _this.isUpgradeOptions,
@@ -174,9 +167,7 @@ define('src/account/security/equipment.editor.vm', [
     // events
     //
     _this.cmdCancel = ko.command(function(cb) {
-      var newItem = _this.newItem.peek();
-      _this.newItem(null); //@HACK: clear out in order to close
-      closeLayer(newItem);
+      closeLayer(_this);
       cb();
     }, function(busy) {
       return !busy && !_this.cmdSave.busy();
@@ -209,24 +200,38 @@ define('src/account/security/equipment.editor.vm', [
         data.IsServiceUpgrade = tmp.IsServiceUpgrade;
         data.ActualPoints = tmp.ActualPoints;
 
-        setTimeout(function() { //@HACK: to save
-          closeLayer(data);
-        }, 0);
+        _this.layerResult = data;
+        closeLayer(_this);
       }, function(err) {
         notify.error(err);
       }));
     });
-
-    function closeLayer(result, deleted) {
-      if (_this.layer) {
-        _this.layer.close(result, deleted);
-      }
-    }
   }
   utils.inherits(EquipmentEditorViewModel, BaseViewModel);
   EquipmentEditorViewModel.prototype.viewTmpl = 'tmpl-security-equipment_editor';
   EquipmentEditorViewModel.prototype.width = 550;
   EquipmentEditorViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  EquipmentEditorViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
+  EquipmentEditorViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdAdd.busy() && !_this.layerResult) {
+      msg = 'Please wait for add to finish.';
+    } else if (_this.cmdSave.busy() && !_this.layerResult) {
+      msg = 'Please wait for save to finish.';
+    }
+    return msg;
+  };
+
 
   EquipmentEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
@@ -250,18 +255,6 @@ define('src/account/security/equipment.editor.vm', [
       _this.data.markClean(_this.item, true);
     });
   };
-  EquipmentEditorViewModel.prototype.closeMsg = function() { // overrides base
-    var _this = this,
-      msg;
-    if (_this.cmdAdd.busy()) {
-      msg = 'Please wait for add to finish.';
-    } else if (_this.cmdSave.busy()) {
-      msg = 'Please wait for save to finish.';
-    } else if (_this.newItem()) {
-      return 'Close using Cancel button'; // this is counter intertuitive and dumb. fix using something like commented out code below.
-    }
-    return msg;
-  };
   // EquipmentEditorViewModel.prototype.closeValues = function() {
   //   return [ //
   //   ];
@@ -274,9 +267,6 @@ define('src/account/security/equipment.editor.vm', [
   //commented by reagan/junryl match upgrade type from crm db
   EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
     {
-      value: null,
-      text: 'null',
-    }, {
       value: 'CUST',
       text: 'Customer',
     }, {
@@ -286,7 +276,6 @@ define('src/account/security/equipment.editor.vm', [
       value: 'TECH',
       text: 'Technician',
     },
-
   ];
   /*EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
     {
@@ -374,7 +363,9 @@ define('src/account/security/equipment.editor.vm', [
       _this.data.setValue(data);
       _this.data.markClean(data, true);
 
-      _this.newItem(data);
+      // set result, but don't close
+      // needed incase cancel is pressed after this point
+      _this.layerResult = data;
     }, notify.error));
   }
 

@@ -22,15 +22,19 @@ define('src/account/default/search.vm', [
   ko
 ) {
   "use strict";
-  var schema,
+  var acctNumSchema, schema,
     nullStrConverter = ukov.converters.nullString(),
     typeMap;
 
+  acctNumSchema = {
+    converter: ukov.converters.numText('Invalid customer number'),
+    validators: [
+      ukov.validators.isRequired('Please enter a customer number'),
+    ],
+  };
+
   schema = {
     _model: true,
-    CMFID: {
-      converter: ukov.converters.numText(),
-    },
     FirstName: {
       converter: nullStrConverter,
     },
@@ -86,6 +90,7 @@ define('src/account/default/search.vm', [
 
     _this.title = ko.observable(_this.title);
     _this.focusFirst = ko.observable(false);
+    _this.acctNum = ukov.wrap('', acctNumSchema);
     _this.data = ukov.wrap({
       // only set initial values for PageSize and PageNumber. all other values should be null by default.
       PageSize: 25,
@@ -177,6 +182,9 @@ define('src/account/default/search.vm', [
     //
     // events
     //
+    _this.cmdOpenAccount = ko.command(function(cb) {
+      _this.openAccount(cb);
+    });
     _this.cmdSearch = ko.command(function(cb, vm) {
       _this.search(vm.page, cb);
     });
@@ -215,7 +223,6 @@ define('src/account/default/search.vm', [
   SearchViewModel.prototype.clearData = function() {
     var _this = this,
       data = {
-        CMFID: null,
         FirstName: null,
         LastName: null,
         PhoneNumber: null,
@@ -228,58 +235,58 @@ define('src/account/default/search.vm', [
       };
     _this.data.setValue(data);
     _this.data.markClean(data, true);
+
+    _this.acctNum.setValue('');
+    _this.acctNum.markClean();
+  };
+  SearchViewModel.prototype.openAccount = function(cb) {
+    var _this = this,
+      id;
+    if (!_this.acctNum.isValid()) {
+      notify.warn(_this.acctNum.errMsg(), null, 5);
+    } else {
+      id = _this.acctNum.getValue();
+      _this.goTo({
+        route: 'accounts',
+        masterid: id,
+      });
+      _this.acctNum.markClean(id, true);
+    }
+    cb();
   };
   SearchViewModel.prototype.search = function(page, cb) {
     var _this = this,
       model;
     if (page < 1) { // don't set to a page less than 1
       cb();
-      return;
-    }
-
-    if (!_this.data.isValid()) {
+    } else if (!_this.data.isValid()) {
       notify.warn(_this.data.errMsg(), null, 7);
       cb();
-      return;
-    }
-
-    model = _this.data.CMFID.getValue();
-    if (model) {
-      // if it's a Customer Number open a tab or select an open tab
-      _this.goTo({
-        masterid: model,
-      });
-      _this.data.CMFID.markClean(model, true);
-      cb();
-      return;
-    }
-
-    if (_this.data.isClean() && _this.data.PageNumber() === page) {
+    } else if (_this.data.isClean() && _this.data.PageNumber() === page) {
       // only search if something has changed
-      notify.warn('Nothing changed. No search made.', null, 3);
+      notify.warn('Search criteria hasn\'t changed. No search made.', null, 3);
       cb();
-      return;
+    } else {
+      model = _this.data.getValue();
+      // set page here instead of on `data` so that the pager isn't updated until the search is done
+      model.PageNumber = page;
+      // clear grid
+      _this.gvm.list([]);
+      // do search
+      dataservice.accountingengine.customerSearches.save({
+        data: model,
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        // update the page number and pager
+        _this.data.PageNumber(page);
+        // mark search query as the new clean
+        _this.data.markClean(model, true);
+        // set results in grid
+        _this.gvm.list(resp.Value);
+        _this.gvm.setSelectedRows([]);
+      }, function(err) {
+        notify.error(err, 30);
+      }));
     }
-
-    model = _this.data.getValue();
-    // set page here instead of on `data` so that the pager isn't updated until the search is done
-    model.PageNumber = page;
-    // clear grid
-    _this.gvm.list([]);
-    // do search
-    dataservice.accountingengine.customerSearches.save({
-      data: model,
-    }, null, utils.safeCallback(cb, function(err, resp) {
-      // update the page number and pager
-      _this.data.PageNumber(page);
-      // mark search query as the new clean
-      _this.data.markClean(model, true);
-      // set results in grid
-      _this.gvm.list(resp.Value);
-      _this.gvm.setSelectedRows([]);
-    }, function(err) {
-      notify.error(err, 30);
-    }));
   };
 
   function calculatePages(currPage) {

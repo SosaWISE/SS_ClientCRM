@@ -1,6 +1,7 @@
 ﻿define('src/core/ko.bindingHandlers.all', [
   'jquery',
   'ko',
+  'src/core/utils',
   // include other handlers
   'src/core/ko.bindingHandlers.formatters',
   'src/core/ko.bindingHandlers.mover',
@@ -9,7 +10,8 @@
   'src/core/ko.bindingHandlers.spinner',
 ], function(
   jquery,
-  ko
+  ko,
+  utils
 ) {
   "use strict";
 
@@ -228,7 +230,9 @@
       var observable = valueAccessor();
       if (observable()) {
         element.focus();
-        element.select();
+        if (utils.isFunc(element.select)) {
+          element.select();
+        }
         observable(false);
       }
     },

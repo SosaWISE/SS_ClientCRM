@@ -28,7 +28,13 @@
         return;
       }
       _cmd.busy(true);
+      var called = false;
       return execute.call(this, function() {
+        if (called) {
+          return;
+        }
+        called = true;
+
         _cmd.busy(false);
         if (utils.isFunc(cb)) {
           cb.apply(null, ko.utils.makeArray(arguments));

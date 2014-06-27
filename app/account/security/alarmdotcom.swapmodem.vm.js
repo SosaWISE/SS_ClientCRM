@@ -63,7 +63,8 @@ define('src/account/security/alarmdotcom.swapmodem.vm', [
         link: 'swapmodem',
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
-        closeLayer(resp.Value);
+        _this.layerResult = resp.Value;
+        closeLayer(_this);
       }, function(err) {
         notify.error(err);
       }));
@@ -78,17 +79,29 @@ define('src/account/security/alarmdotcom.swapmodem.vm', [
         }, 100);
       }
     });
-
-    function closeLayer(result) {
-      if (_this.layer) {
-        _this.layer.close(result);
-      }
-    }
   }
   utils.inherits(AlarmDotComSwapModemViewModel, BaseViewModel);
   AlarmDotComSwapModemViewModel.prototype.viewTmpl = 'tmpl-security-alarmdotcom_swapmodem';
   AlarmDotComSwapModemViewModel.prototype.width = 450;
   AlarmDotComSwapModemViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  AlarmDotComSwapModemViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
+  AlarmDotComSwapModemViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdSwap.busy() && !_this.layerResult) {
+      msg = 'Please wait for modem swap to finish.';
+    }
+    return msg;
+  };
 
   AlarmDotComSwapModemViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     // var _this = this,

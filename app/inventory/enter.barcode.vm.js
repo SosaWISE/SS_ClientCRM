@@ -82,7 +82,7 @@ define('src/inventory/enter.barcode.vm', [
 
               _this.barcodeCount(count.toString());
 
-              //clear barcode field            
+              //clear barcode field
               _this.data.productBarcodeID.setValue(null);
 
             } else {
@@ -106,9 +106,8 @@ define('src/inventory/enter.barcode.vm', [
     //
 
     _this.clickClose = function() {
-      if (_this.layer) {
-        _this.layer.close(_this.repResult());
-      }
+      _this.layerResult = null;
+      closeLayer(_this);
     };
 
 
@@ -127,6 +126,17 @@ define('src/inventory/enter.barcode.vm', [
   EnterBarcodeViewModel.prototype.viewTmpl = 'tmpl-inventory-enter-barcode';
   EnterBarcodeViewModel.prototype.width = 400;
   EnterBarcodeViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  EnterBarcodeViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
+
 
   return EnterBarcodeViewModel;
 });

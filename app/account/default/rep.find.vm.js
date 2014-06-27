@@ -5,15 +5,13 @@ define('src/account/default/rep.find.vm', [
   'ko',
   'src/ukov',
   'src/dataservice',
-  'src/account/security/equipment.vm'
 ], function(
   notify,
   utils,
   BaseViewModel,
   ko,
   ukov,
-  dataservice,
-  EquipmentViewModel
+  dataservice
 ) {
   "use strict";
 
@@ -36,25 +34,22 @@ define('src/account/default/rep.find.vm', [
 
     _this.title = _this.title || 'Sales Rep';
     _this.focusFirst = ko.observable(false);
+    _this.focusOk = ko.observable(false);
     _this.repData = ukov.wrap({
       CompanyID: _this.text || '',
     }, schema);
-    _this.repResult = ko.observable(null);
-
-    // /////TESTING//////////////////////
-    // _this.repData.CompanyID('sosa001');
-    // /////TESTING//////////////////////
+    _this.rep = ko.observable();
 
     //
     // events
     //
-    _this.clickClose = function() {
-      if (_this.layer) {
-        _this.layer.close(_this.repResult());
-      }
+    _this.clickOk = function() {
+      _this.layerResult = _this.rep.peek();
+      closeLayer(_this);
     };
     _this.cmdFind = ko.command(function(cb) {
-      _this.repResult(null);
+      // clear out previously found rep
+      _this.rep(null);
 
       _this.repData.validate();
       if (!_this.repData.isValid()) {
@@ -66,19 +61,12 @@ define('src/account/default/rep.find.vm', [
       dataservice.qualify.salesrep.read({
         id: model.CompanyID
       }, null, utils.safeCallback(cb, function(err, resp) {
-        _this.repData.markClean(model);
-        if (resp && resp.Value) {
-          _this.repResult(resp.Value);
-
-
-          //Extract TechnicianID - I'm not sure if this is the right way of passing value to EquipmentViewModel
-          return new EquipmentViewModel({
-            //repResult:resp.Value
-            repCompanyID: resp.Value.CompanyID
-          });
-
-
-
+        if (resp) {
+          // mark clean what was searched
+          _this.repData.markClean(model);
+          // set rep
+          _this.rep(resp.Value);
+          _this.focusOk(true);
         }
       }, function(err) {
         notify.error(err);
@@ -99,6 +87,16 @@ define('src/account/default/rep.find.vm', [
   RepFindViewModel.prototype.viewTmpl = 'tmpl-acct-default-rep_find';
   RepFindViewModel.prototype.width = 400;
   RepFindViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  RepFindViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
 
   return RepFindViewModel;
 });

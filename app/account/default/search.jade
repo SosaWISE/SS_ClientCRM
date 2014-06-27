@@ -7,7 +7,7 @@ div(class="acct-search")
             li
               span(class="label") Customer Number
               input(type="text", placeholder="",
-                data-bind="ukov:data.CMFID,value:data.CMFID,valueUpdate:'keyup',enter:cmdSearch,select:focusFirst")
+                data-bind="ukov:acctNum,value:acctNum,valueUpdate:'keyup',enter:cmdOpenAccount,select:focusFirst")
             li
               span(class="label") First Name
               input(type="text", placeholder="",

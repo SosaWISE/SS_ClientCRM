@@ -1,10 +1,12 @@
 define('src/core/layers.vm', [
   'ko',
+  'src/core/arrays',
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
 ], function(
   ko,
+  arrays,
   notify,
   utils,
   BaseViewModel
@@ -108,7 +110,7 @@ define('src/core/layers.vm', [
         }
         var topLayer = layersVm.getTopLayer(),
           index = layers.indexOf(layer),
-          msg, vm = layer.vm();
+          results, msg, vm = layer.vm();
 
         // check if the layer vm can be closed
         if (vm && (msg = vm.closeMsg())) {
@@ -123,7 +125,12 @@ define('src/core/layers.vm', [
           prevCtx.dispose();
         }
         if (utils.isFunc(onClose)) {
-          onClose.apply(null, ko.utils.makeArray(arguments));
+          results = utils.isFunc(vm.getResults) ? vm.getResults() : [];
+          if (results.length > 1) {
+            onClose.apply(null, results);
+          } else {
+            onClose.call(null, results[0]);
+          }
         }
 
         //

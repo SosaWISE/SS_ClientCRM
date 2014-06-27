@@ -66,7 +66,8 @@ define('src/account/security/alarmdotcom.editor.vm', [
         link: 'register',
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
-        closeLayer(resp.Value);
+        _this.layerResult = resp.Value;
+        closeLayer(_this);
       }, function(err) {
         notify.error(err);
       }));
@@ -81,17 +82,29 @@ define('src/account/security/alarmdotcom.editor.vm', [
         }, 100);
       }
     });
-
-    function closeLayer(result) {
-      if (_this.layer) {
-        _this.layer.close(result);
-      }
-    }
   }
   utils.inherits(AlarmDotComEditorViewModel, BaseViewModel);
   AlarmDotComEditorViewModel.prototype.viewTmpl = 'tmpl-security-alarmdotcom_editor';
   AlarmDotComEditorViewModel.prototype.width = 450;
   AlarmDotComEditorViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  AlarmDotComEditorViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
+  AlarmDotComEditorViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdRegister.busy() && !_this.layerResult) {
+      msg = 'Please wait for registration to finish.';
+    }
+    return msg;
+  };
 
   AlarmDotComEditorViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     // var _this = this,

@@ -55,6 +55,10 @@
         &.dragging {
           cursor: move;
         }
+        // reset cursor for all immediate children
+        > * {
+          cursor: initial;
+        }
 
         .actions ul,
         ul.actions {

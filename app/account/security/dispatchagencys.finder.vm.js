@@ -96,12 +96,6 @@ define('src/account/security/dispatchagencys.finder.vm', [
     //
     // events
     //
-    // _this.cmdCancel = ko.command(function(cb) {
-    //   closeLayer(null);
-    //   cb();
-    // }, function(busy) {
-    //   return !busy && !_this.cmdSelect.busy();
-    // });
     _this.cmdFind = ko.command(function(cb) {
       if (!_this.data.isValid()) {
         notify.warn(_this.data.errMsg(), null, 7);
@@ -145,27 +139,20 @@ define('src/account/security/dispatchagencys.finder.vm', [
       }
       alert('currently i do nothing...');
       setTimeout(function() {
+        _this.layerResult = null;
+        closeLayer(_this);
         cb();
-        closeLayer(null);
       }, 5000);
       //@TODO: get correct api path and response format
-      // dataservice.boh.boh.save({}, null, utils.safeCallback(null, function(err, resp) {
-      //   cb();
-      //   closeLayer(resp.Value);
+      // dataservice.boh.boh.save({}, null, utils.safeCallback(cb, function(err, resp) {
+      //   _this.layerResult = resp.Value;
+      //   closeLayer(_this);
       // }, function(err) {
       //   notify.error(err);
       // }));
     }, function(busy) {
       return !busy && _this.gvm.list().length;
     });
-
-    function closeLayer(result) {
-      //@NOTE: command callbacks should be called before calling closeLayer
-      if (_this.layer) {
-        _this.layer.close(result);
-      }
-    }
-
 
     //
     _this.active.subscribe(function(active) {
@@ -182,10 +169,19 @@ define('src/account/security/dispatchagencys.finder.vm', [
   DispatchAgencysFinderViewModel.prototype.width = 600;
   DispatchAgencysFinderViewModel.prototype.height = 'auto';
 
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  DispatchAgencysFinderViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
   DispatchAgencysFinderViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
       msg;
-    if (_this.cmdSelect.busy()) {
+    if (_this.cmdSelect.busy() && !_this.layerResult) {
       msg = 'Please wait for the agency to be selected.';
     }
     return msg;

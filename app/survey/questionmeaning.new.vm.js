@@ -42,10 +42,7 @@ define('src/survey/questionmeaning.new.vm', [
     // events
     //
     _this.clickCancel = function() {
-      if (_this.cmdAdd.busy()) {
-        return;
-      }
-      _this.layer.close();
+      closeLayer(_this);
     };
     _this.cmdAdd = ko.command(function(cb) {
       _this.qmData.Name.validate();
@@ -60,7 +57,8 @@ define('src/survey/questionmeaning.new.vm', [
         if (err) {
           notify.error(err);
         } else {
-          _this.layer.close(resp.Value);
+          _this.layerResult = resp.Value;
+          closeLayer(_this);
         }
         cb();
       });
@@ -70,6 +68,24 @@ define('src/survey/questionmeaning.new.vm', [
   NewQuestionMeaningViewModel.prototype.viewTmpl = 'tmpl-questionmeaning_new';
   NewQuestionMeaningViewModel.prototype.width = 300;
   NewQuestionMeaningViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  NewQuestionMeaningViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
+  NewQuestionMeaningViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdAdd.busy() && !_this.layerResult) {
+      msg = 'Please wait for add to finish.';
+    }
+    return msg;
+  };
 
   return NewQuestionMeaningViewModel;
 });

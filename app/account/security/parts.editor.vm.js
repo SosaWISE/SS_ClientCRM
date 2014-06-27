@@ -64,11 +64,12 @@ define('src/account/security/parts.editor.vm', [
     ]);
 
     _this.focusFirst = ko.observable();
+    _this.focusOk = ko.observable();
     _this.active.subscribe(function(active) {
       if (active) {
         // this timeout makes it possible to actually focus
         setTimeout(function() {
-          _this.focusFirst(true);
+          _this.focusOk(true);
         }, 100);
       }
     });
@@ -145,12 +146,10 @@ define('src/account/security/parts.editor.vm', [
     //
     // events
     //
-    _this.cmdCancel = ko.command(function(cb) {
-      closeLayer(null);
-      cb();
-    }, function(busy) {
-      return !busy && !_this.cmdSave.busy();
-    });
+    _this.clickCancel = function() {
+      _this.layerResult = null;
+      closeLayer(_this);
+    };
     _this.cmdSave = ko.command(function(cb) {
       if (!_this.data.isValid()) {
         notify.warn(_this.data.errMsg(), null, 7);
@@ -162,22 +161,35 @@ define('src/account/security/parts.editor.vm', [
         link: _this.byPart ? 'AddByPartNumber' : 'AddByBarcode',
         data: _this.data.getValue(),
       }, null, utils.safeCallback(cb, function(err, resp) {
-        closeLayer(resp.Value);
+        _this.layerResult = resp.Value;
+        closeLayer(_this);
       }, function(err) {
         notify.error(err);
       }));
     });
-
-    function closeLayer(result) {
-      if (_this.layer) {
-        _this.layer.close(result);
-      }
-    }
   }
   utils.inherits(PartsEditorViewModel, BaseViewModel);
   PartsEditorViewModel.prototype.viewTmpl = 'tmpl-security-parts_editor';
   PartsEditorViewModel.prototype.width = 290;
   PartsEditorViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  PartsEditorViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
+  PartsEditorViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdSave.busy() && !_this.layerResult) {
+      msg = 'Please wait for save to finish.';
+    }
+    return msg;
+  };
 
   PartsEditorViewModel.prototype.getAssignToList = function() {
     var _this = this;
