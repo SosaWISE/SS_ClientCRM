@@ -129,6 +129,7 @@ define('src/inventory/report.inventory.vm', [
                 console.log("Unknown barcode:" + resp.Value.ItemDesc);
 
                 _this.scannedListGvm.list.push({
+                  ProductBarcodeId: resp.Value.ProductBarcodeId,
                   ItemDesc: resp.Value.ItemDesc
                 });
 
