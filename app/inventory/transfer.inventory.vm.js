@@ -226,6 +226,8 @@ define('src/inventory/transfer.inventory.vm', [
 
         _this.newLocation(resp.Value.Location);
 
+        //clear barcode field
+        _this.data.productBarcodeID(null);
 
       } else {
         notify.error(err);
