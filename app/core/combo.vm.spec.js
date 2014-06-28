@@ -37,12 +37,10 @@ define('src/core/combo.vm.spec', [
       list = c.list();
     });
 
-    it('should start with the first item selected', function() {
-      expect(c.selected().item.value).toBe(1);
-      expect(c.selectedItem()).not.toBe(null);
-      expect(c.selectedItem().value).toBe(1);
-      expect(c.selectedValue()).not.toBe(null);
-      expect(c.selectedValue()).toBe(1);
+    it('should start no item selected', function() {
+      expect(c.selected().item.value).toBe(null);
+      expect(c.selectedItem()).toBe(null);
+      expect(c.selectedValue()).toBe(null);
     });
 
     describe('filterText', function() {
@@ -81,6 +79,8 @@ define('src/core/combo.vm.spec', [
       }
 
       it('should correctly select the next items down', function() {
+        c.activateNext(true);
+        expectActiveIndex(0);
         c.activateNext(true);
         expectActiveIndex(1);
         c.activateNext(true);

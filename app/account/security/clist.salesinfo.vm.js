@@ -240,11 +240,8 @@ define('src/account/security/clist.salesinfo.vm', [
       deletePart: function(part) {
         dataservice.invoicesrv.invoiceItems.del(part.InvoiceItemID, null, utils.safeCallback(null, function(err, resp) {
           if (resp.Value) {
-            // _this.refreshInvoice();
             // reload invoice (without saving)
-            dataservice.invoicesrv.invoices.read({
-              id: part.InvoiceId,
-            }, null, utils.safeCallback(null, function(err, resp) {
+            load_invoice(_this.data.InvoiceID.getValue(), utils.safeCallback(null, function(err, resp) {
               _this.partsGvm.list(resp.Value.Items);
             }, function(err) {
               notify.error(err);
@@ -335,8 +332,13 @@ define('src/account/security/clist.salesinfo.vm', [
 
   CListSalesInfoViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
-      subjoin = join.create(),
-      cb;
+      accountid = routeData.id,
+      join1 = join.create(),
+      join2 = join.create(),
+      join3 = join.create(),
+      cb = join.add('1');
+
+    _this.currData = null; // clear (incase of reload)
 
     // remove old subscriptions
     _this.subs.forEach(function(s) {
@@ -344,7 +346,70 @@ define('src/account/security/clist.salesinfo.vm', [
     });
     _this.subs = [];
 
-    function onLoadComplete(err) {
+    _this.data.AccountId(accountid);
+
+    //
+    // 1 - load types
+    //
+    // load_vendorAlarmComPackages(_this.data.AlarmComPackageCvm, join1.add('2'));
+    load_pointSystems(_this.pointSystemsCvm, join1.add('3'));
+    load_panelTypes(_this.data.PanelTypeCvm, join1.add('4'));
+    load_frequentlyInstalledEquipmentGet(_this.frequentGvm, join1.add('6'));
+    _this.data.CellularTypeCvm.setList([]);
+    load_cellularTypes(_this.cellularTypes, join1.add('5'));
+    //
+    dataservice.qualify.qualifyCustomerInfos.read({
+      id: accountid,
+      link: 'account',
+    }, null, utils.safeCallback(join1.add(), function(err, resp) {
+      // load sales rep
+      dataservice.qualify.salesrep.read({
+        id: resp.Value.CompanyID,
+      }, null, utils.safeCallback(join1.add(), function(err, resp) {
+        var rep = resp.Value;
+        if (rep) {
+          _this.reps = [rep];
+        } else {
+          _this.reps = [];
+        }
+      }, utils.noop));
+    }, utils.no_op));
+    //
+    // 2 - load invoiceMsInstalls
+    //
+    join1.after(function(err) {
+      if (err) {
+        // skip to next one
+        join2.add()(err);
+      } else {
+        load_invoiceMsInstalls(_this.data, join2);
+      }
+    });
+    //
+    // 3 - load the invoice items
+    //
+    join2.after(function(err) {
+      var cb = join3.add(),
+        invoiceId;
+      if (err) {
+        cb(err);
+      } else {
+        invoiceId = _this.data.InvoiceID.getValue();
+        if (invoiceId) {
+          // load invoice (without saving)
+          load_invoice(invoiceId, utils.safeCallback(cb, function(err, resp) {
+            _this.partsGvm.list(resp.Value.Items);
+          }, utils.noop));
+        } else {
+          // load invoice
+          _this.refreshInvoice(cb);
+        }
+      }
+    });
+    //
+    // 4 - add subscriptions
+    //
+    join3.after(function(err) {
       if (!err) {
         // subscribe to updates after everyting has been set
         Object.keys(_this.data.doc).forEach(function(key) {
@@ -355,59 +420,9 @@ define('src/account/security/clist.salesinfo.vm', [
         _this.subs.push(_this.data.cellServiceCvm.selectedValue.subscribe(_this.refreshInvoice));
       }
       cb(err);
-    }
-
-    _this.currData = null; // clear (incase of reload)
-
-    _this.data.AccountId(routeData.id);
-
-    load_invoiceMsInstalls(_this.data, subjoin);
-    // load_vendorAlarmComPackages(_this.data.AlarmComPackageCvm, subjoin.add('2'));
-    load_pointSystems(_this.pointSystemsCvm, subjoin.add('3'));
-    load_panelTypes(_this.data.PanelTypeCvm, subjoin.add('4'));
-    load_frequentlyInstalledEquipmentGet(_this.frequentGvm, subjoin.add('6'));
-    _this.data.CellularTypeCvm.setList([]);
-    load_cellularTypes(_this.cellularTypes, subjoin.add('5'));
-
-    //
-    dataservice.qualify.qualifyCustomerInfos.read({
-      id: routeData.id,
-      link: 'account',
-    }, null, utils.safeCallback(subjoin.add(), function(err, resp) {
-      // load sales rep
-      dataservice.qualify.salesrep.read({
-        id: resp.Value.CompanyID,
-      }, null, utils.safeCallback(subjoin.add(), function(err, resp) {
-        var rep = resp.Value;
-        if (rep) {
-          _this.reps = [rep];
-        } else {
-          _this.reps = [];
-        }
-      }, utils.noop));
-    }, utils.no_op));
-
-
-    cb = join.add('1');
-    subjoin.when(function(err) {
-      if (err) {
-        onLoadComplete(err);
-      } else {
-        /** Refresh the invoice. */
-        // load inventory
-        _this.refreshInvoice(onLoadComplete);
-      }
     });
   };
 
-  // CListSalesInfoViewModel.prototype.letter = function(first) {
-  //   var _this = this;
-  //   if (first) {
-  //     // reset to first letter
-  //     _this._char = 'A'.charCodeAt(0);
-  //   }
-  //   return String.fromCharCode(_this._char++) + '.';
-  // };
   CListSalesInfoViewModel.prototype.num = function(first) {
     var _this = this;
     if (first) {
@@ -470,6 +485,11 @@ define('src/account/security/clist.salesinfo.vm', [
     }));
   };
 
+  function load_invoice(invoiceId, cb) {
+    dataservice.invoicesrv.invoices.read({
+      id: invoiceId,
+    }, null, cb);
+  }
 
   function load_invoiceMsInstalls(data, join) {
     dataservice.salessummary.invoiceMsIsntalls.read({

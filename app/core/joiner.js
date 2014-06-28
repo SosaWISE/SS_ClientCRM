@@ -49,7 +49,7 @@ define('src/core/joiner', [
       clearTimeout(timeout);
       var index = waiting.indexOf(addKey);
       if (index < 0) {
-        // already called
+        // already called or a previous callback passed a value for err
         return;
       }
 
@@ -81,6 +81,14 @@ define('src/core/joiner', [
     var _this = this;
     _this._callbacks.push(cb);
     tryWhen(_this);
+  };
+  Joiner.prototype.after = function(cb) {
+    var _this = this;
+    _this._callbacks.push(cb);
+    // only call `tryWhen` if an error has already occurred
+    if (_this._err) {
+      tryWhen(_this);
+    }
   };
 
   Joiner.prototype.results = function() {
