@@ -17,7 +17,7 @@ table(class="fh-wrap")
               li
                 label Packing Slip #
               li
-                input(type="text" data-bind="ukov:data.PackingSlipNumber,value:data.PackingSlipNumber,valueUpdate:'keyup'")
+                input(type="text" data-bind="ukov:data.PackingSlipNumber,value:data.PackingSlipNumber,valueUpdate:'keyup', event: { keyup: resetPage}")
   tr
     td(class="fh-body")
       div(class="fh-contents")
