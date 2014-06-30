@@ -5,7 +5,9 @@ define('src/inventory/transfer.inventory.vm', [
   'src/core/utils',
   'src/core/base.vm',
   'src/core/controller.vm',
+  'src/core/layers.vm',
   'src/core/joiner',
+  'src/inventory/barcode.not.found.vm',
   'ko',
   'src/ukov',
 ], function(
@@ -15,7 +17,9 @@ define('src/inventory/transfer.inventory.vm', [
   utils,
   BaseViewModel,
   ControllerViewModel,
+  LayersViewModel,
   joiner,
+  BarcodeErrorViewModel,
   ko,
   ukov
 ) {
@@ -62,6 +66,10 @@ define('src/inventory/transfer.inventory.vm', [
         value: 'WarehouseSiteID',
         text: 'WarehouseSiteName',
       },
+    });
+
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
     });
 
     //events
@@ -193,7 +201,17 @@ define('src/inventory/transfer.inventory.vm', [
         // notify.error({
         //   Message: 'Barcode not found.'
         // }, null, 3);
-        notify.warn('Barcode not found.', null, 3);
+        //notify.warn('Barcode not found.', null, 3);
+
+        //Use this template instead of notify for this error message
+        _this.layersVm.show(new BarcodeErrorViewModel({
+          title: 'Error',
+        }), function onClose(result) {
+          if (!result) {
+            return;
+          }
+        });
+
         _this.data.productBarcodeID(null);
 
       }
