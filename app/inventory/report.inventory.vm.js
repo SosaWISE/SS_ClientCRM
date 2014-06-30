@@ -79,18 +79,19 @@ define('src/inventory/report.inventory.vm', [
 
     });
 
-    //subscribe to change on value for product barcode, if not empty do the some scan barcode stuff
-    _this.data.ProductBarcodeID.subscribe(function(ProductBarcodeID, cb) {
+    _this.processBarcode = function(data, event, cb) {
 
-      if (ProductBarcodeID) {
+      if (_this.data.ProductBarcodeID().trim() !== "" && event.keyCode === 13) {
 
         if (_this.data.LocationType() === null || _this.data.LocationData() === null) {
+
           notify.warn('Please select location type and location.', null, 3);
           _this.data.ProductBarcodeID(null);
           return;
+
         }
 
-        var barcodeId = ProductBarcodeID,
+        var barcodeId = _this.data.ProductBarcodeID(),
           itemList = _this.unScannedListGvm.list(),
           found = false,
           i,
@@ -139,9 +140,6 @@ define('src/inventory/report.inventory.vm', [
               }
             }));
 
-            // _this.scannedListGvm.list.push({
-            //   Barcode: barcodeId
-            // });
           }
 
           //clear barcode field
@@ -150,7 +148,7 @@ define('src/inventory/report.inventory.vm', [
         }
 
       }
-    });
+    };
 
     //Print report
     _this.cmdPrintReport = ko.command(function(cb) {
@@ -219,6 +217,7 @@ define('src/inventory/report.inventory.vm', [
     //events
     //
 
+
     //subscribe to change on LocationCvm and populate grid
     _this.data.LocationData.subscribe(function(location, cb) {
       if (location) {
@@ -243,10 +242,9 @@ define('src/inventory/report.inventory.vm', [
             notify.warn('No records found', null, 3);
           }
         }));
-
-
       }
     });
+
 
     //subscribe to change on LocationType and populate Location dropdown
     _this.data.LocationType.subscribe(function(locationType, cb) {
@@ -270,7 +268,6 @@ define('src/inventory/report.inventory.vm', [
             notify.warn('Location Type not found', null, 3);
           }
         }));
-
 
       }
     });

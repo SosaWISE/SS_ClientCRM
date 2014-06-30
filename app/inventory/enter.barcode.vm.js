@@ -51,19 +51,20 @@ define('src/inventory/enter.barcode.vm', [
     _this.barcodeCount(0);
 
     //Call api for adding barcodes
-    //_this.processBarcode = function(cb) {
-    _this.data.productBarcodeID.subscribe(function(barcodeId, cb) {
+    _this.processBarcode = function(data, event, cb) {
+      //_this.data.productBarcodeID.subscribe(function(barcodeId, cb) {
 
-      //Check if barcode is not empty
-      if (barcodeId) {
+      //Check if barcode is not empty and enter key is hit
+      //if (barcodeId) {        
+      if (_this.data.productBarcodeID().trim() && event.keyCode === 13) {
 
         //Retrieve current barcode counts
         var count = parseInt(_this.barcodeCount()) + 1;
 
         //Set of parameters used on api call
         param = {
-          //ProductBarcodeID: _this.data.productBarcodeID(),
-          ProductBarcodeID: barcodeId,
+          ProductBarcodeID: _this.data.productBarcodeID(),
+          //ProductBarcodeID: barcodeId,
           PurchaseOrderItemId: _this.purchaseOrderItemID
         };
 
@@ -92,12 +93,12 @@ define('src/inventory/enter.barcode.vm', [
           }, utils.no_op));
 
         } else {
-          notify.warn('Entered barcode count must not exceed received count.');
+          notify.warn('Entered barcode count must not exceed received count.', null, 3);
         }
 
       }
 
-    });
+    };
 
 
     _this.repResult = ko.observable(null);

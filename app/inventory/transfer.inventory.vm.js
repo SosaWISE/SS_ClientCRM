@@ -70,16 +70,19 @@ define('src/inventory/transfer.inventory.vm', [
     //Call api for adding barcodes
     _this.processBarcode = function(data, event) {
 
-      //Process barcode only if transfer location is not empty.
+      //Process barcode only if transfer location is not empty.      
       if (_this.data.TransferLocation()) {
 
-        //when enter key is hit, call the APIs
-        if (event.keyCode === 13) {
+        //when enter key is hit and barcode is not empty, call the APIs
+        if (_this.data.productBarcodeID().trim() !== "" && event.keyCode === 13) {
+
+          //set location to NA
+          _this.newLocation('NA');
+          _this.prevLocation('NA');
 
           var join = joiner(),
             param1 = {},
             param2 = {};
-
 
           //set parameters
           param1 = {
@@ -187,10 +190,10 @@ define('src/inventory/transfer.inventory.vm', [
         post_productBarcodeTracking(param, _this, cb);
 
       } else {
-        notify.error({
-          Message: 'Barcode not found.'
-        });
-
+        // notify.error({
+        //   Message: 'Barcode not found.'
+        // }, null, 3);
+        notify.warn('Barcode not found.', null, 3);
         _this.data.productBarcodeID(null);
 
       }
