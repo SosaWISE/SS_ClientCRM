@@ -7,6 +7,7 @@ define('src/account/security/clist.salesinfo.vm', [
   'src/account/security/clist.salesinfo.gvm',
   'src/ukov',
   'src/dataservice',
+  'src/core/numbers',
   'src/core/strings',
   'src/core/notify',
   'src/core/utils',
@@ -22,6 +23,7 @@ define('src/account/security/clist.salesinfo.vm', [
   CListSalesInfoGridViewModel,
   ukov,
   dataservice,
+  numbers,
   strings,
   notify,
   utils,
@@ -637,84 +639,19 @@ define('src/account/security/clist.salesinfo.vm', [
       text: 'Manual Invoice',
     },
   ];
-  CListSalesInfoViewModel.prototype.billingDayOptions = [ //
-    {
-      value: 1,
-      text: '1st'
-    }, {
-      value: 2,
-      text: '2nd'
-    }, {
-      value: 3,
-      text: '3rd'
-    }, {
-      value: 4,
-      text: '4th'
-    }, {
-      value: 5,
-      text: '5th'
-    }, {
-      value: 6,
-      text: '6th'
-    }, {
-      value: 7,
-      text: '7th'
-    }, {
-      value: 8,
-      text: '8th'
-    }, {
-      value: 9,
-      text: '9th'
-    }, {
-      value: 10,
-      text: '10th'
-    }, {
-      value: 11,
-      text: '11th'
-    }, {
-      value: 12,
-      text: '12th'
-    }, {
-      value: 13,
-      text: '13th'
-    }, {
-      value: 14,
-      text: '14th'
-    }, {
-      value: 15,
-      text: '15th'
-    }, {
-      value: 16,
-      text: '16th'
-    }, {
-      value: 17,
-      text: '17th'
-    }, {
-      value: 18,
-      text: '18th'
-    }, {
-      value: 19,
-      text: '19th'
-    }, {
-      value: 20,
-      text: '20th'
-    }, {
-      value: 21,
-      text: '21st'
-    }, {
-      value: 22,
-      text: '22nd'
-    }, {
-      value: 23,
-      text: '23rd'
-    }, {
-      value: 24,
-      text: '24th'
-    }, {
-      value: 25,
-      text: '25th'
-    },
-  ];
+  (function() {
+    var list = [],
+      i = 0;
+    // billing days are 1st to 25th
+    while (i < 25) {
+      i++;
+      list.push({
+        value: i,
+        text: numbers.toOrdinal(i),
+      });
+    }
+    CListSalesInfoViewModel.prototype.billingDayOptions = list;
+  })();
   CListSalesInfoViewModel.prototype.isTakeOverOptions = [ //
     {
       value: false,

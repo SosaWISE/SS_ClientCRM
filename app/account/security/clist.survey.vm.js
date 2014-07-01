@@ -4,6 +4,7 @@ define('src/account/security/clist.survey.vm', [
   'src/dataservice',
   'src/survey/takesurvey.vm',
   'src/account/security/clist.survey.gvm',
+  'src/core/numbers',
   'src/core/strings',
   'src/core/joiner',
   'src/core/notify',
@@ -15,6 +16,7 @@ define('src/account/security/clist.survey.vm', [
   dataservice,
   TakeSurveyViewModel,
   CListSurveyGridViewModel,
+  numbers,
   strings,
   joiner,
   notify,
@@ -123,7 +125,7 @@ define('src/account/security/clist.survey.vm', [
   CListSurveyViewModel.prototype.getDataContext = function(cb) {
     var _this = this,
       join = joiner(),
-      priCustomer, premAddress, salesRep, details;
+      priCustomer, premAddress, salesRep, details, invoiceInfo, salesInfo;
 
     // load primary customer
     dataservice.monitoringstationsrv.accounts.read({
@@ -157,6 +159,20 @@ define('src/account/security/clist.survey.vm', [
       details = val;
     }, join.add());
 
+    // load invoiceInfo
+    dataservice.salessummary.invoiceMsIsntalls.read({
+      id: _this.accountid,
+      link: 'accountid'
+    }, function(val) {
+      invoiceInfo = val;
+    }, join.add());
+    // load salesInfo
+    dataservice.monitoringstationsrv.msAccountSalesInformations.read({
+      id: _this.accountid,
+    }, function(val) {
+      salesInfo = val;
+    }, join.add());
+
 
     join.when(function(err) {
       if (err) {
@@ -171,7 +187,7 @@ define('src/account/security/clist.survey.vm', [
           FirstName: priCustomer.FirstName,
           LastName: priCustomer.LastName,
           FullName: strings.joinTrimmed(' ', priCustomer.Prefix, priCustomer.FirstName, priCustomer.MiddleName, priCustomer.LastName, priCustomer.Postfix),
-          Phone1: priCustomer.PhoneHome || priCustomer.PhoneMobile || priCustomer.PhoneWork,
+          Phone1: premAddress.Phone || priCustomer.PhoneHome || priCustomer.PhoneMobile || priCustomer.PhoneWork, //@REVIEW: PrimaryCustomer.Phone1
           Email: priCustomer.Email,
         },
         PremiseAddress: {
@@ -195,14 +211,16 @@ define('src/account/security/clist.survey.vm', [
           // CellularTypeName: details.CellularTypeName,
           // DslSeizure: details.DslSeizure,
         },
-        ContractTerms: { //@TODO: load contract terms
-          ContractLength: 60,
-          BillingMethod: 2,
-          MonthlyMonitoringFee: 49.99,
-          TotalActivationFee: 199.99,
-          ActivationFeePaymentMethod: 1,
-          BillingDate: '15th',
-          HasSalesUpgrades: true,
+        ContractTerms: {
+          ContractLength: convertToContractLength(invoiceInfo.ContractTemplateId),
+          BillingMethod: convertToBillingMethod(salesInfo.PaymentTypeId),
+          PaymentType: salesInfo.PaymentTypeId, //@TODO: add this token
+          MonthlyMonitoringFee: invoiceInfo.MonthlyMonitoringRateActual,
+          TotalActivationFee: invoiceInfo.ActivationFeeActual,
+          ActivationFeePaymentMethod: convertToActivationFeePaymentMethod(invoiceInfo.ActivationFeeActual, invoiceInfo.Over3Months),
+          // Over3Months: invoiceInfo.Over3Months, // no token
+          BillingDate: numbers.toOrdinal(salesInfo.BillingDay),
+          // HasSalesUpgrades: true, //??????????????????????
         },
         SalesRep: {
           FirstName: salesRep.PreferredName || salesRep.FirstName,
@@ -212,6 +230,46 @@ define('src/account/security/clist.survey.vm', [
       cb(null, dataContext);
     });
   };
+
+  function convertToContractLength(contractTemplateId) {
+    switch (contractTemplateId) {
+      case 1:
+        return 36;
+      default:
+      case 2:
+        return 60;
+    }
+  }
+
+  function convertToBillingMethod(paymentTypeId) {
+    var result = 0; // start with Unknown billing method
+    switch (paymentTypeId) {
+      case 'ACH':
+        result = 2; // Bank account
+        break;
+      case 'CC':
+        result = 1; // Credit card
+        break;
+      case 'CHCK':
+        // result = 3; // Pay by Invoice??????
+        result = paymentTypeId;
+        break;
+      case 'MAN':
+        // ????
+        result = paymentTypeId;
+        break;
+    }
+    return result;
+  }
+
+  function convertToActivationFeePaymentMethod(activationFeeActual, over3Months) {
+    if (activationFeeActual > 0) {
+      return over3Months ? 3 : 1;
+    } else {
+      // no payment method since there is no activation fee
+      return 0;
+    }
+  }
 
   function showTakeSurvey(_this, surveyid, locale, surveyResultView, retake, cb) {
     if (_this.loadingSurvey()) {
