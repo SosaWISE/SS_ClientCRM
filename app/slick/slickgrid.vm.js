@@ -154,6 +154,11 @@ define('src/slick/slickgrid.vm', [
         });
       }
       onresize(_this.grid.getContainerNode(), _this.updateGrid);
+
+      // re-set selected rows
+      if (_this._prevSelectedRows) {
+        _this.setSelectedRows(_this._prevSelectedRows);
+      }
     }, 9);
   };
   SlickGridViewModel.prototype.unBound = function(element) {
@@ -170,6 +175,9 @@ define('src/slick/slickgrid.vm', [
       if (element && element !== container) {
         console.warn('unBound element doesn\'t match grid container', container, element);
       }
+      // store selected rows
+      _this._prevSelectedRows = _this.grid.getSelectedRows();
+      //
       _this.grid.onSelectedRowsChanged.unsubscribe(_this.handleSelectedRowsChanged);
       _this.grid.destroy(); // also unregisters all plugins
       _this.grid = null;

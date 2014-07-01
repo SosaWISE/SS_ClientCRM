@@ -93,13 +93,12 @@ define('src/account/security/clist.survey.vm', [
   };
   CListSurveyViewModel.prototype.onActivate = function( /*routeCtx*/ ) { // overrides base
     var _this = this;
-    if (!_this.gvm.list().length) {
-      if (_this.currentSurveyVm) {
-        _this.activeChild(_this.currentSurveyVm);
-      } else {
-        // take the survey since it hasn't been taken yet
-        _this.cmdTakeSurvey.execute();
-      }
+    if (_this.currentSurveyVm) {
+      // re-set active child to survey being taken
+      _this.activeChild(_this.currentSurveyVm);
+    } else if (!_this.gvm.list.peek().length) {
+      // take the survey since it hasn't been taken yet
+      _this.cmdTakeSurvey.execute();
     }
     // CListSurveyViewModel.super_.prototype.onActivate.call(_this, routeCtx);
   };
@@ -271,6 +270,10 @@ define('src/account/security/clist.survey.vm', [
     }
   }
 
+  //
+  //
+  //
+
   function showTakeSurvey(_this, surveyid, locale, surveyResultView, retake, cb) {
     if (_this.loadingSurvey()) {
       cb();
@@ -341,6 +344,9 @@ define('src/account/security/clist.survey.vm', [
     }
   }
 
+  //
+  //
+  //
 
   function load_activeSurvey(surveyTypeId, setter, join) {
     var cb = join.add();
