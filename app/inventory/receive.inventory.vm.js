@@ -91,7 +91,7 @@ define('src/inventory/receive.inventory.vm', [
 
         //parameters for packingslipitems
         var param = {
-          PackingSlipId: _this.PackingSlipID(),
+          PackingSlipId: _this.data.PackingSlipID(),
           //ProductSkwId: part.ProductSkwId,
           ItemId: part.ItemId,
           Quantity: part.Quantity
@@ -212,7 +212,7 @@ define('src/inventory/receive.inventory.vm', [
         loadPurchaseOrderItems(vm, purchaseOrder.PurchaseOrderID, join.add());
 
       } else {
-        notify.warn('PurchaseOrderID not found', null, 3);
+        notify.warn('PO# not found', null, 3);
       }
     }));
 
