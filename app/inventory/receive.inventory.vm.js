@@ -116,8 +116,30 @@ define('src/inventory/receive.inventory.vm', [
           count: part.WithBarcodeCount,
           enteredBarcode: 0,
           purchaseOrderItemID: part.PurchaseOrderItemID,
-        }), function onClose(result) {
+        }), function onClose(result, cb) {
           if (!result) {
+
+            //Once done adding barcode, refresh grid with latest data - still need to simplify
+            var updatedList = _this.inventoryListGvm.list();
+
+            dataservice.inventoryenginesrv.PurchaseOrderItems.read({
+              id: updatedList[0].PurchaseOrderId
+            }, null, utils.safeCallback(cb, function(err, resp) {
+              if (resp.Code === 0) {
+
+                //Empty grid before inserting new data
+                _this.inventoryListGvm.list([]);
+
+                //Update inventoryListGvm grid
+                for (var x = 0; x < resp.Value.length; x++) {
+                  _this.inventoryListGvm.list.push(resp.Value[x]);
+                }
+
+              }
+
+            }));
+
+
             return;
           }
         });
@@ -185,7 +207,7 @@ define('src/inventory/receive.inventory.vm', [
 
     //Getting PurchaseOrderID api call
     dataservice.inventoryenginesrv.PurchaseOrder.read({
-      id: iePurchaseOrder.PurchaseOrderID,
+      id: iePurchaseOrder.PurchaseOrderID.trim(),
       link: 'gppo'
     }, null, utils.safeCallback(join.add(), function(err, resp) {
 

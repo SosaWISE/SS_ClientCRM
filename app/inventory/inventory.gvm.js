@@ -55,16 +55,16 @@ define('src/inventory/inventory.gvm', [
           name: 'Remain',
           field: 'WithoutBarcodeCount',
         }, {
+          id: 'ItemDesc',
+          name: 'Description',
+          field: 'ItemDesc',
+        }, {
           id: 'WithBarcodeCount',
           name: 'Received',
           field: 'WithBarcodeCount',
           editor: Slick.Editors.Text,
           validator: numberFieldValidator,
           cssClass: 'editable_look',
-        }, {
-          id: 'ItemDesc',
-          name: 'Description',
-          field: 'ItemDesc',
         },
         new ButtonsColumn({
           id: 'enterBarcode',
