@@ -35,16 +35,20 @@ define('src/survey/takesurveytranslation.vm', [
     // events
     //
     _this.clickCancel = function() {
-      if (_this.layer) {
-        _this.layer.close();
-      }
+      closeLayer(_this);
     };
     _this.clickTake = _this.take.bind(_this);
   }
   utils.inherits(TakeSurveyTranslationViewModel, BaseViewModel);
   TakeSurveyTranslationViewModel.prototype.viewTmpl = 'tmpl-takesurveytranslation';
   TakeSurveyTranslationViewModel.prototype.width = 300;
-  TakeSurveyTranslationViewModel.prototype.height = 250;
+  TakeSurveyTranslationViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
 
   TakeSurveyTranslationViewModel.prototype.updateSurveyTranslations = function(surveyTranslationVMs) {
     var _this = this;

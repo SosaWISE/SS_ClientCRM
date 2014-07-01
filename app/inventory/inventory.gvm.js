@@ -59,7 +59,8 @@ define('src/inventory/inventory.gvm', [
           name: 'Received',
           field: 'WithBarcodeCount',
           editor: Slick.Editors.Text,
-          validator: numberFieldValidator
+          validator: numberFieldValidator,
+          cssClass: 'editable_look',
         }, {
           id: 'ItemDesc',
           name: 'Description',

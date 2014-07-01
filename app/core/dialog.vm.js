@@ -16,12 +16,6 @@ define('src/core/dialog.vm', [
     DialogViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, ['title', 'msg', 'actionNames']);
 
-    function closeLayer(result) {
-      if (_this.layer) {
-        _this.layer.close(result);
-      }
-    }
-
     //
     // add events/actions
     //
@@ -30,7 +24,8 @@ define('src/core/dialog.vm', [
       _this.actions.push({
         name: name.substr(0, 1).toUpperCase() + name.substr(1),
         action: function() {
-          closeLayer(name);
+          _this.layerResult = name;
+          closeLayer(_this);
         },
       });
     });
@@ -39,6 +34,16 @@ define('src/core/dialog.vm', [
   DialogViewModel.prototype.viewTmpl = 'tmpl-dialog';
   DialogViewModel.prototype.width = 600;
   DialogViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  DialogViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
 
   return DialogViewModel;
 });

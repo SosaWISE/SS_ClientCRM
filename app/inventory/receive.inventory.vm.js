@@ -57,7 +57,8 @@ define('src/inventory/receive.inventory.vm', [
       validators: [
         ukov.validators.isRequired('PackingSlipNumber ID is required')
       ]
-    }
+    },
+    PackingSlipID: {}
   };
 
 
@@ -69,11 +70,12 @@ define('src/inventory/receive.inventory.vm', [
     _this.focusFirst = ko.observable(false);
 
     //holds the packing slip id - to be used on addPackingSlipItems
-    _this.PackingSlipID = ko.observable();
+    //_this.PackingSlipID = ko.observable();
 
     _this.data = ukov.wrap(_this.item || {
       PurchaseOrderID: null,
-      PackingSlipNumber: null
+      PackingSlipNumber: null,
+      PackingSlipID: null
     }, schema);
 
 
@@ -95,12 +97,15 @@ define('src/inventory/receive.inventory.vm', [
           Quantity: part.Quantity
         };
 
-        if (typeof _this.PackingSlipID() === "undefined") {
-          //do not call packing slip items api
-        } else {
-          //add to packing slip items
-          addPackingSlipItems(param, cb);
-        }
+        ///if (typeof _this.PackingSlipID() === "undefined") {
+        //do not call packing slip items api
+        //} else {
+        //add to packing slip items
+        //addPackingSlipItems(param, cb);
+        //}
+
+        //Add to packing slip items
+        addPackingSlipItems(param, cb);
 
 
         //Go to Enter Barcodes screen
@@ -125,7 +130,7 @@ define('src/inventory/receive.inventory.vm', [
     _this.resetPage = function() {
 
       //clear packing slip# field
-      _this.data.PackingSlipNumber(null);
+      //_this.data.PackingSlipNumber(null);
 
       //clear grid
       _this.inventoryListGvm.list([]);
@@ -190,16 +195,21 @@ define('src/inventory/receive.inventory.vm', [
         purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
 
         //parameters for reading packingslip api
-        param = {
-          id: purchaseOrder.PurchaseOrderID,
-          link: 'POID'
-        };
+        // param = {
+        //   id: purchaseOrder.PurchaseOrderID,
+        //   link: 'POID'
+        // };
 
-        //Populate PurchaseOrderItems
-        loadPurchaseOrderItems(vm, purchaseOrder.PurchaseOrderID, join.add());
+        param = {
+          PurchaseOrderId: purchaseOrder.PurchaseOrderID,
+          PackingSlipNumber: vm.data.PackingSlipNumber()
+        };
 
         //function that calls packing slip api
         loadPackingSlipInfo(param, vm, join.add());
+
+        //Populate PurchaseOrderItems
+        loadPurchaseOrderItems(vm, purchaseOrder.PurchaseOrderID, join.add());
 
       } else {
         notify.warn('PurchaseOrderID not found', null, 3);
@@ -241,108 +251,29 @@ define('src/inventory/receive.inventory.vm', [
 
   function loadPackingSlipInfo(param, vm, cb) {
 
-    dataservice.inventoryenginesrv.PackingSlip.read(param, null, utils.safeCallback(cb, function(err, resp) {
-      if (resp.Code === 0) {
-
-        console.log("PackingSlipRead-Result:" + JSON.stringify(resp.Value));
-
-        //Get value of packing slip Id from api
-        vm.PackingSlipID(resp.Value.PackingSlipID);
-
-        var packingSlip = resp.Value;
-
-        //If packing slip # from api not equal to null, set value.
-        if (packingSlip.PackingSlipNumber !== null) {
-          vm.data.PackingSlipNumber.setValue(packingSlip.PackingSlipNumber);
-        } else {
-
-          //Create packing slip # if packing slip# from UI not empty
-          if (packingSlip.PackingSlipNumber === null) {
-            console.log("Packing slip number is empty. Creating packing slip number...");
-            //Create packing slip#
-            packingSlipNumberIsEmpty(vm, param.id, cb);
-          }
-
-        }
-
-
-      } else {
-        notify.warn('PurchaseOrderID not found', null, 10);
-      }
-    }, function( /*err*/ ) {
-
-      //Create packing slip#
-      packingSlipNumberIsEmpty(vm, param.id, cb);
-
-      // var param2, packingSlipNumber;
-
-      // packingSlipNumber = vm.data.PackingSlipNumber();
-      // param2 = {
-      //   PurchaseOrderId: param.id,
-      //   PackingSlipNumber: packingSlipNumber
-      // };
-
-      // alert(packingSlipNumber);
-
-      // if (packingSlipNumber !== null && packingSlipNumber !== "") {
-      //   //alert(JSON.stringify(param2));
-      //   createPackingSlipNumber(param2, cb);
-      // } else {
-      //   notify.warn('Please input a Packing Slip#!');
-      // }
-
-    }));
-
-
-  } //end function loadPackingSlipInfo
-
-  function packingSlipNumberIsEmpty(vm, purchaseOrderID, cb) {
-
-    var param2, packingSlipNumberUI;
-
-    packingSlipNumberUI = vm.data.PackingSlipNumber();
-
-    //alert(packingSlipNumberUI);
-
-    param2 = {
-      PurchaseOrderId: purchaseOrderID,
-      PackingSlipNumber: packingSlipNumberUI
-    };
-
-    console.log("createPackingSlipNumber-param:" + JSON.stringify(param2));
-
-    if (packingSlipNumberUI !== null && packingSlipNumberUI !== "") {
-      createPackingSlipNumber(param2, vm, cb);
-    } else {
-      notify.warn('Please input a Packing Slip#!');
-    }
-
-  }
-
-
-  //Create packing slip number if not available - pull this from UI
-  function createPackingSlipNumber(param, vm, cb) {
+    console.log("Packing slip params:" + JSON.stringify(param));
 
     dataservice.inventoryenginesrv.PackingSlip.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {}
-      console.log("createPackingSlipNumber-Result:" + JSON.stringify(resp.Value));
-      vm.data.PackingSlipNumber.setValue(resp.Value.PackingSlipNumber);
+
+      console.log("PackingSlip:" + JSON.stringify(resp.Value));
+
+      //vm.data.PackingSlipNumber.setValue(resp.Value.PackingSlipNumber);
+      vm.data.PackingSlipID(resp.Value.PackingSlipID);
 
     }, function(err) {
       notify.error(err);
     }));
 
+  }
 
-  } //end createPackingSlipNumber
-
-  //add to packing slip items
   function addPackingSlipItems(param, cb) {
 
     dataservice.inventoryenginesrv.PackingSlipItem.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
-        console.log("PackingSlipItems-Result:" + JSON.stringify(resp.Value));
+        console.log("Add Packing Slip:" + JSON.stringify(resp.Value));
       }
 
     }, function(err) {
@@ -350,6 +281,122 @@ define('src/inventory/receive.inventory.vm', [
     }));
   }
 
-
   return ReceiveInventoryViewModel;
 });
+
+
+//function loadPackingSlipInfo(param, vm, cb) {
+
+//   dataservice.inventoryenginesrv.PackingSlip.read(param, null, utils.safeCallback(cb, function(err, resp) {
+//     if (resp.Code === 0) {
+
+//       console.log("PackingSlipRead-Result:" + JSON.stringify(resp.Value));
+
+//       //Get value of packing slip Id from api
+//       vm.PackingSlipID(resp.Value.PackingSlipID);
+
+//       var packingSlip = resp.Value;
+
+//       //If packing slip # from api not equal to null, set value.
+//       if (packingSlip.PackingSlipNumber !== null) {
+//         vm.data.PackingSlipNumber.setValue(packingSlip.PackingSlipNumber);
+//       } else {
+
+//         //Create packing slip # if packing slip# from UI not empty
+//         if (packingSlip.PackingSlipNumber === null) {
+//           console.log("Packing slip number is empty. Creating packing slip number...");
+//           //Create packing slip#
+//           packingSlipNumberIsEmpty(vm, param.id, cb);
+//         }
+
+//       }
+
+//alert(packingSlipNumberUI);
+
+//     } else {
+//       notify.warn('PurchaseOrderID not found', null, 10);
+//     }
+//   }, function( /*err*/ ) {
+
+//     //Create packing slip#
+//     packingSlipNumberIsEmpty(vm, param.id, cb);
+
+//     // var param2, packingSlipNumber;
+
+//     // packingSlipNumber = vm.data.PackingSlipNumber();
+//     // param2 = {
+//     //   PurchaseOrderId: param.id,
+//     //   PackingSlipNumber: packingSlipNumber
+//     // };
+
+//     // alert(packingSlipNumber);
+
+//     // if (packingSlipNumber !== null && packingSlipNumber !== "") {
+//     //   //alert(JSON.stringify(param2));
+//     //   createPackingSlipNumber(param2, cb);
+//     // } else {
+//     //   notify.warn('Please input a Packing Slip#!');
+//     // }
+
+//   }));
+
+
+// } //end function loadPackingSlipInfo
+
+// function packingSlipNumberIsEmpty(vm, purchaseOrderID, cb) {
+
+//   var param2, packingSlipNumberUI;
+
+//   packingSlipNumberUI = vm.data.PackingSlipNumber();
+
+//   //alert(packingSlipNumberUI);
+
+//   param2 = {
+//     PurchaseOrderId: purchaseOrderID,
+//     PackingSlipNumber: packingSlipNumberUI
+//   };
+
+//   console.log("createPackingSlipNumber-param:" + JSON.stringify(param2));
+
+//   if (packingSlipNumberUI !== null && packingSlipNumberUI !== "") {
+//     createPackingSlipNumber(param2, vm, cb);
+//   } else {
+//     notify.warn('Please input a Packing Slip#!');
+//   }
+
+// }
+
+
+//Create packing slip number if not available - pull this from UI
+// function createPackingSlipNumber(param, vm, cb) {
+
+//   dataservice.inventoryenginesrv.PackingSlip.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+
+//     if (resp.Code === 0) {}
+//     console.log("createPackingSlipNumber-Result:" + JSON.stringify(resp.Value));
+//     vm.data.PackingSlipNumber.setValue(resp.Value.PackingSlipNumber);
+
+//   }, function(err) {
+//     notify.error(err);
+//   }));
+
+
+// } //end createPackingSlipNumber
+
+//add to packing slip items
+// function addPackingSlipItems(param, cb) {
+
+//   dataservice.inventoryenginesrv.PackingSlipItem.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+
+//     if (resp.Code === 0) {
+//       console.log("PackingSlipItems-Result:" + JSON.stringify(resp.Value));
+//     }
+
+//   }, function(err) {
+//     notify.error(err);
+//   }));
+// }
+
+
+//   return ReceiveInventoryViewModel;
+// });

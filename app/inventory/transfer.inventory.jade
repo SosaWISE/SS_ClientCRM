@@ -14,3 +14,5 @@ ul(class="edit-form")
         li
           span(class="label") New Location
           span(class="label" data-bind="text: newLocation") XXXXX
+  li
+    div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

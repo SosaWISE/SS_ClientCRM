@@ -50,11 +50,14 @@
         // padding: 5px 20px 20px 20px;
         padding: 20px;
 
-        .user-select(none);
         cursor: move;
         cursor: -webkit-grab;
         &.dragging {
           cursor: move;
+        }
+        // reset cursor for all immediate children
+        > * {
+          cursor: initial;
         }
 
         .actions ul,

@@ -40,10 +40,7 @@ define('src/survey/qpossibleanswermap.new.vm', [
     // events
     //
     _this.clickCancel = function() {
-      if (_this.cmdAdd.busy()) {
-        return;
-      }
-      _this.layer.close();
+      closeLayer(_this);
     };
     _this.cmdAdd = ko.command(function(cb) {
       var possibleAnswer = _this.paComboVM.selectedValue();
@@ -62,7 +59,8 @@ define('src/survey/qpossibleanswermap.new.vm', [
           notify.error(err);
         } else {
           _this.questionVM.addPossibleAnswerMap(resp.Value);
-          _this.layer.close();
+          _this.layerResult = resp.Value;
+          closeLayer(_this);
         }
         cb();
       });
@@ -71,7 +69,21 @@ define('src/survey/qpossibleanswermap.new.vm', [
   utils.inherits(NewQPossibleAnswerMapViewModel, BaseViewModel);
   NewQPossibleAnswerMapViewModel.prototype.viewTmpl = 'tmpl-qpossibleanswermap_new';
   NewQPossibleAnswerMapViewModel.prototype.width = 300;
-  NewQPossibleAnswerMapViewModel.prototype.height = 250;
+  NewQPossibleAnswerMapViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  NewQPossibleAnswerMapViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdAdd.busy() && !_this.layerResult) {
+      msg = 'Please wait for add to finish.';
+    }
+    return msg;
+  };
 
   function createComboList(tokenMaps, tokens) {
     var map = {},

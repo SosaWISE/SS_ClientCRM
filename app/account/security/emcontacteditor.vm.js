@@ -146,7 +146,7 @@ define('src/account/security/emcontacteditor.vm', [
     _this.width = ko.observable(550);
     _this.height = ko.observable('auto');
 
-    _this.data = ukov.wrap(_this.item || {
+    _this.item = _this.item || {
       // EmergencyContactID: '',
       CustomerId: _this.customerId,
       AccountId: _this.accountId,
@@ -170,7 +170,8 @@ define('src/account/security/emcontacteditor.vm', [
       Phone3: '',
       Phone3TypeId: null,
       Comment1: '',
-    }, schema);
+    };
+    _this.data = ukov.wrap(utils.clone(_this.item), schema);
 
     _this.data.RelationshipCvm = new ComboViewModel({
       selectedValue: _this.data.RelationshipId,
@@ -204,19 +205,12 @@ define('src/account/security/emcontacteditor.vm', [
     //
     // events
     //
-    _this.cmdCancel = ko.command(function(cb) {
-      if (_this.layer) {
-        _this.layer.close(null);
-      }
-      cb();
-    }, function(busy) {
-      return !busy && !_this.cmdSave.busy() && !_this.cmdDelete.busy();
-    });
+    _this.clickCancel = function() {
+      _this.layerResult = null;
+      _this.isDeleted = false;
+      closeLayer(_this);
+    };
     _this.cmdSave = ko.command(function(cb) {
-      if (!_this.layer) {
-        cb();
-        return;
-      }
       if (!_this.data.isValid()) {
         notify.warn(_this.data.errMsg(), null, 7);
         cb();
@@ -233,7 +227,10 @@ define('src/account/security/emcontacteditor.vm', [
         }
         //
         _this.data.markClean(model, true);
-        _this.layer.close(resp.Value, false);
+        //
+        _this.layerResult = resp.Value;
+        _this.isDeleted = false;
+        closeLayer(_this);
       }, function(err) {
         notify.error(err);
       }));
@@ -241,27 +238,45 @@ define('src/account/security/emcontacteditor.vm', [
       return !busy && !_this.cmdDelete.busy();
     });
     _this.cmdDelete = ko.command(function(cb) {
-      if (!_this.layer) {
-        cb();
-        return;
-      }
       var model = _this.data.getValue();
-      dataservice.msaccountsetupsrv.emergencyContacts.del(model.EmergencyContactID, null, utils.safeCallback(cb, function(err, resp) {
+      dataservice.msaccountsetupsrv.emergencyContacts.del(_this.item.EmergencyContactID, null, utils.safeCallback(cb, function(err, resp) {
         notify.info('Deleted ' + formatFullname(model), '', 3);
         if (resp.Message && resp.Message !== 'Success') {
           notify.error(resp, 3);
         }
         //
-        _this.layer.close(resp.Value, true);
+        _this.layerResult = resp.Value;
+        _this.isDeleted = true;
+        closeLayer(_this);
       }, function(err) {
         notify.error(err);
       }));
     }, function(busy) {
-      return !busy && _this.item && !_this.cmdSave.busy();
+      return !busy && _this.item.EmergencyContactID && !_this.cmdSave.busy();
     });
   }
   utils.inherits(EmContactEditorViewModel, BaseViewModel);
   EmContactEditorViewModel.prototype.viewTmpl = 'tmpl-security-emcontacteditor';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  EmContactEditorViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult, _this.isDeleted];
+  };
+  EmContactEditorViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdSave.busy() && !_this.layerResult) {
+      msg = 'Please wait for save to finish.';
+    } else if (_this.cmdDelete.busy() && !_this.layerResult) {
+      msg = 'Please wait for delete to finish.';
+    }
+    return msg;
+  };
 
   function formatFullname(d) {
     return strings.joinTrimmed(' ', d.Prefix, d.FirstName, d.MiddleName, d.LastName, d.Postfix);

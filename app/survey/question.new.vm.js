@@ -127,10 +127,7 @@ define('src/survey/question.new.vm', [
     // events
     //
     _this.clickCancel = function() {
-      if (_this.cmdAdd.busy()) {
-        return;
-      }
-      _this.layer.close();
+      closeLayer(_this);
     };
     _this.cmdAdd = ko.command(function(cb) {
       if (!_this.data.isValid()) {
@@ -144,7 +141,8 @@ define('src/survey/question.new.vm', [
         if (err) {
           notify.error(err);
         } else {
-          _this.layer.close(resp.Value);
+          _this.layerResult = resp.Value;
+          closeLayer(_this);
         }
         cb();
       });
@@ -154,6 +152,24 @@ define('src/survey/question.new.vm', [
   NewQuestionViewModel.prototype.viewTmpl = 'tmpl-question_new';
   NewQuestionViewModel.prototype.width = 500;
   NewQuestionViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  NewQuestionViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
+  NewQuestionViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdAdd.busy() && !_this.layerResult) {
+      msg = 'Please wait for add to finish.';
+    }
+    return msg;
+  };
 
   NewQuestionViewModel.prototype.showAddNewMeaning = function(filterText) {
     var _this = this,

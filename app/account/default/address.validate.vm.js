@@ -142,12 +142,13 @@ define('src/account/default/address.validate.vm', [
     var _this = this;
     AddressValidateViewModel.super_.call(_this, options);
 
-    if (_this.item) {
-      // ??? make it so Manual button can be toggled ???
-      _this.item.Validated = false;
-    }
+    // if (_this.item) {
+    //   // ??? make it so Manual button can be toggled ???
+    //   _this.item.Validated = false;
+    // }
 
-    _this.focus = ko.observable(false);
+    _this.focusFirst = ko.observable(false);
+    _this.focusOk = ko.observable(false);
     _this.result = ko.observable(_this.item);
     _this.override = ko.observable(false);
 
@@ -199,10 +200,9 @@ define('src/account/default/address.validate.vm', [
     //
     // events
     //
-    _this.clickClose = function() {
-      if (_this.layer) {
-        _this.layer.close(_this.result());
-      }
+    _this.clickOk = function() {
+      _this.layerResult = _this.result.peek();
+      closeLayer(_this);
     };
     _this.cmdValidate = ko.command(function(cb) {
       _this.data.validate();
@@ -216,10 +216,15 @@ define('src/account/default/address.validate.vm', [
       model.AddressId = model.AddressID; // copy id to match API inputs
       dataservice.qualify.addressValidation.post(null, model, null, utils.safeCallback(cb, function(err, resp) {
         if (resp && resp.Value) {
-          _this.data.setValue(resp.Value);
-          _this.data.markClean(resp.Value, true);
-          //@TODO: handle !Validated
-          _this.result(resp.Value);
+          //@TODO: handle !data.Validated
+          var data = resp.Value;
+          _this.data.setValue(data);
+          _this.data.markClean(data, true);
+          _this.result(data);
+          // store now since we want to use this even if escape key is pressed...
+          _this.layerResult = _this.result.peek();
+          //
+          _this.focusOk(true);
         }
       }, function(err) {
         notify.error(err);
@@ -242,12 +247,22 @@ define('src/account/default/address.validate.vm', [
   utils.inherits(AddressValidateViewModel, BaseViewModel);
   AddressValidateViewModel.prototype.viewTmpl = 'tmpl-acct-default-address_validate';
 
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  AddressValidateViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
+
   AddressValidateViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
     var _this = this;
 
     // this timeout makes it possible to focus the input
     setTimeout(function() {
-      _this.focus(true);
+      _this.focusFirst(true);
     }, 100);
   };
 

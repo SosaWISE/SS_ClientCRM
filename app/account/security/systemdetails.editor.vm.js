@@ -68,12 +68,10 @@ define('src/account/security/systemdetails.editor.vm', [
     //
     // events
     //
-    _this.cmdCancel = ko.command(function(cb) {
-      closeLayer(null);
-      cb();
-    }, function(busy) {
-      return !busy && !_this.cmdSave.busy();
-    });
+    _this.clickCancel = function() {
+      _this.layerResult = null;
+      closeLayer(_this);
+    };
     _this.cmdSave = ko.command(function(cb) {
       if (!_this.data.isValid()) {
         notify.warn(_this.data.errMsg(), null, 7);
@@ -86,7 +84,8 @@ define('src/account/security/systemdetails.editor.vm', [
         id: model.AccountID,
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
-        closeLayer(resp.Value);
+        _this.layerResult = resp.Value;
+        closeLayer(_this);
       }, function(err) {
         notify.error(err);
       }));
@@ -94,17 +93,29 @@ define('src/account/security/systemdetails.editor.vm', [
     _this.cmdSearch = ko.command(function(cb) {
       cb();
     });
-
-    function closeLayer(result) {
-      if (_this.layer) {
-        _this.layer.close(result);
-      }
-    }
   }
   utils.inherits(SystemDetailsEditorViewModel, BaseViewModel);
   SystemDetailsEditorViewModel.prototype.viewTmpl = 'tmpl-security-systemdetails_editor';
   SystemDetailsEditorViewModel.prototype.width = 290;
   SystemDetailsEditorViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  SystemDetailsEditorViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
+  SystemDetailsEditorViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdSave.busy() && !_this.layerResult) {
+      msg = 'Please wait for save to finish.';
+    }
+    return msg;
+  };
 
   return SystemDetailsEditorViewModel;
 });

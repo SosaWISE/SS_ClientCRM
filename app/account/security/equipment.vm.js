@@ -46,10 +46,16 @@ define('src/account/security/equipment.vm', [
     //
 
     _this.cmdAddByPart = ko.command(function(cb) {
-      showEquipmentEditor(_this, true, null, cb);
+      showEquipmentEditor(_this, true, null, function(model) {
+        _this.gvm.list.push(model);
+        cb();
+      });
     });
     _this.cmdAddByBarcode = ko.command(function(cb) {
-      showEquipmentEditor(_this, false, null, cb);
+      showEquipmentEditor(_this, false, null, function(model) {
+        _this.gvm.list.push(model);
+        cb();
+      });
     });
     _this.cmdAddExistingEquipment = ko.command(function(cb) {
       showExistingEquipmentEditor(_this, cb);
@@ -138,7 +144,7 @@ define('src/account/security/equipment.vm', [
     return new ExistingEquipmentEditorViewModel({
       accountId: _this.accountId,
       monitoringStationOsId: _this.accountDetails.MonitoringStationOsId,
-      reps: _this.cache.reps,
+      cache: _this.cache,
     });
   }
 

@@ -30,7 +30,7 @@ define('src/account/security/equipment.editor.vm', [
     ],
   };
   searchPartNumSchema = {
-    converter: strConverter,
+    converter: ukov.converters.toUpper(),
     validators: [
       ukov.validators.isRequired('Please enter a part #'),
     ],
@@ -49,10 +49,10 @@ define('src/account/security/equipment.editor.vm', [
     // EquipmentLocationDesc: null,
     EquipmentLocationId: {},
     GPEmployeeId: {},
-    // IsExisting: false,
+    IsExisting: {},
     IsExistingWiring: {},
     IsMainPanel: {},
-    // IsServiceUpgrade: false,
+    IsServiceUpgrade: {},
     ItemDesc: {},
     ItemId: {},
     ItemSKU: {},
@@ -70,10 +70,6 @@ define('src/account/security/equipment.editor.vm', [
 
   function EquipmentEditorViewModel(options) {
     var _this = this;
-    // ** Check to see if an item is passed
-    if (utils.isObject(options.item)) {
-      _this.item = options.item;
-    }
     EquipmentEditorViewModel.super_.call(_this, options);
     _this.mixinLoad();
     BaseViewModel.ensureProps(_this, [
@@ -99,9 +95,10 @@ define('src/account/security/equipment.editor.vm', [
       BarcodeId: null,
       EquipmentLocationId: null,
       GPEmployeeId: null,
+      IsExisting: null,
       IsExistingWiring: null,
-      // IsExisting: null,
       IsMainPanel: null,
+      IsServiceUpgrade: null,
       ItemDesc: null,
       ItemId: null,
       ItemSKU: null,
@@ -115,13 +112,11 @@ define('src/account/security/equipment.editor.vm', [
       //UpgradePrice: '',
       //MainPanel: null,
     };
-    _this.cleanItem = utils.clone(_this.item);
 
-    _this.data = ukov.wrap(_this.item, schema);
+    _this.data = ukov.wrap(utils.clone(_this.item), schema);
     _this.hasItem = ko.computed(function() {
       return !!_this.data.ItemId();
     });
-
     _this.data.ZoneEventTypeCvm = new ComboViewModel({
       selectedValue: _this.data.ZoneEventType,
       fields: {
@@ -137,7 +132,6 @@ define('src/account/security/equipment.editor.vm', [
         text: 'EquipmentLocationDesc',
       },
     });
-
     _this.data.ZoneTypeCvm = new ComboViewModel({
       selectedValue: _this.data.AccountZoneTypeId,
       fields: {
@@ -145,19 +139,15 @@ define('src/account/security/equipment.editor.vm', [
         text: 'AccountZoneType',
       },
     });
-
     _this.data.AssignToCvm = new ComboViewModel({
-      //selectedValue: _this.data.AssignTo,
       selectedValue: _this.data.GPEmployeeId,
       nullable: true,
-      list: _this.cache.reps,
       fields: {
         value: 'CompanyID',
         text: 'FullName',
       },
     });
     _this.data.IsUpgradeCvm = new ComboViewModel({
-      //  selectedValue: _this.data.IsUpgrade,
       selectedValue: _this.data.AccountEquipmentUpgradeTypeId,
       nullable: true,
       list: _this.isUpgradeOptions,
@@ -177,7 +167,7 @@ define('src/account/security/equipment.editor.vm', [
     // events
     //
     _this.cmdCancel = ko.command(function(cb) {
-      closeLayer();
+      closeLayer(_this);
       cb();
     }, function(busy) {
       return !busy && !_this.cmdSave.busy();
@@ -194,9 +184,9 @@ define('src/account/security/equipment.editor.vm', [
       var model = _this.data.getValue(),
         tmp = {
           EquipmentLocationDesc: _this.data.EquipmentLocationCvm.selectedItem().EquipmentLocationDesc,
-          ItemSKU: _this.data.ItemSKU.getValue(),
+          ItemSKU: model.ItemSKU,
+          IsServiceUpgrade: model.IsServiceUpgrade,
           ActualPoints: _this.data.model.ActualPoints,
-          IsServiceUpgrade: _this.data.model.IsServiceUpgrade,
         };
       dataservice.msaccountsetupsrv.equipments.save({
         data: model,
@@ -207,25 +197,41 @@ define('src/account/security/equipment.editor.vm', [
         //@HACK: fix fields that don't get returned
         data.EquipmentLocationDesc = tmp.EquipmentLocationDesc;
         data.ItemSKU = tmp.ItemSKU;
-        data.ActualPoints = tmp.ActualPoints;
         data.IsServiceUpgrade = tmp.IsServiceUpgrade;
+        data.ActualPoints = tmp.ActualPoints;
 
-        closeLayer(data);
+        _this.layerResult = data;
+        closeLayer(_this);
       }, function(err) {
         notify.error(err);
       }));
     });
-
-    function closeLayer(result, deleted) {
-      if (_this.layer) {
-        _this.layer.close(result, deleted);
-      }
-    }
   }
   utils.inherits(EquipmentEditorViewModel, BaseViewModel);
   EquipmentEditorViewModel.prototype.viewTmpl = 'tmpl-security-equipment_editor';
   EquipmentEditorViewModel.prototype.width = 550;
   EquipmentEditorViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  EquipmentEditorViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
+  EquipmentEditorViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdAdd.busy() && !_this.layerResult) {
+      msg = 'Please wait for add to finish.';
+    } else if (_this.cmdSave.busy() && !_this.layerResult) {
+      msg = 'Please wait for save to finish.';
+    }
+    return msg;
+  };
+
 
   EquipmentEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
@@ -233,15 +239,26 @@ define('src/account/security/equipment.editor.vm', [
     load_zoneEventTypes(_this.cache, _this.data.ZoneEventTypeCvm, _this.monitoringStationOsId, join.add());
     load_accountZoneTypes(_this.cache, _this.data.ZoneTypeCvm, _this.monitoringStationOsId, join.add());
     load_equipmentLocation(_this.cache, _this.data.EquipmentLocationCvm, _this.monitoringStationOsId, join.add());
+    load_rep(_this.cache, _this.item.GPEmployeeId, join.add());
 
     join.when(function(err) {
       if (err) {
         return;
       }
-      // make everything clean
-      _this.data.markClean(_this.cleanItem, true);
+      //
+      _this.data.AssignToCvm.setList(_this.cache.reps);
+      // set current data
+      if (_this.item) {
+        _this.data.setValue(_this.item, true);
+      }
+      // make everything clean (if item is null everything is clean)
+      _this.data.markClean(_this.item, true);
     });
   };
+  // EquipmentEditorViewModel.prototype.closeValues = function() {
+  //   return [ //
+  //   ];
+  // };
 
   // ?????????
   //CUST  Customer
@@ -250,9 +267,6 @@ define('src/account/security/equipment.editor.vm', [
   //commented by reagan/junryl match upgrade type from crm db
   EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
     {
-      value: null,
-      text: 'null',
-    }, {
       value: 'CUST',
       text: 'Customer',
     }, {
@@ -262,7 +276,6 @@ define('src/account/security/equipment.editor.vm', [
       value: 'TECH',
       text: 'Technician',
     },
-
   ];
   /*EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
     {
@@ -306,6 +319,24 @@ define('src/account/security/equipment.editor.vm', [
     }, cb);
   }
 
+  function load_rep(cache, companyId, cb) {
+    if (!companyId || cache.reps.some(function(rep) {
+      return companyId === rep.CompanyID;
+    })) {
+      cb();
+      return;
+    }
+
+    // ?????
+    dataservice.qualify.salesrep.read({
+      id: companyId,
+    }, function(rep) {
+      // normalize data
+      rep.FullName = strings.format('{0} - {1}', rep.CompanyID, strings.joinTrimmed(' ', rep.FirstName, rep.LastName));
+      cache.reps.push(rep);
+    }, cb);
+  }
+
   function addEquipment(_this, cb) {
     var searchKey = _this.searchKey.getValue();
     console.log("accountId:" + _this.accountId);
@@ -326,11 +357,15 @@ define('src/account/security/equipment.editor.vm', [
       var data = resp.Value;
 
       if (_this.byPart) {
-        data.ItemDesc = searchKey; //@HACK: to set ItemDesc since is not returned.....
+        data.ItemSKU = searchKey; //@HACK: to set ItemSKU since is not returned.....
       }
 
       _this.data.setValue(data);
       _this.data.markClean(data, true);
+
+      // set result, but don't close
+      // needed incase cancel is pressed after this point
+      _this.layerResult = data;
     }, notify.error));
   }
 

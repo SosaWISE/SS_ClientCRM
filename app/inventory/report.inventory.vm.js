@@ -53,7 +53,7 @@ define('src/inventory/report.inventory.vm', [
 
     _this.data.LocationTypeCvm = new ComboViewModel({
       selectedValue: _this.data.LocationType,
-      nullable: true,
+      //nullable: true,
       fields: {
         value: 'LocationTypeID',
         text: 'LocationTypeName',
@@ -62,7 +62,7 @@ define('src/inventory/report.inventory.vm', [
 
     _this.data.LocationCvm = new ComboViewModel({
       selectedValue: _this.data.LocationData,
-      nullable: true,
+      //nullable: true,
       fields: {
         value: 'LocationID',
         text: 'LocationName',
@@ -79,17 +79,19 @@ define('src/inventory/report.inventory.vm', [
 
     });
 
-    //subscribe to change on value for product barcode, if not empty do the some scan barcode stuff
-    _this.data.ProductBarcodeID.subscribe(function(ProductBarcodeID, cb) {
+    _this.processBarcode = function(data, event, cb) {
 
-      if (ProductBarcodeID) {
+      if (_this.data.ProductBarcodeID().trim() !== "" && event.keyCode === 13) {
 
         if (_this.data.LocationType() === null || _this.data.LocationData() === null) {
+
           notify.warn('Please select location type and location.', null, 3);
+          _this.data.ProductBarcodeID(null);
           return;
+
         }
 
-        var barcodeId = ProductBarcodeID,
+        var barcodeId = _this.data.ProductBarcodeID(),
           itemList = _this.unScannedListGvm.list(),
           found = false,
           i,
@@ -129,6 +131,7 @@ define('src/inventory/report.inventory.vm', [
                 console.log("Unknown barcode:" + resp.Value.ItemDesc);
 
                 _this.scannedListGvm.list.push({
+                  ProductBarcodeId: resp.Value.ProductBarcodeId,
                   ItemDesc: resp.Value.ItemDesc
                 });
 
@@ -137,9 +140,6 @@ define('src/inventory/report.inventory.vm', [
               }
             }));
 
-            // _this.scannedListGvm.list.push({
-            //   Barcode: barcodeId
-            // });
           }
 
           //clear barcode field
@@ -148,12 +148,12 @@ define('src/inventory/report.inventory.vm', [
         }
 
       }
-    });
+    };
 
     //Print report
     _this.cmdPrintReport = ko.command(function(cb) {
 
-      //Bug: curently if the user close the print dialog using the "x" button of the pop up, no callback happens
+      //Bug: currently if the user close the print dialog using the "x" button of the pop up, no callback happens
 
       var toAppend,
         unScanItemList,
@@ -177,7 +177,7 @@ define('src/inventory/report.inventory.vm', [
 
       //loop all inventory items that are unscanned
       for (inc = 0; inc < unScanItemList.length; inc++) {
-        unScanItems += "<div class='items'>" + unScanItemList[inc].ItemDesc + "</div>";
+        unScanItems += "<div class='items'>" + unScanItemList[inc].ProductBarcodeId + "|" + unScanItemList[inc].ItemDesc + "</div>";
       }
 
       //Add break line for spacing
@@ -185,7 +185,7 @@ define('src/inventory/report.inventory.vm', [
 
       //now for unknown items            
       for (inc = 0; inc < scanItemList.length; inc++) {
-        scanItems += "<div class='items'>" + scanItemList[inc].ItemDesc + "</div>";
+        scanItems += "<div class='items'>" + scanItemList[inc].ProductBarcodeId + "|" + scanItemList[inc].ItemDesc + "</div>";
       }
 
       //Add break line for spacing
@@ -217,6 +217,7 @@ define('src/inventory/report.inventory.vm', [
     //events
     //
 
+
     //subscribe to change on LocationCvm and populate grid
     _this.data.LocationData.subscribe(function(location, cb) {
       if (location) {
@@ -241,14 +242,17 @@ define('src/inventory/report.inventory.vm', [
             notify.warn('No records found', null, 3);
           }
         }));
-
-
       }
     });
+
 
     //subscribe to change on LocationType and populate Location dropdown
     _this.data.LocationType.subscribe(function(locationType, cb) {
       if (locationType) {
+
+        //clear grids when there's a change of location type
+        _this.unScannedListGvm.list([]);
+        _this.scannedListGvm.list([]);
 
         dataservice.inventoryenginesrv.Locations.read({
           id: locationType
@@ -264,7 +268,6 @@ define('src/inventory/report.inventory.vm', [
             notify.warn('Location Type not found', null, 3);
           }
         }));
-
 
       }
     });

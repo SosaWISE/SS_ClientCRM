@@ -22,13 +22,16 @@ define('src/core/joiner.spec', [
       it('should have a `when` function', function() {
         expect(typeof(join.when)).toBe('function');
       });
+      it('should have a `after` function', function() {
+        expect(typeof(join.after)).toBe('function');
+      });
       it('should have a `create` function', function() {
         expect(typeof(join.create)).toBe('function');
       });
     });
 
     describe('`when`', function() {
-      it('should be called immediately if no `add` callbacks have been created', function() {
+      it('should be called immediately when there are no `add` callbacks', function() {
         var called = false;
         join.when(function() {
           called = true;
@@ -113,6 +116,39 @@ define('src/core/joiner.spec', [
         add1();
         add2();
         expect(called).toBe(true);
+      });
+    });
+
+    describe('`after`', function() {
+      it('should be called immediately when there are no `add` callbacks if there was an err', function() {
+        var called = false;
+        join.after(function() {
+          called = true;
+        });
+        expect(called).toBe(false);
+        join.add()('error', 'resp');
+        expect(called).toBe(true);
+
+        called = false;
+        join.after(function() {
+          called = true;
+        });
+        expect(called).toBe(true);
+      });
+      it('should NOT be called immediately if no `add` callbacks have been created', function() {
+        var called = false;
+        join.after(function() {
+          called = true;
+        });
+        expect(called).toBe(false);
+        join.add()(null, 'resp');
+        expect(called).toBe(true);
+
+        called = false;
+        join.after(function() {
+          called = true;
+        });
+        expect(called).toBe(false);
       });
     });
 

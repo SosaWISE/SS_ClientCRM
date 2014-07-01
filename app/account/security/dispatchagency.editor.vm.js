@@ -82,12 +82,6 @@ define('src/account/security/dispatchagency.editor.vm', [
     //
     // events
     //
-    // _this.cmdCancel = ko.command(function(cb) {
-    //   closeLayer(null);
-    //   cb();
-    // }, function(busy) {
-    //   return !busy && !_this.cmdSave.busy();
-    // });
     _this.cmdSave = ko.command(function(cb) {
       if (!_this.data.isValid()) {
         notify.warn(_this.data.errMsg(), null, 7);
@@ -98,13 +92,16 @@ define('src/account/security/dispatchagency.editor.vm', [
       _this.data.markClean(model, true);
       alert('currently i save nothing...');
       setTimeout(function() {
+        _this.layerResult = model;
+        _this.isDeleted = false;
+        closeLayer(_this);
         cb();
-        closeLayer(model);
       }, 5000);
       //@TODO: get correct api path and response format
-      // dataservice.boh.boh.save({}, null, utils.safeCallback(null, function(err, resp) {
-      //   cb();
-      //   closeLayer(resp.Value);
+      // dataservice.boh.boh.save({}, null, utils.safeCallback(cb, function(err, resp) {
+      //   _this.layerResult = resp.Value;
+      //   _this.isDeleted = false;
+      //   closeLayer(_this);
       // }, function(err) {
       //   notify.error(err);
       // }));
@@ -114,14 +111,16 @@ define('src/account/security/dispatchagency.editor.vm', [
     _this.cmdDelete = ko.command(function(cb) {
       alert('currently i delete nothing...');
       setTimeout(function() {
+        _this.layerResult = 1; //@HACK: to tell grid the edit occurred
+        _this.isDeleted = true;
+        closeLayer(_this);
         cb();
-        closeLayer(1, true);
       }, 5000);
       //@TODO: get correct api path and response format
-      // dataservice.boh.boh.del(_this.data.model.___ID, null, utils.safeCallback(null, function(err, resp) {
-      //   cb();
-      //   closeLayer(1, true);
-      //   closeLayer(resp.Value||1, true);
+      // dataservice.boh.boh.del(_this.data.model.___ID, null, utils.safeCallback(cb, function(err, resp) {
+      //   _this.layerResult =resp.Value || 1;
+      //   _this.isDeleted = true;
+      //   closeLayer(_this);
       // }, function(err) {
       //   notify.error(err);
       // }));
@@ -131,14 +130,6 @@ define('src/account/security/dispatchagency.editor.vm', [
     _this.busy = ko.computed(function() {
       return _this.cmdSave.busy() || _this.cmdDelete.busy();
     });
-
-    function closeLayer(result, deleted) {
-      //@NOTE: command callbacks should be called before calling closeLayer
-      if (_this.layer) {
-        _this.layer.close(result, deleted);
-      }
-    }
-
 
     //
     _this.active.subscribe(function(active) {
@@ -155,12 +146,21 @@ define('src/account/security/dispatchagency.editor.vm', [
   DispatchAgencyEditorViewModel.prototype.width = 600;
   DispatchAgencyEditorViewModel.prototype.height = 'auto';
 
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  DispatchAgencyEditorViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult, _this.isDeleted];
+  };
   DispatchAgencyEditorViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
       msg;
-    if (_this.cmdSave.busy()) {
+    if (_this.cmdSave.busy() && !_this.layerResult) {
       msg = 'Please wait for save to finish.';
-    } else if (_this.cmdDelete.busy()) {
+    } else if (_this.cmdDelete.busy() && !_this.layerResult) {
       msg = 'Please wait for delete to finish.';
     }
     return msg;

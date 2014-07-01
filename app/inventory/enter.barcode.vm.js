@@ -51,19 +51,20 @@ define('src/inventory/enter.barcode.vm', [
     _this.barcodeCount(0);
 
     //Call api for adding barcodes
-    //_this.processBarcode = function(cb) {
-    _this.data.productBarcodeID.subscribe(function(barcodeId, cb) {
+    _this.processBarcode = function(data, event, cb) {
+      //_this.data.productBarcodeID.subscribe(function(barcodeId, cb) {
 
-      //Check if barcode is not empty
-      if (barcodeId) {
+      //Check if barcode is not empty and enter key is hit
+      //if (barcodeId) {        
+      if (_this.data.productBarcodeID().trim() && event.keyCode === 13) {
 
         //Retrieve current barcode counts
         var count = parseInt(_this.barcodeCount()) + 1;
 
         //Set of parameters used on api call
         param = {
-          //ProductBarcodeID: _this.data.productBarcodeID(),
-          ProductBarcodeID: barcodeId,
+          ProductBarcodeID: _this.data.productBarcodeID(),
+          //ProductBarcodeID: barcodeId,
           PurchaseOrderItemId: _this.purchaseOrderItemID
         };
 
@@ -82,7 +83,7 @@ define('src/inventory/enter.barcode.vm', [
 
               _this.barcodeCount(count.toString());
 
-              //clear barcode field            
+              //clear barcode field
               _this.data.productBarcodeID.setValue(null);
 
             } else {
@@ -92,12 +93,12 @@ define('src/inventory/enter.barcode.vm', [
           }, utils.no_op));
 
         } else {
-          notify.warn('Entered barcode count must not exceed received count.');
+          notify.warn('Entered barcode count must not exceed received count.', null, 3);
         }
 
       }
 
-    });
+    };
 
 
     _this.repResult = ko.observable(null);
@@ -106,9 +107,8 @@ define('src/inventory/enter.barcode.vm', [
     //
 
     _this.clickClose = function() {
-      if (_this.layer) {
-        _this.layer.close(_this.repResult());
-      }
+      _this.layerResult = null;
+      closeLayer(_this);
     };
 
 
@@ -127,6 +127,17 @@ define('src/inventory/enter.barcode.vm', [
   EnterBarcodeViewModel.prototype.viewTmpl = 'tmpl-inventory-enter-barcode';
   EnterBarcodeViewModel.prototype.width = 400;
   EnterBarcodeViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  EnterBarcodeViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
+
 
   return EnterBarcodeViewModel;
 });

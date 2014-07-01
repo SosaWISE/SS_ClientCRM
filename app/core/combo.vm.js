@@ -96,8 +96,8 @@ define('src/core/combo.vm', [
         //@NOTE: this will call this function again
         // and set `selected` to `noItemSelected` or it will select the first item (if not nullable)
         _this.selectedValue(null);
-      } else if (!_this.nullable && _this.list.peek().length) {
-        _this.selectFirst();
+        // } else if (!_this.nullable && _this.list.peek().length) {
+        //   _this.selectFirst();
       } else {
         _this.selected(_this.noItemSelected);
         _this.deactivateCurrent();

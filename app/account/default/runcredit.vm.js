@@ -152,13 +152,12 @@ define('src/account/default/runcredit.vm', [
   };
 
   function RunCreditViewModel(options) {
-    var _this = this,
-      customerModel;
+    var _this = this;
     RunCreditViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, ['addressId']);
     _this.mixinLoad();
 
-    _this.focus = ko.observable(false);
+    _this.focusFirst = ko.observable(false);
     _this.creditResult = ko.observable(null);
     _this.loaded = ko.observable(false);
     _this.override = ko.observable(false);
@@ -191,39 +190,15 @@ define('src/account/default/runcredit.vm', [
       }
     });
 
-    // /////TESTING//////////////////////
-    // _this.data.FirstName('Bob');
-    // _this.data.LastName('Bobbins');
-    // // _this.data.DOB('1-1-1');
-    // _this.data.DOB(new Date(Date.UTC(2001, 0, 1)));
-    // _this.data.Email('Bob.Bobbins@some.com');
-    // /////TESTING//////////////////////
-
     //
     // events
     //
     _this.cmdAccept = ko.command(function(cb) {
-      if (_this.layer) {
-        var customerResult = {
-            SSN: customerModel.SSN,
-            DOB: customerModel.DOB,
-            Email: customerModel.Email,
-            CustomerName: strings.joinTrimmed(' ', customerModel.Salutation, customerModel.FirstName, customerModel.MiddleName, customerModel.LastName, customerModel.Suffix),
-          },
-          tmpCreditResult;
-
-        //@HACK: to allow closing
-        tmpCreditResult = _this.creditResult();
-        _this.creditResult(null);
-
-        _this.layer.close(customerResult, tmpCreditResult);
-
-        // undo hack
-        _this.creditResult(tmpCreditResult);
-      }
+      closeLayer(_this);
       cb();
     }, function(busy) {
-      return !busy && _this.creditResult() && _this.creditResult().IsHit;
+      var creditResult = _this.creditResult();
+      return !busy && creditResult && creditResult.IsHit;
     });
     _this.cmdRun = ko.command(function(cb) {
       _this.data.validate();
@@ -233,35 +208,53 @@ define('src/account/default/runcredit.vm', [
         return cb();
       }
 
+      var model = _this.data.getValue();
+      // store now since we want to use this even if escape key is pressed...
+      _this.customerResult = {
+        SSN: model.SSN,
+        DOB: model.DOB,
+        Email: model.Email,
+        CustomerName: strings.joinTrimmed(' ', model.Salutation, model.FirstName, model.MiddleName, model.LastName, model.Suffix),
+      };
       _this.loaded(false);
-      customerModel = _this.data.getValue();
-      _this.data.markClean(customerModel, true);
-      dataservice.qualify.runcredit.post(null, customerModel, null, function(err, resp) {
-        if (err) {
-          notify.error(err, 10);
-          return cb();
-        }
-        _this.creditResult(resp.Value);
+      dataservice.qualify.runcredit.post(null, model, null, utils.safeCallback(cb, function(err, resp) {
         _this.loaded(true);
-        cb();
-      });
+        _this.data.markClean(model, true);
+        _this.creditResult(resp.Value);
+      }, function(err) {
+        notify.error(err, 10);
+      }));
     }, function(busy) {
-      return !busy && (!_this.creditResult() || !_this.creditResult().IsHit);
+      var creditResult = _this.creditResult();
+      return !busy && (!creditResult || !creditResult.IsHit);
     });
-
-    _this.loading = _this.cmdRun.busy;
   }
   utils.inherits(RunCreditViewModel, BaseViewModel);
   RunCreditViewModel.prototype.viewTmpl = 'tmpl-acct-default-runcredit';
   RunCreditViewModel.prototype.width = 550;
   RunCreditViewModel.prototype.height = 'auto';
 
-  RunCreditViewModel.prototype.closeMsg = function() { // overrides base
-    var _this = this;
-    if (_this.creditResult() && _this.creditResult().IsHit) {
-      return 'Close using OK button';
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
     }
-    return null;
+  }
+  RunCreditViewModel.prototype.getResults = function() {
+    var _this = this,
+      creditResult = _this.creditResult.peek();
+    if (creditResult && creditResult.IsHit) {
+      return [_this.customerResult, creditResult];
+    } else {
+      return [];
+    }
+  };
+  RunCreditViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdRun.busy()) {
+      msg = 'Please wait for credit check to finish.';
+    }
+    return msg;
   };
 
   RunCreditViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
@@ -269,7 +262,7 @@ define('src/account/default/runcredit.vm', [
 
     // this timeout makes it possible to focus the input
     setTimeout(function() {
-      _this.focus(true);
+      _this.focusFirst(true);
     }, 100);
   };
 

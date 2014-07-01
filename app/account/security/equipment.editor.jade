@@ -1,7 +1,7 @@
 div(class="equipment-editor")
   div(data-bind="spinner:loading,spinner-rgb:'white'")
 
-  div(data-bind="if:!hasItem()")
+  div(data-bind="if:!hasItem()&&!loading()")
     div(class="line-top")
       ul(class="edit-form")
         li

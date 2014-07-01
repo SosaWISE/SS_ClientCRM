@@ -5,7 +5,9 @@ define('src/inventory/transfer.inventory.vm', [
   'src/core/utils',
   'src/core/base.vm',
   'src/core/controller.vm',
+  'src/core/layers.vm',
   'src/core/joiner',
+  'src/inventory/barcode.not.found.vm',
   'ko',
   'src/ukov',
 ], function(
@@ -15,7 +17,9 @@ define('src/inventory/transfer.inventory.vm', [
   utils,
   BaseViewModel,
   ControllerViewModel,
+  LayersViewModel,
   joiner,
+  BarcodeErrorViewModel,
   ko,
   ukov
 ) {
@@ -64,36 +68,52 @@ define('src/inventory/transfer.inventory.vm', [
       },
     });
 
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
+    });
+
     //events
     //
 
     //Call api for adding barcodes
     _this.processBarcode = function(data, event) {
 
-      //when enter key is hit, call the APIs
-      if (event.keyCode === 13) {
+      //Process barcode only if transfer location is not empty.      
+      if (_this.data.TransferLocation()) {
 
-        var join = joiner(),
-          param1 = {},
-          param2 = {};
+        //when enter key is hit and barcode is not empty, call the APIs
+        if (_this.data.productBarcodeID().trim() !== "" && event.keyCode === 13) {
+
+          //set location to NA
+          _this.newLocation('NA');
+          _this.prevLocation('NA');
+
+          var join = joiner(),
+            param1 = {},
+            param2 = {};
+
+          //set parameters
+          param1 = {
+            id: _this.data.productBarcodeID(),
+            link: 'PBID'
+          };
+
+          param2 = {
+            TransferToWarehouseSiteId: _this.data.TransferLocation(),
+            ProductBarcodeId: _this.data.productBarcodeID()
+          };
+
+          //Load product barcode
+          load_productBarcode(param1, _this.data.TransferLocation(), _this, join.add());
 
 
-        //set parameters
-        param1 = {
-          id: _this.data.productBarcodeID(),
-          link: 'PBID'
-        };
+        } //end of keycode event
 
-        param2 = {
-          TransferToWarehouseSiteId: _this.data.TransferLocation(),
-          ProductBarcodeId: _this.data.productBarcodeID()
-        };
-
-        //Load product barcode
-        load_productBarcode(param1, _this.data.TransferLocation(), _this, join.add());
-
-
+      } else {
+        notify.warn('Please select transfer location.', null, 3);
+        _this.data.productBarcodeID(null);
       }
+
     };
 
     _this.active.subscribe(function(active) {
@@ -178,9 +198,21 @@ define('src/inventory/transfer.inventory.vm', [
         post_productBarcodeTracking(param, _this, cb);
 
       } else {
-        notify.error({
-          Message: 'Barcode not found.'
+        // notify.error({
+        //   Message: 'Barcode not found.'
+        // }, null, 3);
+        //notify.warn('Barcode not found.', null, 3);
+
+        //Use this template instead of notify for this error message
+        _this.layersVm.show(new BarcodeErrorViewModel({
+          title: 'Error',
+        }), function onClose(result) {
+          if (!result) {
+            return;
+          }
         });
+
+        _this.data.productBarcodeID(null);
 
       }
     }));
@@ -215,6 +247,8 @@ define('src/inventory/transfer.inventory.vm', [
 
         _this.newLocation(resp.Value.Location);
 
+        //clear barcode field
+        _this.data.productBarcodeID(null);
 
       } else {
         notify.error(err);
