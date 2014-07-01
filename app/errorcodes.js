@@ -7,6 +7,9 @@ define('src/errorcodes', [], function() {
 
     '0': 'Info',
 
+    '70110': 'Item was not found',
+    '70120': 'Duplicate item found',
+
     '990000': 'Connection Refused',
     '990001': 'Error processing response',
     '990002': 'Request Error',

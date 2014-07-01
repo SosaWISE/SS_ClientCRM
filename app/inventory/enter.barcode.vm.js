@@ -55,11 +55,11 @@ define('src/inventory/enter.barcode.vm', [
       //_this.data.productBarcodeID.subscribe(function(barcodeId, cb) {
 
       //Check if barcode is not empty and enter key is hit
-      //if (barcodeId) {        
+      //if (barcodeId) {
       if (_this.data.productBarcodeID().trim() && event.keyCode === 13) {
 
         //Retrieve current barcode counts
-        var count = parseInt(_this.barcodeCount()) + 1;
+        var count = parseInt(_this.barcodeCount(), 10) + 1;
 
         //Set of parameters used on api call
         param = {
@@ -68,36 +68,21 @@ define('src/inventory/enter.barcode.vm', [
           PurchaseOrderItemId: _this.purchaseOrderItemID
         };
 
-        if (parseInt(_this.receiveCount) >= count) {
+        if (parseInt(_this.receiveCount, 10) >= count) {
           //This is the api for adding barcodes
-          dataservice.inventoryenginesrv.ProductBarcode.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
-
-            if (err) {
-              cb(err);
-              return;
-            }
-
-            if (resp.Code === 0) {
-
-              //Increment entered barcodes count
-
-              _this.barcodeCount(count.toString());
-
-              //clear barcode field
-              _this.data.productBarcodeID.setValue(null);
-
-            } else {
-              notify.warn('Error adding barcode...', null, 3);
-            }
-
-          }, utils.no_op));
+          dataservice.inventoryenginesrv.ProductBarcode.post(null, param, null, utils.safeCallback(cb, function( /*err, resp*/ ) {
+            //Increment entered barcodes count
+            _this.barcodeCount(count.toString());
+            //clear barcode field
+            _this.data.productBarcodeID.setValue(null);
+          }, function(err) {
+            notify.error(err);
+          }));
 
         } else {
           notify.warn('Entered barcode count must not exceed received count.', null, 3);
         }
-
       }
-
     };
 
 

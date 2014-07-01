@@ -60,7 +60,7 @@ define('src/inventory/inventory.gvm', [
           field: 'ItemDesc',
         }, {
           id: 'WithBarcodeCount',
-          name: 'Received',
+          name: 'Enter Qty Received',
           field: 'WithBarcodeCount',
           editor: Slick.Editors.Text,
           validator: numberFieldValidator,
