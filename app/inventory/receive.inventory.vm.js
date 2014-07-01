@@ -47,7 +47,7 @@ define('src/inventory/receive.inventory.vm', [
   schema = {
     _model: true,
     PurchaseOrderID: {
-      converter: ukov.converters.number(0),
+      //converter: ukov.converters.number(0),
       validators: [
         ukov.validators.isRequired('PurchaseOrder ID is required')
       ]
@@ -90,7 +90,7 @@ define('src/inventory/receive.inventory.vm', [
         //parameters for packingslipitems
         var param = {
           PackingSlipId: _this.PackingSlipID(),
-          ProductSkwId: part.ProductSkwId,
+          //ProductSkwId: part.ProductSkwId,
           ItemId: part.ItemId,
           Quantity: part.Quantity
         };
@@ -180,7 +180,8 @@ define('src/inventory/receive.inventory.vm', [
 
     //Getting PurchaseOrderID api call
     dataservice.inventoryenginesrv.PurchaseOrder.read({
-      id: iePurchaseOrder.PurchaseOrderID
+      id: iePurchaseOrder.PurchaseOrderID,
+      link: 'gppo'
     }, null, utils.safeCallback(join.add(), function(err, resp) {
 
       if (resp.Code === 0) {
@@ -195,7 +196,7 @@ define('src/inventory/receive.inventory.vm', [
         };
 
         //Populate PurchaseOrderItems
-        loadPurchaseOrderItems(vm, join.add());
+        loadPurchaseOrderItems(vm, purchaseOrder.PurchaseOrderID, join.add());
 
         //function that calls packing slip api
         loadPackingSlipInfo(param, vm, join.add());
@@ -211,11 +212,11 @@ define('src/inventory/receive.inventory.vm', [
   };
 
 
-  function loadPurchaseOrderItems(vm, cb) {
-    var iePurchaseOrder = vm.data.getValue();
+  function loadPurchaseOrderItems(vm, poid, cb) {
+    //var iePurchaseOrder = vm.data.getValue();
     //Purchange Order Items
     dataservice.inventoryenginesrv.PurchaseOrderItems.read({
-      id: iePurchaseOrder.PurchaseOrderID
+      id: poid
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Code === 0) {
 
@@ -301,7 +302,7 @@ define('src/inventory/receive.inventory.vm', [
 
     packingSlipNumberUI = vm.data.PackingSlipNumber();
 
-    //alert(packingSlipNumberUI);   
+    //alert(packingSlipNumberUI);
 
     param2 = {
       PurchaseOrderId: purchaseOrderID,

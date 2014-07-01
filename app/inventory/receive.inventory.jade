@@ -8,10 +8,10 @@ table(class="fh-wrap")
             ul(class="header_ul")
               li
                 label PO#
-              li  
-                input(type="text" placeholder="" data-bind="ukov:data.PurchaseOrderID,value:data.PurchaseOrderID,valueUpdate:'keyup',select:focusFirst, event: { keyup: resetPage}")
-              li  
-                button(type="button" class="btn-inventory"  data-bind="cmd:cmdSearch") Submit    
+              li
+                input(type="text" placeholder="" data-bind="value:data.PurchaseOrderID,valueUpdate:'keyup',select:focusFirst, event: { keyup: resetPage}")
+              li
+                button(type="button" class="btn-inventory"  data-bind="cmd:cmdSearch") Submit
           div(class="header_right")
             ul(class="header_ul")
               li
@@ -21,6 +21,6 @@ table(class="fh-wrap")
   tr
     td(class="fh-body")
       div(class="fh-contents")
-        div(class="grid-wrap")          
+        div(class="grid-wrap")
           div(class="slickgrid", style="background:white;margin:10px;color:black;", data-bind="slickgrid:inventoryListGvm")
           div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

@@ -43,9 +43,9 @@ define('src/inventory/inventory.gvm', [
 
       columns: [ //
         {
-          id: 'ProductSkwId',
+          id: 'ProductSKU',
           name: 'SKU',
-          field: 'ProductSkwId',
+          field: 'ProductSKU',
         }, {
           id: 'Quantity',
           name: 'Quantity',
