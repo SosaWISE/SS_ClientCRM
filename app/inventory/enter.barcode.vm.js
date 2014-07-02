@@ -58,30 +58,71 @@ define('src/inventory/enter.barcode.vm', [
       //if (barcodeId) {
       if (_this.data.productBarcodeID().trim() && event.keyCode === 13) {
 
-        //Retrieve current barcode counts
-        var count = parseInt(_this.barcodeCount(), 10) + 1;
-
-        //Set of parameters used on api call
-        param = {
-          ProductBarcodeID: _this.data.productBarcodeID(),
-          //ProductBarcodeID: barcodeId,
-          PurchaseOrderItemId: _this.purchaseOrderItemID
+        var param2 = {
+          id: _this.data.productBarcodeID().trim(),
+          link: 'PBID'
         };
 
-        if (parseInt(_this.receiveCount, 10) >= count) {
-          //This is the api for adding barcodes
-          dataservice.inventoryenginesrv.ProductBarcode.post(null, param, null, utils.safeCallback(cb, function( /*err, resp*/ ) {
-            //Increment entered barcodes count
-            _this.barcodeCount(count.toString());
-            //clear barcode field
-            _this.data.productBarcodeID.setValue(null);
-          }, function(err) {
-            notify.error(err);
-          }));
+        //Check if barcode exists
+        dataservice.inventoryenginesrv.ProductBarcode.read(param2, null, utils.safeCallback(cb, function(err, resp) {
 
-        } else {
-          notify.warn('Entered barcode count must not exceed received count.', null, 3);
-        }
+          if (resp.Code === 0) {
+            notify.warn('Barcode already in use.', null, 3);
+            return;
+          } else {
+            //Retrieve current barcode counts
+            var count = parseInt(_this.barcodeCount(), 10) + 1;
+
+            //Set of parameters used on api call
+            param = {
+              ProductBarcodeID: _this.data.productBarcodeID(),
+              //ProductBarcodeID: barcodeId,
+              PurchaseOrderItemId: _this.purchaseOrderItemID
+            };
+
+            if (parseInt(_this.receiveCount, 10) >= count) {
+              //This is the api for adding barcodes
+              dataservice.inventoryenginesrv.ProductBarcode.post(null, param, null, utils.safeCallback(cb, function( /*err, resp*/ ) {
+                //Increment entered barcodes count
+                _this.barcodeCount(count.toString());
+                //clear barcode field
+                _this.data.productBarcodeID.setValue(null);
+              }, function(err) {
+                notify.error(err);
+              }));
+            } else {
+              notify.warn('Entered barcode count must not exceed received count.', null, 3);
+            }
+          }
+
+        }));
+
+        // //Retrieve current barcode counts
+        // var count = parseInt(_this.barcodeCount(), 10) + 1;
+
+        // //Set of parameters used on api call
+        // param = {
+        //   ProductBarcodeID: _this.data.productBarcodeID(),
+        //   //ProductBarcodeID: barcodeId,
+        //   PurchaseOrderItemId: _this.purchaseOrderItemID
+        // };
+
+        // if (parseInt(_this.receiveCount, 10) >= count) {
+        //   //This is the api for adding barcodes
+        //   dataservice.inventoryenginesrv.ProductBarcode.post(null, param, null, utils.safeCallback(cb, function( /*err, resp*/ ) {
+        //     //Increment entered barcodes count
+        //     _this.barcodeCount(count.toString());
+        //     //clear barcode field
+        //     _this.data.productBarcodeID.setValue(null);
+        //   }, function(err) {
+        //     notify.error(err);
+        //   }));
+
+        // } else {
+        //   notify.warn('Entered barcode count must not exceed received count.', null, 3);
+        // }
+
+
       }
     };
 

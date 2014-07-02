@@ -3,6 +3,9 @@ ul(class="edit-form")
     div(class="header_left")
       ul(class="header_ul" style="color: white;")
         li
+          span(class="label") Location Type
+          div(data-bind="cvm:data.LocationTypeCvm")        
+        li
           span(class="label") Transfer To
           div(data-bind="cvm:data.TransferLocationCvm")         
         li
