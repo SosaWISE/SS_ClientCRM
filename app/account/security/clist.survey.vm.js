@@ -213,7 +213,7 @@ define('src/account/security/clist.survey.vm', [
         ContractTerms: {
           ContractLength: convertToContractLength(invoiceInfo.ContractTemplateId),
           BillingMethod: convertToBillingMethod(salesInfo.PaymentTypeId),
-          PaymentType: salesInfo.PaymentTypeId, //@TODO: add this token
+          PaymentType: salesInfo.PaymentTypeId,
           MonthlyMonitoringFee: invoiceInfo.MonthlyMonitoringRateActual,
           TotalActivationFee: invoiceInfo.ActivationFeeActual,
           ActivationFeePaymentMethod: convertToActivationFeePaymentMethod(invoiceInfo.ActivationFeeActual, invoiceInfo.Over3Months),

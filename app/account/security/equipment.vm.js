@@ -77,7 +77,6 @@ define('src/account/security/equipment.vm', [
         _this.accountDetails = {};
         _this.cache.reps = [];
       } else {
-        val.MonitoringStationOsId = val.MonitoringStationOsId || 'MI_DICE'; //@HACK: for null value
         _this.accountDetails = val;
         _this.cache.reps = [ //
           {
@@ -89,6 +88,7 @@ define('src/account/security/equipment.vm', [
           },
         ];
       }
+      _this.accountDetails.MonitoringStationOsId = _this.accountDetails.MonitoringStationOsId || 'MI_DICE'; //@HACK: for null value
     }, join.add());
     load_equipment(_this.gvm, _this.accountId, join.add());
   };

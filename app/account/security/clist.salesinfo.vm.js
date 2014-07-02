@@ -117,7 +117,7 @@ define('src/account/security/clist.salesinfo.vm', [
     IsTakeOver: {},
     IsMoni: {
       validators: [
-        ukov.validators.isRequired('Current Monitoring Station is Required'),
+        // ukov.validators.isRequired('Current Monitoring Station is Required'),
       ],
     },
 
