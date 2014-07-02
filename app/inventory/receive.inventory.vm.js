@@ -97,52 +97,51 @@ define('src/inventory/receive.inventory.vm', [
           Quantity: part.Quantity
         };
 
-        ///if (typeof _this.PackingSlipID() === "undefined") {
-        //do not call packing slip items api
-        //} else {
-        //add to packing slip items
-        //addPackingSlipItems(param, cb);
-        //}
+        //If Enter Qty Received greater than zero, proceed to entering barcode screen        
+        if (parseInt(part.WithBarcodeCount, 10) > 0) {
 
-        //Add to packing slip items
-        addPackingSlipItems(param, cb);
+          //Add to packing slip items
+          addPackingSlipItems(param, cb);
 
+          //Go to Enter Barcodes screen
+          _this.layersVm.show(new EnterBarcodeViewModel({
+            title: 'Enter Barcodes',
+            poNumber: part.PurchaseOrderId,
+            packingSlipID: _this.data.PackingSlipNumber,
+            count: part.WithBarcodeCount,
+            enteredBarcode: 0,
+            purchaseOrderItemID: part.PurchaseOrderItemID,
+          }), function onClose(result, cb) {
+            if (!result) {
 
-        //Go to Enter Barcodes screen
-        _this.layersVm.show(new EnterBarcodeViewModel({
-          title: 'Enter Barcodes',
-          poNumber: part.PurchaseOrderId,
-          packingSlipID: _this.data.PackingSlipNumber,
-          count: part.WithBarcodeCount,
-          enteredBarcode: 0,
-          purchaseOrderItemID: part.PurchaseOrderItemID,
-        }), function onClose(result, cb) {
-          if (!result) {
+              //Once done adding barcode, refresh grid with latest data - still need to simplify
+              var updatedList = _this.inventoryListGvm.list();
 
-            //Once done adding barcode, refresh grid with latest data - still need to simplify
-            var updatedList = _this.inventoryListGvm.list();
+              dataservice.inventoryenginesrv.PurchaseOrderItems.read({
+                id: updatedList[0].PurchaseOrderId
+              }, null, utils.safeCallback(cb, function(err, resp) {
+                if (resp.Code === 0) {
 
-            dataservice.inventoryenginesrv.PurchaseOrderItems.read({
-              id: updatedList[0].PurchaseOrderId
-            }, null, utils.safeCallback(cb, function(err, resp) {
-              if (resp.Code === 0) {
+                  //Empty grid before inserting new data
+                  _this.inventoryListGvm.list([]);
 
-                //Empty grid before inserting new data
-                _this.inventoryListGvm.list([]);
+                  //Update inventoryListGvm grid
+                  for (var x = 0; x < resp.Value.length; x++) {
+                    _this.inventoryListGvm.list.push(resp.Value[x]);
+                  }
 
-                //Update inventoryListGvm grid
-                for (var x = 0; x < resp.Value.length; x++) {
-                  _this.inventoryListGvm.list.push(resp.Value[x]);
                 }
 
-              }
-
-            }));
+              }));
 
 
-            return;
-          }
-        });
+              return;
+            }
+          });
+
+        } else {
+          notify.warn('Please input quantity received.', null, 3);
+        }
 
       },
 
