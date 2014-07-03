@@ -73,7 +73,7 @@ define('src/account/security/clist.salesinfo.vm', [
     ActivationFeeItemId: {},
     // AlarmComPackageId: {},
     CellularTypeId: {},
-    ContractTemplateId: {},
+    // ContractTemplateId: {},
     InvoiceID: {},
     MonthlyMonitoringRate: {},
     MonthlyMonitoringRateActual: {
@@ -144,7 +144,7 @@ define('src/account/security/clist.salesinfo.vm', [
       ],
     },
     // ContractLength: {},
-    // ContractTemplateId: {},
+    ContractTemplateId: {},
   };
 
   function CListSalesInfoViewModel(options) {

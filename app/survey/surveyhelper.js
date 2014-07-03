@@ -12,9 +12,9 @@ define('src/survey/surveyhelper', [
   'use strict';
 
   return {
-    formatQuestion: function(textFormat, tokenValues, missingParamText) {
+    formatQuestion: function(textFormat, tokenValues, missingParamFormat) {
       var html = markdown.toHTML(textFormat);
-      return strings.aformat(html, tokenValues, missingParamText);
+      return strings.aformat(html, tokenValues, missingParamFormat);
     },
 
     questionsSorter: function(a, b) {

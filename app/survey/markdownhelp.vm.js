@@ -27,7 +27,7 @@ define('src/survey/markdownhelp.vm', [
           _this.inputText(), [
             '123.4567890',
           ],
-          '[missing token value]'
+          '[missing token value for index {0}]'
         );
       }
     });

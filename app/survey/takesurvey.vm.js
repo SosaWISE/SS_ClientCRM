@@ -297,7 +297,7 @@ define('src/survey/takesurvey.vm', [
       questionHtmlMap[translation.QuestionId] = surveyhelper.formatQuestion(
         translation.TextFormat,
         questionTokenValuesMap[translation.QuestionId],
-        '[missing token value]'
+        '[missing token value for index {0}]'
       );
     });
     if (resultAnswers) {

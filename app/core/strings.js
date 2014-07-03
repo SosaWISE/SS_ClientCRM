@@ -30,10 +30,10 @@ define('src/core/strings', [
     // since we want zero-based indexes and speed we'll choose the last one
     return strings.aformat(format, arrays.argsToArray(arguments, 1));
   };
-  strings.aformat = function(format, argsArray, missingParamText) {
+  strings.aformat = function(format, argsArray, missingParamFormat) {
     var decorators = strings.decorators;
     format = format || '';
-    missingParamText = missingParamText || '';
+    missingParamFormat = missingParamFormat || '';
     return format.replace(formatRegex, function(item, paramIndex, formatName) {
       formatName = formatName;
       var val = argsArray[paramIndex];
@@ -44,7 +44,7 @@ define('src/core/strings', [
           return val;
         }
       } else {
-        return missingParamText;
+        return strings.aformat(missingParamFormat, [paramIndex]);
       }
     });
   };

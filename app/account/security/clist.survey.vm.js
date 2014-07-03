@@ -178,6 +178,9 @@ define('src/account/security/clist.survey.vm', [
         cb(err);
         return;
       }
+      // sometimes details can be null...
+      details = details || {};
+
       var dataContext;
       dataContext = {
         CompanyName: 'Nexsense',
@@ -211,7 +214,7 @@ define('src/account/security/clist.survey.vm', [
           // DslSeizure: details.DslSeizure,
         },
         ContractTerms: {
-          ContractLength: convertToContractLength(invoiceInfo.ContractTemplateId),
+          ContractLength: salesInfo.ContractLength,
           BillingMethod: convertToBillingMethod(salesInfo.PaymentTypeId),
           PaymentType: salesInfo.PaymentTypeId,
           MonthlyMonitoringFee: invoiceInfo.MonthlyMonitoringRateActual,
@@ -229,16 +232,6 @@ define('src/account/security/clist.survey.vm', [
       cb(null, dataContext);
     });
   };
-
-  function convertToContractLength(contractTemplateId) {
-    switch (contractTemplateId) {
-      case 1:
-        return 36;
-      default:
-      case 2:
-        return 60;
-    }
-  }
 
   function convertToBillingMethod(paymentTypeId) {
     var result = 0; // start with Unknown billing method
