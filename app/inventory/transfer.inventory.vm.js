@@ -85,39 +85,49 @@ define('src/inventory/transfer.inventory.vm', [
       //Process barcode only if transfer location is not empty.      
       if (_this.data.TransferLocation()) {
 
-        //when enter key is hit and barcode is not empty, call the APIs
-        if (_this.data.productBarcodeID().trim() !== "" && event.keyCode === 13) {
+        //when enter key is hit and barcode is not empty, call the APIs        
+        if (_this.data.productBarcodeID() !== null && _this.data.productBarcodeID().trim() !== "") {
 
-          //set location to NA
-          _this.newLocation('NA');
-          _this.prevLocation('NA');
+          if (event.keyCode === 13 || event.keyCode === 9) {
 
-          var join = joiner(),
-            param1 = {},
-            param2 = {};
+            //set location to NA
+            _this.newLocation('NA');
+            _this.prevLocation('NA');
 
-          //set parameters
-          param1 = {
-            id: _this.data.productBarcodeID(),
-            link: 'PBID'
-          };
+            var join = joiner(),
+              param1 = {},
+              param2 = {};
 
-          param2 = {
-            TransferToWarehouseSiteId: _this.data.TransferLocation(),
-            ProductBarcodeId: _this.data.productBarcodeID()
-          };
+            //set parameters
+            param1 = {
+              id: _this.data.productBarcodeID(),
+              link: 'PBID'
+            };
 
-          //Load product barcode
-          load_productBarcode(param1, _this.data.TransferLocation(), _this.data.LocationType, _this, join.add());
+            param2 = {
+              TransferToWarehouseSiteId: _this.data.TransferLocation(),
+              ProductBarcodeId: _this.data.productBarcodeID()
+            };
 
+            //Load product barcode
+            load_productBarcode(param1, _this.data.TransferLocation(), _this.data.LocationType, _this, join.add());
 
-        } //end of keycode event
+            //if keycode equals tab, return false
+            if (event.keyCode === 9) {
+              return false;
+            }
+
+          } //end of keycode event
+
+        } //end checking if barcode is null/not
 
       } else {
         notify.warn('Please select transfer location.', null, 3);
         _this.data.productBarcodeID(null);
       }
 
+      //default return true
+      return true;
     };
 
     //subscribe to change on LocationType and populate Location dropdown

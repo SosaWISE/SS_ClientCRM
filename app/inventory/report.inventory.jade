@@ -14,7 +14,7 @@ table(class="fh-wrap")
               li
                 span(class="label") Enter Barcode           
                 //-input(type="text")
-                input(type="text" placeholder="" data-bind="ukov:data.ProductBarcodeID, value:data.ProductBarcodeID,valueUpdate:'keyup',select:focusFirst, event: { keyup: processBarcode}")
+                input(type="text" placeholder="" data-bind="ukov:data.ProductBarcodeID, value:data.ProductBarcodeID,valueUpdate:'afterkeydown',select:focusFirst, event: { keydown: processBarcode}")
               //-li
                 //-input(type="submit" class="btn-bg")
   tr    

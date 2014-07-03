@@ -81,73 +81,85 @@ define('src/inventory/report.inventory.vm', [
 
     _this.processBarcode = function(data, event, cb) {
 
-      if (_this.data.ProductBarcodeID().trim() !== "" && event.keyCode === 13) {
+      if (_this.data.ProductBarcodeID() !== null && _this.data.ProductBarcodeID().trim() !== "") {
 
-        if (_this.data.LocationType() === null || _this.data.LocationData() === null) {
+        if (event.keyCode === 13 || event.keyCode === 9) {
 
-          notify.warn('Please select location type and location.', null, 3);
-          _this.data.ProductBarcodeID(null);
-          return;
+          if (_this.data.LocationType() === null || _this.data.LocationData() === null) {
 
-        }
+            notify.warn('Please select location type and location.', null, 3);
+            _this.data.ProductBarcodeID(null);
+            return;
 
-        var barcodeId = _this.data.ProductBarcodeID(),
-          itemList = _this.unScannedListGvm.list(),
-          found = false,
-          i,
-          index;
-
-        console.log(JSON.stringify(itemList));
-
-        if (barcodeId !== null && barcodeId !== "") {
-
-          //Check if barcode exist on the list, if found, remove from list.
-          for (i = 0; i < itemList.length; i++) {
-
-            if (itemList[i].ProductBarcodeId === barcodeId) {
-
-              found = true;
-              index = i;
-              break;
-
-            } else {
-              console.log("Not Found");
-            }
           }
 
-          if (found) {
-            _this.unScannedListGvm.deleteRow(index);
-          } else {
-            //If barcode scanned is not found on inventory list, add to the right grid.
+          var barcodeId = _this.data.ProductBarcodeID(),
+            itemList = _this.unScannedListGvm.list(),
+            found = false,
+            i,
+            index;
 
-            dataservice.inventoryenginesrv.ProductBarcodeLocations.read({
-              id: barcodeId,
-              link: 'PBID'
-            }, null, utils.safeCallback(cb, function(err, resp) {
+          console.log(JSON.stringify(itemList));
 
-              if (resp.Code === 0) {
-                console.log("Unknown barcode:" + JSON.stringify(resp.Value));
-                console.log("Unknown barcode:" + resp.Value.ProductBarcodeId);
-                console.log("Unknown barcode:" + resp.Value.ItemDesc);
+          if (barcodeId !== null && barcodeId !== "") {
 
-                _this.scannedListGvm.list.push({
-                  ProductBarcodeId: resp.Value.ProductBarcodeId,
-                  ItemDesc: resp.Value.ItemDesc
-                });
+            //Check if barcode exist on the list, if found, remove from list.
+            for (i = 0; i < itemList.length; i++) {
+
+              if (itemList[i].ProductBarcodeId === barcodeId) {
+
+                found = true;
+                index = i;
+                break;
 
               } else {
-                notify.warn('Barcode not found.', null, 3);
+                console.log("Not Found");
               }
-            }));
+            }
+
+            if (found) {
+              _this.unScannedListGvm.deleteRow(index);
+            } else {
+              //If barcode scanned is not found on inventory list, add to the right grid.
+
+              dataservice.inventoryenginesrv.ProductBarcodeLocations.read({
+                id: barcodeId,
+                link: 'PBID'
+              }, null, utils.safeCallback(cb, function(err, resp) {
+
+                if (resp.Code === 0) {
+                  console.log("Unknown barcode:" + JSON.stringify(resp.Value));
+                  console.log("Unknown barcode:" + resp.Value.ProductBarcodeId);
+                  console.log("Unknown barcode:" + resp.Value.ItemDesc);
+
+                  _this.scannedListGvm.list.push({
+                    ProductBarcodeId: resp.Value.ProductBarcodeId,
+                    ItemDesc: resp.Value.ItemDesc
+                  });
+
+                } else {
+                  notify.warn('Barcode not found.', null, 3);
+                }
+              }));
+
+            }
+
+            //clear barcode field
+            _this.data.ProductBarcodeID(null);
+
+            //if keycode equals tab, return false
+            if (event.keyCode === 9) {
+              return false;
+            }
 
           }
 
-          //clear barcode field
-          _this.data.ProductBarcodeID(null);
+        } //end keycode if
 
-        }
+      } //end checking if barcode is null/not
 
-      }
+      //default return true
+      return true;
     };
 
     //Print report

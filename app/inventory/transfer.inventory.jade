@@ -10,7 +10,7 @@ ul(class="edit-form")
           div(data-bind="cvm:data.TransferLocationCvm")         
         li
           span(class="label") Enter Barcode           
-          input(type="text" placeholder="" data-bind="ukov:data.productBarcodeID, value:data.productBarcodeID,valueUpdate:'afterkeydown',select:focusFirst, event: { keyup: processBarcode}")
+          input(type="text" placeholder="" data-bind="ukov:data.productBarcodeID, value:data.productBarcodeID,valueUpdate:'afterkeydown',select:focusFirst, event: { keydown: processBarcode}")
         li
           span(class="label") Previous Location
           span(class="label" data-bind="text: prevLocation") XXXXX
