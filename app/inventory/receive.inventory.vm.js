@@ -53,7 +53,7 @@ define('src/inventory/receive.inventory.vm', [
       ]
     },
     PackingSlipNumber: {
-      converter: ukov.converters.number(0),
+      //converter: ukov.converters.number(0),
       validators: [
         ukov.validators.isRequired('PackingSlipNumber ID is required')
       ]
@@ -97,7 +97,7 @@ define('src/inventory/receive.inventory.vm', [
           Quantity: part.Quantity
         };
 
-        //If Enter Qty Received greater than zero, proceed to entering barcode screen        
+        //If Enter Qty Received greater than zero, proceed to entering barcode screen
         if (parseInt(part.WithBarcodeCount, 10) > 0) {
 
           //Add to packing slip items
