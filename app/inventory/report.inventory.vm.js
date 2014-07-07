@@ -50,19 +50,18 @@ define('src/inventory/report.inventory.vm', [
       ProductBarcodeID: null
     }, schema);
 
-
+    //This is the dropdown for location type
     _this.data.LocationTypeCvm = new ComboViewModel({
       selectedValue: _this.data.LocationType,
-      //nullable: true,
       fields: {
         value: 'LocationTypeID',
         text: 'LocationTypeName',
       },
     });
 
+    //This is the dropdown for locations
     _this.data.LocationCvm = new ComboViewModel({
       selectedValue: _this.data.LocationData,
-      //nullable: true,
       fields: {
         value: 'LocationID',
         text: 'LocationName',
@@ -71,20 +70,27 @@ define('src/inventory/report.inventory.vm', [
 
 
     //Display Inventory Grids
+
+    //Items added on this list are those scanned but not found on inventory list
     _this.scannedListGvm = new InventoryReportScannedGridViewModel({
 
     });
 
+    //Items added on this list are those items from inventory list but not scanned
     _this.unScannedListGvm = new InventoryReportUnScannedGridViewModel({
 
     });
 
+    //This block executes when enter/tab key is hit and barcode field is not empty
     _this.processBarcode = function(data, event, cb) {
 
+      //check if barcode is not null/empty
       if (_this.data.ProductBarcodeID() !== null && _this.data.ProductBarcodeID().trim() !== "") {
 
+        //check if enter/tab key is hit
         if (event.keyCode === 13 || event.keyCode === 9) {
 
+          //check if location type and location are specified, otherwise show error
           if (_this.data.LocationType() === null || _this.data.LocationData() === null) {
 
             notify.warn('Please select location type and location.', null, 3);
@@ -93,11 +99,11 @@ define('src/inventory/report.inventory.vm', [
 
           }
 
-          var barcodeId = _this.data.ProductBarcodeID(),
-            itemList = _this.unScannedListGvm.list(),
-            found = false,
+          var barcodeId = _this.data.ProductBarcodeID(), //this holds the barcode entered by user
+            itemList = _this.unScannedListGvm.list(), //this holds the list of un-scanned items from inventory list
+            found = false, //flag if barcode is found in "itemList"
             i,
-            index;
+            index; //this holds the index/row to be removed from un-scanned grid list
 
           console.log(JSON.stringify(itemList));
 
@@ -106,6 +112,7 @@ define('src/inventory/report.inventory.vm', [
             //Check if barcode exist on the list, if found, remove from list.
             for (i = 0; i < itemList.length; i++) {
 
+              //check if barcode entered/scanned is found in inventory list/un-scanned grid list
               if (itemList[i].ProductBarcodeId === barcodeId) {
 
                 found = true;
@@ -117,11 +124,14 @@ define('src/inventory/report.inventory.vm', [
               }
             }
 
+            //if found, remove from un-scanned grid list
             if (found) {
               _this.unScannedListGvm.deleteRow(index);
             } else {
-              //If barcode scanned is not found on inventory list, add to the right grid.
 
+              //If barcode scanned is not found on inventory list, add to the right grid/scanned grid list.
+
+              //load this api to get the item name of the specific item scanned
               dataservice.inventoryenginesrv.ProductBarcodeLocations.read({
                 id: barcodeId,
                 link: 'PBID'
@@ -132,6 +142,7 @@ define('src/inventory/report.inventory.vm', [
                   console.log("Unknown barcode:" + resp.Value.ProductBarcodeId);
                   console.log("Unknown barcode:" + resp.Value.ItemDesc);
 
+                  //populate the scanned grid list - items not found in inventory list but scanned
                   _this.scannedListGvm.list.push({
                     ProductBarcodeId: resp.Value.ProductBarcodeId,
                     ItemDesc: resp.Value.ItemDesc
@@ -162,7 +173,7 @@ define('src/inventory/report.inventory.vm', [
       return true;
     };
 
-    //Print report
+    //Print report using "print preview"
     _this.cmdPrintReport = ko.command(function(cb) {
 
       //Bug: currently if the user close the print dialog using the "x" button of the pop up, no callback happens
@@ -186,6 +197,7 @@ define('src/inventory/report.inventory.vm', [
       //Initialize headers
       unScanItems = "<b><u><div class='inventoryItems'>Items that are in inventory but not scanned</div></u></b><br />";
       scanItems = "<b><u><div class='unknownItems'>Items that are scanned but not in the inventory</div></u></b><br />";
+
 
       //loop all inventory items that are unscanned
       for (inc = 0; inc < unScanItemList.length; inc++) {
@@ -310,7 +322,7 @@ define('src/inventory/report.inventory.vm', [
 
   };
 
-  //load LocationTypeList
+  //Populate location type dropdown
   function load_locationTypeList(cvm, cb) {
 
     dataservice.inventoryenginesrv.LocationTypeList.read({}, null, utils.safeCallback(cb, function(err, resp) {

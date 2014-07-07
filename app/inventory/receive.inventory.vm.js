@@ -15,8 +15,6 @@ define('src/inventory/receive.inventory.vm', [
   'src/inventory/inventory.gvm',
   'src/inventory/enter.barcode.vm',
   'src/core/layers.vm',
-  //'src/config',
-  //'src/slick/rowevent',
   'src/ukov',
 ], function(
   AddressValidateViewModel,
@@ -35,8 +33,6 @@ define('src/inventory/receive.inventory.vm', [
   InventoryGridViewModel,
   EnterBarcodeViewModel,
   LayersViewModel,
-  //config,
-  //RowEvent,
   ukov
 ) {
   "use strict";
@@ -67,10 +63,8 @@ define('src/inventory/receive.inventory.vm', [
 
     ReceiveInventoryViewModel.super_.call(_this, options);
 
+    //Set the first focus on PO# field
     _this.focusFirst = ko.observable(false);
-
-    //holds the packing slip id - to be used on addPackingSlipItems
-    //_this.PackingSlipID = ko.observable();
 
     _this.data = ukov.wrap(_this.item || {
       PurchaseOrderID: null,
@@ -78,7 +72,7 @@ define('src/inventory/receive.inventory.vm', [
       PackingSlipID: null
     }, schema);
 
-
+    //This a layer for enter barcode screen pop up
     _this.layersVm = new LayersViewModel({
       controller: _this,
     });
@@ -87,12 +81,12 @@ define('src/inventory/receive.inventory.vm', [
     //Display Inventory Grid
     _this.inventoryListGvm = new InventoryGridViewModel({
 
+      //This block executes when any of the submit buttons on "Enter Barcode" column is clicked
       enterBarcode: function(part, cb) {
 
         //parameters for packingslipitems
         var param = {
           PackingSlipId: _this.data.PackingSlipID(),
-          //ProductSkwId: part.ProductSkwId,
           ItemId: part.ItemId,
           Quantity: part.Quantity
         };
@@ -149,10 +143,6 @@ define('src/inventory/receive.inventory.vm', [
 
     //Clear fields and grid when there's a change on PO#
     _this.resetPage = function() {
-
-      //clear packing slip# field
-      //_this.data.PackingSlipNumber(null);
-
       //clear grid
       _this.inventoryListGvm.list([]);
     };
@@ -213,13 +203,8 @@ define('src/inventory/receive.inventory.vm', [
       if (resp.Code === 0) {
         var param,
           purchaseOrder = resp.Value;
-        purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
 
-        //parameters for reading packingslip api
-        // param = {
-        //   id: purchaseOrder.PurchaseOrderID,
-        //   link: 'POID'
-        // };
+        purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
 
         param = {
           PurchaseOrderId: purchaseOrder.PurchaseOrderID,
@@ -229,7 +214,7 @@ define('src/inventory/receive.inventory.vm', [
         //function that calls packing slip api
         loadPackingSlipInfo(param, vm, join.add());
 
-        //Populate PurchaseOrderItems
+        //Populate grid with PurchaseOrderItems
         loadPurchaseOrderItems(vm, purchaseOrder.PurchaseOrderID, join.add());
 
       } else {
@@ -304,120 +289,3 @@ define('src/inventory/receive.inventory.vm', [
 
   return ReceiveInventoryViewModel;
 });
-
-
-//function loadPackingSlipInfo(param, vm, cb) {
-
-//   dataservice.inventoryenginesrv.PackingSlip.read(param, null, utils.safeCallback(cb, function(err, resp) {
-//     if (resp.Code === 0) {
-
-//       console.log("PackingSlipRead-Result:" + JSON.stringify(resp.Value));
-
-//       //Get value of packing slip Id from api
-//       vm.PackingSlipID(resp.Value.PackingSlipID);
-
-//       var packingSlip = resp.Value;
-
-//       //If packing slip # from api not equal to null, set value.
-//       if (packingSlip.PackingSlipNumber !== null) {
-//         vm.data.PackingSlipNumber.setValue(packingSlip.PackingSlipNumber);
-//       } else {
-
-//         //Create packing slip # if packing slip# from UI not empty
-//         if (packingSlip.PackingSlipNumber === null) {
-//           console.log("Packing slip number is empty. Creating packing slip number...");
-//           //Create packing slip#
-//           packingSlipNumberIsEmpty(vm, param.id, cb);
-//         }
-
-//       }
-
-//alert(packingSlipNumberUI);
-
-//     } else {
-//       notify.warn('PurchaseOrderID not found', null, 10);
-//     }
-//   }, function( /*err*/ ) {
-
-//     //Create packing slip#
-//     packingSlipNumberIsEmpty(vm, param.id, cb);
-
-//     // var param2, packingSlipNumber;
-
-//     // packingSlipNumber = vm.data.PackingSlipNumber();
-//     // param2 = {
-//     //   PurchaseOrderId: param.id,
-//     //   PackingSlipNumber: packingSlipNumber
-//     // };
-
-//     // alert(packingSlipNumber);
-
-//     // if (packingSlipNumber !== null && packingSlipNumber !== "") {
-//     //   //alert(JSON.stringify(param2));
-//     //   createPackingSlipNumber(param2, cb);
-//     // } else {
-//     //   notify.warn('Please input a Packing Slip#!');
-//     // }
-
-//   }));
-
-
-// } //end function loadPackingSlipInfo
-
-// function packingSlipNumberIsEmpty(vm, purchaseOrderID, cb) {
-
-//   var param2, packingSlipNumberUI;
-
-//   packingSlipNumberUI = vm.data.PackingSlipNumber();
-
-//   //alert(packingSlipNumberUI);
-
-//   param2 = {
-//     PurchaseOrderId: purchaseOrderID,
-//     PackingSlipNumber: packingSlipNumberUI
-//   };
-
-//   console.log("createPackingSlipNumber-param:" + JSON.stringify(param2));
-
-//   if (packingSlipNumberUI !== null && packingSlipNumberUI !== "") {
-//     createPackingSlipNumber(param2, vm, cb);
-//   } else {
-//     notify.warn('Please input a Packing Slip#!');
-//   }
-
-// }
-
-
-//Create packing slip number if not available - pull this from UI
-// function createPackingSlipNumber(param, vm, cb) {
-
-//   dataservice.inventoryenginesrv.PackingSlip.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
-
-//     if (resp.Code === 0) {}
-//     console.log("createPackingSlipNumber-Result:" + JSON.stringify(resp.Value));
-//     vm.data.PackingSlipNumber.setValue(resp.Value.PackingSlipNumber);
-
-//   }, function(err) {
-//     notify.error(err);
-//   }));
-
-
-// } //end createPackingSlipNumber
-
-//add to packing slip items
-// function addPackingSlipItems(param, cb) {
-
-//   dataservice.inventoryenginesrv.PackingSlipItem.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
-
-//     if (resp.Code === 0) {
-//       console.log("PackingSlipItems-Result:" + JSON.stringify(resp.Value));
-//     }
-
-//   }, function(err) {
-//     notify.error(err);
-//   }));
-// }
-
-
-//   return ReceiveInventoryViewModel;
-// });
