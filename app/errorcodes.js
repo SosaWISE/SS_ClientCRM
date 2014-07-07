@@ -10,6 +10,7 @@ define('src/errorcodes', [], function() {
     '70110': 'Item was not found',
     '70120': 'Duplicate item found',
     '70130': 'Null exception occurred',
+    '70140': 'Argument Validation Failed',
 
     '990000': 'Connection Refused',
     '990001': 'Error processing response',
