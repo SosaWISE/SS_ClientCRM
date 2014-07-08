@@ -117,11 +117,12 @@ define('src/survey/takesurveytranslation.vm', [
           ContractTerms: {
             ContractLength: 60,
             BillingMethod: 2,
+            PaymentType: 'ACH',
             MonthlyMonitoringFee: 49.99,
             TotalActivationFee: 199.99,
             ActivationFeePaymentMethod: 1,
-            BillingDate: '15th',
-            HasSalesUpgrades: true,
+            BillingDate: 15,
+            // HasSalesUpgrades: true,
           },
           SalesRep: {
             FirstName: 'RepName',

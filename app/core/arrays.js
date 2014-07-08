@@ -1,4 +1,8 @@
-define('src/core/arrays', [], function() {
+define('src/core/arrays', [
+  'ko',
+], function(
+  ko
+) {
   "use strict";
 
   return {
@@ -13,6 +17,21 @@ define('src/core/arrays', [], function() {
         i++;
       }
       return array;
+    },
+
+    // assumes `list` is already ordered
+    insertOrdered: function(list, comparer, item) {
+      var peekList = ko.isObservable(list) ? list.peek() : list;
+      if (!peekList.some(function(obj, index) {
+        if (comparer(obj, item) > 0) {
+          // insert into list
+          list.splice(index, 0, item);
+          return true;
+        }
+      })) {
+        // put at end of list
+        list.push(item);
+      }
     },
 
   };

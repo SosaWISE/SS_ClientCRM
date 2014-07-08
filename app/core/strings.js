@@ -1,9 +1,11 @@
 define('src/core/strings', [
   'moment',
+  'src/core/numbers',
   'src/core/arrays',
   'src/core/utils',
 ], function(
   moment,
+  numbers,
   arrays,
   utils
 ) {
@@ -121,9 +123,19 @@ define('src/core/strings', [
     phone: function(val) {
       return strings.formatters.phone(val);
     },
+    ordinal: function(val) {
+      var integer = parseInt(val, 10);
+      /* jshint eqeqeq:false */
+      if (integer == val) {
+        return numbers.toOrdinal(integer);
+      } else {
+        return val;
+      }
+    }
   };
-  // alias c with $
+  // aliases
   strings.decorators.$ = strings.decorators.c;
+  strings.decorators.th = strings.decorators.ordinal;
 
   strings.trim = function(text) {
     if (text) {

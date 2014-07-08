@@ -17,7 +17,6 @@ define('src/survey/questionschemas', [
     ],
   };
 
-
   schemas = {
     'default': {
       validators: [required],
@@ -34,7 +33,7 @@ define('src/survey/questionschemas', [
       converter: ukov.converters.number(0),
       validators: [
         required,
-        ukov.validators.isInRange(1, 25, 'Billing date must be between the {0}st and {1}th'),
+        ukov.validators.isInRange(1, 25, 'Billing date must be between the {0:th} and {1:th}'),
       ],
     },
   };

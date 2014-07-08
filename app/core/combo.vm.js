@@ -325,11 +325,13 @@ define('src/core/combo.vm', [
     if (!(fields.text in item)) {
       throw new Error('no ' + fields.text + ' field: ' + jsonhelpers.stringify(item));
     }
+    var text = ko.unwrap(item[fields.text]),
+      value = ko.unwrap(item[fields.value]);
     return {
       item: item,
-      text: item[fields.text],
-      value: item[fields.value],
-      html: ko.observable(item[fields.text]),
+      text: text,
+      value: value,
+      html: ko.observable(text),
       matches: ko.observable(false),
       active: ko.observable(false),
     };

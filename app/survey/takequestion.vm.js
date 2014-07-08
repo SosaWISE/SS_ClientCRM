@@ -60,11 +60,15 @@ define('src/survey/takequestion.vm', [
   // recursively add answers and return first error message
   TakeQuestionViewModel.prototype.addAnswers = function(list) {
     var _this = this,
-      errMsg;
+      errMsg, answer;
     if (_this.answer.isValid()) {
+      answer = _this.answer.getValue();
       list.push({
         QuestionId: _this.QuestionID,
-        AnswerText: _this.answer.getValue(),
+        AnswerText: (answer != null) ? String(answer) : null, // ensure it is a string
+        // user to create map to token answers
+        MapToToken: _this.MapToToken,
+        Answer: answer,
       });
       if (_this.showSubs()) {
         // begin recursion

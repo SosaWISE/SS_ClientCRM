@@ -47,13 +47,17 @@ define('src/account/security/equipment.vm', [
 
     _this.cmdAddByPart = ko.command(function(cb) {
       showEquipmentEditor(_this, true, null, function(model) {
-        _this.gvm.list.push(model);
+        if (model) {
+          _this.gvm.list.push(model);
+        }
         cb();
       });
     });
     _this.cmdAddByBarcode = ko.command(function(cb) {
       showEquipmentEditor(_this, false, null, function(model) {
-        _this.gvm.list.push(model);
+        if (model) {
+          _this.gvm.list.push(model);
+        }
         cb();
       });
     });

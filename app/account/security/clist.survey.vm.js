@@ -4,7 +4,6 @@ define('src/account/security/clist.survey.vm', [
   'src/dataservice',
   'src/survey/takesurvey.vm',
   'src/account/security/clist.survey.gvm',
-  'src/core/numbers',
   'src/core/strings',
   'src/core/joiner',
   'src/core/notify',
@@ -16,7 +15,6 @@ define('src/account/security/clist.survey.vm', [
   dataservice,
   TakeSurveyViewModel,
   CListSurveyGridViewModel,
-  numbers,
   strings,
   joiner,
   notify,
@@ -221,7 +219,7 @@ define('src/account/security/clist.survey.vm', [
           TotalActivationFee: invoiceInfo.ActivationFeeActual,
           ActivationFeePaymentMethod: convertToActivationFeePaymentMethod(invoiceInfo.ActivationFeeActual, invoiceInfo.Over3Months),
           // Over3Months: invoiceInfo.Over3Months, // no token
-          BillingDate: numbers.toOrdinal(salesInfo.BillingDay),
+          BillingDate: salesInfo.BillingDay,
           // HasSalesUpgrades: true, //??????????????????????
         },
         SalesRep: {

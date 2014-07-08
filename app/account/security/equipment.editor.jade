@@ -13,10 +13,11 @@ div(class="equipment-editor")
           a(class="btn",tabindex="0",data-bind="cmd:cmdAdd") Add
 
   div(data-bind="if:hasItem")
-    //- ul(class="actions")
-    //-   li
-    //-     a(class="btn",data-bind="cmd:cmdDelete") Delete
     div(class="label",data-bind="text:data.ItemDesc")
+    div(class="line-top")
+      ul(class="actions")
+        li
+          a(class="btn",data-bind="cmd:cmdDelete") Delete
     div(class="line-top")
       ul(class="edit-form limit-width")
         li

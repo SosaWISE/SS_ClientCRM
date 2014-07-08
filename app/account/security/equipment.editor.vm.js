@@ -199,12 +199,30 @@ define('src/account/security/equipment.editor.vm', [
         data.ItemSKU = tmp.ItemSKU;
         data.IsServiceUpgrade = tmp.IsServiceUpgrade;
         data.ActualPoints = tmp.ActualPoints;
+        if (_this.byPart) {
+
+        } else {
+
+        }
 
         _this.layerResult = data;
+        _this.isDeleted = false;
         closeLayer(_this);
-      }, function(err) {
-        notify.error(err);
-      }));
+      }, notify.error, false));
+    }, function(busy) {
+      return !busy && !_this.cmdAdd.busy() && !_this.cmdDelete.busy();
+    });
+    _this.cmdDelete = ko.command(function(cb) {
+      dataservice.msaccountsetupsrv.equipments.del(_this.item.AccountEquipmentID, null, utils.safeCallback(cb, function(err, resp) {
+        if (!resp.Value) {
+          console.log('item already deleted or item does not exist');
+        }
+        _this.layerResult = true;
+        _this.isDeleted = true;
+        closeLayer(_this);
+      }, notify.error, false));
+    }, function(busy) {
+      return !busy && !_this.cmdAdd.busy() && !_this.cmdSave.busy() && (_this.item.AccountEquipmentID > 0);
     });
   }
   utils.inherits(EquipmentEditorViewModel, BaseViewModel);
@@ -219,7 +237,7 @@ define('src/account/security/equipment.editor.vm', [
   }
   EquipmentEditorViewModel.prototype.getResults = function() {
     var _this = this;
-    return [_this.layerResult];
+    return [_this.layerResult, _this.isDeleted];
   };
   EquipmentEditorViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
@@ -228,6 +246,8 @@ define('src/account/security/equipment.editor.vm', [
       msg = 'Please wait for add to finish.';
     } else if (_this.cmdSave.busy() && !_this.layerResult) {
       msg = 'Please wait for save to finish.';
+    } else if (_this.cmdDelete.busy() && !_this.layerResult) {
+      msg = 'Please wait for delete to finish.';
     }
     return msg;
   };
@@ -357,7 +377,10 @@ define('src/account/security/equipment.editor.vm', [
       var data = resp.Value;
 
       if (_this.byPart) {
-        data.ItemSKU = searchKey; //@HACK: to set ItemSKU since is not returned.....
+        data.ItemSKU = searchKey; //@HACK: to set ItemSKU since it is not returned.....
+      } else {
+        data.BarcodeId = searchKey; //@HACK: to set BarcodeId since it is not returned.....
+        // ActualPoints and ItemSKU are also missing...
       }
 
       _this.data.setValue(data);
@@ -366,6 +389,7 @@ define('src/account/security/equipment.editor.vm', [
       // set result, but don't close
       // needed incase cancel is pressed after this point
       _this.layerResult = data;
+      _this.isDeleted = false;
     }, notify.error));
   }
 

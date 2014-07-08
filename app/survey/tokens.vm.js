@@ -58,6 +58,20 @@ define('src/survey/tokens.vm', [
     }
     return result;
   };
+  TokensViewModel.prototype.getTokenByName = function(tokenName) {
+    var _this = this,
+      result;
+    _this.list.peek().some(function(item) {
+      if (item.Token === tokenName) {
+        result = item;
+        return true;
+      }
+    });
+    if (!result) {
+      console.error('no token for', tokenName);
+    }
+    return result;
+  };
 
 
   // flatten context

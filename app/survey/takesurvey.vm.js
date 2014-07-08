@@ -159,7 +159,9 @@ define('src/survey/takesurvey.vm', [
 
   TakeSurveyViewModel.prototype.saveSurvey = function(cb) {
     var _this = this,
-      errMsg, answers = [];
+      errMsg, answers = [],
+      tokensVM = _this.tokensVM,
+      mapToTokenAnswers = [];
     if (_this.surveyData) {
       if (!_this.showSave()) { // if (_this.resultid && !_this.retake) {
         notify.warn(strings.format('Survey {0} has already been saved.', _this.resultid), null, 7);
@@ -175,6 +177,17 @@ define('src/survey/takesurvey.vm', [
           errMsg = errResult;
         }
       });
+      answers.forEach(function(item) {
+        if (item.MapToToken) {
+          mapToTokenAnswers.push({
+            TokenId: tokensVM.getTokenByName(item.MapToToken).TokenID,
+            Answer: item.Answer,
+          });
+        }
+        // not needed in answers array
+        delete item.MapToToken;
+        delete item.Answer;
+      });
 
       // check for errors
       if (errMsg) {
@@ -185,29 +198,31 @@ define('src/survey/takesurvey.vm', [
           'but you will be able to retake it later. Do you still want to save the survey?',
           function(result) {
             if (result === 'yes') {
-              doSave(_this, answers, errMsg, cb);
+              doSave(_this, answers, mapToTokenAnswers, errMsg, cb);
             } else {
               cb();
             }
           });
       } else {
-        doSave(_this, answers, errMsg, cb);
+        doSave(_this, answers, mapToTokenAnswers, errMsg, cb);
       }
     }
   };
 
-  function doSave(_this, answers, errMsg, cb) {
+  function doSave(_this, answers, mapToTokenAnswers, errMsg, cb) {
     dataservice.survey.results.save({
       data: {
         // ResultID: 0,
         AccountId: _this.accountid,
         SurveyTranslationId: _this.surveyData.surveyTranslation.SurveyTranslationID,
         Context: _this.tokensVM.stringifyContext(_this.dataContext), // stringified Context
-        Answers: answers, // all visible question answers
-        CreatedBy: 'boh?',
-        Caller: 'boh?',
+        // CreatedBy: 'boh?',
+        // Caller: 'boh?',
         Passed: !errMsg, //@REVIEW: Passed
         IsComplete: !errMsg, //@REVIEW: IsComplete
+        //
+        Answers: answers, // all visible question answers
+        MapToTokenAnswers: mapToTokenAnswers,
       },
     }, null, utils.safeCallback(cb, function(err, resp) {
       // always set retake to false

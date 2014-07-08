@@ -471,7 +471,7 @@ define('mock/dataservices/survey.mock', [
             FirstName: 'Bob',
             LastName: 'Bobbins',
             FullName: 'Bob Bobbins',
-            Phone1: '(801) 555-1234',
+            Phone1: '8015551234',
             Email: 'bobe@mail.com',
           },
           PremiseAddress: {
@@ -481,7 +481,7 @@ define('mock/dataservices/survey.mock', [
             Zip: '84059',
           },
           SystemDetails: {
-            PremisePhone: '(801) 123-1234',
+            PremisePhone: '8011231234',
             PanelType: 'Concord',
             Password: 'BobRules',
             IsTwoWay: true,
@@ -491,11 +491,12 @@ define('mock/dataservices/survey.mock', [
           ContractTerms: {
             ContractLength: 60,
             BillingMethod: 2,
+            PaymentType: 'ACH',
             MonthlyMonitoringFee: 49.99,
             TotalActivationFee: 199.99,
             ActivationFeePaymentMethod: 1,
-            BillingDate: '15th',
-            HasSalesUpgrades: true,
+            BillingDate: 15,
+            // HasSalesUpgrades: true,
           },
           SalesRep: {
             FirstName: 'RepName',
