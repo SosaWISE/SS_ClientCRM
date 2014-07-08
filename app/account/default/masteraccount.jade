@@ -42,10 +42,9 @@ div(data-bind="if:!loadErr()&&!loading()")
                 div(class="phone work", data-bind="phonetext:PhoneWork")
                 div(class="phone home", data-bind="phonetext:PhoneHome")
                 div(class="email", data-bind="text:Email")
-                div(class="credit-score excellent")
+                div(class="credit-result excellent")
                   |Credit Score:&nbsp;
-                  |????????????
-                  //- span(data-bind="text:???")
+                  span(data-bind="text:'648'")
 
           div(class="section")
             div(class="title")
@@ -75,7 +74,7 @@ div(data-bind="if:!loadErr()&&!loading()")
               ul(class="accounts")
                 li
                   a(class="")
-                    span(class="name") ??
+                    span(class="name")
                     span(class="amount")
 
           div(class="section")
