@@ -81,6 +81,32 @@
         // padding: 15px 0px 0px 15px;
         // text-transform: uppercase;
       }
+
+      a.close {
+        color: inherit;
+        position: absolute;
+        top: 3px;
+        left: 2px;
+        padding: 1px 5px;
+        &:before {
+          font-family: 'entypo';
+          content: '\2715';
+        }
+        .border-radius(9px);
+        .transition(.1s);
+        &:hover {
+          background: rgba(0, 0, 0, 0.25);
+        }
+        &:active {
+          background: rgba(0, 0, 0, 0.4);
+        }
+
+        // in windows put it on the right side
+        .win32 & {
+          left: initial;
+          right: 2px;
+        }
+      }
     }
   }
 }

@@ -160,10 +160,14 @@ define('src/bootstrapper', [
   // }, 1000);
   // ////////////////////////TESTING////////////////////////////////////////////////
 
+  // detect os
+  app.os = navigator.platform.split(' ')[0].toLowerCase();
+
   console.log("Version: ", config.version);
   console.log("Application Token: " + config.token);
   console.log("CORS Domain: " + config.serviceDomain);
   console.log("Log Errors: " + config.logErrors);
+  console.log("OS: " + app.os);
 
   ControllerViewModel.titlePrefix = config.titlePrefix;
   ControllerViewModel.titlePostfix = config.titlePostfix;

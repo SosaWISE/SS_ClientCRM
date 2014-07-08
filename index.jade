@@ -16,7 +16,7 @@ html
         |Loading...
         span(id="loadingSeconds")
 
-    div(id="main")
+    div(id="main",data-bind="attr:{'class':os}")
 
       div(style="display:none;", id="login-container", data-bind="with:login")
         div(data-bind="template:viewTmpl", id="login-panel")
