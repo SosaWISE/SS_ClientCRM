@@ -8,12 +8,15 @@ div(class="barcode_wrapper")
       label(data-bind="text: PackingSlipID")
     li
       label Count#  
-      label(data-bind="text: Count")
+      label(data-bind="text: receiveCount")
     li
       label Enter# 
       label(data-bind="text: barcodeCount")
     li
       label Barcode       
-      input(type="text" data-bind="ukov:data.productBarcodeID, value:data.productBarcodeID,valueUpdate:'afterkeydown',select:focusFirst, event: { keydown: processBarcode}")  
-  div(class="actions")    
+      //-input(type="text" data-bind="ukov:data.productBarcodeID, value:data.productBarcodeID,valueUpdate:'afterkeydown',select:focusFirst, event: { keydown: processBarcode}")  
+      textarea(rows="5" data-bind="ukov:data.productBarcodeID, value:data.productBarcodeID,valueUpdate:'afterkeydown',select:focusFirst, event: { keyup: barcodeUpdateCount}")  
+    li
+      span(class="btn-bg", tabindex="0", data-bind="cmd:clickProcessBarcode") Submit List
+  div(class="actions")          
       span(class="btn-bg", tabindex="0", data-bind="cmd:clickClose") Done Entering Barcodes
