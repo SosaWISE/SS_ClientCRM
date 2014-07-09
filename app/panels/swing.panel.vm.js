@@ -141,23 +141,28 @@ define('src/panels/swing.panel.vm', [
         {
           id: 'RowNumber',
           name: '',
-          field: 'RowNumber'
+          field: 'RowNumber',
+          width: 21
         }, {
           id: 'ZoneNumber',
           name: 'Zone',
-          field: 'ZoneNumber'
+          field: 'ZoneNumber',
+          width: 35
         }, {
           id: 'Zone',
           name: 'ZoneType',
           field: 'ZoneTypeName',
+          width: 55
         }, {
           id: 'Equipment',
           name: 'Equipment',
           field: 'FullName',
+          width: 339
         }, {
           id: 'Location',
           name: 'Location',
           field: 'EquipmentLocationDesc',
+          width: 132
         },
       ],
     });
