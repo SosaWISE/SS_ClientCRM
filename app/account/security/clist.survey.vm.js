@@ -122,7 +122,7 @@ define('src/account/security/clist.survey.vm', [
   CListSurveyViewModel.prototype.getDataContext = function(cb) {
     var _this = this,
       join = joiner(),
-      priCustomer, premAddress, salesRep, details, invoiceInfo, salesInfo;
+      priCustomer, premAddress, salesRep, details, salesInfo;
 
     // load primary customer
     dataservice.monitoringstationsrv.accounts.read({
@@ -156,13 +156,6 @@ define('src/account/security/clist.survey.vm', [
       details = val;
     }, join.add());
 
-    // load invoiceInfo
-    dataservice.salessummary.invoiceMsIsntalls.read({
-      id: _this.accountid,
-      link: 'accountid'
-    }, function(val) {
-      invoiceInfo = val;
-    }, join.add());
     // load salesInfo
     dataservice.monitoringstationsrv.msAccountSalesInformations.read({
       id: _this.accountid,
@@ -215,10 +208,10 @@ define('src/account/security/clist.survey.vm', [
           ContractLength: salesInfo.ContractLength,
           BillingMethod: convertToBillingMethod(salesInfo.PaymentTypeId),
           PaymentType: salesInfo.PaymentTypeId,
-          MonthlyMonitoringFee: invoiceInfo.MonthlyMonitoringRateActual,
-          TotalActivationFee: invoiceInfo.ActivationFeeActual,
-          ActivationFeePaymentMethod: convertToActivationFeePaymentMethod(invoiceInfo.ActivationFeeActual, invoiceInfo.Over3Months),
-          // Over3Months: invoiceInfo.Over3Months, // no token
+          MonthlyMonitoringFee: salesInfo.MMR,
+          TotalActivationFee: salesInfo.SetupFee,
+          ActivationFeePaymentMethod: convertToActivationFeePaymentMethod(salesInfo.SetupFee, salesInfo.Over3Months),
+          // Over3Months: salesInfo.Over3Months, // no token
           BillingDate: salesInfo.BillingDay,
           // HasSalesUpgrades: true, //??????????????????????
         },

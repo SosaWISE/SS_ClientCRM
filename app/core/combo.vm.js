@@ -126,7 +126,11 @@ define('src/core/combo.vm', [
       _this.clickingItem = false;
       if (_this.isOpen()) {
         _this.isOpen(false);
-        _this.deselectInput(true);
+        setTimeout(function() {
+          _this.focusInput(true);
+          _this.selectInput(true);
+          _this.deselectInput(true);
+        }, 0);
       }
     };
     _this.clickOpen = function() {
