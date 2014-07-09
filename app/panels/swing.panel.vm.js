@@ -139,8 +139,16 @@ define('src/panels/swing.panel.vm', [
       },
       columns: [ //
         {
-          id: 'Zone',
+          id: 'RowNumber',
+          name: '',
+          field: 'RowNumber'
+        }, {
+          id: 'ZoneNumber',
           name: 'Zone',
+          field: 'ZoneNumber'
+        }, {
+          id: 'Zone',
+          name: 'ZoneType',
           field: 'ZoneTypeName',
         }, {
           id: 'Equipment',
