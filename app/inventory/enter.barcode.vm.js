@@ -5,18 +5,20 @@ define('src/inventory/enter.barcode.vm', [
   'ko',
   'src/ukov',
   'src/dataservice',
+  'src/core/joiner',
 ], function(
   notify,
   utils,
   BaseViewModel,
   ko,
   ukov,
-  dataservice
+  dataservice,
+  joiner
 ) {
   "use strict";
 
 
-  var schema, param = {};
+  var schema; /*, param = {};*/
 
   schema = {
     _model: true,
@@ -141,7 +143,7 @@ define('src/inventory/enter.barcode.vm', [
 
     //Process list of barcodes
     _this.clickProcessBarcode = ko.command(function(cb, vm) {
-      processBarcodes(vm, cb);
+      _this.processBarcodes(vm, cb);
     });
 
 
@@ -161,6 +163,12 @@ define('src/inventory/enter.barcode.vm', [
   EnterBarcodeViewModel.prototype.width = 400;
   EnterBarcodeViewModel.prototype.height = 'auto';
 
+  EnterBarcodeViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me    
+
+    join = join;
+
+  };
+
   function closeLayer(_this) {
     if (_this.layer) {
       _this.layer.close();
@@ -172,15 +180,14 @@ define('src/inventory/enter.barcode.vm', [
   };
 
   //Process list of barcodes
-  function processBarcodes(vm, cb) {
+  EnterBarcodeViewModel.prototype.processBarcodes = function(vm, cb) {
 
     var barcodeList = vm.data.productBarcodeID(), //list of barcodes from textarea
       barcode, //array that holds the list of barcodes after split by return
       barcodeCount = 0, //holds the current barcodes counts
-      rCount = 0, //holds the received count
-      remaining = 0, //holds the remaing counts received - entered
+      rCount = 0, //holds the received count      
       x,
-      param;
+      join = joiner();
 
     //split list by return key
     barcode = barcodeList.split('\n');
@@ -203,56 +210,49 @@ define('src/inventory/enter.barcode.vm', [
 
         if (barcode[x] !== "") {
 
-          param = {
-            id: barcode[x],
-            link: 'PBID'
-          };
+          // param = {
+          //   id: barcode[x],
+          //   link: 'PBID'
+          // };
 
           //Add barcode to DB
-          addBarcode(vm, barcode[x], cb);
+          addBarcode(vm, barcode[x], join);
 
         }
 
       }
-
-      remaining = rCount - barcodeCount;
-
-      //Update "Count#"
-      vm.receiveCount(remaining.toString());
 
       //reset "Enter#" to 0  
       vm.barcodeCount('0');
     }
 
     cb();
-  }
+  };
 
   //Add barcodes to DB
-  function addBarcode(vm, barcode, cb) {
+  function addBarcode(vm, barcode, join) {
 
-    dataservice.inventoryenginesrv.ProductBarcode.read(param, null, utils.safeCallback(cb, function(err, resp) {
+    //Set of parameters used on api call
+    var param2 = {
+      ProductBarcodeID: barcode,
+      PurchaseOrderItemId: vm.purchaseOrderItemID
+    };
 
-      if (resp.Code === 0) {
-        notify.warn(barcode + ' already in use.', null, 3);
-      } else {
+    //This is the api for adding barcodes
+    dataservice.inventoryenginesrv.ProductBarcode.post(null, param2, null, utils.safeCallback(join.add(), function( /*err, resp*/ ) {
 
-        //Set of parameters used on api call
-        param = {
-          ProductBarcodeID: barcode,
-          PurchaseOrderItemId: vm.purchaseOrderItemID
-        };
+      var rCount = parseInt(vm.receiveCount(), 10);
 
-        //This is the api for adding barcodes
-        dataservice.inventoryenginesrv.ProductBarcode.post(null, param, null, utils.safeCallback(cb, function( /*err, resp*/ ) {
+      //decrement received count every successful add of barcdode
+      rCount--;
 
-          //clear barcode field
-          vm.data.productBarcodeID.setValue(null);
-        }, function(err) {
-          notify.error(err);
-        }));
+      //Update "Count#"
+      vm.receiveCount(rCount.toString());
 
-      }
-
+      //clear barcode field
+      vm.data.productBarcodeID.setValue(null);
+    }, function(err) {
+      notify.error(err);
     }));
 
   }
