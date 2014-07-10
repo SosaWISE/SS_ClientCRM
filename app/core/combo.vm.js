@@ -122,13 +122,15 @@ define('src/core/combo.vm', [
       }
       _this.clickClose();
     };
-    _this.clickClose = function() {
+    _this.clickClose = function(preventFocus) {
       _this.clickingItem = false;
       if (_this.isOpen()) {
         _this.isOpen(false);
         setTimeout(function() {
-          _this.focusInput(true);
-          _this.selectInput(true);
+          if (!preventFocus) {
+            _this.focusInput(true);
+            _this.selectInput(true);
+          }
           _this.deselectInput(true);
         }, 0);
       }
@@ -206,7 +208,7 @@ define('src/core/combo.vm', [
       } else {
         _this.setSelectedValue(null);
       }
-      _this.clickClose();
+      _this.clickClose(true);
     };
 
     _this.clickAction = function(action) {

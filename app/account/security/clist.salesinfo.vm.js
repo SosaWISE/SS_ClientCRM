@@ -472,7 +472,7 @@ define('src/account/security/clist.salesinfo.vm', [
     // data.AlarmComPackageId = data.CellPackageItemId;
     // delete data.CellPackageItemId;
 
-    console.log('currData:', JSON.stringify(_this.currData, null, '  '));
+    // console.log('currData:', JSON.stringify(_this.currData, null, '  '));
     dataservice.salessummary.invoiceRefresh.save({
       data: data,
     }, null, utils.safeCallback(cb, function(err, resp) {
