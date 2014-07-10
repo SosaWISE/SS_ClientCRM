@@ -125,6 +125,18 @@ define('src/account/security/clist.qualify.vm', [
     }, function(busy) {
       return !busy && _this.step() === 3 && _this.canCreateAccount && _this.customerModel() && _this.creditResult();
     });
+
+    _this.cmdSendToIS = ko.command(function(cb) {
+      dataservice.qualify.insideSales.save({
+        id: _this.creditResult().LeadId,
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        if (resp.Message && resp.Message !== 'Success') {
+          notify.error(resp, 3);
+        }
+      }, notify.error));
+    }, function(busy) {
+      return !busy && _this.creditResult();
+    });
   }
   utils.inherits(CListQualifyViewModel, ControllerViewModel);
   CListQualifyViewModel.prototype.viewTmpl = 'tmpl-security-clist_qualify';

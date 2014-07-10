@@ -154,7 +154,7 @@ module.exports = function(grunt) {
     uglify: {
       prod: {
         options: {
-          mangle: false,
+          mangle: true,
         },
         files: {
           '<%= www %>/account.js': ['<%= www %>/account.debug.js'],

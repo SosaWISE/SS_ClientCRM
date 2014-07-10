@@ -24,7 +24,10 @@ div(data-bind="if:!loadErr()&&!loading()")
           div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult}")
           div(data-bind="template:{name:'tmpl-acct-default-customer',data:customerModel}")
 
-    div(class="actions")
-      span(class="btn",tabindex="0",data-bind="cmd:cmdCreateAccount") Create Account
+    ul(class="actions")
+      li
+        span(class="btn",tabindex="0",data-bind="cmd:cmdCreateAccount") Create Account
+      li
+        span(class="btn",tabindex="0",data-bind="cmd:cmdSendToIS") Send to InsideSales.com
 
 div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
