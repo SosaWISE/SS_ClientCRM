@@ -23,6 +23,7 @@ define('src/inventory/enter.barcode.vm', [
   schema = {
     _model: true,
     productBarcodeID: {},
+    productBarcodeIdList: {},
   };
 
 
@@ -44,7 +45,8 @@ define('src/inventory/enter.barcode.vm', [
     _this.receiveCount(_this.count);
 
     _this.data = ukov.wrap(_this.item || {
-      productBarcodeID: null
+      productBarcodeID: null,
+      productBarcodeIdList: null,
     }, schema);
 
     //Display data  on UI
@@ -53,79 +55,50 @@ define('src/inventory/enter.barcode.vm', [
     _this.Count = _this.count;
     _this.barcodeCount(0);
 
-    // //Call api for adding barcodes
-    // _this.processBarcode = function(data, event, cb) {
-    //   //_this.data.productBarcodeID.subscribe(function(barcodeId, cb) {
+    //Add barcode one at a time though tab/enter key
+    _this.processBarcode = function(data, event) {
 
-    //   //Check if barcode is not empty and enter key is hit
-    //   if (_this.data.productBarcodeID() !== null && _this.data.productBarcodeID().trim() !== "") {
+      //Check if barcode is not empty and enter key is hit
+      if (_this.data.productBarcodeID() !== null && _this.data.productBarcodeID().trim() !== "") {
 
-    //     if (event.keyCode === 13 || event.keyCode === 9) {
+        if (event.keyCode === 13 || event.keyCode === 9) {
 
-    //       var param2 = {
-    //         id: _this.data.productBarcodeID().trim(),
-    //         link: 'PBID'
-    //       };
+          var join = joiner(),
+            listtype = false,
+            count = parseInt(_this.barcodeCount(), 10) + 1;
 
-    //       //Check if barcode exists
-    //       dataservice.inventoryenginesrv.ProductBarcode.read(param2, null, utils.safeCallback(cb, function(err, resp) {
+          if (parseInt(_this.receiveCount(), 10) >= count) {
 
-    //         if (resp.Code === 0) {
-    //           notify.warn('Barcode already in use.', null, 3);
-    //           return;
-    //         } else {
-    //           //Retrieve current barcode counts
-    //           var count = parseInt(_this.barcodeCount(), 10) + 1;
+            //Add barcode to DB
+            addBarcode(data, _this.data.productBarcodeID(), join, listtype);
 
-    //           //Set of parameters used on api call
-    //           param = {
-    //             ProductBarcodeID: _this.data.productBarcodeID(),
-    //             //ProductBarcodeID: barcodeId,
-    //             PurchaseOrderItemId: _this.purchaseOrderItemID
-    //           };
+          } else {
+            notify.warn('Entered barcode count must not exceed received count.', null, 3);
+          }
 
-    //           if (parseInt(_this.receiveCount, 10) >= count) {
-    //             //This is the api for adding barcodes
-    //             dataservice.inventoryenginesrv.ProductBarcode.post(null, param, null, utils.safeCallback(cb, function( /*err, resp*/ ) {
-    //               //Increment entered barcodes count
-    //               _this.barcodeCount(count.toString());
-    //               //clear barcode field
-    //               _this.data.productBarcodeID.setValue(null);
-    //             }, function(err) {
-    //               notify.error(err);
-    //             }));
-    //           } else {
-    //             notify.warn('Entered barcode count must not exceed received count.', null, 3);
-    //           }
-    //         }
+          if (event.keyCode === 9) {
+            return false;
+          }
 
-    //       }));
+        } //end keycode if
+      } //end checking if barcode is null/not
 
-    //       //if keycode equals tab, return false
-    //       if (event.keyCode === 9) {
-    //         return false;
-    //       }
+      //default return true
+      return true;
 
-    //     } //end keycode if
-    //   } //end checking if barcode is null/not
-
-    //   //default return true
-    //   return true;
-
-    // };
-
+    };
 
     //Update "Enter#" label everytime user hit enter key on barcode textarea
     _this.barcodeUpdateCount = function(data, event) {
 
       if (event.keyCode === 13) {
 
-        var fCount = getBarcodeCounts(_this.data.productBarcodeID());
+        var barcodeCount = parseInt(_this.barcodeCount(), 10),
+          fCount = getBarcodeCounts(_this.data.productBarcodeIdList(), barcodeCount);
 
-        _this.barcodeCount(fCount.toString());
-
-        if (fCount > _this.receiveCount) {
+        if (fCount > _this.receiveCount()) {
           notify.warn('Entered barcode count must not exceed received count.', null, 3);
+          return;
         }
       }
     };
@@ -182,27 +155,26 @@ define('src/inventory/enter.barcode.vm', [
   //Process list of barcodes
   EnterBarcodeViewModel.prototype.processBarcodes = function(vm, cb) {
 
-    var barcodeList = vm.data.productBarcodeID(), //list of barcodes from textarea
+    var barcodeList = vm.data.productBarcodeIdList(), //list of barcodes from textarea
       barcode, //array that holds the list of barcodes after split by return
-      barcodeCount = 0, //holds the current barcodes counts
+      barcodeCount = parseInt(vm.barcodeCount(), 10),
       rCount = 0, //holds the received count      
       x,
+      listtype = true,
       join = joiner();
 
     //split list by return key
     barcode = barcodeList.split('\n');
 
-    //get the current barcode counts
-    barcodeCount = parseInt(getBarcodeCounts(barcodeList), 10);
+    //get latest barcode count
+    barcodeCount = getBarcodeCounts(barcodeList, barcodeCount);
 
     //get the current received counts
     rCount = parseInt(vm.receiveCount(), 10);
 
-    //update value of "Enter#" label
-    vm.barcodeCount(barcodeCount.toString());
-
     if (rCount < barcodeCount) {
       notify.warn('Entered barcode count must not exceed received count.', null, 3);
+
       cb();
     } else {
 
@@ -210,27 +182,20 @@ define('src/inventory/enter.barcode.vm', [
 
         if (barcode[x] !== "") {
 
-          // param = {
-          //   id: barcode[x],
-          //   link: 'PBID'
-          // };
-
           //Add barcode to DB
-          addBarcode(vm, barcode[x], join);
+          addBarcode(vm, barcode[x], join, listtype);
 
         }
 
       }
 
-      //reset "Enter#" to 0  
-      vm.barcodeCount('0');
     }
 
     cb();
   };
 
   //Add barcodes to DB
-  function addBarcode(vm, barcode, join) {
+  function addBarcode(vm, barcode, join, listtype) {
 
     //Set of parameters used on api call
     var param2 = {
@@ -241,16 +206,20 @@ define('src/inventory/enter.barcode.vm', [
     //This is the api for adding barcodes
     dataservice.inventoryenginesrv.ProductBarcode.post(null, param2, null, utils.safeCallback(join.add(), function( /*err, resp*/ ) {
 
-      var rCount = parseInt(vm.receiveCount(), 10);
+      var bCount = parseInt(vm.barcodeCount(), 10);
 
-      //decrement received count every successful add of barcdode
-      rCount--;
+      //increment enter# count
+      bCount++;
 
-      //Update "Count#"
-      vm.receiveCount(rCount.toString());
+      vm.barcodeCount(bCount.toString());
 
-      //clear barcode field
-      vm.data.productBarcodeID.setValue(null);
+      //clear barcode fields
+      if (listtype) {
+        vm.data.productBarcodeIdList.setValue(null);
+      } else {
+        vm.data.productBarcodeID.setValue(null);
+      }
+
     }, function(err) {
       notify.error(err);
     }));
@@ -258,7 +227,8 @@ define('src/inventory/enter.barcode.vm', [
   }
 
   //Get the counts of barcode entered by the user
-  function getBarcodeCounts(list) {
+  function getBarcodeCounts(list, barcodeCount) {
+
     var count = 0,
       x,
       barcode;
@@ -271,8 +241,10 @@ define('src/inventory/enter.barcode.vm', [
       }
     }
 
-    return count;
+    //return current barcode count + number of barcodes in the list 
+    return count + barcodeCount;
   }
+
 
   return EnterBarcodeViewModel;
 });
