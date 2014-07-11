@@ -163,8 +163,14 @@ define('src/inventory/enter.barcode.vm', [
       listtype = true,
       join = joiner();
 
-    //split list by return key
-    barcode = barcodeList.split('\n');
+
+    if (barcodeList !== null) {
+      //split list by return key
+      barcode = barcodeList.split('\n');
+    } else {
+      cb();
+      return;
+    }
 
     //get latest barcode count
     barcodeCount = getBarcodeCounts(barcodeList, barcodeCount);
@@ -233,7 +239,12 @@ define('src/inventory/enter.barcode.vm', [
       x,
       barcode;
 
-    barcode = list.split('\n');
+    if (list !== null) {
+      barcode = list.split('\n');
+    } else {
+      return 0;
+    }
+
 
     for (x = 0; x < barcode.length; x++) {
       if (barcode[x] !== "") {

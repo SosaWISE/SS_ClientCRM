@@ -5,9 +5,15 @@ table(class="fh-wrap")
         //li(class="inventory_header")
         li(style="margin: 10px;")
           div(class="header_left")
-            ul(class="header_ul")
+            ul(class="header_ul" style="color: white;")
               li
-                label PO#
+                span(class="label") Vendor
+                div(data-bind="cvm:data.vendorTypeCvm")            
+              li
+                span(class="label") PO# List
+                div(data-bind="cvm:data.purchaseOrderListCvm")                
+              li
+                span(class="label") PO#
               li
                 input(type="text" placeholder="" data-bind="value:data.PurchaseOrderID,valueUpdate:'keyup',select:focusFirst, event: { keyup: resetPage}")
               li

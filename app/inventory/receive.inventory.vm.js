@@ -54,7 +54,9 @@ define('src/inventory/receive.inventory.vm', [
         ukov.validators.isRequired('PackingSlipNumber ID is required')
       ]
     },
-    PackingSlipID: {}
+    PackingSlipID: {},
+    VendorType: {},
+    PurchaseOrderList: {},
   };
 
 
@@ -75,6 +77,27 @@ define('src/inventory/receive.inventory.vm', [
     //This a layer for enter barcode screen pop up
     _this.layersVm = new LayersViewModel({
       controller: _this,
+    });
+
+    //This is the dropdown vendor type
+    _this.data.vendorTypeCvm = new ComboViewModel({
+      selectedValue: _this.data.VendorType,
+      nullable: true,
+      fields: {
+        value: 'VendorID',
+        text: 'VendorName',
+      },
+    });
+
+    //This is the dropdown PO# list
+    _this.data.purchaseOrderListCvm = new ComboViewModel({
+      selectedValue: _this.data.PurchaseOrderList,
+      nullable: true,
+      fields: {
+        value: 'GPPONumber',
+        text: 'GPPONumber',
+      },
+
     });
 
 
@@ -143,6 +166,10 @@ define('src/inventory/receive.inventory.vm', [
 
     //Clear fields and grid when there's a change on PO#
     _this.resetPage = function() {
+
+      //clear packing slip#
+      _this.data.PackingSlipNumber(null);
+
       //clear grid
       _this.inventoryListGvm.list([]);
     };
@@ -153,6 +180,7 @@ define('src/inventory/receive.inventory.vm', [
     //Search PO by PurchaseOrderID
     _this.cmdSearch = ko.command(function(cb, vm) {
       _this.search(vm, cb);
+      cb();
     });
 
 
@@ -163,6 +191,35 @@ define('src/inventory/receive.inventory.vm', [
           _this.focusFirst(true);
         }, 100);
       }
+    });
+
+    //Populate PO list when there's a change of vendor
+    _this.data.VendorType.subscribe(function(VendorType, cb) {
+      if (VendorType) {
+
+        dataservice.inventoryenginesrv.PurchaseOrder.read({
+          id: VendorType,
+          link: 20,
+        }, null, utils.safeCallback(cb, function(err, resp) {
+          if (resp.Code === 0) {
+
+            _this.data.purchaseOrderListCvm.setList(resp.Value);
+
+          } else {
+            notify.warn('No records found.', null, 3);
+          }
+        }));
+
+      }
+    });
+
+    //Populate PO field when there's a change of vendor
+    _this.data.PurchaseOrderList.subscribe(function(purchaseOrderNumber) {
+      if (purchaseOrderNumber) {
+        _this.data.PurchaseOrderID(purchaseOrderNumber);
+        _this.search(_this);
+      }
+
     });
 
 
@@ -179,15 +236,20 @@ define('src/inventory/receive.inventory.vm', [
 
     this.inventoryListGvm.list([]);
 
+    var _this = this;
     join = join;
 
+    //load vendors
+    load_vendorList(_this.data.vendorTypeCvm, join.add());
+
   };
+
   ReceiveInventoryViewModel.prototype.onActivate = function(routeData) {
 
     routeData.action = 'receive';
   };
 
-  ReceiveInventoryViewModel.prototype.search = function(vm, cb) {
+  ReceiveInventoryViewModel.prototype.search = function(vm) {
 
     var iePurchaseOrder = vm.data.getValue(),
 
@@ -223,7 +285,7 @@ define('src/inventory/receive.inventory.vm', [
     }));
 
     //since we are using joiner. invoked cb only once
-    cb();
+    //cb();
 
   };
 
@@ -239,14 +301,19 @@ define('src/inventory/receive.inventory.vm', [
         //Empty grid before inserting new data
         vm.inventoryListGvm.list([]);
 
-        //Update inventoryListGvm grid
-        for (var x = 0; x < resp.Value.length; x++) {
+        if (resp.Value.length > 0) {
 
-          //console.log(JSON.stringify(resp.Value[x]));
+          //Update inventoryListGvm grid
+          for (var x = 0; x < resp.Value.length; x++) {
 
-          vm.inventoryListGvm.list.push(resp.Value[x]);
+            //console.log(JSON.stringify(resp.Value[x]));
+
+            vm.inventoryListGvm.list.push(resp.Value[x]);
+          }
+
+        } else {
+          notify.warn('No records found.', null, 3);
         }
-
 
       } else {
         notify.warn('PurchaseOrderID not found', null, 3);
@@ -286,6 +353,27 @@ define('src/inventory/receive.inventory.vm', [
       notify.error(err);
     }));
   }
+
+  //load vendors
+  function load_vendorList(cvm, cb) {
+
+    dataservice.inventoryenginesrv.VendorList.read({}, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+
+        console.log("VendorList:" + JSON.stringify(resp.Value));
+
+        //set vendor list
+        cvm.setList(resp.Value);
+
+      } else {
+        notify.warn('No records found.', null, 3);
+      }
+    }));
+
+  }
+
+
 
   return ReceiveInventoryViewModel;
 });

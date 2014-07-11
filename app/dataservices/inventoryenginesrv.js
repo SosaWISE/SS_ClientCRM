@@ -21,7 +21,8 @@ define('src/dataservices/inventoryenginesrv', [
       'WarehouseSiteList',
       'LocationTypeList',
       'Locations',
-      'ProductBarcodeLocations'
+      'ProductBarcodeLocations',
+      'VendorList'
     ].forEach(function(collectionName) {
       result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
     });
