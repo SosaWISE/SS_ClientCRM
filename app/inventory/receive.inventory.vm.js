@@ -172,6 +172,7 @@ define('src/inventory/receive.inventory.vm', [
 
       //clear grid
       _this.inventoryListGvm.list([]);
+
     };
 
 
@@ -216,7 +217,16 @@ define('src/inventory/receive.inventory.vm', [
     //Populate PO field when there's a change of vendor
     _this.data.PurchaseOrderList.subscribe(function(purchaseOrderNumber) {
       if (purchaseOrderNumber) {
+
+        var previousPO = _this.data.PurchaseOrderID();
+
+        //clear packing slip# if PO# has changed
+        if (previousPO !== null && previousPO.trim() !== purchaseOrderNumber.trim()) {
+          _this.data.PackingSlipNumber(null);
+        }
+
         _this.data.PurchaseOrderID(purchaseOrderNumber);
+
         _this.search(_this);
       }
 
