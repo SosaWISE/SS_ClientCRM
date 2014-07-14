@@ -114,6 +114,12 @@ define('src/inventory/receive.inventory.vm', [
           Quantity: part.Quantity
         };
 
+        //If Enter Qty Received greater than Remain, show error message
+        if (part.WithBarcodeCount > part.WithoutBarcodeCount) {
+          notify.warn('\'Enter Qty Received\' should not be greater than \'Remain\'', null, 3);
+          cb();
+        }
+
         //If Enter Qty Received greater than zero, proceed to entering barcode screen
         if (parseInt(part.WithBarcodeCount, 10) > 0) {
 
