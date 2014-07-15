@@ -91,16 +91,32 @@ define('src/inventory/enter.barcode.vm', [
     //Update "Enter#" label everytime user hit enter key on barcode textarea
     _this.barcodeUpdateCount = function(data, event) {
 
-      if (event.keyCode === 13) {
+      if (event.keyCode === 13 || event.keyCode === 9) {
 
         var barcodeCount = parseInt(_this.barcodeCount(), 10),
-          fCount = getBarcodeCounts(_this.data.productBarcodeIdList(), barcodeCount);
+          fCount,
+          updatedList;
+
+        if (event.keyCode === 9) {
+          updatedList = convertTabToEnter(_this.data.productBarcodeIdList());
+          _this.data.productBarcodeIdList(updatedList);
+        }
+
+        fCount = getBarcodeCounts(_this.data.productBarcodeIdList(), barcodeCount);
 
         if (fCount > _this.receiveCount()) {
           notify.warn('Entered barcode count must not exceed received count.', null, 3);
           return;
         }
+
+        if (event.keyCode === 9) {
+          return false;
+        }
+
       }
+
+      return true;
+
     };
 
 
@@ -254,6 +270,17 @@ define('src/inventory/enter.barcode.vm', [
 
     //return current barcode count + number of barcodes in the list 
     return count + barcodeCount;
+  }
+
+  //convert tab to enter on the fly
+  function convertTabToEnter(list) {
+
+    if (list !== null) {
+      list = list + "\n";
+    }
+
+    return list;
+
   }
 
 

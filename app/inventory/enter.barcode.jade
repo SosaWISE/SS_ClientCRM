@@ -17,7 +17,7 @@ div(class="barcode_wrapper")
       input(type="text" data-bind="ukov:data.productBarcodeID, value:data.productBarcodeID,valueUpdate:'afterkeydown',select:focusFirst, event: { keydown: processBarcode}")  
     li
       Label Enter list of Barcodes
-      textarea(rows="5" data-bind="ukov:data.productBarcodeIdList, value:data.productBarcodeIdList,valueUpdate:'afterkeydown', event: { keyup: barcodeUpdateCount}")  
+      textarea(rows="5" data-bind="ukov:data.productBarcodeIdList, value:data.productBarcodeIdList,valueUpdate:'afterkeydown', event: { keydown: barcodeUpdateCount}")  
     li
       span(class="btn-bg", tabindex="0", data-bind="cmd:clickProcessBarcode") Submit List
   div(class="actions")          
