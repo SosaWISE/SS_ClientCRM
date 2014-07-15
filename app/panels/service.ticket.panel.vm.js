@@ -5,6 +5,8 @@ define('src/panels/service.ticket.panel.vm', [
   'src/core/utils',
   'src/core/controller.vm',
   'src/serviceTicket/service.ticket.gvm',
+  'src/serviceTicket/create.ticket.vm',
+  'src/core/layers.vm',
   'src/core/joiner',
   'ko',
   'src/ukov',
@@ -15,6 +17,8 @@ define('src/panels/service.ticket.panel.vm', [
   utils,
   ControllerViewModel,
   ServiceTicketGridViewModel,
+  CreateTicketViewModel,
+  LayersViewModel,
   joiner,
   ko,
   ukov
@@ -43,14 +47,18 @@ define('src/panels/service.ticket.panel.vm', [
 
     });
 
+    //This a layer for creating new ticket
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
+    });
+
     //Ticket status dropdown
     _this.data.ticketStatusCvm = new ComboViewModel({
       selectedValue: _this.data.TicketStatus,
-      nullable: true,
-      // fields: {
-      //   value: 'statusCode',
-      //   text: 'Status',
-      // },
+      fields: {
+        value: 'TicketStatusID',
+        text: 'TicketStatusCode',
+      },
     });
 
 
@@ -58,7 +66,15 @@ define('src/panels/service.ticket.panel.vm', [
     //
 
     _this.cmdNewTicket = ko.command(function(cb /*, vm*/ ) {
-      alert("@TODO create new ticket");
+
+      //Go to Enter Barcodes screen
+      _this.layersVm.show(new CreateTicketViewModel({
+        title: 'Create New Service Ticket'
+      }), function onClose( /*result*/ ) {
+
+      });
+
+
       cb();
     });
 
@@ -72,13 +88,35 @@ define('src/panels/service.ticket.panel.vm', [
   //
 
   ServiceTicketViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-    //var _this = this;
+    var _this = this;
     join = join;
 
     //Initialize empty grid
     this.serviceTicketGvm.list([]);
 
+    //load status list
+    load_ticketStatusList(_this.data.ticketStatusCvm, join.add());
+
   };
+
+  function load_ticketStatusList(cvm, cb) {
+
+    dataservice.ticketsrv.TicketStatusList.read({}, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+
+        console.log("TicketStatusList:" + JSON.stringify(resp.Value));
+
+        //Set result to Location combo list
+        cvm.setList(resp.Value);
+
+      } else {
+        notify.warn('No records found.', null, 3);
+      }
+    }));
+
+  }
+
 
   return ServiceTicketViewModel;
 });
