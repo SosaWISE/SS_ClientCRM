@@ -6,6 +6,7 @@ define('src/app', [
   'src/panels/surveys.panel.vm',
   'src/panels/swing.panel.vm',
   'src/panels/inventory.panel.vm',
+  'src/panels/service.ticket.panel.vm',
   'src/core/notify'
 ], function(
   router,
@@ -15,6 +16,7 @@ define('src/app', [
   SurveysPanelViewModel,
   SwingViewModel,
   InventoryViewModel,
+  ServiceTicketViewModel,
   notify
 ) {
   "use strict";
@@ -77,6 +79,12 @@ define('src/app', [
       title: 'Inventory',
       ico: '&#128101;',
     }),
+    new ServiceTicketViewModel({
+      routePart: routePart,
+      id: 'serviceticket',
+      title: 'Service Tickets',
+      ico: '&#128101;',
+    }),
   ]);
   setTemplate(app.panels, 'viewTmpl', 'panel_');
 
@@ -109,6 +117,7 @@ define('src/app', [
 
   router.addRoute(app.panelMap.swing, 'swing', '', {});
   router.addRoute(app.panelMap.inventory, 'inventory', ':tab', {});
+  router.addRoute(app.panelMap.serviceticket, 'serviceticket', '', {});
 
   return app;
 });
