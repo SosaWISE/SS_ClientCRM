@@ -143,7 +143,7 @@ define('src/account/security/existingequipment.editor.vm', [
   };
 
   function load_equipment(cache, cvm, cb) {
-    readMonitoringStationOS(cache, cvm, null, 'equipmentList', {}, cb);
+    readMonitoringStationOS(cache, cvm, null, 'equipmentExistingList', {}, cb);
   }
 
   function load_zoneEventTypes(cache, cvm, monitoringStationOsId, cb) {
