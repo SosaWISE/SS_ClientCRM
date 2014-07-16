@@ -4,7 +4,7 @@ div(class="locale")
   span(data-bind="text:LocalizationCode")
   |:
 div(class="edit",data-bind="visible:!editorVM()")
-  a(title="edit language",data-bind="click:clickEdit")
+  a(title="edit language",data-bind="cmd:cmdEdit")
     pre(data-bind="text:qtData.TextFormat()||'[No Translation]'")
 div(data-bind="with:editorVM")
   div(data-bind="template:viewTmpl")

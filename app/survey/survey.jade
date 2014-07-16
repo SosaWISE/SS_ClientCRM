@@ -2,19 +2,21 @@ div(class="survey")
   div(class="head")
     ul(class="sv")
       li
-        a(class="add-btn btn",data-bind="click:clickAddSurveyTranslation") Add
+        a(class="add-btn btn",data-bind="cmd:cmdAddSurveyTranslation") Translation
       <!-- ko foreach:translations -->
       li(data-bind="cmd:cmdToggle")
         a(class="btn",data-bind="active:active,busy:cmdToggle.busy")
           span(data-bind="text:model.LocalizationCode")
       <!-- /ko -->
     ul(class="sv spaced",style="position:absolute;right:5px;top:5px;")
-      li
-        a(data-bind="click:clickHelp") Markdown Cheatsheet
+      li(style="margin-left:0px;")
+        a(data-bind="click:clickHelp") MD Cheatsheet
       li
         a(data-bind="click:clickTakeSurvey") Test Survey
       li(style="padding-left:5px;")
         div(style="min-width:70px;white-space:nowrap;",data-bind="cvm:takeVm.localeCvm")
+      li
+        a(class="btn small",data-bind="cmd:cmdPublish") Publish
 
   div(class="content")
     div(data-bind="foreach:questions")
@@ -24,7 +26,7 @@ div(class="survey")
     div(class="question-actions")
       ul(class="sv")
         li
-          a(class="btn add-btn",data-bind="click:clickAddQuestion")
+          a(class="btn add-btn",data-bind="cmd:cmdAddQuestion")
             span(data-bind="text:nextName")
 
   div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

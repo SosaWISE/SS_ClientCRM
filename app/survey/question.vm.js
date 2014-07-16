@@ -53,7 +53,7 @@ define('src/survey/question.vm', [
       }
       if (resp.Value) {
         var list = resp.Value.map(function(item) {
-          return createPossibleAnswerMap(_this.possibleAnswersVM, item);
+          return createPossibleAnswerMap(_this, item);
         });
         _this.possibleAnswerMaps(list);
       } else {
@@ -80,7 +80,7 @@ define('src/survey/question.vm', [
 
   QuestionViewModel.prototype.addPossibleAnswerMap = function(model) {
     var _this = this;
-    _this.possibleAnswerMaps.push(createPossibleAnswerMap(_this.possibleAnswersVM, model));
+    _this.possibleAnswerMaps.push(createPossibleAnswerMap(_this, model));
   };
 
   QuestionViewModel.prototype.addQuestion = function(topVm, model, parent, cb) {
@@ -115,9 +115,11 @@ define('src/survey/question.vm', [
   //   return pName + index + '.';
   // }
 
-  function createPossibleAnswerMap(possibleAnswersVM, model) {
+  function createPossibleAnswerMap(_this, model) {
     return new QPossibleAnswerMapViewModel({
-      possibleAnswersVM: possibleAnswersVM,
+      questionVM: _this,
+      possibleAnswersVM: _this.possibleAnswersVM,
+      topVm: _this.topVm,
       model: model,
     });
   }

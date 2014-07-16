@@ -56,8 +56,9 @@ define('src/survey/questiontranslation.vm', [
     //
     // events
     //
-    _this.clickEdit = function() {
+    _this.cmdEdit = ko.command(function(cb) {
       if (_this.editorVM()) {
+        cb();
         return;
       }
       //
@@ -66,7 +67,10 @@ define('src/survey/questiontranslation.vm', [
         questionMeaningVM: _this.questionVM.questionMeaningVM,
       });
       _this.editorVM(vm);
-    };
+      cb();
+    }, function(busy) {
+      return !busy && !_this.surveyTranslationVM.surveyVM.isReadonly();
+    });
     _this.clickEndEdit = function(force) {
       if (!force && _this.cmdSave.busy()) {
         return;

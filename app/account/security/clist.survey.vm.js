@@ -85,7 +85,7 @@ define('src/account/security/clist.survey.vm', [
     _this.activeChild(_this.currentSurveyVm = null);
 
     load_accountSurveys(_this.accountid, _this.gvm, join.add());
-    load_activeSurvey(_this.surveyTypeId, function(survey) {
+    load_currentSurvey(_this.surveyTypeId, function(survey) {
       _this.surveyid = survey.SurveyID;
     }, join);
   };
@@ -332,11 +332,11 @@ define('src/account/security/clist.survey.vm', [
   //
   //
 
-  function load_activeSurvey(surveyTypeId, setter, join) {
+  function load_currentSurvey(surveyTypeId, setter, join) {
     var cb = join.add();
     dataservice.survey.surveyTypes.read({
       id: surveyTypeId,
-      link: 'activeSurvey',
+      link: 'currentSurvey',
     }, setter, cb);
   }
 

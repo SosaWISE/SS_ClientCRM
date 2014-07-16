@@ -18,6 +18,8 @@ define('src/survey/surveytranslation.vm', [
   function SurveyTranslationViewModel(options) {
     var _this = this;
     SurveyTranslationViewModel.super_.call(_this, options);
+    ControllerViewModel.ensureProps(_this, ['model', 'surveyVM']);
+
 
     _this.id = _this.model.SurveyTranslationID;
 

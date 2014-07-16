@@ -47,6 +47,9 @@ define('src/survey/survey.vm', [
 
     // observables
     _this.translations = ko.observableArray();
+    _this.isCurrent = ko.observable(_this.model.IsCurrent);
+    _this.isReadonly = ko.observable(_this.model.IsReadonly);
+    _this.isReadonly(false); //@TODO: remove
 
     _this.layersVm = new LayersViewModel({
       controller: _this,
@@ -64,7 +67,7 @@ define('src/survey/survey.vm', [
     //
     // events
     //
-    _this.clickAddSurveyTranslation = function() {
+    _this.cmdAddSurveyTranslation = ko.command(function(cb) {
       _this.layersVm.show(new NewSurveyTranslationViewModel({
         surveyVM: _this,
       }), function(model) {
@@ -77,30 +80,59 @@ define('src/survey/survey.vm', [
           vm.cmdToggle.execute();
         }
       });
-    };
-    _this.clickAddToken = function(vm) {
+      cb();
+    }, function(busy) {
+      return !busy && !_this.isReadonly();
+    });
+    _this.cmdAddToken = ko.command(function(cb, vm) {
       _this.layersVm.show(new NewQMTokenMapViewModel({
         questionMeaningVM: vm,
         tokensVM: _this.tokensVM,
       }));
-    };
-    _this.clickAddPossibleAnswer = function(vm) {
+      cb();
+    }, function(busy) {
+      return !busy && !_this.isReadonly();
+    });
+    _this.cmdAddPossibleAnswer = ko.command(function(cb, vm) {
       _this.layersVm.show(new NewQPossibleAnswerMapViewModel({
         questionVM: vm,
         possibleAnswersVM: _this.possibleAnswersVM,
       }));
-    };
+      cb();
+    }, function(busy) {
+      return !busy && !_this.isReadonly();
+    });
     _this.clickTakeSurvey = _this.takeVm.clickTake;
 
-    _this.clickAddQuestion = function(parentVm) {
+    _this.cmdAddQuestion = ko.command(function(cb, parentVm) {
       newQuestion(_this, parentVm);
-    };
+      cb();
+    }, function(busy) {
+      return !busy && !_this.isReadonly();
+    });
     _this.clickHelp = function() {
       if (!_this.helpVm) {
         _this.helpVm = new MarkdownHelpViewModel();
       }
       _this.layersVm.show(_this.helpVm);
     };
+
+    _this.cmdPublish = ko.command(function(cb) {
+      var msg = '';
+      // if (!_this.isReadonly()) { //@TODO: uncomment
+      //   msg += 'This survey will become the current survey, but it will no longer be editable. ';
+      // }
+      msg += 'Are you sure you want to publish this survey?';
+      notify.confirm('Publish?', msg, function(result) {
+        if (result === 'yes') {
+          publish(_this, cb);
+        } else {
+          cb();
+        }
+      });
+    }, function(busy) {
+      return !busy && !_this.isCurrent();
+    });
   }
   utils.inherits(SurveyViewModel, QuestionsParentViewModel);
   SurveyViewModel.prototype.routePart = 'surveyid';
@@ -203,6 +235,24 @@ define('src/survey/survey.vm', [
       }
       parentVm.addQuestion(surveyVM, model, parentVm);
     });
+  }
+
+  function publish(_this, cb) {
+    dataservice.survey.surveys.save({
+      id: _this.id,
+      link: 'publish',
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Message && resp.Message !== "Success") {
+        notify.error(resp);
+      }
+      // mark all as not current
+      _this.surveyTypeVM.childs().forEach(function(vm) {
+        vm.isCurrent(false);
+      });
+      // mark as current
+      _this.isCurrent(true);
+      // _this.isReadonly(true); //@TODO: uncomment
+    }, notify.error));
   }
 
   return SurveyViewModel;

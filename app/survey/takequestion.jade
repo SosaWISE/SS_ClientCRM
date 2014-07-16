@@ -1,5 +1,5 @@
 table(class="question takequestion",data-bind="toggle:{'complete':isComplete}")
-  tr
+  tr(data-bind="css:{'fails':fails}")
     td(class="title")
       h2(data-bind="text:name")
     td(class="content")

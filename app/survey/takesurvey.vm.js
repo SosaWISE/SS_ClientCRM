@@ -159,9 +159,19 @@ define('src/survey/takesurvey.vm', [
 
   TakeSurveyViewModel.prototype.saveSurvey = function(cb) {
     var _this = this,
-      errMsg, answers = [],
+      errMsg, fails, isComplete = true,
+      answers = [],
       tokensVM = _this.tokensVM,
       mapToTokenAnswers = [];
+
+    function confirmCb(result) {
+      if (result === 'yes') {
+        doSave(_this, answers, mapToTokenAnswers, !errMsg, !!isComplete, cb);
+      } else {
+        cb();
+      }
+    }
+
     if (_this.surveyData) {
       if (!_this.showSave()) { // if (_this.resultid && !_this.retake) {
         notify.warn(strings.format('Survey {0} has already been saved.', _this.resultid), null, 7);
@@ -171,6 +181,9 @@ define('src/survey/takesurvey.vm', [
 
       // gather answers
       _this.survey().questions().forEach(function(vm) {
+        //
+        isComplete &= vm.isComplete.peek();
+        //
         var errResult = vm.addAnswers(answers);
         // only store first error message
         if (!errMsg && errResult) {
@@ -184,42 +197,42 @@ define('src/survey/takesurvey.vm', [
             Answer: item.Answer,
           });
         }
+        fails |= item.Fails;
         // not needed in answers array
         delete item.MapToToken;
         delete item.Answer;
+        delete item.Fails;
       });
 
       // check for errors
       if (errMsg) {
         notify.warn(errMsg, null, 7);
-        // allow for saving even if there are errors
-        notify.confirm('Save incomplete survey?',
-          'This survey is incomplete. Saving now will result in an automatic failure, ' +
-          'but you will be able to retake it later. Do you still want to save the survey?',
-          function(result) {
-            if (result === 'yes') {
-              doSave(_this, answers, mapToTokenAnswers, errMsg, cb);
-            } else {
-              cb();
-            }
-          });
+        if (fails) {
+          notify.confirm('Save failed survey?',
+            'This survey has failed. It can be retaken later. Do you still want to save the survey and all edited fields?',
+            confirmCb);
+        } else {
+          notify.confirm('Save incomplete survey?',
+            'This survey is incomplete. Saving now will result in an automatic failure, ' +
+            'but you will be able to retake it later. Do you still want to save the survey and all edited fields?',
+            confirmCb);
+        }
       } else {
-        doSave(_this, answers, mapToTokenAnswers, errMsg, cb);
+        confirmCb('yes');
       }
     }
   };
 
-  function doSave(_this, answers, mapToTokenAnswers, errMsg, cb) {
+  function doSave(_this, answers, mapToTokenAnswers, passed, isComplete, cb) {
     dataservice.survey.results.save({
       data: {
         // ResultID: 0,
         AccountId: _this.accountid,
         SurveyTranslationId: _this.surveyData.surveyTranslation.SurveyTranslationID,
         Context: _this.tokensVM.stringifyContext(_this.dataContext), // stringified Context
-        // CreatedBy: 'boh?',
         // Caller: 'boh?',
-        Passed: !errMsg, //@REVIEW: Passed
-        IsComplete: !errMsg, //@REVIEW: IsComplete
+        Passed: passed,
+        IsComplete: isComplete,
         //
         Answers: answers, // all visible question answers
         MapToTokenAnswers: mapToTokenAnswers,

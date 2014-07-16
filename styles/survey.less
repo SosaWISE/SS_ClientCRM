@@ -6,6 +6,9 @@
       a.active {
         color: @site-green;
       }
+      a.current:after {
+        content: "(current)";
+      }
     }
 
     .survey-type {
@@ -50,6 +53,10 @@
       padding-bottom: 10px;
       li {
         padding-top: 3px;
+
+        .fails {
+          color: red;
+        }
       }
     }
     &.spaced {
@@ -126,6 +133,10 @@
     border-color: red;
     &.complete {
       border-color: white;
+    }
+
+    tr.fails {
+      background-color: #FEB2B2;
     }
   }
 

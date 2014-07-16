@@ -9,7 +9,7 @@ div(class="panel")
     ul
       <!-- ko foreach:surveys -->
       li(data-bind="click:$parents[1].clickSurvey")
-        a(data-bind="active:active")
+        a(data-bind="active:active,css:{'current':isCurrent}")
           span(data-bind="text:model.Version")
       <!-- /ko -->
       li

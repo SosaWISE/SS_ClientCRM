@@ -27,6 +27,7 @@ define('src/survey/takequestion.vm', [
     QuestionsParentViewModel.ensureProps(_this, ['ukovModel', 'QuestionID', 'show']);
 
     _this.showSubs = ko.observable(false);
+    _this.fails = ko.observable(false);
     initAnswer(_this);
 
     // computed observables
@@ -62,13 +63,20 @@ define('src/survey/takequestion.vm', [
     var _this = this,
       errMsg, answer;
     if (_this.answer.isValid()) {
+      //
+      if (!errMsg && _this.fails.peek()) {
+        errMsg = 'Auto Fail';
+      }
+      //
       answer = _this.answer.getValue();
       list.push({
         QuestionId: _this.QuestionID,
         AnswerText: (answer != null) ? String(answer) : null, // ensure it is a string
-        // user to create map to token answers
+        // use to create map to token answers
         MapToToken: _this.MapToToken,
         Answer: answer,
+        //
+        Fails: _this.fails.peek(),
       });
       if (_this.showSubs()) {
         // begin recursion
@@ -145,6 +153,7 @@ define('src/survey/takequestion.vm', [
         expands = !!paMap && paMap.Expands;
 
       _this.showSubs(expands);
+      _this.fails(paMap && paMap.Fails);
 
       // recursively update child questions to make ukovModel match showSubs and isComplete
       // ukovModel questions are flat so ignoring just this question's questions won't work

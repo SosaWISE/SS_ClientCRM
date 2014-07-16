@@ -47,11 +47,11 @@ define('mock/dataservices/survey.mock', [
         case 'questionMeanings':
           result = mockery.filterListBy(questionMeanings, 'SurveyTypeId', id);
           break;
-        case 'activeSurvey':
+        case 'currentSurvey':
           // get all surveys for type
           result = mockery.filterListBy(surveys, 'SurveyTypeId', id);
           // find first one that is marked as active or first in list?????
-          result = mockery.findSingleBy(result, 'Active', true) || result[0];
+          result = mockery.findSingleBy(result, 'IsCurrent', true) || result[0];
           // webserver should return an error when result if null
           if (!result) {
             code = -1;
@@ -147,12 +147,34 @@ define('mock/dataservices/survey.mock', [
       }), setter, cb);
     };
     dataservice.survey.surveys.save = function(params, setter, cb) {
-      var data = params.data;
-      send(0, mockery.createOrUpdate(surveys, 'SurveyID', '@INC(survey)', {
-        SurveyID: data.SurveyID,
-        SurveyTypeId: data.SurveyTypeId,
-        Version: data.Version,
-      }), setter, cb);
+      var result, data = params.data;
+      switch (params.link || null) {
+        case null:
+          result = mockery.createOrUpdate(surveys, 'SurveyID', '@INC(survey)', {
+            SurveyID: data.SurveyID,
+            SurveyTypeId: data.SurveyTypeId,
+            Version: data.Version,
+            IsCurrent: false,
+            IsReadonly: false,
+          });
+          break;
+        case 'publish':
+          result = mockery.findSingleBy(surveys, 'SurveyID', params.id);
+
+          // mark all as not current
+          mockery.filterListBy(surveys, 'SurveyTypeId', result.SurveyTypeId).forEach(function(item) {
+            item.IsCurrent = false;
+          });
+
+          // mark this one as current
+          result.IsCurrent = true;
+          result.IsReadonly = true;
+
+          result = true;
+          break;
+      }
+
+      send(0, result, setter, cb);
     };
     dataservice.survey.questionMeanings.save = function(params, setter, cb) {
       var data = params.data;
@@ -247,6 +269,7 @@ define('mock/dataservices/survey.mock', [
         QuestionId: data.QuestionId,
         PossibleAnswerId: data.PossibleAnswerId,
         Expands: data.Expands,
+        Fails: data.Fails,
       }, function(list, value) {
         var index;
         list.some(function(item, i) {
@@ -328,6 +351,8 @@ define('mock/dataservices/survey.mock', [
         SurveyID: '@INC(survey)',
         SurveyTypeId: '@FK(surveyType)',
         Version: '@NUMBER(1,2).1.@INC(surveyVersion)',
+        IsCurrent: false,
+        IsReadonly: false,
       }
     ],
   }).list;
@@ -434,6 +459,7 @@ define('mock/dataservices/survey.mock', [
         QuestionId: '@FK(questions)',
         PossibleAnswerId: '@FK(possibleAnswer)',
         Expands: true, //'@BOOL',
+        Fails: false, //'@BOOL',
       }
     ],
   }).list;
@@ -532,7 +558,7 @@ define('mock/dataservices/survey.mock', [
         AccountId: svResult.AccountId,
         // RecruitId: svResult.RecruitId,
         Caller: svResult.Caller,
-        // Passed: svResult.Passed, // this will be decided by the server
+        Passed: svResult.Passed,
         IsComplete: svResult.IsComplete,
         Context: svResult.Context,
         CreatedBy: svResult.CreatedBy,

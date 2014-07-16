@@ -17,20 +17,20 @@ table(class="question")
       <!-- /ko -->
       ul(class="sv tlist cf")
         li
-          a(class="btn small add-btn",data-bind="click:topVm.clickAddPossibleAnswer") Add
+          a(class="btn small add-btn",data-bind="cmd:topVm.cmdAddPossibleAnswer")
         li
           span(style="color:black;") Possible Answers:
           |&nbsp;
         <!-- ko foreach:possibleAnswerMaps -->
-        li(data-bind="cmd:cmdToggle")
+        li
           a(class="btn small",
-            data-bind="active:active,busy:cmdToggle.busy,attr:{title:active()?'shows sub questions':'sub questions hidden'}")
+            data-bind="cmd:cmdEdit,active:expands,css:{'fails':fails}")
             span(data-bind="text:possibleAnswer.AnswerText")
         <!-- /ko -->
       <!-- ko with:questionMeaningVM -->
       ul(class="sv tlist cf")
         li
-          a(class="btn small add-btn",data-bind="click:$parent.topVm.clickAddToken") Add
+          a(class="btn small add-btn",data-bind="cmd:$parent.topVm.cmdAddToken")
         li
           span(style="color:black;") Tokens:
           |&nbsp;
@@ -56,5 +56,5 @@ table(class="question")
         ul(class="sv")
           li
             a(class="btn add-btn",
-              data-bind="click:topVm.clickAddQuestion,cssDisabled:noAddSubQuestion,attr:{title:noAddSubQuestion()?'add a possible answer first':'add sub question'}")
+              data-bind="cmd:topVm.cmdAddQuestion,cssDisabled:noAddSubQuestion,attr:{title:noAddSubQuestion()?'add a possible answer first':'add sub question'}")
               span(data-bind="text:nextName")
