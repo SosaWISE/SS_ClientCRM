@@ -12,7 +12,8 @@ define('src/dataservices/ticketsrv', [
       result = {};
     [
 
-      'TicketStatusList'
+      'TicketStatusList',
+      'TicketTypeList'
     ].forEach(function(collectionName) {
       result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
     });

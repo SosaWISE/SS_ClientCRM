@@ -5,17 +5,17 @@ define('src/serviceTicket/create.ticket.vm', [
   'src/core/combo.vm',
   'ko',
   'src/ukov',
-  //'src/dataservice',
-  //'src/core/joiner',
+  'src/dataservice',
+  'src/core/joiner',
 ], function(
   notify,
   utils,
   BaseViewModel,
   ComboViewModel,
   ko,
-  ukov
-  //dataservice,
-  //joiner
+  ukov,
+  dataservice,
+  joiner
 ) {
   "use strict";
 
@@ -46,12 +46,13 @@ define('src/serviceTicket/create.ticket.vm', [
     //Ticket type dropdown
     _this.data.ticketTypeCvm = new ComboViewModel({
       selectedValue: _this.data.TicketType,
-      nullable: true,
-      // fields: {
-      //   value: 'TicketStatusID',
-      //   text: 'TicketStatusCode',
-      // },
+      fields: {
+        value: 'TicketTypeID',
+        text: 'TicketTypeName',
+      },
     });
+
+
 
     //
     // events
@@ -79,9 +80,13 @@ define('src/serviceTicket/create.ticket.vm', [
   CreateTicketViewModel.prototype.width = 400;
   CreateTicketViewModel.prototype.height = 'auto';
 
-  CreateTicketViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me    
+  CreateTicketViewModel.prototype.onActivate = function( /*routeData*/ ) {
 
-    join = join;
+    var _this = this,
+      join = joiner();
+
+    //load ticket type list
+    load_ticketTypeList(_this.data.ticketTypeCvm, join.add());
 
   };
 
@@ -94,6 +99,24 @@ define('src/serviceTicket/create.ticket.vm', [
     var _this = this;
     return [_this.layerResult];
   };
+
+  function load_ticketTypeList(cvm, cb) {
+
+    dataservice.ticketsrv.TicketTypeList.read({}, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+
+        console.log("TicketTypeList:" + JSON.stringify(resp.Value));
+
+        //Set result to Location combo list
+        cvm.setList(resp.Value);
+
+      } else {
+        notify.warn('No records found.', null, 3);
+      }
+    }));
+
+  }
 
 
   return CreateTicketViewModel;
