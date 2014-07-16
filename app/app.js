@@ -82,7 +82,7 @@ define('src/app', [
     new ServiceTicketViewModel({
       routePart: routePart,
       id: 'serviceticket',
-      title: 'Service Tickets',
+      title: 'Scheduling',
       ico: '&#128101;',
     }),
   ]);
