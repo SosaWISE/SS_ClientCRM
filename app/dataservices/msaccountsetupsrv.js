@@ -18,6 +18,7 @@ define('src/dataservices/msaccountsetupsrv', [
       'emergencyContactRelationships',
       'monitoringStationOS',
       'equipments',
+      'equipmentExistings',
       'systemDetails',
       'techDetails',
       'serviceTypes',

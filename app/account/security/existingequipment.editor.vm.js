@@ -104,10 +104,17 @@ define('src/account/security/existingequipment.editor.vm', [
       closeLayer(_this);
     };
     _this.cmdSave = ko.command(function(cb) {
-      alert("@TODO");
+      if (!_this.data.isValid()) {
+        notify.warn(_this.data.errMsg(), null, 7);
+        cb();
+        return;
+      }
+      var model = _this.data.getValue();
       // _this.layerResult = null;
       closeLayer(_this);
       cb();
+    }, function(busy) {
+      return !busy && !_this.cmdDelete.busy();
     });
   }
   utils.inherits(ExistingEquipmentEditorViewModel, BaseViewModel);
