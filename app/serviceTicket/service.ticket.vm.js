@@ -1,4 +1,4 @@
-define('src/panels/service.ticket.panel.vm', [
+define('src/serviceTicket/service.ticket.vm', [
   'src/dataservice',
   'src/core/combo.vm',
   'src/core/notify',
@@ -81,7 +81,7 @@ define('src/panels/service.ticket.panel.vm', [
   }
 
   utils.inherits(ServiceTicketViewModel, ControllerViewModel);
-  ServiceTicketViewModel.prototype.viewTmpl = 'tmpl-panel_serviceticket';
+  ServiceTicketViewModel.prototype.viewTmpl = 'tmpl-service-ticket';
 
   //
   // members
