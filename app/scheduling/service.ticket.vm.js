@@ -56,8 +56,8 @@ define('src/scheduling/service.ticket.vm', [
     _this.data.ticketStatusCvm = new ComboViewModel({
       selectedValue: _this.data.TicketStatus,
       fields: {
-        value: 'TicketStatusID',
-        text: 'TicketStatusCode',
+        value: 'StatusCodeID',
+        text: 'StatusCode',
       },
     });
 
@@ -101,11 +101,11 @@ define('src/scheduling/service.ticket.vm', [
 
   function load_ticketStatusList(cvm, cb) {
 
-    dataservice.scheduleenginesrv.TicketStatusList.read({}, null, utils.safeCallback(cb, function(err, resp) {
+    dataservice.scheduleenginesrv.TicketStatusCodeList.read({}, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
 
-        console.log("TicketStatusList:" + JSON.stringify(resp.Value));
+        console.log("TicketStatusCodeList:" + JSON.stringify(resp.Value));
 
         //Set result to Location combo list
         cvm.setList(resp.Value);
