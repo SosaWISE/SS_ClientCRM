@@ -110,11 +110,23 @@ define('src/account/security/existingequipment.editor.vm', [
         return;
       }
       var model = _this.data.getValue();
-      // _this.layerResult = null;
-      closeLayer(_this);
-      cb();
+      dataservice.msaccountsetupsrv.equipmentExistings.save({
+        data: model
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        notify.info('Saved Third Party Equipment', '', 3);
+        if (resp.Message && resp.Message !== 'Success') {
+          notify.error(resp, 3);
+        }
+        _this.data.markClean(model, true);
+        //
+        _this.layerResult = resp.Value;
+        _this.isDeleted = false;
+        closeLayer(_this);
+      }, function(err) {
+        notify.error(err);
+      }));
     }, function(busy) {
-      return !busy && !_this.cmdDelete.busy();
+      return !busy;
     });
   }
   utils.inherits(ExistingEquipmentEditorViewModel, BaseViewModel);
