@@ -1,4 +1,4 @@
-define('src/dataservices/ticketsrv', [
+define('src/dataservices/scheduleenginesrv', [
   'src/core/dataservice.base',
   'src/config'
 ], function(

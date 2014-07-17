@@ -1,11 +1,11 @@
-define('src/serviceTicket/service.ticket.vm', [
+define('src/scheduling/service.ticket.vm', [
   'src/dataservice',
   'src/core/combo.vm',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
-  'src/serviceTicket/service.ticket.gvm',
-  'src/serviceTicket/create.ticket.vm',
+  'src/scheduling/service.ticket.gvm',
+  'src/scheduling/create.ticket.vm',
   'src/core/layers.vm',
   'src/core/joiner',
   'ko',
@@ -101,7 +101,7 @@ define('src/serviceTicket/service.ticket.vm', [
 
   function load_ticketStatusList(cvm, cb) {
 
-    dataservice.ticketsrv.TicketStatusList.read({}, null, utils.safeCallback(cb, function(err, resp) {
+    dataservice.scheduleenginesrv.TicketStatusList.read({}, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
 

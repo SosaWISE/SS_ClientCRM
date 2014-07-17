@@ -1,4 +1,4 @@
-define('src/serviceTicket/create.ticket.vm', [
+define('src/scheduling/create.ticket.vm', [
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
@@ -102,7 +102,7 @@ define('src/serviceTicket/create.ticket.vm', [
 
   function load_ticketTypeList(cvm, cb) {
 
-    dataservice.ticketsrv.TicketTypeList.read({}, null, utils.safeCallback(cb, function(err, resp) {
+    dataservice.scheduleenginesrv.TicketTypeList.read({}, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
 

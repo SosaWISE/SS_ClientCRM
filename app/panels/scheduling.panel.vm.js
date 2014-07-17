@@ -19,9 +19,9 @@ define('src/panels/scheduling.panel.vm', [
   var deps = {},
     ensureDeps = helpers.onetimer(function loadDeps(cb) {
       require([
-        'src/serviceTicket/service.ticket.vm',
-        'src/serviceTicket/schedule.vm',
-        //'src/serviceTicket/report.inventory.vm',
+        'src/scheduling/service.ticket.vm',
+        'src/scheduling/schedule.vm',
+        //'src/scheduling/report.inventory.vm',
       ], function() {
         var args = arguments;
         deps.ServiceTicketViewModel = args[0];

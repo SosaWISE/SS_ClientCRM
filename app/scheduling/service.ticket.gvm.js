@@ -1,4 +1,4 @@
-define('src/serviceTicket/service.ticket.gvm', [
+define('src/scheduling/service.ticket.gvm', [
   'ko',
   'src/slick/slickgrid.vm',
   'src/core/utils',

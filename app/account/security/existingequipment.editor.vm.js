@@ -109,7 +109,7 @@ define('src/account/security/existingequipment.editor.vm', [
         cb();
         return;
       }
-      var model = _this.data.getValue();
+      //var model = _this.data.getValue();
       // _this.layerResult = null;
       closeLayer(_this);
       cb();
