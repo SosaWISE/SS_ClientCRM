@@ -61,16 +61,16 @@ define('src/account/security/existingequipment.editor.vm', [
     _this.searchKey = ukov.wrap('', searchKeySchema);
 
     _this.data = ukov.wrap(_this.item || {
-      EquipmentItem: null,
+      ItemId: null,
       Zone: '',
-      ZoneEventType: null,
-      ItemLocation: null,
+      ZoneEventTypeId: null,
+      EquipmentLocationId: null,
       IsExistingWiring: null,
     }, schema);
 
 
     _this.data.EquipmentCvm = new ComboViewModel({
-      selectedValue: _this.data.EquipmentItem,
+      selectedValue: _this.data.ItemId,
       fields: {
         value: 'EquipmentID',
         text: 'ShortName',
@@ -78,14 +78,14 @@ define('src/account/security/existingequipment.editor.vm', [
     });
 
     _this.data.ZoneEventTypeCvm = new ComboViewModel({
-      selectedValue: _this.data.ZoneEventType,
+      selectedValue: _this.data.ZoneEventTypeId,
       fields: {
         value: 'ZoneEventTypeID',
         text: 'Descrption',
       },
     });
     _this.data.ItemLocationCvm = new ComboViewModel({
-      selectedValue: _this.data.ItemLocation,
+      selectedValue: _this.data.EquipmentLocationId,
       fields: {
         value: 'EquipmentLocationID',
         text: 'EquipmentLocationDesc',
