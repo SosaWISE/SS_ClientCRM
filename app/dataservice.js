@@ -13,7 +13,7 @@ define('src/dataservice', [
   'src/dataservices/invoicesrv',
   'src/dataservices/swingaccountsrv',
   'src/dataservices/inventoryenginesrv',
-  'src/dataservices/ticketsrv',
+  'src/dataservices/scheduleenginesrv',
   'src/dataservices/humanresourcesrv',
 
 ], function(
@@ -31,7 +31,7 @@ define('src/dataservice', [
   createInvoicesrv,
   createSwingAccountSrv,
   createInventoryEngineSrv,
-  createTicketSrv,
+  createScheduleEngineSrv,
   createHumanResourceSrv
 
 ) {
@@ -50,7 +50,7 @@ define('src/dataservice', [
     invoicesrv: createInvoicesrv(),
     swingaccountsrv: createSwingAccountSrv(),
     inventoryenginesrv: createInventoryEngineSrv(),
-    ticketsrv: createTicketSrv(),
+    scheduleenginesrv: createScheduleEngineSrv(),
     humanresourcesrv: createHumanResourceSrv()
   };
 });

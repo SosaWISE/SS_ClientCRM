@@ -1,4 +1,4 @@
-define('src/serviceTicket/schedule.vm', [
+define('src/scheduling/schedule.vm', [
   'src/dataservice',
   'src/core/combo.vm',
   'src/core/notify',

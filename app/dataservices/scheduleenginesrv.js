@@ -1,4 +1,4 @@
-define('src/dataservices/ticketsrv', [
+define('src/dataservices/scheduleenginesrv', [
   'src/core/dataservice.base',
   'src/config'
 ], function(
@@ -8,11 +8,11 @@ define('src/dataservices/ticketsrv', [
   "use strict";
 
   return function() {
-    var serviceDomain = config.serviceDomain + '/ticketsrv',
+    var serviceDomain = config.serviceDomain + '/scheduleenginesrv',
       result = {};
     [
 
-      'TicketStatusList',
+      'TicketStatusCodeList',
       'TicketTypeList'
     ].forEach(function(collectionName) {
       result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
