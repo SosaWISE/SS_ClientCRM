@@ -26,7 +26,7 @@ define('src/account/security/existingequipment.editor.vm', [
 
   schema = {
     _model: true,
-    EquipmentItem: {
+    ItemId: {
       validators: [
         ukov.validators.isRequired('Please select the equipment'),
       ],
@@ -34,12 +34,12 @@ define('src/account/security/existingequipment.editor.vm', [
     Zone: {
       converter: strConverter,
     },
-    ZoneEventType: {
+    ZoneEventTypeId: {
       validators: [
         ukov.validators.isRequired('Please select a zone event type'),
       ],
     },
-    ItemLocation: {
+    EquipmentLocationId: {
       validators: [
         ukov.validators.isRequired('Please select a location'),
       ],
