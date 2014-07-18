@@ -23,7 +23,7 @@ define('src/inventory/enter.barcode.vm', [
   schema = {
     _model: true,
     productBarcodeID: {},
-    productBarcodeIdList: {},
+    productBarcodeIdList: {}
   };
 
 
@@ -183,6 +183,7 @@ define('src/inventory/enter.barcode.vm', [
     if (barcodeList !== null) {
       //split list by return key
       barcode = barcodeList.split('\n');
+
     } else {
       cb();
       return;
@@ -199,6 +200,8 @@ define('src/inventory/enter.barcode.vm', [
 
       cb();
     } else {
+
+      vm.data.productBarcodeIdList.setValue(null);
 
       for (x = 0; x < barcode.length; x++) {
 
@@ -221,9 +224,10 @@ define('src/inventory/enter.barcode.vm', [
 
     //Set of parameters used on api call
     var param2 = {
-      ProductBarcodeID: barcode,
-      PurchaseOrderItemId: vm.purchaseOrderItemID
-    };
+        ProductBarcodeID: barcode,
+        PurchaseOrderItemId: vm.purchaseOrderItemID
+      },
+      badList;
 
     //This is the api for adding barcodes
     dataservice.inventoryenginesrv.ProductBarcode.post(null, param2, null, utils.safeCallback(join.add(), function( /*err, resp*/ ) {
@@ -235,14 +239,27 @@ define('src/inventory/enter.barcode.vm', [
 
       vm.barcodeCount(bCount.toString());
 
-      //clear barcode fields
-      if (listtype) {
-        vm.data.productBarcodeIdList.setValue(null);
-      } else {
+      //clear/return bad barcodes
+      if (!listtype) {
         vm.data.productBarcodeID.setValue(null);
       }
 
     }, function(err) {
+
+      //retain bad barcodes on textbox      
+
+      if (listtype) {
+
+        if (vm.data.productBarcodeIdList() === null) {
+          badList = "";
+        } else {
+          badList = vm.data.productBarcodeIdList();
+        }
+
+        badList = badList + barcode + "\n";
+        vm.data.productBarcodeIdList.setValue(badList);
+      }
+
       notify.error(err);
     }));
 
@@ -282,7 +299,6 @@ define('src/inventory/enter.barcode.vm', [
     return list;
 
   }
-
 
   return EnterBarcodeViewModel;
 });
