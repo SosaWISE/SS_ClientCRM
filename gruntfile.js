@@ -183,6 +183,18 @@ module.exports = function(grunt) {
           '<%= www %>/spec/index.html': 'spec/index.jade',
         },
       },
+      prod_debug: {
+        options: {
+          data: {
+            release: false,
+            debug: true,
+          },
+        },
+        files: {
+          '<%= www %>/index.debug.html': 'index.jade',
+          '<%= www %>/spec/index.debug.html': 'spec/index.jade',
+        },
+      },
       dev: {
         options: {
           data: {
@@ -250,6 +262,7 @@ module.exports = function(grunt) {
     'concat',
     'uglify',
     'jade:prod',
+    'jade:prod_debug',
     'less:prod',
   ]);
   grunt.registerTask('build-dev', [
