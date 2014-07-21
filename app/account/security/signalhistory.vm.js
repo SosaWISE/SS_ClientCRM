@@ -284,7 +284,7 @@ define('src/account/security/signalhistory.vm', [
 
     // create map of all zones in history
     signalHistoryList.forEach(function(item) {
-      var zone = zoneString(item.AreaNum);
+      var zone = zoneString(item.Point);
       if (zone && !signalHistoryZonesMap[zone]) {
         signalHistoryZonesMap[zone] = true;
       }
