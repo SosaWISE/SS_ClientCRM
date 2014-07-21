@@ -1,4 +1,5 @@
 define('src/account/security/existingequipment.editor.vm', [
+  'src/core/querystring',
   'src/dataservice',
   'src/core/combo.vm',
   'src/core/notify',
@@ -7,6 +8,7 @@ define('src/account/security/existingequipment.editor.vm', [
   'ko',
   'src/ukov',
 ], function(
+  querystring,
   dataservice,
   ComboViewModel,
   notify,
@@ -69,7 +71,7 @@ define('src/account/security/existingequipment.editor.vm', [
     }, schema);
 
 
-    _this.data.EquipmentCvm = new ComboViewModel({
+    _this.data.ItemCvm = new ComboViewModel({
       selectedValue: _this.data.ItemId,
       fields: {
         value: 'EquipmentID',
@@ -84,7 +86,7 @@ define('src/account/security/existingequipment.editor.vm', [
         text: 'Descrption',
       },
     });
-    _this.data.ItemLocationCvm = new ComboViewModel({
+    _this.data.EquipmentLocationCvm = new ComboViewModel({
       selectedValue: _this.data.EquipmentLocationId,
       fields: {
         value: 'EquipmentLocationID',
@@ -96,6 +98,9 @@ define('src/account/security/existingequipment.editor.vm', [
       nullable: true,
       list: _this.yesNoOptions,
     });
+
+    subscribeEquipment(_this);
+
     //
     // events
     //
@@ -111,7 +116,7 @@ define('src/account/security/existingequipment.editor.vm', [
       }
       var model = _this.data.getValue();
       dataservice.msaccountsetupsrv.equipmentExistings.save({
-        data: model
+        data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
         notify.info('Saved Third Party Equipment', '', 3);
         if (resp.Message && resp.Message !== 'Success') {
@@ -122,9 +127,7 @@ define('src/account/security/existingequipment.editor.vm', [
         _this.layerResult = resp.Value;
         _this.isDeleted = false;
         closeLayer(_this);
-      }, function(err) {
-        notify.error(err);
-      }));
+      }, notify.error));
     }, function(busy) {
       return !busy;
     });
@@ -156,38 +159,64 @@ define('src/account/security/existingequipment.editor.vm', [
   ExistingEquipmentEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
 
-    load_equipment(_this.cache, _this.data.EquipmentCvm, join.add());
-    load_zoneEventTypes(_this.cache, _this.data.ZoneEventTypeCvm, _this.monitoringStationOsId, join.add());
-    load_equipmentLocation(_this.cache, _this.data.ItemLocationCvm, _this.monitoringStationOsId, join.add());
+    load_equipment(_this.cache, _this.data.ItemCvm.setList, join.add());
+    load_equipmentLocation(_this.cache, _this.monitoringStationOsId, _this.data.EquipmentLocationCvm.setList, join.add());
   };
 
-  function load_equipment(cache, cvm, cb) {
-    readMonitoringStationOS(cache, cvm, null, 'equipmentExistingList', {}, cb);
+  function load_equipment(cache, setter, cb) {
+    readMonitoringStationOS(cache, null, 'equipmentExistingList', {}, setter, cb);
   }
 
-  function load_zoneEventTypes(cache, cvm, monitoringStationOsId, cb) {
-    readMonitoringStationOS(cache, cvm, monitoringStationOsId, 'zoneEventTypes', {
-      'equipmentTypeId': 1,
-    }, cb);
+  function load_zoneEventTypes(cache, monitoringStationOsId, equipmentTypeId, setter, cb) {
+    readMonitoringStationOS(cache, monitoringStationOsId, 'zoneEventTypes', {
+      'equipmentTypeId': equipmentTypeId,
+    }, setter, cb);
   }
 
-  function load_equipmentLocation(cache, cvm, monitoringStationOsId, cb) {
-    readMonitoringStationOS(cache, cvm, monitoringStationOsId, 'equipmentLocations', {}, cb);
+  function load_equipmentLocation(cache, monitoringStationOsId, setter, cb) {
+    readMonitoringStationOS(cache, monitoringStationOsId, 'equipmentLocations', {}, setter, cb);
   }
 
-  function readMonitoringStationOS(cache, cvm, id, link, query, cb) {
-    if (cache[link]) {
-      cvm.setList(cache[link]);
+  function readMonitoringStationOS(cache, id, link, query, setter, cb) {
+    var cacheKey = id + link + querystring.toQuerystring(query);
+    if (cache[cacheKey]) {
+      setter(cache[cacheKey]);
       cb();
       return;
     }
+    // get new list
     dataservice.msaccountsetupsrv.monitoringStationOS.read({
       id: id,
       link: link,
       query: query,
     }, function(val) {
-      cvm.setList(cache[link] = val);
+      setter(cache[cacheKey] = val);
     }, cb);
+  }
+
+  function subscribeEquipment(_this) {
+    var lastItem, setter = _this.data.ZoneEventTypeCvm.setList;
+    _this.data.ItemCvm.selected.subscribe(function(item) {
+      if (item === _this.data.ItemCvm.noItemSelected) {
+        return;
+      }
+      // unwrap item
+      item = item.item;
+      // store for later use
+      lastItem = item;
+      // clear list
+      setter([]);
+      load_zoneEventTypes(_this.cache, _this.monitoringStationOsId, item.EquipmentTypeId, function(val) {
+        if (lastItem === item) {
+          // set list
+          setter(val);
+        }
+      }, function(err) {
+        if (err) {
+          notify.error(err);
+        }
+      });
+    });
   }
 
   return ExistingEquipmentEditorViewModel;

@@ -7,7 +7,7 @@ div(class="existing-equipment-editor")
     ul(class="edit-form limit-width")
       li
         span(class="label") Equipment Item
-        div(data-bind="cvm:data.EquipmentCvm")
+        div(data-bind="cvm:data.ItemCvm")
       li
         span(class="label") Zone
         input(type="text",placeholder="",data-bind="ukov:data.Zone,value:data.Zone,valueUpdate:'keyup'")
@@ -16,7 +16,7 @@ div(class="existing-equipment-editor")
         div(data-bind="cvm:data.ZoneEventTypeCvm")
       li
         span(class="label") Location
-        div(data-bind="cvm:data.ItemLocationCvm")
+        div(data-bind="cvm:data.EquipmentLocationCvm")
       li
         span(class="label") Existing Wiring
         div(data-bind="cvm:data.IsExistingWiringCvm")

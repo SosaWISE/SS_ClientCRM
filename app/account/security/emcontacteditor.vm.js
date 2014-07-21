@@ -238,19 +238,25 @@ define('src/account/security/emcontacteditor.vm', [
       return !busy && !_this.cmdDelete.busy();
     });
     _this.cmdDelete = ko.command(function(cb) {
-      var model = _this.data.getValue();
-      dataservice.msaccountsetupsrv.emergencyContacts.del(_this.item.EmergencyContactID, null, utils.safeCallback(cb, function(err, resp) {
-        notify.info('Deleted ' + formatFullname(model), '', 3);
-        if (resp.Message && resp.Message !== 'Success') {
-          notify.error(resp, 3);
+      notify.confirm('Delete?', 'Are you sure you want to delete this emergency contact?', function(result) {
+        if (result !== 'yes') {
+          cb();
+          return;
         }
-        //
-        _this.layerResult = resp.Value;
-        _this.isDeleted = true;
-        closeLayer(_this);
-      }, function(err) {
-        notify.error(err);
-      }));
+        var model = _this.data.getValue();
+        dataservice.msaccountsetupsrv.emergencyContacts.del(_this.item.EmergencyContactID, null, utils.safeCallback(cb, function(err, resp) {
+          notify.info('Deleted ' + formatFullname(model), '', 3);
+          if (resp.Message && resp.Message !== 'Success') {
+            notify.error(resp, 3);
+          }
+          //
+          _this.layerResult = resp.Value;
+          _this.isDeleted = true;
+          closeLayer(_this);
+        }, function(err) {
+          notify.error(err);
+        }));
+      });
     }, function(busy) {
       return !busy && _this.item.EmergencyContactID && !_this.cmdSave.busy();
     });

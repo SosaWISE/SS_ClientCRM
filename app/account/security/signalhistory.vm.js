@@ -110,9 +110,9 @@ define('src/account/security/signalhistory.vm', [
           field: 'UTCDate',
           formatter: SlickGridViewModel.formatters.datetime,
         }, {
-          id: 'AreaNum',
+          id: 'Point',
           name: 'Zone',
-          field: 'AreaNum',
+          field: 'Point',
           width: 30,
           formatter: function(row, cell, value) {
             return zoneString(value);
@@ -142,11 +142,6 @@ define('src/account/security/signalhistory.vm', [
           formatter: function(row, cell, value, columnDef, dataCtx) {
             return strings.format('{0} - {1}', dataCtx.OpAct, dataCtx.OpActDescription);
           },
-        }, {
-          id: 'Point',
-          name: 'Point',
-          field: 'Point',
-          width: 30,
         }, {
           id: 'PointDescription',
           name: 'PointDescription',

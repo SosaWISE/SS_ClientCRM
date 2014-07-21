@@ -216,6 +216,10 @@ define('src/core/combo.vm', [
       action.onClick(_this.filterText());
     };
 
+    // ensure setList always has the correct scope
+    _this.setList = _this.setList.bind(_this);
+
+    // init
     if (options && options.list) {
       _this.setList(options.list);
     } else {

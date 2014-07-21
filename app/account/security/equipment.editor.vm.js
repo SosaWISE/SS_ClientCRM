@@ -213,14 +213,20 @@ define('src/account/security/equipment.editor.vm', [
       return !busy && !_this.cmdAdd.busy() && !_this.cmdDelete.busy();
     });
     _this.cmdDelete = ko.command(function(cb) {
-      dataservice.msaccountsetupsrv.equipments.del(_this.item.AccountEquipmentID, null, utils.safeCallback(cb, function(err, resp) {
-        if (!resp.Value) {
-          console.log('item already deleted or item does not exist');
+      notify.confirm('Delete?', 'Are you sure you want to delete this equipment item?', function(result) {
+        if (result !== 'yes') {
+          cb();
+          return;
         }
-        _this.layerResult = true;
-        _this.isDeleted = true;
-        closeLayer(_this);
-      }, notify.error, false));
+        dataservice.msaccountsetupsrv.equipments.del(_this.item.AccountEquipmentID, null, utils.safeCallback(cb, function(err, resp) {
+          if (!resp.Value) {
+            console.log('item already deleted or item does not exist');
+          }
+          _this.layerResult = true;
+          _this.isDeleted = true;
+          closeLayer(_this);
+        }, notify.error, false));
+      });
     }, function(busy) {
       return !busy && !_this.cmdAdd.busy() && !_this.cmdSave.busy() && (_this.item.AccountEquipmentID > 0);
     });

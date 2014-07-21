@@ -15,10 +15,6 @@ div(class="equipment-editor")
   div(data-bind="if:hasItem")
     div(class="label",data-bind="text:data.ItemDesc")
     div(class="line-top")
-      ul(class="actions")
-        li
-          a(class="btn",data-bind="cmd:cmdDelete") Delete
-    div(class="line-top")
       ul(class="edit-form limit-width")
         li
           span(class="label") Part #
@@ -64,3 +60,5 @@ div(class="equipment-editor")
           a(class="btn",tabindex="0",data-bind="cmd:cmdCancel") Cancel
         li
           a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
+        li
+          a(class="btn",tabindex="0",data-bind="cmd:cmdDelete") Delete

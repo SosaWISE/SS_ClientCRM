@@ -109,6 +109,8 @@ define('src/account/security/equipment.gvm', [
       }, 0);
       return numbers.roundTo(result, 2);
     });
+
+    _this.loading = ko.observable(false);
   }
   utils.inherits(EquipmentGridViewModel, SlickGridViewModel);
 
