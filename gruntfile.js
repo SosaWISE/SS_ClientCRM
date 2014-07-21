@@ -136,6 +136,7 @@ module.exports = function(grunt) {
           'tparty/moment.js',
           'tparty/underscore.js',
           'tparty/markdown.js',
+          'tparty/definelibs.js',
           'tparty/fullcalendar.js',
         ],
         dest: '<%= www %>/lib.debug.js',
