@@ -16,7 +16,7 @@ window.require = {
     underscore: '/tparty/underscore', // Allows for excellent data manipulation like linq in C#.
     markdown: '/tparty/markdown',
     slick: '/tparty/slick-dev',
-    fullcalendar:'/tparty/fullcalendar'
+    fullcalendar: '/tparty/fullcalendar',
   },
 
   // defines global names(exports). does NOT load/require them
