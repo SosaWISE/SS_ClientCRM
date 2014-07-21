@@ -28,6 +28,7 @@ define('src/account/security/existingequipment.editor.vm', [
 
   schema = {
     _model: true,
+    AccountId: {},
     ItemId: {
       validators: [
         ukov.validators.isRequired('Please select the equipment'),
@@ -63,6 +64,7 @@ define('src/account/security/existingequipment.editor.vm', [
     _this.searchKey = ukov.wrap('', searchKeySchema);
 
     _this.data = ukov.wrap(_this.item || {
+      AccountId: options.AccountId,
       ItemId: null,
       Zone: '',
       ZoneEventTypeId: null,
