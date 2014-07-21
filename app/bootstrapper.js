@@ -46,6 +46,31 @@ define('src/bootstrapper', [
 ) {
   "use strict";
 
+  // detect os
+  app.os = navigator.platform.split(' ')[0].toLowerCase();
+
+  console.log("Version: ", config.version);
+  console.log("Application Token: " + config.token);
+  console.log("CORS Domain: " + config.serviceDomain);
+  console.log("Log Errors: " + config.logErrors);
+  console.log("OS: " + app.os);
+
+  ControllerViewModel.titlePrefix = config.titlePrefix;
+  ControllerViewModel.titlePostfix = config.titlePostfix;
+  notify.init(LayersViewModel, DialogViewModel, resources, errorcodes);
+  // overwrite jquery's JSON parsing
+  jquery.ajaxSetup({
+    converters: {
+      'text json': jsonhelpers.parse,
+    },
+  });
+  // set timeouts
+  DataserviceBase.prototype.timeout = config.apiTimeout;
+  joiner.Joiner.prototype.timeout = config.joinerTimeout;
+
+  // start ko (since notify can't show anything without it)
+  ko.applyBindings(app, document.getElementById('main'));
+
   // ////////////////////////TESTING////////////////////////////////////////////////
   // throw new Error('test error');
   // ////////////////////////TESTING////////////////////////////////////////////////
@@ -160,28 +185,6 @@ define('src/bootstrapper', [
   // }, 1000);
   // ////////////////////////TESTING////////////////////////////////////////////////
 
-  // detect os
-  app.os = navigator.platform.split(' ')[0].toLowerCase();
-
-  console.log("Version: ", config.version);
-  console.log("Application Token: " + config.token);
-  console.log("CORS Domain: " + config.serviceDomain);
-  console.log("Log Errors: " + config.logErrors);
-  console.log("OS: " + app.os);
-
-  ControllerViewModel.titlePrefix = config.titlePrefix;
-  ControllerViewModel.titlePostfix = config.titlePostfix;
-  notify.init(LayersViewModel, DialogViewModel, resources, errorcodes);
-  // overwrite jquery's JSON parsing
-  jquery.ajaxSetup({
-    converters: {
-      'text json': jsonhelpers.parse,
-    },
-  });
-  // set timeouts
-  DataserviceBase.prototype.timeout = config.apiTimeout;
-  joiner.Joiner.prototype.timeout = config.joinerTimeout;
-
   var deps = [];
   if (config.useMocks) {
     deps = ['mock/index'];
@@ -211,8 +214,6 @@ define('src/bootstrapper', [
     });
 
     dataservice.session.start(config.token, function(err, resp) {
-      // start ko (since notify can't show anything without it)
-      ko.applyBindings(app, document.getElementById('main'));
 
       if (err) {
         notify.error(err);

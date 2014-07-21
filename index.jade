@@ -60,13 +60,15 @@ html
     script parent.browser && parent.browser.init(window);
 
     //- js
-    script(src="depends.conf.js")
     if release
+      script(src="depends.conf.js")
       script(src="lib.js")
       script(src="app.js")
     else if debug
+      script(src="depends.debug.conf.js")
       script(src="lib.debug.js")
       script(src="app.debug.js")
     else
+      script(src="depends.conf.js")
       script(src="tparty/depends.js")
     script require('src/bootstrapper');

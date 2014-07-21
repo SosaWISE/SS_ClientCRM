@@ -69,6 +69,9 @@ module.exports = function(grunt) {
           }, {
             src: 'depends-production.conf.js',
             dest: '<%= www %>/depends.conf.js',
+          }, {
+            src: 'depends-production.debug.conf.js',
+            dest: '<%= www %>/depends.debug.conf.js',
           },
         ],
       },
