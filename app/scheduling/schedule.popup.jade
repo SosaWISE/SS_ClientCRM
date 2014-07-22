@@ -1,0 +1,19 @@
+ul(class="edit-form")
+	li
+		input(type="hidden" id="eventID")
+	li
+		span(class="label") Ticket title	
+		input(type="text" data-bind="ukov:data.EventTitle, value:data.EventTitle, valueUpdate:'keyup'")
+	li
+		label Scheduled date
+		input(type="text" data-bind="ukov:data.EventDate, value:data.EventDate, valueUpdate:'keyup'")
+	li
+		label Scheduled time
+		input(type="text" data-bind="ukov:data.EventTime, value:data.EventTime, valueUpdate:'keyup'")
+	li
+		label Appointment length (minutes)
+		input(type="text" data-bind="ukov:data.EventDuration, value:data.EventDuration, valueUpdate:'keyup'")
+	li
+div(class="actions")
+	span(class="btn-bg", id="btnPopupSave" tabindex="0", data-bind="cmd: cmdSaveEvent") Save event
+	span(class="btn-bg", id="btnPopupCancel" tabindex="0", data-bind="cmd:clickClose") Cancel

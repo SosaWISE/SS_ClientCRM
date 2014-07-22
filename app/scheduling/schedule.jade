@@ -1,1 +1,7 @@
-div(id="calendar" style="background-color:white;")
+table(class="fh-wrap")
+	tr
+		td(class="fh-body")
+			div(class="fh-contents relative" style="overflow: auto;")
+				div(id="calendar" style="background-color:white; margin: 10px;")
+				div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")        		
+

@@ -24,37 +24,39 @@ define('src/scheduling/service.ticket.gvm', [
         name: 'TicketID',
         field: 'TicketID',
       }, {
-        id: 'Moni Ticket#',
+        id: 'MoniNumber',
         name: 'Moni Ticket#',
-        field: 'Moni Ticket#',
+        field: 'MoniNumber',
       }, {
-        id: 'Service Ticket Type',
+        id: 'TicketTypeName',
         name: 'Service Ticket Type',
-        field: 'Service Ticket Type',
+        field: 'TicketTypeName',
       }, {
-        id: 'Status',
+        id: 'StatusCodeID',
         name: 'Status',
-        field: 'Status',
+        field: 'StatusCodeID',
       }, {
-        id: 'Moni Confirmation',
+        id: 'MoniConfirmation',
         name: 'Moni Confirmation',
-        field: 'Moni Confirmation',
+        field: 'MoniConfirmation',
       }, {
-        id: 'Tech Confirmation',
+        id: 'TechConfirmation',
         name: 'Tech Confirmation',
-        field: 'Tech Confirmation',
+        field: 'TechConfirmation',
+        formatter: SlickGridViewModel.formatters.datetime,
       }, {
-        id: 'Tech',
+        id: 'TechnicianID',
         name: 'Tech',
-        field: 'Tech',
+        field: 'TechnicianID',
       }, {
-        id: 'Agent Confirmation',
+        id: 'AgentConfirmation',
         name: 'Agent Confirmation',
-        field: 'Agent Confirmation',
+        field: 'AgentConfirmation',
       }, {
-        id: 'Expiration Date',
+        id: 'ExpirationDate',
         name: 'Expiration Date',
-        field: 'Expiration Date',
+        field: 'ExpirationDate',
+        formatter: SlickGridViewModel.formatters.datetime,
       }, ],
 
     });

@@ -78,6 +78,16 @@ define('src/scheduling/service.ticket.vm', [
       cb();
     });
 
+    _this.data.TicketStatus.subscribe(function(statusId, cb) {
+
+      if (statusId) {
+        load_tickets({
+          id: statusId
+        }, _this.serviceTicketGvm, cb);
+      }
+
+    });
+
   }
 
   utils.inherits(ServiceTicketViewModel, ControllerViewModel);
@@ -97,6 +107,9 @@ define('src/scheduling/service.ticket.vm', [
     //load status list
     load_ticketStatusList(_this.data.ticketStatusCvm, join.add());
 
+    //load all tickets created
+    load_tickets({}, _this.serviceTicketGvm, join.add());
+
   };
 
   function load_ticketStatusList(cvm, cb) {
@@ -107,8 +120,10 @@ define('src/scheduling/service.ticket.vm', [
 
         console.log("TicketStatusCodeList:" + JSON.stringify(resp.Value));
 
-        //Set result to Location combo list
-        cvm.setList(resp.Value);
+        if (resp.Value.length > 0) {
+          //Set result to Location combo list
+          cvm.setList(resp.Value);
+        }
 
       } else {
         notify.warn('No records found.', null, 3);
@@ -117,6 +132,27 @@ define('src/scheduling/service.ticket.vm', [
 
   }
 
+  function load_tickets(param, cvm, cb) {
+
+    dataservice.scheduleenginesrv.SeTicketList.read(param, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+
+        console.log("Tickets:" + JSON.stringify(resp.Value));
+
+        //empty the list before adding some data
+        cvm.list([]);
+
+        //Update inventoryListGvm grid
+        for (var x = 0; x < resp.Value.length; x++) {
+          cvm.list.push(resp.Value[x]);
+        }
+
+      } else {
+        notify.warn('No records found.', null, 3);
+      }
+    }));
+  }
 
   return ServiceTicketViewModel;
 });
