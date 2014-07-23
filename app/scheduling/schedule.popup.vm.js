@@ -1,6 +1,7 @@
 define('src/scheduling/schedule.popup.vm', [
   'jquery',
   'fullcalendar',
+  'src/dataservice',
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
@@ -9,6 +10,7 @@ define('src/scheduling/schedule.popup.vm', [
 ], function(
   $,
   fullCalendar,
+  dataservice,
   notify,
   utils,
   BaseViewModel,
@@ -21,16 +23,12 @@ define('src/scheduling/schedule.popup.vm', [
 
   schema = {
     _model: true,
-    EventTitle: {
-      validators: [
-        ukov.validators.isRequired('Event Title is required')
-      ]
-    },
-    EventDate: {},
-    EventTime: {},
-    EventDuration: {
-      converter: ukov.converters.numText(),
-    }
+    ScheduleZip: {},
+    ScheduleMaxRadius: {},
+    ScheduleDistance: {},
+    ScheduleDate: {},
+    ScheduleStartTime: {},
+    ScheduleEndTime: {}
   };
 
 
@@ -48,15 +46,18 @@ define('src/scheduling/schedule.popup.vm', [
     _this.title = _this.title || 'Create New Service Ticket';
 
     _this.data = ukov.wrap(_this.item || {
-      EventTitle: null,
-      EventDate: null,
-      EventTime: null,
-      EventDuration: null,
+      ScheduleZip: null,
+      ScheduleMaxRadius: null,
+      ScheduleDistance: null,
+      ScheduleDate: null,
+      ScheduleStartTime: null,
+      ScheduleEndTime: null
     }, schema);
 
     //Set values
-    _this.data.EventDate(_this.pdate);
-    _this.data.EventTime(_this.ptime);
+    _this.data.ScheduleDate(_this.pdate);
+    _this.data.ScheduleStartTime(_this.stime);
+    _this.data.ScheduleEndTime(_this.etime);
 
     //
     // events
@@ -65,32 +66,31 @@ define('src/scheduling/schedule.popup.vm', [
     _this.cmdSaveEvent = ko.command(function(cb) {
 
       var dataRow = {
-        'Title': _this.data.EventTitle(),
-        'NewEventDate': _this.data.EventDate(),
-        'NewEventTime': _this.data.EventTime(),
-        'NewEventDuration': _this.data.EventDuration()
+        'Title': null, //temp
+        'AppointmentDate': _this.data.ScheduleDate(),
+        'AppointmentDuration': 100, //temp
+        'TravelTime': 0, //temp
+        'TicketId': 8 //temp                            
       };
 
       console.log("Ready to save event...");
       console.log("Data to save:" + JSON.stringify(dataRow));
 
-      //Refetch grid
-      // $.ajax({
-      //     type: 'POST',
-      //     url: "/Home/SaveEvent",
-      //     data: dataRow,
-      //     success: function (response) {
-      //         if (response == 'True') {
-      //             $('#calendar').fullCalendar('refetchEvents');
-      //             alert('New event saved!');
-      //         }
-      //         else {
-      //             alert('Error, could not save event!');
-      //         }
-      //     }
-      // });      
+      dataservice.scheduleenginesrv.SeScheduleTicket.post(null, dataRow, null, utils.safeCallback(cb, function(err, resp) {
 
-      cb();
+        if (resp.Code === 0) {
+          console.log("SeScheduleTicket:" + JSON.stringify(resp.Value));
+
+          notify.info("Ticket saved", null, 3);
+
+          //close popup
+          closeLayer(_this);
+
+        } else {
+          notify.error(err);
+        }
+      }));
+
     });
 
     _this.clickClose = function() {

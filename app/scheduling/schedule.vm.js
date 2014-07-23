@@ -8,7 +8,7 @@ define('src/scheduling/schedule.vm', [
   'src/core/controller.vm',
   'src/scheduling/schedule.popup.vm',
   'src/core/layers.vm',
-  //'src/core/joiner',
+  'src/core/joiner',
   //'ko',
   //'src/ukov',
 
@@ -21,8 +21,8 @@ define('src/scheduling/schedule.vm', [
   utils,
   ControllerViewModel,
   SchedulePopupViewModel,
-  LayersViewModel
-  //joiner,
+  LayersViewModel,
+  joiner
   //ko,
   //ukov
 ) {
@@ -69,11 +69,30 @@ define('src/scheduling/schedule.vm', [
 
   };
 
-  ScheduleViewModel.prototype.onActivate = function(routeData, extraData, join) { // override me
+  ScheduleViewModel.prototype.onActivate = function( /*routeData, extraData, join*/ ) { // override me
     var _this = this,
+      join = joiner(),
+      tSource = {}, //temporary list of tickets
       CalLoading = true;
 
-    join = join;
+    //create temporary list of tickets
+    tSource = {
+      events: [{
+          title: 'Event1',
+          start: '2014-07-20'
+        }, {
+          title: 'Event2',
+          start: '2014-07-21'
+        }
+        // etc...
+      ],
+      color: 'yellow', // an option!
+      textColor: 'black' // an option!
+    };
+
+    //load all scheduled tickets
+    load_scheduleTickets(join.add());
+
 
     $('#calendar').fullCalendar({
       header: {
@@ -86,7 +105,9 @@ define('src/scheduling/schedule.vm', [
       allDaySlot: false,
       selectable: true,
       slotMinutes: 15,
-      // events: '/Home/GetDiaryEvents/',
+      selectHelper: true,
+      //events: '/Home/GetDiaryEvents/',
+      events: tSource,
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
         alert('You clicked on event id: ' + calEvent.id + "\nSpecial ID: " + calEvent.someKey + "\nAnd the title is: " + calEvent.title);
 
@@ -111,20 +132,34 @@ define('src/scheduling/schedule.vm', [
 
 
 
-      dayClick: function(date /*, allDay, jsEvent, view*/ ) {
+      dayClick: function( /*date , allDay, jsEvent, view*/ ) {
         // $('#eventTitle').val("");
         // $('#eventDate').val($.fullCalendar.formatDate(date, 'dd/MM/yyyy'));
         // $('#eventTime').val($.fullCalendar.formatDate(date, 'HH:mm'));
         // new ShowEventPopup(date);
 
+        // _this.layersVm.show(new SchedulePopupViewModel({
+        //   ptitle: 'New Service Ticket',
+        //   pdate: $.fullCalendar.formatDate(date, 'MM/dd/yyyy'),
+        //   ptime: $.fullCalendar.formatDate(date, 'HH:mm'),
+        // }), function onClose( /*result*/ ) {
+        //     console.log("Refetching tickets...");
+        //     $('#calendar').fullCalendar('refetchEvents');
+        // });
+
+      },
+
+      select: function(start, end /*, jsEvent, view*/ ) {
+
         _this.layersVm.show(new SchedulePopupViewModel({
           ptitle: 'New Service Ticket',
-          pdate: $.fullCalendar.formatDate(date, 'dd/MM/yyyy'),
-          ptime: $.fullCalendar.formatDate(date, 'HH:mm'),
+          pdate: $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
+          stime: $.fullCalendar.formatDate(start, 'HH:mm'),
+          etime: $.fullCalendar.formatDate(end, 'HH:mm'),
         }), function onClose( /*result*/ ) {
-
+          console.log("Refetching tickets...");
+          $('#calendar').fullCalendar('refetchEvents');
         });
-
       },
 
       viewRender: function(view /*, element*/ ) {
@@ -177,6 +212,27 @@ define('src/scheduling/schedule.vm', [
     });
   }
 
+
+  function load_scheduleTickets(cb) {
+
+    //temporary date range
+    var param = {
+      AppointmentDateStart: '07/21/2014',
+      AppointmentDateEnd: '07/26/2014'
+    };
+
+    dataservice.scheduleenginesrv.SeScheduleTicketList.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+
+        console.log("SeScheduleTicketList:" + JSON.stringify(resp.Value));
+
+      } else {
+        notify.warn('No records found.', null, 3);
+      }
+    }));
+
+  }
 
 
   return ScheduleViewModel;
