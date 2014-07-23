@@ -70,8 +70,8 @@ define('src/scheduling/service.ticket.vm', [
       //Go to Enter Barcodes screen
       _this.layersVm.show(new CreateTicketViewModel({
         title: 'Create New Service Ticket'
-      }), function onClose( /*result*/ ) {
-
+      }), function onClose() {
+        load_tickets({}, _this.serviceTicketGvm, cb);
       });
 
 

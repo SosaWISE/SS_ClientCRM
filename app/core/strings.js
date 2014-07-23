@@ -211,5 +211,9 @@ define('src/core/strings', [
     return strWithTest(str, val, false);
   };
 
+  strings.repeat = function(text, num) {
+    return new Array(num + 1).join(text);
+  };
+
   return strings;
 });

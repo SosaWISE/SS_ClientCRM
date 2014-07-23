@@ -25,6 +25,8 @@ define('src/scheduling/create.ticket.vm', [
   schema = {
     _model: true,
     TicketType: {},
+    MoniNumber: {},
+    Notes: {},
   };
 
 
@@ -41,6 +43,8 @@ define('src/scheduling/create.ticket.vm', [
 
     _this.data = ukov.wrap(_this.item || {
       TicketType: null,
+      MoniNumber: null,
+      Notes: null
     }, schema);
 
     //Ticket type dropdown
@@ -57,6 +61,12 @@ define('src/scheduling/create.ticket.vm', [
     //
     // events
     //
+
+    //Create service ticket
+    _this.cmdCreateTicket = ko.command(function(cb, vm) {
+      createTicket(vm, cb);
+      cb();
+    });
 
     _this.clickClose = function() {
       _this.layerResult = null;
@@ -113,6 +123,44 @@ define('src/scheduling/create.ticket.vm', [
 
       } else {
         notify.warn('No records found.', null, 3);
+      }
+    }));
+
+  }
+
+  //create service ticket
+  function createTicket(vm, cb) {
+
+    var param = {
+      AccountID: 1,
+      MoniNumber: vm.data.MoniNumber(),
+      TicketTypeID: vm.data.TicketType(),
+      StatusCodeID: 1,
+      MoniConfirmation: 'MONI CONFIRM',
+      TechConfirmation: '07/22/2014',
+      TechnicianID: 1,
+      TripCharges: 123.5,
+      Appointment: 'APPOINTMENT TEST',
+      AgentConfirmation: 'AGENT CONFIRMATION',
+      ExpirationDate: '07/22/2014',
+      Notes: vm.data.Notes(),
+
+    };
+
+    console.log(JSON.stringify("Create Ticket Parameters:" + JSON.stringify(param)));
+
+    dataservice.scheduleenginesrv.SeTicket.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+        console.log("Create Ticket:" + JSON.stringify(resp.Value));
+
+        //clear service ticket fields
+        vm.data.MoniNumber(null);
+        vm.data.TicketType(null);
+        vm.data.Notes(null);
+
+      } else {
+        notify.error(err);
       }
     }));
 

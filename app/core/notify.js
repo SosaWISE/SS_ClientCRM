@@ -102,7 +102,7 @@ define('src/core/notify', [
     n = {
       type: type,
       url: url,
-      code: code,
+      code: (code != null) ? '(' + code + ')' : code,
       title: title || titleMap[type] || type,
       message: message,
       noPre: options && options.noPre || false,

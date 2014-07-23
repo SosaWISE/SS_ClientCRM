@@ -1,4 +1,5 @@
 define('src/account/security/equipment.vm', [
+  'src/account/security/securityhelper',
   'ko',
   'src/dataservice',
   'src/account/security/equipment.editor.vm',
@@ -10,6 +11,7 @@ define('src/account/security/equipment.vm', [
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  securityhelper,
   ko,
   dataservice,
   EquipmentEditorViewModel,
@@ -126,8 +128,20 @@ define('src/account/security/equipment.vm', [
       accountId: _this.accountId,
       monitoringStationOsId: _this.accountDetails.MonitoringStationOsId,
       cache: _this.cache,
+      nextZone: getNextZone(_this),
     });
     _this.layersVm.show(vm, cb);
+  }
+
+  function getNextZone(_this) {
+    var max = 0;
+    _this.gvm.list.peek().forEach(function(item) {
+      var zone = parseInt(item.Zone, 10);
+      if (zone > max) {
+        max = zone;
+      }
+    });
+    return securityhelper.zoneString(max + 1);
   }
 
   function showExistingEquipmentEditor(_this, cb) {

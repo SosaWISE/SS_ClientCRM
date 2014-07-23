@@ -2,18 +2,24 @@ ul(class="edit-form")
 	li
 		input(type="hidden" id="eventID")
 	li
-		span(class="label") Ticket title	
-		input(type="text" data-bind="ukov:data.EventTitle, value:data.EventTitle, valueUpdate:'keyup'")
+		label Zip
+		input(type="text" data-bind="ukov:data.ScheduleZip, value:data.ScheduleZip, valueUpdate:'keyup'")
 	li
-		label Scheduled date
-		input(type="text" data-bind="ukov:data.EventDate, value:data.EventDate, valueUpdate:'keyup'")
+		label Max Radius
+		input(type="text" data-bind="ukov:data.ScheduleMaxRadius, value:data.ScheduleMaxRadius, valueUpdate:'keyup'")
 	li
-		label Scheduled time
-		input(type="text" data-bind="ukov:data.EventTime, value:data.EventTime, valueUpdate:'keyup'")
+		label Distance
+		input(type="text" data-bind="ukov:data.ScheduleDistance, value:data.ScheduleDistance, valueUpdate:'keyup'")
 	li
-		label Appointment length (minutes)
-		input(type="text" data-bind="ukov:data.EventDuration, value:data.EventDuration, valueUpdate:'keyup'")
+		Appointment Date
+		input(type="text" data-bind="ukov:data.ScheduleDate, value:data.ScheduleDate, valueUpdate:'keyup'")
+	li
+		label Appointment Startime
+		input(type="text" data-bind="ukov:data.ScheduleStartTime, value:data.ScheduleStartTime, valueUpdate:'keyup'")
+	li
+		label Appointment Endtime
+		input(type="text" data-bind="ukov:data.ScheduleEndTime, value:data.ScheduleEndTime, valueUpdate:'keyup'")
 	li
 div(class="actions")
-	span(class="btn-bg", id="btnPopupSave" tabindex="0", data-bind="cmd: cmdSaveEvent") Save event
+	span(class="btn-bg", id="btnPopupSave" tabindex="0", data-bind="cmd: cmdSaveEvent") Save Ticket
 	span(class="btn-bg", id="btnPopupCancel" tabindex="0", data-bind="cmd:clickClose") Cancel
