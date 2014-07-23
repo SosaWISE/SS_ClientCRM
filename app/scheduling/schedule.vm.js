@@ -72,27 +72,33 @@ define('src/scheduling/schedule.vm', [
   ScheduleViewModel.prototype.onActivate = function( /*routeData, extraData, join*/ ) { // override me
     var _this = this,
       join = joiner(),
-      tSource = {}, //temporary list of tickets
+      tSource = [], //temporary list of tickets
       CalLoading = true;
 
     //create temporary list of tickets
-    tSource = {
-      events: [{
-          title: 'Event1',
-          start: '2014-07-20'
-        }, {
-          title: 'Event2',
-          start: '2014-07-21'
-        }
-        // etc...
-      ],
-      color: 'yellow', // an option!
-      textColor: 'black' // an option!
-    };
+    tSource = [{
+      id: 1,
+      title: null,
+      start: '2014-07-20 01:00',
+      allDay: false,
+      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />'
+    }, {
+      id: 2,
+      title: null,
+      start: '2014-07-21 02:15',
+      allDay: false,
+      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />'
+    }, {
+      id: 3,
+      title: null,
+      start: '2014-07-23 00:30',
+      allDay: false,
+      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />'
+    }];
+
 
     //load all scheduled tickets
     load_scheduleTickets(join.add());
-
 
     $('#calendar').fullCalendar({
       header: {
@@ -106,54 +112,32 @@ define('src/scheduling/schedule.vm', [
       selectable: true,
       slotMinutes: 15,
       selectHelper: true,
-      //events: '/Home/GetDiaryEvents/',
       events: tSource,
-      eventClick: function(calEvent /*, jsEvent, view*/ ) {
-        alert('You clicked on event id: ' + calEvent.id + "\nSpecial ID: " + calEvent.someKey + "\nAnd the title is: " + calEvent.title);
-
+      eventColor: '#FACC00',
+      eventBackgroundColor: '#FACC00',
+      eventBorderColor: '#FACC00',
+      eventTextColor: 'white',
+      eventClick: function( /*calEvent , jsEvent, view*/ ) {
+        //handle click event on tickets
       },
 
-      eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc) {
-        if (this.confirm("Confirm move?")) {
-          new UpdateEvent(event.id, event.start);
-        } else {
-          revertFunc();
-        }
+      eventDrop: function(event /*, dayDelta, minuteDelta, allDay, revertFunc*/ ) {
+        new UpdateEvent(event.id, event.start);
       },
 
-      eventResize: function(event, dayDelta, minuteDelta, revertFunc) {
-
-        if (this.confirm("Confirm change appointment length?")) {
-          new UpdateEvent(event.id, event.start, event.end);
-        } else {
-          revertFunc();
-        }
+      eventResize: function(event /*, dayDelta, minuteDelta, revertFunc*/ ) {
+        alert("fire");
+        new UpdateEvent(event.id, event.start, event.end);
       },
-
-
 
       dayClick: function( /*date , allDay, jsEvent, view*/ ) {
-        // $('#eventTitle').val("");
-        // $('#eventDate').val($.fullCalendar.formatDate(date, 'dd/MM/yyyy'));
-        // $('#eventTime').val($.fullCalendar.formatDate(date, 'HH:mm'));
-        // new ShowEventPopup(date);
-
-        // _this.layersVm.show(new SchedulePopupViewModel({
-        //   ptitle: 'New Service Ticket',
-        //   pdate: $.fullCalendar.formatDate(date, 'MM/dd/yyyy'),
-        //   ptime: $.fullCalendar.formatDate(date, 'HH:mm'),
-        // }), function onClose( /*result*/ ) {
-        //     console.log("Refetching tickets...");
-        //     $('#calendar').fullCalendar('refetchEvents');
-        // });
 
       },
 
       select: function(start, end /*, jsEvent, view*/ ) {
 
         _this.layersVm.show(new SchedulePopupViewModel({
-          ptitle: 'New Service Ticket',
-          pdate: $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
+          date: $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
           stime: $.fullCalendar.formatDate(start, 'HH:mm'),
           etime: $.fullCalendar.formatDate(end, 'HH:mm'),
         }), function onClose( /*result*/ ) {
@@ -175,41 +159,28 @@ define('src/scheduling/schedule.vm', [
             //   $('#calendar').fullCalendar('addEventSource', sourceFullView);
           }
         }
+      },
+
+      //add some more info on events
+      eventRender: function(event, element) {
+        element.find('.fc-event-title').append("<br/>" + event.someInfo);
       }
 
     });
 
   };
 
-
-  // function ShowEventPopup( /*date*/ ) {    
-  //   new ClearPopupFormValues();
-  //   $('#popupEventForm').show();
-  //   $('#eventTitle').focus();
-  // }
-
-  // function ClearPopupFormValues() {
-  //   $('#eventID').val("");
-  //   $('#eventTitle').val("");
-  //   $('#eventDateTime').val("");
-  //   $('#eventDuration').val("");
-  // }
-
   function UpdateEvent(EventID, EventStart, EventEnd) {
 
     var dataRow = {
       'ID': EventID,
-      'NewEventStart': EventStart,
-      'NewEventEnd': EventEnd
+      'NewStartTime': EventStart,
+      'NewEndTime': EventEnd
     };
 
-    $.ajax({
-      type: 'POST',
-      url: "/Home/UpdateEvent",
-      dataType: "json",
-      contentType: "application/json",
-      data: JSON.stringify(dataRow)
-    });
+    //@TODO update ticket info
+    console.log("Ready to update ticket info:" + JSON.stringify(dataRow));
+
   }
 
 

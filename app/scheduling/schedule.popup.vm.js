@@ -36,12 +36,6 @@ define('src/scheduling/schedule.popup.vm', [
     var _this = this;
     SchedulePopupViewModel.super_.call(_this, options);
 
-    //debugging
-    console.log("Title:" + _this.ptitle);
-    console.log("Date:" + _this.pdate);
-    console.log("Time:" + _this.ptime);
-
-
     //Set title
     _this.title = _this.title || 'Create New Service Ticket';
 
@@ -55,7 +49,7 @@ define('src/scheduling/schedule.popup.vm', [
     }, schema);
 
     //Set values
-    _this.data.ScheduleDate(_this.pdate);
+    _this.data.ScheduleDate(_this.date);
     _this.data.ScheduleStartTime(_this.stime);
     _this.data.ScheduleEndTime(_this.etime);
 
