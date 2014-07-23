@@ -1,4 +1,5 @@
 define('src/account/security/signalhistory.vm', [
+  'src/account/security/securityhelper',
   'src/dataservice',
   'moment',
   'ko',
@@ -9,6 +10,7 @@ define('src/account/security/signalhistory.vm', [
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  securityhelper,
   dataservice,
   moment,
   ko,
@@ -115,7 +117,7 @@ define('src/account/security/signalhistory.vm', [
           field: 'Point',
           width: 30,
           formatter: function(row, cell, value) {
-            return zoneString(value);
+            return securityhelper.zoneString(value);
           },
         }, {
           id: 'TransmitterCode',
@@ -284,14 +286,14 @@ define('src/account/security/signalhistory.vm', [
 
     // create map of all zones in history
     signalHistoryList.forEach(function(item) {
-      var zone = zoneString(item.Point);
+      var zone = securityhelper.zoneString(item.Point);
       if (zone && !signalHistoryZonesMap[zone]) {
         signalHistoryZonesMap[zone] = true;
       }
     });
     // create map of all zones in equipment
     equipmentList.forEach(function(item) {
-      var zone = zoneString(item.Zone);
+      var zone = securityhelper.zoneString(item.Zone);
       if (zone && !equipmentZonesMap[zone]) {
         equipmentZonesMap[zone] = true;
       }
@@ -317,19 +319,6 @@ define('src/account/security/signalhistory.vm', [
     missingList.sort();
     setMissingZones(missingList);
   }
-
-  function zoneString(zoneVal) {
-    if (!zoneVal && zoneVal !== 0) {
-      // no zone
-      return null;
-    } else if (utils.isStr(zoneVal) || utils.isNum(zoneVal)) {
-      // ensure correct zone format
-      return strings.padLeft(zoneVal, '0', 3);
-    } else {
-      throw new Error('invalid zone `' + zoneVal + '`');
-    }
-  }
-
 
   // private void CheckZonesSignals(EventSignalHistory oSignalHistory) {
   //   MissingSignals.Clear();

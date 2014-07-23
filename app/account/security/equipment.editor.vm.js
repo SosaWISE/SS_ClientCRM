@@ -1,4 +1,5 @@
 define('src/account/security/equipment.editor.vm', [
+  'src/account/security/securityhelper',
   'src/dataservice',
   'src/core/strings',
   'src/core/combo.vm',
@@ -8,6 +9,7 @@ define('src/account/security/equipment.editor.vm', [
   'ko',
   'src/ukov',
 ], function(
+  securityhelper,
   dataservice,
   strings,
   ComboViewModel,
@@ -43,7 +45,11 @@ define('src/account/security/equipment.editor.vm', [
     AccountId: {},
     AccountZoneAssignmentID: {},
     // AccountZoneType: {},
-    AccountZoneTypeId: {},
+    AccountZoneTypeId: {
+      validators: [
+        ukov.validators.isRequired('Please enter a Zone Type'),
+      ],
+    },
     // ActualPoints: 3,
     BarcodeId: {},
     // EquipmentLocationDesc: null,
@@ -60,7 +66,7 @@ define('src/account/security/equipment.editor.vm', [
       converter: ukov.converters.number(2),
     },
     Zone: {
-      converter: strConverter,
+      converter: securityhelper.zoneStringConverter,
     },
 
     //@NOTE: these are not returned in equipment item array... msaccountsetupsrv/accounts/151147/equipment
@@ -78,6 +84,7 @@ define('src/account/security/equipment.editor.vm', [
       'monitoringStationOsId',
       'cache',
       'byPart',
+      'nextZone',
     ]);
     BaseViewModel.ensureProps(_this.cache, [
       'reps',
@@ -172,8 +179,8 @@ define('src/account/security/equipment.editor.vm', [
     }, function(busy) {
       return !busy && !_this.cmdSave.busy();
     });
-    _this.cmdAdd = ko.command(function(cb) {
-      addEquipment(_this, cb);
+    _this.cmdSearch = ko.command(function(cb) {
+      searchEquipment(_this, cb);
     });
     _this.cmdSave = ko.command(function(cb) {
       if (!_this.data.isValid()) {
@@ -181,36 +188,35 @@ define('src/account/security/equipment.editor.vm', [
         cb();
         return;
       }
-      var model = _this.data.getValue(),
-        tmp = {
-          EquipmentLocationDesc: _this.data.EquipmentLocationCvm.selectedItem().EquipmentLocationDesc,
-          ItemSKU: model.ItemSKU,
-          IsServiceUpgrade: model.IsServiceUpgrade,
-          ActualPoints: _this.data.model.ActualPoints,
-        };
+      var model = _this.data.getValue();
+      // tmp = {
+      //   EquipmentLocationDesc: _this.data.EquipmentLocationCvm.selectedItem().EquipmentLocationDesc,
+      //   ItemSKU: model.ItemSKU,
+      //   IsServiceUpgrade: model.IsServiceUpgrade,
+      //   ActualPoints: _this.data.model.ActualPoints,
+      // };
       dataservice.msaccountsetupsrv.equipments.save({
+        id: model.AccountEquipmentID, // if no value create, else update
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
         _this.data.markClean(model, true);
 
         var data = resp.Value;
-        //@HACK: fix fields that don't get returned
-        data.EquipmentLocationDesc = tmp.EquipmentLocationDesc;
-        data.ItemSKU = tmp.ItemSKU;
-        data.IsServiceUpgrade = tmp.IsServiceUpgrade;
-        data.ActualPoints = tmp.ActualPoints;
-        if (_this.byPart) {
-
-        } else {
-
-        }
+        // //@HACK: fix fields that don't get returned
+        // data.EquipmentLocationDesc = tmp.EquipmentLocationDesc;
+        // data.ItemSKU = tmp.ItemSKU;
+        // data.IsServiceUpgrade = tmp.IsServiceUpgrade;
+        // data.ActualPoints = tmp.ActualPoints;
+        // if (_this.byPart) {
+        // } else {
+        // }
 
         _this.layerResult = data;
         _this.isDeleted = false;
         closeLayer(_this);
       }, notify.error, false));
     }, function(busy) {
-      return !busy && !_this.cmdAdd.busy() && !_this.cmdDelete.busy();
+      return !busy && !_this.cmdSearch.busy() && !_this.cmdDelete.busy();
     });
     _this.cmdDelete = ko.command(function(cb) {
       notify.confirm('Delete?', 'Are you sure you want to delete this equipment item?', function(result) {
@@ -228,7 +234,7 @@ define('src/account/security/equipment.editor.vm', [
         }, notify.error, false));
       });
     }, function(busy) {
-      return !busy && !_this.cmdAdd.busy() && !_this.cmdSave.busy() && (_this.item.AccountEquipmentID > 0);
+      return !busy && !_this.cmdSearch.busy() && !_this.cmdSave.busy() && (_this.item.AccountEquipmentID > 0);
     });
   }
   utils.inherits(EquipmentEditorViewModel, BaseViewModel);
@@ -248,9 +254,7 @@ define('src/account/security/equipment.editor.vm', [
   EquipmentEditorViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
       msg;
-    if (_this.cmdAdd.busy() && !_this.layerResult) {
-      msg = 'Please wait for add to finish.';
-    } else if (_this.cmdSave.busy() && !_this.layerResult) {
+    if (_this.cmdSave.busy() && !_this.layerResult) {
       msg = 'Please wait for save to finish.';
     } else if (_this.cmdDelete.busy() && !_this.layerResult) {
       msg = 'Please wait for delete to finish.';
@@ -363,39 +367,46 @@ define('src/account/security/equipment.editor.vm', [
     }, cb);
   }
 
-  function addEquipment(_this, cb) {
+  function searchEquipment(_this, cb) {
     var searchKey = _this.searchKey.getValue();
-    console.log("accountId:" + _this.accountId);
-    console.log("tId:" + _this.tId);
-
-    dataservice.msaccountsetupsrv.equipments.read({
+    dataservice.invoicesrv.items.read({
       id: searchKey,
       link: _this.byPart ? 'ByPartNumber' : 'ByBarcode',
-      query: {
-        id: _this.accountId,
-        tid: _this.tId
-      }
     }, null, utils.safeCallback(cb, function(err, resp) {
       // //Set Item Name and Part# to UI
       // _this.itemName(resp.Value.ItemDesc);
       // _this.partNumber(searchKey);
-
-      var data = resp.Value;
-
-      if (_this.byPart) {
-        data.ItemSKU = searchKey; //@HACK: to set ItemSKU since it is not returned.....
-      } else {
-        data.BarcodeId = searchKey; //@HACK: to set BarcodeId since it is not returned.....
-        // ActualPoints and ItemSKU are also missing...
+      if (resp.Message && resp.Message !== "Success") {
+        notify.error(resp, 2);
       }
 
-      _this.data.setValue(data);
-      _this.data.markClean(data, true);
-
-      // set result, but don't close
-      // needed incase cancel is pressed after this point
-      _this.layerResult = data;
-      _this.isDeleted = false;
+      var item = resp.Value;
+      if (item) {
+        _this.data.setValue({
+          // from item
+          ItemId: item.ItemID,
+          Points: item.SystemPoints,
+          ActualPoints: item.SystemPoints,
+          Price: item.Price,
+          ItemSKU: item.ItemSKU,
+          ItemDesc: item.ItemDesc,
+          // local data
+          BarcodeId: _this.byPart ? null : searchKey,
+          AccountId: _this.accountId,
+          Zone: _this.nextZone,
+          // defaults
+          AccountEquipmentUpgradeTypeId: 'CUST',
+          EquipmentLocationId: null,
+          GPEmployeeId: null,
+          OfficeReconciliationItemId: null,
+          IsExisting: false,
+          IsServiceUpgrade: false,
+          IsExistingWiring: false,
+          IsMainPanel: false,
+        });
+        // _this.data.AssignToCvm.selectFirst();
+        _this.data.markClean({}, true);
+      }
     }, notify.error));
   }
 

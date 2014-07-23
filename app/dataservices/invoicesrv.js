@@ -14,6 +14,7 @@ define('src/dataservices/invoicesrv', [
     [
       'invoices',
       'invoiceItems',
+      'items',
     ].forEach(function(collectionName) {
       result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
     });
