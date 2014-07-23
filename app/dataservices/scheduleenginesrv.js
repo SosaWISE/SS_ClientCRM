@@ -14,7 +14,8 @@ define('src/dataservices/scheduleenginesrv', [
 
       'TicketStatusCodeList',
       'TicketTypeList',
-      'SeTicketList'
+      'SeTicketList',
+      'SeTicket'
     ].forEach(function(collectionName) {
       result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
     });
