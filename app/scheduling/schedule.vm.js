@@ -80,18 +80,21 @@ define('src/scheduling/schedule.vm', [
       id: 1,
       title: null,
       start: '2014-07-20 01:00',
+      end: '2014-07-20 03:00',
       allDay: false,
       someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />'
     }, {
       id: 2,
       title: null,
       start: '2014-07-21 02:15',
+      end: '2014-07-21 06:15',
       allDay: false,
       someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />'
     }, {
       id: 3,
       title: null,
       start: '2014-07-23 00:30',
+      end: '2014-07-23 02:30',
       allDay: false,
       someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />'
     }];
