@@ -21,6 +21,7 @@ define('src/account/security/clist.systemdetails.vm', [
 
   function CListSystemDetailsViewModel(options) {
     var _this = this;
+
     CListSystemDetailsViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
