@@ -137,7 +137,10 @@ define('src/account/security/emcontacts.vm', [
 
   function load_relationshipTypes(_this, cb) {
     _this.relationshipTypes = null;
-    dataservice.msaccountsetupsrv.emergencyContactRelationships.read({}, null, utils.safeCallback(cb, function(err, resp) {
+    dataservice.msaccountsetupsrv.accounts.read({
+      id: _this.accountId,
+      link: 'emergencyContactRelationships',
+    }, null, utils.safeCallback(cb, function(err, resp) {
       _this.relationshipTypes = resp.Value;
     }, utils.no_op));
   }
