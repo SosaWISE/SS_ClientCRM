@@ -82,21 +82,32 @@ define('src/scheduling/schedule.vm', [
       start: '2014-07-20 01:00',
       end: '2014-07-20 03:00',
       allDay: false,
-      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />'
+      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
+      backgroundColor: 'white',
     }, {
       id: 2,
       title: null,
       start: '2014-07-21 02:15',
       end: '2014-07-21 06:15',
       allDay: false,
-      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />'
+      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
+      backgroundColor: 'red',
     }, {
       id: 3,
       title: null,
-      start: '2014-07-23 00:30',
-      end: '2014-07-23 02:30',
+      start: '2014-07-23 02:15',
+      end: '2014-07-23 06:15',
       allDay: false,
-      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />'
+      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
+      backgroundColor: 'orange',
+    }, {
+      id: 4,
+      title: null,
+      start: '2014-07-24 00:30',
+      end: '2014-07-24 02:30',
+      allDay: false,
+      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
+      backgroundColor: 'skyblue',
     }];
 
 
@@ -116,10 +127,10 @@ define('src/scheduling/schedule.vm', [
       slotMinutes: 15,
       selectHelper: true,
       events: tSource,
-      eventColor: '#FACC00',
-      eventBackgroundColor: '#FACC00',
-      eventBorderColor: '#FACC00',
-      eventTextColor: 'white',
+      //eventColor: '#FACC00',
+      //eventBackgroundColor: '#FACC00',
+      //eventBorderColor: '#FACC00',
+      //eventTextColor: 'white',
       eventClick: function( /*calEvent , jsEvent, view*/ ) {
         //handle click event on tickets
       },
