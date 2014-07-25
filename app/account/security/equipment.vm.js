@@ -3,7 +3,6 @@ define('src/account/security/equipment.vm', [
   'ko',
   'src/dataservice',
   'src/account/security/equipment.editor.vm',
-  'src/account/security/existingequipment.editor.vm',
   'src/account/security/equipment.gvm',
   'src/core/strings',
   'src/core/layers.vm',
@@ -15,7 +14,6 @@ define('src/account/security/equipment.vm', [
   ko,
   dataservice,
   EquipmentEditorViewModel,
-  ExistingEquipmentEditorViewModel,
   EquipmentGridViewModel,
   strings,
   LayersViewModel,
@@ -38,7 +36,7 @@ define('src/account/security/equipment.vm', [
     _this.gvm = new EquipmentGridViewModel({
       edit: function(eqItem, cb) {
         //showDispatchAgencyEditor(_this, agency, cb);
-        showEquipmentEditor(_this, false, utils.clone(eqItem), cb);
+        showEquipmentEditor(_this, '', utils.clone(eqItem), cb);
       },
     });
 
@@ -57,17 +55,17 @@ define('src/account/security/equipment.vm', [
       };
     }
     _this.cmdAddByPart = ko.command(function(cb) {
-      showEquipmentEditor(_this, true, null, createReloadGvmCb(cb));
+      showEquipmentEditor(_this, 'part', null, createReloadGvmCb(cb));
     }, function(busy) {
       return !busy && !_this.cmdAddByBarcode.busy() && !_this.cmdAddExistingEquipment.busy();
     });
     _this.cmdAddByBarcode = ko.command(function(cb) {
-      showEquipmentEditor(_this, false, null, createReloadGvmCb(cb));
+      showEquipmentEditor(_this, 'barcode', null, createReloadGvmCb(cb));
     }, function(busy) {
       return !busy && !_this.cmdAddByPart.busy() && !_this.cmdAddExistingEquipment.busy();
     });
     _this.cmdAddExistingEquipment = ko.command(function(cb) {
-      showExistingEquipmentEditor(_this, createReloadGvmCb(cb));
+      showEquipmentEditor(_this, 'existing', null, createReloadGvmCb(cb));
     }, function(busy) {
       return !busy && !_this.cmdAddByPart.busy() && !_this.cmdAddByBarcode.busy();
     });
@@ -121,9 +119,9 @@ define('src/account/security/equipment.vm', [
     }, utils.no_op));
   }
 
-  function showEquipmentEditor(_this, byPart, item, cb) {
+  function showEquipmentEditor(_this, addBy, item, cb) {
     var vm = new EquipmentEditorViewModel({
-      byPart: byPart,
+      addBy: addBy,
       item: item,
       accountId: _this.accountId,
       monitoringStationOsId: _this.accountDetails.MonitoringStationOsId,
@@ -142,15 +140,6 @@ define('src/account/security/equipment.vm', [
       }
     });
     return securityhelper.zoneString(max + 1);
-  }
-
-  function showExistingEquipmentEditor(_this, cb) {
-    var vm = new ExistingEquipmentEditorViewModel({
-      accountId: _this.accountId,
-      monitoringStationOsId: _this.accountDetails.MonitoringStationOsId,
-      cache: _this.cache,
-    });
-    _this.layersVm.show(vm, cb);
   }
 
   function reloadEquipment(_this, cb) {

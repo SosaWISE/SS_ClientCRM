@@ -103,15 +103,12 @@ define('src/account/security/equipment.editor.vm', [
       'accountId',
       'monitoringStationOsId',
       'cache',
-      'byPart',
+      'addBy',
       'nextZone',
     ]);
     BaseViewModel.ensureProps(_this.cache, [
       'reps',
     ]);
-
-    _this.title = _this.byPart ? 'Part #' : 'Barcode';
-    _this.searchKey = ukov.wrap('', _this.byPart ? searchPartNumSchema : searchBarcodeSchema);
 
     _this.item = _this.item || {
       AccountEquipmentID: null,
@@ -132,7 +129,7 @@ define('src/account/security/equipment.editor.vm', [
       AccountZoneAssignmentID: null,
       AccountZoneTypeId: null,
       AccountEventId: null,
-      Zone: null,
+      Zone: _this.nextZone,
       Comments: null,
     };
 
@@ -173,8 +170,6 @@ define('src/account/security/equipment.editor.vm', [
         },
       },
     });
-    subscribeZoneType(_this);
-
     _this.data.IsUpgradeCvm = new ComboViewModel({
       selectedValue: _this.data.AccountEquipmentUpgradeTypeId,
       // nullable: true,
@@ -191,15 +186,41 @@ define('src/account/security/equipment.editor.vm', [
       list: _this.yesNoOptions,
     });
 
+
+    switch (_this.addBy) {
+      default:
+      case 'part':
+        _this.title = 'Part #';
+        _this.searchKey = ukov.wrap('', searchPartNumSchema);
+        break;
+      case 'barcode':
+        _this.title = 'Barcode';
+        _this.searchKey = ukov.wrap('', searchBarcodeSchema);
+        break;
+      case 'existing':
+        _this.title = 'Add Third Party Equipment';
+        _this.viewTmpl = 'tmpl-security-existing_equipment_editor';
+        _this.width = 290;
+
+        _this.data.EquipmentCvm = new ComboViewModel({
+          selectedValue: _this.data.EquipmentId,
+          fields: {
+            value: 'EquipmentID',
+            text: 'ShortName',
+          },
+        });
+        break;
+    }
+    subscribeEquipment(_this);
+    subscribeZoneType(_this);
+
     //
     // events
     //
-    _this.cmdCancel = ko.command(function(cb) {
+    _this.clickCancel = function() {
+      _this.layerResult = null;
       closeLayer(_this);
-      cb();
-    }, function(busy) {
-      return !busy && !_this.cmdSave.busy();
-    });
+    };
     _this.cmdSearch = ko.command(function(cb) {
       searchEquipment(_this, cb);
     });
@@ -210,12 +231,6 @@ define('src/account/security/equipment.editor.vm', [
         return;
       }
       var model = _this.data.getValue();
-      // tmp = {
-      //   EquipmentLocationDesc: _this.data.EquipmentLocationCvm.selectedItem().EquipmentLocationDesc,
-      //   ItemSKU: model.ItemSKU,
-      //   IsServiceUpgrade: model.IsServiceUpgrade,
-      //   ActualPoints: _this.data.model.ActualPoints,
-      // };
       dataservice.msaccountsetupsrv.equipments.save({
         id: model.AccountEquipmentID, // if no value create, else update
         data: model,
@@ -223,15 +238,6 @@ define('src/account/security/equipment.editor.vm', [
         _this.data.markClean(model, true);
 
         var data = resp.Value;
-        // //@HACK: fix fields that don't get returned
-        // data.EquipmentLocationDesc = tmp.EquipmentLocationDesc;
-        // data.ItemSKU = tmp.ItemSKU;
-        // data.IsServiceUpgrade = tmp.IsServiceUpgrade;
-        // data.ActualPoints = tmp.ActualPoints;
-        // if (_this.byPart) {
-        // } else {
-        // }
-
         _this.layerResult = data;
         _this.isDeleted = false;
         closeLayer(_this);
@@ -296,6 +302,9 @@ define('src/account/security/equipment.editor.vm', [
     load_rep(_this, config.user.peek().GPEmployeeID, join.add());
     load_rep(_this, _this.item.GPEmployeeId, join.add());
     load_equipmentLocation(_this, _this.data.EquipmentLocationCvm, _this.monitoringStationOsId, join.add());
+    if (_this.data.EquipmentCvm) {
+      load_existingEquipmentList(_this, _this.data.EquipmentCvm.setList, join.add());
+    }
 
     join.when(function(err) {
       if (err) {
@@ -311,10 +320,6 @@ define('src/account/security/equipment.editor.vm', [
       _this.data.markClean(_this.item, true);
     });
   };
-  // EquipmentEditorViewModel.prototype.closeValues = function() {
-  //   return [ //
-  //   ];
-  // };
 
   EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
     {
@@ -329,9 +334,6 @@ define('src/account/security/equipment.editor.vm', [
     },
   ];
 
-  // function load_equipmentAccountZoneTypes(_this, equipmentId, setter, cb) {
-  //   readAccountSetupSrv(_this, 'equipments', equipmentId, 'equipmentAccountZoneTypes', {}, setter, cb);
-  // }
   function load_equipmentAccountZoneTypes(equipmentId, setter, cb) {
     dataservice.msaccountsetupsrv.equipments.read({
       id: equipmentId,
@@ -350,6 +352,10 @@ define('src/account/security/equipment.editor.vm', [
     readAccountSetupSrv(_this, 'monitoringStationOS', monitoringStationOsId, 'equipmentLocations', {}, cvm.setList, cb);
   }
 
+  function load_existingEquipmentList(_this, setter, cb) {
+    readAccountSetupSrv(_this, 'monitoringStationOS', null, 'equipmentExistingList', {}, setter, cb);
+  }
+
   function readAccountSetupSrv(_this, collectionName, id, link, query, setter, cb) {
     var cache = _this.cache,
       cacheKey = id + link + querystring.toQuerystring(query);
@@ -365,6 +371,21 @@ define('src/account/security/equipment.editor.vm', [
     }, function(val) {
       setter(cache[cacheKey] = val);
     }, cb);
+  }
+
+  function subscribeEquipment(_this) {
+    if (!_this.data.EquipmentCvm) {
+      return;
+    }
+    _this.data.EquipmentCvm.selected.subscribe(function(item) {
+      if (item === _this.data.EquipmentCvm.noItemSelected) {
+        return;
+      }
+      // unwrap item
+      item = item.item;
+      //
+      loadEquipmentItem(_this, item.EquipmentID, false, utils.noop);
+    });
   }
 
   function subscribeZoneType(_this) {
@@ -421,27 +442,55 @@ define('src/account/security/equipment.editor.vm', [
   }
 
   function searchEquipment(_this, cb) {
-    var join = joiner(),
-      searchKey = _this.searchKey.getValue();
+    if (!_this.searchKey) {
+      return;
+    }
+    // load equipment
+    loadEquipmentItem(_this, _this.searchKey.getValue(), true, cb);
+  }
+
+  function loadEquipmentItem(_this, searchKey, markClean, cb) {
+    var link, barcodeId, isExisting, join = joiner();
     join.after(function(err) {
       if (err) {
         notify.error(err);
       }
       cb();
     });
-    // load equipment
+
+    switch (_this.addBy) {
+      default:
+      case 'part':
+        link = 'ByPartNumber';
+        barcodeId = null;
+        isExisting = false;
+        break;
+      case 'barcode':
+        link = 'ByBarcode';
+        barcodeId = searchKey;
+        isExisting = false;
+        break;
+      case 'existing':
+        link = ''; // by equipment id
+        barcodeId = null;
+        isExisting = true;
+        break;
+    }
+
+    _this._lastSearch = searchKey + link;
     dataservice.msaccountsetupsrv.equipments.read({
       id: searchKey,
-      link: _this.byPart ? 'ByPartNumber' : 'ByBarcode',
+      link: link,
     }, null, utils.safeCallback(join.add(), function(err, resp) {
+      if (_this._lastSearch !== searchKey + link) {
+        // do nothing if the user changed the search
+        return;
+      }
+
       if (resp.Message && resp.Message !== "Success") {
         notify.error(resp, 2);
       }
       var item = resp.Value;
-      if (!item) {
-        notify.warn('', '', 5);
-        return;
-      }
 
       // load zone types
       load_equipmentAccountZoneTypes(item.EquipmentID, function(val) {
@@ -458,19 +507,16 @@ define('src/account/security/equipment.editor.vm', [
           ItemDesc: item.ItemDescription,
           Comments: item.ItemDescription,
           // local data
-          BarcodeId: _this.byPart ? null : searchKey,
+          BarcodeId: barcodeId,
           AccountId: _this.accountId,
-          Zone: _this.nextZone,
+          // Zone: _this.nextZone,
+          IsExisting: isExisting,
           // defaults
           AccountEquipmentUpgradeTypeId: 'CUST',
-          EquipmentLocationId: null,
-          GPEmployeeId: null,
-          IsExisting: false,
-          IsServiceUpgrade: false,
-          IsExistingWiring: false,
-          IsMainPanel: false,
         });
-        _this.data.markClean({}, true);
+        if (markClean) {
+          _this.data.markClean({}, true);
+        }
       }, join.add());
     }, utils.noop));
   }
