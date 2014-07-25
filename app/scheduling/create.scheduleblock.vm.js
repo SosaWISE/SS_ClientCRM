@@ -1,4 +1,4 @@
-define('src/scheduling/schedule.popup.vm', [
+define('src/scheduling/create.scheduleblock.vm', [
   'jquery',
   'fullcalendar',
   'src/dataservice',
@@ -32,12 +32,12 @@ define('src/scheduling/schedule.popup.vm', [
   };
 
 
-  function SchedulePopupViewModel(options) {
+  function ScheduleBlockViewModel(options) {
     var _this = this;
-    SchedulePopupViewModel.super_.call(_this, options);
+    ScheduleBlockViewModel.super_.call(_this, options);
 
     //Set title
-    _this.title = _this.title || 'Create New Service Ticket';
+    _this.title = _this.title || 'Create Schedule Block';
 
     _this.data = ukov.wrap(_this.item || {
       ScheduleZip: null,
@@ -57,9 +57,9 @@ define('src/scheduling/schedule.popup.vm', [
     // events
     //
 
-    _this.cmdSaveEvent = ko.command(function(cb) {
+    _this.cmdSaveBlock = ko.command(function(cb) {
 
-      var dataRow = {
+      var param = {
         'Title': null, //temp
         'AppointmentDate': _this.data.ScheduleDate(),
         'AppointmentDuration': 100, //temp
@@ -67,23 +67,28 @@ define('src/scheduling/schedule.popup.vm', [
         'TicketId': 8 //temp                            
       };
 
-      console.log("Ready to save event...");
-      console.log("Data to save:" + JSON.stringify(dataRow));
+      console.log("Ready to save block...");
+      console.log("Data to save:" + JSON.stringify(param));
 
-      dataservice.scheduleenginesrv.SeScheduleTicket.post(null, dataRow, null, utils.safeCallback(cb, function(err, resp) {
+      //@TODO Save block
+      alert("@TODO Save block");
 
-        if (resp.Code === 0) {
-          console.log("SeScheduleTicket:" + JSON.stringify(resp.Value));
+      // dataservice.scheduleenginesrv.SeScheduleTicket.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
-          notify.info("Ticket saved", null, 3);
+      //   if (resp.Code === 0) {
+      //     console.log("SeScheduleTicket:" + JSON.stringify(resp.Value));
 
-          //close popup
-          closeLayer(_this);
+      //     notify.info("Ticket saved", null, 3);
 
-        } else {
-          notify.error(err);
-        }
-      }));
+      //     //close popup
+      //     closeLayer(_this);
+
+      //   } else {
+      //     notify.error(err);
+      //   }
+      // }));
+
+      cb();
 
     });
 
@@ -95,22 +100,22 @@ define('src/scheduling/schedule.popup.vm', [
 
   }
 
-  utils.inherits(SchedulePopupViewModel, BaseViewModel);
-  SchedulePopupViewModel.prototype.viewTmpl = 'tmpl-schedule-popup';
-  SchedulePopupViewModel.prototype.width = 400;
-  SchedulePopupViewModel.prototype.height = 'auto';
+  utils.inherits(ScheduleBlockViewModel, BaseViewModel);
+  ScheduleBlockViewModel.prototype.viewTmpl = 'tmpl-schedule-block';
+  ScheduleBlockViewModel.prototype.width = 400;
+  ScheduleBlockViewModel.prototype.height = 'auto';
 
-  SchedulePopupViewModel.prototype.onActivate = function( /*routeData*/ ) {};
+  ScheduleBlockViewModel.prototype.onActivate = function( /*routeData*/ ) {};
 
   function closeLayer(_this) {
     if (_this.layer) {
       _this.layer.close();
     }
   }
-  SchedulePopupViewModel.prototype.getResults = function() {
+  ScheduleBlockViewModel.prototype.getResults = function() {
     var _this = this;
     return [_this.layerResult];
   };
 
-  return SchedulePopupViewModel;
+  return ScheduleBlockViewModel;
 });

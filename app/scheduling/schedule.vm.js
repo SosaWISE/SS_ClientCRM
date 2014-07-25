@@ -6,7 +6,8 @@ define('src/scheduling/schedule.vm', [
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
-  'src/scheduling/schedule.popup.vm',
+  'src/scheduling/create.scheduleblock.vm',
+  'src/scheduling/create.scheduleticket.vm',
   'src/core/layers.vm',
   'src/core/joiner',
   //'ko',
@@ -20,7 +21,8 @@ define('src/scheduling/schedule.vm', [
   notify,
   utils,
   ControllerViewModel,
-  SchedulePopupViewModel,
+  ScheduleBlockViewModel,
+  ScheduleTicketViewModel,
   LayersViewModel,
   joiner
   //ko,
@@ -79,8 +81,8 @@ define('src/scheduling/schedule.vm', [
     tSource = [{
       id: 1,
       title: null,
-      start: '2014-07-20 01:00',
-      end: '2014-07-20 03:00',
+      start: '2014-07-22 01:00',
+      end: '2014-07-22 03:00',
       allDay: false,
       someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
       backgroundColor: 'white',
@@ -111,9 +113,10 @@ define('src/scheduling/schedule.vm', [
     }];
 
 
-    //load all scheduled tickets
-    load_scheduleTickets(join.add());
+    //load block list    
+    load_scheduleBlockList(join.add());
 
+    /** Fullcalendar plugin **/
     $('#calendar').fullCalendar({
       header: {
         left: 'prev,next today',
@@ -127,12 +130,15 @@ define('src/scheduling/schedule.vm', [
       slotMinutes: 15,
       selectHelper: true,
       events: tSource,
-      //eventColor: '#FACC00',
-      //eventBackgroundColor: '#FACC00',
-      //eventBorderColor: '#FACC00',
-      //eventTextColor: 'white',
-      eventClick: function( /*calEvent , jsEvent, view*/ ) {
-        //handle click event on tickets
+      hiddenDays: [0], //hide sunday      
+      eventClick: function(calEvent /*, jsEvent, view*/ ) {
+        _this.layersVm.show(new ScheduleTicketViewModel({
+          date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
+          //stime: $.fullCalendar.formatDate(start, 'HH:mm'),
+          //etime: $.fullCalendar.formatDate(end, 'HH:mm'),
+        }), function onClose( /*result*/ ) {
+
+        });
       },
 
       eventDrop: function(event /*, dayDelta, minuteDelta, allDay, revertFunc*/ ) {
@@ -140,7 +146,6 @@ define('src/scheduling/schedule.vm', [
       },
 
       eventResize: function(event /*, dayDelta, minuteDelta, revertFunc*/ ) {
-        alert("fire");
         new UpdateEvent(event.id, event.start, event.end);
       },
 
@@ -150,7 +155,7 @@ define('src/scheduling/schedule.vm', [
 
       select: function(start, end /*, jsEvent, view*/ ) {
 
-        _this.layersVm.show(new SchedulePopupViewModel({
+        _this.layersVm.show(new ScheduleBlockViewModel({
           date: $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
           stime: $.fullCalendar.formatDate(start, 'HH:mm'),
           etime: $.fullCalendar.formatDate(end, 'HH:mm'),
@@ -198,25 +203,26 @@ define('src/scheduling/schedule.vm', [
   }
 
 
-  function load_scheduleTickets(cb) {
+  function load_scheduleBlockList(cb) {
 
     //temporary date range
-    var param = {
-      AppointmentDateStart: '07/21/2014',
-      AppointmentDateEnd: '07/26/2014'
-    };
+    // var param = {
+    //   AppointmentDateStart: '07/21/2014',
+    //   AppointmentDateEnd: '07/26/2014'
+    // };
 
-    dataservice.scheduleenginesrv.SeScheduleTicketList.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+    // dataservice.scheduleenginesrv.ScheduleBlockList.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
-      if (resp.Code === 0) {
+    //   if (resp.Code === 0) {
 
-        console.log("SeScheduleTicketList:" + JSON.stringify(resp.Value));
+    //     console.log("ScheduleBlockList:" + JSON.stringify(resp.Value));
 
-      } else {
-        notify.warn('No records found.', null, 3);
-      }
-    }));
+    //   } else {
+    //     notify.warn('No block(s) found.', null, 3);
+    //   }
+    // }));
 
+    cb();
   }
 
 
