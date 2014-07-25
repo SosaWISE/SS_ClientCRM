@@ -129,7 +129,7 @@ define('src/u-kov/validators', [
   validators.isRequired = function(message) {
     message = message || valRequired;
     return function(val /*, model*/ ) {
-      if (!val && val !== 0) {
+      if (!val && val !== 0 && val !== false) {
         return message;
       }
     };

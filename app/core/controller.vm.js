@@ -1,7 +1,6 @@
 define('src/core/controller.vm', [
   'src/core/helpers',
   'src/core/notify',
-  'src/core/joiner',
   'jquery',
   'src/core/utils',
   'ko',
@@ -9,7 +8,6 @@ define('src/core/controller.vm', [
 ], function(
   helpers,
   notify,
-  joiner,
   jquery,
   utils,
   ko,

@@ -1,6 +1,9 @@
 define('src/account/security/equipment.editor.vm', [
+  'src/config',
+  'src/core/querystring',
   'src/account/security/securityhelper',
   'src/dataservice',
+  'src/core/joiner',
   'src/core/strings',
   'src/core/combo.vm',
   'src/core/notify',
@@ -9,8 +12,11 @@ define('src/account/security/equipment.editor.vm', [
   'ko',
   'src/ukov',
 ], function(
+  config,
+  querystring,
   securityhelper,
   dataservice,
+  joiner,
   strings,
   ComboViewModel,
   notify,
@@ -23,7 +29,8 @@ define('src/account/security/equipment.editor.vm', [
 
   var schema,
     searchBarcodeSchema, searchPartNumSchema,
-    strConverter = ukov.converters.string();
+    strConverter = ukov.converters.string(),
+    isRequired = ukov.validators.isRequired();
 
   searchBarcodeSchema = {
     converter: strConverter,
@@ -40,37 +47,50 @@ define('src/account/security/equipment.editor.vm', [
 
   schema = {
     _model: true,
-    AccountEquipmentID: {},
-    AccountEquipmentUpgradeTypeId: {},
-    AccountId: {},
-    AccountZoneAssignmentID: {},
-    // AccountZoneType: {},
-    AccountZoneTypeId: {
+
+    AccountEquipmentID: {}, //long
+    AccountId: {}, //long
+    EquipmentId: {}, //string
+    EquipmentLocationId: {}, //int?
+    GPEmployeeId: {}, //string
+    AccountEquipmentUpgradeTypeId: {}, //string
+    Points: {}, //int
+    ActualPoints: {}, //double?
+    Price: { //decimal
+      converter: ukov.converters.number(2),
+    },
+    IsExisting: {
+      validators: [isRequired],
+    },
+    BarcodeId: {}, //string
+    IsServiceUpgrade: {
+      validators: [isRequired],
+    },
+    IsExistingWiring: {
+      validators: [isRequired],
+    },
+    IsMainPanel: {
+      validators: [isRequired],
+    },
+
+    AccountZoneAssignmentID: {}, //long
+    AccountZoneTypeId: { //string
       validators: [
         ukov.validators.isRequired('Please enter a Zone Type'),
       ],
     },
-    // ActualPoints: 3,
-    BarcodeId: {},
-    // EquipmentLocationDesc: null,
-    EquipmentLocationId: {},
-    GPEmployeeId: {},
-    IsExisting: {},
-    IsExistingWiring: {},
-    IsMainPanel: {},
-    IsServiceUpgrade: {},
-    ItemDesc: {},
-    ItemId: {},
-    ItemSKU: {},
-    Price: {
-      converter: ukov.converters.number(2),
-    },
+    AccountEventId: {}, //int?
     Zone: {
       converter: securityhelper.zoneStringConverter,
     },
+    Comments: {},
 
-    //@NOTE: these are not returned in equipment item array... msaccountsetupsrv/accounts/151147/equipment
-    ZoneEventType: {},
+    // // readonly
+    ItemSKU: {},
+    ItemDesc: {},
+    // ItemDesc
+    // AccountZoneType
+    // EquipmentLocationDesc
   };
 
 
@@ -95,40 +115,37 @@ define('src/account/security/equipment.editor.vm', [
 
     _this.item = _this.item || {
       AccountEquipmentID: null,
-      AccountEquipmentUpgradeTypeId: null,
-      AccountId: null,
-      AccountZoneAssignmentID: null,
-      AccountZoneTypeId: null,
-      BarcodeId: null,
+      AccountId: _this.accountId,
+      EquipmentId: null,
       EquipmentLocationId: null,
       GPEmployeeId: null,
-      IsExisting: null,
-      IsExistingWiring: null,
-      IsMainPanel: null,
-      IsServiceUpgrade: null,
-      ItemDesc: null,
-      ItemId: null,
-      ItemSKU: null,
-      Price: '',
-      Zone: '',
+      AccountEquipmentUpgradeTypeId: null,
+      Points: null,
+      ActualPoints: null,
+      Price: null,
+      IsExisting: false,
+      BarcodeId: null,
+      IsServiceUpgrade: false,
+      IsExistingWiring: false,
+      IsMainPanel: false,
 
-      // see schema
-      ZoneEventType: null,
-
-      //IsUpgrade: null,
-      //UpgradePrice: '',
-      //MainPanel: null,
+      AccountZoneAssignmentID: null,
+      AccountZoneTypeId: null,
+      AccountEventId: null,
+      Zone: null,
+      Comments: null,
     };
 
     _this.data = ukov.wrap(utils.clone(_this.item), schema);
     _this.hasItem = ko.computed(function() {
-      return !!_this.data.ItemId();
+      return !!_this.data.EquipmentId();
     });
-    _this.data.ZoneEventTypeCvm = new ComboViewModel({
-      selectedValue: _this.data.ZoneEventType,
+    _this.data.AssignToCvm = new ComboViewModel({
+      selectedValue: _this.data.GPEmployeeId,
+      nullable: true,
       fields: {
-        value: 'ZoneEventTypeID',
-        text: 'Descrption',
+        value: 'CompanyID',
+        text: 'FullName',
       },
     });
     _this.data.EquipmentLocationCvm = new ComboViewModel({
@@ -142,31 +159,35 @@ define('src/account/security/equipment.editor.vm', [
     _this.data.ZoneTypeCvm = new ComboViewModel({
       selectedValue: _this.data.AccountZoneTypeId,
       fields: {
-        value: 'AccountZoneTypeID',
+        value: 'AccountZoneTypeId',
         text: 'AccountZoneType',
       },
     });
-    _this.data.AssignToCvm = new ComboViewModel({
-      selectedValue: _this.data.GPEmployeeId,
-      nullable: true,
+    _this.data.AccountEventCvm = new ComboViewModel({
+      selectedValue: _this.data.AccountEventId,
       fields: {
-        value: 'CompanyID',
-        text: 'FullName',
+        value: 'AccountEventID',
+        // text: 'Description',
+        text: function(item) {
+          return strings.format('{0} ({1})', item.Description, item.AccountEventID);
+        },
       },
     });
+    subscribeZoneType(_this);
+
     _this.data.IsUpgradeCvm = new ComboViewModel({
       selectedValue: _this.data.AccountEquipmentUpgradeTypeId,
-      nullable: true,
+      // nullable: true,
       list: _this.isUpgradeOptions,
     });
     _this.data.IsExistingWiringCvm = new ComboViewModel({
       selectedValue: _this.data.IsExistingWiring,
-      nullable: true,
+      // nullable: true,
       list: _this.yesNoOptions,
     });
     _this.data.MainPanelCvm = new ComboViewModel({
       selectedValue: _this.data.IsMainPanel,
-      nullable: true,
+      // nullable: true,
       list: _this.yesNoOptions,
     });
 
@@ -264,12 +285,17 @@ define('src/account/security/equipment.editor.vm', [
 
 
   EquipmentEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
-    var _this = this;
+    var _this = this,
+      equipmentId = _this.data.EquipmentId.peek();
 
-    load_zoneEventTypes(_this.cache, _this.data.ZoneEventTypeCvm, _this.monitoringStationOsId, join.add());
-    load_accountZoneTypes(_this.cache, _this.data.ZoneTypeCvm, _this.monitoringStationOsId, join.add());
-    load_equipmentLocation(_this.cache, _this.data.EquipmentLocationCvm, _this.monitoringStationOsId, join.add());
-    load_rep(_this.cache, _this.item.GPEmployeeId, join.add());
+    if (equipmentId) {
+      load_equipmentAccountZoneTypes(equipmentId, function(val) {
+        _this.data.ZoneTypeCvm.setList(val);
+      }, join.add());
+    }
+    load_rep(_this, config.user.peek().GPEmployeeID, join.add());
+    load_rep(_this, _this.item.GPEmployeeId, join.add());
+    load_equipmentLocation(_this, _this.data.EquipmentLocationCvm, _this.monitoringStationOsId, join.add());
 
     join.when(function(err) {
       if (err) {
@@ -290,11 +316,6 @@ define('src/account/security/equipment.editor.vm', [
   //   ];
   // };
 
-  // ?????????
-  //CUST  Customer
-  //SALESREP  Sales Rep
-  //TECH  Technician
-  //commented by reagan/junryl match upgrade type from crm db
   EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
     {
       value: 'CUST',
@@ -307,52 +328,80 @@ define('src/account/security/equipment.editor.vm', [
       text: 'Technician',
     },
   ];
-  /*EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
-    {
-      value: null,
-      text: 'null',
-    }, {
-      value: true,
-      text: 'Tech',
-    }, {
-      value: false,
-      text: 'Rep',
-    },
-  ];*/
 
-  function load_zoneEventTypes(cache, cvm, monitoringStationOsId, cb) {
-    readMonitoringStationOS(cache, cvm, monitoringStationOsId, 'zoneEventTypes', {
-      'equipmentTypeId': 1,
-    }, cb);
+  // function load_equipmentAccountZoneTypes(_this, equipmentId, setter, cb) {
+  //   readAccountSetupSrv(_this, 'equipments', equipmentId, 'equipmentAccountZoneTypes', {}, setter, cb);
+  // }
+  function load_equipmentAccountZoneTypes(equipmentId, setter, cb) {
+    dataservice.msaccountsetupsrv.equipments.read({
+      id: equipmentId,
+      link: 'equipmentAccountZoneTypes',
+    }, setter, cb);
   }
 
-  function load_accountZoneTypes(cache, cvm, monitoringStationOsId, cb) {
-    readMonitoringStationOS(cache, cvm, monitoringStationOsId, 'accountZoneTypes', {}, cb);
+  function load_equipmentAccountZoneTypeEvents(_this, equipmentId, equipmentAccountZoneTypeId, monitoringStationOSId, setter, cb) {
+    readAccountSetupSrv(_this, 'equipments', equipmentId, 'equipmentAccountZoneTypeEvents', {
+      'equipmentAccountZoneTypeId': equipmentAccountZoneTypeId,
+      'monitoringStationOSId': monitoringStationOSId,
+    }, setter, cb);
   }
 
-  function load_equipmentLocation(cache, cvm, monitoringStationOsId, cb) {
-    readMonitoringStationOS(cache, cvm, monitoringStationOsId, 'equipmentLocations', {}, cb);
+  function load_equipmentLocation(_this, cvm, monitoringStationOsId, cb) {
+    readAccountSetupSrv(_this, 'monitoringStationOS', monitoringStationOsId, 'equipmentLocations', {}, cvm.setList, cb);
   }
 
-  function readMonitoringStationOS(cache, cvm, id, link, query, cb) {
-    if (cache[link]) {
-      cvm.setList(cache[link]);
+  function readAccountSetupSrv(_this, collectionName, id, link, query, setter, cb) {
+    var cache = _this.cache,
+      cacheKey = id + link + querystring.toQuerystring(query);
+    if (cache[cacheKey]) {
+      setter(cache[cacheKey]);
       cb();
       return;
     }
-    dataservice.msaccountsetupsrv.monitoringStationOS.read({
+    dataservice.msaccountsetupsrv[collectionName].read({
       id: id,
       link: link,
       query: query,
     }, function(val) {
-      cvm.setList(cache[link] = val);
+      setter(cache[cacheKey] = val);
     }, cb);
   }
 
-  function load_rep(cache, companyId, cb) {
-    if (!companyId || cache.reps.some(function(rep) {
-      return companyId === rep.CompanyID;
-    })) {
+  function subscribeZoneType(_this) {
+    var lastItem, data = _this.data,
+      setter = data.AccountEventCvm.setList;
+    data.ZoneTypeCvm.selected.subscribe(function(item) {
+      if (item === data.ZoneTypeCvm.noItemSelected) {
+        return;
+      }
+      // unwrap item
+      item = item.item;
+      // store for later use
+      lastItem = item;
+      // clear list
+      setter([]);
+      load_equipmentAccountZoneTypeEvents(_this, data.EquipmentId.peek(), item.EquipmentAccountZoneTypeID, _this.monitoringStationOsId, function(val) {
+        if (lastItem === item) {
+          // set list
+          setter(val);
+        }
+      }, function(err) {
+        if (err) {
+          notify.error(err);
+        }
+      });
+    });
+  }
+
+  function load_rep(_this, companyId, cb) {
+    var cache = _this.cache;
+
+    function hasRep(id) {
+      return cache.reps.some(function(rep) {
+        return id === rep.CompanyID;
+      });
+    }
+    if (!companyId || hasRep(companyId)) {
       cb();
       return;
     }
@@ -361,35 +410,53 @@ define('src/account/security/equipment.editor.vm', [
     dataservice.qualify.salesrep.read({
       id: companyId,
     }, function(rep) {
-      // normalize data
-      rep.FullName = strings.format('{0} - {1}', rep.CompanyID, strings.joinTrimmed(' ', rep.FirstName, rep.LastName));
-      cache.reps.push(rep);
+      // don't add duplicates
+      if (!hasRep(rep.CompanyID)) {
+        // normalize data
+        rep.FullName = strings.format('{0} - {1}', rep.CompanyID, strings.joinTrimmed(' ', rep.FirstName, rep.LastName));
+        // add
+        cache.reps.push(rep);
+      }
     }, cb);
   }
 
   function searchEquipment(_this, cb) {
-    var searchKey = _this.searchKey.getValue();
-    dataservice.invoicesrv.items.read({
+    var join = joiner(),
+      searchKey = _this.searchKey.getValue();
+    join.after(function(err) {
+      if (err) {
+        notify.error(err);
+      }
+      cb();
+    });
+    // load equipment
+    dataservice.msaccountsetupsrv.equipments.read({
       id: searchKey,
       link: _this.byPart ? 'ByPartNumber' : 'ByBarcode',
-    }, null, utils.safeCallback(cb, function(err, resp) {
-      // //Set Item Name and Part# to UI
-      // _this.itemName(resp.Value.ItemDesc);
-      // _this.partNumber(searchKey);
+    }, null, utils.safeCallback(join.add(), function(err, resp) {
       if (resp.Message && resp.Message !== "Success") {
         notify.error(resp, 2);
       }
-
       var item = resp.Value;
-      if (item) {
+      if (!item) {
+        notify.warn('', '', 5);
+        return;
+      }
+
+      // load zone types
+      load_equipmentAccountZoneTypes(item.EquipmentID, function(val) {
+        _this.data.ZoneTypeCvm.setList(val);
+
         _this.data.setValue({
           // from item
-          ItemId: item.ItemID,
-          Points: item.SystemPoints,
-          ActualPoints: item.SystemPoints,
-          Price: item.Price,
-          ItemSKU: item.ItemSKU,
-          ItemDesc: item.ItemDesc,
+          EquipmentId: item.EquipmentID,
+          Points: item.Points,
+          ActualPoints: item.ActualPoints,
+          Price: item.RetailPrice,
+          AccountZoneTypeId: item.AccountZoneTypeId,
+          ItemSKU: item.GPItemNmbr,
+          ItemDesc: item.ItemDescription,
+          Comments: item.ItemDescription,
           // local data
           BarcodeId: _this.byPart ? null : searchKey,
           AccountId: _this.accountId,
@@ -398,16 +465,14 @@ define('src/account/security/equipment.editor.vm', [
           AccountEquipmentUpgradeTypeId: 'CUST',
           EquipmentLocationId: null,
           GPEmployeeId: null,
-          OfficeReconciliationItemId: null,
           IsExisting: false,
           IsServiceUpgrade: false,
           IsExistingWiring: false,
           IsMainPanel: false,
         });
-        // _this.data.AssignToCvm.selectFirst();
         _this.data.markClean({}, true);
-      }
-    }, notify.error));
+      }, join.add());
+    }, utils.noop));
   }
 
   return EquipmentEditorViewModel;

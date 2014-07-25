@@ -332,11 +332,16 @@ define('src/core/combo.vm', [
     if (!(fields.value in item)) {
       throw new Error('no ' + fields.value + ' field: ' + jsonhelpers.stringify(item));
     }
-    if (!(fields.text in item)) {
+    var text, value;
+    if (utils.isFunc(fields.text)) {
+      // text field can be a format function
+      text = fields.text(item);
+    } else if (!(fields.text in item)) {
       throw new Error('no ' + fields.text + ' field: ' + jsonhelpers.stringify(item));
+    } else {
+      text = ko.unwrap(item[fields.text]);
     }
-    var text = ko.unwrap(item[fields.text]),
-      value = ko.unwrap(item[fields.value]);
+    value = ko.unwrap(item[fields.value]);
     return {
       item: item,
       text: text,

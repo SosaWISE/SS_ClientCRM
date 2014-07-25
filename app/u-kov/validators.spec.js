@@ -44,5 +44,27 @@ define('src/u-kov/validators.spec', [
         });
       });
     });
+
+    describe('isRequired', function() {
+      var isRequired;
+      beforeEach(function() {
+        isRequired = validators.isRequired();
+      });
+
+      describe('when valid', function() {
+        it('should return err msg', function() {
+          expect(isRequired()).toBeDefined();
+          expect(isRequired(null)).toBeDefined();
+        });
+      });
+      describe('when invalid', function() {
+        it('should return truthy value', function() {
+          expect(isRequired('bob')).toBeUndefined();
+          expect(isRequired(true)).toBeUndefined();
+          expect(isRequired(0)).toBeUndefined();
+          expect(isRequired(false)).toBeUndefined();
+        });
+      });
+    });
   });
 });
