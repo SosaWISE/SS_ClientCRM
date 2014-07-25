@@ -27,6 +27,7 @@ define('src/scheduling/create.scheduleticket.vm', [
 
   schema = {
     _model: true,
+    ScheduleTicketID: {},
     ScheduleTicketType: {},
     ScheduleTicketAppointment: {},
     ScheduleTicketNotes: {},
@@ -43,6 +44,7 @@ define('src/scheduling/create.scheduleticket.vm', [
     _this.title = _this.title || 'Create New Schedule Ticket';
 
     _this.data = ukov.wrap(_this.item || {
+      ScheduleTicketID: null,
       ScheduleTicketType: null,
       ScheduleTicketAppointment: null,
       ScheduleTicketNotes: null,
@@ -68,37 +70,17 @@ define('src/scheduling/create.scheduleticket.vm', [
 
     _this.cmdSaveScheduleTicket = ko.command(function(cb) {
 
-      var param = {
-        'BlockId': 1, //temp        
-        'Appointment': _this.data.ScheduleTicketAppointment(),
-        'Notes': _this.data.ScheduleTicketNotes(),
-        'TicketTypeId': _this.data.ScheduleTicketType(),
-        'AppointmentDate': _this.data.ScheduleAppointmentDate(),
-        'TravelTime': _this.data.ScheduleTravelTime(),
-        'TicketId': 8 //temp  
+      var TicketId = _this.data.ScheduleTicketID();
 
-      };
+      //@TODO
+      //if ticketid does not exist, create ticket first to obtain ticketid otherwise proceed to scheduling
 
-      console.log("Data to save:" + JSON.stringify(param));
+      if (!TicketId) {
+        createServiceTicket(_this, cb);
+      } else {
+        setScheduleTicket(_this, cb);
+      }
 
-      //@TODO save schedule ticket      
-
-      dataservice.scheduleenginesrv.SeScheduleTicket.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
-
-        if (resp.Code === 0) {
-          console.log("SeScheduleTicket:" + JSON.stringify(resp.Value));
-
-          notify.info("Ticket saved", null, 3);
-
-          //close popup
-          closeLayer(_this);
-
-        } else {
-          notify.error(err);
-        }
-      }));
-
-      cb();
 
     });
 
@@ -148,6 +130,79 @@ define('src/scheduling/create.scheduleticket.vm', [
 
       } else {
         notify.warn('No records found.', null, 3);
+      }
+    }));
+
+  }
+
+  //create ticket
+  function createServiceTicket(_this, cb) {
+
+    var param = {
+      AccountID: 1, //temp
+      MoniNumber: null, //temp
+      TicketTypeID: _this.data.ScheduleTicketType(),
+      StatusCodeID: 1, //temp
+      MoniConfirmation: 'MONI CONFIRM', //temp
+      TechConfirmation: '07/22/2014', //temp
+      TechnicianID: 1, //temp
+      TripCharges: 123.5, //temp
+      Appointment: _this.data.ScheduleAppointmentDate(),
+      AgentConfirmation: 'AGENT CONFIRMATION', //temp
+      ExpirationDate: '07/22/2014', //temp
+      Notes: _this.data.ScheduleTicketNotes(),
+
+    };
+
+    console.log(JSON.stringify("Create Ticket Parameters:" + JSON.stringify(param)));
+
+    dataservice.scheduleenginesrv.SeTicket.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+        console.log("Create Ticket:" + JSON.stringify(resp.Value));
+
+        //get TicketID
+        _this.data.ScheduleTicketID(resp.Value.TicketID);
+
+        //do scheduling stuff
+        setScheduleTicket(_this, cb);
+
+      } else {
+        notify.error(err);
+      }
+    }));
+
+  }
+
+  //do scheduling stuff
+  function setScheduleTicket(_this, cb) {
+
+    var param = {
+      'BlockId': _this.blockId,
+      'Notes': _this.data.ScheduleTicketNotes(),
+      'TicketTypeId': _this.data.ScheduleTicketType(),
+      'AppointmentDate': _this.data.ScheduleAppointmentDate(),
+      'TravelTime': _this.data.ScheduleTravelTime(),
+      'TicketId': _this.data.ScheduleTicketID()
+    };
+
+    console.log("Data to save:" + JSON.stringify(param));
+
+    dataservice.scheduleenginesrv.SeScheduleTicket.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+
+        console.log("SeScheduleTicket:" + JSON.stringify(resp.Value));
+
+        //clear fields
+        _this.data.ScheduleTicketID(null);
+        _this.data.ScheduleTicketAppointment(null);
+        _this.data.ScheduleTicketNotes(null);
+        _this.data.ScheduleTicketType(null);
+        _this.data.ScheduleTravelTime(null);
+
+      } else {
+        notify.error(err);
       }
     }));
 

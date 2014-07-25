@@ -134,6 +134,7 @@ define('src/scheduling/schedule.vm', [
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
         _this.layersVm.show(new ScheduleTicketViewModel({
           date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
+          blockId: calEvent.id,
           //stime: $.fullCalendar.formatDate(start, 'HH:mm'),
           //etime: $.fullCalendar.formatDate(end, 'HH:mm'),
         }), function onClose( /*result*/ ) {
@@ -205,24 +206,32 @@ define('src/scheduling/schedule.vm', [
 
   function load_scheduleBlockList(cb) {
 
-    //temporary date range
-    // var param = {
-    //   AppointmentDateStart: '07/21/2014',
-    //   AppointmentDateEnd: '07/26/2014'
-    // };
+    var current = new Date(), // get current date    
+      weekstart = current.getDate() - current.getDay() + 1,
+      weekend = weekstart + 5, // end day 5 for saturday 
+      start = new Date(current.setDate(weekstart)),
+      end = new Date(current.setDate(weekend)),
+      param;
 
-    // dataservice.scheduleenginesrv.ScheduleBlockList.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+    param = {
+      'DateFrom': $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
+      'DateTo': $.fullCalendar.formatDate(end, 'MM/dd/yyyy')
+    };
 
-    //   if (resp.Code === 0) {
+    console.log("Date range:" + JSON.stringify(param));
 
-    //     console.log("ScheduleBlockList:" + JSON.stringify(resp.Value));
+    dataservice.scheduleenginesrv.SeScheduleBlockList.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
-    //   } else {
-    //     notify.warn('No block(s) found.', null, 3);
-    //   }
-    // }));
+      if (resp.Code === 0) {
 
-    cb();
+        console.log("SeScheduleBlockList:" + JSON.stringify(resp.Value));
+
+      } else {
+        notify.error(err);
+      }
+    }));
+
+
   }
 
 

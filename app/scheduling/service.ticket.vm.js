@@ -112,6 +112,14 @@ define('src/scheduling/service.ticket.vm', [
 
   };
 
+  ServiceTicketViewModel.prototype.onActivate = function(cb) { // override me
+    var _this = this;
+
+    //load all tickets created
+    load_tickets({}, _this.serviceTicketGvm, cb);
+
+  };
+
   function load_ticketStatusList(cvm, cb) {
 
     dataservice.scheduleenginesrv.TicketStatusCodeList.read({}, null, utils.safeCallback(cb, function(err, resp) {

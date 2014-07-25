@@ -2,6 +2,9 @@ ul(class="edit-form")
 	li
 		input(type="hidden" id="eventID")
 	li		
+		span(class="label") Ticket ID
+		input(type="text" data-bind="ukov:data.ScheduleTicketID, value:data.ScheduleTicketID, valueUpdate:'keyup'")
+	li		
 		span(class="label") Ticket Type
 		div(data-bind="cvm:data.ScheduleTicketTypeCvm")
 	li
