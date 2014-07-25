@@ -59,36 +59,42 @@ define('src/scheduling/create.scheduleblock.vm', [
 
     _this.cmdSaveBlock = ko.command(function(cb) {
 
-      var param = {
-        'Title': null, //temp
-        'AppointmentDate': _this.data.ScheduleDate(),
-        'AppointmentDuration': 100, //temp
-        'TravelTime': 0, //temp
-        'TicketId': 8 //temp                            
+      var block,
+        param;
+
+      //check am/pm
+      block = (parseInt(_this.data.ScheduleEndTime(), 10) < 12) ? 'AM' : 'PM';
+
+      console.log("Block:" + block);
+
+      param = {
+        'Block': block,
+        'ZipCode': _this.data.ScheduleZip(),
+        'MaxRadius': _this.data.ScheduleMaxRadius(),
+        'Distance': _this.data.ScheduleDistance(),
+        'StartTime': _this.data.ScheduleStartTime(),
+        'EndTime': _this.data.ScheduleEndTime(),
+        'AvailableSlots': 10, //temp
+        'TechnicianId': 1,
       };
 
-      console.log("Ready to save block...");
       console.log("Data to save:" + JSON.stringify(param));
 
       //@TODO Save block
-      alert("@TODO Save block");
 
-      // dataservice.scheduleenginesrv.SeScheduleTicket.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+      dataservice.scheduleenginesrv.SeScheduleBlock.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
-      //   if (resp.Code === 0) {
-      //     console.log("SeScheduleTicket:" + JSON.stringify(resp.Value));
+        if (resp.Code === 0) {
+          console.log("SeScheduleBlock:" + JSON.stringify(resp.Value));
 
-      //     notify.info("Ticket saved", null, 3);
+          //close popup
+          closeLayer(_this);
 
-      //     //close popup
-      //     closeLayer(_this);
+        } else {
+          notify.error(err);
+        }
+      }));
 
-      //   } else {
-      //     notify.error(err);
-      //   }
-      // }));
-
-      cb();
 
     });
 

@@ -77,6 +77,7 @@ define('src/scheduling/schedule.vm', [
       tSource = [], //temporary list of tickets
       CalLoading = true;
 
+
     //create temporary list of tickets
     tSource = [{
       id: 1,
@@ -129,14 +130,12 @@ define('src/scheduling/schedule.vm', [
       selectable: true,
       slotMinutes: 15,
       selectHelper: true,
-      events: tSource,
+      //events: tSource,
       hiddenDays: [0], //hide sunday      
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
         _this.layersVm.show(new ScheduleTicketViewModel({
           date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
           blockId: calEvent.id,
-          //stime: $.fullCalendar.formatDate(start, 'HH:mm'),
-          //etime: $.fullCalendar.formatDate(end, 'HH:mm'),
         }), function onClose( /*result*/ ) {
 
         });
@@ -158,11 +157,10 @@ define('src/scheduling/schedule.vm', [
 
         _this.layersVm.show(new ScheduleBlockViewModel({
           date: $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
-          stime: $.fullCalendar.formatDate(start, 'HH:mm'),
-          etime: $.fullCalendar.formatDate(end, 'HH:mm'),
-        }), function onClose( /*result*/ ) {
-          console.log("Refetching tickets...");
-          $('#calendar').fullCalendar('refetchEvents');
+          stime: $.fullCalendar.formatDate(start, 'MM/dd/yyyy HH:mm'),
+          etime: $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm'),
+        }), function onClose(cb) {
+          load_scheduleBlockList(cb);
         });
       },
 
@@ -211,7 +209,10 @@ define('src/scheduling/schedule.vm', [
       weekend = weekstart + 5, // end day 5 for saturday 
       start = new Date(current.setDate(weekstart)),
       end = new Date(current.setDate(weekend)),
-      param;
+      param,
+      x,
+      data = {},
+      result = [];
 
     param = {
       'DateFrom': $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
@@ -226,11 +227,32 @@ define('src/scheduling/schedule.vm', [
 
         console.log("SeScheduleBlockList:" + JSON.stringify(resp.Value));
 
+        for (x = 0; x < resp.Value.length; x++) {
+          data = {
+            id: resp.Value[x].BlockID,
+            title: null,
+            start: resp.Value[x].StartTime,
+            end: resp.Value[x].EndTime,
+            allDay: false,
+            someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + resp.Value[x].ZipCode + ' <br /> Max Radius: ' + resp.Value[x].MaxRadius + ' miles <br /> Distance: ' + resp.Value[x].Distance + ' miles <br /> Available: ' + resp.Value[x].AvailableSlots + ' of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
+            backgroundColor: 'skyblue', //temporary
+          };
+
+          //list of blocks from server
+          result.push(data);
+
+        }
+
+        console.log("Final Source:" + JSON.stringify(result));
+
+        $("#calendar").fullCalendar('removeEvents');
+
+        $("#calendar").fullCalendar('addEventSource', result);
+
       } else {
         notify.error(err);
       }
     }));
-
 
   }
 
