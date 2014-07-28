@@ -15,10 +15,13 @@ define('src/dataservices/accountingengine', [
       'aging',
       'billingInfoSummary',
       'invoices',
-      'invoiceitems'
+      'invoiceItems',
+      'customerSearches',
+      'customerCardInfos',
+      'customers',
     ].forEach(function(collectionName) {
-        result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
-      });
+      result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
+    });
 
     return result;
   };

@@ -7,7 +7,11 @@ define('mock/dataservices/user.mock', [
 ) {
   "use strict";
 
-  return function(settings) {
+  return function(settings, config) {
+    if (!config.canMockLogin) {
+      return;
+    }
+
     UserDataservice.prototype.auth = function(data, cb) {
       setTimeout(function() {
         var resp = mockery.fromTemplate({

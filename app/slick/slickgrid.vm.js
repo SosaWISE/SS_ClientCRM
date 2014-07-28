@@ -1,4 +1,5 @@
 define('src/slick/slickgrid.vm', [
+  'moment',
   'slick',
   'jquery',
   'ko',
@@ -7,6 +8,7 @@ define('src/slick/slickgrid.vm', [
   'src/core/utils',
   'src/core/base.vm',
 ], function(
+  moment,
   Slick,
   jquery,
   ko,
@@ -53,6 +55,9 @@ define('src/slick/slickgrid.vm', [
     });
 
     _this.gridOptions = _this.gridOptions || {};
+    if (!_this.list || !ko.isObservable(_this.list)) {
+      _this.list = ko.observableArray(_this.list);
+    }
     _this.updateGrid = function() {
       var grid = _this.grid;
       if (grid) {
@@ -61,36 +66,29 @@ define('src/slick/slickgrid.vm', [
         grid.render();
       }
     };
-    if (_this.dataView) {
-      // data view passed in
-      _this.list = ko.observable(_this.dataView);
-      // Make the grid respond to DataView change events.
-      _this.dataView.onRowCountChanged.subscribe(function( /*e, args*/ ) {
-        var grid = _this.grid;
-        if (grid) {
-          grid.updateRowCount();
-          grid.render();
+    _this.list.subscribe(function(list) {
+      var grid = _this.grid;
+      if (grid) {
+        grid.setData(list, _this.scrollToTop); // false - don't scroll to top
+        _this.updateGrid();
+        if (_this.handleSelectedRowsChanged) {
+          _this.handleSelectedRowsChanged(null, {
+            grid: grid,
+            rows: grid.getSelectedRows(),
+          });
         }
-      });
-      _this.dataView.onRowsChanged.subscribe(function(e, args) {
-        var grid = _this.grid;
-        if (grid) {
-          grid.invalidateRows(args.rows);
-          grid.render();
-        }
-      });
-    } else {
-      // either list was passed in or an array will be set at some point
-      if (!_this.list || !ko.isObservable(_this.list)) {
-        _this.list = ko.observableArray(_this.list);
       }
-      _this.list.subscribe(function(list) {
-        var grid = _this.grid;
-        if (grid) {
-        grid.setData(list, false); // false - don't scroll to top
-          _this.updateGrid();
+    });
+
+    if (_this.onSelectedRowsChanged) {
+      _this.handleSelectedRowsChanged = function(e, data) {
+        var i, length = data.rows.length,
+          rows = new Array(length);
+        for (i = 0; i < length; i++) {
+          rows[i] = data.grid.getDataItem(data.rows[i]);
         }
-      });
+        _this.onSelectedRowsChanged(rows);
+      };
     }
 
     // try to create context menu
@@ -125,6 +123,7 @@ define('src/slick/slickgrid.vm', [
     _this.active = ko.observable(false);
   }
   utils.inherits(SlickGridViewModel, BaseViewModel);
+  SlickGridViewModel.ensureProps = BaseViewModel.ensureProps;
 
   SlickGridViewModel.prototype.onBound = function(element) {
     // create a new grid everytime this view model is bound/rebound
@@ -133,12 +132,18 @@ define('src/slick/slickgrid.vm', [
       console.warn('grid is already bound');
       _this.unBound();
     }
-    setTimeout(function() {
+    _this.bindTimeout = setTimeout(function() {
+      _this.bindTimeout = null;
+
       _this.grid = new Slick.Grid(element, _this.list(), _this.columns, _this.gridOptions);
       if (!_this.noSelection) {
-        _this.grid.setSelectionModel(new Slick.RowSelectionModel({
+        var selectionModel = new Slick.RowSelectionModel({
           // selectActiveRow: false
-        }));
+        });
+        _this.grid.setSelectionModel(selectionModel);
+        if (_this.handleSelectedRowsChanged) {
+          _this.grid.onSelectedRowsChanged.subscribe(_this.handleSelectedRowsChanged);
+        }
       }
       _this.plugins.forEach(function(plugin) {
         _this.grid.registerPlugin(plugin);
@@ -149,29 +154,82 @@ define('src/slick/slickgrid.vm', [
         });
       }
       onresize(_this.grid.getContainerNode(), _this.updateGrid);
-    }, 0);
+
+      // re-set selected rows
+      if (_this._prevSelectedRows) {
+        _this.setSelectedRows(_this._prevSelectedRows);
+      }
+    }, 9);
   };
   SlickGridViewModel.prototype.unBound = function(element) {
     // destroy grid everytime this view model is unbound
     var _this = this,
       container;
+
+    // make sure we don't bind
+    clearTimeout(_this.bindTimeout);
+    _this.bindTimeout = null;
+
     if (_this.grid) {
       container = _this.grid.getContainerNode();
       if (element && element !== container) {
         console.warn('unBound element doesn\'t match grid container', container, element);
       }
+      // store selected rows
+      _this._prevSelectedRows = _this.grid.getSelectedRows();
+      //
+      _this.grid.onSelectedRowsChanged.unsubscribe(_this.handleSelectedRowsChanged);
       _this.grid.destroy(); // also unregisters all plugins
       _this.grid = null;
     }
   };
 
+  SlickGridViewModel.prototype.setSelectedRows = function(rows) {
+    var _this = this;
+    if (_this.grid) {
+      _this.grid.setSelectedRows(rows);
+    }
+  };
+  SlickGridViewModel.prototype.resetActiveCell = function() {
+    var _this = this;
+    if (_this.grid) {
+      _this.grid.resetActiveCell();
+    }
+  };
+
+  //Not sure if this is the right place to add this here.
+  SlickGridViewModel.prototype.deleteRow = function(row) {
+    var _this = this,
+      data = _this.grid.getData();
+
+    data.splice(row, 1);
+    _this.grid.setData(data);
+    _this.grid.render();
+
+  };
+
 
   SlickGridViewModel.formatters = {
     currency: function(row, cell, value /*, columnDef, dataContext*/ ) {
-      return strings.decorators.c(value);
+      return strings.formatters.currency(value);
     },
     likecurrency: function(row, cell, value /*, columnDef, dataContext*/ ) {
-      return strings.decorators.c(value).replace('$', '');
+      return strings.formatters.likecurrency(value);
+    },
+    yesNoFormatter: function(row, cell, value) {
+      return value ? 'yes' : 'no';
+    },
+    xFormatter: function(row, cell, value) {
+      return value ? 'X' : '';
+    },
+    date: function(row, cell, value) {
+      return strings.formatters.date(value);
+    },
+    datetime: function(row, cell, value) {
+      return strings.formatters.datetime(value);
+    },
+    phone: function(row, cell, value) {
+      return strings.formatters.phone(value);
     },
   };
 

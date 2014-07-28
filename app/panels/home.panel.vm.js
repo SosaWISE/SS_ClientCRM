@@ -17,27 +17,33 @@ define('src/panels/home.panel.vm', [
 
   HomePanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
-    notify.notify('info', '/surveys/1', 0, {
-      view: function() {
-        _this.goTo({
-          route: 'surveys',
-          surveyid: 1,
-        });
+    notify.info('/surveys/1/1', null, 0, {
+      actions: {
+        view: function() {
+          _this.goTo({
+            route: 'surveys',
+            surveytypeid: 1,
+            surveyid: 1,
+          });
+        },
       },
     });
-    notify.notify('info', '/surveys/2', 0, {
-      view: function() {
-        _this.goTo({
-          route: 'surveys',
-          surveyid: 2,
-        });
+    notify.info('/surveys/2/2', null, 0, {
+      actions: {
+        view: function() {
+          _this.goTo({
+            route: 'surveys',
+            surveytypeid: 2,
+            surveyid: 2,
+          });
+        },
       },
     });
 
     // notify.counter = 0;
     // setInterval(function() {
     //   notify.counter++;
-    //   notify.notify('type', 'message ' + notify.counter, 6);
+    //   notify.info('message ' + notify.counter, null, 1);
     // }, 1000 * 1);
 
     join.add()();

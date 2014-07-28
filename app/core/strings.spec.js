@@ -9,8 +9,10 @@ define('src/core/strings.spec', [
     // beforeEach(function() {});
 
     it('should have an `format` function', function() {
-      expect(strings.format).toBeDefined();
       expect(typeof(strings.format)).toBe('function');
+    });
+    it('should have an `joinTrimmed` function', function() {
+      expect(typeof(strings.joinTrimmed)).toBe('function');
     });
 
     describe('format params', function() {
@@ -44,6 +46,46 @@ define('src/core/strings.spec', [
         it('should insert non-breaking spaces between each character', function() {
           expect(strings.format('{0:space}', 'A A')).toBe('A&nbsp; &nbsp;A');
         });
+      });
+    });
+
+    describe('joinTrimmed', function() {
+      it('should join on first param', function() {
+        expect(strings.joinTrimmed(':', 'a', 'b')).toBe('a:b');
+        expect(strings.joinTrimmed('', 'a', 'b')).toBe('ab');
+      });
+      it('should accept an array as the second param', function() {
+        expect(strings.joinTrimmed(':', ['a', 'b'], 'ignored')).toBe('a:b');
+      });
+      it('should exclude falsey values from join', function() {
+        expect(strings.joinTrimmed(' ', '  ', ' ', undefined, null, 'a', 'b  ', 'c', 'd')).toBe('a b c d');
+      });
+    });
+
+    describe('padLeft', function() {
+      it('should prepend text', function() {
+        expect(strings.padLeft('9', '0', 3)).toBe('009');
+        expect(strings.padLeft('9', '00', 4)).toBe('00009');
+      });
+      it('should convert number to text before prepending', function() {
+        expect(strings.padLeft(9, '0', 3)).toBe('009');
+        expect(strings.padLeft(0, '1', 3)).toBe('110');
+      });
+      it('null and undefined should be treated as empty string', function() {
+        expect(strings.padLeft(null, '1', 3)).toBe('111');
+      });
+    });
+    describe('padRight', function() {
+      it('should append text', function() {
+        expect(strings.padRight('9', '0', 3)).toBe('900');
+        expect(strings.padRight('9', '00', 4)).toBe('90000');
+      });
+      it('should convert number to text before appending', function() {
+        expect(strings.padRight(9, '0', 3)).toBe('900');
+        expect(strings.padRight(0, '1', 3)).toBe('011');
+      });
+      it('null and undefined should be treated as empty string', function() {
+        expect(strings.padRight(null, '1', 3)).toBe('111');
       });
     });
   });

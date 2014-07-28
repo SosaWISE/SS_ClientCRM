@@ -21,8 +21,8 @@ define('src/slick/rowmovemanager', [
       options = $.extend(true, {}, _defaults, options);
       _grid = grid;
       _canvas = _grid.getCanvasNode();
-      // .subscribe(_grid.onDragInit, handleDragInit)
       _handler
+        .subscribe(_grid.onDragInit, handleDragInit)
         .subscribe(_grid.onDragStart, handleDragStart)
         .subscribe(_grid.onDrag, handleDrag)
         .subscribe(_grid.onDragEnd, handleDragEnd);
@@ -32,10 +32,10 @@ define('src/slick/rowmovemanager', [
       _handler.unsubscribeAll();
     }
 
-    // function handleDragInit(e /*, dd*/ ) {
-    //   // prevent the grid from cancelling drag'n'drop
-    //   e.stopImmediatePropagation();
-    // }
+    function handleDragInit(e /*, dd*/ ) {
+      // prevent the grid from cancelling drag'n'drop
+      e.stopImmediatePropagation();
+    }
 
     function handleDragStart(e, dd) {
       var cell = _grid.getCellFromEvent(e),
@@ -96,10 +96,8 @@ define('src/slick/rowmovemanager', [
 
       // get cell under the selectionProxy
       dd.selectionProxy.hide();
-      dd.guide.hide();
       e.target = document.elementFromPoint(e.pageX, e.pageY);
       cell = _grid.getCellFromEvent(e);
-      dd.guide.show();
       dd.selectionProxy.show();
 
       if (!cell || !/dropChild/.test(_grid.getColumns()[cell.cell].behavior)) {
@@ -108,7 +106,6 @@ define('src/slick/rowmovemanager', [
         dd.canMoveUnder = false;
         //
         dd.guide
-          .css("height", 2)
           .css("width", $(_canvas).innerWidth())
           .css("left", 0);
 
@@ -135,7 +132,6 @@ define('src/slick/rowmovemanager', [
         dd.canMove = false;
         //
         dd.guide
-          .css("height", rowHeight)
           .css("width", $(_canvas).innerWidth() - 30)
           .css("left", 30);
 
@@ -150,8 +146,7 @@ define('src/slick/rowmovemanager', [
             dd.guide.css("top", -1000);
             dd.canMoveUnder = false;
           } else {
-            // dd.guide.css("top", (insertUnder * rowHeight) + rowHeight);
-            dd.guide.css("top", insertUnder * rowHeight);
+            dd.guide.css("top", (insertUnder * rowHeight) + rowHeight);
             dd.canMoveUnder = true;
           }
 

@@ -1,0 +1,33 @@
+div(class="acct-item acct-clist-qualify load-err", data-bind="if:loadErr,toggle:{'may-reload':mayReload}")
+  div(class="col")
+    div Failed to load lead
+    //- ul(class="actions")
+      li
+        a(class="btn small",tabindex="0",data-bind="hasfocus:true,cmd:clickReload") Retry
+      li
+        a(class="btn small",tabindex="0",data-bind="cmd:close") Close
+
+div(data-bind="if:!loadErr()&&!loading()")
+  div(class="acct-item acct-clist-qualify",data-bind="toggle:{'may-reload':mayReload}")
+    div(class="col")
+      div(class="section",data-bind="cmd:cmdFindRep,toggle:{empty:!repModel()}")
+        span(class="title") Sales Rep
+        div(class="contents",data-bind="if:repModel")
+          div(data-bind="template:{data:repModel,name:'tmpl-acct-default-rep_info'}")
+      div(class="section",data-bind="cmd:cmdAddress,toggle:{empty:!addressModel()}")
+        span(class="title") Premise
+        div(class="contents",data-bind="if:addressModel")
+          div(data-bind="template:{data:addressModel,name:'tmpl-acct-default-address'}")
+      div(class="section",data-bind="cmd:cmdCustomer,toggle:{empty:!customerModel()}")
+        span(class="title") Customer
+        div(class="contents",data-bind="if:customerModel()&&creditResult()")
+          div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult}")
+          div(data-bind="template:{name:'tmpl-acct-default-customer',data:customerModel}")
+
+    ul(class="actions")
+      li
+        span(class="btn",tabindex="0",data-bind="cmd:cmdCreateAccount") Create Account
+      li
+        span(class="btn",tabindex="0",data-bind="cmd:cmdSendToIS") Send to InsideSales.com
+
+div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")

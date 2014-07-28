@@ -3,12 +3,14 @@ define('src/account/security/emcontacts.gvm', [
   'src/slick/moverows',
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
+  'src/core/strings',
   'src/core/utils',
 ], function(
   ko,
   MoveRows,
   RowEvent,
   SlickGridViewModel,
+  strings,
   utils
 ) {
   "use strict";
@@ -49,7 +51,7 @@ define('src/account/security/emcontacts.gvm', [
           },
         }),
       ],
-      columns: [
+      columns: [ //
         {
           id: '#',
           name: '',
@@ -57,53 +59,60 @@ define('src/account/security/emcontacts.gvm', [
           behavior: 'selectAndMove',
           resizable: false,
           cssClass: 'cell-reorder',
-        },
-        {
-          id: '#c',
-          name: '',
-          width: 30,
-          behavior: 'dropChild',
-          resizable: false,
-        },
-        {
+        }, {
           id: 'Name',
           name: 'Name',
+          width: 50,
           formatter: options.fullnameFormatter,
-        },
-        {
+        }, {
           id: 'RelationshipId',
-          name: 'RelationshipId',
+          name: 'Relationship',
           field: 'RelationshipId',
+          width: 50,
           formatter: options.relationshipFormatter,
-        },
-        {
+        }, {
           id: 'Phone1',
-          name: 'Phone1',
+          name: 'Primary Phone',
           field: 'Phone1',
           width: 50,
-        },
-        {
+          formatter: function(row, cell, value, columnDef, dataCtx) {
+            return formatPhoneAndType(value, dataCtx.Phone1TypeId);
+          },
+        }, {
           id: 'Phone2',
-          name: 'Phone2',
+          name: 'Secondary Phone',
           field: 'Phone2',
           width: 50,
-        },
-        {
+          formatter: function(row, cell, value, columnDef, dataCtx) {
+            return formatPhoneAndType(value, dataCtx.Phone2TypeId);
+          },
+        }, {
           id: 'Phone3',
-          name: 'Phone3',
+          name: 'Alternate Phone',
           field: 'Phone3',
           width: 50,
-        },
-        {
+          formatter: function(row, cell, value, columnDef, dataCtx) {
+            return formatPhoneAndType(value, dataCtx.Phone3TypeId);
+          },
+        }, {
           id: 'HasKey',
-          name: 'HasKey',
+          name: 'Has Keys',
           field: 'HasKey',
           // resizable: false,
           width: 30,
-          formatter: options.yesNoFormatter,
+          minWidth: 15,
+          formatter: SlickGridViewModel.formatters.xFormatter,
         },
       ],
     });
+
+    function formatPhoneAndType(phone, type) {
+      type = options.getPhoneType(type);
+      if (type && type.MsPhoneTypeId && phone) {
+        return type.MsPhoneTypeId + ': ' + strings.formatters.phone(phone);
+      }
+      return phone;
+    }
   }
   utils.inherits(EmContactsGridViewModel, SlickGridViewModel);
 

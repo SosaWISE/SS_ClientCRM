@@ -1,8 +1,10 @@
 define('src/survey/survey.vm', [
+  'src/survey/surveyhelper',
   'src/core/treehelper',
   'src/survey/takesurveytranslation.vm',
   'src/core/joiner',
   'src/core/layers.vm',
+  'src/survey/markdownhelp.vm',
   'src/survey/qpossibleanswermap.new.vm',
   'src/survey/qmtokenmap.new.vm',
   'src/survey/question.vm',
@@ -12,13 +14,15 @@ define('src/survey/survey.vm', [
   'src/dataservice',
   'ko',
   'src/core/notify',
-  'src/core/controller.vm',
+  'src/survey/questions.parent.vm', //'src/core/controller.vm',
   'src/core/utils',
 ], function(
+  surveyhelper,
   treehelper,
   TakeSurveyTranslationViewModel,
   joiner,
   LayersViewModel,
+  MarkdownHelpViewModel,
   NewQPossibleAnswerMapViewModel,
   NewQMTokenMapViewModel,
   QuestionViewModel,
@@ -28,7 +32,7 @@ define('src/survey/survey.vm', [
   dataservice,
   ko,
   notify,
-  ControllerViewModel,
+  QuestionsParentViewModel,
   utils
 ) {
   'use strict';
@@ -36,25 +40,34 @@ define('src/survey/survey.vm', [
   function SurveyViewModel(options) {
     var _this = this;
     SurveyViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['model', 'surveyTypeVM', 'tokensVM', 'possibleAnswersVM']);
+    QuestionsParentViewModel.ensureProps(_this, ['model', 'surveyTypeVM', 'tokensVM', 'possibleAnswersVM']);
 
     _this.title = ko.observable(_this.surveyTypeVM.model.Name + ' ' + _this.model.Version);
     _this.id = _this.model.SurveyID;
 
     // observables
-    _this.questions = ko.observableArray();
     _this.translations = ko.observableArray();
-    // computed observables
-    _this.nextName = ko.computed(_this.computeNextName, _this);
+    _this.isCurrent = ko.observable(_this.model.IsCurrent);
+    _this.isReadonly = ko.observable(_this.model.IsReadonly);
+    _this.isReadonly(false); //@TODO: remove
 
     _this.layersVm = new LayersViewModel({
       controller: _this,
     });
 
+    _this.takeVm = new TakeSurveyTranslationViewModel({
+      layersVm: _this.layersVm,
+      surveyTranslationVMs: _this.translations(),
+      surveyid: _this.id,
+    });
+    _this.translations.subscribe(function(vms) {
+      _this.takeVm.updateSurveyTranslations(vms);
+    });
+
     //
     // events
     //
-    _this.clickAddSurveyTranslation = function() {
+    _this.cmdAddSurveyTranslation = ko.command(function(cb) {
       _this.layersVm.show(new NewSurveyTranslationViewModel({
         surveyVM: _this,
       }), function(model) {
@@ -67,58 +80,61 @@ define('src/survey/survey.vm', [
           vm.cmdToggle.execute();
         }
       });
-    };
-    _this.clickAddQuestion = function(parentVM) {
-      var parent = (parentVM === _this) ? null : parentVM,
-        vm;
-      if (parent && parent.noAddSubQuestion()) {
-        return;
-      }
-      vm = new NewQuestionViewModel({
-        surveyVM: _this,
-        surveyTypeVM: _this.surveyTypeVM,
-        parent: parent,
-        nextName: parentVM.nextName(),
-        groupOrder: parentVM.nextGroupOrder(),
-      });
-      _this.layersVm.show(vm, function(model) {
-        if (!model) {
-          return;
-        }
-        model.childs = [];
-        var vm = createQuestion(_this, model, parent);
-        // make sure it is loaded
-        vm.load({}, null, function(errResp) {
-          if (errResp) {
-            return notify.notify('error', errResp.Message);
-          }
-          parentVM.questions.push(vm);
-        });
-      });
-    };
-    _this.clickAddToken = function(vm) {
+      cb();
+    }, function(busy) {
+      return !busy && !_this.isReadonly();
+    });
+    _this.cmdAddToken = ko.command(function(cb, vm) {
       _this.layersVm.show(new NewQMTokenMapViewModel({
         questionMeaningVM: vm,
         tokensVM: _this.tokensVM,
       }));
-    };
-    _this.clickAddPossibleAnswer = function(vm) {
+      cb();
+    }, function(busy) {
+      return !busy && !_this.isReadonly();
+    });
+    _this.cmdAddPossibleAnswer = ko.command(function(cb, vm) {
       _this.layersVm.show(new NewQPossibleAnswerMapViewModel({
         questionVM: vm,
         possibleAnswersVM: _this.possibleAnswersVM,
       }));
+      cb();
+    }, function(busy) {
+      return !busy && !_this.isReadonly();
+    });
+    _this.clickTakeSurvey = _this.takeVm.clickTake;
+
+    _this.cmdAddQuestion = ko.command(function(cb, parentVm) {
+      newQuestion(_this, parentVm);
+      cb();
+    }, function(busy) {
+      return !busy && !_this.isReadonly();
+    });
+    _this.clickHelp = function() {
+      if (!_this.helpVm) {
+        _this.helpVm = new MarkdownHelpViewModel();
+      }
+      _this.layersVm.show(_this.helpVm);
     };
-    _this.clickTakeSurvey = function() {
-      _this.layersVm.show(new TakeSurveyTranslationViewModel({
-        surveyTranslationVMs: _this.translations(),
-        routeData: {
-          surveyid: _this.id,
-          // locale: 'en',
-        },
-      }));
-    };
+
+    _this.cmdPublish = ko.command(function(cb) {
+      var msg = '';
+      // if (!_this.isReadonly()) { //@TODO: uncomment
+      //   msg += 'This survey will become the current survey, but it will no longer be editable. ';
+      // }
+      msg += 'Are you sure you want to publish this survey?';
+      notify.confirm('Publish?', msg, function(result) {
+        if (result === 'yes') {
+          publish(_this, cb);
+        } else {
+          cb();
+        }
+      });
+    }, function(busy) {
+      return !busy && !_this.isCurrent();
+    });
   }
-  utils.inherits(SurveyViewModel, ControllerViewModel);
+  utils.inherits(SurveyViewModel, QuestionsParentViewModel);
   SurveyViewModel.prototype.routePart = 'surveyid';
   SurveyViewModel.prototype.viewTmpl = 'tmpl-survey';
 
@@ -143,25 +159,23 @@ define('src/survey/survey.vm', [
     });
   };
 
+  SurveyViewModel.prototype.addQuestion = QuestionViewModel.prototype.addQuestion;
+
   function loadQuestions(surveyVM, surveyID, routeData, extraData, join) {
     var cb = join.add();
     dataservice.survey.surveys.read({
       id: surveyID,
       link: 'questions',
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        if (resp.Value) {
-          var treeTrunk = treehelper.makeTree(resp.Value, 'QuestionID', 'ParentId', function(model, parentVM /*, parent*/ ) {
-            var vm = createQuestion(surveyVM, model, parentVM);
-            vm.load(routeData, extraData, join.add());
-            return vm;
-          });
-          surveyVM.questions(treeTrunk);
-        } else {
-          surveyVM.questions([]);
-        }
-      }, cb);
-    });
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Value) {
+        resp.Value.sort(surveyhelper.questionsSorter);
+        treehelper.makeTree(resp.Value, 'QuestionID', 'ParentId', function(model, parentVM /*, parent*/ ) {
+          parentVM = parentVM || surveyVM;
+          var vm = parentVM.addQuestion(surveyVM, model, parentVM, join.add());
+          return vm;
+        });
+      }
+    }, utils.no_op));
   }
 
   function loadSurveyTranslations(surveyVM, surveyID, routeData, extraData, join) {
@@ -169,20 +183,18 @@ define('src/survey/survey.vm', [
     dataservice.survey.surveys.read({
       id: surveyID,
       link: 'surveyTranslations',
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        if (resp.Value) {
-          var list = resp.Value.map(function(model) {
-            var vm = createSurveyTranslation(surveyVM, model);
-            // lazy load survey translation data // vm.load(routeData, extraData, join.add());
-            return vm;
-          });
-          surveyVM.translations(list);
-        } else {
-          surveyVM.translations([]);
-        }
-      }, cb);
-    });
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Value) {
+        var list = resp.Value.map(function(model) {
+          var vm = createSurveyTranslation(surveyVM, model);
+          // lazy load survey translation data // vm.load(routeData, extraData, join.add());
+          return vm;
+        });
+        surveyVM.translations(list);
+      } else {
+        surveyVM.translations([]);
+      }
+    }, utils.no_op));
   }
 
   SurveyViewModel.prototype.onActivate = function() { // overrides base
@@ -197,29 +209,50 @@ define('src/survey/survey.vm', [
     });
   };
 
-  SurveyViewModel.prototype.computeNextName = function() {
-    return this.nextGroupOrder() + '.';
-  };
-
-  SurveyViewModel.prototype.nextGroupOrder = function() {
-    return this.questions().length + 1;
-  };
-
-  function createQuestion(surveyVM, model, parent) {
-    return new QuestionViewModel({
-      surveyVM: surveyVM,
-      possibleAnswersVM: surveyVM.possibleAnswersVM,
-      questionMeaningVM: surveyVM.surveyTypeVM.getQuestionMeaning(model.QuestionMeaningId),
-      model: model,
-      parent: parent,
-    });
-  }
-
   function createSurveyTranslation(surveyVM, model) {
     return new SurveyTranslationViewModel({
       surveyVM: surveyVM,
       model: model,
     });
+  }
+
+  function newQuestion(surveyVM, parentVm) {
+    var vm, parent = (parentVm === surveyVM) ? null : parentVm;
+    if (parent && parent.noAddSubQuestion()) {
+      return;
+    }
+    vm = new NewQuestionViewModel({
+      surveyVM: surveyVM,
+      surveyTypeVM: surveyVM.surveyTypeVM,
+      tokensVM: surveyVM.tokensVM,
+      parent: parent,
+      nextName: parentVm.nextName(),
+      groupOrder: parentVm.nextGroupOrder(),
+    });
+    surveyVM.layersVm.show(vm, function(model) {
+      if (!model) {
+        return;
+      }
+      parentVm.addQuestion(surveyVM, model, parentVm);
+    });
+  }
+
+  function publish(_this, cb) {
+    dataservice.survey.surveys.save({
+      id: _this.id,
+      link: 'publish',
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Message && resp.Message !== "Success") {
+        notify.error(resp);
+      }
+      // mark all as not current
+      _this.surveyTypeVM.childs().forEach(function(vm) {
+        vm.isCurrent(false);
+      });
+      // mark as current
+      _this.isCurrent(true);
+      // _this.isReadonly(true); //@TODO: uncomment
+    }, notify.error));
   }
 
   return SurveyViewModel;

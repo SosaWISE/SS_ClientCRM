@@ -1,76 +1,25 @@
 define('mock/dataservices/maincore.mock', [
   'src/dataservice',
   'src/core/mockery',
-  'src/core/utils',
 ], function(
   dataservice,
-  mockery,
-  utils
+  mockery
 ) {
   "use strict";
 
   function mock(settings) {
-    function clone(value) {
-      return JSON.parse(JSON.stringify(value));
-    }
-
-    function send(value, setter, cb, timeout) {
-      var err, result;
-      if (value) {
-        value = clone(value);
-      }
-      if (false && !value) {
-        err = {
-          Code: 12345,
-          Message: 'No value',
-          Value: null,
-        };
-      } else {
-        result = {
-          Code: 0,
-          Message: 'Success',
-          Value: value,
-        };
-      }
-
-      setTimeout(function() {
-        if (!err && result && utils.isFunc(setter)) {
-          setter(result.Value);
-        }
-        cb(err, result);
-      }, timeout || settings.timeout);
-    }
-
-    function filterListBy(list, propName, id) {
-      return list.filter(function(item) {
-        return item[propName] === id;
-      });
-    }
-
-    function findSingleBy(list, propName, id) {
-      return list.filter(function(item) {
-        return item[propName] === id;
-      })[0];
-    }
-
-    function findSingleOrAll(list, propName, id) {
-      var result;
-      if (id > 0) {
-        result = findSingleBy(list, propName, id);
-      } else {
-        result = list;
-      }
-      return result;
+    function send(code, value, setter, cb, timeout) {
+      mockery.send(code, value, setter, cb, timeout || settings.timeout);
     }
 
     dataservice.maincore.departments.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(departments, 'DepartmentID', id);
+          result = mockery.findSingleOrAll(departments, 'DepartmentID', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.maincore.notecategory1.read = function(params, setter, cb) {
       var result, id = params.id;
@@ -81,10 +30,10 @@ define('mock/dataservices/maincore.mock', [
         case 'departmentid':
           result =
             noteCategorys1;
-          filterListBy(noteCategorys1, 'departmentid???', id); // ????????????????????????
+          mockery.filterListBy(noteCategorys1, 'departmentid???', id); // ????????????????????????
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.maincore.notecategory2.read = function(params, setter, cb) {
       var result, id = params.id;
@@ -93,31 +42,40 @@ define('mock/dataservices/maincore.mock', [
           result = noteCategorys2;
           break;
         case 'category1id':
-          result = filterListBy(noteCategorys2, 'NoteCategory1Id', id);
+          result = mockery.filterListBy(noteCategorys2, 'NoteCategory1Id', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.maincore.notes.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(notes, 'NoteID', id);
+          result = mockery.findSingleOrAll(notes, 'NoteID', id);
           break;
         case 'cmfid':
-          result = filterListBy(notes, 'CustomerMasterFileId', id);
+          result = mockery.filterListBy(notes, 'CustomerMasterFileId', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.maincore.notetypes.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(departments, 'NoteTypeID', id);
+          result = mockery.findSingleOrAll(departments, 'NoteTypeID', id);
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
+    };
+    dataservice.maincore.localizations.read = function(params, setter, cb) {
+      var result, id = params.id;
+      switch (params.link || null) {
+        case null:
+          result = mockery.findSingleOrAll(localizations, 'LocalizationID', id);
+          break;
+      }
+      send(0, result, setter, cb);
     };
 
 
@@ -127,7 +85,7 @@ define('mock/dataservices/maincore.mock', [
 
     dataservice.maincore.notes.save = function(params, setter, cb) {
       var data = params.data;
-      send(createOrUpdate(notes, 'NoteID', '@INC(note)', {
+      send(0, createOrUpdate(notes, 'NoteID', '@INC(note)', {
         NoteID: data.NoteID,
         NoteTypeId: data.NoteTypeId,
         CustomerMasterFileId: data.CustomerMasterFileId,
@@ -183,59 +141,53 @@ define('mock/dataservices/maincore.mock', [
     noteCategorys1,
     noteCategorys2,
     notes,
-    noteTypes;
+    noteTypes,
+    localizations;
 
-  departments = [
+  departments = [ //
     {
       DepartmentID: 'COLLEC',
       DepartmentName: 'Collections'
-    },
-    {
+    }, {
       DepartmentID: 'CSERVIC',
       DepartmentName: 'Customer Service'
-    },
-    {
+    }, {
       DepartmentID: 'DENTRY',
       DepartmentName: 'Data Entry'
-    },
-    {
+    }, {
       DepartmentID: 'INSALES',
       DepartmentName: 'Inside Sales'
     },
   ];
 
-  noteCategorys1 = [
+  noteCategorys1 = [ //
     {
       NoteCategory1ID: 1,
       Category: 'Cat 1',
       Description: 'Cat 1 Description',
-    },
-    {
+    }, {
       NoteCategory1ID: 2,
       Category: 'Cat 2',
       Description: 'Cat 2 Description',
     },
   ];
-  noteCategorys2 = [
+  noteCategorys2 = [ //
     {
       NoteCategory2ID: 1,
       NoteCategory1Id: 1,
       Category: 'Cat 1.1',
       Description: 'Cat 1.1 Description',
-    },
-    {
+    }, {
       NoteCategory2ID: 2,
       NoteCategory1Id: 1,
       Category: 'Cat 1.2',
       Description: 'Cat 1.2 Description',
-    },
-    {
+    }, {
       NoteCategory2ID: 3,
       NoteCategory1Id: 2,
       Category: 'Cat 2.1',
       Description: 'Cat 2.1 Description',
-    },
-    {
+    }, {
       NoteCategory2ID: 4,
       NoteCategory1Id: 2,
       Category: 'Cat 2.2',
@@ -244,7 +196,7 @@ define('mock/dataservices/maincore.mock', [
   ];
 
   notes = mockery.fromTemplate({
-    'list|1-1': [
+    'list|1-1': [ //
       {
         NoteID: '@INC(note)',
         NoteTypeId: 'AUTO_GEN',
@@ -261,24 +213,32 @@ define('mock/dataservices/maincore.mock', [
     ]
   }).list;
 
-  noteTypes = [
+  noteTypes = [ //
     {
       NoteTypeID: 'AUTO_GEN',
       NoteType: 'Auto Generated'
-    },
-    {
+    }, {
       NoteTypeID: 'BILLING_ENGINE',
       NoteType: 'Billing Engine'
-    },
-    {
+    }, {
       NoteTypeID: 'CEN_STATION',
       NoteType: 'Central Station'
-    },
-    {
+    }, {
       NoteTypeID: 'STANDARD',
       NoteType: 'Standard Note'
     },
   ];
+
+  localizations = [ //
+    {
+      LocalizationID: 'en-US',
+      LocalizationName: 'English USA',
+    }, {
+      LocalizationID: 'es',
+      LocalizationName: 'Spanish Standard',
+    }
+  ];
+
 
   return mock;
 });

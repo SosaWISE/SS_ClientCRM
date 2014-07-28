@@ -1,9 +1,9 @@
 div
-  span Take Survey Translation
+  h2(class="title") Take Survey Translation
   ul(class="edit-form")
     li
       span(class="label") Localization Code
-      div(data-bind="template:{name:localeComboVM.viewTmpl,data:localeComboVM}")
+      div(data-bind="cvm:localeCvm")
 
 ul(class="actions")
   li

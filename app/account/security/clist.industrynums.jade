@@ -1,0 +1,19 @@
+div(class="acct-item acct-industrynums",data-bind="toggle:{'may-reload':mayReload}")
+  h2(class="title") Industry #'s
+  div(data-bind="foreach:industryAccounts")
+    ul
+      li
+        span(class="name") Industry Number:
+        span(class="value",data-bind="text:IndustryAccount")
+      li
+        span(class="name") Receiver Number:
+        span(class="value",data-bind="text:ReceiverNumber")
+      //- li
+        span(class="name") Last NOC Date:
+        span(class="value",data-bind="text:LastNOCDate")
+
+  ul(class="actions left cf")
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:cmdGenerate") Generate Industry Account
+
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")

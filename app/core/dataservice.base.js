@@ -15,10 +15,6 @@ define('src/core/dataservice.base', [
     _sessionId = null,
     _history = [];
 
-  function frontSlash(text) {
-    return text ? ('/' + text) : '';
-  }
-
   function DataserviceBase(collectionName, domain) {
     this.collectionName = collectionName;
     this.baseUrl = (domain ? ('//' + domain) : '') + frontSlash(collectionName);
@@ -27,13 +23,9 @@ define('src/core/dataservice.base', [
   // DataserviceBase.prototype.timeout = 1000 * 6;
   // DataserviceBase.prototype.timeout = 1000 * 60 * 3;
 
-  DataserviceBase.prototype.createRequestUrl = function(id, link, queryObj /*, httpVerb*/ ) {
-    var query = querystring.toQuerystring(queryObj);
-    return this.baseUrl + frontSlash(id) + frontSlash(link) + (query ? ('?' + query) : '');
-  };
+  //@NOTE: the webservice only supports POST, GET and DELETE (which is why update and replace are commented out)
 
-  //@NOTE: the webservice only supports POST, GET and DELETE
-
+  // raw post/get (difficult to mock)
   DataserviceBase.prototype.post = function(path, data, setter, callback) {
     this.ajax('POST', null, path, null, data, setter, callback);
   };
@@ -41,11 +33,12 @@ define('src/core/dataservice.base', [
     this.ajax('GET', null, path, queryObj, null, setter, callback);
   };
 
+  // post/get with params object (easy to mock)
   DataserviceBase.prototype.save = function(params, setter, callback) {
     this.ajax('POST', params.id, params.link, null, params.data, setter, callback);
   };
   DataserviceBase.prototype.read = function(params, setter, callback) {
-    this.ajax('GET', params.id, params.link, params.queryObj, null, setter, callback);
+    this.ajax('GET', params.id, params.link, params.query, null, setter, callback);
   };
   // DataserviceBase.prototype.update = function(id, data, setter, callback) {
   //   this.ajax('PATCH', id, null, null, data, setter, callback);
@@ -57,6 +50,12 @@ define('src/core/dataservice.base', [
   //   this.ajax('PUT', id, null, null, data, setter, callback);
   // };
 
+
+
+  DataserviceBase.prototype.createRequestUrl = function(id, link, queryObj /*, httpVerb*/ ) {
+    var query = querystring.toQuerystring(queryObj);
+    return this.baseUrl + frontSlash(id) + frontSlash(link) + (query ? ('?' + query) : '');
+  };
   DataserviceBase.prototype.ajax = function(httpVerb, id, link, queryObj, data, setter, callback) {
     queryObj = (queryObj || {});
     if (!queryObj.SessionId) {
@@ -79,7 +78,7 @@ define('src/core/dataservice.base', [
       // Delete  - DELETE
       // Replace - PUT
       httpVerb: httpVerb,
-      data: (data && typeof(data) !== "string") ? JSON.stringify(data, jsonhelpers.replacer) : data,
+      data: (data && !utils.isStr(data)) ? jsonhelpers.stringify(data) : data,
 
       contentType: 'application/json',
       dataType: 'json',
@@ -134,39 +133,51 @@ define('src/core/dataservice.base', [
 
   DataserviceBase.prototype.onError = function(xhr, textStatus, errorThrown, context) {
     xhr = xhr || {};
-    if (xhr.readyState === 0 && textStatus === 'error') {
-      // ignore the error if readyState is UNSENT.
-      // page is probably refreshing or closing
-      return;
-    }
+    // if (xhr.readyState === 0 && textStatus === 'error') {
+    //   // ignore the error if readyState is UNSENT.
+    //   // page is probably refreshing or closing
+    //   return;
+    // }
 
-    var value, code, message, responseData;
+    var value, code, msg, msgParts, responseData;
     try {
+      msgParts = [];
 
       try {
-        value = JSON.parse(xhr.responseText);
+        value = jsonhelpers.parse(xhr.responseText);
       } catch (ex) {
         value = xhr.responseText;
       }
 
       if (textStatus === 'timeout') {
         code = 990003;
-        message = 'Request Timeout Error';
+        msg = 'Request timed out';
+      } else if (xhr.readyState === 0) {
+        code = 990000;
+        msg = 'Unabled to connect to server';
       } else {
         code = 990002;
-        message = 'Server Error';
+        msg = 'Error making request';
+      }
+      msgParts.push(msg);
+
+      if (utils.isStr(errorThrown) && errorThrown.length) {
+        msgParts.push(errorThrown);
+      }
+      if (value && value.Message) {
+        msgParts.push(value.Message);
       }
 
       responseData = {
         Code: code,
-        Message: errorThrown || message,
+        Message: msgParts.join(': '),
         Value: value,
       };
     } catch (ex) {
-      console.log(ex);
+      console.error(ex);
       responseData = {
         Code: 990001,
-        Message: 'Error processing response',
+        Message: ex.stack,
         Value: null,
       };
     }
@@ -183,18 +194,33 @@ define('src/core/dataservice.base', [
       xhr: xhr,
     };
 
+    // set request url
+    responseData.Url = context.requestUrl;
+
     if (utils.isFunc(context.callback)) {
       // try to update session id
       DataserviceBase.sessionID(responseData.SessionId);
+
       var err;
       // check if there was an error
       if (responseData.Code === 0) {
         // try to set setter value,
         if (utils.isFunc(context.setter)) {
-          context.setter(responseData.Value);
+          try {
+            context.setter(responseData.Value);
+          } catch (ex) {
+            console.error(ex);
+            err = {
+              Code: 990004,
+              Message: ex.stack,
+              Value: null,
+            };
+          }
         }
       } else {
         err = responseData;
+        // // prepend requestUrl
+        // err.Message = context.requestUrl + '\n' + (err.Message || '');
       }
       // call callback function
       context.callback(err, responseData, context);
@@ -218,6 +244,11 @@ define('src/core/dataservice.base', [
   };
   DataserviceBase.maxHistory = 20;
   DataserviceBase._history = _history;
+
+
+  function frontSlash(text) {
+    return (text || text === 0) ? ('/' + text) : '';
+  }
 
   return DataserviceBase;
 });

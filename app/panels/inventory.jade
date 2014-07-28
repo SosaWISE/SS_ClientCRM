@@ -1,0 +1,13 @@
+div(class="inventory", data-bind="if:loaded")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+        ul(class="tabs cf",data-bind="foreach:list")
+          li(class="tab",data-bind="active:active")
+            a(data-bind="click:$parent.clickItem,text:title")
+    tr
+      td(class="fh-body")
+        div(class="fh-contents",data-bind="foreach:list")
+          <!-- ko if:active -->
+          div(class="tab", data-bind="template:viewTmpl,active:active")
+          <!-- /ko -->

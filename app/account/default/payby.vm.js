@@ -47,23 +47,30 @@ define('src/account/default/payby.vm', [
     _this.cmdSave = ko.command(function(cb) {
       var selectedVm = _this.selectedVm();
       if (!selectedVm.data.isValid()) {
-        notify.notify('warn', selectedVm.data.errMsg(), 7);
+        notify.warn(selectedVm.data.errMsg(), null, 7);
         cb();
         return;
       }
 
-      if (_this.layer) {
-        _this.layer.close(selectedVm.data.getValue());
-      }
-
+      _this.layerResult = selectedVm.data.getValue();
+      closeLayer(_this);
       cb();
     });
-
   }
   utils.inherits(PayByViewModel, BaseViewModel);
   PayByViewModel.prototype.viewTmpl = 'tmpl-acct-default-payby';
   PayByViewModel.prototype.width = 800;
   PayByViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  PayByViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
 
   return PayByViewModel;
 });

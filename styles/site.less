@@ -58,7 +58,7 @@ input {
 
 .wrap {
   position: fixed;
-  top:0;right:0;bottom:0;left:80px;
+  top:0;right:0;bottom:0;left:90px;
 }
 
 
@@ -84,11 +84,13 @@ body {
   .content ul li.active .sub { color: @color; }
 }
 body.home {
-  .mixin-body-color(@site-orange);
+  .mixin-body-color(@site-purple);
+  .mixin-content-active(@site-purple);
 }
+body.leads,
 body.accounts {
-  .mixin-body-color(@site-blue);
-  .mixin-content-active(@site-blue);
+  .mixin-body-color(@site-purple);
+  .mixin-content-active(@site-purple);
 }
 body.surveys {
   .mixin-body-color(@site-green);
@@ -103,7 +105,24 @@ body.reports {
   .mixin-content-active(@site-magenta);
 }
 
+body.swing {
+  .mixin-body-color(@site-blue);
+  .mixin-content-active(@site-blue);
+  overflow-y: auto !important;
 
+}
+
+body.inventory {
+  .mixin-body-color(@site-orange);
+  .mixin-content-active(@site-orange);
+  overflow-y: auto !important;
+
+}
+
+body.scheduling {
+  .mixin-body-color(@site-maroon);
+  .mixin-content-active(@site-maroon); 
+}
 
 .busy {
   cursor: wait !important;
@@ -115,6 +134,10 @@ body.reports {
 .relative {
   position: relative;
 }
+.ib {
+  display: inline-block !important;
+}
+
 
 .scrollable {
   overflow: auto;
@@ -135,3 +158,10 @@ h3 { font-size: 1.15em; }
 // h4 { font-size: 1em; }
 h5 { font-size: .83em; }
 h6 { font-size: .75em; }
+
+
+.may-reload {
+  // background-color: red; // doesn't always show
+  // .box-shadow(inset 0 0 5px 2px #FF0000); // doesn't always show
+  border: solid 3px #FF0000; // resizes contents, but always shows
+}

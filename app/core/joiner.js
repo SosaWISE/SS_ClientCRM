@@ -1,5 +1,5 @@
 define('src/core/joiner', [
- 'src/core/arrays',
+  'src/core/arrays',
 ], function(
   arrays
 ) {
@@ -8,7 +8,6 @@ define('src/core/joiner', [
   function Joiner() {
     var _this = this,
       disposed = false;
-    _this.timeout = 1000 * 30;
     _this._count = 0;
     _this._waiting = [];
     _this._results = [];
@@ -24,9 +23,10 @@ define('src/core/joiner', [
       return disposed;
     };
   }
+  Joiner.prototype.timeout = 1000 * 30;
 
   function no_op() {}
-  Joiner.prototype.add = function() {
+  Joiner.prototype.add = function(name) {
     var _this = this,
       waiting, results, addKey,
       timeout;
@@ -49,7 +49,7 @@ define('src/core/joiner', [
       clearTimeout(timeout);
       var index = waiting.indexOf(addKey);
       if (index < 0) {
-        // already called
+        // already called or a previous callback passed a value for err
         return;
       }
 
@@ -71,7 +71,7 @@ define('src/core/joiner', [
     timeout = setTimeout(function() {
       cb({
         Code: 1, // ???,
-        Message: 'timeout error',
+        Message: 'Joiner timed out - ' + (name || '[unnamed]'),
       });
     }, _this.timeout);
 
@@ -81,6 +81,14 @@ define('src/core/joiner', [
     var _this = this;
     _this._callbacks.push(cb);
     tryWhen(_this);
+  };
+  Joiner.prototype.after = function(cb) {
+    var _this = this;
+    _this._callbacks.push(cb);
+    // only call `tryWhen` if an error has already occurred
+    if (_this._err) {
+      tryWhen(_this);
+    }
   };
 
   Joiner.prototype.results = function() {
@@ -118,5 +126,6 @@ define('src/core/joiner', [
   }
   Joiner.prototype.create = create;
 
+  create.Joiner = Joiner;
   return create;
 });

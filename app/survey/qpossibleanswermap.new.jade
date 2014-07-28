@@ -1,16 +1,18 @@
-div(data-bind="if:cmdAdd.busy")
-  div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+div(data-bind="spinner:cmdSave.busy,spinner-rgb:'white'")
 
 ul(class="edit-form")
   li
     span(class="label") Answer
-    div(data-bind="template:{name:paComboVM.viewTmpl,data:paComboVM}")
+    div(data-bind="template:{name:data.PossibleAnswerCvm.viewTmpl,data:data.PossibleAnswerCvm}")
   li
     span(class="label") Expands Sub Questions
-    div(data-bind="template:{name:expandsComboVM.viewTmpl,data:expandsComboVM}")
+    div(data-bind="template:{name:data.ExpandsCvm.viewTmpl,data:data.ExpandsCvm}")
+  li
+    span(class="label") Fails Survey
+    div(data-bind="template:{name:data.FailsCvm.viewTmpl,data:data.FailsCvm}")
 
 ul(class="actions")
   li
     a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
   li
-    a(class="btn",tabindex="0",data-bind="cmd:cmdAdd") Add Possible Answer
+    a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save Possible Answer

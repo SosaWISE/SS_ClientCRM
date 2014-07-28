@@ -1,98 +1,129 @@
 define('mock/dataservices/accountingengine.mock', [
+  'src/core/strings',
   'src/dataservice',
   'src/core/mockery',
-  'src/core/utils',
 ], function(
+  strings,
   dataservice,
-  mockery,
-  utils
+  mockery
 ) {
   "use strict";
 
   function mock(settings) {
-    function clone(value) {
-      return JSON.parse(JSON.stringify(value));
-    }
-
-    function send(value, setter, cb, timeout) {
-      var err, result;
-      if (value) {
-        value = clone(value);
-      }
-      if (false && !value) {
-        err = {
-          Code: 12345,
-          Message: 'No value',
-          Value: null,
-        };
-      } else {
-        result = {
-          Code: 0,
-          Message: 'Success',
-          Value: value,
-        };
-      }
-
-      setTimeout(function() {
-        if (!err && result && utils.isFunc(setter)) {
-          setter(result.Value);
-        }
-        cb(err, result);
-      }, timeout || settings.timeout);
-    }
-
-    function filterListBy(list, propName, id) {
-      return list.filter(function(item) {
-        return item[propName] === id;
-      });
-    }
-
-    function findSingleBy(list, propName, id) {
-      return list.filter(function(item) {
-        return item[propName] === id;
-      })[0];
-    }
-
-    function findSingleOrAll(list, propName, id) {
-      var result;
-      if (id > 0) {
-        result = findSingleBy(list, propName, id);
-      } else {
-        result = list;
-      }
-      return result;
+    function send(code, value, setter, cb, timeout) {
+      mockery.send(code, value, setter, cb, timeout || settings.timeout);
     }
 
     dataservice.accountingengine.aging.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = filterListBy(agings, 'CMFID', id);
+          // result = mockery.filterListBy(agings, 'CMFID', id);
+          result = mockery.fromTemplate({
+            'list|6-6': [ // multiples of 6
+              {
+                CMFID: id,
+                Age: '@AGING',
+                Value: '@MONEY(0,60)',
+              }
+            ]
+          }).list;
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
     dataservice.accountingengine.billingInfoSummary.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(billingInfoSummarys, 'SummaryID', id);
+          result = mockery.findSingleOrAll(billingInfoSummarys, 'SummaryID', id);
           break;
         case 'CMFID':
-          result = filterListBy(billingInfoSummarys, 'CustomerMasterFileId', id);
+          result = mockery.filterListBy(billingInfoSummarys, 'CustomerMasterFileId', id);
+          if (!result || !result.length) {
+            billingInfoTmpl.CustomerMasterFileId = id;
+            result = mockery.fromTemplate({
+              'list|8-8': [billingInfoTmpl], // multiples of 8
+            }).list;
+            // add to list
+            billingInfoSummarys = billingInfoSummarys.concat(result);
+          }
           break;
         case 'AccountId':
-          result = filterListBy(billingInfoSummarys, 'AccountId', id);
+          result = mockery.filterListBy(billingInfoSummarys, 'AccountId', id);
           break;
       }
-      send(result, setter, cb);
+
+      send(0, result, setter, cb);
+    };
+
+    dataservice.accountingengine.customerSearches.save = function(params, setter, cb) {
+      var result, template, fname, lname, data = params.data;
+      switch (params.link || null) {
+        case null:
+          template = {};
+          fname = (data.FirstName || '@NAME');
+          lname = (data.LastName || '@LASTNAME');
+          template['list|' + data.PageSize + '-' + data.PageSize] = [ //
+            {
+              CustomerMasterFileID: '@NUMBER(3000001,3000100)',
+              Fullname: '[C]: ' + fname + ' ' + lname,
+              City: (data.City || '@LASTNAME(citycb)') + ', ' +
+                (data.StateId || 'UT') + ' ' +
+                (data.PostalCode || '8@NUMBER(3000,5999)') + '-@NUMBER(1000,9999)',
+              Phone: /*'H: ' + */ (data.PhoneNumber || '@PHONE'),
+              Email: strings.format('{0}.{1}@@LASTNAME(cb).com', fname, lname),
+              'AccountTypes|1-5': ['@ACCT_TYPE'],
+            },
+          ];
+          result = mockery.fromTemplate(template).list;
+          break;
+      }
+      send(0, result, setter, cb);
+    };
+
+    dataservice.accountingengine.customerCardInfos.read = function(params, setter, cb) {
+      var result;
+      switch (params.link || null) {
+        case null:
+          result = mockery.fromTemplate({
+            AddressID: 68,
+            City: '@CITY',
+            CityStateZip: '@CITY @STATEAB @ZIP',
+            // CustomerID: '???',
+            CustomerMasterFileID: params.id,
+            DOB: '@DATE',
+            Email: '@EMAIL',
+            FirstName: '@NAME',
+            FullName: '@NAME @LASTNAME',
+            Gender: 'Male',
+            LastName: '@LASTNAME',
+            MiddleName: null,
+            Password: 'PasswordGoesHere',
+            PhoneHome: '@PHONE(home)',
+            PhoneMobile: '@PHONE(mobile)',
+            PhoneWork: '@PHONE(work)',
+            PlusFour: null,
+            PostFix: null,
+            PostalCode: '@ZIP',
+            Prefix: null,
+            ResultType: 'LEAD',
+            SSN: null,
+            StateId: '@STATEAB',
+            StreetAddress: '@ADDRESS',
+            StreetAddress2: '#@NUMBER(10,300,apt)',
+            Username: null,
+          });
+          break;
+      }
+      send(0, result, setter, cb);
     };
   }
 
   (function() {
     // mockery.random = Math.random;
 
-    mockery.addModulusValueFunc('ACCT_NAME', [
+    mockery.addModulusValueFunc('ACCT_NAME', [ // multiples of 8
       'Main Home Security System',
       'Vacation Home Security System',
       'FWI Firewall',
@@ -102,7 +133,7 @@ define('mock/dataservices/accountingengine.mock', [
       'Strike Plate',
       'Window Film',
     ]);
-    mockery.addModulusValueFunc('ACCT_DESC', [
+    mockery.addModulusValueFunc('ACCT_DESC', [ // multiples of 8
       'This is the house where my family lives.  Here we do all our stuf.',
       'This home we like to go to when winter comes around.',
       'This is the firewall that protects our family from porn.',
@@ -142,7 +173,7 @@ define('mock/dataservices/accountingengine.mock', [
       1,
       4,
     ]);
-    mockery.addModulusValueFunc('AGING', [
+    mockery.addModulusValueFunc('AGING', [ // multiples of 6
       'Current',
       '1 to 30',
       '31 to 60',
@@ -150,59 +181,54 @@ define('mock/dataservices/accountingengine.mock', [
       '91 to 120',
       '> 120',
     ]);
+    mockery.addModulusValueFunc('ACCT_TYPE', [
+      'LEAD', //   Lead
+      'ALRM', //   Alarm System
+      'INSEC', //  Internet Security
+      'LFLCK', //  Life Lock
+      'NUMAN', //  NuManna
+      'PERS', //   GPS Tracking Device
+      'SKPLT', //  Strick Plate
+      'WNFIL', //  Window Film
+    ]);
   })();
 
   // data used in mock function
-  var agings,
-    billingInfoSummarys;
+  var cmfidList,
+    billingInfoSummarys,
+    billingInfoTmpl;
 
-  agings = mockery.fromTemplate({
-    // multiples of 6
-    'list|6-6': [
-      {
-        CMFID: 3000001,
-        Age: '@AGING',
-        Value: '@MONEY(0,60)',
-      }
-    ]
-  }).list.concat(mockery.fromTemplate({
-    // multiples of 6
-    'list|6-6': [
-      {
-        CMFID: 3000003,
-        Age: '@AGING',
-        Value: '@MONEY(0,60)',
-      }
-    ]
-  }).list);
+  cmfidList = mockery.fromTemplate({
+    'list|2-2': ['@INC(customerMasterFile,3000001)']
+  }).list;
 
-  billingInfoSummarys = mockery.fromTemplate({
-    'list|8-8': [
-      {
-        SummaryID: '@INC(summary)',
-        CustomerMasterFileId: 3000001,
-        AccountId: '@INC(account)',
-        AccountName: '@ACCT_NAME',
-        AccountDesc: '@ACCT_DESC',
-        AmountDue: '@DUE',
-        DueDate: '@DUEDATE',
-        NumberOfUnites: '@NUNITS',
-      }
-    ],
-  }).list.concat(mockery.fromTemplate({
-    'list|8-8': [
-      {
-        SummaryID: '@INC(summary)',
-        CustomerMasterFileId: 3000003,
-        AccountId: '@INC(account)',
-        AccountName: '@ACCT_NAME',
-        AccountDesc: '@ACCT_DESC',
-        AmountDue: '@DUE',
-        DueDate: '@DUEDATE',
-        NumberOfUnites: '@NUNITS',
-      }
-    ],
-  }).list);
+  billingInfoTmpl = {
+    SummaryID: '@INC(summary)',
+    CustomerMasterFileId: 'set me!!!',
+    AccountId: '@INC(account)',
+    AccountName: '@ACCT_NAME',
+    AccountDesc: '@ACCT_DESC',
+    AmountDue: '@DUE',
+    DueDate: '@DUEDATE',
+    NumberOfUnites: '@NUNITS',
+  };
+
+  billingInfoSummarys = [];
+  cmfidList.forEach(function(cmfid) {
+    billingInfoTmpl.CustomerMasterFileId = cmfid;
+    billingInfoSummarys = billingInfoSummarys.concat(mockery.fromTemplate({
+      'list|8-8': [billingInfoTmpl], // multiples of 8
+    }).list);
+  });
+
+  mock.addAccount = function(cmfid) {
+    billingInfoTmpl.CustomerMasterFileId = cmfid;
+    var bis = mockery.fromTemplate(billingInfoTmpl);
+
+    billingInfoSummarys.push(bis);
+
+    return bis;
+  };
 
   return mock;
 });

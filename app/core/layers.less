@@ -1,0 +1,112 @@
+.layers .layer-table {
+  z-index: 99; // put above slickgrid // changed to 99 to put above fullcalendar grid
+  position: absolute;
+  display: table;
+  width: 100%;
+  height: 100%;
+
+  // only show the background on the topmost layer
+  &:last-child {
+    background-color: rgba(0,0,0, 0.2);
+  }
+  // &:not(:last-child) {
+  //   display: none;
+  // }
+
+  .layer-cell {
+    display: table-cell;
+    vertical-align: middle;
+
+    .layer {
+      color: white;
+      margin: 5px auto;
+      .transition(width 0.25s, height 0.25s;);
+
+      position: relative;
+
+      .border-radius(5px);
+      .box-shadow(0px 0px 10px rgba(0, 0, 0, 0.25));
+      // default size
+      width: 98%;
+      height: 98%;
+      &.autoflow {
+        overflow: auto;
+      }
+
+      // > .header {
+      //   .user-select(none);
+      //   background: rgba(0,0,0,0.15);
+      //   height: 15px;
+      //   > .handle.drag {
+      //     height: 100%;
+      //     cursor: move;
+      //     cursor: -webkit-grab;
+      //     &.dragging {
+      //       cursor: move;
+      //     }
+      //   }
+      // }
+      > .content {
+        // padding: 5px 20px 20px 20px;
+        padding: 20px;
+
+        cursor: move;
+        cursor: -webkit-grab;
+        &.dragging {
+          cursor: move;
+        }
+        // reset cursor for all immediate children
+        > * {
+          cursor: initial;
+        }
+
+        .actions ul,
+        ul.actions {
+          text-align: right;
+          display: block;
+          li {
+            display: inline-block;
+            padding: 10px 0px 10px 5px;
+          }
+        }
+
+        // correctly show scroll bars
+        table.fh-wrap {
+          height: ~"calc(100% - 40px)"; // `calc` is a CSS3 function. too bad it took til now to find out about it...
+        }
+      }
+
+      h2.title {
+        text-shadow: 0 1px 0 #fff;
+        // padding: 15px 0px 0px 15px;
+        // text-transform: uppercase;
+      }
+
+      a.close {
+        color: inherit;
+        position: absolute;
+        top: 3px;
+        left: 2px;
+        padding: 1px 5px;
+        &:before {
+          font-family: 'entypo';
+          content: '\2715';
+        }
+        .border-radius(9px);
+        .transition(.1s);
+        &:hover {
+          background: rgba(0, 0, 0, 0.25);
+        }
+        &:active {
+          background: rgba(0, 0, 0, 0.4);
+        }
+
+        // in windows put it on the right side
+        .win32 & {
+          left: initial;
+          right: 2px;
+        }
+      }
+    }
+  }
+}

@@ -15,27 +15,25 @@ define('src/scrum/backlogdata.spec', [
   describe('BacklogData', function() {
     var epics, storys, bd;
     beforeEach(function() {
-      epics = [
+      epics = [ //
         {
           ParentId: null,
           ID: 1,
           Name: 'Epic 1',
           SortOrder: 1,
-        },
-        {
+        }, {
           ParentId: null,
           ID: 2,
           Name: 'Epic 2',
           SortOrder: 2,
-        },
-        {
+        }, {
           ParentId: 1,
           ID: 3,
           Name: 'Epic 3',
           SortOrder: 3,
         },
       ];
-      storys = [
+      storys = [ //
         {
           EpicId: 3,
           ID: 1,
@@ -43,39 +41,35 @@ define('src/scrum/backlogdata.spec', [
           Version: 1,
           Points: 0.5,
           SortOrder: 11,
-        },
-        {
+        }, {
           EpicId: 1,
           ID: 2,
           Name: "Story 2",
           Version: 1,
           Points: 13,
           SortOrder: 12,
-        },
-        {
+        }, {
           EpicId: 2,
           ID: 3,
           Name: "Story 3",
           Version: 1,
           Points: 2,
           SortOrder: 13,
-        },
-        {
+        }, {
           EpicId: 1,
           ID: 4,
           Name: "Story 4",
           Version: 1,
           Points: 2,
           SortOrder: 14,
-        },
-        {
+        }, {
           EpicId: 3,
           ID: 5,
           Name: "Story 5",
           Version: 1,
           Points: 1,
           SortOrder: 15,
-          Tasks: [
+          Tasks: [ //
             {
               ID: 1,
               StoryId: 5,
@@ -304,7 +298,7 @@ define('src/scrum/backlogdata.spec', [
           Version: 1,
           Points: 3,
           SortOrder: 16,
-          Tasks: [
+          Tasks: [ //
             {
               TaskStepId: 1,
               ID: 1,

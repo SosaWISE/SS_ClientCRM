@@ -6,7 +6,7 @@ div(class="addr-validate")
         li
           span(class="label") Premise Phone
           input(type="text", placeholder="(123) 123-1234",
-            data-bind="hasfocus:focus,ukov:data.PhoneNumber,value:data.PhoneNumber,valueUpdate:'keyup',enter:cmdValidate")
+            data-bind="select:focusFirst,ukov:data.PhoneNumber,phonevalue:data.PhoneNumber,valueUpdate:'keyup',enter:cmdValidate")
         li
           span(class="label") Zip code
           input(type="text", placeholder="12345",
@@ -26,14 +26,14 @@ div(class="addr-validate")
             data-bind="ukov:data.City,value:data.City,valueUpdate:'keyup',enter:cmdValidate")
         li
           span(class="label") State
-          div(data-bind="template:{name:data.StateCvm.viewTmpl,data:data.StateCvm}")
+          div(data-bind="cvm:data.StateCvm")
         li
           span(class="label") County
           input(type="text", placeholder="Grand",
             data-bind="ukov:data.County,value:data.County,valueUpdate:'keyup',enter:cmdValidate")
         li
           span(class="label") Time Zone
-          div(data-bind="template:{name:data.TimeZoneCvm.viewTmpl,data:data.TimeZoneCvm}")
+          div(data-bind="cvm:data.TimeZoneCvm")
         li
         <!-- /ko -->
       ul(class="edit-form right-side",data-bind="visible:override")
@@ -47,13 +47,13 @@ div(class="addr-validate")
             data-bind="ukov:data.StreetName,value:data.StreetName,valueUpdate:'keyup',enter:cmdValidate")
         li
           span(class="label") Pre Directional
-          div(data-bind="template:{name:data.PreDirectionalCvm.viewTmpl,data:data.PreDirectionalCvm}")
+          div(data-bind="cvm:data.PreDirectionalCvm")
         li
           span(class="label") Post Directional
-          div(data-bind="template:{name:data.PostDirectionalCvm.viewTmpl,data:data.PostDirectionalCvm}")
+          div(data-bind="cvm:data.PostDirectionalCvm")
         li
           span(class="label") Street Type
-          div(data-bind="template:{name:data.StreetTypeCvm.viewTmpl,data:data.StreetTypeCvm}")
+          div(data-bind="cvm:data.StreetTypeCvm")
         li
           span(class="label") Extension
           input(type="text", placeholder="",
@@ -73,9 +73,9 @@ div(class="addr-validate")
 
   div
     span(class="btn-bg", tabindex="0", data-bind="cmd:cmdValidate") Validate Address
-    span(class="btn-bg", tabindex="0", data-bind="cmd:cmdManual") Manual
+    //- span(class="btn-bg", tabindex="0", data-bind="cmd:cmdManual") Manual
 
   div(class="result",data-bind="if:result")
     div(data-bind="template:{name:'tmpl-acct-default-address',data:result}")
     div(class="actions")
-      span(class="btn-bg", tabindex="0", data-bind="cmd:clickClose") Ok
+      span(class="btn-bg", tabindex="0", data-bind="cmd:clickOk,select:focusOk") Ok

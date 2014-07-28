@@ -10,7 +10,8 @@ define('src/core/route.spec', [
       route = Route.create({
         goTo: function() {},
       }, {
-        setRoute: function() {},
+        // fake controller with addRoute function
+        addRoute: function() {},
       }, 'devices', ':tab/:id/:action', {
         tab: 'index',
         id: '',
@@ -41,10 +42,10 @@ define('src/core/route.spec', [
     it('`parts` property should be an array with expected values', function() {
       expect(Array.isArray(route.parts)).toBe(true);
       expect(route.parts.length).toBe(4);
-      expect(route.parts[0]).toEqual('route');
-      expect(route.parts[1]).toEqual('tab');
-      expect(route.parts[2]).toEqual('id');
-      expect(route.parts[3]).toEqual('action');
+      expect(route.parts[0]).toBe('route');
+      expect(route.parts[1]).toBe('tab');
+      expect(route.parts[2]).toBe('id');
+      expect(route.parts[3]).toBe('action');
     });
 
     describe('addDefaults', function() {

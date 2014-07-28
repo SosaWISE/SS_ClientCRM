@@ -1,6 +1,6 @@
 /*global describe,it,expect,beforeEach*/
 define('src/u-kov/string-converters.spec', [
- 'src/u-kov/string-converters'
+  'src/u-kov/string-converters'
 ], function(
   converters
 ) {
@@ -64,16 +64,20 @@ define('src/u-kov/string-converters.spec', [
         expect(precision3Converter('-123.5678')).toBe(-123.568);
         expect(precision0Converter('-123.5678')).toBe(-124);
       });
-      it('should return undefined for falsy values', function() {
-        expect(precision3Converter('')).toBeUndefined();
+      it('should return null for falsy values', function() {
+        expect(precision3Converter('')).toBe(null);
       });
-      it('should return Error for invalid numbers', function() {
-        expect(precision3Converter('a-123.5678') instanceof Error).toBe(true);
+      it('should remove invalid characters', function() {
+        expect(precision3Converter('a-123.56b78')).toBe(-123.568);
+        expect(precision3Converter('-12b3.5678')).toBe(-123.568);
+        expect(precision3Converter('    -12 b3.56 78   ')).toBe(-123.568);
+      });
+      it('should return Error when there\'s not a number', function() {
         expect(precision3Converter(' ') instanceof Error).toBe(true);
       });
-      it('should return Error for invalid numbers, including values that parseFloat can parse part of', function() {
-        expect(precision3Converter('-12b3.5678') instanceof Error).toBe(true);
-        expect(precision0Converter('-12b3.5678') instanceof Error).toBe(true);
+      it('should return Error when - and . characters are in wrong positions', function() {
+        expect(precision3Converter('-123.56.78') instanceof Error).toBe(true);
+        expect(precision3Converter('-123.56-78') instanceof Error).toBe(true);
       });
       it('should ignore leading zeros', function() {
         expect(precision3Converter('0000123.5678')).toBe(123.568);
@@ -92,7 +96,8 @@ define('src/u-kov/string-converters.spec', [
       var converter = converters.phone();
 
       it('should always return expected output when valid', function() {
-        var expected = '(123) 123-1234';
+        // var expected = '(123) 123-1234';
+        var expected = '1231231234'; // convert to raw digits
         expect(converter('1231231234')).toBe(expected);
         expect(converter('(123)123-1234')).toBe(expected);
         expect(converter('123.123.1234')).toBe(expected);

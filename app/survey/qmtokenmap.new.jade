@@ -1,5 +1,4 @@
-div(data-bind="if:cmdAdd.busy")
-  div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
+div(data-bind="spinner:cmdAdd.busy,spinner-rgb:'white'")
 
 //- span(data-bind="text:nextName")
 ul(class="edit-form")

@@ -28,15 +28,12 @@ define('src/survey/qmtokenmap.new.vm', [
     // events
     //
     _this.clickCancel = function() {
-      if (_this.cmdAdd.busy()) {
-        return;
-      }
-      _this.layer.close();
+      closeLayer(_this);
     };
     _this.cmdAdd = ko.command(function(cb) {
       var selectedValue = _this.tokenComboVM.selectedValue();
       if (!selectedValue) {
-        notify.notify('warn', 'No token selected', 10);
+        notify.warn('No token selected', null, 10);
         return cb();
       }
       dataservice.survey.questionMeaningTokenMaps.save({
@@ -45,21 +42,33 @@ define('src/survey/qmtokenmap.new.vm', [
           TokenId: selectedValue.TokenID,
           IsDeleted: false,
         },
-      }, null, function(err, resp) {
-        if (err) {
-          notify.notify('error', err.Message);
-        } else {
-          _this.questionMeaningVM.addTokenMap(resp.Value);
-          _this.layer.close();
-        }
-        cb();
-      });
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        _this.questionMeaningVM.addTokenMap(resp.Value);
+        _this.layerResult = resp.Value;
+        closeLayer(_this);
+      }, function(err) {
+        notify.error(err);
+      }));
     });
   }
   utils.inherits(NewQMTokenMapViewModel, BaseViewModel);
   NewQMTokenMapViewModel.prototype.viewTmpl = 'tmpl-qmtokenmap_new';
   NewQMTokenMapViewModel.prototype.width = 300;
-  NewQMTokenMapViewModel.prototype.height = 250;
+  NewQMTokenMapViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  NewQMTokenMapViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdAdd.busy() && !_this.layerResult) {
+      msg = 'Please wait for add to finish.';
+    }
+    return msg;
+  };
 
   function createComboList(tokenMaps, tokens) {
     var map = {},

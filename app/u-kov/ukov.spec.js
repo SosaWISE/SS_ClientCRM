@@ -1,8 +1,8 @@
 /*global describe,it,beforeEach,expect*/
 define('src/u-kov/ukov.spec', [
- 'ko',
- 'src/u-kov/ukov',
- 'src/u-kov/ukov-model'
+  'ko',
+  'src/u-kov/ukov',
+  'src/u-kov/ukov-model'
 ], function(
   ko,
   Ukov,
@@ -18,8 +18,8 @@ define('src/u-kov/ukov.spec', [
 
       validationGroup = {
         keys: [
-         'groupProp1',
-         'groupProp2',
+          'groupProp1',
+          'groupProp2',
         ],
         validators: [
 
@@ -100,7 +100,7 @@ define('src/u-kov/ukov.spec', [
           validationGroup: validationGroup,
         },
 
-        'arrayProp': [
+        'arrayProp': [ //
           {
             converter: function(val) {
               return val;
@@ -125,7 +125,7 @@ define('src/u-kov/ukov.spec', [
             },
           }
         },
-        'nestedObjectsInArray': [
+        'nestedObjectsInArray': [ //
           {
             _model: true,
             p1: {
@@ -155,12 +155,11 @@ define('src/u-kov/ukov.spec', [
           p1: 'p1',
           p2: 'p2',
         },
-        nestedObjectsInArray: [
+        nestedObjectsInArray: [ //
           {
             p1: '1p1',
             p2: '1p2',
-          },
-          {
+          }, {
             p1: '2p1',
             p2: '2p2',
           }
@@ -445,7 +444,7 @@ define('src/u-kov/ukov.spec', [
         expect(ukovProp.isValid()).toBe(false);
       });
       it('should accept array types', function() {
-        var ukovPropArray = ukov.wrap(['bob', 'hank'], [
+        var ukovPropArray = ukov.wrap(['bob', 'hank'], [ //
           {
             converter: function(val) {
               return val;

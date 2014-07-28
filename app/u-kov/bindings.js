@@ -1,6 +1,6 @@
 define('src/u-kov/bindings', [
- 'jquery',
- 'ko',
+  'jquery',
+  'ko',
 ], function(
   jquery,
   ko
@@ -10,16 +10,16 @@ define('src/u-kov/bindings', [
   var exports = {};
 
   ko.bindingHandlers.ukov = {
-    init: function(element, valueAccessor) {
-      var prop = valueAccessor();
-      // set prop to converted value when element loses focus
-      jquery(element).blur(function setProp() {
-        var value = prop.getValue();
-        if (!(value instanceof Error)) {
-          prop(value);
-        }
-      });
-    },
+    // init: function(element, valueAccessor) {
+    //   var prop = valueAccessor();
+    //   // set prop to converted value when element loses focus
+    //   jquery(element).blur(function setProp() {
+    //     var value = prop.getValue();
+    //     if (!(value instanceof Error)) {
+    //       prop(value);
+    //     }
+    //   });
+    // },
     update: function(element, valueAccessor) {
       exports.updateElement(element, valueAccessor());
     }
@@ -34,7 +34,7 @@ define('src/u-kov/bindings', [
       cls = 'form-saving';
     } else if (ukovItem.isValid && !ukovItem.isValid()) {
       cls = 'form-error';
-      title = 'Error: ' + ukovItem.errMsg();
+      title = 'Invalid: ' + ukovItem.errMsg();
     } else if (ukovItem.isClean && !ukovItem.isClean()) {
       cls = 'form-dirty';
     } else {

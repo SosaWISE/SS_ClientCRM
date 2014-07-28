@@ -16,22 +16,20 @@ define('src/scrum/repository.spec', [
 
       repo = new Repository({
         sorter: taskSorter,
-        metadata: [
+        metadata: [ //
           {
             field: 'Fk1',
             sorter: function(a, b) {
               a = b;
               return 0;
             },
-          },
-          {
+          }, {
             field: 'Fk2',
             sorter: function(a, b) {
               a = b;
               return 0;
             },
-          },
-          {
+          }, {
             field: 'Fk3',
             sorter: function(a, b) {
               a = b;
@@ -56,19 +54,19 @@ define('src/scrum/repository.spec', [
         expect(Object.keys(repo.map)).toEqual(['1']);
         expectKeys(Object.keys(repo.structureMap), ['10', '10_20', '10_20_30']);
 
-        expect(stripRepoObservableArrays(repo)).toEqual([
+        expect(stripRepoObservableArrays(repo)).toEqual([ //
           {
             // fk1
             id: 10,
-            list: [
+            list: [ //
               // fk2
               {
                 id: 20,
-                list: [
+                list: [ //
                   // fk3
                   {
                     id: 30,
-                    list: [
+                    list: [ //
                       {
                         ID: 1,
                         Version: 1,
@@ -85,24 +83,23 @@ define('src/scrum/repository.spec', [
         expect(Object.keys(repo.map)).toEqual(['1', '2']);
         expectKeys(Object.keys(repo.structureMap), ['10', '10_20', '10_20_30']);
 
-        expect(stripRepoObservableArrays(repo)).toEqual([
+        expect(stripRepoObservableArrays(repo)).toEqual([ //
           {
             // fk1
             id: 10,
-            list: [
+            list: [ //
               // fk2
               {
                 id: 20,
-                list: [
+                list: [ //
                   // fk3
                   {
                     id: 30,
-                    list: [
+                    list: [ //
                       {
                         ID: 1,
                         Version: 1,
-                      },
-                      {
+                      }, {
                         ID: 2,
                         Version: 1,
                       },
@@ -128,28 +125,27 @@ define('src/scrum/repository.spec', [
         expect(Object.keys(repo.map)).toEqual(['1', '2']);
         expectKeys(Object.keys(repo.structureMap), ['10', '10_20', '10_20_30', '10_20_31']);
 
-        expect(stripRepoObservableArrays(repo)).toEqual([
+        expect(stripRepoObservableArrays(repo)).toEqual([ //
           {
             // fk1
             id: 10,
-            list: [
+            list: [ //
               // fk2
               {
                 id: 20,
-                list: [
+                list: [ //
                   // fk3
                   {
                     id: 30,
-                    list: [
+                    list: [ //
                       {
                         ID: 1,
                         Version: 1,
                       },
                     ],
-                  },
-                  {
+                  }, {
                     id: 31,
-                    list: [
+                    list: [ //
                       {
                         ID: 2,
                         Version: 1,
@@ -168,19 +164,19 @@ define('src/scrum/repository.spec', [
         expect(Object.keys(repo.map)).toEqual(['1', '2']);
         expect(Object.keys(repo.structureMap)).toEqual(['10', '10_20', '10_20_30', '10_21', '10_21_30']);
 
-        expect(stripRepoObservableArrays(repo)).toEqual([
+        expect(stripRepoObservableArrays(repo)).toEqual([ //
           {
             // fk1
             id: 10,
-            list: [
+            list: [ //
               // fk2
               {
                 id: 20,
-                list: [
+                list: [ //
                   // fk3
                   {
                     id: 30,
-                    list: [
+                    list: [ //
                       {
                         ID: 1,
                         Version: 1,
@@ -188,14 +184,13 @@ define('src/scrum/repository.spec', [
                     ],
                   },
                 ],
-              },
-              {
+              }, {
                 id: 21,
-                list: [
+                list: [ //
                   // fk3
                   {
                     id: 30,
-                    list: [
+                    list: [ //
                       {
                         ID: 2,
                         Version: 1,
@@ -214,19 +209,19 @@ define('src/scrum/repository.spec', [
         expect(Object.keys(repo.map)).toEqual(['1', '2']);
         expectKeys(Object.keys(repo.structureMap), ['10', '10_20', '10_20_30', '11', '11_20', '11_20_30']);
 
-        expect(stripRepoObservableArrays(repo)).toEqual([
+        expect(stripRepoObservableArrays(repo)).toEqual([ //
           {
             // fk1
             id: 10,
-            list: [
+            list: [ //
               // fk2
               {
                 id: 20,
-                list: [
+                list: [ //
                   // fk3
                   {
                     id: 30,
-                    list: [
+                    list: [ //
                       {
                         ID: 1,
                         Version: 1,
@@ -236,18 +231,17 @@ define('src/scrum/repository.spec', [
                 ],
               },
             ],
-          },
-          {
+          }, {
             // fk1
             id: 11,
-            list: [
+            list: [ //
               {
                 id: 20,
-                list: [
+                list: [ //
                   // fk3
                   {
                     id: 30,
-                    list: [
+                    list: [ //
                       {
                         ID: 2,
                         Version: 1,

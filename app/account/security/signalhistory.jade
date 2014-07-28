@@ -1,0 +1,31 @@
+div(class="signalhistory",style="margin-bottom:10px;")
+  div
+    h2 Equipment Summary
+    div(class="grid-wrap rv")
+      div(class="slickgrid",data-bind="slickgrid:equipmentGvm")
+
+  div
+    h2 Signal History
+    ul(class="actions left",style="margin-bottom:30px;")
+      li
+        a(class="btn small",tabindex="0",data-bind="cmd:cmdSixMonthsHistory") 6 Months
+      li
+        a(class="btn small",tabindex="0",data-bind="cmd:cmdFullHistory") Full
+    div(class="grid-wrap rv")
+      div(class="slickgrid",data-bind="slickgrid:historyGvm")
+
+  div
+    h2 Zones/Signals
+    div(class="missing")
+      h3(class="title") Missing Equipment Zones
+      ul(class="data",data-bind="foreach:missingZones")
+        li(data-bind="text:$data")
+    div(class="missing")
+      h3(class="title") Missing Signal History
+      ul(class="data",data-bind="foreach:missingSignals")
+        li(data-bind="text:$data")
+
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
+
+
+  //- div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

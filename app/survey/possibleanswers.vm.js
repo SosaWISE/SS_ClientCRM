@@ -26,18 +26,16 @@ define('src/survey/possibleanswers.vm', [
     var _this = this,
       cb = join.add();
 
-    dataservice.survey.possibleAnswers.read({}, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        if (resp.Value) {
-          resp.Value.forEach(function(item) {
-            _this.paMap[item.PossibleAnswerID] = item;
-          });
-          _this.possibleAnswers(resp.Value);
-        } else {
-          _this.possibleAnswers([]);
-        }
-      }, cb);
-    });
+    dataservice.survey.possibleAnswers.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Value) {
+        resp.Value.forEach(function(item) {
+          _this.paMap[item.PossibleAnswerID] = item;
+        });
+        _this.possibleAnswers(resp.Value);
+      } else {
+        _this.possibleAnswers([]);
+      }
+    }, utils.no_op));
   };
 
   PossibleAnswersViewModel.prototype.getPossibleAnswer = function(possibleAnswerId) {

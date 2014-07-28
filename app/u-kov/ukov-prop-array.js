@@ -137,7 +137,7 @@ define('src/u-kov/ukov-prop-array', [
 
     this.update(!allowParentUpdate);
   };
-  fn.setVal = function() {
+  fn.setValue = function() {
     throw new Error('not implemented');
   };
 

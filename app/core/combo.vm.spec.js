@@ -10,32 +10,26 @@ define('src/core/combo.vm.spec', [
     var c, list;
     beforeEach(function() {
       c = new ComboViewModel();
-      c.setList([
+      c.setList([ //
         {
           value: 1,
           text: 'abcdef',
-        },
-        {
+        }, {
           value: 2,
           text: 'bcdefa',
-        },
-        {
+        }, {
           value: 3,
           text: 'cdefab',
-        },
-        {
+        }, {
           value: 4,
           text: 'defabc',
-        },
-        {
+        }, {
           value: 5,
           text: 'efabcd',
-        },
-        {
+        }, {
           value: 6,
           text: 'fabcde',
-        },
-        {
+        }, {
           value: 7,
           text: 'aBcdefabcdef',
         },
@@ -43,8 +37,9 @@ define('src/core/combo.vm.spec', [
       list = c.list();
     });
 
-    it('should start with no item selected', function() {
-      expect(c.selected()).toBe(c.noItemSelected);
+    it('should start no item selected', function() {
+      expect(c.selected().item.value).toBe(null);
+      expect(c.selectedItem()).toBe(null);
       expect(c.selectedValue()).toBe(null);
     });
 
@@ -54,14 +49,14 @@ define('src/core/combo.vm.spec', [
           value: 2,
           text: '2b',
         };
-        c.setList([
+        c.setList([ //
           {
             value: 2,
             text: '2a',
           },
         ]);
         c.selectedValue(2);
-        c.setList([
+        c.setList([ //
           {
             value: 1,
             text: '1a',
@@ -124,6 +119,8 @@ define('src/core/combo.vm.spec', [
         expectActiveIndex(6);
         c.activateNext(true);
         expectActiveIndex(0);
+        c.activateNext(true);
+        expectActiveIndex(1);
       });
       it('when items are filtered it should correctly select the next items down', function() {
         c.filterText('bce');

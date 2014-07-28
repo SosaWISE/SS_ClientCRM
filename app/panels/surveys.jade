@@ -1,3 +1,4 @@
+<!-- ko if:active -->
 div(class="panel")
   div(class="p-nav survey-types")
     <!-- ko foreach:surveyTypes -->
@@ -8,7 +9,7 @@ div(class="panel")
     ul
       <!-- ko foreach:surveys -->
       li(data-bind="click:$parents[1].clickSurvey")
-        a(data-bind="active:active")
+        a(data-bind="active:active,css:{'current':isCurrent}")
           span(data-bind="text:model.Version")
       <!-- /ko -->
       li
@@ -21,3 +22,6 @@ div(class="panel")
       div(data-bind="template:viewTmpl")
 
   div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
+
+div(data-bind="spinner:loading,spinner-rgb:'white'")
+<!-- /ko -->

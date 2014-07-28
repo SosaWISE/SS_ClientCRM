@@ -23,7 +23,7 @@ define('src/scrum/backlog.gvm', [
         multiSelect: false,
       },
       dataView: options.dataView,
-      plugins: [
+      plugins: [ //
         new MoveSubRows({
           dataView: options.dataView,
           // orderName: 'OrderNumber',
@@ -50,7 +50,7 @@ define('src/scrum/backlog.gvm', [
         //   },
         // }),
       ],
-      columns: [
+      columns: [ //
         {
           id: '#',
           name: '',
@@ -83,8 +83,7 @@ define('src/scrum/backlog.gvm', [
           formatter: function(row, cell, value, columnDef, dataCtx) {
             return dataCtx.item.Name;
           },
-        },
-        {
+        }, {
           id: "points",
           name: "Points",
           // field: "points",

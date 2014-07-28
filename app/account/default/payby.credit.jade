@@ -2,15 +2,15 @@ div(class="payby-eft")
   ul(class="edit-form")
     li
       span(class="label") Card Type
-      div(data-bind="template:{name:data.CardTypeCvm.viewTmpl,data:data.CardTypeCvm}")
+      div(data-bind="cvm:data.CardTypeCvm")
     li
       span(class="label") Card Number
       input(type="text", placeholder="",
         data-bind="ukov:data.CardNumber,value:data.CardNumber,valueUpdate:'keyup'")
     li
       span(class="label") Expiration
-      div(class="month",data-bind="template:{name:data.ExpirationMonthCvm.viewTmpl,data:data.ExpirationMonthCvm}")
-      div(class="year",data-bind="template:{name:data.ExpirationYearCvm.viewTmpl,data:data.ExpirationYearCvm}")
+      div(class="month",data-bind="cvm:data.ExpirationMonthCvm")
+      div(class="year",data-bind="cvm:data.ExpirationYearCvm")
     li
       span(class="label") Security Code (CSC/CCV/CVV)
       //- (CSC/CCV/CVV/CVC/etc) ??? https://en.wikipedia.org/wiki/Card_security_code

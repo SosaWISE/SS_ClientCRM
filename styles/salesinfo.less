@@ -1,11 +1,16 @@
 .sales-info {
+  @account-bg: @site-purple;
   @middle:470px;
   @pad: 10px;
 
   // ** Properties
-  position: absolute;
-  top:0;right:0;bottom:0;left:0;
-  overflow:auto;
+  // overflow:auto;
+
+  .subHeader {
+    font-weight: 500;
+    border-bottom: 1px solid @account-bg;
+    margin-bottom: 3px;
+  }
 
   // ** Inner elements
   .center {
@@ -27,9 +32,9 @@
       text-align: center;
     }
 
-    .vars {
-      @letterWidth:15px;
-      @answerWidth:200px;
+    .edit-form {
+      @letterWidth:25px;
+      @answerWidth:170px;
 
       width: @middle;
       .subHeader {
@@ -42,14 +47,29 @@
       }
       .letter {
         width:@letterWidth;
+        padding-right: 2px;
       }
       .question {
         width:@middle - @letterWidth - @answerWidth;
         padding-right: 2px;
+        &.noanswer {
+          width:@middle - @letterWidth;
+        }
       }
       .answer {
         display:inline-block;
         width:@answerWidth;
+        padding-bottom: 5px;
+      }
+
+      .subline {
+        padding-left:@letterWidth;
+        .letter {
+          width:@letterWidth + 10px;
+        }
+        .question {
+          width:@middle - (@letterWidth*2 + 10px) - @answerWidth;
+        }
       }
     }
   }
@@ -57,7 +77,7 @@
     // Style
     position: absolute;
     top:0;right:@pad;bottom:0;left:@middle + (@pad * 2);
-    min-width: 330px;
+    min-width: 530px;
     min-height:600px;
 
     // ** Inner Elements
@@ -66,15 +86,12 @@
       font-weight: bold;
       text-align: center;
     }
-    div.ssiAddEqpmt {
-      background-color: #0E4B8F;
-      display: inline-block;
-      padding: 3px;
-      &:hover { background-color: #4170A5; }
-
-      a {
-        color: white;
-        text-decoration: none;
+    ul.actions {
+      // text-align: right;
+      display: block;
+      li {
+        display: inline-block;
+        padding: 10px 0px 10px 5px;
       }
     }
 
@@ -82,12 +99,8 @@
       bottom:100px;
     }
 
+    .points,
     .totals {
-      position:absolute;
-      height:100px;
-      right:45px;
-      bottom:0;
-
       .name,
       .value {
         display:inline-block;
@@ -97,7 +110,26 @@
         width:130px;
       }
       .value {
-        width:90px;
+        width:60px;
+      }
+    }
+    .points {
+      position:absolute;
+      height:100px;
+      right:200px;
+      bottom:0;
+    }
+    .totals {
+      position:absolute;
+      height:100px;
+      right:30px;
+      bottom:0;
+
+      .total {
+        margin: 2px 0px;
+        padding: 3px 0px;
+        border-top: 1px solid @account-bg;
+        border-bottom: 4px double @account-bg;
       }
     }
   }

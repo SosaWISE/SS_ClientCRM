@@ -581,20 +581,17 @@ define('src/scrum/backlogdata', [
       throw new Error('already initialized');
     }
 
-    _this.taskSteps = [
+    _this.taskSteps = [ //
       {
         ID: 1,
         Name: 'To Do',
-      },
-      {
+      }, {
         ID: 2,
         Name: 'In Progress',
-      },
-      {
+      }, {
         ID: 3,
         Name: 'Done',
-      },
-      {
+      }, {
         ID: 4,
         Name: 'Approved',
       },
@@ -749,7 +746,7 @@ define('src/scrum/backlogdata', [
         // selectable: true,
         // focusable: false,
         // cssClasses: '',
-        columns: [
+        columns: [ //
           {
             id: '#',
           },
@@ -767,8 +764,7 @@ define('src/scrum/backlogdata', [
               return tab + dataCtx.item.Name;
               // return '<span class="parent-cell" style="width:' + (item.depth() * 25) + 'px;">&nbsp;</span>' + dataCtx.item.Name;
             },
-          },
-          {
+          }, {
             id: "points",
             formatter: function(row, cell, value, columnDef, dataCtx) {
               return dataCtx.points();

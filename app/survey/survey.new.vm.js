@@ -50,10 +50,7 @@ define('src/survey/survey.new.vm', [
     // events
     //
     _this.clickCancel = function() {
-      if (_this.cmdAdd.busy()) {
-        return;
-      }
-      _this.layer.close();
+      closeLayer(_this);
     };
     _this.cmdAdd = ko.command(function(cb) {
       var version = _this.sData.Version;
@@ -63,16 +60,17 @@ define('src/survey/survey.new.vm', [
       }
       _this.sData.update();
       if (!_this.sData.isValid()) {
-        notify.notify('warn', _this.sData.errMsg(), 10);
+        notify.warn(_this.sData.errMsg(), null, 10);
         return cb();
       }
       dataservice.survey.surveys.save({
         data: _this.sData.model,
       }, null, function(err, resp) {
         if (err) {
-          notify.notify('error', err.Message);
+          notify.error(err);
         } else {
-          _this.layer.close(resp.Value);
+          _this.layerResult = resp.Value;
+          closeLayer(_this);
         }
         cb();
       });
@@ -81,7 +79,25 @@ define('src/survey/survey.new.vm', [
   utils.inherits(NewSurveyViewModel, BaseViewModel);
   NewSurveyViewModel.prototype.viewTmpl = 'tmpl-survey_new';
   NewSurveyViewModel.prototype.width = 300;
-  NewSurveyViewModel.prototype.height = 250;
+  NewSurveyViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  NewSurveyViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
+  NewSurveyViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdAdd.busy() && !_this.layerResult) {
+      msg = 'Please wait for add to finish.';
+    }
+    return msg;
+  };
 
   return NewSurveyViewModel;
 });

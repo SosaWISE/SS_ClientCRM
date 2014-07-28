@@ -1,3 +1,5 @@
+@import 'roboto.less';
+
 // mixin
 .font-face(@fnt) {
   font-family: '@{fnt}';
@@ -16,4 +18,13 @@
 }
 @font-face {
   .font-face('Nexsense')
+}
+
+//@HACK: to fix Main Menu Icons bug in Chrome on Windows
+// http://stackoverflow.com/a/19247378
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    @font-face {
+        font-family: 'entypo';
+        src: url('/stuff/fonts/entypo.svg#entypo') format('svg');
+    }
 }

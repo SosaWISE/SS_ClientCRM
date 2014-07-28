@@ -96,7 +96,8 @@ define('src/core/querystring', [
   }
 
   function parseQuery(text) {
-    var items = {}, name, splits, length, v, value, i;
+    var items = {},
+      name, splits, length, v, value, i;
 
     if (!text) {
       return items;

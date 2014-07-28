@@ -1,4 +1,5 @@
 define('src/account/default/notes.vm', [
+  'moment',
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/ukov',
@@ -9,6 +10,7 @@ define('src/account/default/notes.vm', [
   'src/core/utils',
   'src/core/base.vm',
 ], function(
+  moment,
   RowEvent,
   SlickGridViewModel,
   ukov,
@@ -38,12 +40,10 @@ define('src/account/default/notes.vm', [
       ],
     },
     NoteCategory2Id: {
-      validators: [
-        //
-        function(val, model) {
-          model = arguments;
-          return null;
-        },
+      validators: [ //
+        // function(val, model) {
+        //   return null;
+        // },
         ukov.validators.isRequired('Please select a secondary reason'),
       ],
     },
@@ -64,7 +64,7 @@ define('src/account/default/notes.vm', [
   function NotesViewModel(options) {
     var _this = this;
     NotesViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, ['id']);
+    BaseViewModel.ensureProps(_this, ['id', 'vm']);
 
     _this.mixinLoad();
 
@@ -82,15 +82,7 @@ define('src/account/default/notes.vm', [
         value: 'NoteCategory1ID',
         text: 'Category',
       },
-      list: [
-        {
-          NoteCategory1ID: 1,
-          Category: 'Master Account Access',
-          Description: 'General Access to Master Account',
-        },
-      ]
     });
-    _this.data.NoteCategory1IdCvm.selectedValue(1);
     _this.data.NoteCategory2IdCvm = new ComboViewModel({
       selectedValue: _this.data.NoteCategory2Id,
       noItemSelectedText: '[Secondary Reason]',
@@ -119,37 +111,45 @@ define('src/account/default/notes.vm', [
         new RowEvent({
           eventName: 'onDblClick',
           fn: function(item) {
-            notify.notify('info', item.Note, 5);
+            notify.info('Note Details', item.Note, 5, null, true);
           },
         }),
       ],
-      columns: [
+      columns: [ //
         {
           id: 'CreatedOn',
           name: 'Date',
           field: 'CreatedOn',
-          width: 40,
+          width: 20,
           cssClass: 'wrap-cell',
-        },
-        {
+          formatter: SlickGridViewModel.formatters.datetime,
+        }, {
           id: 'CreatedBy',
           name: 'User',
           field: 'CreatedBy',
-          width: 30,
-        },
-        {
-          id: 'NoteCategory1Id',
-          name: 'Primary Reason ID',
-          field: 'NoteCategory1Id',
-          width: 30,
-        },
-        {
-          id: 'NoteCategory2Id',
-          name: 'Secondary Reason',
-          field: 'NoteCategory2Id',
-          width: 30,
-        },
-        {
+          width: 35,
+        }, {
+          //   id: 'NoteCategory1Id',
+          //   name: 'Primary Reason',
+          //   // field: 'NoteCategory1Id',
+          //   field: 'Category1',
+          //   width: 30,
+          // }, {
+          //   id: 'NoteCategory2Id',
+          //   name: 'Secondary Reason',
+          //   // field: 'NoteCategory2Id',
+          //   field: 'Category2',
+          //   width: 30,
+          // }, {
+          id: 'reason',
+          name: 'Reason',
+          // width: 30,
+          formatter: function(row, cell, value, columnDef, dataCtx) {
+            //@NOTE: for this to work we need a list of all category1 and category2.
+            //       currently we only have filtered lists
+            return dataCtx.Category1 + ':<br />' + dataCtx.Category2;
+          },
+        }, {
           id: 'Note',
           name: 'Note',
           field: 'Note',
@@ -168,10 +168,9 @@ define('src/account/default/notes.vm', [
     });
     _this.cmdAppendClose = ko.command(function(cb) {
       _this.cmdAppend.execute(function(err) {
-        if (err) {
-          return cb();
+        if (!err) {
+          _this.vm.close();
         }
-        alert('@TODO: close account');
         cb();
       });
     });
@@ -187,18 +186,14 @@ define('src/account/default/notes.vm', [
       dataservice.maincore.notecategory1.read({
         id: selectedValue,
         link: 'departmentid',
-      }, null, function(err, resp) {
-        utils.safeCallback(err, function() {
-          if (_this.departmentsCvm.selectedValue() === selectedValue) {
-            // make sure selectedValue hasn't changed
-            _this.data.NoteCategory1IdCvm.setList(resp.Value);
-          }
-        }, function(err) {
-          if (err) {
-            notify.notify('error', err.Message);
-          }
-        });
-      });
+      }, null, utils.safeCallback(null, function(err, resp) {
+        // make sure selectedValue hasn't changed
+        if (_this.departmentsCvm.selectedValue() === selectedValue) {
+          _this.data.NoteCategory1IdCvm.setList(resp.Value);
+        }
+      }, function(err) {
+        notify.error(err);
+      }));
     });
     _this.data.NoteCategory1IdCvm.selectedValue.subscribe(function(selectedValue) {
       _this.data.NoteCategory2IdCvm.setList([]);
@@ -208,18 +203,14 @@ define('src/account/default/notes.vm', [
       dataservice.maincore.notecategory2.read({
         id: selectedValue,
         link: 'category1id',
-      }, null, function(err, resp) {
-        utils.safeCallback(err, function() {
-          if (_this.data.NoteCategory1IdCvm.selectedValue() === selectedValue) {
-            // make sure selectedValue hasn't changed
-            _this.data.NoteCategory2IdCvm.setList(resp.Value);
-          }
-        }, function(err) {
-          if (err) {
-            notify.notify('error', err.Message);
-          }
-        });
-      });
+      }, null, utils.safeCallback(null, function(err, resp) {
+        // make sure selectedValue hasn't changed
+        if (_this.data.NoteCategory1IdCvm.selectedValue() === selectedValue) {
+          _this.data.NoteCategory2IdCvm.setList(resp.Value);
+        }
+      }, function(err) {
+        notify.error(err);
+      }));
     });
   }
   utils.inherits(NotesViewModel, BaseViewModel);
@@ -231,26 +222,37 @@ define('src/account/default/notes.vm', [
     load_notes(_this.id, _this.notesGvm, join.add());
     createNote(_this.data, join.add());
   };
+  NotesViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (!_this.note._saved) {
+      msg = 'An an account note has not been entered.';
+    } else if (!_this.data.isClean() || !_this.note.isClean()) {
+      msg = 'Pending changes for the current note need to be saved.';
+    }
+    return msg;
+  };
 
   function createNote(ukovData, cb) {
     var model = ukovData.getValue();
+    // set default note categories
+    model.NoteCategory1Id = 1; // Master Access
+    model.NoteCategory2Id = 1; // General Open
     dataservice.maincore.notes.save({
       data: model,
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        ukovData.setVal(resp.Value);
-        ukovData.markClean(resp.Value);
-      }, cb);
-    });
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      ukovData.setValue(resp.Value);
+      ukovData.markClean(resp.Value);
+    }));
   }
 
   function appendNote(note, ukovData, cb) {
     if (!ukovData.isValid()) {
-      notify.notify('warn', ukovData.errMsg(), 7);
+      notify.warn(ukovData.errMsg(), null, 7);
       return cb(ukovData.errMsg());
     }
     if (!note.isValid()) {
-      notify.notify('warn', note.errMsg(), 7);
+      notify.warn(note.errMsg(), null, 7);
       return cb(note.errMsg());
     }
 
@@ -262,21 +264,23 @@ define('src/account/default/notes.vm', [
 
     dataservice.maincore.notes.save({
       data: model,
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        ukovData.setVal(resp.Value);
-        ukovData.markClean(resp.Value);
-      }, cb);
-    });
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      note._saved = true; // mark the note as being saved (used in `closeMsg`)
+      ukovData.setValue(resp.Value);
+      ukovData.markClean(resp.Value);
+    }));
   }
 
   function load_departments(cvm, cb) {
-    dataservice.maincore.departments.read({}, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        cvm.setList(resp.Value);
+    dataservice.maincore.departments.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      cvm.setList(resp.Value);
+      // try to select Data Entry
+      cvm.selectedValue('DENTRY');
+      // select the first if nothing is selected
+      if (!cvm.selectedValue()) {
         cvm.selectItem(cvm.list()[0]);
-      }, cb);
-    });
+      }
+    }));
   }
 
   function load_notes(id, gvm, cb) {
@@ -284,11 +288,9 @@ define('src/account/default/notes.vm', [
     dataservice.maincore.notes.read({
       id: id,
       link: 'cmfid',
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        gvm.list(resp.Value || []);
-      }, cb);
-    });
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      gvm.list(resp.Value || []);
+    }));
   }
 
 

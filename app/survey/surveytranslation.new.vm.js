@@ -51,10 +51,7 @@ define('src/survey/surveytranslation.new.vm', [
     // events
     //
     _this.clickCancel = function() {
-      if (_this.cmdAdd.busy()) {
-        return;
-      }
-      _this.layer.close();
+      closeLayer(_this);
     };
     _this.cmdAdd = ko.command(function(cb) {
       var localizationCode = _this.stData.LocalizationCode;
@@ -64,16 +61,17 @@ define('src/survey/surveytranslation.new.vm', [
       }
       _this.stData.update();
       if (!_this.stData.isValid()) {
-        notify.notify('warn', _this.stData.errMsg(), 7);
+        notify.warn(_this.stData.errMsg(), null, 7);
         return cb();
       }
       dataservice.survey.surveyTranslations.save({
         data: _this.stData.model,
       }, null, function(err, resp) {
         if (err) {
-          notify.notify('error', err.Message);
+          notify.error(err);
         } else {
-          _this.layer.close(resp.Value);
+          _this.layerResult = resp.Value;
+          closeLayer(_this);
         }
         cb();
       });
@@ -82,7 +80,25 @@ define('src/survey/surveytranslation.new.vm', [
   utils.inherits(NewSurveyTranslationViewModel, BaseViewModel);
   NewSurveyTranslationViewModel.prototype.viewTmpl = 'tmpl-surveytranslation_new';
   NewSurveyTranslationViewModel.prototype.width = 300;
-  NewSurveyTranslationViewModel.prototype.height = 250;
+  NewSurveyTranslationViewModel.prototype.height = 'auto';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  NewSurveyTranslationViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult];
+  };
+  NewSurveyTranslationViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdAdd.busy() && !_this.layerResult) {
+      msg = 'Please wait for add to finish.';
+    }
+    return msg;
+  };
 
   NewSurveyTranslationViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
     var _this = this;

@@ -1,0 +1,4 @@
+div(class="acct-item acct-clist-emcontacts",data-bind="toggle:{'may-reload':mayReload}")
+  div(data-bind="template:{name:emcontactsVm.viewTmpl,data:emcontactsVm}")
+
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")

@@ -1,8 +1,10 @@
 define('src/u-kov/validators', [
   'src/core/strings',
+  'src/core/utils',
   'moment'
 ], function(
   strings,
+  utils,
   moment
 ) {
   "use strict";
@@ -28,7 +30,7 @@ define('src/u-kov/validators', [
     passwordRegex = /^(?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])\S+$/,
     ssnExactRegx = /^(?!000)(?!666)[0-8]\d{2}[- ](?!00)\d{2}[- ](?!0000)\d{4}$/,
 
-    relaxedEmailRegx = /^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+(?:\.[A-Z0-9.-]+)?\b$/i,
+    relaxedEmailRegx = /^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}\b$/i,
     zipRegx = /^[0-9]{5}$/;
 
   validators.isString = function(message) {
@@ -77,17 +79,6 @@ define('src/u-kov/validators', [
       }
     };
   };
-  // validators.isDate = function(message) {
-  // 	message = message || notDate;
-  // 	return getDateErrMsg(val/*, model*/) {
-  // 		if (val == null) {
-  // 			return;
-  // 		}
-  // 		if (true) { //@TODO:
-  // 			return message;
-  // 		}
-  // 	};
-  // };
 
   validators.isInRange = function(min, max, message) {
     message = message || notInRange;
@@ -138,7 +129,7 @@ define('src/u-kov/validators', [
   validators.isRequired = function(message) {
     message = message || valRequired;
     return function(val /*, model*/ ) {
-      if (!val && val !== 0) {
+      if (!val && val !== 0 && val !== false) {
         return message;
       }
     };
@@ -178,23 +169,19 @@ define('src/u-kov/validators', [
       return moment.utc();
     }
   };
-  validators.minAge = function(format, isLocal, min, message) {
+  validators.minAge = function(isLocal, min, message) {
     message = message || minAgeMsg;
     return function(bday /*, model*/ ) {
       if (bday == null) {
         return;
       }
-
-      //parse bday
-      if (isLocal) {
-        bday = moment(bday, format);
-      } else {
-        bday = moment.utc(bday, format);
+      if (!utils.isDate(bday)) {
+        return new Error('invalid date');
       }
 
       // get `now`, move back N years, and the person's birthday is all day
       var cutOffDay = validators.now(isLocal).subtract('years', min).endOf('day');
-      if (bday.isAfter(cutOffDay)) {
+      if (cutOffDay.isBefore(bday)) {
         return strings.format(message, min);
       }
     };

@@ -5,9 +5,8 @@ define('src/core/utils', [
 ) {
   "use strict";
 
-  function no_op() {}
-
-  return {
+  var utils = {
+    noop: function() {},
 
     inherits: function(ctor, superCtor) {
       ctor.super_ = superCtor;
@@ -21,27 +20,44 @@ define('src/core/utils', [
       });
     },
 
-    safeCallback: function(err, action, cb) {
-      cb = cb || no_op;
-      if (err) {
-        return cb(err);
+    safeCallback: function(cb, successFn, errorFn, allArgsOnErr) {
+      if (!utils.isFunc(cb)) {
+        cb = utils.noop;
       }
-      try {
-        action();
-      } catch (ex) {
-        err = {
-          Message: ex.message
-        };
-      } finally {
-        cb(err);
+      if (!utils.isFunc(successFn)) {
+        throw new Error('successFn must be a function');
       }
+      if (errorFn && !utils.isFunc(errorFn)) {
+        throw new Error('errorFn must be a function or falsey');
+      }
+      // return a function to be called when the async operation is complete
+      return function(err, resp, ctx) {
+        try {
+          if (err && errorFn) {
+            if (allArgsOnErr) {
+              errorFn(err, resp, ctx);
+            } else {
+              errorFn(err);
+            }
+          } else {
+            successFn(err, resp, ctx);
+          }
+        } catch (ex) {
+          console.error(ex.stack);
+          err = {
+            Message: ex.stack,
+          };
+        } finally {
+          cb(err, resp);
+        }
+      };
     },
 
     clone: function(value) {
       if (value == null) {
         return value;
       } else {
-        return JSON.parse(JSON.stringify(value, jsonhelpers.replacer), jsonhelpers.reviver);
+        return jsonhelpers.parse(jsonhelpers.stringify(value));
       }
     },
 
@@ -54,6 +70,22 @@ define('src/core/utils', [
     isNum: function(obj) {
       return typeof(obj) === 'number' || (obj instanceof Number);
     },
+    isDate: function(obj) {
+      return (obj instanceof Date);
+    },
+    isObject: function(obj) {
+      return typeof(obj) === 'object' || (obj instanceof Object);
+    },
+
+    // actually sets if null or undefined...
+    setIfNull: function(val, propName, defaultValue) {
+      if (val[propName] == null) {
+        val[propName] = defaultValue;
+      }
+    },
 
   };
+  utils.no_op = utils.noop; // only for backwards compatibiltiy
+
+  return utils;
 });

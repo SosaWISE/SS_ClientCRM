@@ -1,65 +1,22 @@
 define('mock/dataservices/qualify.mock', [
-  'src/core/mockery',
   'src/dataservice',
-  'src/core/utils',
+  'src/core/mockery',
 ], function(
-  mockery,
   dataservice,
-  utils
+  mockery
 ) {
   "use strict";
 
   function mock(settings) {
-    function clone(value) {
-      return JSON.parse(JSON.stringify(value));
-    }
-
     function send(code, value, setter, cb, timeout) {
-      var err, result;
-      if (value) {
-        value = clone(value);
-      }
-
-      result = {
-        Code: code,
-        Message: code ? ('Error Code ' + code) : 'Success',
-        Value: value,
-      };
-
-      setTimeout(function() {
-        if (!err && result && utils.isFunc(setter)) {
-          setter(result.Value);
-        }
-        cb(err, result);
-      }, timeout || settings.timeout);
+      mockery.send(code, value, setter, cb, timeout || settings.timeout);
     }
 
-    // function filterListBy(list, propName, id) {
-    //   return list.filter(function(item) {
-    //     return item[propName] === id;
-    //   });
-    // }
-
-    function findSingleBy(list, propName, id) {
-      return list.filter(function(item) {
-        return item[propName] === id;
-      })[0];
-    }
-
-    function findSingleOrAll(list, propName, id) {
-      var result;
-      if (id > 0 || (typeof(id) === 'string' && id.length)) {
-        result = findSingleBy(list, propName, id);
-      } else {
-        result = list;
-      }
-      return result;
-    }
     dataservice.qualify.salesrep.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(salesreps, 'CompanyID', id);
+          result = mockery.findSingleOrAll(salesreps, 'CompanyID', id);
           break;
       }
       send(0, result, setter, cb);
@@ -72,7 +29,7 @@ define('mock/dataservices/qualify.mock', [
         AddressID: '@INC(addresss)',
         DealerId: data.DealerId,
         StreetAddress: (data.StreetAddress || '').toUpperCase(),
-        StreetAddress2: (data.StreetAddress2 || '').toUpperCase(),
+        StreetAddress2: data.StreetAddress2 ? data.StreetAddress2.toUpperCase() : null,
         City: data.City || 'Orem',
         StateId: data.State || 'UT',
         PostalCode: data.PostalCode,
@@ -84,7 +41,8 @@ define('mock/dataservices/qualify.mock', [
         SalesRepId: data.SalesRepId,
         SeasonId: data.SeasonId,
         TeamLocationId: data.TeamLocationId,
-        TimeZoneId: data.TimeZoneId || 1,
+        TimeZoneId: data.TimeZoneId || 8,
+        TimeZone: data.TimeZone || 'TimeZoneGoesHere',
 
         // IsActive: false,
         // ModifiedOn: '0001-01-01T00:00:00',
@@ -101,13 +59,13 @@ define('mock/dataservices/qualify.mock', [
         // // CountryId
         // // AddressTypeId
         // PlusFour: data.PlusFour || '1234',
-        // StreetNumber: data.StreetNumber || '123',
-        // StreetName: data.StreetName || 'Street Name',
-        // StreetType: data.StreetType || 'RD',
-        // PreDirectional: data.PreDirectional || 'N',
-        // PostDirectional: data.PostDirectional || 'W',
-        // Extension: data.Extension,
-        // ExtensionNumber: data.ExtensionNumber,
+        StreetNumber: data.StreetNumber || '123',
+        StreetName: data.StreetName || 'Street Name',
+        StreetType: data.StreetType || 30 || 'RD',
+        PreDirectional: data.PreDirectional || 1 || 'N',
+        PostDirectional: data.PostDirectional || 4 || 'W',
+        Extension: data.Extension,
+        ExtensionNumber: data.ExtensionNumber,
         // // CountyCode
         // // Urbanization
         // // UrbanizationCode
@@ -116,9 +74,9 @@ define('mock/dataservices/qualify.mock', [
         // // Longitude
         // // CongressionalDistric
         // // DPV
-        // DPVResponse: data.DPVResponse,
+        DPVResponse: data.DPVResponse,
         // // DPVFootnote
-        // CarrierRoute: data.CarrierRoute,
+        CarrierRoute: data.CarrierRoute,
         // // IsDeleted
       }), setter, cb);
     };
@@ -160,6 +118,7 @@ define('mock/dataservices/qualify.mock', [
         CreditReportID: 1,
         LeadId: 1,
         BureauId: 1,
+        BureauName: 'BureauName',
         SeasonId: 1,
         CreditReportVendorId: 1,
         CreditReportVendorAbaraId: 1,
@@ -175,6 +134,40 @@ define('mock/dataservices/qualify.mock', [
         // IsDeleted: false,
         // CreatedBy: 'bbobbins',
         // CreatedOn: 'today',
+      }), setter, cb);
+    };
+
+    dataservice.qualify.qualifyCustomerInfos.read = function(params, setter, cb) {
+      send(0, mockery.fromTemplate({
+        LeadID: (params.link === 'lead') ? params.id : '@NUMBER(1,7)', // long
+        SeasonId: '@NUMBER(1,7)', // int
+        CustomerName: '@NAME', // string
+        CustomerEmail: '@EMAIL', // string
+        AddressID: '@NUMBER(1,7)', // long
+        StreetAddress: '@NUMBER(1000,2000) @LASTNAME Rd', // string
+        StreetAddress2: '#@NUMBER(10,100)', // string
+        City: '@LASTNAME()ton', // string
+        StateId: 'UT', // string
+        County: '@LASTNAME County', // string
+        TimeZoneId: '@NUMBER(1,9)', // int
+        TimeZoneName: 'TimeZoneName', // string
+        PostalCode: '@NUMBER(10000,99999)', // string
+        Phone: '@PHONE', // string
+        CreditReportID: '@NUMBER(1,7)', // long
+        CRStatus: 'CRStatus', // string
+        Score: '@NUMBER(500,850)', // int
+        BureauName: 'BureauName', // string
+        UserID: null, // int
+        CompanyID: 'CompanyID', // string
+        FirstName: 'FirstName', // string
+        MiddleName: 'MiddleName', // string
+        LastName: 'LastName', // string
+        PreferredName: 'PreferredName', // string
+        RepEmail: 'RepEmail', // string
+        PhoneCell: 'PhoneCell', // string
+        PhoneCellCarrierID: 'PhoneCellCarrierID', // short?
+        PhoneCellCarrier: 'PhoneCellCarrier', // string
+        SeasonName: 'SeasonName', // string
       }), setter, cb);
     };
   }
@@ -222,19 +215,21 @@ define('mock/dataservices/qualify.mock', [
     addresss;
 
   salesreps = mockery.fromTemplate({
-    'list|3-3': [
+    'list|3-3': [ //
       {
         CompanyID: '@COMPANYID',
         ImagePath: '@IMG(100,100,people)',
         FirstName: '@MNAME',
         LastName: '@LASTNAME',
-        Seasons: [
+        Seasons: [ //
           {
-            SeasonName: '@SEASON @DATE_YYYY',
+            SeasonID: '@INC(seasons)',
+            SeasonName: '@SEASON @NUMBER(2012,2015,Year)',
           },
         ],
         PhoneCell: '@PHONE',
         Email: '@EMAIL',
+        TeamLocationId: '@INC(teamLocations)',
       },
     ],
   }).list;

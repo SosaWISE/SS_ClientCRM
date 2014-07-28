@@ -1,112 +1,61 @@
 define('mock/dataservices/salessummary.mock', [
   'src/dataservice',
   'src/core/mockery',
-  'src/core/utils',
 ], function(
   dataservice,
-  mockery,
-  utils
+  mockery
 ) {
   "use strict";
 
   function mock(settings) {
-    function clone(value) {
-      return JSON.parse(JSON.stringify(value));
+    function send(code, value, setter, cb, timeout) {
+      mockery.send(code, value, setter, cb, timeout || settings.timeout);
     }
 
-    function send(value, setter, cb, timeout) {
-      var err, result;
-      if (value) {
-        value = clone(value);
-      }
-      if (false && !value) {
-        err = {
-          Code: 12345,
-          Message: 'No value',
-          Value: null,
-        };
-      } else {
-        result = {
-          Code: 0,
-          Message: 'Success',
-          Value: value,
-        };
-      }
-
-      setTimeout(function() {
-        if (!err && result && utils.isFunc(setter)) {
-          setter(result.Value);
-        }
-        cb(err, result);
-      }, timeout || settings.timeout);
-    }
-
-    // function filterListBy(list, propName, id) {
-    //   return list.filter(function(item) {
-    //     return item[propName] === id;
-    //   });
-    // }
-
-    // function findSingleBy(list, propName, id) {
-    //   return list.filter(function(item) {
-    //     return item[propName] === id;
-    //   })[0];
-    // }
-
-    // function findSingleOrAll(list, propName, id) {
-    //   var result;
-    //   if (id > 0) {
-    //     result = findSingleBy(list, propName, id);
-    //   } else {
-    //     result = list;
-    //   }
-    //   return result;
-    // }
-
-    dataservice.salessummary.pointsystems.read = function(params, setter, cb) {
+    dataservice.salessummary.pointSystems.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:
-          result = pointsystems;
+          result = pointSystems;
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
-    dataservice.salessummary.cellulartypes.read = function(params, setter, cb) {
+    dataservice.salessummary.cellularTypes.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:
-          result = cellulartypes;
+          result = cellularTypes;
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
-    dataservice.salessummary.vendoralarmcompacakges.read = function(params, setter, cb) {
+    dataservice.salessummary.vendorAlarmcomPacakges.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:
-          result = vendoralarmcompacakges;
+          result = vendorAlarmcomPacakges;
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
-    dataservice.salessummary.contractlengthsget.read = function(params, setter, cb) {
+    dataservice.salessummary.contractLengthsGet.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:
-          result = contractlengthsget;
+          result = contractLengthsGet;
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
-    dataservice.salessummary.frequentlyinstalledequipmentget.read = function(params, setter, cb) {
+    dataservice.salessummary.frequentlyInstalledEquipmentGet.read = function(params, setter, cb) {
       var result;
       switch (params.link || null) {
         case null:
-          result = frequentlyinstalledequipmentget;
+          result = frequentlyInstalledEquipmentGet;
           break;
       }
-      send(result, setter, cb);
+      send(0, result, setter, cb);
     };
   }
 
@@ -116,19 +65,33 @@ define('mock/dataservices/salessummary.mock', [
     mockery = mockery; // remove me
     // mockery.addModulusValueFunc('ASDF', [
     // ]);
+
+    mockery.addModulusValueFunc('CELLULAR_TYPE_ID', [
+      'CELLPRI',
+      'CELLSEC',
+      'CELLTRKR',
+      'NOCELL',
+    ]);
+    mockery.addModulusValueFunc('CELLULAR_TYPE_NAME', [
+      'Cell Primary',
+      'Cell Backup',
+      'Cell Tracker',
+      'No Cellular',
+    ]);
   })();
 
   // data used in mock function
-  var pointsystems,
+  var pointSystems,
     // activationfees,
     // surveytypes,
-    cellulartypes,
-    vendoralarmcompacakges,
+    cellularTypes,
+    vendorAlarmcomPacakges,
     // equipmentbypointsget,
-    contractlengthsget,
-    frequentlyinstalledequipmentget;
+    contractLengthsGet,
+    frequentlyInstalledEquipmentGet,
+    invoiceMsIsntalls;
 
-  pointsystems = [
+  pointSystems = [ //
     {
       InvoiceTemplateID: 1,
       DealerId: 5000,
@@ -141,8 +104,7 @@ define('mock/dataservices/salessummary.mock', [
       ActivationDiscountAmount: 0,
       MMRDiscountAmount: 0,
       SystemPoints: 8
-    },
-    {
+    }, {
       InvoiceTemplateID: 2,
       DealerId: 5000,
       ActivationItemId: "SETUP_FEE_99",
@@ -157,44 +119,32 @@ define('mock/dataservices/salessummary.mock', [
     }
   ];
 
-  cellulartypes = [
-    {
-      "CellularTypeID": "CELLPRI",
-      "CellularTypeName": "Cell Primary"
-    },
-    {
-      "CellularTypeID": "CELLSEC",
-      "CellularTypeName": "Cell Backup"
-    },
-    {
-      "CellularTypeID": "CELLTRKR",
-      "CellularTypeName": "Cell Tracker"
-    },
-    {
-      "CellularTypeID": "NOCELL",
-      "CellularTypeName": "No Cellular"
-    }
-  ];
+  cellularTypes = mockery.fromTemplate({
+    'list|4-4': [ //
+      {
+        CellularTypeID: '@CELLULAR_TYPE_ID',
+        CellularTypeName: '@CELLULAR_TYPE_NAME',
+      },
+    ]
+  }).list;
 
-  vendoralarmcompacakges = [
+  vendorAlarmcomPacakges = [ //
     {
       "AlarmComPackageID": "ADVINT",
       "PackageName": "Advanced Interactive",
       "DefaultValue": false
-    },
-    {
+    }, {
       "AlarmComPackageID": "BSCINT",
       "PackageName": "Basic Interactive",
       "DefaultValue": false
-    },
-    {
+    }, {
       "AlarmComPackageID": "WRLFWN",
       "PackageName": "Wireless Forwarding",
       "DefaultValue": true
     }
   ];
 
-  contractlengthsget = [
+  contractLengthsGet = [ //
     {
       "ContractTemplateID": 1,
       "ContractName": "Full Contract 3 Years",
@@ -208,8 +158,7 @@ define('mock/dataservices/salessummary.mock', [
       "CreatedOn": "2014-01-08T14:03:02.9517605-07:00",
       "CreatedBy": "",
       "DEX_ROW_TS": "1900-01-01T00:00:00"
-    },
-    {
+    }, {
       "ContractTemplateID": 2,
       "ContractName": "Full Contract 5 Years",
       "ContractLength": 60,
@@ -225,7 +174,7 @@ define('mock/dataservices/salessummary.mock', [
     }
   ];
 
-  frequentlyinstalledequipmentget = [
+  frequentlyInstalledEquipmentGet = [ //
     {
       "ItemID": "EQPM_INVT126",
       "ItemTypeId": "EQPM_INVT",
@@ -239,8 +188,7 @@ define('mock/dataservices/salessummary.mock', [
       "IsCatalogItem": true,
       "IsActive": true,
       "IsDeleted": false
-    },
-    {
+    }, {
       "ItemID": "EQPM_INVT128",
       "ItemTypeId": "EQPM_INVT",
       "TaxOptionId": "TAX",
@@ -253,8 +201,7 @@ define('mock/dataservices/salessummary.mock', [
       "IsCatalogItem": true,
       "IsActive": true,
       "IsDeleted": false
-    },
-    {
+    }, {
       "ItemID": "EQPM_INVT131",
       "ItemTypeId": "EQPM_INVT",
       "TaxOptionId": "TAX",
@@ -267,8 +214,7 @@ define('mock/dataservices/salessummary.mock', [
       "IsCatalogItem": true,
       "IsActive": true,
       "IsDeleted": false
-    },
-    {
+    }, {
       "ItemID": "EQPM_INVT132",
       "ItemTypeId": "EQPM_INVT",
       "TaxOptionId": "TAX",
@@ -281,8 +227,7 @@ define('mock/dataservices/salessummary.mock', [
       "IsCatalogItem": true,
       "IsActive": true,
       "IsDeleted": false
-    },
-    {
+    }, {
       "ItemID": "EQPM_INVT133",
       "ItemTypeId": "EQPM_INVT",
       "TaxOptionId": "TAX",
@@ -295,8 +240,7 @@ define('mock/dataservices/salessummary.mock', [
       "IsCatalogItem": true,
       "IsActive": true,
       "IsDeleted": false
-    },
-    {
+    }, {
       "ItemID": "EQPM_INVT139",
       "ItemTypeId": "EQPM_INVT",
       "TaxOptionId": "TAX",
@@ -309,6 +253,23 @@ define('mock/dataservices/salessummary.mock', [
       "IsCatalogItem": true,
       "IsActive": true,
       "IsDeleted": false
+    }
+  ];
+
+  invoiceMsIsntalls = [ //
+    {
+      "InvoiceID": 10010064,
+      "AccountId": 100212,
+      "ActivationFeeItemId": "SETUP_FEE_199",
+      "ActivationFee": 199,
+      "ActivationFeeActual": 199,
+      "MonthlyMonitoringRateItemId": "MON_CONT_5000",
+      "MonthlyMonitoringRateActual": 39.95,
+      "MonthlyMonitoringRate": 39.95,
+      "AlarmComPackageId": "WRLFWN",
+      "Over3Months": false,
+      "CellularTypeId": null,
+      "ContractTemplateId": 1
     }
   ];
 

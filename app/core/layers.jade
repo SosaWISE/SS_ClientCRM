@@ -2,12 +2,15 @@ div(data-bind="preventFocusUnderLayer:1")
   <!-- ko foreach:showLayers -->
   div(class="layer-table")
     div(class="layer-cell")
-      div(class="layer", data-bind="width:width,height:height")
-        div(class="content", data-bind="template:{name:vm().viewTmpl,data:vm}")
+      div(class="layer", data-bind="width:width,height:height,css:{autoflow:vm().autoflow}")
+        //- div(class="header")
+        //-   div(class="handle drag",data-bind="mover:2")
+        a(class="close",data-bind="click:close")
+        div(class="content", data-bind="mover:1,template:{name:vm().viewTmpl,data:vm}")
   <!-- /ko -->
   <!-- ko foreach:alertLayers -->
   div(class="layer-table")
     div(class="layer-cell")
       div(class="layer", data-bind="width:width,height:height")
-        div(class="content", data-bind="template:{name:vm().viewTmpl,data:vm}")
+        div(class="content", data-bind="mover:1,template:{name:vm().viewTmpl,data:vm}")
   <!-- /ko -->

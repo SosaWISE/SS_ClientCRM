@@ -5,6 +5,12 @@ define('slick', [
   '/tparty/slick.core',
   '/tparty/slick.grid',
   '/tparty/slick.rowselectionmodel',
+  '/tparty/slick.cellrangedecorator',
+  '/tparty/slick.cellrangeselector',
+  '/tparty/slick.cellselectionmodel',
+  '/tparty/slick.editors',
+  '/tparty/slick.formatters',
+  '/tparty/jquery-ui-1.10.4.custom',
 ], function() {
   "use strict";
   return window.Slick;

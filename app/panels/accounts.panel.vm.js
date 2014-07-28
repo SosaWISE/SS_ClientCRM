@@ -1,10 +1,14 @@
 define('src/panels/accounts.panel.vm', [
+  'ko',
   'src/core/helpers',
+  'src/core/strings',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  ko,
   helpers,
+  strings,
   notify,
   utils,
   ControllerViewModel
@@ -40,7 +44,7 @@ define('src/panels/accounts.panel.vm', [
     // events
     //
     _this.clickSearch = function() {
-      _this.selectChild(_this.searchVM);
+      _this.selectChild(_this.searchVm);
     };
     _this.clickItem = function(vm) {
       _this.selectChild(vm);
@@ -51,12 +55,9 @@ define('src/panels/accounts.panel.vm', [
       // _this.selectChild(vm);
     };
     _this.clickNew = function() {
-      newCount++;
-      var vm = new deps.ChecklistViewModel({
-        pcontroller: _this,
-        id: 'qualify' + newCount,
-        title: 'Qualify ' + newCount,
-      });
+      newCount--; // negative number are unsaved leads
+      // the negative number adds a dash before Qualify which seems to work
+      var vm = createChecklistVM(_this, newCount, 'Qualify' + newCount);
       _this.list.push(vm);
       _this.selectChild(vm);
     };
@@ -69,12 +70,13 @@ define('src/panels/accounts.panel.vm', [
       cb = join.add();
 
     ensureDeps(function() {
-      _this.searchVM = new deps.AccountSearchViewModel({
+      _this.searchVm = new deps.AccountSearchViewModel({
+        routeName: 'accounts',
         pcontroller: _this,
         id: 'search',
         title: 'Search',
       });
-      _this.defaultChild = _this.searchVM;
+      _this.defaultChild = _this.searchVm;
 
       // ////////////////TESTING//////////////////////////////////
       // _this.list([
@@ -102,17 +104,21 @@ define('src/panels/accounts.panel.vm', [
   AccountsPanelViewModel.prototype.findChild = function(routeData) {
     var _this = this,
       result, id;
-    if (routeData[_this.searchVM.routePart] === _this.searchVM.id) {
-      result = _this.searchVM;
+    if (routeData[_this.searchVm.routePart] === _this.searchVm.id) {
+      result = _this.searchVm;
     } else {
       result = AccountsPanelViewModel.super_.prototype.findChild.call(_this, routeData);
       if (!result) {
         // get child id
-        id = routeData[_this.getChildRoutePart()];
+        id = routeData[_this.getChildRoutePart(routeData.route)];
         /* jshint eqeqeq:false */
-        if (typeof(id) !== 'undefined' && parseInt(id, 10) == id) {
-          // create child and add to list
-          result = createMasterAccountVM(_this, parseInt(id, 10), id + '');
+        if (typeof(id) !== 'undefined' && parseInt(id, 10) == id && id > 0) {
+          if (routeData.route === 'leads') {
+            // create child and add to list
+            result = createChecklistVM(_this, parseInt(id, 10), strings.format('{0}(Lead)', id));
+          } else {
+            result = createMasterAccountVM(_this, parseInt(id, 10), id + '');
+          }
           _this.list.push(result);
         }
       }
@@ -122,10 +128,20 @@ define('src/panels/accounts.panel.vm', [
 
   function createMasterAccountVM(pcontroller, id, name) {
     return new deps.MasterAccountViewModel({
+      routeName: 'accounts',
       pcontroller: pcontroller,
       id: id,
       title: name,
       name: name,
+    });
+  }
+
+  function createChecklistVM(pcontroller, id, name) {
+    return new deps.ChecklistViewModel({
+      routeName: 'leads',
+      pcontroller: pcontroller,
+      id: id,
+      title: name,
     });
   }
 

@@ -1,0 +1,6 @@
+div(class="dialog")
+  h2(class="title",data-bind="text:title")
+  p(class="",data-bind="text:msg")
+  ul(class="actions line-top",data-bind="foreach:actions")
+    li
+      a(class="btn small",tabindex="0",data-bind="text:name,cmd:action")

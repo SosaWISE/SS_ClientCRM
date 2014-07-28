@@ -28,14 +28,28 @@ define('src/config', [
 
   //
   // Property Defaults (overrideable)
+  // ONLY CONFIG DEFAULTS GO IN THIS FILE
+  // ALL OTHER CONFIG SETTINGS GO IN webconfig.js
   //
   set('useMocks', false);
+  set('canMockLogin', true); // only relevant if `useMocks` is true
+  //
   set('token', 'SSE_CMS_CORS');
-  set('serviceDomain', 'sse.services.cmscors');
+  // set('serviceDomain', 'sse.services.cmscors'); // every environment should have this set in webconfig.js
+  set('logErrors', true);
   set('titlePrefix', '');
-  set('titlePostfix', '| CRM');
+  set('titlePostfix', 'CRM');
   set('leadSourceId', 1);
   set('leadDispositionId', 9);
+  set('apiTimeout', 1000 * 30);
+  set('joinerTimeout', 1000 * 60);
+  set('pingInterval', 1000 * 60 * 29); // One minute less than the session timeout (30 min).
+
+  //
+  set('accounts', {
+    hideNav: false,
+    hideNotes: false,
+  });
 
   return config;
 });

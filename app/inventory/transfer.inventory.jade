@@ -1,0 +1,21 @@
+ul(class="edit-form")
+  li(style="margin: 10px;")
+    div(class="header_left")
+      ul(class="header_ul" style="color: white;")
+        li
+          span(class="label") Transfer to Location Type
+          div(data-bind="cvm:data.LocationTypeCvm")        
+        li
+          span(class="label") Transfer To Location
+          div(data-bind="cvm:data.TransferLocationCvm")         
+        li
+          span(class="label") Enter Barcode           
+          input(type="text" placeholder="" data-bind="ukov:data.productBarcodeID, value:data.productBarcodeID,valueUpdate:'afterkeydown',select:focusFirst, event: { keydown: processBarcode}")
+        li
+          span(class="label") Previous Location
+          span(class="label" data-bind="text: prevLocation") XXXXX
+        li
+          span(class="label") New Location
+          span(class="label" data-bind="text: newLocation") XXXXX
+  li
+    div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

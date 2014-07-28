@@ -1,0 +1,18 @@
+ul(class="edit-form")
+	li
+		span(class="label") Monitronics Ticket#
+		input(type="text" data-bind="ukov:data.MoniNumber, value:data.MoniNumber,valueUpdate:'keyup'")
+	li
+		span(class="label") Not Applicable
+		input(type="checkbox" style="margin-left: 0px;")
+		hr
+	li
+		div(style="height: 5px;")
+		span(class="label") Ticket Type
+		div(data-bind="cvm:data.ticketTypeCvm")
+	li
+		span(class="label") General Note
+		textarea(rows="5" data-bind="ukov:data.Notes, value:data.Notes,valueUpdate:'keyup'")
+div(class="actions")
+	span(class="btn-bg", tabindex="0" data-bind="cmd: cmdCreateTicket") Create Service Ticket
+	span(class="btn-bg", tabindex="0", data-bind="cmd:clickClose") Cancel

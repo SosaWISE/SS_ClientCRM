@@ -1,10 +1,12 @@
 define('src/core/layers.vm', [
   'ko',
+  'src/core/arrays',
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
 ], function(
   ko,
+  arrays,
   notify,
   utils,
   BaseViewModel
@@ -107,9 +109,15 @@ define('src/core/layers.vm', [
           subscription = null;
         }
         var topLayer = layersVm.getTopLayer(),
-          index = layers.indexOf(layer);
+          index = layers.indexOf(layer),
+          results, msg, vm = layer.vm();
 
-        //@TODO: check to see if the layer can be closed
+        // check if the layer vm can be closed
+        if (vm && (msg = vm.closeMsg())) {
+          notify.warn(msg, null, 7);
+          return;
+        }
+
         if (index > -1) {
           layers.splice(index, 1);
         }
@@ -117,7 +125,12 @@ define('src/core/layers.vm', [
           prevCtx.dispose();
         }
         if (utils.isFunc(onClose)) {
-          onClose.apply(null, ko.utils.makeArray(arguments));
+          results = utils.isFunc(vm.getResults) ? vm.getResults() : [];
+          if (results.length > 1) {
+            onClose.apply(null, results);
+          } else {
+            onClose.call(null, results[0]);
+          }
         }
 
         //
@@ -143,7 +156,7 @@ define('src/core/layers.vm', [
 
     subscription = layer.vm.subscribe(function(vm) {
       var ctx = createContext(vm, routeData || layersVm.controller.getRouteData(), null, function() {
-        console.log('activated layer');
+        // console.log('activated layer');
       });
 
       if (prevCtx) {

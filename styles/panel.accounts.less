@@ -1,3 +1,15 @@
+@account-bg: @site-purple;
+
+
+.display-form {
+  .label {
+    width: 165px;
+    display: inline-block;
+    text-align: right;
+    margin-right: 10px;
+  }
+}
+
 .toggle-btn {
   font-family: entypo;
   font-size: 28;
@@ -39,6 +51,12 @@
   }
   .email:not(:empty):before {
     content: "E: ";
+  }
+  .dob:not(:empty):before {
+    content: "DOB: ";
+  }
+  .ssn:not(:empty):before {
+    content: "SSN: ";
   }
   div {
     // display: block;
@@ -104,6 +122,7 @@ table.fh-wrap {
       overflow:hidden;
       position:relative;
       height:100%;
+      min-height: 100px;
 
       > div.tab {
         overflow: hidden;
@@ -144,8 +163,6 @@ table.fh-wrap {
   left: 0;
 }
 
-@account-bg: @site-blue;
-
 
 .accounts {
   @tranSec: .25s;
@@ -175,8 +192,7 @@ table.fh-wrap {
     margin-bottom: 20px;
 
     padding: 10px;
-    background: white;
-    color: black;
+    color: white;
     .border-radius(5px);
     .box-shadow(0px 0px 4px rgba(0, 0, 0, 0.6));
 
@@ -192,6 +208,7 @@ table.fh-wrap {
     }
     &.good {
       background-color: yellow;
+      color: #707070;
     }
     &.pass {
       background-color: orange;
@@ -230,117 +247,7 @@ table.fh-wrap {
     }
   }
 
-  .account-info {
-    padding: 0px 20px;
-    // overflow: auto;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    .transition(left @tranSec);
-    &.show-editor {
-      left: 300px;
-    }
-
-    background-color: #fff;
-    // color: #6c6c6c;
-
-    .details {
-      overflow: auto;
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      bottom: 300px;
-      left: 0;
-      .transition(right @tranSec, bottom @tranSec;);
-      &.hide-notes {
-        bottom: 20px;
-      }
-      &.show-reps {
-        right: 300px;
-      }
-    }
-
-    .notes {
-      position: absolute;
-      // top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      height: 300px;
-      .transition(bottom @tranSec;);
-      &.hide-notes {
-        bottom: -280px;
-      }
-
-      .title {
-        margin-left: 20px;
-        cursor: pointer;
-      }
-      .contents {
-        overflow-y: auto;
-        position: absolute;
-        left: 5px;
-        top: 20px;
-        right: 5px;
-        bottom: 5px;
-      }
-    }
-
-    .rep {
-      position: absolute;
-      top: 0;
-      right: -280px;
-      bottom: 300px;
-      // left: 0;
-      width: 300px;
-      .transition(right @tranSec, bottom @tranSec;);
-      &.show-reps {
-        right: 0;
-      }
-      &.hide-notes {
-        bottom: 20px;
-      }
-
-      // color: #fff;
-
-      .vertical-title {
-        .transform(rotate(90deg));
-        .transform-origin(0px 100% 0px);
-        font-size: 1.1em;
-        font-weight: 500;
-        span {
-          background-color: @account-bg;
-          padding-left: 5px;
-          padding-right: 5px;
-          text-transform: uppercase;
-          .border-radius(0px 0px 5px 5px);
-        }
-      }
-      .title {
-        // margin-left: 20px;
-        cursor: pointer;
-      }
-      .contents {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 20px;
-        width: 280px;
-        // height: 100%;
-        border-left: solid 2px @account-bg;
-        background-color: @account-bg;
-      }
-    }
-
-    div.actions {
-      margin-top: 20px;
-    }
-  }
-
-  .acct-qualify {
+  .acct-checklist {
 
     > .p-nav {
       background-color: white;
@@ -383,7 +290,7 @@ table.fh-wrap {
     .addr-validate {
       .addr-form-wrap {
         width:100%;
-        overflow-x:hidden;
+        // overflow-x: hidden; // for some reason in Chrome this also hides y
       }
       .addr-form {
         width:530px;
@@ -408,7 +315,7 @@ table.fh-wrap {
 
     .runcredit-form {
       position:relative;
-      overflow:hidden;
+      // overflow:hidden;
 
       // transition: height 0.25s;
       // height: 265px;
@@ -463,23 +370,15 @@ table.fh-wrap {
             height: 80px;
           }
         }
+      }
 
-        .credit-score {
-          width: 100%;
-          text-align: center;
-          font-weight: 500;
-          padding: 5px;
+      .transition(opacity .25s;);
 
-          > span {
-            padding: 5px 10px 5px 10px;
-            margin-left: auto;
-            margin-right: auto;
-            .border-radius(5px);
-          }
-
-          .excellent {
-            background-color: green;
-          }
+      &:not(.disabled) {
+        cursor: pointer;
+        opacity: 0.9;
+        &:hover {
+          opacity: 1;
         }
       }
 
@@ -493,7 +392,6 @@ table.fh-wrap {
         display:table;
         height: 150px;
         text-align: center;
-        .transition(opacity .25s;);
         opacity: 0.2;
         &:not(.disabled) {
           opacity: 0.7;
@@ -509,7 +407,7 @@ table.fh-wrap {
             text-align: center;
             margin-left: 5px;
           }
-          cursor: pointer;
+          // cursor: pointer;
         }
         .title {
           display:table-cell;
@@ -522,6 +420,13 @@ table.fh-wrap {
           display: none;
         }
       }
+    }
+  }
+  .load-err {
+    > .col {
+      text-align: center;
+      padding-top: 30px;
+      font-size: 1.2em;
     }
   }
 
@@ -610,7 +515,7 @@ table.fh-wrap {
         top: 0; right: 0; bottom: 0; left: 0;
         overflow: hidden;
         > .contents {
-          width: @navWidth + 15px; // hide scroll bar
+          width: @navWidth + 17px; // hide scroll bar
           overflow-y: scroll; // but still allow scrolling
           overflow-x: hidden;
           height: 100%;
@@ -812,20 +717,14 @@ table.fh-wrap {
         }
       }
     }
+    &.load-err {
+      > .p-module {
+        left: 0px;
+        bottom: 0px;
 
-    .credit-score {
-      width: 100%;
-      text-align: center;
-      font-weight: 500;
-
-      padding: 5px 10px 5px 10px;
-      margin-left: auto;
-      margin-right: auto;
-      .border-radius(5px);
-      .box-shadow(0px 0px 4px rgba(0, 0, 0, 0.6));
-
-      &.excellent {
-        background-color: green;
+        text-align: center;
+        padding-top: 30px;
+        font-size: 1.2em;
       }
     }
   }
@@ -845,74 +744,219 @@ table.fh-wrap {
       margin-left: 5px;
     }
   }
-  ul {
-    list-style: none;
+  ul.edit-form > li {
+    display: inline-block;
+    vertical-align: top;
+    height: 50px;
+    width: 24.5%;
+    margin: 0 0.5% 10px 0;
     padding: 0;
-    margin: 0;
-    border: 0 solid transparent;
-    li {
-      width: 16%;
-      min-width: 85px;
-      list-style: none;
-      float: left;
-      margin: 0 4px 10px 0;
-      padding: 0;
+    white-space: nowrap;
+  }
+
+  .spinner-wrap {
+    // match .slickgrid margins
+    top:10px;right:10px;bottom:10px;left:10px;
+  }
+  .grid-pager {
+    position: absolute;
+    bottom: -5px;
+
+    > ul {
+      margin-left: 15px;
+      white-space: nowrap;
+
+      > li {
+        .user-select(none);
+        width: auto;
+        display: inline-block;
+        padding: 0px 3px;
+        span.label {
+          cursor: pointer;
+          font-weight: 500;
+          display: inline-block;
+          min-width: 20px;
+          &:hover {
+            text-decoration: underline;
+          }
+          &.disabled ,
+          &.notEnabled {
+            .opacity(0.9);
+            cursor: default;
+            text-decoration: none;
+          }
+          &.active {
+            font-weight: 100;
+            font-size: 1.3em;
+            cursor: default;
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+
+    // input,
+    // .label {
+    //   display: inline;
+    // }
+  }
+  // .grid-wrap {
+  //   position:relative;
+  //   height: 100%;
+  //   margin-top: 0px;
+  // }
+}
+
+
+.acct-item {
+  position: absolute;
+  left:0px;top:0px;right:0px;bottom:0px;
+  padding: 0px 10px;
+
+  overflow: auto;
+}
+
+.acct-summary {
+  .slickgrid {
+    bottom: 10px;
+  }
+}
+.acct-equipment {
+  .slickgrid {
+    bottom: 10px;
+  }
+}
+
+.acct-clist-qualify {
+  @tranSec: .25s;
+
+  .transition(left @tranSec);
+  &.show-editor {
+    left: 300px;
+  }
+
+  // color: #6c6c6c;
+
+  .details {
+    overflow: auto;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    bottom: 300px;
+    left: 0;
+    .transition(right @tranSec, bottom @tranSec;);
+    &.hide-notes {
+      bottom: 20px;
+    }
+    &.show-reps {
+      right: 300px;
+    }
+  }
+
+  .notes {
+    position: absolute;
+    // top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 300px;
+    .transition(bottom @tranSec;);
+    &.hide-notes {
+      bottom: -280px;
+    }
+
+    .title {
+      margin-left: 20px;
+      cursor: pointer;
+    }
+    .contents {
+      overflow-y: auto;
+      position: absolute;
+      left: 5px;
+      top: 20px;
+      right: 5px;
+      bottom: 5px;
+    }
+  }
+
+  .rep {
+    position: absolute;
+    top: 0;
+    right: -280px;
+    bottom: 300px;
+    // left: 0;
+    width: 300px;
+    .transition(right @tranSec, bottom @tranSec;);
+    &.show-reps {
+      right: 0;
+    }
+    &.hide-notes {
+      bottom: 20px;
+    }
+
+    // color: #fff;
+
+    .vertical-title {
+      .transform(rotate(90deg));
+      .transform-origin(0px 100% 0px);
+      font-size: 1.1em;
+      font-weight: 500;
+      span {
+        background-color: @account-bg;
+        padding-left: 5px;
+        padding-right: 5px;
+        text-transform: uppercase;
+        .border-radius(0px 0px 5px 5px);
+      }
+    }
+    .title {
+      // margin-left: 20px;
+      cursor: pointer;
+    }
+    .contents {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 20px;
+      width: 280px;
+      // height: 100%;
+      border-left: solid 2px @account-bg;
+      background-color: @account-bg;
+    }
+  }
+
+  div.actions {
+    margin-top: 20px;
+  }
+}
+.acct-clist-systemdetails {
+  .col {
+    padding: 0px;
+    margin-bottom: 10px
+  }
+  .display-form {
+    .label {
+      width: 130px;
     }
   }
 }
-
-
-.acct-summary {
-  position: absolute;
-  left:10px;top:0px;right:10px;bottom:0px;
-  .slickgrid {
-    bottom: 10px;
-  }
-}
-
-.acct-inventory {
-  padding: 0px 10px;
-  .slickgrid {
-    bottom: 10px;
-  }
-}
-
-.acct-emcontacteditor {
-  .edit-form.limit-width,
-  div.limit-width,
-  input[type=text].limit-width {
-    width:250px;
-    display:inline-block;
-    vertical-align:top;
-  }
-  .edit-form.right-side,
-  div.right-side,
-  input[type=text].right-side {
-    margin-left:10px;
-  }
-}
-
-.acct-systemdetails {
-  padding: 0px 10px;
-
+.acct-clist-emcontacts {
+  bottom:10px;
   .col {
     padding: 0px;
     margin-bottom: 10px
   }
 }
-
-.acct-survey {
-  padding: 0px 10px;
-
+.acct-clist-survey {
   .grid-wrap {
-    height:100px;
+    height:150px;
     position:relative;
   }
 }
 
 
-.initialpayment {
-  padding: 0px 20px;
+.acct-clist-initialpayment {
   .checkbox {
     margin-top: 30px;
   }
@@ -1019,4 +1063,73 @@ table.fh-wrap {
   div.actions {
     margin-top: 20px;
   }
+}
+
+.acct-clist-submitonline {
+  .grid-wrap {
+    height: 200px;
+    position: relative;
+  }
+}
+
+.dispatchagencys-finder {
+  .grid-wrap {
+    height: 200px;
+    // position: relative;
+    background: white;
+    color: @account-bg;
+  }
+}
+
+
+
+
+.signalhistory {
+  .missing {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 10px;
+
+    .title {
+      display: block;
+    }
+    .data {
+      border: 1px solid silver;
+      width: 200px;
+      min-height: 100px;
+      overflow-x: auto;
+    }
+  }
+  .grid-wrap {
+    height: 200px;
+    position: relative;
+  }
+}
+
+.alarmdotcom-editor {
+}
+
+
+
+.acct-ico {
+  @size: 45px * 0.4;
+  margin-top: (21px - @size)/2;
+  .mixinAcctIco(@index) {
+    background-position: -@size*@index 0;
+  }
+
+  display: inline-block;
+  background:url("/stuff/img/accttypeicons.png") no-repeat;
+  background-size: auto @size;
+  width: @size;
+  height: @size;
+  &.alrm { .mixinAcctIco(0); }
+  &.lead { .mixinAcctIco(1); }
+  &.insec { .mixinAcctIco(2); }
+  &.lflck { .mixinAcctIco(3); }
+  &.numan { .mixinAcctIco(4); }
+
+  &.pers { .mixinAcctIco(0); }
+  &.skplt { .mixinAcctIco(1); }
+  &.wnfil { .mixinAcctIco(2); }
 }

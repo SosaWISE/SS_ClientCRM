@@ -2,7 +2,7 @@ div(class="payby-eft")
   ul(class="edit-form")
     li
       span(class="label") Account Type
-      div(data-bind="template:{name:data.AccountTypeCvm.viewTmpl,data:data.AccountTypeCvm}")
+      div(data-bind="cvm:data.AccountTypeCvm")
     li
       span(class="label") Account Number
       input(type="text", placeholder="",

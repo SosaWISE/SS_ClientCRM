@@ -1,0 +1,64 @@
+div(class="equipment-editor")
+  div(data-bind="spinner:loading,spinner-rgb:'white'")
+
+  div(data-bind="if:!hasItem()&&!loading()")
+    div(class="line-top")
+      ul(class="edit-form limit-width")
+        li
+          span(class="label",data-bind="text:title")
+          input(type="text",placeholder="",data-bind="ukov:searchKey,value:searchKey,valueUpdate:'keyup',cmdEnter:cmdSearch")
+      ul(class="edit-form limit-width right-side")
+        li
+          span(class="label") &nbsp;
+          a(class="btn",tabindex="0",data-bind="cmd:cmdSearch") Search
+
+  div(data-bind="if:hasItem")
+    div(class="label",data-bind="text:data.ItemDesc")
+    div(class="line-top")
+      ul(class="edit-form limit-width")
+        li
+          span(class="label") Part #
+          span(class="label",data-bind="text:data.ItemSKU")
+      ul(class="edit-form limit-width right-side")
+        li
+          span(class="label") Barcode
+          span(class="label",data-bind="text:data.BarcodeId")
+    div(class="line-top")
+      ul(class="edit-form limit-width")
+        li
+          span(class="label") Zone
+          input(type="text",placeholder="",data-bind="ukov:data.Zone,value:data.Zone,valueUpdate:'keyup'")
+        li
+          span(class="label") Zone Type
+          div(data-bind="cvm:data.ZoneTypeCvm")
+        li
+          span(class="label") Zone Event Type
+          div(data-bind="cvm:data.AccountEventCvm")
+        li
+          span(class="label") Location
+          div(data-bind="cvm:data.EquipmentLocationCvm")
+        li
+          span(class="label") Assign To
+          div(data-bind="cvm:data.AssignToCvm")
+      ul(class="edit-form limit-width right-side")
+        li
+          span(class="label") Upgrade
+          div(data-bind="cvm:data.IsUpgradeCvm")
+        li
+          span(class="label") Upgrade Amount
+          input(type="text",placeholder="",data-bind="ukov:data.Price,likecurrencyvalue:data.Price,valueUpdate:'keyup'")
+        li
+          span(class="label") Existing Wiring
+          div(data-bind="cvm:data.IsExistingWiringCvm")
+        li
+          span(class="label") Main Panel
+          div(data-bind="cvm:data.MainPanelCvm")
+
+    div(class="line-top")
+      ul(class="actions")
+        li
+          a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+        li
+          a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
+        li
+          a(class="btn",tabindex="0",data-bind="cmd:cmdDelete") Delete

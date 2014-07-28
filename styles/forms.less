@@ -170,18 +170,25 @@
   }
 }
 
+.line-top {
+  border-top: 1px solid #fff;
+  padding-top: 5px;
+  margin-top: 5px;
+}
 .edit-form {
-  // padding: 15px 15px 10px 15px;
-
   li {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
+
+    > a {
+      display: inline-block;
+    }
   }
 
   .label {
     display: block;
     // text-transform: uppercase;
     font-weight: 500;
-    margin-bottom: 3px;
+    margin-bottom: 0px;
   }
   input[type=text],
   textarea {
@@ -205,6 +212,31 @@
     font-size: 13px;
     resize: vertical;
   }
+
+  // &.border {
+  //   input[type=text],
+  //   textarea {
+  //     border: 1px solid black;
+  //     margin: 1px 0px;
+  //   }
+  // }
+}
+
+.limit-width,
+.edit-form.limit-width,
+div.limit-width,
+input[type=text].limit-width,
+textarea.limit-width {
+  width: 250px;
+  display: inline-block;
+  vertical-align: top;
+}
+.right-side,
+.edit-form.right-side,
+div.right-side,
+input[type=text].right-side,
+textarea.right-side {
+  margin-left: 10px;
 }
 
 .editing-alert {

@@ -1,0 +1,40 @@
+div(class="dispatchagency-editor")
+  h2(class="title") Dispatch Agency
+
+  div(class="line-top")
+    ul(class="actions")
+      li
+        a(class="btn",data-bind="cmd:cmdDelete") Delete
+
+  div(class="line-top")
+    ul(class="edit-form")
+      li
+        span(class="label") Agency Name
+        input(type="text",placeholder="",
+          data-bind="ukov:data.AgencyName,value:data.AgencyName,valueUpdate:'keyup',enter:cmdSave,select:focusFirst")
+      li
+        span(class="label") Phone Number
+        input(type="text",placeholder="",
+          data-bind="ukov:data.DispatchPhone,phonevalue:data.DispatchPhone,valueUpdate:'keyup',enter:cmdSave")
+      li
+        span(class="label") Agency Type
+        div(data-bind="cvm:data.DispatchAgencyTypeCvm")
+      li
+        span(class="label") Permit Number
+        input(type="text",placeholder="",
+          data-bind="ukov:data.PermitNumber,value:data.PermitNumber,valueUpdate:'keyup',enter:cmdSave")
+      li
+        span(class="label") Effective Date
+        input(type="text",placeholder="mm/dd/yyyy",
+          data-bind="ukov:data.PermitEffectiveDate,datevalue:data.PermitEffectiveDate,valueUpdate:'keyup',enter:cmdSave")
+      li
+        span(class="label") Expiration Date
+        input(type="text",placeholder="mm/dd/yyyy",
+          data-bind="ukov:data.PermitExpireDate,datevalue:data.PermitExpireDate,valueUpdate:'keyup',enter:cmdSave")
+
+  div
+    //- (style="margin-bottom:20px;")
+    //- div(class="actions")
+    span(class="btn-bg", tabindex="0", data-bind="cmd:cmdSave") Save
+
+  div(data-bind="spinner:busy,spinner-rgb:'white'")

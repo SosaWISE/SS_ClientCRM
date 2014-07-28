@@ -31,7 +31,7 @@ define('src/scrum/scrumrepo.spec', [
         expect(Object.keys(repo.taskRepo.map)).toEqual(['50', '51']);
         expectKeys(Object.keys(repo.taskRepo.structureMap), ['10', '10_60', '10_60_30']);
 
-        repo.updateStory(createStory(11, 20, 30, 1, [
+        repo.updateStory(createStory(11, 20, 30, 1, [ //
         ]));
         expect(Object.keys(repo.storyRepo.map)).toEqual(['10', '11']);
         expectKeys(Object.keys(repo.storyRepo.structureMap), ['20', '20_30']);

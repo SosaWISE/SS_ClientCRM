@@ -270,7 +270,7 @@ define('mock/scrum/scrumservice.mock', [
     tasks;
 
   persons = mockery.fromTemplate({
-    'list|3-3': [
+    'list|3-3': [ //
       {
         ID: '@INC(persons)',
         FirstName: '@NAME',
@@ -281,7 +281,7 @@ define('mock/scrum/scrumservice.mock', [
   }).list;
 
   projects = mockery.fromTemplate({
-    'list|3-3': [
+    'list|3-3': [ //
       {
         ID: '@INC(projects)',
         Name: 'Project-@INC(projects)',
@@ -290,7 +290,7 @@ define('mock/scrum/scrumservice.mock', [
   }).list;
 
   sprints = mockery.fromTemplate({
-    'list|3-3': [
+    'list|3-3': [ //
       {
         ID: '@INC(sprints)',
         ProjectId: 1,
@@ -301,7 +301,7 @@ define('mock/scrum/scrumservice.mock', [
   }).list;
 
   epics = mockery.fromTemplate({
-    'list|2-2': [
+    'list|2-2': [ //
       {
         ID: '@INC(epics)',
         ProjectId: 1,
@@ -312,7 +312,7 @@ define('mock/scrum/scrumservice.mock', [
       },
     ],
   }).list.concat(mockery.fromTemplate({
-    'list|5-5': [
+    'list|5-5': [ //
       {
         ID: '@INC(epics)',
         ProjectId: 1,
@@ -325,7 +325,7 @@ define('mock/scrum/scrumservice.mock', [
   }).list);
 
   storytypes = mockery.fromTemplate({
-    'list|2-2': [
+    'list|2-2': [ //
       {
         ID: '@INC(storytypes)',
         Name: '@STORY_TYPE',
@@ -333,7 +333,7 @@ define('mock/scrum/scrumservice.mock', [
     ],
   }).list;
   storys = mockery.fromTemplate({
-    'list|10-10': [
+    'list|10-10': [ //
       {
         ID: '@INC(storys)',
         StoryTypeId: '@REF_INC(storytypes)',
@@ -350,7 +350,7 @@ define('mock/scrum/scrumservice.mock', [
     ],
   }).list.concat(mockery.fromTemplate({
     // backlog storys
-    'list|10-10': [
+    'list|10-10': [ //
       {
         ID: '@INC(storys)',
         StoryTypeId: '@REF_INC(storytypes)',
@@ -368,7 +368,7 @@ define('mock/scrum/scrumservice.mock', [
   }).list);
 
   tasksteps = mockery.fromTemplate({
-    'list|3-3': [
+    'list|3-3': [ //
       {
         ID: '@INC(tasksteps)',
         Name: '@TASKSTEP_NAME',
@@ -377,7 +377,7 @@ define('mock/scrum/scrumservice.mock', [
   }).list;
 
   tasks = mockery.fromTemplate({
-    'list|40-40': [
+    'list|40-40': [ //
       {
         ID: '@INC(tasks)',
         StoryId: '@REF_INC(storys)',

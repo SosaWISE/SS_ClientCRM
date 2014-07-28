@@ -1,5 +1,4 @@
 define('src/scrum/scrum.panel.vm', [
-  'jquery.ui',
   'jquery',
   'ko',
   'src/dataservice',
@@ -8,7 +7,6 @@ define('src/scrum/scrum.panel.vm', [
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
-  _jquery_ui,
   jquery,
   ko,
   dataservice,

@@ -17,7 +17,7 @@ define('src/scrum/scrumrepo', [
 
     _this.storyRepo = new Repository({
       sorter: storySorter,
-      metadata: [
+      metadata: [ //
         {
           field: 'SprintId',
           sorter: function(a, b) {
@@ -26,8 +26,7 @@ define('src/scrum/scrumrepo', [
             a = b;
             return 0;
           },
-        },
-        {
+        }, {
           field: 'PersonId',
           sorter: function(a, b) {
             // sort by name of Person
@@ -40,7 +39,7 @@ define('src/scrum/scrumrepo', [
     });
     _this.taskRepo = new Repository({
       sorter: taskSorter,
-      metadata: [
+      metadata: [ //
         {
           field: 'StoryId',
           sorter: function(a, b) {
@@ -48,16 +47,14 @@ define('src/scrum/scrumrepo', [
             a = b;
             return 0;
           },
-        },
-        {
+        }, {
           values: options ? options.stepValues : null,
           field: 'TaskStepId',
           sorter: function(a, b) {
             // ascending
             return b.id - a.id;
           },
-        },
-        {
+        }, {
           field: 'PersonId',
           sorter: function(a, b) {
             // sort by name of Person

@@ -1,69 +1,66 @@
 define('src/core/ko.bindingHandlers.formatters', [
-  'moment',
-  'ko',
   'src/core/strings',
+  'moment',
+  'jquery',
+  'ko',
 ], function(
+  strings,
   moment,
-  ko,
-  strings
+  jquery,
+  ko
 ) {
   "use strict";
 
 
+  function createFormatter(baseName, makeFormattedValueAccessor) {
+    var alwaysFormat = (baseName !== 'value');
+    return {
+      init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        // pass through to base binding
+        ko.bindingHandlers[baseName].init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
+      },
+      update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        // only format value binding when field is not focused
+        if (alwaysFormat || !jquery(element).is(':focus')) {
+          // call base binding with formatted value
+          valueAccessor = makeFormattedValueAccessor(valueAccessor);
+        }
+        ko.bindingHandlers[baseName].update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
+      },
+    };
+  }
+
   //
   // currency formatters
   //
-  function makeFormattedCurrencyValueAccessor(valueAccessor, html) {
+  function makeFormattedCurrencyValueAccessor(valueAccessor) {
     return function() {
-      var value = ko.unwrap(valueAccessor());
-      value = strings.decorators.c(value);
-      if (html) {
-        value = value.replace(/\$/, '<b>$</b>');
-      }
-      return value;
+      var val = ko.unwrap(valueAccessor());
+      val = strings.formatters.currency(val);
+      return val;
     };
   }
-  ko.bindingHandlers.currency = {
-    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      // pass through to `text` binding
-      ko.bindingHandlers.text.init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-    },
-    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      // call `text` binding with formatted currency
-      valueAccessor = makeFormattedCurrencyValueAccessor(valueAccessor);
-      ko.bindingHandlers.text.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-    },
-  };
-  ko.bindingHandlers.currencyHtml = {
-    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      // pass through to `html` binding
-      ko.bindingHandlers.html.init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-    },
-    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      // call `html` binding with formatted currency
-      valueAccessor = makeFormattedCurrencyValueAccessor(valueAccessor, true);
-      ko.bindingHandlers.html.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-    },
-  };
+  ko.bindingHandlers.currencytext = createFormatter('text', makeFormattedCurrencyValueAccessor);
+
+  function makeHtmlFormattedCurrencyValueAccessor(valueAccessor) {
+    return function() {
+      var val = ko.unwrap(valueAccessor());
+      val = strings.formatters.currency(val);
+      val = val.replace(/\$/, '<b>$</b>');
+      return val;
+    };
+  }
+  ko.bindingHandlers.currencyHtml = createFormatter('html', makeHtmlFormattedCurrencyValueAccessor);
 
   function makeFormattedLikeCurrencyValueAccessor(valueAccessor) {
     return function() {
-      var value = ko.unwrap(valueAccessor());
-      value = strings.decorators.c(value).replace(/\$/, '');
-      return value;
+      var val = ko.unwrap(valueAccessor());
+      val = strings.formatters.likecurrency(val);
+      return val;
     };
   }
-  ko.bindingHandlers.likecurrency = {
-    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      // pass through to `text` binding
-      ko.bindingHandlers.text.init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-    },
-    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      // call `text` binding with formatted currency
-      valueAccessor = makeFormattedLikeCurrencyValueAccessor(valueAccessor);
-      ko.bindingHandlers.text.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-    },
-  };
+  ko.bindingHandlers.likecurrencyvalue = createFormatter('value', makeFormattedLikeCurrencyValueAccessor);
+  ko.bindingHandlers.likecurrencytext = createFormatter('text', makeFormattedLikeCurrencyValueAccessor);
 
 
   //
@@ -71,36 +68,15 @@ define('src/core/ko.bindingHandlers.formatters', [
   //
   function makeFormattedDateValueAccessor(valueAccessor) {
     return function() {
-      var value = ko.unwrap(valueAccessor());
-      if (value instanceof Date) {
-        // dates should be in UTC
-        value = moment.utc(value).format('MM/DD/YYYY');
+      var val = ko.unwrap(valueAccessor());
+      if (val instanceof Date) {
+        val = strings.formatters.date(val);
       }
-      return value;
+      return val;
     };
   }
-  ko.bindingHandlers.datevalue = {
-    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      // pass through to `value` binding
-      ko.bindingHandlers.value.init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-    },
-    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      // call `value` binding with formatted date
-      valueAccessor = makeFormattedDateValueAccessor(valueAccessor);
-      ko.bindingHandlers.value.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-    },
-  };
-  ko.bindingHandlers.datetext = {
-    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      // pass through to `text` binding
-      ko.bindingHandlers.text.init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-    },
-    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      // call `text` binding with formatted date
-      valueAccessor = makeFormattedDateValueAccessor(valueAccessor);
-      ko.bindingHandlers.text.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-    },
-  };
+  ko.bindingHandlers.datevalue = createFormatter('value', makeFormattedDateValueAccessor);
+  ko.bindingHandlers.datetext = createFormatter('text', makeFormattedDateValueAccessor);
 
 
   //
@@ -108,34 +84,28 @@ define('src/core/ko.bindingHandlers.formatters', [
   //
   function makeFormattedDatetimeValueAccessor(valueAccessor) {
     return function() {
-      var value = ko.unwrap(valueAccessor());
-      if (value instanceof Date) {
-        // datetime should be Local
-        value = moment(value).format('MM/DD/YYYY hh:mm:ss.SSS A');
+      var val = ko.unwrap(valueAccessor());
+      if (val instanceof Date) {
+        val = strings.formatters.datetime(val);
       }
-      return value;
+      return val;
     };
   }
-  ko.bindingHandlers.datetimevalue = {
-    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      // pass through to `value` binding
-      ko.bindingHandlers.value.init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-    },
-    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      // call `value` binding with formatted date
-      valueAccessor = makeFormattedDatetimeValueAccessor(valueAccessor);
-      ko.bindingHandlers.value.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-    },
-  };
-  ko.bindingHandlers.datetimetext = {
-    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      // pass through to `text` binding
-      ko.bindingHandlers.text.init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-    },
-    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      // call `text` binding with formatted date
-      valueAccessor = makeFormattedDatetimeValueAccessor(valueAccessor);
-      ko.bindingHandlers.text.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-    },
-  };
+  ko.bindingHandlers.datetimevalue = createFormatter('value', makeFormattedDatetimeValueAccessor);
+  ko.bindingHandlers.datetimetext = createFormatter('text', makeFormattedDatetimeValueAccessor);
+
+
+
+  //
+  // Phone bindings
+  //
+  function makeFormattedPhoneValueAccessor(valueAccessor) {
+    return function() {
+      var val = ko.unwrap(valueAccessor());
+      val = strings.formatters.phone(val);
+      return val;
+    };
+  }
+  ko.bindingHandlers.phonevalue = createFormatter('value', makeFormattedPhoneValueAccessor);
+  ko.bindingHandlers.phonetext = createFormatter('text', makeFormattedPhoneValueAccessor);
 });

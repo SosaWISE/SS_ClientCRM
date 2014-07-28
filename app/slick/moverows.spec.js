@@ -22,24 +22,20 @@ define('src/slick/moverows.spec', [
     describe('moveRows', function() {
       var list;
       beforeEach(function() {
-        list = [
+        list = [ //
           {
             ID: 1,
             SortOrder: 1,
-          },
-          {
+          }, {
             ID: 2,
             SortOrder: 2,
-          },
-          {
+          }, {
             ID: 3,
             SortOrder: 3,
-          },
-          {
+          }, {
             ID: 4,
             SortOrder: 4,
-          },
-          {
+          }, {
             ID: 5,
             SortOrder: 5,
           },
@@ -106,24 +102,20 @@ define('src/slick/moverows.spec', [
     describe('updateSortOrder', function() {
       it('should start after prev item\'s sort order', function() {
         var newList, changedRows;
-        newList = [
+        newList = [ //
           {
             ID: 1,
             SortOrder: 5,
-          },
-          {
+          }, {
             ID: 3,
             SortOrder: 0,
-          },
-          {
+          }, {
             ID: 5,
             SortOrder: 0,
-          },
-          {
+          }, {
             ID: 2,
             SortOrder: 0,
-          },
-          {
+          }, {
             ID: 4,
             SortOrder: 0,
           },
@@ -143,24 +135,20 @@ define('src/slick/moverows.spec', [
       });
       it('should modify rows who\'s position has changed', function() {
         var newList, changedRows;
-        newList = [
+        newList = [ //
           {
             ID: 1,
             SortOrder: 1,
-          },
-          {
+          }, {
             ID: 3,
             SortOrder: 0,
-          },
-          {
+          }, {
             ID: 5,
             SortOrder: 0,
-          },
-          {
+          }, {
             ID: 2,
             SortOrder: 0,
-          },
-          {
+          }, {
             ID: 4,
             SortOrder: 0,
           },
@@ -180,24 +168,20 @@ define('src/slick/moverows.spec', [
       });
       it('should modify all relevant rows', function() {
         var newList, changedRows;
-        newList = [
+        newList = [ //
           {
             ID: 2,
             SortOrder: 0,
-          },
-          {
+          }, {
             ID: 3,
             SortOrder: 0,
-          },
-          {
+          }, {
             ID: 1,
             SortOrder: 0,
-          },
-          {
+          }, {
             ID: 5,
             SortOrder: 0,
-          },
-          {
+          }, {
             ID: 4,
             SortOrder: 0,
           },

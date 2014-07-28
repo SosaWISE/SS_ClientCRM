@@ -9,7 +9,7 @@ define('src/survey/questiontranslation.vm', [
 ], function(
   ukov,
   dataservice,
-  EditorQuestionTranslationViewModel,
+  QuestionTranslationEditorViewModel,
   ko,
   notify,
   utils,
@@ -56,17 +56,21 @@ define('src/survey/questiontranslation.vm', [
     //
     // events
     //
-    _this.clickEdit = function() {
+    _this.cmdEdit = ko.command(function(cb) {
       if (_this.editorVM()) {
+        cb();
         return;
       }
       //
-      var vm = new EditorQuestionTranslationViewModel({
+      var vm = new QuestionTranslationEditorViewModel({
         input: _this.qtData.TextFormat,
         questionMeaningVM: _this.questionVM.questionMeaningVM,
       });
       _this.editorVM(vm);
-    };
+      cb();
+    }, function(busy) {
+      return !busy && !_this.surveyTranslationVM.surveyVM.isReadonly();
+    });
     _this.clickEndEdit = function(force) {
       if (!force && _this.cmdSave.busy()) {
         return;
@@ -79,16 +83,17 @@ define('src/survey/questiontranslation.vm', [
       _this.qtData.TextFormat.validate();
       _this.qtData.update();
       if (!_this.qtData.isValid()) {
-        notify.notify('warn', _this.qtData.errMsg(), 10);
+        notify.warn(_this.qtData.errMsg(), null, 10);
         return cb();
       }
       dataservice.survey.questionTranslations.save({
+        id: _this.qtData.model.QuestionTranslationID, // null or undefined if new
         data: _this.qtData.model,
       }, null, function(err, resp) {
         if (err) {
-          notify.notify('error', err.Message);
+          notify.error(err);
         } else {
-          _this.qtData.setVal(resp.Value);
+          _this.qtData.setValue(resp.Value);
           _this.qtData.markClean(resp.Value);
           _this.clickEndEdit(true);
         }

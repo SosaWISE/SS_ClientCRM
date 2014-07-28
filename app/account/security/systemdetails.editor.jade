@@ -1,0 +1,29 @@
+div(class="systemdetails-editor")
+  div(data-bind="spinner:loading,spinner-rgb:'white'")
+
+  h2(class="title") System Details
+
+  div(class="line-top")
+    ul(class="edit-form limit-width")
+      li
+        span(class="label") Account Password
+        input(type="text",placeholder="",data-bind="ukov:data.AccountPassword,value:data.AccountPassword,valueUpdate:'keyup'")
+      li
+        span(class="label") Panel Type
+        div(data-bind="cvm:data.PanelTypeCvm")
+      li
+        span(class="label") System Type
+        div(data-bind="cvm:data.SystemTypeCvm")
+      li
+        span(class="label") Cellular Type
+        div(data-bind="cvm:data.CellularTypeCvm")
+      li
+        span(class="label") DSL/Seizures
+        div(data-bind="cvm:data.DslSeizureCvm")
+
+  div(class="line-top")
+    ul(class="actions")
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save

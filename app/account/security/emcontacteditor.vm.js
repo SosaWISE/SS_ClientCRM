@@ -1,6 +1,7 @@
 define('src/account/security/emcontacteditor.vm', [
   'src/dataservice',
   'src/core/combo.vm',
+  'src/core/strings',
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
@@ -9,6 +10,7 @@ define('src/account/security/emcontacteditor.vm', [
 ], function(
   dataservice,
   ComboViewModel,
+  strings,
   notify,
   utils,
   BaseViewModel,
@@ -19,7 +21,37 @@ define('src/account/security/emcontacteditor.vm', [
 
   var schema,
     strConverter = ukov.converters.string(),
-    phoneConverter = ukov.converters.phone();
+    phoneConverter = ukov.converters.phone(),
+    phone2ValidationGroup, phone3ValidationGroup;
+
+  function createPhoneAndTypeValidationGroup(phoneName, typeName) {
+    return {
+      keys: [phoneName, typeName],
+      validators: [ //
+        function(group) {
+          var errName, errMsgObj,
+            phone = group[phoneName],
+            type = group[typeName];
+          if (!phone && type) {
+            // type is set but phone is not
+            errName = phoneName;
+          } else if (phone && !type) {
+            // phone is set but type is not
+            errName = typeName;
+          } else {
+            // no errors
+            return null;
+          }
+
+          errMsgObj = {};
+          errMsgObj[errName] = 'Both phone and type must be set.';
+          return errMsgObj;
+        },
+      ],
+    };
+  }
+  phone2ValidationGroup = createPhoneAndTypeValidationGroup('Phone2', 'Phone2TypeId');
+  phone3ValidationGroup = createPhoneAndTypeValidationGroup('Phone3', 'Phone3TypeId');
 
   schema = {
     _model: true,
@@ -84,12 +116,18 @@ define('src/account/security/emcontacteditor.vm', [
     },
     Phone2: {
       converter: phoneConverter,
+      validationGroup: phone2ValidationGroup,
     },
-    Phone2TypeId: {},
+    Phone2TypeId: {
+      validationGroup: phone2ValidationGroup,
+    },
     Phone3: {
       converter: phoneConverter,
+      validationGroup: phone3ValidationGroup,
     },
-    Phone3TypeId: {},
+    Phone3TypeId: {
+      validationGroup: phone3ValidationGroup,
+    },
   };
 
 
@@ -99,16 +137,16 @@ define('src/account/security/emcontacteditor.vm', [
     BaseViewModel.ensureProps(_this, [
       // 'customerId',
       'accountId',
-      'phoneOptions',
-      'phoneOptionFields',
-      'relationshipOptions',
-      'relationshipOptionFields',
+      'phoneTypes',
+      'phoneTypeFields',
+      'relationshipTypes',
+      'relationshipTypeFields',
     ]);
 
     _this.width = ko.observable(550);
     _this.height = ko.observable('auto');
 
-    _this.data = ukov.wrap(_this.item || {
+    _this.item = _this.item || {
       // EmergencyContactID: '',
       CustomerId: _this.customerId,
       AccountId: _this.accountId,
@@ -132,12 +170,13 @@ define('src/account/security/emcontacteditor.vm', [
       Phone3: '',
       Phone3TypeId: null,
       Comment1: '',
-    }, schema);
+    };
+    _this.data = ukov.wrap(utils.clone(_this.item), schema);
 
-    _this.data.RelastionshipCvm = new ComboViewModel({
+    _this.data.RelationshipCvm = new ComboViewModel({
       selectedValue: _this.data.RelationshipId,
-      list: _this.relationshipOptions,
-      fields: _this.relationshipOptionFields,
+      list: _this.relationshipTypes,
+      fields: _this.relationshipTypeFields,
     });
     _this.data.HasKeyCvm = new ComboViewModel({
       selectedValue: _this.data.HasKey,
@@ -146,79 +185,108 @@ define('src/account/security/emcontacteditor.vm', [
 
     _this.data.Phone1TypeCvm = new ComboViewModel({
       selectedValue: _this.data.Phone1TypeId,
-      list: _this.phoneOptions,
-      fields: _this.phoneOptionFields,
+      list: _this.phoneTypes,
+      fields: _this.phoneTypeFields,
       nullable: true,
     });
     _this.data.Phone2TypeCvm = new ComboViewModel({
       selectedValue: _this.data.Phone2TypeId,
-      list: _this.phoneOptions,
-      fields: _this.phoneOptionFields,
+      list: _this.phoneTypes,
+      fields: _this.phoneTypeFields,
       nullable: true,
     });
     _this.data.Phone3TypeCvm = new ComboViewModel({
       selectedValue: _this.data.Phone3TypeId,
-      list: _this.phoneOptions,
-      fields: _this.phoneOptionFields,
+      list: _this.phoneTypes,
+      fields: _this.phoneTypeFields,
       nullable: true,
     });
 
     //
     // events
     //
-    _this.cmdCancel = ko.command(function(cb) {
-      if (_this.layer) {
-        _this.layer.close(null);
-      }
-      cb();
-    }, function(busy) {
-      return !busy && !_this.cmdSave.busy() && !_this.cmdDelete.busy();
-    });
+    _this.clickCancel = function() {
+      _this.layerResult = null;
+      _this.isDeleted = false;
+      closeLayer(_this);
+    };
     _this.cmdSave = ko.command(function(cb) {
-      if (!_this.layer) {
-        cb();
-        return;
-      }
       if (!_this.data.isValid()) {
-        notify.notify('warn', _this.data.errMsg(), 7);
+        notify.warn(_this.data.errMsg(), null, 7);
         cb();
         return;
       }
       var model = _this.data.getValue();
-      _this.data.markClean(model, true);
-      dataservice.monitoringstation.emergencyContacts.save({
+      dataservice.msaccountsetupsrv.emergencyContacts.save({
         id: model.EmergencyContactID,
         data: model,
-      }, null, function(err, resp) {
-        if (err) {
-          notify.notify('error', err.Message);
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        notify.info('Saved ' + formatFullname(model), '', 3);
+        if (resp.Message && resp.Message !== 'Success') {
+          notify.error(resp, 3);
         }
-        utils.safeCallback(err, function() {
-          _this.layer.close(resp.Value, false);
-        }, cb);
-      });
+        //
+        _this.data.markClean(model, true);
+        //
+        _this.layerResult = resp.Value;
+        _this.isDeleted = false;
+        closeLayer(_this);
+      }, function(err) {
+        notify.error(err);
+      }));
     }, function(busy) {
       return !busy && !_this.cmdDelete.busy();
     });
     _this.cmdDelete = ko.command(function(cb) {
-      if (!_this.layer) {
-        cb();
-        return;
-      }
-      dataservice.monitoringstation.emergencyContacts.del(_this.data.model.EmergencyContactID, null, function(err, resp) {
-        if (err) {
-          notify.notify('error', err.Message);
+      notify.confirm('Delete?', 'Are you sure you want to delete this emergency contact?', function(result) {
+        if (result !== 'yes') {
+          cb();
+          return;
         }
-        utils.safeCallback(err, function() {
-          _this.layer.close(resp.Value, true);
-        }, cb);
+        var model = _this.data.getValue();
+        dataservice.msaccountsetupsrv.emergencyContacts.del(_this.item.EmergencyContactID, null, utils.safeCallback(cb, function(err, resp) {
+          notify.info('Deleted ' + formatFullname(model), '', 3);
+          if (resp.Message && resp.Message !== 'Success') {
+            notify.error(resp, 3);
+          }
+          //
+          _this.layerResult = resp.Value;
+          _this.isDeleted = true;
+          closeLayer(_this);
+        }, function(err) {
+          notify.error(err);
+        }));
       });
     }, function(busy) {
-      return !busy && _this.item && !_this.cmdSave.busy();
+      return !busy && _this.item.EmergencyContactID && !_this.cmdSave.busy();
     });
   }
   utils.inherits(EmContactEditorViewModel, BaseViewModel);
   EmContactEditorViewModel.prototype.viewTmpl = 'tmpl-security-emcontacteditor';
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  EmContactEditorViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult, _this.isDeleted];
+  };
+  EmContactEditorViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdSave.busy() && !_this.layerResult) {
+      msg = 'Please wait for save to finish.';
+    } else if (_this.cmdDelete.busy() && !_this.layerResult) {
+      msg = 'Please wait for delete to finish.';
+    }
+    return msg;
+  };
+
+  function formatFullname(d) {
+    return strings.joinTrimmed(' ', d.Prefix, d.FirstName, d.MiddleName, d.LastName, d.Postfix);
+  }
 
   return EmContactEditorViewModel;
 });

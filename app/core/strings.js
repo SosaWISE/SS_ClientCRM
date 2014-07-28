@@ -1,14 +1,19 @@
 define('src/core/strings', [
+  'moment',
+  'src/core/numbers',
   'src/core/arrays',
   'src/core/utils',
 ], function(
+  moment,
+  numbers,
   arrays,
   utils
 ) {
   "use strict";
 
   var strings = {},
-    formatRegex = /\{([0-9]+)(?::([0-9A-Z]+))?\}/gi, // {0} or {0:decoratorName}
+    formatRegex = /\{([0-9]+)(?::([0-9A-Z$]+))?\}/gi, // {0} or {0:decoratorName}
+    phoneRegx = /^\(?\b([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
     usdFormatter;
 
   // e.g.: strings.format('{0} {1}', 'bob', 'bobbins') === 'bob bobbins'
@@ -27,10 +32,10 @@ define('src/core/strings', [
     // since we want zero-based indexes and speed we'll choose the last one
     return strings.aformat(format, arrays.argsToArray(arguments, 1));
   };
-  strings.aformat = function(format, argsArray, missingParamText) {
+  strings.aformat = function(format, argsArray, missingParamFormat) {
     var decorators = strings.decorators;
     format = format || '';
-    missingParamText = missingParamText || '';
+    missingParamFormat = missingParamFormat || '';
     return format.replace(formatRegex, function(item, paramIndex, formatName) {
       formatName = formatName;
       var val = argsArray[paramIndex];
@@ -41,13 +46,13 @@ define('src/core/strings', [
           return val;
         }
       } else {
-        return missingParamText;
+        return strings.aformat(missingParamFormat, [paramIndex]);
       }
     });
   };
 
-  strings.decorators = {
-    c: function(val) {
+  strings.formatters = {
+    currency: function(val) {
       if (!usdFormatter) {
         if (window.Intl) {
           usdFormatter = new Intl.NumberFormat("en-US", {
@@ -66,11 +71,71 @@ define('src/core/strings', [
       }
       return usdFormatter.format(val);
     },
-    space: function(val) {
-      val = val || '';
-      return val.split('').join('&nbsp;');
+    likecurrency: function(val) {
+      return strings.formatters.currency(val).replace('$', '');
+    },
+    date: function(dt, isLocal) {
+      // UTC by default ???
+      if (isLocal) {
+        dt = moment(dt);
+      } else {
+        dt = moment.utc(dt);
+      }
+      return dt.format('MM/DD/YYYY');
+    },
+    datetime: function(dt, isUtc) {
+      // Local by default ???
+      //@REVEIW: the web server should always return UTC dates, so i don't know about this default...
+      if (isUtc) {
+        dt = moment.utc(dt);
+      } else {
+        dt = moment(dt);
+      }
+      return dt.format('MM/DD/YYYY hh:mm a');
+    },
+    phone: function(val, outputFormat) {
+      if (!val) {
+        return val;
+      }
+      var matches = phoneRegx.exec(val);
+      if (!matches) {
+        return val;
+      } else {
+        return strings.format(outputFormat || '({0}) {1}-{2}', matches[1], matches[2], matches[3]);
+      }
     },
   };
+  strings.decorators = {
+    // wrap formatters in case they are modified outside of this file
+    c: function(val) {
+      return strings.formatters.currency(val);
+    },
+    d: function(val) {
+      return strings.formatters.date(val);
+    },
+    dt: function(val) {
+      return strings.formatters.datetime(val);
+    },
+    space: function(val) {
+      val = (val || '') + ''; // make sure it's not null, undefined, or something other than a string
+      return val.split('').join('&nbsp;');
+    },
+    phone: function(val) {
+      return strings.formatters.phone(val);
+    },
+    ordinal: function(val) {
+      var integer = parseInt(val, 10);
+      /* jshint eqeqeq:false */
+      if (integer == val) {
+        return numbers.toOrdinal(integer);
+      } else {
+        return val;
+      }
+    }
+  };
+  // aliases
+  strings.decorators.$ = strings.decorators.c;
+  strings.decorators.th = strings.decorators.ordinal;
 
   strings.trim = function(text) {
     if (text) {
@@ -79,6 +144,21 @@ define('src/core/strings', [
       text = null;
     }
     return text;
+  };
+  strings.joinTrimmed = function(joinOn, args /*...*/ ) {
+    var list = [];
+    // args is an array or everything after joinOn becomes and array
+    if (!Array.isArray(args)) {
+      args = arrays.argsToArray(arguments, 1);
+    }
+    // only include truthy args
+    args.forEach(function(val) {
+      val = strings.trim(val);
+      if (val) {
+        list.push(val);
+      }
+    });
+    return list.join(joinOn);
   };
 
   // from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
@@ -92,6 +172,48 @@ define('src/core/strings', [
   // function escapeRegExp(str) {
   //   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
   // }
+
+
+  function pad(isLeft, txt, letter, minLength) {
+    if (!txt && txt !== 0) {
+      txt = '';
+    }
+    txt += '';
+    if (isLeft) {
+      while (txt.length < minLength) {
+        txt = letter + txt;
+      }
+    } else {
+      while (txt.length < minLength) {
+        txt += letter;
+      }
+    }
+    return txt;
+  }
+  strings.padLeft = function(txt, letter, minLength) {
+    return pad(true, txt, letter, minLength);
+  };
+  strings.padRight = function(txt, letter, minLength) {
+    return pad(false, txt, letter, minLength);
+  };
+
+
+  function strWithTest(str, val, atStart) {
+    str = (str == null) ? '' : ('' + str);
+    val = (val == null) ? '' : ('' + val);
+    return str.length >= val.length &&
+      (atStart ? str.slice(0, val.length) : str.slice(str.length - val.length)) === val;
+  }
+  strings.startsWith = function(str, val) {
+    return strWithTest(str, val, true);
+  };
+  strings.endsWith = function(str, val) {
+    return strWithTest(str, val, false);
+  };
+
+  strings.repeat = function(text, num) {
+    return new Array(num + 1).join(text);
+  };
 
   return strings;
 });

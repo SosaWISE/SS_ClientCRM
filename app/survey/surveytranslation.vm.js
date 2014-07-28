@@ -18,6 +18,8 @@ define('src/survey/surveytranslation.vm', [
   function SurveyTranslationViewModel(options) {
     var _this = this;
     SurveyTranslationViewModel.super_.call(_this, options);
+    ControllerViewModel.ensureProps(_this, ['model', 'surveyVM']);
+
 
     _this.id = _this.model.SurveyTranslationID;
 
@@ -45,27 +47,26 @@ define('src/survey/surveytranslation.vm', [
     var _this = this,
       cb = join.add();
 
+    _this.list([]);
     dataservice.survey.surveyTranslations.read({
       id: _this.id,
       link: 'questionTranslations',
-    }, null, function(err, resp) {
-      utils.safeCallback(err, function() {
-        // clear cache
-        _this.vmMap = {};
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      // clear cache
+      _this.vmMap = {};
+      //
+      var map = {};
+      _this.map = map;
+      if (resp.Value) {
+        resp.Value.forEach(function(model) {
+          map[model.QuestionId] = model;
+        });
         //
-        var map = {};
-        _this.map = map;
-        if (resp.Value) {
-          resp.Value.forEach(function(model) {
-            map[model.QuestionId] = model;
-          });
-          //
-          _this.list(resp.Value);
-        } else {
-          _this.list([]);
-        }
-      }, cb);
-    });
+        _this.list(resp.Value);
+      } else {
+        _this.list([]);
+      }
+    }, utils.no_op));
   };
 
   SurveyTranslationViewModel.prototype.getQuestionTranslationVM = function(questionVM) { // overrides base

@@ -1,8 +1,10 @@
 define('src/u-kov/string-converters', [
+  'src/core/jsonhelpers',
   'src/core/paymenthelper',
   'src/core/strings',
   'moment'
 ], function(
+  jsonhelpers,
   paymenthelper,
   strings,
   moment
@@ -22,48 +24,56 @@ define('src/u-kov/string-converters', [
       /^([0-9]{1,2}[- \/][0-9]{1,2}[- \/])([0-9]{1,2} )/, // MM/DD/YY | MM-DD-YY | MM DD YY
       /^(\w+ [0-9]{1,2} )([0-9]{1,2} )/, // MMM DD YY
       /^([0-9]{1,2} \w+ )([0-9]{1,2} )/, // DD MMM YY
-    ];
-
-  function trim(text) {
-    if (text) {
-      text = (text + '').replace(/^\s+|\s+$/g, '');
-    } else if (text !== '') {
-      text = null;
-    }
-    return text;
-  }
-
+    ],
+    ssnRegx = /^(\d{3})(\d{2})(\d{4})$/;
 
   converters.string = function() {
-    return function convString(val) {
-      return trim(val);
-    };
+    return convString;
+  };
+  converters.nullString = function() {
+    return convNullString;
   };
   converters.toUpper = function() {
-    return function convString(val) {
-      val = trim(val);
-      if (val) {
-        val = trim(val).toUpperCase();
-      }
-      return val;
-    };
+    return convToUpper;
   };
   converters.bool = function() {
-    return function convBool(val) {
-      val = val.toLowerCase();
-      return val === 'true' || val === '1';
+    return convBool;
+  };
+  converters.numText = function(errMsg) {
+    errMsg = errMsg || 'invalid number';
+    return function convNumText(val) {
+      val = trim(val);
+      if (!val) {
+        return null;
+      }
+
+      // return val.replace(/[^\d]/g, '');
+      if (/^[\d]+$/.test(val)) {
+        return val;
+      } else {
+        return new Error(errMsg);
+      }
     };
   };
-  converters.number = function(precision) {
+  converters.jsonString = function() {
+    return convJsonString;
+  };
+
+  converters.number = function(precision, errMsg) {
+    errMsg = errMsg || 'invalid number';
     var roundingMagnitude = Math.pow(10, precision || 0);
     return function convNumber(val) {
       if (!val) {
-        return;
+        return null;
       }
+
+      // remove non-number characters
+      // (- and . are needed for negative and decimals. more than one or wrong position will make val NaN)
+      val = val.replace(/[^-.0-9]/g, '');
 
       var num = parseFloat(val);
       if (isNaN(val) || isNaN(num)) {
-        return new Error('invalid number');
+        return new Error(errMsg);
       } else {
         // round to correct precision
         return Math.round(num * roundingMagnitude) / roundingMagnitude;
@@ -74,7 +84,7 @@ define('src/u-kov/string-converters', [
     return function convDate(val) {
       val = trim(val);
       if (!val) {
-        return;
+        return null;
       }
 
       var day;
@@ -122,14 +132,14 @@ define('src/u-kov/string-converters', [
     var dateConverter = converters.date(),
       dateFormat = 'MM/DD/YYYY',
       timeFormats = [
-      'hh:mm:ss.SSS A',
-      'hh:mm:ss A',
-      'hh:mm A'
-    ];
+        'hh:mm:ss.SSS A',
+        'hh:mm:ss A',
+        'hh:mm A'
+      ];
     return function convDatetime(val) {
       val = trim(val);
       if (!val) {
-        return;
+        return null;
       }
 
       var day, replacementValue;
@@ -180,29 +190,26 @@ define('src/u-kov/string-converters', [
       }
     };
   };
-  converters.phone = function(outputFormat) {
-    outputFormat = outputFormat || '({0}) {1}-{2}';
+  converters.phone = function() {
     return function convPhone(val) {
       val = trim(val);
       if (!val) {
-        return;
+        return null;
       }
 
       var matches = phoneRegx.exec(val);
       if (!matches) {
-        return new Error('Invalid phone number. Expected format: ' + strings.format(outputFormat, '123', '123', '1234'));
+        return new Error('Invalid phone number. Expected format: (123) 123-1234');
       } else {
-        return strings.format(outputFormat, matches[1], matches[2], matches[3]);
+        return matches[1] + matches[2] + matches[3];
       }
     };
   };
-
-
   converters.ccard = function() {
     return function convCCard(val) {
       val = trim(val);
       if (!val) {
-        return;
+        return null;
       }
 
       val = val.replace(/[^\d]/g, '');
@@ -213,15 +220,71 @@ define('src/u-kov/string-converters', [
       }
     };
   };
-  converters.numText = function() {
-    return function convNumText(val) {
-      val = trim(val);
-      if (!val) {
-        return;
-      }
-      return val.replace(/[^\d]/g, '');
-    };
+  converters.ssn = function() {
+    return convSsn;
   };
+
+
+  function trim(text) {
+    if (text) {
+      text = (text + '').replace(/^\s+|\s+$/g, '');
+    } else if (text !== '') {
+      text = null;
+    }
+    return text;
+  }
+
+  function convString(val) {
+    return trim(val);
+  }
+
+  function convNullString(val) {
+    return trim(val) || null;
+  }
+
+  function convToUpper(val) {
+    val = trim(val);
+    if (val) {
+      val = val.toUpperCase();
+    }
+    return val;
+  }
+
+  function convBool(val) {
+    val = val.toLowerCase();
+    return val === 'true' || val === '1';
+  }
+
+  function convJsonString(val) {
+    val = trim(val);
+    if (!val) {
+      return null;
+    }
+
+    try {
+      return jsonhelpers.stringify(jsonhelpers.parse(val), 2);
+    } catch (ex) {
+      return ex;
+    }
+  }
+
+  function convSsn(val) {
+    val = trim(val);
+    if (!val) {
+      return null;
+    }
+
+    // remove everything but digits
+    val = val.replace(/[^0-9]/g, '');
+
+    // try to match
+    var matches = ssnRegx.exec(val);
+    if (matches) {
+      return strings.format('{0}-{1}-{2}', matches[1], matches[2], matches[3]);
+    } else {
+      return new Error('Invalid Social Security Number. Expected format: 123-12-1234');
+    }
+  }
 
   return converters;
 });

@@ -1,27 +1,31 @@
 define('src/account/security/checklist.vm', [
-  'src/account/default/initialpayment.vm',
-  'src/account/security/survey.vm',
-  'src/account/security/systemdetails.vm',
-  'src/account/security/industrynums.vm',
-  'src/account/security/salesinfo.vm',
-  'src/account/security/account.qualify.vm',
-  'src/core/layers.vm',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
   'ko',
+  'src/account/security/clist.qualify.vm',
+  'src/account/security/clist.salesinfo.vm',
+  'src/account/security/clist.survey.vm',
+  'src/account/security/clist.industrynums.vm',
+  'src/account/security/clist.emcontacts.vm',
+  'src/account/security/clist.systemdetails.vm',
+  'src/account/security/clist.registercell.vm',
+  'src/account/security/clist.systemtest.vm',
+  'src/account/security/clist.initialpayment.vm',
+  'src/account/security/clist.submitonline.vm',
+  'src/core/layers.vm',
+  'src/core/notify', 'src/core/utils', 'src/core/controller.vm',
 ], function(
-  InitialPaymentViewModel,
-  SurveyViewModel,
-  SystemDetailsViewModel,
-  IndustryViewModel,
-  SalesInfoViewModel,
-  AccountQualifyViewModel,
+  ko,
+  CListQualifyViewModel,
+  CListSalesInfoViewModel,
+  CListSurveyViewModel,
+  CListIndustryViewModel,
+  CListEmcontactsViewModel,
+  CListSystemDetailsViewModel,
+  CListRegisterCellViewModel,
+  CListSystemTestViewModel,
+  CListInitialPaymentViewModel,
+  CListSubmitOnlineViewModel,
   LayersViewModel,
-  notify,
-  utils,
-  ControllerViewModel,
-  ko
+  notify, utils, ControllerViewModel
 ) {
   "use strict";
 
@@ -29,13 +33,15 @@ define('src/account/security/checklist.vm', [
     var _this = this;
     ChecklistViewModel.super_.call(_this, options);
 
+    _this.title = ko.observable(_this.title);
+
     _this.checklist = _this.childs;
 
     _this.layersVm = new LayersViewModel({
       controller: _this,
     });
 
-    _this.qualifyVm = new AccountQualifyViewModel({
+    _this.qualifyVm = new CListQualifyViewModel({
       pcontroller: _this,
       id: 'qualify',
       title: 'Qualify Customer',
@@ -61,58 +67,72 @@ define('src/account/security/checklist.vm', [
 
     _this.checklist([
       _this.qualifyVm,
-      new SalesInfoViewModel({
+      new CListSalesInfoViewModel({
         pcontroller: _this,
         id: 'salesinfo',
         title: 'Sales Info',
+        layersVm: _this.layersVm,
       }),
-      new SurveyViewModel({
+      new CListSurveyViewModel({
         pcontroller: _this,
         id: 'presurvey',
         title: 'Pre Survey',
+        surveyTypeId: 1000, //@HACK: need better way of knowing the id of the survey type
       }),
-      new IndustryViewModel({
+      new CListIndustryViewModel({
         pcontroller: _this,
         id: 'industrynums',
         title: 'Industry #\'s',
       }),
-      new SystemDetailsViewModel({
+      new CListEmcontactsViewModel({
+        pcontroller: _this,
+        id: 'emcontacts',
+        title: 'Emergency Contacts',
+        layersVm: _this.layersVm,
+      }),
+      new CListSystemDetailsViewModel({
         pcontroller: _this,
         id: 'systemdetails',
         title: 'System Details',
         layersVm: _this.layersVm,
       }),
-      {
-        title: 'System Test',
-        // title: 'Signal/TwoWay Check',
-        active: ko.observable(false),
-      },
-      // {
-      //   title: 'Tech Inspection',
-      //   active: ko.observable(false),
-      // },
-      new SurveyViewModel({
+      new CListRegisterCellViewModel({
         pcontroller: _this,
-        id: 'techinspection',
-        title: 'Tech Inspection',
+        id: 'registercell',
+        title: 'Register Cell',
+        layersVm: _this.layersVm,
       }),
-      new SurveyViewModel({
+      new CListSystemTestViewModel({
+        pcontroller: _this,
+        id: 'systemtest',
+        title: 'System Test',
+        layersVm: _this.layersVm,
+      }),
+      // for now we're not doing Tech inspections
+      // new CListSurveyViewModel({
+      //   pcontroller: _this,
+      //   id: 'techinspection',
+      //   title: 'Tech Inspection',
+      // }),
+      new CListSurveyViewModel({
         pcontroller: _this,
         id: 'postsurvey',
         title: 'Post Survey',
+        surveyTypeId: 1001, //@HACK: need better way of knowing the id of the survey type
       }),
-      new InitialPaymentViewModel({
+      new CListInitialPaymentViewModel({
         pcontroller: _this,
         id: 'initialpayment',
         title: 'Initial Payment',
         layersVm: _this.layersVm,
       }),
-      {
+      new CListSubmitOnlineViewModel({
+        pcontroller: _this,
+        id: 'submitonline',
         title: 'Submit Account Online',
-        active: ko.observable(false),
-      },
+        layersVm: _this.layersVm,
+      }),
     ]);
-
 
     join.add()();
   };
@@ -123,8 +143,8 @@ define('src/account/security/checklist.vm', [
       routePart = _this.getChildRoutePart();
 
     if (_this.qualifyVm.canCreateAccount) {
-      // when there is no account, qualify is the only selectable child
-      routeData[routePart] = _this.qualifyVm.id;
+      // // when there is no account, qualify is the only selectable child
+      // routeData[routePart] = _this.qualifyVm.id;
     } else if (routeData[routePart]) {
       //@TODO: ensure the action is currently valid
     }

@@ -1,6 +1,5 @@
 table(class="question takequestion",data-bind="toggle:{'complete':isComplete}")
-  thead
-  tr
+  tr(data-bind="css:{'fails':fails}")
     td(class="title")
       h2(data-bind="text:name")
     td(class="content")
@@ -10,15 +9,16 @@ table(class="question takequestion",data-bind="toggle:{'complete':isComplete}")
         span(data-bind="text:answer")
       div(data-bind="if:answerMode==='radiolist'")
         div(style="white-space:nowrap;",data-bind="foreach:questionPossibleAnswerMaps")
-          a(class="btn small",data-bind="click:$parent.clickAnswer,active:$parent.answer()===text,text:text")
+          a(class="btn small",tabindex="0",data-bind="click:$parent.clickAnswer,active:$parent.answer()===text,text:text")
           |&nbsp;
       div(data-bind="if:answerMode==='combo'")
-        div(style="min-width:75px;",data-bind="template:{name:cvm.viewTmpl,data:cvm}")
+        div(style="min-width:75px;",data-bind="cvm:cvm")
       div(data-bind="if:answerMode==='text'")
-        input(type="text",data-bind="value:answer,valueUpdate:'keyup'")
+        input(type="text",data-bind="ukov:answer,value:answer,valueUpdate:'keyup'")
 
   tr(data-bind="visible:showSubs")
     td
     td(colspan="2")
       div(data-bind="foreach:questions")
+        //- begin question recursion
         div(class="relative",data-bind="template:'tmpl-takequestion'")

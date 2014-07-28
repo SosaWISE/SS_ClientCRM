@@ -1,5 +1,4 @@
-define('src/core/relativesort', [
-], function() {
+define('src/core/relativesort', [], function() {
   "use strict";
 
   var min = (Math.pow(2, 31) * -1), // min int

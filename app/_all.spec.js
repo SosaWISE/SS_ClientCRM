@@ -3,6 +3,8 @@ define('src/_all.spec', [
   'src/core/_all.spec',
   'src/scrum/_all.spec',
   'src/slick/_all.spec',
+  'src/account/_all.spec',
+  'src/survey/_all.spec',
 ], function() {
   'use strict';
 });

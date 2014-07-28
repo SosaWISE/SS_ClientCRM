@@ -1,6 +1,9 @@
 // the mock factory
 define('src/core/mockery', [
-], function() {
+  'src/core/utils',
+], function(
+  utils
+) {
   'use strict';
 
   var mockery = {},
@@ -10,36 +13,43 @@ define('src/core/mockery', [
     incMap = {};
 
   mockery.fn = {
-    BOOL: function() {
-      return mockery.random() >= 0.5;
+    BOOL: function(cache) {
+      return cache.__funcs.random() >= 0.5;
     },
     NUMBER: function(cache, min, max) {
-      return randomFromRange(min, max, 0, 10);
+      return randomFromRange(cache, min, max, 0, 10);
     },
     MONEY: function(cache, min, max) {
       min = (min) ? parseInt(min, 10) : 1;
       max = (max) ? parseInt(max, 10) : 100;
-      return randomFromRange(min * 100, max * 100, 100, 10000) / 100;
+      return randomFromRange(cache, min * 100, max * 100, 100, 10000) / 100;
     },
-    INC: function(cache, key) {
-      var val = incMap[key];
-      if (val) {
-        val++;
+    INC: function(cache, key, idSeed) {
+      var val, obj = incMap[key];
+      if (obj) {
+        val = ++obj.val;
       } else {
-        val = identitySeed; // default start value
+        if (idSeed) {
+          idSeed = parseInt(idSeed, 10);
+        }
+        val = idSeed || identitySeed; // default start value
+        incMap[key] = {
+          val: val,
+          idSeed: val,
+        };
       }
-      incMap[key] = val;
       return val;
     },
     INC_NULLABLE: function(cache, key) {
-      if (mockery.random() >= 0.8) {
+      if (cache.__funcs.random() >= 0.8) {
         return null; // top level
       } else {
         return mockery.fn.INC(cache, key + 'NULLABLE');
       }
     },
     REF_INC: function(cache, key) {
-      return mockery.fn.NUMBER(cache, identitySeed, incMap[key] || identitySeed);
+      var obj = incMap[key];
+      return mockery.fn.NUMBER(cache, identitySeed, obj ? obj.val : identitySeed);
     },
     FK: function(cache, key) {
       return incModulus(cache, key, key + '_FK_');
@@ -52,12 +62,12 @@ define('src/core/mockery', [
     },
     TEXT: function(cache, min, max) {
       var results = [],
-        num = randomFromRange(min, max, 10, 50),
+        num = randomFromRange(cache, min, max, 10, 50),
         length = 0,
         splitIndex,
         str = loremIpsum,
         tmpStr;
-      splitIndex = Math.floor((loremIpsum.length - 2) * mockery.random());
+      splitIndex = Math.floor((loremIpsum.length - 2) * cache.__funcs.random());
       str = loremIpsum.substr(splitIndex) + loremIpsum.substr(0, splitIndex);
       while (length < num) {
         if ((length + str.length) < num) {
@@ -70,11 +80,14 @@ define('src/core/mockery', [
       }
       return results.join('. ');
     },
-    PHONE: function(cache) {
-      return fromTemplate('(@NUMBER(200,999)) @NUMBER(100,999)-@NUMBER(1000,9999)', cache);
+    PHONE: function(cache, busterKey) {
+      // prepend comma
+      busterKey = (busterKey) ? ',' + busterKey : '';
+      // return fromTemplate('(@NUMBER(200,999)) @NUMBER(100,999)-@NUMBER(1000,9999)', cache);
+      return fromTemplate('@NUMBER(200,999' + busterKey + ')@NUMBER(100,999' + busterKey + ')@NUMBER(1000,9999' + busterKey + ')', cache);
     },
     EMAIL: function(cache) {
-      return fromTemplate('@NAME.@LASTNAME@@LASTNAME(cb).com', cache).toLowerCase();
+      return fromTemplate('@NAME.@LASTNAME@@LASTNAME(cb)inc.com', cache).toLowerCase();
     },
     FULLNAME: function(cache) {
       return fromTemplate('@NAME @LASTNAME', cache);
@@ -82,40 +95,50 @@ define('src/core/mockery', [
     CHAR_UPPER: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
     CHAR_LOWER: 'abcdefghijklmnopqrstuvwxyz'.split(''),
     MNAME: ['James', 'John', 'Robert', 'Michael', 'William', 'David',
-        'Richard', 'Charles', 'Joseph', 'Thomas', 'Christopher', 'Daniel',
-        'Paul', 'Mark', 'Donald', 'George', 'Kenneth', 'Steven', 'Edward',
-        'Brian', 'Ronald', 'Anthony', 'Kevin', 'Jason', 'Matthew', 'Gary',
-        'Timothy', 'Jose', 'Larry', 'Jeffrey', 'Frank', 'Scott', 'Eric'],
+      'Richard', 'Charles', 'Joseph', 'Thomas', 'Christopher', 'Daniel',
+      'Paul', 'Mark', 'Donald', 'George', 'Kenneth', 'Steven', 'Edward',
+      'Brian', 'Ronald', 'Anthony', 'Kevin', 'Jason', 'Matthew', 'Gary',
+      'Timothy', 'Jose', 'Larry', 'Jeffrey', 'Frank', 'Scott', 'Eric',
+    ],
     FEMNAME: ['Mary', 'Patricia', 'Linda', 'Barbara', 'Elizabeth',
-        'Jennifer', 'Maria', 'Susan', 'Margaret', 'Dorothy', 'Lisa', 'Nancy',
-        'Karen', 'Betty', 'Helen', 'Sandra', 'Donna', 'Carol', 'Ruth', 'Sharon',
-        'Michelle', 'Laura', 'Sarah', 'Kimberly', 'Deborah', 'Jessica',
-        'Shirley', 'Cynthia', 'Angela', 'Melissa', 'Brenda', 'Amy', 'Anna'],
+      'Jennifer', 'Maria', 'Susan', 'Margaret', 'Dorothy', 'Lisa', 'Nancy',
+      'Karen', 'Betty', 'Helen', 'Sandra', 'Donna', 'Carol', 'Ruth', 'Sharon',
+      'Michelle', 'Laura', 'Sarah', 'Kimberly', 'Deborah', 'Jessica',
+      'Shirley', 'Cynthia', 'Angela', 'Melissa', 'Brenda', 'Amy', 'Anna',
+    ],
     LASTNAME: ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller',
-        'Davis', 'Garcia', 'Rodriguez', 'Wilson', 'Martinez', 'Anderson',
-        'Taylor', 'Thomas', 'Hernandez', 'Moore', 'Martin', 'Jackson',
-        'Thompson', 'White', 'Lopez', 'Lee', 'Gonzalez', 'Harris', 'Clark',
-        'Lewis', 'Robinson', 'Walker', 'Perez', 'Hall', 'Young', 'Allen'],
+      'Davis', 'Garcia', 'Rodriguez', 'Wilson', 'Martinez', 'Anderson',
+      'Taylor', 'Thomas', 'Hernandez', 'Moore', 'Martin', 'Jackson',
+      'Thompson', 'White', 'Lopez', 'Lee', 'Gonzalez', 'Harris', 'Clark',
+      'Lewis', 'Robinson', 'Walker', 'Perez', 'Hall', 'Young', 'Allen',
+    ],
     SEASON: ['Spring', 'Summer', 'Fall', 'Winter'],
 
-    DATE_YYYY: function() {
-      var yyyy = randomDate().getFullYear();
-      return yyyy + '';
+    NOW: function() {
+      return new Date();
     },
-    DATE_DD: function() {
-      return padLeft(randomDate().getDate(), '0', 2);
+    DATE: function(cache) {
+      //@TODO: correctly
+      return randomDate(cache);
     },
-    DATE_MM: function() {
-      return padLeft(randomDate().getMonth() + 1, '0', 2);
+    DATETIME: function(cache, startDaysFromNow, endDaysFromNow) {
+      return randomDate(cache, startDaysFromNow, endDaysFromNow);
     },
-    TIME_HH: function() {
-      return padLeft(randomDate().getHours(), '0', 2);
+
+    ADDRESS: function(cache) {
+      return fromTemplate('@NUMBER(100,1999,North) North @NUMBER(100,1999,East) East', cache);
     },
-    TIME_MM: function() {
-      return padLeft(randomDate().getMinutes(), '0', 2);
+    CITY: function(cache) {
+      return fromTemplate('@LASTNAME(City)ton', cache);
     },
-    TIME_SS: function() {
-      return padLeft(randomDate().getSeconds(), '0', 2);
+    STATEAB: function(cache) {
+      return fromTemplate('@CHAR_UPPER(StateA)@CHAR_UPPER(StateB)', cache);
+    },
+    ZIP: function(cache) {
+      return fromTemplate('8@NUMBER(1000,9999)', cache);
+    },
+    COUNTY: function(cache) {
+      return fromTemplate('@LASTNAME(County) County', cache);
     },
   };
   mockery.fn.NAME = [].concat(mockery.fn.MNAME).concat(mockery.fn.FEMNAME);
@@ -145,11 +168,15 @@ define('src/core/mockery', [
   function fromArrayTemplate(template, cache, range) {
     var result = [];
 
-    range = getRangeValue(range, 1, 10);
+    range = getRangeValue(cache, range, 1, 10);
 
     template = template[0];
     while (range > 0) {
-      cache = {}; // reset cache for each result value
+      // reset cache for each result value
+      cache = {
+        // copy __funcs
+        __funcs: cache.__funcs,
+      };
       result.push(fromTemplate(template, cache));
       range--;
     }
@@ -182,7 +209,7 @@ define('src/core/mockery', [
           template = template.replace(key, getData(key.substr(1), cache));
         });
 
-        repeatRange = getRangeValue(repeatRange, 1, 1);
+        repeatRange = getRangeValue(cache, repeatRange, 1, 1);
         while (repeatRange > 0) {
           repeatRange--;
           result += template;
@@ -194,14 +221,14 @@ define('src/core/mockery', [
     return result;
   }
 
-  function getRangeValue(range, defaultMin, defaultMax) {
+  function getRangeValue(cache, range, defaultMin, defaultMax) {
     var result,
       matches = (range || '').match(/(\d+)-(\d+)/);
 
     if (matches) {
-      result = randomFromRange(matches[1], matches[2], defaultMin, defaultMax);
+      result = randomFromRange(cache, matches[1], matches[2], defaultMin, defaultMax);
     } else {
-      result = randomFromRange(defaultMin, defaultMax);
+      result = randomFromRange(cache, defaultMin, defaultMax);
     }
     return result;
   }
@@ -259,7 +286,7 @@ define('src/core/mockery', [
 
       // must be an array or a function
       if (Array.isArray(fnValue)) {
-        result = fnValue[Math.floor(fnValue.length * mockery.random())];
+        result = fnValue[Math.floor(fnValue.length * cache.__funcs.random())];
       } else {
         result = fnValue.apply(null, params);
       }
@@ -272,29 +299,14 @@ define('src/core/mockery', [
     return result;
   }
 
-  function padLeft(txt, letter, length) {
-    txt += '';
-    while (txt.length < length) {
-      txt = letter + txt;
-    }
-    return txt;
-  }
-
-  function padRight(txt, letter, length) {
-    txt += '';
-    while (txt.length < length) {
-      txt += letter;
-    }
-    return txt;
-  }
-
   function incModulus(cache, refKey, key) {
-    var count = incMap[refKey] - identitySeed + 1,
-      refCount = mockery.fn.INC(cache, key) - identitySeed;
-    return (refCount % count) + identitySeed;
+    var obj = incMap[refKey],
+      count = obj.val - obj.idSeed + 1,
+      refCount = mockery.fn.INC(cache, key) - obj.idSeed;
+    return (refCount % count) + obj.idSeed;
   }
 
-  function randomFromRange(min, max, defaultMin, defaultMax) {
+  function randomFromRange(cache, min, max, defaultMin, defaultMax) {
     min = (min) ? parseInt(min, 10) : (defaultMin || 0);
     max = (max) ? parseInt(max, 10) : (defaultMax || 10);
     if (max < min) {
@@ -302,11 +314,22 @@ define('src/core/mockery', [
       max = min;
       min = tmp;
     }
-    return Math.round(mockery.random() * (max - min)) + min;
+    return Math.round(cache.__funcs.random() * (max - min)) + min;
   }
 
-  function randomDate() {
-    return new Date(Math.floor(mockery.random() * new Date().valueOf()));
+  function randomDate(cache, startDaysFromNow, endDaysFromNow) {
+    // startDaysFromNow/endDaysFromNow: number of days before or after now
+    //   - positive number goes into the future
+    //   - negative number goes into the past
+    startDaysFromNow = parseInt(startDaysFromNow, 10);
+    endDaysFromNow = parseInt(endDaysFromNow, 10);
+    if (!isNaN(startDaysFromNow) && !isNaN(endDaysFromNow)) {
+      var nowTimestamp = mockery.fn.NOW().valueOf(),
+        val = randomFromRange(cache, nowTimestamp + (startDaysFromNow * 86400000), nowTimestamp + (endDaysFromNow * 86400000));
+      return new Date(val);
+    } else {
+      return new Date(Math.floor(cache.__funcs.random() * Date.now()));
+    }
   }
 
   // set to Math.random if you want more random
@@ -317,14 +340,15 @@ define('src/core/mockery', [
     return x;
   };
   mockery.randomIndex = 1;
-  mockery.fromTemplate = function(template) {
-    return fromTemplate(template, {});
+  mockery.fromTemplate = function(template, randomFn, cache) {
+    cache = cache || {};
+    cache.__funcs = cache.__funcs || {};
+    cache.__funcs.random = randomFn || cache.__funcs.random || mockery.random;
+    return fromTemplate(template, cache);
   };
   mockery.log = false;
   mockery.getData = getData;
   mockery.randomFromRange = randomFromRange;
-  mockery.padLeft = padLeft;
-  mockery.padRight = padRight;
   mockery.incModulus = incModulus;
   mockery.addModulusValueFunc = function(name, values) {
     if (mockery.fn[name]) {
@@ -335,6 +359,109 @@ define('src/core/mockery', [
       return values[count++ % values.length];
     };
   };
+
+
+  mockery.filterListBy = function(list, propName, id) {
+    return list.filter(function(item) {
+      return item[propName] === id;
+    });
+  };
+  mockery.findSingleBy = function(list, propName, id) {
+    return list.filter(function(item) {
+      return item[propName] === id;
+    })[0];
+  };
+  mockery.findSingleOrAll = function(list, propName, id) {
+    var result;
+    if (id > 0 || (id && id.length)) {
+      result = mockery.findSingleBy(list, propName, id);
+    } else {
+      result = list;
+    }
+    return result;
+  };
+  mockery.createOrUpdate = function(list, idName, idTemplate, newValue) {
+    var id = newValue[idName],
+      index;
+    if (id > 0) {
+      if (!list.some(function(item, i) {
+        if (item[idName] === id) {
+          index = i;
+          return true;
+        }
+      })) {
+        throw new Error('invalid id. id not in list.');
+      }
+
+      // replace old value with new value
+      list.splice(index, 1, newValue);
+    } else {
+      newValue[idName] = mockery.fromTemplate(idTemplate, {
+        __funcs: {
+          random: mockery.random,
+        },
+      });
+      // add new value
+      list.push(newValue);
+    }
+    return newValue;
+  };
+  mockery.deleteItem = function(list, idName, id) {
+    var result;
+    list.some(function(item, index) {
+      if (item[idName] === id) {
+        // remove
+        list.splice(index, 1);
+        result = item;
+        return true;
+      }
+    });
+    return result;
+  };
+  mockery.saveWithNoPKey = function(list, newValue, findFunc) {
+    var index = findFunc(list, newValue);
+    if (index > -1) {
+      // update
+      list.splice(index, 1, newValue);
+    } else {
+      // create
+      list.push(newValue);
+    }
+    return newValue;
+  };
+  mockery.send = function(code, value, setter, cb, timeout) {
+    var err, result;
+    if (value) {
+      value = utils.clone(value);
+    }
+    if (code) {
+      err = {
+        Code: code,
+        Message: 'Error Code ' + code,
+        Value: value,
+      };
+      // } else if (!value) {
+      //   err = {
+      //     Code: 12345,
+      //     Message: 'No value',
+      //     Value: null,
+      //   };
+    } else {
+      result = {
+        Code: 0,
+        Message: 'Success',
+        Value: value,
+      };
+    }
+
+    setTimeout(function() {
+      if (!err && result && utils.isFunc(setter)) {
+        setter(result.Value);
+      }
+      cb(err, result);
+    }, timeout || 100);
+  };
+
 
   return mockery;
 });

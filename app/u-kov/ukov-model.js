@@ -15,8 +15,9 @@ define('src/u-kov/ukov-model', [
   });
 
   function UkovModel(updateParent, parentModel, doc, key) {
-    this.model = parentModel[key];
-    if (!this.model) {
+    var _this = this;
+    _this.model = parentModel[key];
+    if (!_this.model) {
       throw new Error('missing model for key: ' + key);
     }
 
@@ -28,42 +29,44 @@ define('src/u-kov/ukov-model', [
     });
 
     // ensure update always has the correct scope
-    this.update = this.update.bind(this);
+    _this.update = _this.update.bind(_this);
 
-    this.updateParent = updateParent;
-    this.parentModel = parentModel;
-    this.doc = doc;
-    this.key = key;
+    _this.updateParent = updateParent;
+    _this.parentModel = parentModel;
+    _this.doc = doc;
+    _this.key = key;
 
-    this.isClean = doc.alwaysClean ? alwaysClean : ko.observable(true);
-    this.errMsg = ko.observable();
-    this.isValid = ko.computed(function() {
-      return !this.errMsg();
-    }, this);
+    _this.isClean = doc.alwaysClean ? alwaysClean : ko.observable(true);
+    _this.errMsg = ko.observable();
+    _this.isValid = ko.computed(function() {
+      return !_this.errMsg();
+    }, _this);
 
     // setup each property on the model that is in the doc
-    Object.keys(this.doc).forEach(function(key) {
+    Object.keys(_this.doc).forEach(function(key) {
       // setup ukov item
-      this[key] = this.createChild(key);
-    }, this);
+      _this[key] = _this.createChild(key);
+    }, _this);
 
-    if (!this.parentModel) {
+    if (!_this.parentModel) {
       // start clean if we're the top model
-      this.markClean();
+      _this.markClean();
     }
   }
   UkovModel.prototype.updateStoredValue = function() {
-    this.parentModel[this.key] = this.model;
-    return this.model;
+    var _this = this;
+    _this.parentModel[_this.key] = _this.model;
+    return _this.model;
   };
   UkovModel.prototype.createChild = function( /*index, initialValue*/ ) {
     throw new Error('override me in ukov.js');
   };
   UkovModel.prototype.update = function(preventParentUpdate, drillDown) {
-    var item, isClean = true,
+    var _this = this,
+      item, isClean = true,
       errMsg;
-    Object.keys(this.doc).some(function(key) {
-      item = this[key];
+    Object.keys(_this.doc).some(function(key) {
+      item = _this[key];
       if (drillDown) {
         item.update(true, drillDown);
       }
@@ -81,28 +84,25 @@ define('src/u-kov/ukov-model', [
       }
       // stop if errored and dirty
       return !isClean && errMsg;
-    }, this);
+    }, _this);
 
-    this.errMsg(errMsg);
-    this.isClean(isClean);
+    _this.errMsg(errMsg);
+    _this.isClean(isClean);
 
     if (!preventParentUpdate) {
-      this.updateParent();
+      _this.updateParent();
     }
   };
   UkovModel.prototype.validate = function() {
-    Object.keys(this.doc).forEach(function(key) {
-      this[key].validate();
-    }, this);
+    var _this = this;
+    Object.keys(_this.doc).forEach(function(key) {
+      _this[key].validate();
+    }, _this);
   };
   UkovModel.prototype.ignore = function(ignoreVal, allowParentUpdate) {
     var _this = this;
     if (arguments.length) {
-      if (ignoreVal) {
-        _this._ignore = true;
-      } else {
-        delete _this._ignore;
-      }
+      _this._ignore = !!ignoreVal;
       // set ignore on fields
       Object.keys(_this.doc).forEach(function(key) {
         _this[key].ignore(ignoreVal, false);
@@ -110,37 +110,46 @@ define('src/u-kov/ukov-model', [
       // update self
       _this.update(!allowParentUpdate && _this.parentModel);
     }
-    return !!_this._ignore;
+    return _this._ignore;
   };
   UkovModel.prototype.markClean = function(cleanVal, allowParentUpdate) {
     cleanVal = cleanVal || {};
 
-    Object.keys(this.doc).forEach(function(key) {
-      this[key].markClean(cleanVal[key]);
-    }, this);
+    var _this = this;
+    Object.keys(_this.doc).forEach(function(key) {
+      _this[key].markClean(cleanVal[key]);
+    }, _this);
 
-    this.update(!allowParentUpdate && this.parentModel);
+    _this.update(!allowParentUpdate && _this.parentModel);
   };
-  UkovModel.prototype.setVal = function(val) {
+  UkovModel.prototype.setValue = function(val) {
     val = val || {};
 
-    Object.keys(this.doc).forEach(function(key) {
+    var _this = this;
+    Object.keys(_this.doc).forEach(function(key) {
       if (val.hasOwnProperty(key)) {
-        this[key].setVal(val[key]);
+        _this[key].setValue(val[key]);
       }
-    }, this);
+    }, _this);
 
-    this.update(true);
+    _this.update(true);
   };
 
-  UkovModel.prototype.getValue = function(onlyDirty) {
-    var result = {}, prop;
-    Object.keys(this.doc).forEach(function(key) {
-      prop = this[key];
+  UkovModel.prototype.getValue = function(onlyDirty, excludeIgnored) {
+    var _this = this,
+      result = {},
+      prop;
+    Object.keys(_this.doc).forEach(function(key) {
+      prop = _this[key];
       if (!onlyDirty || !prop.isClean()) {
-        result[key] = prop.getValue();
+        if (!excludeIgnored || !prop.ignore()) {
+          result[key] = prop.getValue();
+        } else {
+          // use null for ignored values
+          result[key] = null;
+        }
       }
-    }, this);
+    }, _this);
     return result;
   };
 

@@ -1,0 +1,35 @@
+.spinner-wrap {
+  position: absolute;
+  top:0px;right:0px;bottom:0px;left:0px;
+  z-index: 1; // put above slickgrid
+
+  &.white {
+    // white has a black background
+    background-color: rgba(0,0,0, 0.2);
+  }
+  &.black {
+    // black has a white background
+    background-color: rgba(255,255,255, 0.6);
+  }
+
+  // .transition(opacity .25s);
+  // opacity: 0;
+  // &.active {
+  //   opacity: 1;
+  //   z-index: 110;
+  // }
+
+  > .spinner {
+    @width:60px;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: (@width/2) * -1;
+    margin-top: (@width/2) * -1;
+    display: block;
+
+    width:@width;
+    height:@width;
+  }
+}

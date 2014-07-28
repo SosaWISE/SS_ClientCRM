@@ -39,7 +39,8 @@ define('src/core/harold.spec', [
         }).toThrow();
       });
       it('should return result of `onFetch` function', function() {
-        var ctx = {}, result = 'onFetch result';
+        var ctx = {},
+          result = 'onFetch result';
         h.onFetch('evt:name', ctx, function() {
           return result;
         });
@@ -54,7 +55,8 @@ define('src/core/harold.spec', [
         }).not.toThrow();
       });
       it('should send data to all `onSend` functions', function() {
-        var ctx = {}, sendValues = [];
+        var ctx = {},
+          sendValues = [];
         h.onSend('evt:NO', ctx, function(data) {
           sendValues.push(data + 'NO');
         });
@@ -72,7 +74,8 @@ define('src/core/harold.spec', [
         expect(sendValues[1]).toBe('val2');
       });
       it('should call `onSend` functions with correct context', function() {
-        var ctx = {}, sendCtx;
+        var ctx = {},
+          sendCtx;
         h.onSend('evt:name', ctx, function() {
           sendCtx = this;
         });
@@ -84,7 +87,8 @@ define('src/core/harold.spec', [
     });
     describe('unSend', function() {
       it('should remove `onSend` functions that match eventName and context', function() {
-        var ctx1 = {}, ctx2 = {},
+        var ctx1 = {},
+          ctx2 = {},
           sendValues = [];
         h.onSend('evt:a', ctx1, function(data) {
           sendValues.push(data + 'a1');
@@ -109,7 +113,8 @@ define('src/core/harold.spec', [
         expect(sendValues[1]).toBe('valb1');
       });
       it('no context should remove all `onSend` functions that match eventName', function() {
-        var ctx1 = {}, ctx2 = {},
+        var ctx1 = {},
+          ctx2 = {},
           sendValues = [];
         h.onSend('evt:a', ctx1, function() {
           sendValues.push('a1');

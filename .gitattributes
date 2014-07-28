@@ -1,0 +1,25 @@
+# all text files should have the end of line character changed to linefeed
+* text eol=lf
+
+# binary files will not be modified (i copied this list from binary_file_patterns in my sublime settings)
+*.gz binary
+*.node binary
+*.bin binary
+*.woff binary
+*.msi binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.ttf binary
+*.tga binary
+*.dds binary
+*.ico binary
+*.eot binary
+*.pdf binary
+*.swf binary
+*.jar binary
+*.zip binary
+*.Zip binary
+*.exe binary
+*.dll binary

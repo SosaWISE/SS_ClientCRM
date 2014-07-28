@@ -12,19 +12,20 @@ define('src/dataservices/salessummary', [
       result = {};
 
     [
-      'pointsystems',
+      'pointSystems',
       'activationfees',
       'surveytypes',
-      'cellulartypes',
-      'vendoralarmcompacakges',
+      'panelTypes',
+      'cellularTypes',
+      'vendorAlarmcomPacakges',
       'equipmentbypointsget',
-      'contractlengthsget',
-      'frequentlyinstalledequipmentget',
-      'invoicerefresh',
-      'invoicemsisntalls'
+      'contractLengthsGet',
+      'frequentlyInstalledEquipmentGet',
+      'invoiceRefresh',
+      'invoiceMsIsntalls'
     ].forEach(function(collectionName) {
-        result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
-      });
+      result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
+    });
 
     return result;
   };

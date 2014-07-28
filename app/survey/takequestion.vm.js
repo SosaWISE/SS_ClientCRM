@@ -1,124 +1,203 @@
 define('src/survey/takequestion.vm', [
-  'src/core/strings',
-  'src/core/combo.vm',
+  'src/survey/questionschemas',
+  'src/ukov',
   'ko',
+  'src/core/treehelper',
+  'src/core/combo.vm',
+  'src/core/strings',
   'src/core/notify',
+  'src/survey/questions.parent.vm', //'src/core/base.vm',
   'src/core/utils',
-  'src/core/base.vm',
 ], function(
-  strings,
-  ComboViewModel,
+  questionschemas,
+  ukov,
   ko,
+  treehelper,
+  ComboViewModel,
+  strings,
   notify,
-  utils,
-  BaseViewModel
+  QuestionsParentViewModel,
+  utils
 ) {
   'use strict';
 
   function TakeQuestionViewModel(options) {
     var _this = this;
     TakeQuestionViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, []);
+    QuestionsParentViewModel.ensureProps(_this, ['ukovModel', 'QuestionID', 'show']);
 
     _this.showSubs = ko.observable(false);
-    _this.parent = ko.observable();
+    _this.fails = ko.observable(false);
+    initAnswer(_this);
 
     // computed observables
-    _this.name = ko.computed({
-      deferEvaluation: true,
-      read: function() {
-        return getName(_this.parent(), _this.GroupOrder);
-      },
-    });
     _this.isComplete = ko.computed({
       deferEvaluation: true,
       read: function() {
-        // complete if children are complete
-        var subsComplete = true;
-        if (_this.showSubs() && _this.questions.length) {
-          subsComplete = _this.questions.every(function(q) {
-            return q.isComplete();
+        // complete if valid and children are complete
+        var showSubs = _this.showSubs(),
+          questions = _this.questions(),
+          complete = _this.answer.isValid();
+        if (showSubs && questions.length) {
+          complete = questions.every(function(q) {
+            return !_this.show || q.isComplete();
           });
         }
-        //@TODO: add answer validation
-        if (_this.answer.isValid) {
-          return strings.trim(_this.answer.isValid()) && subsComplete;
-        } else {
-          return strings.trim(_this.answer()) && subsComplete;
-        }
+        return complete;
       },
     });
 
     //
     // events
     //
-    _this.clickAnswer = function(questionPossibleAnswerMap) {
-      _this.answer(questionPossibleAnswerMap.text);
-      _this.showSubs(questionPossibleAnswerMap.Expands);
+    _this.clickAnswer = function(paMap) {
+      _this.answer(paMap.text);
     };
+  }
+  // utils.inherits(TakeQuestionViewModel, BaseViewModel);
+  utils.inherits(TakeQuestionViewModel, QuestionsParentViewModel);
+  TakeQuestionViewModel.prototype.viewTmpl = 'tmpl-takequestion';
 
-    //
-    if (_this.answerText) {
-      _this.answer = ko.observable('');
-      _this.answerMode = "answered";
-      if (_this.questionPossibleAnswerMaps.length) {
-        if (!_this.questionPossibleAnswerMaps.some(function(paMap) {
-          if (paMap.text === _this.answerText) {
-            _this.clickAnswer(paMap);
-            return true;
+  // recursively add answers and return first error message
+  TakeQuestionViewModel.prototype.addAnswers = function(list) {
+    var _this = this,
+      errMsg, answer;
+    if (_this.answer.isValid()) {
+      //
+      if (!errMsg && _this.fails.peek()) {
+        errMsg = 'Auto Fail';
+      }
+      //
+      answer = _this.answer.getValue();
+      list.push({
+        QuestionId: _this.QuestionID,
+        AnswerText: (answer != null) ? String(answer) : null, // ensure it is a string
+        // use to create map to token answers
+        MapToToken: _this.MapToToken,
+        Answer: answer,
+        //
+        Fails: _this.fails.peek(),
+      });
+      if (_this.showSubs()) {
+        // begin recursion
+        _this.questions.peek().forEach(function(vm) {
+          var result = vm.addAnswers(list);
+          // only store first error message
+          if (!errMsg) {
+            errMsg = result;
           }
-        })) {
-          throw new Error('`' + _this.answerText + '` not found in list of possible answers');
-        }
-      } else {
-        _this.answer(_this.answerText);
+        });
       }
     } else {
+      errMsg = _this.answer.errMsg();
+    }
+    return errMsg;
+  };
+
+  TakeQuestionViewModel.prototype.findPam = function(answerText) {
+    var _this = this,
+      result;
+    if (_this.questionPossibleAnswerMaps.length) {
+      _this.questionPossibleAnswerMaps.some(function(paMap) {
+        if (paMap.text === answerText) {
+          result = paMap;
+          return true;
+        }
+      });
+    }
+    return result;
+  };
+
+  TakeQuestionViewModel.prototype.addQuestion = function(vm) {
+    var _this = this;
+    // add to list
+    _this.questions.push(vm);
+    //
+    _this.updateChildNames();
+    return vm;
+  };
+
+  function initAnswer(_this) {
+    if (_this.answer) {
+      throw new Error('`answer` already defined');
+    }
+
+    if (_this.readonly) {
+      // can't edit
+      _this.answerMode = "answered";
+      _this.answer = createChildProp(_this);
+    } else {
+      // editable
       _this.answerMode = calcAnswerMode(_this.questionPossibleAnswerMaps.length);
       if (_this.answerMode === 'text') {
-        //@TODO: use MapToToken observable
-        // BaseViewModel.ensureProps(_this, ['mapToTokenObservable']);
-        // _this.answer = ???;
-        _this.answer = ko.observable('');
+        _this.answer = createChildProp(_this, _this.MapToToken);
       } else {
-        _this.answer = ko.observable('');
-      }
-      switch (_this.answerMode) {
-        case 'radiolist':
-          break;
-        case 'combo':
+        _this.answer = createChildProp(_this);
+
+        if (_this.answerMode === 'combo') {
           _this.cvm = new ComboViewModel({
+            selectedValue: _this.answer,
             fields: {
               text: 'text',
               value: 'text',
             },
             list: _this.questionPossibleAnswerMaps
           });
-          _this.cvm.selected.subscribe(function(selected) {
-            _this.clickAnswer(selected.item);
-          });
-          break;
-        case 'text':
-          break;
+        }
       }
     }
-  }
-  utils.inherits(TakeQuestionViewModel, BaseViewModel);
-  TakeQuestionViewModel.prototype.viewTmpl = 'tmpl-takequestion';
 
-  function getName(parent, index) {
-    var pName = parent ? parent.name() : '';
-    return pName + index + '.';
+    // update childs when answer is set
+    _this.answer.subscribe(function(answerText) {
+      var paMap = _this.findPam(answerText),
+        expands = !!paMap && paMap.Expands;
+
+      _this.showSubs(expands);
+      _this.fails(paMap && paMap.Fails);
+
+      // recursively update child questions to make ukovModel match showSubs and isComplete
+      // ukovModel questions are flat so ignoring just this question's questions won't work
+      treehelper.walkTree(_this, 'questions', function(vm) {
+        vm.answer.ignore(!expands);
+      });
+      _this.ukovModel.update();
+    });
+
+    // set correct answerText(not null) and mark it as clean
+    _this.answer(_this.answerText || '');
+    _this.answer.markClean();
+  }
+
+  function createChildProp(_this, tokenName) {
+    var key = _this.QuestionID,
+      doc = _this.ukovModel.doc,
+      child;
+    if (doc[key]) {
+      console.warn('duplicate question ' + key);
+    }
+
+    tokenName = tokenName || 'default';
+
+    // add this prop's schema to the parent doc
+    if (!questionschemas[tokenName]) {
+      console.warn('questionschemas does not have token: ' + tokenName);
+      doc[key] = {}; // empty schema???
+    } else {
+      doc[key] = questionschemas[tokenName];
+    }
+
+    child = _this.ukovModel.createChild(key); // value will default to null
+    return (_this.ukovModel[key] = child);
   }
 
   function calcAnswerMode(num) {
     var result;
-    if (num > 2) {
-      result = 'combo';
-    } else if (num > 0) {
+    if (num < 1) {
+      result = 'text';
+    } else if (num < 3) {
       result = 'radiolist';
     } else {
-      result = 'text';
+      result = 'combo';
     }
     return result;
   }

@@ -1,12 +1,27 @@
 module.exports = function(grunt) {
   'use strict';
 
+  var path = require('path'),
+    jsfiles;
+
+  jsfiles = [
+    '**/*.js',
+    // exclude files
+    '!app/flowMap/**/*.js',
+    '!node_modules/**/*.js',
+    '!testing/**/*.js',
+    '!tparty/**/*.js',
+  ];
+
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jade');
   grunt.loadNpmTasks('grunt-contrib-less');
+  grunt.loadNpmTasks('grunt-jsbeautifier');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-exec');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -20,30 +35,45 @@ module.exports = function(grunt) {
         },
         src: [
           // delete everything in build folder except webconfig.js
-          '<%= www %>/*', '!<%= www %>/webconfig.js',
+          '<%= www %>/**/*', '!<%= www %>/webconfig.js',
         ]
       }
     },
 
     copy: {
-      production: {
-        files: [
+      webconfig: {
+        src: 'webconfig-example.js',
+        dest: 'webconfig.js',
+        filter: function() { // only copy if webconfig.js doesn't exist
+          return !grunt.file.exists('webconfig.js');
+        },
+      },
+      prod: {
+        files: [ //
           {
+            src: 'webconfig-example.js',
+            dest: '<%= www %>/webconfig.js',
+            filter: function() { // only copy if webconfig.js doesn't exist in output dir
+              return !grunt.file.exists(path.join(path.join(grunt.config('www'), 'webconfig.js')));
+            },
+          }, {
             src: [
               'logindummy.html',
-              'stuff/fonts/*',
-              'stuff/img/*',
+              'stuff/fonts/**/*',
+              'stuff/img/**/*',
               // specs
-              'tparty/jasmine/*',
+              'tparty/jasmine/**/*',
               'tparty/depends.js',
             ],
             dest: '<%= www %>/'
-          },
-          {
+          }, {
             src: 'depends-production.conf.js',
             dest: '<%= www %>/depends.conf.js',
+          }, {
+            src: 'depends-production.debug.conf.js',
+            dest: '<%= www %>/depends.debug.conf.js',
           },
-        ]
+        ],
       },
     },
     concat: {
@@ -68,6 +98,7 @@ module.exports = function(grunt) {
           'tparty/slick.core.js',
           'tparty/slick.grid.js',
           'tparty/slick.rowselectionmodel.js',
+          'tparty/slick.editors.js',
           'tparty/slick-production.js',
           // actual package
           'app/slick/**/*.js', '!app/slick/**/*.spec.js',
@@ -89,11 +120,11 @@ module.exports = function(grunt) {
           'app/**/*.js',
           // exclude specs and packages
           '!app/**/*.spec.js',
-          '!app/account/*',
-          '!app/survey/*',
-          '!app/core/*',
-          '!app/slick/*',
-          '!app/u-kov/*',
+          '!app/account/**/*',
+          '!app/survey/**/*',
+          '!app/core/**/*',
+          '!app/slick/**/*',
+          '!app/u-kov/**/*',
         ],
         dest: '<%= www %>/app.debug.js',
       },
@@ -102,13 +133,14 @@ module.exports = function(grunt) {
         src: [
           'tparty/depends.js',
 
-          'tparty/jquery-*.js',
+          'tparty/jquery-1.10.2.js',
+          'tparty/jquery-ui-1.10.4.custom.js',
           'tparty/knockout.js',
           'tparty/moment.js',
           'tparty/underscore.js',
           'tparty/markdown.js',
-
           'tparty/definelibs.js',
+          'tparty/fullcalendar.js',
         ],
         dest: '<%= www %>/lib.debug.js',
       },
@@ -123,9 +155,9 @@ module.exports = function(grunt) {
       },
     },
     uglify: {
-      production: {
+      prod: {
         options: {
-          mangle: false,
+          mangle: true,
         },
         files: {
           '<%= www %>/account.js': ['<%= www %>/account.debug.js'],
@@ -141,10 +173,12 @@ module.exports = function(grunt) {
       }
     },
     jade: {
-      production: {
+      prod: {
         options: {
           data: {
             release: true,
+            // release: false,
+            // debug: true,
           },
         },
         files: {
@@ -152,9 +186,32 @@ module.exports = function(grunt) {
           '<%= www %>/spec/index.html': 'spec/index.jade',
         },
       },
+      prod_debug: {
+        options: {
+          data: {
+            release: false,
+            debug: true,
+          },
+        },
+        files: {
+          '<%= www %>/index.debug.html': 'index.jade',
+          '<%= www %>/spec/index.debug.html': 'spec/index.jade',
+        },
+      },
+      dev: {
+        options: {
+          data: {
+            release: false,
+          },
+        },
+        files: {
+          'index.html': 'index.jade',
+          'spec/index.html': 'spec/index.jade',
+        },
+      },
     },
     less: {
-      production: {
+      prod: {
         options: {
           cleancss: true,
         },
@@ -162,14 +219,67 @@ module.exports = function(grunt) {
           '<%= www %>/index.css': 'index.less',
         },
       },
+      dev: {
+        options: {
+          cleancss: false,
+        },
+        files: {
+          'index.css': 'index.less',
+        },
+      },
     },
+
+    jsbeautifier: {
+      format: {
+        src: jsfiles,
+        options: {
+          config: '.jsbeautifyrc',
+        },
+      },
+      test: {
+        src: jsfiles,
+        options: {
+          config: '.jsbeautifyrc',
+          mode: 'VERIFY_ONLY',
+        },
+      },
+    },
+    jshint: {
+      jsfiles: jsfiles,
+      options: {
+        jshintrc: '.jshintrc',
+      },
+    },
+
+    // exec: {
+    //   npm_install: 'npm install',
+    // },
   });
 
-  grunt.registerTask('default', [
-    'copy',
+  grunt.registerTask('init', [
+    'copy:webconfig',
+  ]);
+
+  grunt.registerTask('build', [
+    'copy:prod',
     'concat',
     'uglify',
-    'jade',
-    'less',
+    'jade:prod',
+    'jade:prod_debug',
+    'less:prod',
+  ]);
+  grunt.registerTask('build-dev', [
+    'jade:dev',
+    'less:dev',
+  ]);
+  grunt.registerTask('jsformat', [
+    'jsbeautifier:format',
+  ]);
+
+
+  grunt.registerTask('precommit', [
+    // 'exec:npm_install', // before running make sure node_modules match package.json
+    'jsbeautifier:test', // faster than jshint
+    'jshint',
   ]);
 };

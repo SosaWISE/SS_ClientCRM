@@ -1,13 +1,23 @@
-!!! HTML5
+doctype HTML5
 html
   head
     title Nexsense
     meta(http-equiv='X-UA-Compatible', content='IE=Edge,chrome=1')
     meta(http-equiv='content-type', content='text/html; charset=utf-8')
-    link(href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,300', rel='stylesheet', type='text/css')
     link(rel="stylesheet", type='text/css', media='screen', href="index.css")
+    link(rel="shortcut icon",href="stuff/img/favicon.ico",type="image/x-icon")
+    //- include contents of index.js
+    script
+      include index.js
+    //- script(src="index.js")
   body
-    div(id="main")
+    div(id="siteLoading",style="background-color:#772E6D;color:#fff;height:100%;width:100%;display:table;text-align:center;")
+      span(style="display:table-cell;vertical-align:middle;font-weight:500;")
+        |Loading...
+        span(id="loadingSeconds")
+
+    div(id="main",data-bind="attr:{'class':os}")
+
       div(style="display:none;", id="login-container", data-bind="with:login")
         div(data-bind="template:viewTmpl", id="login-panel")
 
@@ -25,7 +35,7 @@ html
               div(data-bind="visible:active")
                 div(class="indicator")
               span(class="ico", data-bind="html:ico")
-              span(class="txt", data-bind="text:name")
+              span(class="txt", data-bind="text:title")
           <!-- /ko -->
 
         div(class="wrap")
@@ -34,6 +44,7 @@ html
               div(data-bind="template:viewTmpl,attr:{id:id+'-panel'}")
 
       div(data-bind="template:{name:'tmpl-notices',data:notify}")
+      div(class="notify-position-toggle",data-bind="click:notify.clickToggle")
 
     //- templates
     div(style="display:none")
@@ -43,18 +54,22 @@ html
       include ./app/panels/_all.jade
       include ./app/survey/_all.jade
       include ./app/scrum/_all.jade
+      include ./app/inventory/_all.jade
+      include ./app/scheduling/_all.jade
 
     //- testing
     script parent.browser && parent.browser.init(window);
 
     //- js
-    script(src="depends.conf.js")
     if release
+      script(src="depends.conf.js")
       script(src="lib.js")
       script(src="app.js")
     else if debug
+      script(src="depends.debug.conf.js")
       script(src="lib.debug.js")
       script(src="app.debug.js")
     else
+      script(src="depends.conf.js")
       script(src="tparty/depends.js")
     script require('src/bootstrapper');
