@@ -74,44 +74,44 @@ define('src/scheduling/schedule.vm', [
   ScheduleViewModel.prototype.onActivate = function( /*routeData, extraData, join*/ ) { // override me
     var _this = this,
       join = joiner(),
-      tSource = [], //temporary list of tickets
+      //tSource = [], //temporary list of tickets
       CalLoading = true;
 
 
     //create temporary list of tickets
-    tSource = [{
-      id: 1,
-      title: null,
-      start: '2014-07-22 01:00',
-      end: '2014-07-22 03:00',
-      allDay: false,
-      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
-      backgroundColor: 'white',
-    }, {
-      id: 2,
-      title: null,
-      start: '2014-07-21 02:15',
-      end: '2014-07-21 06:15',
-      allDay: false,
-      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
-      backgroundColor: 'red',
-    }, {
-      id: 3,
-      title: null,
-      start: '2014-07-23 02:15',
-      end: '2014-07-23 06:15',
-      allDay: false,
-      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
-      backgroundColor: 'orange',
-    }, {
-      id: 4,
-      title: null,
-      start: '2014-07-24 00:30',
-      end: '2014-07-24 02:30',
-      allDay: false,
-      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
-      backgroundColor: 'skyblue',
-    }];
+    // tSource = [{
+    //   id: 1,
+    //   title: null,
+    //   start: '2014-07-22 01:00',
+    //   end: '2014-07-22 03:00',
+    //   allDay: false,
+    //   someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
+    //   backgroundColor: 'white',
+    // }, {
+    //   id: 2,
+    //   title: null,
+    //   start: '2014-07-21 02:15',
+    //   end: '2014-07-21 06:15',
+    //   allDay: false,
+    //   someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
+    //   backgroundColor: 'red',
+    // }, {
+    //   id: 3,
+    //   title: null,
+    //   start: '2014-07-23 02:15',
+    //   end: '2014-07-23 06:15',
+    //   allDay: false,
+    //   someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
+    //   backgroundColor: 'orange',
+    // }, {
+    //   id: 4,
+    //   title: null,
+    //   start: '2014-07-24 00:30',
+    //   end: '2014-07-24 02:30',
+    //   allDay: false,
+    //   someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
+    //   backgroundColor: 'skyblue',
+    // }];
 
 
     //load block list    
@@ -136,8 +136,8 @@ define('src/scheduling/schedule.vm', [
         _this.layersVm.show(new ScheduleTicketViewModel({
           date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
           blockId: calEvent.id,
-        }), function onClose( /*result*/ ) {
-
+        }), function onClose(cb) {
+          load_scheduleBlockList(cb);
         });
       },
 
@@ -179,7 +179,7 @@ define('src/scheduling/schedule.vm', [
         }
       },
 
-      //add some more info on events
+      //add some more info on blocks
       eventRender: function(event, element) {
         element.find('.fc-event-title').append("<br/>" + event.someInfo);
       }
@@ -211,6 +211,9 @@ define('src/scheduling/schedule.vm', [
       end = new Date(current.setDate(weekend)),
       param,
       x,
+      tColor,
+      slotAvailable,
+      numTickets,
       data = {},
       result = [];
 
@@ -228,14 +231,35 @@ define('src/scheduling/schedule.vm', [
         console.log("SeScheduleBlockList:" + JSON.stringify(resp.Value));
 
         for (x = 0; x < resp.Value.length; x++) {
+
+          //color coding blocks
+          slotAvailable = resp.Value[x].AvailableSlots;
+          numTickets = (resp.Value[x].NoOfTickets === null) ? 0 : resp.Value[x].NoOfTickets;
+
+          /**
+          White – The entire block is free to schedule a service
+          Blue – There is tickets scheduled in the block and there are spaces still available
+          Red – The block cannot be scheduled in unless there is a manager override
+          Orange – The block is completely full and will not allow further tickets to be scheduled
+          **/
+
+          if (numTickets > 0 && numTickets < slotAvailable) {
+            tColor = 'skyblue';
+          } else if (numTickets >= slotAvailable) {
+            tColor = 'orange';
+          } else {
+            tColor = 'white';
+          }
+
+          //objects to display on scheduler grid
           data = {
             id: resp.Value[x].BlockID,
             title: null,
             start: resp.Value[x].StartTime,
             end: resp.Value[x].EndTime,
             allDay: false,
-            someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + resp.Value[x].ZipCode + ' <br /> Max Radius: ' + resp.Value[x].MaxRadius + ' miles <br /> Distance: ' + resp.Value[x].Distance + ' miles <br /> Available: ' + resp.Value[x].AvailableSlots + ' of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
-            backgroundColor: 'skyblue', //temporary
+            someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + resp.Value[x].ZipCode + ' <br /> Max Radius: ' + resp.Value[x].MaxRadius + ' miles <br /> Distance: ' + resp.Value[x].Distance + ' miles <br /> Available: ' + numTickets + ' of ' + resp.Value[x].AvailableSlots + ' <br /><hr> Daniel Ellis (0 of 2) <br />',
+            backgroundColor: tColor,
           };
 
           //list of blocks from server

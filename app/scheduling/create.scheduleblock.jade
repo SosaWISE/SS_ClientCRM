@@ -2,6 +2,9 @@ ul(class="edit-form")
 	li
 		input(type="hidden" id="eventID")
 	li
+		label Number of Slots
+		input(type="text" data-bind="ukov:data.ScheduleAvailableSlot, value:data.ScheduleAvailableSlot, valueUpdate:'keyup', select:focusFirst")
+	li
 		label Zip
 		input(type="text" data-bind="ukov:data.ScheduleZip, value:data.ScheduleZip, valueUpdate:'keyup'")
 	li
@@ -11,7 +14,7 @@ ul(class="edit-form")
 		label Distance
 		input(type="text" data-bind="ukov:data.ScheduleDistance, value:data.ScheduleDistance, valueUpdate:'keyup'")
 	li
-		//-ppointment Date
+		//-Appointment Date
 		input(type="hidden" data-bind="ukov:data.ScheduleDate, value:data.ScheduleDate, valueUpdate:'keyup'")
 	li
 		label Block Startime
