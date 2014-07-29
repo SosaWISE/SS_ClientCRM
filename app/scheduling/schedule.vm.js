@@ -133,12 +133,19 @@ define('src/scheduling/schedule.vm', [
       //events: tSource,
       hiddenDays: [0], //hide sunday      
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
-        _this.layersVm.show(new ScheduleTicketViewModel({
-          date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
-          blockId: calEvent.id,
-        }), function onClose(cb) {
-          load_scheduleBlockList(cb);
-        });
+
+        console.log(parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10));
+
+        //only create ticket if # of tickets is less than the available slot
+        if (parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10)) {
+          _this.layersVm.show(new ScheduleTicketViewModel({
+            date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
+            blockId: calEvent.id,
+          }), function onClose(cb) {
+            load_scheduleBlockList(cb);
+          });
+        }
+
       },
 
       eventDrop: function(event /*, dayDelta, minuteDelta, allDay, revertFunc*/ ) {
@@ -257,6 +264,8 @@ define('src/scheduling/schedule.vm', [
             title: null,
             start: resp.Value[x].StartTime,
             end: resp.Value[x].EndTime,
+            slot: slotAvailable,
+            nTickets: numTickets,
             allDay: false,
             someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + resp.Value[x].ZipCode + ' <br /> Max Radius: ' + resp.Value[x].MaxRadius + ' miles <br /> Distance: ' + resp.Value[x].Distance + ' miles <br /> Available: ' + numTickets + ' of ' + resp.Value[x].AvailableSlots + ' <br /><hr> Daniel Ellis (0 of 2) <br />',
             backgroundColor: tColor,
