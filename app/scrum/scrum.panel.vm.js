@@ -65,26 +65,26 @@ define('src/scrum/scrum.panel.vm', [
     ensureDeps(function() {
       _this.chatVm(new deps.ChatViewModel());
 
-      load_projects(_this, join);
+      //load_projects(_this, join);
 
       cb();
     });
   };
 
-  function load_projects(_this, join) {
-    var cb = join.add();
-    dataservice.scrum.projects.read({}, null, utils.safeCallback(cb, function(err, resp) {
-      var list = resp.Value.map(function(item) {
-        return new deps.ProjectViewModel({
-          pcontroller: _this,
-          id: item.ID,
-          title: item.Name,
-          item: item,
-        });
-      });
-      _this.projects(list);
-    }, utils.noop));
-  }
+  // function load_projects(_this, join) {
+  //   var cb = join.add();
+  //   dataservice.scrum.projects.read({}, null, utils.safeCallback(cb, function(err, resp) {
+  //     var list = resp.Value.map(function(item) {
+  //       return new deps.ProjectViewModel({
+  //         pcontroller: _this,
+  //         id: item.ID,
+  //         title: item.Name,
+  //         item: item,
+  //       });
+  //     });
+  //     _this.projects(list);
+  //   }, utils.noop));
+  // }
 
   return ScrumPanelViewModel;
 });
