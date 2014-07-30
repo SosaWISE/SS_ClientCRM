@@ -136,7 +136,7 @@ define('src/scheduling/schedule.vm', [
 
         console.log(parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10));
 
-        //only create ticket if # of tickets is less than the available slot
+        //show create ticket screen only when there are still spaces available for a specific block
         if (parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10)) {
           _this.layersVm.show(new ScheduleTicketViewModel({
             date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
@@ -149,7 +149,7 @@ define('src/scheduling/schedule.vm', [
       },
 
       eventDrop: function(event /*, dayDelta, minuteDelta, allDay, revertFunc*/ ) {
-        new UpdateEvent(event.id, event.start);
+        new UpdateEvent(event.id, event.start, event.end);
       },
 
       eventResize: function(event /*, dayDelta, minuteDelta, revertFunc*/ ) {
@@ -196,15 +196,20 @@ define('src/scheduling/schedule.vm', [
   };
 
   function UpdateEvent(EventID, EventStart, EventEnd) {
-
-    var dataRow = {
-      'ID': EventID,
-      'NewStartTime': EventStart,
-      'NewEndTime': EventEnd
+    var param = {
+      'BlockID': EventID,
+      'Block': 'AM', //temp
+      'StartTime': $.fullCalendar.formatDate(EventStart, 'MM/dd/yyyy HH:mm'),
+      'EndTime': $.fullCalendar.formatDate(EventEnd, 'MM/dd/yyyy HH:mm'),
     };
 
-    //@TODO update ticket info
-    console.log("Ready to update ticket info:" + JSON.stringify(dataRow));
+    //@TODO update block info
+    console.log("Updating block info:" + JSON.stringify(param));
+
+    dataservice.scheduleenginesrv.SeScheduleBlock.post(EventID, param, null, utils.safeCallback(null, function(err, resp) {
+      console.log("Block updated:" + JSON.stringify(resp.Value));
+    }, notify.error, false));
+
 
   }
 
