@@ -73,46 +73,8 @@ define('src/scheduling/schedule.vm', [
 
   ScheduleViewModel.prototype.onActivate = function( /*routeData, extraData, join*/ ) { // override me
     var _this = this,
-      join = joiner(),
-      //tSource = [], //temporary list of tickets
-      CalLoading = true;
-
-
-    //create temporary list of tickets
-    // tSource = [{
-    //   id: 1,
-    //   title: null,
-    //   start: '2014-07-22 01:00',
-    //   end: '2014-07-22 03:00',
-    //   allDay: false,
-    //   someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
-    //   backgroundColor: 'white',
-    // }, {
-    //   id: 2,
-    //   title: null,
-    //   start: '2014-07-21 02:15',
-    //   end: '2014-07-21 06:15',
-    //   allDay: false,
-    //   someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
-    //   backgroundColor: 'red',
-    // }, {
-    //   id: 3,
-    //   title: null,
-    //   start: '2014-07-23 02:15',
-    //   end: '2014-07-23 06:15',
-    //   allDay: false,
-    //   someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
-    //   backgroundColor: 'orange',
-    // }, {
-    //   id: 4,
-    //   title: null,
-    //   start: '2014-07-24 00:30',
-    //   end: '2014-07-24 02:30',
-    //   allDay: false,
-    //   someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
-    //   backgroundColor: 'skyblue',
-    // }];
-
+      join = joiner();
+    //CalLoading = true;
 
     //load block list    
     load_scheduleBlockList(join.add());
@@ -130,6 +92,7 @@ define('src/scheduling/schedule.vm', [
       selectable: true,
       slotMinutes: 15,
       selectHelper: true,
+      aspectRatio: 2.1,
       //events: tSource,
       hiddenDays: [0], //hide sunday      
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
@@ -166,24 +129,25 @@ define('src/scheduling/schedule.vm', [
           date: $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
           stime: $.fullCalendar.formatDate(start, 'MM/dd/yyyy HH:mm'),
           etime: $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm'),
+          blockTime: $.fullCalendar.formatDate(end, 'HH:mm'),
         }), function onClose(cb) {
           load_scheduleBlockList(cb);
         });
       },
 
-      viewRender: function(view /*, element*/ ) {
+      viewRender: function( /*view, element*/ ) {
 
-        if (!CalLoading) {
-          if (view.name === 'month') {
-            //   $('#calendar').fullCalendar('removeEventSource', sourceFullView);
-            //$('#calendar').fullCalendar('removeEvents');
-            //   $('#calendar').fullCalendar('addEventSource', sourceSummaryView);
-          } else {
-            //   $('#calendar').fullCalendar('removeEventSource', sourceSummaryView);
-            //$('#calendar').fullCalendar('removeEvents');
-            //   $('#calendar').fullCalendar('addEventSource', sourceFullView);
-          }
-        }
+        // if (!CalLoading) {
+        //   if (view.name === 'month') {
+        //     //   $('#calendar').fullCalendar('removeEventSource', sourceFullView);
+        //     //$('#calendar').fullCalendar('removeEvents');
+        //     //   $('#calendar').fullCalendar('addEventSource', sourceSummaryView);
+        //   } else {
+        //     //   $('#calendar').fullCalendar('removeEventSource', sourceSummaryView);
+        //     //$('#calendar').fullCalendar('removeEvents');
+        //     //   $('#calendar').fullCalendar('addEventSource', sourceFullView);
+        //   }
+        // }
       },
 
       //add some more info on blocks
@@ -196,9 +160,17 @@ define('src/scheduling/schedule.vm', [
   };
 
   function UpdateEvent(EventID, EventStart, EventEnd) {
-    var param = {
+
+    var block,
+      param;
+
+    block = (parseInt($.fullCalendar.formatDate(EventEnd, 'HH:mm'), 10) < 12) ? 'AM' : 'PM';
+
+    console.log("Block to update:" + block);
+
+    param = {
       'BlockID': EventID,
-      'Block': 'AM', //temp
+      'Block': block,
       'StartTime': $.fullCalendar.formatDate(EventStart, 'MM/dd/yyyy HH:mm'),
       'EndTime': $.fullCalendar.formatDate(EventEnd, 'MM/dd/yyyy HH:mm'),
     };

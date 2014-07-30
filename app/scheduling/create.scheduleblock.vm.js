@@ -78,8 +78,10 @@ define('src/scheduling/create.scheduleblock.vm', [
       var block,
         param;
 
+      console.log(_this.blockTime);
+
       //check am/pm
-      block = (parseInt(_this.data.ScheduleEndTime(), 10) < 12) ? 'AM' : 'PM';
+      block = (parseInt(_this.blockTime, 10) < 12) ? 'AM' : 'PM';
 
       console.log("Block:" + block);
 
