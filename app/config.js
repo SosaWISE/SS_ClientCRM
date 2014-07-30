@@ -36,6 +36,7 @@ define('src/config', [
   //
   set('token', 'SSE_CMS_CORS');
   // set('serviceDomain', 'sse.services.cmscors'); // every environment should have this set in webconfig.js
+  // set('wsPath', 'wss://'); // every environment should have this set in webconfig.js
   set('logErrors', true);
   set('titlePrefix', '');
   set('titlePostfix', 'CRM');

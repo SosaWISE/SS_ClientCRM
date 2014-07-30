@@ -89,8 +89,8 @@ define('src/app', [
     }),
     new ScrumPanelViewModel({
       routePart: routePart,
-      id: 'scrum',
-      title: 'Scrum',
+      id: 'sockets',
+      title: 'Sockets',
       ico: '&#9416;',
     }),
   ]);
@@ -122,7 +122,7 @@ define('src/app', [
   router.addRoute(app.panelMap.surveys, 'surveys', ':surveytypeid/:surveyid/:locale', {
     locale: 'en',
   });
-  router.addRoute(app.panelMap.scrum, 'scrum', ':projectid/:sprintid/:view', {});
+  router.addRoute(app.panelMap.sockets, 'sockets', ':projectid', {});
 
   router.addRoute(app.panelMap.swing, 'swing', '', {});
   router.addRoute(app.panelMap.inventory, 'inventory', ':tab', {});

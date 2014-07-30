@@ -1,17 +1,17 @@
-body.scrum {
-  .mixin-body-color(@site-green);
-  .mixin-content-active(@site-green);
+@scrumbg: @site-purple;
+
+body.sockets {
+  .mixin-body-color(@scrumbg);
+  .mixin-content-active(@scrumbg);
 }
 
-#scrum-panel .scrum {
-  @bg-color: @site-green;
-
+#sockets-panel .scrum {
   .fh-body {
     background: #fff;
   }
 
   .btn {
-    background-color: @bg-color;
+    background-color: @scrumbg;
     font-size: 0.9em;
     position: relative;
 
@@ -29,12 +29,30 @@ body.scrum {
 
   .project {
     .tabs {
-      background-color: @bg-color;
+      background-color: @scrumbg;
+    }
+
+    @people-width: 200px;
+
+    .grid-wrap {
+      position: absolute;
+      top:0;right:@people-width;bottom:0;left:0;
+    }
+    .people-wrap {
+      position: absolute;
+      top:0;right:0;bottom:0;width:@people-width;
+
+      .people {
+        margin: 10px 10px 10px 0px;
+        height: ~"calc(100% - 20px)";
+      }
     }
   }
 
   @tranSec: .25s;
   @navWidth: 150px;
+  @chatHeight: 450px;
+  @chatWidth: 400px;
   > .p-nav {
     // overwrite p-nav defaults
     overflow-y: visible;
@@ -92,7 +110,7 @@ body.scrum {
         position: relative;
 
         &.active {
-          color: @bg-color;
+          color: @scrumbg;
         }
       }
     }
@@ -103,11 +121,11 @@ body.scrum {
       top: 0px;
       right: -18px;
       .border-radius(0px 5px 5px 0px);
-      background-color: @bg-color;
+      background-color: @scrumbg;
 
       // cover up nav box-shadow
       &:before {
-        background-color: @bg-color;
+        background-color: @scrumbg;
         content: '';
         position: absolute;
         top: 0px;
@@ -130,10 +148,119 @@ body.scrum {
     // padding: 20px;
 
     .tabs {
-      background-color: @bg-color;
+      background-color: @scrumbg;
       // padding-left: 20px;
       .under-toggle-btn {
         width:17px;height:39px;
+      }
+    }
+  }
+
+  > .chat-wrap {
+    position: absolute;
+    // top: 0;
+    right: 0px;
+    bottom: 0;
+    // left: 0;
+    height: @chatHeight;
+    width: @chatWidth;
+
+    .transition(bottom @tranSec;);
+    // start hidden
+    bottom: -@chatHeight;
+    .contents {
+      display: none;
+    }
+    &.show {
+      bottom: 0;
+      .contents {
+        display: block;
+      }
+    }
+
+    .box-shadow(inset 0px 0px 2px 0px #000000;);
+    background-color: @scrumbg;
+    // color: #6c6c6c;
+    .border-radius(5px 5px 0px 0px);
+
+    .toggle-btn {
+      .rotation(-90deg);
+
+      color: white;
+      .box-shadow(inset 0 5px 5px -5px #000000, inset -5px 0 5px -5px #000000, inset -2px -5px 5px -5px #000000;);
+      position: absolute;
+      top: -29px;
+      right: 10px;
+      .border-radius(0px 5px 5px 0px);
+      background-color: @scrumbg;
+
+      // cover up nav box-shadow
+      &:before {
+        background-color: @scrumbg;
+        content: '';
+        position: absolute;
+        top: 0px;
+        left: -5px;
+        height: 100%;
+        width: 5px;
+      }
+    }
+
+    @msgHeight: 54px;
+    .chats {
+      position: absolute;
+      top:5px;
+      right:5px;
+      bottom:10px + @msgHeight;
+      left:5px;
+      background-color: #fff;
+      overflow-x: auto;
+
+      padding: 2px;
+      ul {
+        > .chat {
+          > span.name {
+            font-weight: 500;
+            > span {
+              display: inline-block;
+              &.typing:before {
+                font-family: entypo;
+                font-size: 16;
+                content: '...\270E';
+                padding-left: 5px;
+                padding-right: 5px;
+              }
+            }
+          }
+          > span.text {
+            white-space: pre-wrap; // from http://stackoverflow.com/a/20618776
+          }
+        }
+      }
+    }
+    .msg {
+      position: absolute;
+      // top:5px;
+      right:5px;
+      bottom:5px;
+      left:5px;
+      height: @msgHeight;
+      background-color: #fff;
+
+      textarea {
+        width: 100%;
+        height: 100%;
+        resize: none;
+      }
+      .send {
+        position: absolute;
+        right: 2px;
+        bottom: 2px;
+        // translucent when button is not focused and not being hovered over
+        opacity: 0.5;
+        &:hover, &:focus {
+          opacity: 1;
+        }
       }
     }
   }
@@ -141,10 +268,23 @@ body.scrum {
     > .p-nav {
       left: -@navWidth;
     }
-    > .p-module {
+    > .p-module,
+    > .chat {
       left: 0px;
     }
   }
+  // &.hide-chat {
+  //   // > .p-nav,
+  //   // > .p-module {
+  //   //   bottom: 0px;
+  //   // }
+  //   > .chat-wrap {
+  //     bottom: -@chatHeight;
+  //     .contents {
+  //       display: none;
+  //     }
+  //   }
+  // }
 
   .drag-hdl {
     cursor: url(/stuff/img/cursor-grab-up.cur), default;

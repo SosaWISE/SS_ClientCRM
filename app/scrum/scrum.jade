@@ -1,19 +1,37 @@
-div(class="panel scrum",data-bind="active:active,toggle:{'hide-nav':hideNav}")
+div(class="panel scrum",data-bind="active:active,css:{'hide-nav':hideNav}")
   //- div(data-bind="if:false")
     div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
 
-  div(class="p-module",data-bind="if:activeChild()")
-    div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}")
-  div(class="p-nav")
-    div(class="toggle-btn", data-bind="click:clickToggleNav,toggle:{'closed':hideNav}")
+  //- div(class="p-module",data-bind="if:activeChild()")
+  //-   div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}")
+  //- div(class="p-nav")
+  //-   div(class="toggle-btn", data-bind="click:clickToggleNav,css:{'closed':hideNav}")
+  //-     div(class="close")
+  //-     div(class="open")
+  //-   div(class="contents-wrap")
+  //-     div(class="contents")
+  //-       div(class="section")
+  //-         span(class="title") Projects
+  //-         div(class="contents")
+  //-           ul(class="projects",data-bind="foreach:projects")
+  //-             li
+  //-               a(data-bind="active:active,click:$parent.clickItem")
+  //-                 span(class="name",data-bind="text:title")
+
+  <!-- ko with:chatVm -->
+  div(class="chat-wrap",data-bind="css:{'show':show}")
+    div(class="toggle-btn", data-bind="click:clickToggle,css:{'closed':!show()}")
       div(class="close")
       div(class="open")
-    div(class="contents-wrap")
-      div(class="contents")
-        div(class="section")
-          span(class="title") Projects
-          div(class="contents")
-            ul(class="projects",data-bind="foreach:projects")
-              li
-                a(data-bind="active:active,click:$parent.clickItem")
-                  span(class="name",data-bind="text:title")
+    div(class="chats",data-bind="keepbottom:allMsgs")
+      ul(data-bind="foreach:allMsgs")
+        li(class="chat")
+          span(class="name")
+            span(data-bind="text:name,css:{'typing':typing}")
+            span(data-bind="if:name") :&nbsp;
+          span(class="text",data-bind="text:text")
+    div(class="msg")
+      textarea(data-bind="ukov:msg,value:msg,valueUpdate:'input',select:focus")
+      //- a(class="btn small send",tabindex="0",data-bind="cmd:cmdSend") Send
+      a(class="btn small send",tabindex="0",data-bind="cmd:clickSend") Send
+  <!-- /ko -->

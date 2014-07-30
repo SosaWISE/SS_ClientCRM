@@ -93,6 +93,14 @@ define('src/core/strings', [
       }
       return dt.format('MM/DD/YYYY hh:mm a');
     },
+    datetimesec: function(dt, isLocal) {
+      if (isLocal) {
+        dt = moment(dt);
+      } else {
+        dt = moment.utc(dt);
+      }
+      return dt.format('MM/DD/YYYY hh:mm:ss a');
+    },
     phone: function(val, outputFormat) {
       if (!val) {
         return val;
