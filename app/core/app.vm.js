@@ -129,8 +129,8 @@ define('src/core/app.vm', [
 
     _this.init();
   }
-  AppViewModel.prototype.prefix = 'panel_';
-  AppViewModel.prototype.postfix = '';
+  AppViewModel.prototype.prefix = '';
+  AppViewModel.prototype.postfix = '-panel';
   AppViewModel.prototype.routePart = 'route';
   AppViewModel.prototype.init = function() {
     var _this = this,
