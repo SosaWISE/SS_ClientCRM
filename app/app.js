@@ -15,9 +15,9 @@ define('src/app', [
     doLogout: function(cb) {
       dataservice.user.logout(cb);
     },
-    createLogin: function(user, routePart) {
+    createLogin: function(setUser, routePart) {
       return new LoginViewModel({
-        user: user,
+        setUser: setUser,
         routePart: routePart,
         id: 'login',
         title: 'Secure Login',

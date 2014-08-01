@@ -16,7 +16,7 @@ define('src/panels/login.panel.vm', [
   function LoginViewModel(options) {
     var _this = this;
     LoginViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['user']);
+    ControllerViewModel.ensureProps(_this, ['setUser']);
 
     _this.signupVM = ko.observable();
     _this.title = ko.observable(_this.title);

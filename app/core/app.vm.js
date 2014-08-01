@@ -93,6 +93,8 @@ define('src/core/app.vm', [
     ]);
     ko.utils.extend(_this, options);
 
+    _this.setUser = _this.setUser.bind(_this);
+
     _this.router = new Router();
     _this.user = ko.observable(null);
     _this.login = ko.observable(null);
@@ -135,7 +137,7 @@ define('src/core/app.vm', [
       login, panels;
 
     // create
-    login = _this.createLogin(_this.user, _this.routePart);
+    login = _this.createLogin(_this.setUser, _this.routePart);
     setTemplate([login], _this.prefix, _this.postfix);
     panels = [];
     Object.keys(_this.pathToPanelOptionsMap).forEach(function(path) {
