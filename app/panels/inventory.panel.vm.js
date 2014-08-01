@@ -1,4 +1,7 @@
 define('src/panels/inventory.panel.vm', [
+  'src/inventory/receive.inventory.vm',
+  'src/inventory/transfer.inventory.vm',
+  'src/inventory/report.inventory.vm',
   'ko',
   'src/core/helpers',
   'src/core/strings',
@@ -6,6 +9,9 @@ define('src/panels/inventory.panel.vm', [
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  ReceiveInventoryViewModel,
+  TransferInventoryViewModel,
+  ReportInventoryViewModel,
   ko,
   helpers,
   strings,
@@ -14,23 +20,6 @@ define('src/panels/inventory.panel.vm', [
   ControllerViewModel
 ) {
   "use strict";
-
-  //load inventory dependencies
-  var deps = {},
-    ensureDeps = helpers.onetimer(function loadDeps(cb) {
-      require([
-        'src/inventory/receive.inventory.vm',
-        'src/inventory/transfer.inventory.vm',
-        'src/inventory/report.inventory.vm',
-      ], function() {
-        var args = arguments;
-        deps.ReceiveInventoryViewModel = args[0];
-        deps.TransferInventoryViewModel = args[1];
-        deps.ReportInventoryViewModel = args[2];
-
-        cb();
-      });
-    });
 
   function InventoryViewModel(options) {
     var _this = this;
@@ -52,33 +41,30 @@ define('src/panels/inventory.panel.vm', [
   // members
   //
 
-  InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-    var _this = this,
-      cb = join.add();
+  InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+    var _this = this;
 
-    ensureDeps(function() {
-      _this.list([
-        new deps.ReceiveInventoryViewModel({
-          routeName: 'inventory',
-          pcontroller: _this,
-          id: 'receive',
-          title: 'Receive'
-        }),
-        new deps.TransferInventoryViewModel({
-          routeName: 'inventory',
-          pcontroller: _this,
-          id: 'transfer',
-          title: 'Transfer'
-        }),
-        new deps.ReportInventoryViewModel({
-          routeName: 'inventory',
-          pcontroller: _this,
-          id: 'audit',
-          title: 'Audit'
-        }),
-      ]);
-      cb();
-    });
+    _this.list([
+      new ReceiveInventoryViewModel({
+        routeName: 'inventory',
+        pcontroller: _this,
+        id: 'receive',
+        title: 'Receive'
+      }),
+      new TransferInventoryViewModel({
+        routeName: 'inventory',
+        pcontroller: _this,
+        id: 'transfer',
+        title: 'Transfer'
+      }),
+      new ReportInventoryViewModel({
+        routeName: 'inventory',
+        pcontroller: _this,
+        id: 'audit',
+        title: 'Audit'
+      }),
+    ]);
+    join.add()();
   };
 
   return InventoryViewModel;

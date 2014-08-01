@@ -5,10 +5,8 @@
 // define config module
 define('src/config', [
   'webconfig',
-  'ko'
 ], function(
-  config,
-  ko
+  config
 ) {
   "use strict";
 
@@ -23,8 +21,6 @@ define('src/config', [
   // Explicit Properties (non-overrideable)
   //
   config.version = '0.0.1';
-  config.user = ko.observable();
-  // config.logger = ??;
 
   //
   // Property Defaults (overrideable)

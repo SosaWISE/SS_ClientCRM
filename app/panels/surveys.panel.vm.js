@@ -1,4 +1,7 @@
 define('src/panels/surveys.panel.vm', [
+  'src/survey/tokens.vm',
+  'src/survey/possibleanswers.vm',
+  'src/survey/surveytype.vm',
   'ko',
   'src/dataservice',
   'src/core/layers.vm',
@@ -7,6 +10,9 @@ define('src/panels/surveys.panel.vm', [
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  TokensViewModel,
+  PossibleAnswersViewModel,
+  SurveyTypeViewModel,
   ko,
   dataservice,
   LayersViewModel,
@@ -16,22 +22,6 @@ define('src/panels/surveys.panel.vm', [
   ControllerViewModel
 ) {
   'use strict';
-
-  // lazy load account dependencies
-  var deps = {},
-    ensureDeps = helpers.onetimer(function loadDeps(cb) {
-      require([
-        'src/survey/tokens.vm',
-        'src/survey/possibleanswers.vm',
-        'src/survey/surveytype.vm',
-      ], function() {
-        var args = arguments;
-        deps.TokensViewModel = args[0];
-        deps.PossibleAnswersViewModel = args[1];
-        deps.SurveyTypeViewModel = args[2];
-        cb();
-      });
-    });
 
   function SurveysPanelViewModel(options) {
     var _this = this;
@@ -58,40 +48,39 @@ define('src/panels/surveys.panel.vm', [
       depJoin = join.create();
 
     _this.surveyTypes([]);
-    ensureDeps(function() {
-      tokensVM = new deps.TokensViewModel();
-      possibleAnswersVM = new deps.PossibleAnswersViewModel();
 
-      tokensVM.loader.reset(); //incase of reload
-      tokensVM.load(routeData, extraData, depJoin.add());
-      possibleAnswersVM.loader.reset(); //incase of reload
-      possibleAnswersVM.load(routeData, extraData, depJoin.add());
+    tokensVM = new TokensViewModel();
+    possibleAnswersVM = new PossibleAnswersViewModel();
 
-      dataservice.survey.surveyTypes.read({}, null, function(err, resp) {
-        if (err) {
-          return cb(err);
-        }
-        // wait until the dependencies have been loaded
-        depJoin.when(utils.safeCallback(cb, function() {
-          if (resp.Value) {
-            var list = resp.Value.map(function(model) {
-              var vm = new deps.SurveyTypeViewModel({
-                pcontroller: _this,
-                layersVm: _this.layersVm,
-                tokensVM: tokensVM,
-                possibleAnswersVM: possibleAnswersVM,
-                model: model,
-              });
-              vm.load(routeData, extraData, join.add());
-              return vm;
+    tokensVM.loader.reset(); //incase of reload
+    tokensVM.load(routeData, extraData, depJoin.add());
+    possibleAnswersVM.loader.reset(); //incase of reload
+    possibleAnswersVM.load(routeData, extraData, depJoin.add());
+
+    dataservice.survey.surveyTypes.read({}, null, function(err, resp) {
+      if (err) {
+        return cb(err);
+      }
+      // wait until the dependencies have been loaded
+      depJoin.when(utils.safeCallback(cb, function() {
+        if (resp.Value) {
+          var list = resp.Value.map(function(model) {
+            var vm = new SurveyTypeViewModel({
+              pcontroller: _this,
+              layersVm: _this.layersVm,
+              tokensVM: tokensVM,
+              possibleAnswersVM: possibleAnswersVM,
+              model: model,
             });
-            _this.surveyTypes(list);
-          } else {
-            //
-            _this.surveyTypes([]);
-          }
-        }, utils.no_op));
-      });
+            vm.load(routeData, extraData, join.add());
+            return vm;
+          });
+          _this.surveyTypes(list);
+        } else {
+          //
+          _this.surveyTypes([]);
+        }
+      }, utils.no_op));
     });
   };
 

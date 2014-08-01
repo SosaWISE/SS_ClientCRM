@@ -4,22 +4,19 @@ define('src/panels/login.panel.vm', [
   'src/core/utils',
   'src/core/controller.vm',
   'src/dataservice',
-  'src/core/router',
-  'src/config'
 ], function(
   notify,
   ko,
   utils,
   ControllerViewModel,
-  dataservice,
-  router,
-  config
+  dataservice
 ) {
   "use strict";
 
   function LoginViewModel(options) {
     var _this = this;
     LoginViewModel.super_.call(_this, options);
+    ControllerViewModel.ensureProps(_this, ['user']);
 
     _this.signupVM = ko.observable();
     _this.title = ko.observable(_this.title);
@@ -53,8 +50,7 @@ define('src/panels/login.panel.vm', [
             console.error(err);
             notify.error(err, 10);
           } else {
-            config.user(resp.Value);
-            router.useDestPath();
+            _this.setUser(resp.Value, true);
           }
 
           cb();

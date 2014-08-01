@@ -1,4 +1,5 @@
 define('src/account/default/runcredit.vm', [
+  'src/app',
   'src/config',
   'src/core/combo.vm',
   'src/core/strings',
@@ -10,6 +11,7 @@ define('src/account/default/runcredit.vm', [
   'src/ukov',
   'src/dataservice'
 ], function(
+  app,
   config,
   ComboViewModel,
   strings,
@@ -165,7 +167,7 @@ define('src/account/default/runcredit.vm', [
       LocalizationID: '',
       LeadSourceId: config.leadSourceId,
       LeadDispositionId: config.leadDispositionId,
-      DealerId: config.user().DealerId,
+      DealerId: app.user().DealerId,
       AddressId: _this.addressId,
       SalesRepId: _this.repModel.CompanyID,
       TeamLocationId: _this.repModel.TeamLocationId,

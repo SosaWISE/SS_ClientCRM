@@ -1,4 +1,5 @@
 define('src/account/security/clist.survey.vm', [
+  'src/app',
   'src/config',
   'ko',
   'src/dataservice',
@@ -10,6 +11,7 @@ define('src/account/security/clist.survey.vm', [
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  app,
   config,
   ko,
   dataservice,
@@ -175,7 +177,7 @@ define('src/account/security/clist.survey.vm', [
       var dataContext;
       dataContext = {
         CompanyName: 'Nexsense',
-        ADUserDisplayName: config.user().Firstname,
+        ADUserDisplayName: app.user().Firstname,
         PrimaryCustomer: {
           FirstName: priCustomer.FirstName,
           LastName: priCustomer.LastName,
