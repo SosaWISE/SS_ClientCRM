@@ -1,4 +1,4 @@
-define('src/panels/swing.panel.vm', [
+define('src/swing/swing.panel.vm', [
   'src/account/default/address.validate.vm',
   'src/core/combo.vm',
   'src/core/notify',

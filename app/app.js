@@ -1,7 +1,7 @@
 define('src/app', [
   'ko',
   'src/dataservice',
-  'src/panels/login.panel.vm',
+  'src/home/login.panel.vm',
   'src/core/app.vm',
 ], function(
   ko,
@@ -25,32 +25,32 @@ define('src/app', [
       });
     },
     pathToPanelOptionsMap: {
-      'src/panels/home.panel.vm': {
+      'src/home/home.panel.vm': {
         id: 'home',
         title: 'Home',
         ico: '&#8962;',
       },
-      'src/panels/accounts.panel.vm': {
+      'src/account/accounts.panel.vm': {
         id: 'accounts',
         title: 'Accounts',
         ico: '&#128101;',
       },
-      'src/panels/surveys.panel.vm': {
+      'src/survey/surveys.panel.vm': {
         id: 'surveys',
         title: 'Surveys',
         ico: '&#128101;',
       },
-      'src/panels/swing.panel.vm': {
+      'src/swing/swing.panel.vm': {
         id: 'swing',
         title: 'Swing',
         ico: '&#128101;',
       },
-      'src/panels/inventory.panel.vm': {
+      'src/inventory/inventory.panel.vm': {
         id: 'inventory',
         title: 'Inventory',
         ico: '&#128101;',
       },
-      'src/panels/scheduling.panel.vm': {
+      'src/scheduling/scheduling.panel.vm': {
         id: 'scheduling',
         title: 'Scheduling',
         ico: '&#128101;',

@@ -1,4 +1,4 @@
-define('src/panels/accounts.panel.vm', [
+define('src/account/accounts.panel.vm', [
   'ko',
   'src/account/default/masteraccount.vm',
   'src/account/default/search.vm',

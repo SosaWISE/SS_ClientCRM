@@ -1,4 +1,4 @@
-define('src/panels/inventory.panel.vm', [
+define('src/inventory/inventory.panel.vm', [
   'src/inventory/receive.inventory.vm',
   'src/inventory/transfer.inventory.vm',
   'src/inventory/report.inventory.vm',

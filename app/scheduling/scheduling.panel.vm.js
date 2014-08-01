@@ -1,4 +1,4 @@
-define('src/panels/scheduling.panel.vm', [
+define('src/scheduling/scheduling.panel.vm', [
   'src/scheduling/service.ticket.vm',
   'src/scheduling/schedule.vm',
   //'src/scheduling/report.inventory.vm',
