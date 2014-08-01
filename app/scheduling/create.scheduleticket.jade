@@ -1,10 +1,10 @@
 ul(class="edit-form")
 	li
 		input(type="hidden" id="eventID")
-	li		
+	li
 		span(class="label") Ticket ID
 		input(type="text" data-bind="ukov:data.ScheduleTicketID, value:data.ScheduleTicketID, valueUpdate:'keyup'")
-	li		
+	li
 		span(class="label") Ticket Type
 		div(data-bind="cvm:data.ScheduleTicketTypeCvm")
 	li
@@ -16,7 +16,7 @@ ul(class="edit-form")
 	li
 		span(class="label") General Note
 		textarea(rows="5" data-bind="ukov:data.ScheduleTicketNotes, value:data.ScheduleTicketNotes,valueUpdate:'keyup'")
-	li		
+	li
 		input(type="hidden" data-bind="ukov:data.ScheduleAppointmentDate, value:data.ScheduleAppointmentDate, valueUpdate:'keyup'")
 div(class="actions")
 	span(class="btn-bg", id="btnPopupSave" tabindex="0", data-bind="cmd: cmdSaveScheduleTicket") Save Ticket
