@@ -7,4 +7,7 @@
   define('markdown', [], function() {
     return window.markdown;
   });
+  define('fullcalendar', [], function() {
+    return;
+  });
 })();
