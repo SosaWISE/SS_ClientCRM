@@ -1,4 +1,4 @@
-define('src/panels/swing.panel.vm', [
+define('src/swing/swing.panel.vm', [
   'src/account/default/address.validate.vm',
   'src/core/combo.vm',
   'src/core/notify',
@@ -8,7 +8,6 @@ define('src/panels/swing.panel.vm', [
   'src/core/utils',
   'src/core/controller.vm',
   'src/dataservice',
-  'src/core/router',
   'src/slick/slickgrid.vm',
   'src/config',
   'src/slick/rowevent',
@@ -23,7 +22,6 @@ define('src/panels/swing.panel.vm', [
   utils,
   ControllerViewModel,
   dataservice,
-  router,
   SlickGridViewModel,
   config,
   RowEvent,

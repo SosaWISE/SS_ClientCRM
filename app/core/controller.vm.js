@@ -115,6 +115,11 @@ define('src/core/controller.vm', [
 
   // activate async
   ControllerViewModel.prototype.activate = function(routeCtx) { // overrides base
+    // with lazy loaded panels, we now need to check that we should actually be here
+    if (!routeCtx.active()) {
+      return;
+    }
+
     var _this = this,
       lastActiveChild = _this.activeChild.peek();
 
@@ -342,6 +347,36 @@ define('src/core/controller.vm', [
     }
 
     jquery('title').text(parts.join(' < '));
+  };
+
+
+  //
+  //
+  //
+  ControllerViewModel.addManualReloadListener = function() {
+    document.addEventListener("click", function(evt) {
+      // shift+ctrl or shift+alt or shift+ctrl+alt should get passed this
+      if (!evt.shiftKey || !(evt.ctrlKey || evt.altKey)) {
+        return;
+      }
+      // stop the event from firing
+      evt.stopPropagation();
+
+      var vm, el = evt.target;
+      // find the first view model that can be reloaded
+      while (!vm && el) {
+        vm = ko.dataFor(el);
+        // only ControllerViewModels can be reloaded
+        if (!vm || !ko.isObservable(vm.mayReload) || !(vm instanceof ControllerViewModel)) {
+          vm = null;
+          // go up one level
+          el = el.parentNode;
+        }
+      }
+      if (vm) {
+        vm.attemptReload();
+      }
+    }, true); // useCapture - this event is called before all other clicks
   };
 
   return ControllerViewModel;

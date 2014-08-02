@@ -8,51 +8,41 @@ define('src/bootstrapper', [
   'src/core/ko.bindingHandlers.all',
 
   'src/core/jsonhelpers',
-  'src/config',
-  'src/resources',
-  'src/errorcodes',
   'src/core/dialog.vm',
   'src/core/layers.vm',
-  'src/core/strings',
   'src/core/notify',
-  'src/core/router',
   'src/core/controller.vm',
   'src/core/dataservice.base',
   'src/core/joiner',
   'src/dataservice',
   'src/ping',
   'src/apilogger',
+  'src/config', 'src/resources', 'src/errorcodes',
   'src/app'
 ], function(
   jquery, ko, // main libs
   p1, p2, p3, //plugins
 
   jsonhelpers,
-  config,
-  resources,
-  errorcodes,
   DialogViewModel,
   LayersViewModel,
-  strings,
   notify,
-  router,
   ControllerViewModel,
   DataserviceBase,
   joiner,
   dataservice,
   ping,
   apilogger,
+  config, resources, errorcodes,
   app
 ) {
   "use strict";
-
-  // detect os
-  app.os = navigator.platform.split(' ')[0].toLowerCase();
 
   console.log("Version: ", config.version);
   console.log("Application Token: " + config.token);
   console.log("CORS Domain: " + config.serviceDomain);
   console.log("Log Errors: " + config.logErrors);
+  app.os = navigator.platform.split(' ')[0].toLowerCase(); // detect os
   console.log("OS: " + app.os);
 
   ControllerViewModel.titlePrefix = config.titlePrefix;
@@ -70,10 +60,6 @@ define('src/bootstrapper', [
 
   // start ko (since notify can't show anything without it)
   ko.applyBindings(app, document.getElementById('main'));
-
-  // ////////////////////////TESTING////////////////////////////////////////////////
-  // throw new Error('test error');
-  // ////////////////////////TESTING////////////////////////////////////////////////
 
   // overwrite onerror function set in index.js
   window.onerror = function(msg, url, line, column, err) {
@@ -95,95 +81,7 @@ define('src/bootstrapper', [
       Message: msg,
       Url: url,
     });
-
-    // ////////////////////////TESTING////////////////////////////////////////////////
-    // notify.info('Info', msg, 0, {
-    //   actions: {
-    //     'alert1 and dismiss': function() {
-    //       alert('alert1 and dismiss!');
-    //     },
-    //     'alert2': function() {
-    //       alert('alert2!');
-    //       return true;
-    //     },
-    //     'alert3': function() {
-    //       alert('alert3!');
-    //       return true;
-    //     },
-    //   },
-    //   noPre: false,
-    // });
-    // notify.info('Info', msg, 0, {
-    //   actions: {
-    //     'alert1': function() {
-    //       alert('alert1!');
-    //       return true;
-    //     },
-    //     'alert2': function() {
-    //       alert('alert2!');
-    //       return true;
-    //     },
-    //     'alert3': function() {
-    //       alert('alert3!');
-    //       return true;
-    //     },
-    //   },
-    //   noPre: true,
-    // });
-    // notify.info('Info', 'Line 132, Column 13 Url: http://dev-crm.nexsense.com:1024/app/bootstrapper.js', 0, {
-    //   actions: {
-    //     'alert1': function() {
-    //       alert('alert1!');
-    //       return true;
-    //     },
-    //     'alert2': function() {
-    //       alert('alert2!');
-    //       return true;
-    //     },
-    //     'alert3': function() {
-    //       alert('alert3!');
-    //       return true;
-    //     },
-    //   },
-    //   noPre: true,
-    // });
-    // notify.info('Info', 'crm.nexsense.com:1024/app/bootstrapper.js');
-    // notify.warn('Warn', 'crm.nexsense.com:1024/app/bootstrapper.js');
-    // notify.error({
-    //   Code: -1,
-    //   Message: 'crm.nexsense.com:1024/app/bootstrapper.js',
-    // });
-    // ////////////////////////TESTING////////////////////////////////////////////////
   };
-  // ////////////////////////TESTING////////////////////////////////////////////////
-  // setTimeout(function() {
-  //   function a() {
-  //     throw new Error('test error');
-  //   }
-  //   //
-  //   function b() {
-  //     a();
-  //   }
-  //   //
-  //   function c() {
-  //     b();
-  //   }
-  //   //
-  //   function d() {
-  //     c();
-  //   }
-  //   //
-  //   function e() {
-  //     d();
-  //   }
-  //   //
-  //   function f() {
-  //     e();
-  //   }
-  //   //
-  //   f();
-  // }, 1000);
-  // ////////////////////////TESTING////////////////////////////////////////////////
 
   var deps = [];
   if (config.useMocks) {
@@ -199,10 +97,10 @@ define('src/bootstrapper', [
       }, config);
     }
 
-    config.user.subscribe(function(user) {
+    app.user.subscribe(function(user) {
       if (user) {
         // once there is a user, destroy the login forms (for security purposes)
-        delete app.login;
+        app.login(null);
         jquery('#login-container').remove();
         // incase it didn't get moved before the user was set
         jquery('#loginform').remove();
@@ -214,40 +112,14 @@ define('src/bootstrapper', [
     });
 
     dataservice.session.start(config.token, function(err, resp) {
-
       if (err) {
         notify.error(err);
       } else {
         // if we are authenticated, this will log us in
-        config.user(resp.Value.AuthUser);
-        // start router
-        router.init(config.user);
+        app.setUser(resp.Value.AuthUser);
       }
     });
   });
 
-  //
-  document.addEventListener("click", function(evt) {
-    // shift+ctrl or shift+alt or shift+ctrl+alt should get passed this
-    if (!evt.shiftKey || !(evt.ctrlKey || evt.altKey)) {
-      return;
-    }
-    // stop the event from firing
-    evt.stopPropagation();
-
-    var vm, el = evt.target;
-    // find the first view model that can be reloaded
-    while (!vm && el) {
-      vm = ko.dataFor(el);
-      // only ControllerViewModels can be reloaded
-      if (!vm || !ko.isObservable(vm.mayReload) || !(vm instanceof ControllerViewModel)) {
-        vm = null;
-        // go up one level
-        el = el.parentNode;
-      }
-    }
-    if (vm) {
-      vm.attemptReload();
-    }
-  }, true); // useCapture - this event is called before all other clicks
+  ControllerViewModel.addManualReloadListener();
 });

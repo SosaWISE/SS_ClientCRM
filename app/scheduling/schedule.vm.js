@@ -73,46 +73,8 @@ define('src/scheduling/schedule.vm', [
 
   ScheduleViewModel.prototype.onActivate = function( /*routeData, extraData, join*/ ) { // override me
     var _this = this,
-      join = joiner(),
-      tSource = [], //temporary list of tickets
-      CalLoading = true;
-
-
-    //create temporary list of tickets
-    tSource = [{
-      id: 1,
-      title: null,
-      start: '2014-07-22 01:00',
-      end: '2014-07-22 03:00',
-      allDay: false,
-      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
-      backgroundColor: 'white',
-    }, {
-      id: 2,
-      title: null,
-      start: '2014-07-21 02:15',
-      end: '2014-07-21 06:15',
-      allDay: false,
-      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
-      backgroundColor: 'red',
-    }, {
-      id: 3,
-      title: null,
-      start: '2014-07-23 02:15',
-      end: '2014-07-23 06:15',
-      allDay: false,
-      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
-      backgroundColor: 'orange',
-    }, {
-      id: 4,
-      title: null,
-      start: '2014-07-24 00:30',
-      end: '2014-07-24 02:30',
-      allDay: false,
-      someInfo: 'AM Block <br/> Zip: 84003 <br /> Max Radius: 30 miles <br /> Distance: 14.99 miles <br /> Available: 0 of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
-      backgroundColor: 'skyblue',
-    }];
-
+      join = joiner();
+    //CalLoading = true;
 
     //load block list    
     load_scheduleBlockList(join.add());
@@ -130,19 +92,27 @@ define('src/scheduling/schedule.vm', [
       selectable: true,
       slotMinutes: 15,
       selectHelper: true,
+      aspectRatio: 2.1,
       //events: tSource,
       hiddenDays: [0], //hide sunday      
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
-        _this.layersVm.show(new ScheduleTicketViewModel({
-          date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
-          blockId: calEvent.id,
-        }), function onClose( /*result*/ ) {
 
-        });
+        console.log(parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10));
+
+        //show create ticket screen only when there are still spaces available for a specific block
+        if (parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10)) {
+          _this.layersVm.show(new ScheduleTicketViewModel({
+            date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
+            blockId: calEvent.id,
+          }), function onClose(cb) {
+            load_scheduleBlockList(cb);
+          });
+        }
+
       },
 
       eventDrop: function(event /*, dayDelta, minuteDelta, allDay, revertFunc*/ ) {
-        new UpdateEvent(event.id, event.start);
+        new UpdateEvent(event.id, event.start, event.end);
       },
 
       eventResize: function(event /*, dayDelta, minuteDelta, revertFunc*/ ) {
@@ -159,27 +129,28 @@ define('src/scheduling/schedule.vm', [
           date: $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
           stime: $.fullCalendar.formatDate(start, 'MM/dd/yyyy HH:mm'),
           etime: $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm'),
+          blockTime: $.fullCalendar.formatDate(end, 'HH:mm'),
         }), function onClose(cb) {
           load_scheduleBlockList(cb);
         });
       },
 
-      viewRender: function(view /*, element*/ ) {
+      viewRender: function( /*view, element*/ ) {
 
-        if (!CalLoading) {
-          if (view.name === 'month') {
-            //   $('#calendar').fullCalendar('removeEventSource', sourceFullView);
-            //$('#calendar').fullCalendar('removeEvents');
-            //   $('#calendar').fullCalendar('addEventSource', sourceSummaryView);
-          } else {
-            //   $('#calendar').fullCalendar('removeEventSource', sourceSummaryView);
-            //$('#calendar').fullCalendar('removeEvents');
-            //   $('#calendar').fullCalendar('addEventSource', sourceFullView);
-          }
-        }
+        // if (!CalLoading) {
+        //   if (view.name === 'month') {
+        //     //   $('#calendar').fullCalendar('removeEventSource', sourceFullView);
+        //     //$('#calendar').fullCalendar('removeEvents');
+        //     //   $('#calendar').fullCalendar('addEventSource', sourceSummaryView);
+        //   } else {
+        //     //   $('#calendar').fullCalendar('removeEventSource', sourceSummaryView);
+        //     //$('#calendar').fullCalendar('removeEvents');
+        //     //   $('#calendar').fullCalendar('addEventSource', sourceFullView);
+        //   }
+        // }
       },
 
-      //add some more info on events
+      //add some more info on blocks
       eventRender: function(event, element) {
         element.find('.fc-event-title').append("<br/>" + event.someInfo);
       }
@@ -190,14 +161,27 @@ define('src/scheduling/schedule.vm', [
 
   function UpdateEvent(EventID, EventStart, EventEnd) {
 
-    var dataRow = {
-      'ID': EventID,
-      'NewStartTime': EventStart,
-      'NewEndTime': EventEnd
+    var block,
+      param;
+
+    block = (parseInt($.fullCalendar.formatDate(EventEnd, 'HH:mm'), 10) < 12) ? 'AM' : 'PM';
+
+    console.log("Block to update:" + block);
+
+    param = {
+      'BlockID': EventID,
+      'Block': block,
+      'StartTime': $.fullCalendar.formatDate(EventStart, 'MM/dd/yyyy HH:mm'),
+      'EndTime': $.fullCalendar.formatDate(EventEnd, 'MM/dd/yyyy HH:mm'),
     };
 
-    //@TODO update ticket info
-    console.log("Ready to update ticket info:" + JSON.stringify(dataRow));
+    //@TODO update block info
+    console.log("Updating block info:" + JSON.stringify(param));
+
+    dataservice.scheduleenginesrv.SeScheduleBlock.post(EventID, param, null, utils.safeCallback(null, function(err, resp) {
+      console.log("Block updated:" + JSON.stringify(resp.Value));
+    }, notify.error, false));
+
 
   }
 
@@ -211,6 +195,9 @@ define('src/scheduling/schedule.vm', [
       end = new Date(current.setDate(weekend)),
       param,
       x,
+      tColor,
+      slotAvailable,
+      numTickets,
       data = {},
       result = [];
 
@@ -228,14 +215,37 @@ define('src/scheduling/schedule.vm', [
         console.log("SeScheduleBlockList:" + JSON.stringify(resp.Value));
 
         for (x = 0; x < resp.Value.length; x++) {
+
+          //color coding blocks
+          slotAvailable = resp.Value[x].AvailableSlots;
+          numTickets = (resp.Value[x].NoOfTickets === null) ? 0 : resp.Value[x].NoOfTickets;
+
+          /**
+          White – The entire block is free to schedule a service
+          Blue – There is tickets scheduled in the block and there are spaces still available
+          Red – The block cannot be scheduled in unless there is a manager override
+          Orange – The block is completely full and will not allow further tickets to be scheduled
+          **/
+
+          if (numTickets > 0 && numTickets < slotAvailable) {
+            tColor = 'skyblue';
+          } else if (numTickets >= slotAvailable) {
+            tColor = 'orange';
+          } else {
+            tColor = 'white';
+          }
+
+          //objects to display on scheduler grid
           data = {
             id: resp.Value[x].BlockID,
             title: null,
             start: resp.Value[x].StartTime,
             end: resp.Value[x].EndTime,
+            slot: slotAvailable,
+            nTickets: numTickets,
             allDay: false,
-            someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + resp.Value[x].ZipCode + ' <br /> Max Radius: ' + resp.Value[x].MaxRadius + ' miles <br /> Distance: ' + resp.Value[x].Distance + ' miles <br /> Available: ' + resp.Value[x].AvailableSlots + ' of 2 <br /><hr> Daniel Ellis (0 of 2) <br />',
-            backgroundColor: 'skyblue', //temporary
+            someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + resp.Value[x].ZipCode + ' <br /> Max Radius: ' + resp.Value[x].MaxRadius + ' miles <br /> Distance: ' + resp.Value[x].Distance + ' miles <br /> Available: ' + numTickets + ' of ' + resp.Value[x].AvailableSlots + ' <br /><hr> Daniel Ellis (0 of 2) <br />',
+            backgroundColor: tColor,
           };
 
           //list of blocks from server

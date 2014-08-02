@@ -1,16 +1,15 @@
 /* global describe, it, expect */
 define('src/core/router.spec', [
   'src/core/router'
-], function(router) {
+], function(Router) {
   "use strict";
 
-  describe('router', function() {
+  describe('Router', function() {
     // var vm;
     // beforeEach(function() {});
 
-    it('should have an `create` property', function() {
-      expect(router.create).toBeDefined();
-      expect(typeof router.create).toBe('function');
+    it('should be a function', function() {
+      expect(typeof Router).toBe('function');
     });
 
     // describe('addRoute', function() {

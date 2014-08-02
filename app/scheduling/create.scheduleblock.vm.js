@@ -23,7 +23,19 @@ define('src/scheduling/create.scheduleblock.vm', [
 
   schema = {
     _model: true,
-    ScheduleZip: {},
+    ScheduleAvailableSlot: {
+      converter: ukov.converters.number(0),
+      validators: [
+        ukov.validators.isRequired('Please enter # of slot.'),
+        ukov.validators.isInt('Please input a number.'),
+      ],
+    },
+    ScheduleZip: {
+      validators: [
+        ukov.validators.isZipCode('Please enter a valid zip code.'),
+        ukov.validators.isRequired('Please enter a zip code.'),
+      ],
+    },
     ScheduleMaxRadius: {},
     ScheduleDistance: {},
     ScheduleDate: {},
@@ -36,10 +48,14 @@ define('src/scheduling/create.scheduleblock.vm', [
     var _this = this;
     ScheduleBlockViewModel.super_.call(_this, options);
 
+    //Set the first focus on slot # field
+    _this.focusFirst = ko.observable(false);
+
     //Set title
     _this.title = _this.title || 'Create Schedule Block';
 
     _this.data = ukov.wrap(_this.item || {
+      ScheduleAvailableSlot: null,
       ScheduleZip: null,
       ScheduleMaxRadius: null,
       ScheduleDistance: null,
@@ -62,19 +78,22 @@ define('src/scheduling/create.scheduleblock.vm', [
       var block,
         param;
 
+      console.log(_this.blockTime);
+
       //check am/pm
-      block = (parseInt(_this.data.ScheduleEndTime(), 10) < 12) ? 'AM' : 'PM';
+      block = (parseInt(_this.blockTime, 10) < 12) ? 'AM' : 'PM';
 
       console.log("Block:" + block);
 
       param = {
+        'Color': 'white',
         'Block': block,
         'ZipCode': _this.data.ScheduleZip(),
         'MaxRadius': _this.data.ScheduleMaxRadius(),
         'Distance': _this.data.ScheduleDistance(),
         'StartTime': _this.data.ScheduleStartTime(),
         'EndTime': _this.data.ScheduleEndTime(),
-        'AvailableSlots': 10, //temp
+        'AvailableSlots': _this.data.ScheduleAvailableSlot(),
         'TechnicianId': 1,
       };
 
@@ -96,6 +115,15 @@ define('src/scheduling/create.scheduleblock.vm', [
       }));
 
 
+    });
+
+    _this.active.subscribe(function(active) {
+      if (active) {
+        // this timeout makes it possible to focus the slot#
+        setTimeout(function() {
+          _this.focusFirst(true);
+        }, 100);
+      }
     });
 
     _this.clickClose = function() {

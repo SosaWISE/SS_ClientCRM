@@ -24,38 +24,36 @@ html
       div(style="display:none;", id="site-container")
         nav(class="primary")
           //- home
-          a(class="logo",data-bind="click:clickPanel")
+          a(class="logo",data-bind="cmd:clickPanel")
             span(class="ico")
             h1(class="txt") &nbsp;
 
           //- panels
           <!-- ko foreach:panels -->
           div(data-bind="active:active")
-            a(data-bind="css:id,click:$parent.clickPanel")
+            a(data-bind="css:id,cmd:$parent.clickPanel")
               div(data-bind="visible:active")
                 div(class="indicator")
               span(class="ico", data-bind="html:ico")
               span(class="txt", data-bind="text:title")
           <!-- /ko -->
+          a(class="logout",data-bind="cmd:cmdLogout")
+            span(class="txt") Logout
 
         div(class="wrap")
           div(class="panels", data-bind="foreach:panels")
+            <!-- ko with:panel -->
             div(data-bind="active:active")
               div(data-bind="template:viewTmpl,attr:{id:id+'-panel'}")
+            <!-- /ko -->
+            div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
 
       div(data-bind="template:{name:'tmpl-notices',data:notify}")
-      div(class="notify-position-toggle",data-bind="click:notify.clickToggle")
+      div(class="notify-position-toggle",data-bind="cmd:notify.clickToggle")
 
     //- templates
     div(style="display:none")
       include ./app/_all.jade
-      include ./app/account/_all.jade
-      include ./app/core/_all.jade
-      include ./app/panels/_all.jade
-      include ./app/survey/_all.jade
-      include ./app/scrum/_all.jade
-      include ./app/inventory/_all.jade
-      include ./app/scheduling/_all.jade
 
     //- testing
     script parent.browser && parent.browser.init(window);

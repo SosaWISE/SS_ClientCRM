@@ -12,14 +12,16 @@ define('src/core/router', [
   function no_op() {}
 
   function Router() {
-    this.getUser = no_op;
-    this.routeMap = {};
-    this.routes = [];
-    this.anonRoutes = [];
+    var _this = this;
+    _this._inited = false;
+    _this.getUser = no_op;
+    _this.routeMap = {};
+    _this.routes = [];
+    _this.anonRoutes = [];
 
-    this.destPath = null;
-    this.currRouteCtx = null;
-    this._ignoreCount = 0;
+    _this.destPath = null;
+    _this.currRouteCtx = null;
+    _this._ignoreCount = 0;
   }
   Router.prototype.create = function() {
     return new Router();
@@ -28,6 +30,10 @@ define('src/core/router', [
   Router.prototype.init = function(getUser) {
     var _this = this;
     // ,changeTimeout;
+    if (_this._inited) {
+      return;
+    }
+    _this._inited = true;
 
     if (utils.isFunc(getUser)) {
       // set getUser
@@ -41,7 +47,7 @@ define('src/core/router', [
     // check the user is logged in
     if (!_this.getUser()) {
       // save destination path
-      this.destPath = this.getPath();
+      _this.destPath = _this.getPath();
     }
 
     // go to initial route, then listen for the route to change
@@ -58,8 +64,9 @@ define('src/core/router', [
     });
   };
   Router.prototype.useDestPath = function() {
-    this.goToPath(this.destPath, null, false);
-    this.destPath = null;
+    var _this = this;
+    _this.goToPath(_this.destPath, null, false);
+    _this.destPath = null;
   };
 
   Router.prototype.addRoute = function(controller, routeName, routePath, defaultRouteData) {
@@ -200,5 +207,5 @@ define('src/core/router', [
     }
   }
 
-  return new Router();
+  return Router;
 });

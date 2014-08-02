@@ -1,6 +1,7 @@
 define('src/account/security/clist.salesinfo.vm', [
   'underscore',
   'src/account/security/parts.editor.vm',
+  'src/app',
   'src/config',
   'src/slick/buttonscolumn',
   'src/account/security/frequent.gvm',
@@ -17,6 +18,7 @@ define('src/account/security/clist.salesinfo.vm', [
 ], function(
   underscore,
   PartsEditorViewModel,
+  app,
   config,
   ButtonsColumn,
   FrequentGridViewModel,
@@ -156,7 +158,7 @@ define('src/account/security/clist.salesinfo.vm', [
     _this.subs = [];
     _this.title = ko.observable(_this.title);
     _this.data = ukov.wrap({
-      DealerId: config.user().DealerId,
+      DealerId: app.user().DealerId,
     }, schema);
     _this.data.PanelTypeCvm = new ComboViewModel({
       selectedValue: _this.data.PanelTypeId,

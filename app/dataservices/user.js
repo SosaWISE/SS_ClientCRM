@@ -23,6 +23,9 @@ define('src/dataservices/user', [
   UserDataservice.prototype.update = function(data, cb) {
     this.post('UserUpdate', data, null, cb);
   };
+  UserDataservice.prototype.logout = function(cb) {
+    this.post('Logout', null, null, cb);
+  };
   // UserDataservice.prototype.signUp = function(data, cb) {
   //   this.post('UserSignUp', data, cb);
   // };
