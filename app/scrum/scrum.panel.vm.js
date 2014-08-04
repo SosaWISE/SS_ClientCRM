@@ -1,37 +1,24 @@
 define('src/scrum/scrum.panel.vm', [
   'src/core/helpers',
   'src/dataservice',
+  'src/scrum/chat.vm',
+  'src/scrum/project.vm',
   'ko',
   'src/core/utils',
   'src/core/controller.vm',
+  // don't care about reference
+  'src/scrum/scrum.dragdrop',
+  'src/scrum/chat.bindings',
 ], function(
   helpers,
   dataservice,
+  ChatViewModel,
+  ProjectViewModel,
   ko,
   utils,
   ControllerViewModel
 ) {
   "use strict";
-  //@TODO: move to panels folder
-
-
-
-  // lazy load account dependencies
-  var deps = {},
-    ensureDeps = helpers.onetimer(function loadDeps(cb) {
-      require([
-        'src/scrum/chat.vm',
-        'src/scrum/project.vm',
-        // don't care about reference
-        'src/scrum/scrum.dragdrop',
-        'src/scrum/chat.bindings',
-      ], function() {
-        var args = arguments;
-        deps.ChatViewModel = args[0];
-        deps.ProjectViewModel = args[1];
-        cb();
-      });
-    });
 
   function ScrumPanelViewModel(options) {
     var _this = this;
@@ -60,15 +47,13 @@ define('src/scrum/scrum.panel.vm', [
   ScrumPanelViewModel.prototype.viewTmpl = 'tmpl-panel_scrum';
 
   ScrumPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this,
-      cb = join.add();
-    ensureDeps(function() {
-      _this.chatVm(new deps.ChatViewModel());
+    var _this = this;
 
-      //load_projects(_this, join);
+    _this.chatVm(new ChatViewModel());
 
-      cb();
-    });
+    //load_projects(_this, join);
+
+    join.add()();
   };
 
   // function load_projects(_this, join) {

@@ -55,6 +55,11 @@ define('src/app', [
         title: 'Scheduling',
         ico: '&#128101;',
       },
+      'src/scrum/scrum.panel.vm': {
+        id: 'sockets',
+        title: 'Sockets',
+        ico: '&#128101;',
+      },
     },
     addRoutes: function(router, loginVm, idTpPanelsMap) {
       //
@@ -75,6 +80,7 @@ define('src/app', [
       router.addRoute(idTpPanelsMap.swing, 'swing', '', {});
       router.addRoute(idTpPanelsMap.inventory, 'inventory', ':tab', {});
       router.addRoute(idTpPanelsMap.scheduling, 'scheduling', ':tab', {});
+      router.addRoute(idTpPanelsMap.sockets, 'sockets', ':tab', {});
     },
   });
 

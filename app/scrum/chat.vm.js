@@ -4,6 +4,7 @@ define('src/scrum/chat.vm', [
   'src/scrum/ws',
   'ko',
   'src/core/strings',
+  'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
 ], function(
@@ -12,6 +13,7 @@ define('src/scrum/chat.vm', [
   ws,
   ko,
   strings,
+  notify,
   utils,
   BaseViewModel
 ) {
@@ -90,6 +92,9 @@ define('src/scrum/chat.vm', [
         name: '',
         text: strings.formatters.datetimesec(data),
       });
+    });
+    ws.on('authorized', _this, function(data) {
+      notify.info(strings.format('Authorized {0} for {1}.', data.User, data.FuncName), null, 5);
     });
 
     //
