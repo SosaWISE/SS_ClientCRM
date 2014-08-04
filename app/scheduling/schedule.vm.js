@@ -180,6 +180,9 @@ define('src/scheduling/schedule.vm', [
 
     dataservice.scheduleenginesrv.SeScheduleBlock.post(EventID, param, null, utils.safeCallback(null, function(err, resp) {
       console.log("Block updated:" + JSON.stringify(resp.Value));
+      //reload all blocks
+      load_scheduleBlockList();
+
     }, notify.error, false));
 
 
