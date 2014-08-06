@@ -72,10 +72,12 @@ div(data-bind="if:!loadErr()&&!loading()")
             span(class="title") Payment History
             div(class="contents")
               ul(class="accounts")
+                <!-- ko foreach:paymentHistory -->
                 li
                   a(class="")
-                    span(class="name")
-                    span(class="amount")
+                    span(class="name",data-bind="text:BillingNumber")
+                    span(class="amount",data-bind="currencyHtml:BillingAmount")
+                <!-- /ko -->
 
           div(class="section")
             span(class="title") Aging

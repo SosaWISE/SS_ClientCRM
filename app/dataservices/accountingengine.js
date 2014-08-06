@@ -14,6 +14,7 @@ define('src/dataservices/accountingengine', [
     [
       'aging',
       'billingInfoSummary',
+      'billingHistory',
       'invoices',
       'invoiceItems',
       'customerSearches',
