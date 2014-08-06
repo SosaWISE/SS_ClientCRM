@@ -74,7 +74,7 @@ div(data-bind="if:!loadErr()&&!loading()")
               ul(class="accounts")
                 <!-- ko foreach:paymentHistory -->
                 li
-                  a(class="",data-bind="attr:{title:'Billing #: '+BillingNumber}")
+                  a(class="",data-bind="attr:{title:BillingType+' #: '+BillingNumber}")
                     span(class="name",data-bind="datetext:BillingDate")
                     span(class="amount",data-bind="currencyHtml:BillingAmount")
                 <!-- /ko -->
