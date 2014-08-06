@@ -161,7 +161,15 @@ define('src/account/default/masteraccount.vm', [
     dataservice.accountingengine.billingHistory.read({
       id: masterId,
       link: 'CMFID',
-    }, pcontroller.paymentHistory, cb);
+    }, function(val) {
+      val.forEach(function(item) {
+        if (item.BillingType === 'Invoice' && item.BillingAmount > 0) {
+          // make invoices negative
+          item.BillingAmount *= -1;
+        }
+      });
+      pcontroller.paymentHistory(val);
+    }, cb);
   }
 
   function load_aging(pcontroller, masterId, agings, cb) {
