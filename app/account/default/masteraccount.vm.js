@@ -41,6 +41,7 @@ define('src/account/default/masteraccount.vm', [
     _this.customerData = ko.observable();
 
     _this.accounts = ko.observableArray();
+    _this.paymentHistory = ko.observableArray();
     _this.agings = ko.observableArray();
     // override childs array from ControllerViewModel
     _this.childs = ko.computed(function() {
@@ -105,6 +106,7 @@ define('src/account/default/masteraccount.vm', [
         }
 
         load_billingInfoSummary(_this, _this.id, _this.accounts, join.add());
+        load_billingHistory(_this, _this.id, join.add());
         load_aging(_this, _this.id, _this.agings, join.add());
 
         cb();
@@ -153,6 +155,13 @@ define('src/account/default/masteraccount.vm', [
         accounts([]);
       }
     }, utils.no_op));
+  }
+
+  function load_billingHistory(pcontroller, masterId, cb) {
+    dataservice.accountingengine.billingHistory.read({
+      id: masterId,
+      link: 'CMFID',
+    }, pcontroller.paymentHistory, cb);
   }
 
   function load_aging(pcontroller, masterId, agings, cb) {
