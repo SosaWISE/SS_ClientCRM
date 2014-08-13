@@ -129,6 +129,7 @@ define('mock/dataservices/qualify.mock', [
         IsScored: '@CREDIT_SCORED', //true,
         IsHit: '@CREDIT_SCORE_HIT', //true,
         CreditGroup: '@CREDIT_GROUP',
+        CustomerMasterFileId: 3000123,
 
         // IsActive: true,
         // IsDeleted: false,
