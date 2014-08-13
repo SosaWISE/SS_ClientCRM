@@ -1,5 +1,5 @@
 define('src/scrum/chat.vm', [
-  'src/config',
+  'src/app',
   'src/ukov',
   'src/scrum/ws',
   'ko',
@@ -8,7 +8,7 @@ define('src/scrum/chat.vm', [
   'src/core/utils',
   'src/core/base.vm',
 ], function(
-  config,
+  app,
   ukov,
   ws,
   ko,
@@ -40,7 +40,7 @@ define('src/scrum/chat.vm', [
     });
 
     function getData() {
-      var user = config.user.peek();
+      var user = app.user.peek();
       return {
         senderId: rand,
         name: user.Username,
