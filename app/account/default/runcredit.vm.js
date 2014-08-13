@@ -211,7 +211,7 @@ define('src/account/default/runcredit.vm', [
       }
 
       var model = _this.data.getValue();
-      // store now since we want to use this even if escape key is pressed...
+      // store now since we want to use this even if escape key is pressed... (and assuming the credit is a hit)
       _this.customerResult = {
         SSN: model.SSN,
         DOB: model.DOB,
@@ -222,7 +222,10 @@ define('src/account/default/runcredit.vm', [
       dataservice.qualify.runcredit.post(null, model, null, utils.safeCallback(cb, function(err, resp) {
         _this.loaded(true);
         _this.data.markClean(model, true);
-        _this.creditResult(resp.Value);
+        var creditResult = resp.Value;
+        _this.creditResult(creditResult);
+        // show credit result popup
+        showCreditResult(_this);
       }, function(err) {
         notify.error(err, 10);
       }));
@@ -258,16 +261,13 @@ define('src/account/default/runcredit.vm', [
     }
     return msg;
   };
-
   RunCreditViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
     var _this = this;
-
     // this timeout makes it possible to focus the input
     setTimeout(function() {
       _this.focusFirst(true);
     }, 100);
   };
-
   RunCreditViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this,
       cb = join.add();
@@ -280,6 +280,19 @@ define('src/account/default/runcredit.vm', [
       cvm.setList(resp.Value);
       cvm.selectItem(cvm.list()[0]);
     }, utils.no_op));
+  }
+
+  function showCreditResult(_this) {
+    var creditResult = _this.creditResult();
+    if (creditResult && creditResult.IsHit) {
+      // layersVm should be defined since this view model is a layer
+      _this.layersVm.show(new BaseViewModel({
+        result: creditResult,
+        width: 300,
+        height: 'auto',
+        viewTmpl: 'tmpl-acct-default-runcredit-result',
+      }));
+    }
   }
 
   return RunCreditViewModel;

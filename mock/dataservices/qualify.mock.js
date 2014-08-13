@@ -129,6 +129,7 @@ define('mock/dataservices/qualify.mock', [
         IsScored: '@CREDIT_SCORED', //true,
         IsHit: '@CREDIT_SCORE_HIT', //true,
         CreditGroup: '@CREDIT_GROUP',
+        CustomerMasterFileId: 3000123,
 
         // IsActive: true,
         // IsDeleted: false,
@@ -196,7 +197,7 @@ define('mock/dataservices/qualify.mock', [
       var score = cache.CREDIT_SCORE,
         result;
       if (!score) {
-        result = '';
+        result = 'NotFound';
       } else if (score >= 650) {
         result = 'Excellent';
       } else if (score >= 625) {

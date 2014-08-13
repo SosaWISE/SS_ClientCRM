@@ -42,9 +42,9 @@ div(data-bind="if:!loadErr()&&!loading()")
                 div(class="phone work", data-bind="phonetext:PhoneWork")
                 div(class="phone home", data-bind="phonetext:PhoneHome")
                 div(class="email", data-bind="text:Email")
-                //- div(class="credit-result excellent")
-                  |Credit Score:&nbsp;
-                  span(data-bind="text:'648'")
+                div(class="credit-result", data-bind="crg:CreditGroup")
+                  |Credit Group:&nbsp;
+                  span(data-bind="text:CreditGroup")
 
           div(class="section")
             div(class="title")
