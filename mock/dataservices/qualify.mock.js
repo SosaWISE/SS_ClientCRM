@@ -197,7 +197,7 @@ define('mock/dataservices/qualify.mock', [
       var score = cache.CREDIT_SCORE,
         result;
       if (!score) {
-        result = '';
+        result = 'NotFound';
       } else if (score >= 650) {
         result = 'Excellent';
       } else if (score >= 625) {

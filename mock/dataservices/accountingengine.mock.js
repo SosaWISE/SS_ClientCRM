@@ -113,7 +113,11 @@ define('mock/dataservices/accountingengine.mock', [
             StreetAddress: '@ADDRESS',
             StreetAddress2: '#@NUMBER(10,300,apt)',
             Username: null,
+            CreditScore: '@CREDIT_SCORE', //@NOTE: not actually return from API. needed for CREDIT_GROUP
+            CreditGroup: '@CREDIT_GROUP', // from qualify.mock.js
           });
+          // remove fields not in API
+          delete result.CreditScore;
           break;
       }
       send(0, result, setter, cb);
