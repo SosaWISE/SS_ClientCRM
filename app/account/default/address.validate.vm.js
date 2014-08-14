@@ -510,28 +510,28 @@ define('src/account/default/address.validate.vm', [
   ];
   AddressValidateViewModel.prototype.addressDirectionalTypeOptions = [ //
     {
-      value: 1,
+      value: 'N',
       text: 'N - North North'
     }, {
-      value: 2,
+      value: 'E',
       text: 'E - East  East'
     }, {
-      value: 3,
+      value: 'S',
       text: 'S - South South'
     }, {
-      value: 4,
+      value: "W",
       text: 'W - West  West'
     }, {
-      value: 5,
+      value: 'NE',
       text: 'NE - North East North East'
     }, {
-      value: 6,
+      value: 'SE',
       text: 'SE - South East South East'
     }, {
-      value: 7,
+      value: 'NW',
       text: 'NW - North West North West'
     }, {
-      value: 8,
+      value: 'SW',
       text: 'SW - South West South West'
     },
   ];
