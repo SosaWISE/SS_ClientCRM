@@ -537,136 +537,136 @@ define('src/account/default/address.validate.vm', [
   ];
   AddressValidateViewModel.prototype.streetTypeOptions = [ //
     {
-      value: 1,
+      value: 'AL',
       text: 'AL - ALLEY'
     }, {
-      value: 2,
+      value: 'AV',
       text: 'AV - AVENUE'
     }, {
-      value: 3,
+      value: 'BV',
       text: 'BV - BOULEVARD'
     }, {
-      value: 4,
+      value: 'BD',
       text: 'BD - BUILDING'
     }, {
-      value: 5,
+      value: 'CN',
       text: 'CN - CENTER'
     }, {
-      value: 6,
+      value: 'CI',
       text: 'CI - CIRCLE'
     }, {
-      value: 7,
+      value: 'CT',
       text: 'CT - COURT'
     }, {
-      value: 8,
+      value: 'CS',
       text: 'CS - CRESCENT'
     }, {
-      value: 9,
+      value: 'DA',
       text: 'DA - DALE'
     }, {
-      value: 10,
+      value: 'DR',
       text: 'DR - DRIVE'
     }, {
-      value: 11,
+      value: 'EX',
       text: 'EX - EXPRESSWAY'
     }, {
-      value: 12,
+      value: 'FY',
       text: 'FY - FREEWAY'
     }, {
-      value: 13,
+      value: 'GA',
       text: 'GA - GARDEN'
     }, {
-      value: 14,
+      value: 'GR',
       text: 'GR - GROVE'
     }, {
-      value: 15,
+      value: 'HT',
       text: 'HT - HEIGHTS'
     }, {
-      value: 16,
+      value: 'HY',
       text: 'HY - HIGHWAY'
     }, {
-      value: 17,
+      value: 'HI',
       text: 'HI - HILL'
     }, {
-      value: 18,
+      value: 'KN',
       text: 'KN - KNOLL'
     }, {
-      value: 19,
+      value: 'LN',
       text: 'LN - LANE'
     }, {
-      value: 20,
+      value: 'LP',
       text: 'LP - LOOP'
     }, {
-      value: 21,
+      value: 'MA',
       text: 'MA - MALL'
     }, {
-      value: 22,
+      value: 'OV',
       text: 'OV - OVAL'
     }, {
-      value: 23,
+      value: 'PK',
       text: 'PK - PARK'
     }, {
-      value: 24,
+      value: 'PY',
       text: 'PY - PARKWAY'
     }, {
-      value: 25,
+      value: 'PA',
       text: 'PA - PATH'
     }, {
-      value: 26,
+      value: 'PI',
       text: 'PI - PIKE'
     }, {
-      value: 27,
+      value: 'PL',
       text: 'PL - PLACE'
     }, {
-      value: 28,
+      value: 'PZ',
       text: 'PZ - PLAZA'
     }, {
-      value: 29,
+      value: 'PT',
       text: 'PT - POINT'
     }, {
-      value: 30,
+      value: 'RD',
       text: 'RD - ROAD'
     }, {
-      value: 31,
+      value: 'RT',
       text: 'RT - ROUTE'
     }, {
-      value: 32,
+      value: 'RO',
       text: 'RO - ROW'
     }, {
-      value: 33,
+      value: 'RN',
       text: 'RN - RUN'
     }, {
-      value: 34,
+      value: 'RR',
       text: 'RR - RURALROUTE'
     }, {
-      value: 35,
+      value: 'SQ',
       text: 'SQ - SQUARE'
     }, {
-      value: 36,
+      value: 'ST',
       text: 'ST - STREET'
     }, {
-      value: 37,
+      value: 'TC',
       text: 'TC - TERRACE'
     }, {
-      value: 38,
+      value: 'TY',
       text: 'TY - THRUWAY'
     }, {
-      value: 39,
+      value: 'TR',
       text: 'TR - TRAIL'
     }, {
-      value: 40,
+      value: 'TP',
       text: 'TP - TURNPIKE'
     }, {
-      value: 41,
+      value: 'VI',
       text: 'VI - VIADUCT'
     }, {
       value: 42,
       text: 'VW- VIEW'
     }, {
-      value: 43,
+      value: 'WK',
       text: 'WK - WALK'
     }, {
-      value: 44,
+      value: 'WY',
       text: 'WY - WAY'
     },
   ];
