@@ -48,6 +48,7 @@ define('src/inventory/receive.inventory.vm', [
     },
     PackingSlipNumber: {
       //converter: ukov.converters.number(0),
+      converter: ukov.converters.string(),
       validators: [
         ukov.validators.isRequired('PackingSlipNumber ID is required')
       ]
@@ -115,6 +116,13 @@ define('src/inventory/receive.inventory.vm', [
         //If Enter Qty Received greater than Remain, show error message
         if (part.WithBarcodeCount > part.WithoutBarcodeCount) {
           notify.warn('\'Enter Qty Received\' should not be greater than \'Remain\'', null, 3);
+          cb();
+        }
+
+
+        //Do not launch the Enter Barcode window if the Packing Slip # is blank
+        if (!_this.data.PackingSlipNumber()) {
+          notify.warn('Please enter Packing Slip #', null, 3);
           cb();
         }
 
