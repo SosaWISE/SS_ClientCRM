@@ -227,6 +227,7 @@ define('src/account/default/address.validate.vm', [
           _this.focusOk(true);
         }
       }, function(err) {
+        _this.setManualOverride(true);
         notify.error(err);
       }));
     }, function(busy) {
