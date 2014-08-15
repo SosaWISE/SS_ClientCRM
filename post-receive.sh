@@ -19,8 +19,4 @@ grunt init
 grunt build
 
 # # test using
-# git log -2 --format=oneline --reverse
-# #output
-# # FROM_ID
-# # TO_ID
-# echo "$FROM_ID $TO_ID master" | ./hooks/post-receive
+# echo "1 2 tasking" | ./hooks/post-receive
