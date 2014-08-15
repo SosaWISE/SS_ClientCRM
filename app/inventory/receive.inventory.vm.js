@@ -48,6 +48,7 @@ define('src/inventory/receive.inventory.vm', [
     },
     PackingSlipNumber: {
       //converter: ukov.converters.number(0),
+      converter: ukov.converters.string(),
       validators: [
         ukov.validators.isRequired('PackingSlipNumber ID is required')
       ]
@@ -55,6 +56,7 @@ define('src/inventory/receive.inventory.vm', [
     PackingSlipID: {},
     VendorType: {},
     PurchaseOrderList: {},
+    PackingSlipNumberList: {},
   };
 
 
@@ -69,7 +71,8 @@ define('src/inventory/receive.inventory.vm', [
     _this.data = ukov.wrap(_this.item || {
       PurchaseOrderID: null,
       PackingSlipNumber: null,
-      PackingSlipID: null
+      PackingSlipID: null,
+      PackingSlipNumberList: null
     }, schema);
 
     //This a layer for enter barcode screen pop up
@@ -98,6 +101,17 @@ define('src/inventory/receive.inventory.vm', [
 
     });
 
+    //This is the dropdown Packing Slip# list
+    _this.data.packingSlipListCvm = new ComboViewModel({
+      selectedValue: _this.data.PackingSlipNumberList,
+      nullable: true,
+      fields: {
+        value: 'PackingSlipNumber',
+        text: 'PackingSlipNumber',
+      },
+
+    });
+
 
     //Display Inventory Grid
     _this.inventoryListGvm = new InventoryGridViewModel({
@@ -115,6 +129,13 @@ define('src/inventory/receive.inventory.vm', [
         //If Enter Qty Received greater than Remain, show error message
         if (part.WithBarcodeCount > part.WithoutBarcodeCount) {
           notify.warn('\'Enter Qty Received\' should not be greater than \'Remain\'', null, 3);
+          cb();
+        }
+
+
+        //Do not launch the Enter Barcode window if the Packing Slip # is blank
+        if (!_this.data.PackingSlipNumber()) {
+          notify.warn('Please enter Packing Slip #', null, 3);
           cb();
         }
 
@@ -219,7 +240,7 @@ define('src/inventory/receive.inventory.vm', [
     });
 
     //Populate PO field when there's a change of vendor
-    _this.data.PurchaseOrderList.subscribe(function(purchaseOrderNumber) {
+    _this.data.PurchaseOrderList.subscribe(function(purchaseOrderNumber, cb) {
       if (purchaseOrderNumber) {
 
         var previousPO = _this.data.PurchaseOrderID();
@@ -232,8 +253,19 @@ define('src/inventory/receive.inventory.vm', [
         _this.data.PurchaseOrderID(purchaseOrderNumber);
 
         _this.search(_this);
+
+        //populate packing slip# list
+        load_packingSlipNumberList(_this, purchaseOrderNumber, cb);
+
       }
 
+    });
+
+    //Populate packing slip# field when user selected a packing slip# from dropdown
+    _this.data.PackingSlipNumberList.subscribe(function(packingSlipNumber) {
+      if (packingSlipNumber) {
+        _this.data.PackingSlipNumber(packingSlipNumber);
+      }
     });
 
 
@@ -379,6 +411,40 @@ define('src/inventory/receive.inventory.vm', [
 
         //set vendor list
         cvm.setList(resp.Value);
+
+      } else {
+        notify.warn('No records found.', null, 3);
+      }
+    }));
+
+  }
+
+  //load packing slip# list
+  function load_packingSlipNumberList(_this, PackingSlipId, cb) {
+
+    var x,
+      tList = [];
+
+    dataservice.inventoryenginesrv.PackingSlip.read({
+      id: PackingSlipId,
+      link: 'GPPON'
+    }, null, utils.safeCallback(cb, function(err, resp) {
+
+      console.log("PackingSlip list:" + JSON.stringify(resp.Value));
+
+      if (resp.Value.length > 0) {
+
+        for (x = 0; x < resp.Value.length; x++) {
+
+          if (resp.Value[x].PackingSlipNumber) {
+            tList.push({
+              PackingSlipNumber: resp.Value[x].PackingSlipNumber
+            });
+          }
+
+        }
+
+        _this.data.packingSlipListCvm.setList(tList);
 
       } else {
         notify.warn('No records found.', null, 3);

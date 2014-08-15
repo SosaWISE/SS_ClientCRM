@@ -1,15 +1,26 @@
 #!/bin/sh
-# remote: fatal: Could not jump back into original cwd: No such file or directory
-# crmprod works, but crm doesn't since it is crm.git without .git - http://stackoverflow.com/a/8513916
-DIR=/home/user/crmprod
+DEPLOY_ENV=dev # replace with correct environment
+DIR=/home/dev/src/$DEPLOY_ENV/crm
+# ensure the directory exists
+mkdir -p "$DIR"
 
-# make output dir
-mkdir -p ${DIR}
-# checkout tree
-# GIT_WORK_TREE=${DIR} git checkout -f master
-git --git-dir=/home/user/crm.git --work-tree=${DIR} checkout -f master
-
-# install and build
-cd ${DIR}
+# read STDIN (Format: "from_commit to_commit branch_name")
+BRANCH=""
+while read from_commit to_commit branch_name
+do
+    BRANCH=$(git rev-parse --symbolic --abbrev-ref $branch_name)
+done
+echo "Received branch '$BRANCH'"
+# checkout branch that was pushed
+GIT_WORK_TREE="$DIR" git checkout -f $BRANCH
+# build site
+cd "$DIR"
 grunt init
 grunt build
+
+# # test using
+# git log -2 --format=oneline --reverse
+# #output
+# # FROM_ID
+# # TO_ID
+# echo "$FROM_ID $TO_ID master" | ./hooks/post-receive
