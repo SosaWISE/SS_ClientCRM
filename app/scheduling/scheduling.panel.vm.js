@@ -21,6 +21,7 @@ define('src/scheduling/scheduling.panel.vm', [
 ) {
   "use strict";
 
+
   function SchedulingViewModel(options) {
     var _this = this;
     SchedulingViewModel.super_.call(_this, options);
@@ -44,6 +45,22 @@ define('src/scheduling/scheduling.panel.vm', [
   SchedulingViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
+    //Original script
+    /*  _this.list([
+      new ServiceTicketViewModel({
+        routeName: 'scheduling',
+        pcontroller: _this,
+        id: 'serviceticket',
+        title: 'Service Ticket'
+      }),
+      new ScheduleViewModel({
+        routeName: 'scheduling',
+        pcontroller: _this,
+        id: 'schedule',
+        title: 'Schedule'
+      }),
+  */
+
     _this.list([
       new ServiceTicketViewModel({
         routeName: 'scheduling',
@@ -57,6 +74,8 @@ define('src/scheduling/scheduling.panel.vm', [
         id: 'schedule',
         title: 'Schedule'
       }),
+
+
       // new ReportInventoryViewModel({
       //   routeName: 'inventory',
       //   pcontroller: _this,

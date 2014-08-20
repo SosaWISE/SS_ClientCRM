@@ -121,6 +121,7 @@ define('src/account/default/search.vm', [
           fn: function(acct) {
             //@HACK: there is an array of AccountTypes, but not an array of FkId. so we're going to assume that
             //       if there is an AccountType of `LEAD` in the array then the FkId is a LeadID........
+            console.log(_this);
             if (acct.AccountTypes.some(function(t) {
               return t === 'LEAD';
             })) {

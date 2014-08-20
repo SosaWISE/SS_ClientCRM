@@ -10,8 +10,8 @@ define('src/scheduling/schedule.vm', [
   'src/scheduling/create.scheduleticket.vm',
   'src/core/layers.vm',
   'src/core/joiner',
-  //'ko',
-  //'src/ukov',
+  'ko',
+  'src/ukov'
 
 ], function(
   $,
@@ -24,23 +24,25 @@ define('src/scheduling/schedule.vm', [
   ScheduleBlockViewModel,
   ScheduleTicketViewModel,
   LayersViewModel,
-  joiner
-  //ko,
-  //ukov
+  joiner,
+  ko,
+  ukov
 ) {
   "use strict";
 
-  // var schema;
+  var schema;
 
-  // schema = {
-  //   _model: true,
-  //   TicketStatus: {},
-  // };
+  schema = {
+    _model: true,
+    Ticket: {}
+  };
 
 
   function ScheduleViewModel(options) {
     var _this = this;
 
+    // console.log(options);
+    //alert("schedule vm active");
     ScheduleViewModel.super_.call(_this, options);
 
     // _this.data = ukov.wrap(_this.item || {
@@ -71,10 +73,29 @@ define('src/scheduling/schedule.vm', [
 
   };
 
-  ScheduleViewModel.prototype.onActivate = function( /*routeData, extraData, join*/ ) { // override me
+  //ScheduleViewModel.prototype.onActivate = function( /*routeData, extraData, join*/ ) { // override me
+  ScheduleViewModel.prototype.onActivate = function(routeData, extraData, join) { // override me
+
     var _this = this,
       join = joiner();
     //CalLoading = true;
+
+    //console.log(_this);
+    //console.log("routeData");
+
+    //alert("schedule vm onactivate");
+    //console.log(routeData.ticketid);
+    //console.log(routeData);
+    //console.log(routeData.extraData);
+
+    _this.data = ukov.wrap({
+      Ticket: routeData.extraData.ticket,
+    }, schema);
+
+    alert(JSON.stringify(_this.data.getValue()));
+
+    //alert(routeData.ticketid);
+    // _this.title = routeData.ticketid;
 
     //load block list    
     load_scheduleBlockList(join.add());
@@ -97,7 +118,7 @@ define('src/scheduling/schedule.vm', [
       hiddenDays: [0], //hide sunday      
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
 
-        console.log(parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10));
+        //console.log(parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10));
 
         //show create ticket screen only when there are still spaces available for a specific block
         if (parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10)) {
@@ -166,7 +187,7 @@ define('src/scheduling/schedule.vm', [
 
     block = (parseInt($.fullCalendar.formatDate(EventEnd, 'HH:mm'), 10) < 12) ? 'AM' : 'PM';
 
-    console.log("Block to update:" + block);
+    //console.log("Block to update:" + block);
 
     param = {
       'BlockID': EventID,
@@ -176,10 +197,10 @@ define('src/scheduling/schedule.vm', [
     };
 
     //@TODO update block info
-    console.log("Updating block info:" + JSON.stringify(param));
+    // console.log("Updating block info:" + JSON.stringify(param));
 
     dataservice.scheduleenginesrv.SeScheduleBlock.post(EventID, param, null, utils.safeCallback(null, function(err, resp) {
-      console.log("Block updated:" + JSON.stringify(resp.Value));
+      //console.log("Block updated:" + JSON.stringify(resp.Value));
       //reload all blocks
       load_scheduleBlockList();
 
@@ -209,13 +230,13 @@ define('src/scheduling/schedule.vm', [
       'DateTo': $.fullCalendar.formatDate(end, 'MM/dd/yyyy')
     };
 
-    console.log("Date range:" + JSON.stringify(param));
+    //console.log("Date range:" + JSON.stringify(param));
 
     dataservice.scheduleenginesrv.SeScheduleBlockList.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
 
-        console.log("SeScheduleBlockList:" + JSON.stringify(resp.Value));
+        //console.log("SeScheduleBlockList:" + JSON.stringify(resp.Value));
 
         for (x = 0; x < resp.Value.length; x++) {
 
@@ -256,7 +277,7 @@ define('src/scheduling/schedule.vm', [
 
         }
 
-        console.log("Final Source:" + JSON.stringify(result));
+        //console.log("Final Source:" + JSON.stringify(result));
 
         $("#calendar").fullCalendar('removeEvents');
 

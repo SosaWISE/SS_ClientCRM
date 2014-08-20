@@ -1,12 +1,12 @@
-define('src/scheduling/service.ticket.vm', [
+define('src/account/security/service.ticket.vm', [
   'src/dataservice',
   'src/core/combo.vm',
   'src/core/notify',
   'src/core/utils',
   'src/core/router',
   'src/core/controller.vm',
-  'src/scheduling/service.ticket.gvm',
-  'src/scheduling/ticket.editor.vm',
+  'src/account/security/service.ticket.gvm',
+  'src/account/security/ticket.editor.vm',
   'src/core/layers.vm',
   'src/core/joiner',
   'src/slick/slickgrid.vm',
@@ -43,11 +43,6 @@ define('src/scheduling/service.ticket.vm', [
     var _this = this;
 
     ServiceTicketViewModel.super_.call(_this, options);
-
-
-    _this.layersVm = _this.layersVm || new LayersViewModel({
-      controller: _this,
-    });
 
     _this.data = ukov.wrap(_this.item || {
       TicketStatus: null,
@@ -86,7 +81,7 @@ define('src/scheduling/service.ticket.vm', [
     //events
     //
 
-    _this.cmdNewTicket = ko.command(function(cb /*, vm*/ ) {
+    _this.cmdAddServiceTicket = ko.command(function(cb /*, vm*/ ) {
       /*_this.goTo({
 
             route:"scheduling",
@@ -120,7 +115,7 @@ define('src/scheduling/service.ticket.vm', [
   }
 
   utils.inherits(ServiceTicketViewModel, ControllerViewModel);
-  ServiceTicketViewModel.prototype.viewTmpl = 'tmpl-service-ticket';
+  ServiceTicketViewModel.prototype.viewTmpl = 'tmpl-security-service_ticket';
 
   //
   // members
