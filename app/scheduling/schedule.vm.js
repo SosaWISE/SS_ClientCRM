@@ -28,7 +28,7 @@ define('src/scheduling/schedule.vm', [
   ko,
   ukov
 ) {
-  "use strict";
+  'use strict';
 
   var schema;
 
@@ -74,7 +74,7 @@ define('src/scheduling/schedule.vm', [
   };
 
   //ScheduleViewModel.prototype.onActivate = function( /*routeData, extraData, join*/ ) { // override me
-  ScheduleViewModel.prototype.onActivate = function(routeData, extraData, join) { // override me
+  ScheduleViewModel.prototype.onActivate = function(routeData) { // override me
 
     var _this = this,
       join = joiner();
@@ -173,7 +173,7 @@ define('src/scheduling/schedule.vm', [
 
       //add some more info on blocks
       eventRender: function(event, element) {
-        element.find('.fc-event-title').append("<br/>" + event.someInfo);
+        element.find('.fc-event-title').append('<br/>' + event.someInfo);
       }
 
     });
@@ -199,7 +199,7 @@ define('src/scheduling/schedule.vm', [
     //@TODO update block info
     // console.log("Updating block info:" + JSON.stringify(param));
 
-    dataservice.scheduleenginesrv.SeScheduleBlock.post(EventID, param, null, utils.safeCallback(null, function(err, resp) {
+    dataservice.scheduleenginesrv.SeScheduleBlock.post(EventID, param, null, utils.safeCallback(null, function( /*err, resp*/ ) {
       //console.log("Block updated:" + JSON.stringify(resp.Value));
       //reload all blocks
       load_scheduleBlockList();
@@ -279,9 +279,9 @@ define('src/scheduling/schedule.vm', [
 
         //console.log("Final Source:" + JSON.stringify(result));
 
-        $("#calendar").fullCalendar('removeEvents');
+        $('#calendar').fullCalendar('removeEvents');
 
-        $("#calendar").fullCalendar('addEventSource', result);
+        $('#calendar').fullCalendar('addEventSource', result);
 
       } else {
         notify.error(err);

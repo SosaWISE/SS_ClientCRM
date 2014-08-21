@@ -20,7 +20,7 @@ define('src/account/security/ticket.editor.vm', [
   joiner,
   ControllerViewModel
 ) {
-  "use strict";
+  'use strict';
 
 
   var schema;
@@ -51,14 +51,17 @@ define('src/account/security/ticket.editor.vm', [
     //Set title
     _this.title = _this.title || 'Create New Service Ticket';
 
+
     //Set  field as first focusable
     _this.focusFirst = ko.observable(true);
 
-    // alert(JSON.stringify(_this.ticket));
+    alert(JSON.stringify(_this.AccountID));
+
+    //  console.log("AccountID on ticket editor"+_this.AccountID);
 
     _this.ticket = _this.ticket || {
       TicketID: null,
-      AccountID: null,
+      AccountID: _this.AccountID,
       TicketTypeID: null,
       MoniNumber: null,
       StatusCodeID: null,
@@ -119,7 +122,7 @@ define('src/account/security/ticket.editor.vm', [
       }, notify.error, false));
     }, function(busy) {
       //return !busy && !_this.cmdSearch.busy() && !_this.cmdDelete.busy();
-      return !busy
+      return !busy;
     });
 
     _this.cmdSchedule = ko.command(function(cb) {
@@ -148,9 +151,9 @@ define('src/account/security/ticket.editor.vm', [
         _this.goTo({
           pcontroller: _this,
           route: 'scheduling',
-          id: "schedule",
+          id: 'schedule',
           ticketid: data.TicketID,
-          title: "test"
+          title: 'test'
         }, {
           ticket: data
         }, false);
@@ -162,7 +165,7 @@ define('src/account/security/ticket.editor.vm', [
       }, notify.error, false));
     }, function(busy) {
       //return !busy && !_this.cmdSearch.busy() && !_this.cmdDelete.busy();
-      return !busy
+      return !busy;
     });
 
     _this.active.subscribe(function(active) {
@@ -177,17 +180,20 @@ define('src/account/security/ticket.editor.vm', [
   }
   utils.inherits(TicketEditorViewModel, ControllerViewModel);
   // utils.inherits(TicketEditorViewModel, BaseViewModel);
-  TicketEditorViewModel.prototype.viewTmpl = 'tmpl-ticket-editor';
+  TicketEditorViewModel.prototype.viewTmpl = 'tmpl-security-service_ticket_editor';
   TicketEditorViewModel.prototype.width = 400;
   TicketEditorViewModel.prototype.height = 'auto';
 
-  TicketEditorViewModel.prototype.onActivate = function(routeData) {
+  TicketEditorViewModel.prototype.onActivate = function( /*routeData*/ ) {
     //routeData.action="scheduling";
     //alert("on activate");
   };
 
   TicketEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
+
+    //console.log('on ticket editor route id: ' + routeData.id);
+    _this.AccountId = routeData.id;
     //load ticket type list
     load_ticketTypeList(_this.data.ticketTypeCvm, join.add());
 

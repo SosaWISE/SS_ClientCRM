@@ -20,7 +20,7 @@ define('src/scheduling/ticket.editor.vm', [
   joiner,
   ControllerViewModel
 ) {
-  "use strict";
+  'use strict';
 
 
   var schema;
@@ -119,7 +119,7 @@ define('src/scheduling/ticket.editor.vm', [
       }, notify.error, false));
     }, function(busy) {
       //return !busy && !_this.cmdSearch.busy() && !_this.cmdDelete.busy();
-      return !busy
+      return !busy;
     });
 
     _this.cmdSchedule = ko.command(function(cb) {
@@ -148,9 +148,9 @@ define('src/scheduling/ticket.editor.vm', [
         _this.goTo({
           pcontroller: _this,
           route: 'scheduling',
-          id: "schedule",
+          id: 'schedule',
           ticketid: data.TicketID,
-          title: "test"
+          title: 'test'
         }, {
           ticket: data
         }, false);
@@ -162,7 +162,7 @@ define('src/scheduling/ticket.editor.vm', [
       }, notify.error, false));
     }, function(busy) {
       //return !busy && !_this.cmdSearch.busy() && !_this.cmdDelete.busy();
-      return !busy
+      return !busy;
     });
 
     _this.active.subscribe(function(active) {
@@ -181,7 +181,7 @@ define('src/scheduling/ticket.editor.vm', [
   TicketEditorViewModel.prototype.width = 400;
   TicketEditorViewModel.prototype.height = 'auto';
 
-  TicketEditorViewModel.prototype.onActivate = function(routeData) {
+  TicketEditorViewModel.prototype.onActivate = function( /*routeData*/ ) {
     //routeData.action="scheduling";
     //alert("on activate");
   };

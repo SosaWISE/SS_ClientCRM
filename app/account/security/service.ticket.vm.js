@@ -29,12 +29,13 @@ define('src/account/security/service.ticket.vm', [
   ko,
   ukov
 ) {
-  "use strict";
+  'use strict';
 
   var schema;
 
   schema = {
     _model: true,
+    AccountID: {},
     TicketStatus: {},
   };
 
@@ -82,15 +83,7 @@ define('src/account/security/service.ticket.vm', [
     //
 
     _this.cmdAddServiceTicket = ko.command(function(cb /*, vm*/ ) {
-      /*_this.goTo({
-
-            route:"scheduling",
-            id:"schedule",
-
-        });
-        */
       //Go to TicketEditor  screen
-
       _this.layersVm.show(new TicketEditorViewModel({
         title: 'Create New Service Ticket'
       }), function onClose() {
@@ -125,6 +118,13 @@ define('src/account/security/service.ticket.vm', [
     var _this = this;
     join = join;
 
+    //console.log("routeData: "+routeData);
+    //console.log("routeData.id: "+routeData.id);
+    //    _this.accountId = routeData.id;
+    _this.AccountID = routeData.id;
+
+    //console.log("account id: "+_this.AccountID);
+
     //Initialize empty grid
     this.serviceTicketGvm.list([]);
 
@@ -140,14 +140,16 @@ define('src/account/security/service.ticket.vm', [
     var _this = this;
 
     //load all tickets created
-    load_tickets({}, _this.serviceTicketGvm, cb);
+    load_tickets({
+      id: _this.AccountId
+    }, _this.serviceTicketGvm, cb);
 
   };
 
   function showTicketEditor(_this, ticket, cb) {
     var vm = new TicketEditorViewModel({
       pcontroller: _this,
-      title: "Update Ticket",
+      title: 'Update Ticket',
       ticket: ticket
     });
     _this.layersVm.show(vm, cb);
