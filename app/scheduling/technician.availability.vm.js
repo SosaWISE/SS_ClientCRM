@@ -127,8 +127,8 @@ define('src/scheduling/technician.availability.vm', [
           stime: $.fullCalendar.formatDate(start, 'MM/dd/yyyy HH:mm'),
           etime: $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm'),
           blockTime: $.fullCalendar.formatDate(end, 'HH:mm'),
-        }), function onClose(cb) {
-          load_technicianAvailabilityList(cb);
+        }), function onClose( /*cb*/ ) {
+          //load_technicianAvailabilityList(cb);
         });
       },
 
@@ -143,20 +143,20 @@ define('src/scheduling/technician.availability.vm', [
 
   };
 
-  function load_technicianAvailabilityList(cb) {
+  // function load_technicianAvailabilityList(cb) {
 
-    //@TODO retrieve and display the list of technician availability
+  //   //@TODO retrieve and display the list of technician availability
 
-    dataservice.scheduleenginesrv.SeTechnicianAvailabilityList.read(null, null, null, utils.safeCallback(cb, function(err, resp) {
+  //   dataservice.scheduleenginesrv.SeTechnicianAvailabilityList.read(null, null, null, utils.safeCallback(cb, function(err, resp) {
 
-      if (resp.Code === 0) {
-        console.log("SeTechnicianAvailabilityList:" + JSON.stringify(resp.Value));
-      } else {
-        notify.error(err);
-      }
-    }));
+  //     if (resp.Code === 0) {
+  //       console.log("SeTechnicianAvailabilityList:" + JSON.stringify(resp.Value));
+  //     } else {
+  //       notify.error(err);
+  //     }
+  //   }));
 
-  }
+  // }
 
   return TechnicianViewModel;
 });
