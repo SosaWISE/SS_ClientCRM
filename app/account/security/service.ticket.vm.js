@@ -88,13 +88,12 @@ define('src/account/security/service.ticket.vm', [
 
       _this.layersVm.show(new TicketEditorViewModel({
         title: 'Create New Service Ticket',
-        accountId:_this.AccountId
+        accountId: _this.AccountId
       }), function onClose() {
         load_tickets({
-            id: _this.AccountId,
-            link:'ACCID'
-          }
-          , _this.serviceTicketGvm, cb);
+          id: _this.AccountId,
+          link: 'ACCID'
+        }, _this.serviceTicketGvm, cb);
       });
 
 
@@ -140,11 +139,10 @@ define('src/account/security/service.ticket.vm', [
 
     //load all tickets created
     //load_tickets({}, _this.serviceTicketGvm, join.add());
-    load_tickets(
-      {
+    load_tickets({
         id: _this.AccountId,
-        link:'ACCID'
-      }, 
+        link: 'ACCID'
+      },
       _this.serviceTicketGvm, join.add()
     );
 
@@ -156,7 +154,7 @@ define('src/account/security/service.ticket.vm', [
     //load all tickets created
     load_tickets({
       id: _this.AccountId,
-      link:'ACCID'
+      link: 'ACCID'
     }, _this.serviceTicketGvm, cb);
 
   };

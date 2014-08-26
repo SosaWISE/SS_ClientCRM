@@ -55,7 +55,7 @@ define('src/account/security/ticket.editor.vm', [
     //Set  field as first focusable
     _this.focusFirst = ko.observable(true);
 
-   // alert(JSON.stringify(_this));
+    // alert(JSON.stringify(_this));
 
     //  console.log("AccountID on ticket editor"+_this.AccountID);
 
@@ -130,12 +130,12 @@ define('src/account/security/ticket.editor.vm', [
       var model = _this.data.getValue();
 
       _this.goTo({
-       // pcontroller: _this,
+        // pcontroller: _this,
         route: 'schedule',
-        tab:'schedule',
+        tab: 'schedule',
         id: 1
-        });
-      
+      });
+
 
 
       dataservice.scheduleenginesrv.SeTicket.save({
@@ -147,7 +147,7 @@ define('src/account/security/ticket.editor.vm', [
 
         var data = resp.Value;
 
-        console.log("schedule: " + _this);  
+        //console.log('schedule: ' + _this);  
         /*  
         _this.goTo({
           pcontroller: _this,
@@ -159,9 +159,9 @@ define('src/account/security/ticket.editor.vm', [
           ticket: data
         }, false);
         */
- 
 
-        
+
+
         _this.layerResult = data;
         _this.isDeleted = false;
         closeLayer(_this);
@@ -188,8 +188,8 @@ define('src/account/security/ticket.editor.vm', [
   TicketEditorViewModel.prototype.width = 400;
   TicketEditorViewModel.prototype.height = 'auto';
 
-  TicketEditorViewModel.prototype.onActivate = function( routeData ) {
-    var _this =this;
+  TicketEditorViewModel.prototype.onActivate = function( /*routeData*/ ) {
+    // var _this =this;
 
     //routeData.action="scheduling";
     //alert("on activate"+JSON.stringify(routeData));

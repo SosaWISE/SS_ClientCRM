@@ -64,7 +64,7 @@ define('src/account/security/service.ticket.gvm', [
         id: 'StatusCodeID',
         name: 'Status',
         field: 'StatusCode',
-      
+
         //field: 'StatusCodeID',
       }, {
         id: 'MoniConfirmation',
