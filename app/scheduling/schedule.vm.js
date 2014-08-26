@@ -92,7 +92,7 @@ define('src/scheduling/schedule.vm', [
       Ticket: routeData.extraData.ticket,
     }, schema);
 
-    alert(JSON.stringify(_this.data.getValue()));
+    //alert(JSON.stringify(_this.data.getValue()));
 
     //alert(routeData.ticketid);
     // _this.title = routeData.ticketid;

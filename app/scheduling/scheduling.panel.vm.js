@@ -1,7 +1,7 @@
 define('src/scheduling/scheduling.panel.vm', [
   'src/scheduling/service.ticket.vm',
   'src/scheduling/schedule.vm',
-  //'src/scheduling/report.inventory.vm',
+  'src/scheduling/service.technician.vm',
   'ko',
   'src/core/helpers',
   'src/core/strings',
@@ -11,7 +11,7 @@ define('src/scheduling/scheduling.panel.vm', [
 ], function(
   ServiceTicketViewModel,
   ScheduleViewModel,
-  //ReportInventoryViewModel,
+  TechnicianViewModel,
   ko,
   helpers,
   strings,
@@ -74,14 +74,12 @@ define('src/scheduling/scheduling.panel.vm', [
         id: 'schedule',
         title: 'Schedule'
       }),
-
-
-      // new ReportInventoryViewModel({
-      //   routeName: 'inventory',
-      //   pcontroller: _this,
-      //   id: 'audit',
-      //   title: 'Audit'
-      // }),
+      new TechnicianViewModel({
+        routeName: 'scheduling',
+        pcontroller: _this,
+        id: 'servicetechnician',
+        title: 'Service Technician'
+      }),
     ]);
     join.add()();
   };
