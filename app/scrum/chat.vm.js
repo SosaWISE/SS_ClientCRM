@@ -106,6 +106,14 @@ define('src/scrum/chat.vm', [
     _this.clickSend = function() {
       _this.focus(true);
       if (!_this.msg.isValid()) {
+        ////////////TESTING//////////////////////////
+        ws.get('/controller/action/123/link', {
+          a: 1,
+          b: 2,
+        }, null, function(err, resp) {
+          console.log('ws rpc resp:', resp);
+        });
+        ////////////TESTING//////////////////////////
         return;
       }
       ws.sendJson('chat:message:add', getData());

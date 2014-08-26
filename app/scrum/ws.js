@@ -1,5 +1,6 @@
 define('src/scrum/ws', [
   'src/config',
+  'src/core/querystring',
   'src/core/harold',
   'src/core/strings',
   'src/core/jsonhelpers',
@@ -8,6 +9,7 @@ define('src/scrum/ws', [
   'ko',
 ], function(
   config,
+  querystring,
   harold,
   strings,
   jsonhelpers,
@@ -32,6 +34,7 @@ define('src/scrum/ws', [
       'BINARY_ACK',
       'ERROR'
     ],
+    requestCount = 0,
     packetTypes = {};
   packetTypeList.forEach(function(ptype, index) {
     packetTypes[ptype] = index;
@@ -45,11 +48,15 @@ define('src/scrum/ws', [
 
     _this.howie = harold.create();
 
+    _this.pendingRequests = {};
+
     // bind functions to this
     _this.handleOpen = _this.handleOpen.bind(_this);
     _this.handleClose = _this.handleClose.bind(_this);
     _this.handleError = _this.handleError.bind(_this);
     _this.handleMessage = _this.handleMessage.bind(_this);
+    _this.handleRequest = _this.handleRequest.bind(_this);
+    _this.handleResponse = _this.handleResponse.bind(_this);
 
     //
     createSocket(_this, uri);
@@ -75,12 +82,39 @@ define('src/scrum/ws', [
   };
   Ws.prototype.handleMessage = function(evt) {
     var _this = this,
+      eventName,
       packet = StringPacket.decode(evt.data);
     if (packet instanceof Error) {
       //@TODO: do something with error packets??
       console.warn(packet);
     } else {
-      _this.howie.send(packet.data[0], packet.data[1]);
+      eventName = packet.data[0];
+      switch (eventName) {
+        case 'request':
+          _this.handleRequest(packet);
+          break;
+        case 'response':
+          _this.handleResponse(packet);
+          break;
+        default:
+          _this.howie.send(eventName, packet.data[1]);
+          break;
+      }
+    }
+  };
+  Ws.prototype.handleRequest = function(pckt) {
+    notify.warn('WebSocket request', JSON.stringify(pckt.data[1]));
+  };
+  Ws.prototype.handleResponse = function(pckt) {
+    var _this = this,
+      req, resp = pckt.data[1];
+    req = _this.pendingRequests[resp.rpcid];
+    if (req) {
+      delete _this.pendingRequests[resp.rpcid];
+      notify.warn('WebSocket response', JSON.stringify(resp));
+      req.callback(null, resp, {});
+    } else {
+      notify.warn('Unexpected WebSocket response', JSON.stringify(resp));
     }
   };
   //
@@ -95,12 +129,44 @@ define('src/scrum/ws', [
       packet = new StringPacket(packetTypes.EVENT, [eventName, obj]);
     Ws.sendPacket(_this.transport, packet);
   };
+
+  Ws.prototype.get = function(path, queryObj, setter, callback) {
+    var _this = this,
+      rpcid = (++requestCount) + '',
+      packet = new StringPacket(packetTypes.EVENT, ['request', {
+        rpcid: rpcid,
+        method: 'GET',
+        url: createRequestUrl(path, queryObj),
+        body: {
+          bodyProp1: 1,
+        },
+      }]);
+    _this.pendingRequests[rpcid] = {
+      rpcid: rpcid,
+      setter: setter,
+      callback: callback,
+    };
+    Ws.sendPacket(_this.transport, packet);
+  };
+
   //
   // Ws static functions
   //
   Ws.sendPacket = function(transport, packet) {
     transport.send(packet.encode());
   };
+
+  //
+  // private funcs
+  //
+  function createRequestUrl(path, queryObj) {
+    var query = querystring.toQuerystring(queryObj);
+    return frontSlash(path) + (query ? ('?' + query) : '');
+  }
+  //
+  function frontSlash(text) {
+    return (text || text === 0) ? ('/' + text) : '';
+  }
 
 
   //
