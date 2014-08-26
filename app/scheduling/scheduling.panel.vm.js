@@ -1,7 +1,8 @@
 define('src/scheduling/scheduling.panel.vm', [
   'src/scheduling/service.ticket.vm',
   'src/scheduling/schedule.vm',
-  'src/scheduling/service.technician.vm',
+  'src/scheduling/technician.availability.vm',
+  'src/scheduling/technician.ticket.vm',
   'ko',
   'src/core/helpers',
   'src/core/strings',
@@ -11,7 +12,8 @@ define('src/scheduling/scheduling.panel.vm', [
 ], function(
   ServiceTicketViewModel,
   ScheduleViewModel,
-  TechnicianViewModel,
+  TechAvailabilityViewModel,
+  TechTicketsViewModel,
   ko,
   helpers,
   strings,
@@ -74,12 +76,19 @@ define('src/scheduling/scheduling.panel.vm', [
         id: 'schedule',
         title: 'Schedule'
       }),
-      new TechnicianViewModel({
+      new TechAvailabilityViewModel({
         routeName: 'scheduling',
         pcontroller: _this,
-        id: 'servicetechnician',
-        title: 'Service Technician'
+        id: 'technicianavailability',
+        title: 'Technician Availability'
       }),
+      new TechTicketsViewModel({
+        routeName: 'scheduling',
+        pcontroller: _this,
+        id: 'techniciantickets',
+        title: 'Technician Tickets'
+      }),
+
     ]);
     join.add()();
   };

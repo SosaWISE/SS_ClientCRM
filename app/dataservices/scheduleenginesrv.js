@@ -19,7 +19,10 @@ define('src/dataservices/scheduleenginesrv', [
       'SeScheduleTicket',
       'SeScheduleTicketList',
       'SeScheduleBlockList',
-      'SeScheduleBlock'
+      'SeScheduleBlock',
+      'SeTechnicianAvailability',
+      'SeTicketList',
+      'SeTechnicianAvailabilityList'
     ].forEach(function(collectionName) {
       result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
     });

@@ -1,6 +1,7 @@
 define('src/scheduling/technician.signup.vm', [
   'jquery',
   'fullcalendar',
+  'src/app',
   'src/dataservice',
   'src/core/notify',
   'src/core/utils',
@@ -10,6 +11,7 @@ define('src/scheduling/technician.signup.vm', [
 ], function(
   $,
   fullCalendar,
+  app,
   dataservice,
   notify,
   utils,
@@ -52,9 +54,31 @@ define('src/scheduling/technician.signup.vm', [
 
       console.log("@TODO save signup schedule block...");
 
-      cb();
+      var param = {
+        TechnicianId: app.user.peek().GPEmployeeID,
+        StartDateTime: _this.data.AvailableStartTime(),
+        EndDateTime: _this.data.AvailableEndTime()
+      };
+
+      dataservice.scheduleenginesrv.SeTechnicianAvailability.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+
+        if (resp.Code === 0) {
+
+          console.log("New availability schedule saved:" + JSON.stringify(resp.Value));
+
+          notify.info("New schedule saved.", null, 3);
+
+          //close popup
+          closeLayer(_this);
+
+        } else {
+          notify.error(err);
+        }
+
+      }));
 
     });
+
 
     _this.clickClose = function() {
       _this.layerResult = null;
