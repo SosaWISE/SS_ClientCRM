@@ -17,6 +17,24 @@ define('mock/dataservices/qualify.mock', [
       switch (params.link || null) {
         case null:
           result = mockery.findSingleOrAll(salesreps, 'CompanyID', id);
+          if (id[0] !== 'N' && !result) {
+            result = mockery.fromTemplate({
+              CompanyID: id,
+              ImagePath: '@IMG(100,100,people)',
+              FirstName: '@MNAME',
+              LastName: '@LASTNAME',
+              Seasons: [ //
+                {
+                  SeasonID: '@INC(seasons)',
+                  SeasonName: '@SEASON @NUMBER(2012,2015,Year)',
+                },
+              ],
+              PhoneCell: '@PHONE',
+              Email: '@EMAIL',
+              TeamLocationId: '@INC(teamLocations)',
+            });
+            salesreps.push(result);
+          }
           break;
       }
       send(0, result, setter, cb);
@@ -212,28 +230,28 @@ define('mock/dataservices/qualify.mock', [
   })();
 
   // data used in mock functions
-  var salesreps,
+  var salesreps = [],
     addresss;
 
-  salesreps = mockery.fromTemplate({
-    'list|3-3': [ //
-      {
-        CompanyID: '@COMPANYID',
-        ImagePath: '@IMG(100,100,people)',
-        FirstName: '@MNAME',
-        LastName: '@LASTNAME',
-        Seasons: [ //
-          {
-            SeasonID: '@INC(seasons)',
-            SeasonName: '@SEASON @NUMBER(2012,2015,Year)',
-          },
-        ],
-        PhoneCell: '@PHONE',
-        Email: '@EMAIL',
-        TeamLocationId: '@INC(teamLocations)',
-      },
-    ],
-  }).list;
+  // salesreps = mockery.fromTemplate({
+  //   'list|3-3': [ //
+  //     {
+  //       CompanyID: '@COMPANYID',
+  //       ImagePath: '@IMG(100,100,people)',
+  //       FirstName: '@MNAME',
+  //       LastName: '@LASTNAME',
+  //       Seasons: [ //
+  //         {
+  //           SeasonID: '@INC(seasons)',
+  //           SeasonName: '@SEASON @NUMBER(2012,2015,Year)',
+  //         },
+  //       ],
+  //       PhoneCell: '@PHONE',
+  //       Email: '@EMAIL',
+  //       TeamLocationId: '@INC(teamLocations)',
+  //     },
+  //   ],
+  // }).list;
 
   addresss = [];
 

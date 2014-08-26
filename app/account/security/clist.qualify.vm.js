@@ -33,6 +33,7 @@ define('src/account/security/clist.qualify.vm', [
 
     _this.repModel = ko.observable();
     _this.addressModel = ko.observable();
+    _this.customerData = '';
     _this.customerModel = ko.observable();
     _this.creditResult = ko.observable();
 
@@ -75,15 +76,14 @@ define('src/account/security/clist.qualify.vm', [
       return !busy && (_this.step() === 1 || _this.step() === 2);
     });
     _this.cmdCustomer = ko.command(function(cb) {
-      showLayer(AccountRunCreditViewModel, function(customer, creditResult) {
-        if (creditResult) {
+      showLayer(AccountRunCreditViewModel, function(customer) {
+        if (customer) {
           _this.customerModel(customer);
-          _this.creditResult(creditResult);
 
           //
           // set new id and title on parent and update url
           //
-          _this.pcontroller.id = creditResult.LeadId;
+          _this.pcontroller.id = customer.creditResult.LeadId;
           _this.pcontroller.title(strings.format('{0}(Lead)', _this.pcontroller.id));
           _this.goTo(_this.getRouteData());
         }
@@ -98,7 +98,7 @@ define('src/account/security/clist.qualify.vm', [
 
     _this.cmdCreateAccount = ko.command(function(cb) {
       dataservice.msaccountsetupsrv.accounts.post(null, {
-        leadId: _this.creditResult().LeadId
+        leadId: _this.customerModel().creditResult.LeadId
       }, null, function(err, resp) {
         if (err) {
           notify.error(err);
@@ -123,19 +123,19 @@ define('src/account/security/clist.qualify.vm', [
         cb();
       });
     }, function(busy) {
-      return !busy && _this.step() === 3 && _this.canCreateAccount && _this.customerModel() && _this.creditResult();
+      return !busy && _this.step() === 3 && _this.canCreateAccount && _this.customerModel();
     });
 
     _this.cmdSendToIS = ko.command(function(cb) {
       dataservice.qualify.insideSales.save({
-        id: _this.creditResult().LeadId,
+        id: _this.customerModel().creditResult.LeadId,
       }, null, utils.safeCallback(cb, function(err, resp) {
         if (resp.Message && resp.Message !== 'Success') {
           notify.error(resp, 3);
         }
       }, notify.error));
     }, function(busy) {
-      return !busy && _this.creditResult();
+      return !busy && _this.customerModel();
     });
   }
   utils.inherits(CListQualifyViewModel, ControllerViewModel);
@@ -147,20 +147,18 @@ define('src/account/security/clist.qualify.vm', [
     join.add()();
 
     var _this = this,
-      link, id;
+      link;
     if (routeData.route === 'accounts') {
       link = 'account';
-      id = routeData.id;
     } else if (routeData.id > 0) {
       link = 'lead';
-      id = routeData.id;
     } else {
       // lead not saved yet
       return;
     }
 
     dataservice.qualify.qualifyCustomerInfos.read({
-      id: id,
+      id: routeData.id,
       link: link,
     }, null, utils.safeCallback(join.add(), function(err, resp) {
       resp = resp;
@@ -182,24 +180,20 @@ define('src/account/security/clist.qualify.vm', [
         _this.addressModel(val);
       }, join.add());
 
-      // load customer
+      // customer and credit
       _this.customerModel({
         // normalize data
         CustomerName: data.CustomerName,
         SSN: data.SSN,
         DOB: data.DOB,
         Email: data.CustomerEmail,
-      });
-
-      // load credit
-      // dataservice.qualify.creditReports.read({
-      //   id: data.CreditReportID,
-      // }, _this.creditResult, join.add());
-      _this.creditResult({
-        LeadId: data.LeadID,
-        IsHit: data.IsHit,
-        CreditGroup: data.CreditGroup,
-        BureauName: data.BureauName,
+        //
+        creditResult: {
+          LeadId: data.LeadID,
+          IsHit: data.IsHit,
+          CreditGroup: data.CreditGroup,
+          BureauName: data.BureauName,
+        },
       });
 
       //

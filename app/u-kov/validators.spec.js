@@ -58,7 +58,7 @@ define('src/u-kov/validators.spec', [
         });
       });
       describe('when invalid', function() {
-        it('should return truthy value', function() {
+        it('should return undefinded', function() {
           expect(isRequired('bob')).toBeUndefined();
           expect(isRequired(true)).toBeUndefined();
           expect(isRequired(0)).toBeUndefined();

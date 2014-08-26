@@ -19,7 +19,12 @@ div(data-bind="if:!loadErr()&&!loading()")
         div(class="contents",data-bind="if:addressModel")
           div(data-bind="template:{data:addressModel,name:'tmpl-acct-default-address'}")
       div(class="section",data-bind="cmd:cmdCustomer,toggle:{empty:!customerModel()}")
-        span(class="title") Customer
+        span(class="title") Primary Customer
+        div(class="contents",data-bind="if:customerModel()&&creditResult()")
+          div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult}")
+          div(data-bind="template:{name:'tmpl-acct-default-customer',data:customerModel}")
+      div(class="section",data-bind="cmd:cmdCustomer,toggle:{empty:!customerModel()}")
+        span(class="title") Secondary Customer
         div(class="contents",data-bind="if:customerModel()&&creditResult()")
           div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult}")
           div(data-bind="template:{name:'tmpl-acct-default-customer',data:customerModel}")
