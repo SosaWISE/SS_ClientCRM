@@ -55,6 +55,11 @@ define('src/app', [
         title: 'Scheduling',
         ico: '&#128101;',
       },
+      'src/hr/hr.panel.vm': {
+        id: 'hr',
+        title: 'HR',
+        ico: '&#128101;',
+      },
     },
     addRoutes: function(router, loginVm, idTpPanelsMap) {
       //
@@ -69,6 +74,7 @@ define('src/app', [
       router.addRoute(idTpPanelsMap.accounts, 'accounts', ':masterid/:id/:tab/:p1', {});
       router.addRoute(idTpPanelsMap.accounts, 'leads', ':masterid/:tab/:p1', {});
       router.addRoute(idTpPanelsMap.home, 'home', '', {});
+      router.addRoute(idTpPanelsMap.hr, 'hr', '', {});
       router.addRoute(idTpPanelsMap.surveys, 'surveys', ':surveytypeid/:surveyid/:locale', {
         locale: 'en',
       });
