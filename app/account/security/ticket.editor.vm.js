@@ -55,13 +55,13 @@ define('src/account/security/ticket.editor.vm', [
     //Set  field as first focusable
     _this.focusFirst = ko.observable(true);
 
-    alert(JSON.stringify(_this.AccountID));
+   // alert(JSON.stringify(_this));
 
     //  console.log("AccountID on ticket editor"+_this.AccountID);
 
     _this.ticket = _this.ticket || {
       TicketID: null,
-      AccountID: _this.AccountID,
+      AccountID: _this.accountId,
       TicketTypeID: null,
       MoniNumber: null,
       StatusCodeID: null,
@@ -113,7 +113,7 @@ define('src/account/security/ticket.editor.vm', [
         _this.data.markClean(model, true);
 
         var data = resp.Value;
-        alert(JSON.stringify(data));
+        //alert(JSON.stringify(data));
 
         _this.layerResult = data;
         _this.isDeleted = false;
@@ -126,18 +126,17 @@ define('src/account/security/ticket.editor.vm', [
     });
 
     _this.cmdSchedule = ko.command(function(cb) {
-      //alert("go save the ticket and go directly to the schedule tab");
-      // _this.goTo({
-      //           route: 'scheduling',
-      //           id:"schedule", 
-      //           ticketid:1
-      //     });
-      if (!_this.data.isValid()) {
-        notify.warn(_this.data.errMsg(), null, 7);
-        cb();
-        return;
-      }
+
       var model = _this.data.getValue();
+
+      _this.goTo({
+       // pcontroller: _this,
+        route: 'schedule',
+        tab:'schedule',
+        id: 1
+        });
+      
+
 
       dataservice.scheduleenginesrv.SeTicket.save({
         id: model.TicketID, // if no value create, else update
@@ -148,6 +147,8 @@ define('src/account/security/ticket.editor.vm', [
 
         var data = resp.Value;
 
+        console.log("schedule: " + _this);  
+        /*  
         _this.goTo({
           pcontroller: _this,
           route: 'scheduling',
@@ -157,7 +158,10 @@ define('src/account/security/ticket.editor.vm', [
         }, {
           ticket: data
         }, false);
+        */
+ 
 
+        
         _this.layerResult = data;
         _this.isDeleted = false;
         closeLayer(_this);
@@ -184,9 +188,11 @@ define('src/account/security/ticket.editor.vm', [
   TicketEditorViewModel.prototype.width = 400;
   TicketEditorViewModel.prototype.height = 'auto';
 
-  TicketEditorViewModel.prototype.onActivate = function( /*routeData*/ ) {
+  TicketEditorViewModel.prototype.onActivate = function( routeData ) {
+    var _this =this;
+
     //routeData.action="scheduling";
-    //alert("on activate");
+    //alert("on activate"+JSON.stringify(routeData));
   };
 
   TicketEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {

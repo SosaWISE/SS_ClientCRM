@@ -86,6 +86,10 @@ define('src/core/strings', [
     datetime: function(dt, isUtc) {
       // Local by default ???
       //@REVEIW: the web server should always return UTC dates, so i don't know about this default...
+      //to allow display of nullable dates
+      if(dt==null || dt==''){
+        return '';
+      }
       if (isUtc) {
         dt = moment.utc(dt);
       } else {

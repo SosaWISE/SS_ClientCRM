@@ -35,7 +35,7 @@ define('src/account/security/service.ticket.vm', [
 
   schema = {
     _model: true,
-    AccountID: {},
+    AccountId: {},
     TicketStatus: {},
   };
 
@@ -84,10 +84,17 @@ define('src/account/security/service.ticket.vm', [
 
     _this.cmdAddServiceTicket = ko.command(function(cb /*, vm*/ ) {
       //Go to TicketEditor  screen
+      //alert('account id '+ _this.AccountId);
+
       _this.layersVm.show(new TicketEditorViewModel({
-        title: 'Create New Service Ticket'
+        title: 'Create New Service Ticket',
+        accountId:_this.AccountId
       }), function onClose() {
-        load_tickets({}, _this.serviceTicketGvm, cb);
+        load_tickets({
+            id: _this.AccountId,
+            link:'ACCID'
+          }
+          , _this.serviceTicketGvm, cb);
       });
 
 
@@ -121,18 +128,25 @@ define('src/account/security/service.ticket.vm', [
     //console.log("routeData: "+routeData);
     //console.log("routeData.id: "+routeData.id);
     //    _this.accountId = routeData.id;
-    _this.AccountID = routeData.id;
+    _this.AccountId = routeData.id;
 
     //console.log("account id: "+_this.AccountID);
 
     //Initialize empty grid
-    this.serviceTicketGvm.list([]);
+    _this.serviceTicketGvm.list([]);
 
     //load status list
     load_ticketStatusList(_this.data.ticketStatusCvm, join.add());
 
     //load all tickets created
-    load_tickets({}, _this.serviceTicketGvm, join.add());
+    //load_tickets({}, _this.serviceTicketGvm, join.add());
+    load_tickets(
+      {
+        id: _this.AccountId,
+        link:'ACCID'
+      }, 
+      _this.serviceTicketGvm, join.add()
+    );
 
   };
 
@@ -141,7 +155,8 @@ define('src/account/security/service.ticket.vm', [
 
     //load all tickets created
     load_tickets({
-      id: _this.AccountId
+      id: _this.AccountId,
+      link:'ACCID'
     }, _this.serviceTicketGvm, cb);
 
   };
