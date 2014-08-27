@@ -8,9 +8,8 @@ define('src/scheduling/technician.availability.vm', [
   'src/core/controller.vm',
   'src/scheduling/technician.signup.vm',
   'src/core/layers.vm',
-  //'src/core/joiner',
-  //'ko',
-  'src/ukov',
+  'src/core/joiner',
+  //'src/ukov',
 
 ], function(
   $,
@@ -22,9 +21,8 @@ define('src/scheduling/technician.availability.vm', [
   ControllerViewModel,
   TechSignUpViewModel,
   LayersViewModel,
-  //joiner,
-  //ko,
-  ukov
+  joiner
+  //ukov
 ) {
   'use strict';
 
@@ -49,7 +47,6 @@ define('src/scheduling/technician.availability.vm', [
       controller: _this,
     });
 
-
     //events
     //
 
@@ -64,21 +61,15 @@ define('src/scheduling/technician.availability.vm', [
 
   TechnicianViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // override me    
     //var join = joiner();
-
   };
 
   TechnicianViewModel.prototype.onActivate = function( /*routeData*/ ) { // override me  
 
-    var _this = this;
-    //join = joiner();
+    var _this = this,
+      join = joiner();
 
-    _this.data = ukov.wrap({
-      //Ticket: routeData.extraData.ticket,
-    }, schema);
-
-
-    //load block list    
-    //load_scheduleBlockList(join.add());
+    //load technician availability list    
+    load_technicianAvailabilityList(join.add());
 
     /** Fullcalendar plugin **/
     $('#techCalendar').fullCalendar({
@@ -108,12 +99,12 @@ define('src/scheduling/technician.availability.vm', [
 
       },
 
-      eventDrop: function( /*event, dayDelta, minuteDelta, allDay, revertFunc*/ ) {
-        //new UpdateEvent(event.id, event.start, event.end);
+      eventDrop: function(event /*, dayDelta, minuteDelta, allDay, revertFunc*/ ) {
+        new UpdateEvent(event.id, event.start, event.end);
       },
 
-      eventResize: function( /*event, dayDelta, minuteDelta, revertFunc*/ ) {
-        //new UpdateEvent(event.id, event.start, event.end);
+      eventResize: function(event /*, dayDelta, minuteDelta, revertFunc*/ ) {
+        new UpdateEvent(event.id, event.start, event.end);
       },
 
       dayClick: function( /*date , allDay, jsEvent, view*/ ) {
@@ -127,8 +118,11 @@ define('src/scheduling/technician.availability.vm', [
           stime: $.fullCalendar.formatDate(start, 'MM/dd/yyyy HH:mm'),
           etime: $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm'),
           blockTime: $.fullCalendar.formatDate(end, 'HH:mm'),
-        }), function onClose( /*cb*/ ) {
-          //load_technicianAvailabilityList(cb);
+        }), function onClose(result, cb) {
+          if (!result) {
+            load_technicianAvailabilityList(cb);
+          }
+
         });
       },
 
@@ -143,20 +137,72 @@ define('src/scheduling/technician.availability.vm', [
 
   };
 
-  // function load_technicianAvailabilityList(cb) {
 
-  //   //@TODO retrieve and display the list of technician availability
+  function UpdateEvent(EventID, EventStart, EventEnd) {
 
-  //   dataservice.scheduleenginesrv.SeTechnicianAvailabilityList.read(null, null, null, utils.safeCallback(cb, function(err, resp) {
+    dataservice.scheduleenginesrv.SeTechnicianAvailability.save({
+      id: EventID,
+      data: {
+        TechnicianAvailabilityID: EventID,
+        StartDateTime: $.fullCalendar.formatDate(EventStart, 'MM/dd/yyyy HH:mm'),
+        EndDateTime: $.fullCalendar.formatDate(EventEnd, 'MM/dd/yyyy HH:mm'),
+      },
+    }, null, utils.safeCallback(null, function(err, resp) {
 
-  //     if (resp.Code === 0) {
-  //       console.log("SeTechnicianAvailabilityList:" + JSON.stringify(resp.Value));
-  //     } else {
-  //       notify.error(err);
-  //     }
-  //   }));
+      console.log(resp);
 
-  // }
+      if (resp && resp.Value) {
+        load_technicianAvailabilityList();
+      }
+
+    }, function(err) {
+      notify.error(err);
+    }));
+
+
+  }
+
+  function load_technicianAvailabilityList(cb) {
+
+    //@TODO retrieve and display the list of technician availability
+
+    dataservice.scheduleenginesrv.SeTechnicianAvailabilityList.read({}, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+
+        console.log("SeTechnicianAvailabilityList:" + JSON.stringify(resp.Value));
+
+        var data = {},
+          result = [],
+          x;
+
+        for (x = 0; x < resp.Value.length; x++) {
+
+          //objects to display on technician availability grid
+          data = {
+            id: resp.Value[x].TechnicianAvailabilityID,
+            title: null,
+            start: resp.Value[x].StartDateTime,
+            end: resp.Value[x].EndDateTime,
+            allDay: false,
+          };
+
+          //list of blocks from server
+          result.push(data);
+
+        }
+
+        $('#techCalendar').fullCalendar('removeEvents');
+
+        $('#techCalendar').fullCalendar('addEventSource', result);
+
+
+      } else {
+        notify.error(err);
+      }
+    }));
+
+  }
 
   return TechnicianViewModel;
 });

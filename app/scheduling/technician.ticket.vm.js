@@ -5,9 +5,10 @@ define('src/scheduling/technician.ticket.vm', [
   'src/core/utils',
   'src/core/controller.vm',
   'src/scheduling/technician.ticket.gvm',
+  'src/scheduling/technician.ticket.info.vm',
   'src/app',
-  //'src/core/layers.vm',
-  //'src/core/joiner',
+  'src/core/layers.vm',
+  'src/core/joiner',
   //'ko',
   //'src/ukov',
 
@@ -18,9 +19,10 @@ define('src/scheduling/technician.ticket.vm', [
   utils,
   ControllerViewModel,
   TechnicianTicketGridViewModel,
-  app
-  //LayersViewModel
-  //joiner,
+  TechTicketInfoViewModel,
+  app,
+  LayersViewModel,
+  joiner
   //ko,
   //ukov
 ) {
@@ -37,7 +39,20 @@ define('src/scheduling/technician.ticket.vm', [
     var _this = this;
     TechTicketsViewModel.super_.call(_this, options);
 
+    // _this.layersVm = new LayersViewModel({
+    //   controller: _this,
+    // });      
+
+    _this.layersVm = _this.layersVm || new LayersViewModel({
+      controller: _this,
+    });
+
+
     _this.technicianTicketGvm = new TechnicianTicketGridViewModel({
+
+      ticketInfo: function(ticket) {
+        showTicketInfo(_this, ticket);
+      },
 
     });
 
@@ -50,10 +65,19 @@ define('src/scheduling/technician.ticket.vm', [
   utils.inherits(TechTicketsViewModel, ControllerViewModel);
   TechTicketsViewModel.prototype.viewTmpl = 'tmpl-technician-tickets';
 
-  TechTicketsViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
+  TechTicketsViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // override me
+    var _this = this;
+
+    //Initialize empty grid
+    _this.technicianTicketGvm.list([]);
+
+  };
+
+  TechTicketsViewModel.prototype.onActivate = function() {
+
     var _this = this,
-      param = {};
-    join = join;
+      param = {},
+      join = joiner();
 
     //Initialize empty grid
     this.technicianTicketGvm.list([]);
@@ -67,8 +91,6 @@ define('src/scheduling/technician.ticket.vm', [
     load_tickets(param, _this.technicianTicketGvm, join.add());
 
   };
-
-  //TechTicketsViewModel.prototype.onActivate = function( /*routeData*/ ) {};
 
   function load_tickets(param, cvm, cb) {
 
@@ -90,6 +112,17 @@ define('src/scheduling/technician.ticket.vm', [
         notify.warn('No records found.', null, 3);
       }
     }));
+  }
+
+  function showTicketInfo(_this, ticket) {
+
+    _this.layersVm.show(new TechTicketInfoViewModel({
+      title: 'Technician Ticket Info',
+      rowObj: ticket,
+    }), function onClose( /*result, cb*/ ) {
+
+    });
+
   }
 
   return TechTicketsViewModel;

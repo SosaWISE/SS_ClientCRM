@@ -66,7 +66,7 @@ define('src/scheduling/technician.signup.vm', [
 
           console.log("New availability schedule saved:" + JSON.stringify(resp.Value));
 
-          notify.info("New schedule saved.", null, 3);
+          //notify.info("New schedule saved.", null, 3);
 
           //close popup
           closeLayer(_this);
