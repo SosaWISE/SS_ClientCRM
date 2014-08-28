@@ -54,6 +54,8 @@ define('src/scheduling/technician.ticket.info.vm', [
       _this.data.custPhone(obj.PhoneMobile);
     }
 
+    //ticket id
+    _this.TicketId = obj.TicketID;
 
     _this.technicianTicketInfoGvm = new TechnicianTicketInfoGridViewModel({
 
@@ -63,6 +65,71 @@ define('src/scheduling/technician.ticket.info.vm', [
     // events
     //
 
+    _this.cmdEnRoute = ko.command(function(cb) {
+      //@TODO 
+      // this method will set IsTechEnRoute(ITER) status to true
+      // and send email to customer regarding the ticket status (enroute) 
+
+      dataservice.scheduleenginesrv.SeTicket.save({
+        id: _this.TicketId,
+        link: 'ITER'
+      }, null, utils.safeCallback(cb, function(err, resp) {
+
+        console.log("TechEnRoute:" + JSON.stringify(resp));
+
+        if (resp && resp.Value && !err) {
+          notify.info("En-Route notification was sent successfully.", null, 3);
+        }
+
+      }, function(err) {
+        notify.error(err);
+      }));
+
+    });
+
+    _this.cmdDelay = ko.command(function(cb) {
+      //@TODO 
+      // this method will set IsTechDelayed(ITD) status to true      
+
+      dataservice.scheduleenginesrv.SeTicket.save({
+        id: _this.TicketId,
+        link: 'ITD'
+      }, null, utils.safeCallback(cb, function(err, resp) {
+
+        console.log("TechDelayed:" + JSON.stringify(resp));
+
+        if (resp && resp.Value && !err) {
+          notify.info("Delay notification was sent successfully.", null, 3);
+        }
+
+      }, function(err) {
+        notify.error(err);
+      }));
+
+    });
+
+    _this.cmdComplete = ko.command(function(cb) {
+      //@TODO 
+      // this method will set IsTechCompleted(ITC) status to true      
+
+      dataservice.scheduleenginesrv.SeTicket.save({
+        id: _this.TicketId,
+        link: 'ITC'
+      }, null, utils.safeCallback(cb, function(err, resp) {
+
+        console.log("Ticket Completed:" + JSON.stringify(resp));
+
+        if (resp && resp.Value && !err) {
+          notify.info("Ticket Completed.", null, 3);
+
+          closeLayer(_this);
+        }
+
+      }, function(err) {
+        notify.error(err);
+      }));
+
+    });
 
 
     _this.clickClose = function() {

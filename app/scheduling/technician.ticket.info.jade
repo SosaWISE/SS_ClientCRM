@@ -1,8 +1,6 @@
-div(style="text-align: right;")
-		//-button(type="button" class="btn-bg" style="margin: 10px; width: 50%;" data-bind="cmd: cmdEnRoute") En-Route
-		//-button(type="button" class="btn-bg" style="margin: 10px; width: 50%;" data-bind="cmd: cmdDelay") Delay
-		button(type="button" class="btn-bg" style="margin-left: 10px; width: 25%; display: inline-block; !important;") En-Route
-		button(type="button" class="btn-bg" style="margin-left: 10px; width: 25%; display: inline-block; !important;") Delay
+div(style="text-align: right;")		
+		button(type="button" class="btn-bg" style="margin-left: 10px; width: 25%; display: inline-block; !important;", data-bind="cmd: cmdEnRoute") En-Route
+		button(type="button" class="btn-bg" style="margin-left: 10px; width: 25%; display: inline-block; !important;", data-bind="cmd: cmdDelay") Delay
 ul(class="edit-form")
 	li
 		span(class="label") Name
@@ -25,6 +23,6 @@ ul(class="edit-form")
 						div(class="grid-wrap")
 							div(class="slickgrid", style="background:white; color:black;", data-bind="slickgrid:technicianTicketInfoGvm")
 	li
-		span(class="btn-bg", style="width: 25%;" id="btnPopupCancel" tabindex="0") Complete
+		span(class="btn-bg", style="width: 25%;" id="btnPopupCancel" tabindex="0", data-bind="cmd: cmdComplete") Complete
 div(class="actions")
 	span(class="btn-bg", style="width: 25%;" id="btnPopupCancel" tabindex="0", data-bind="cmd:clickClose") Close
