@@ -22,9 +22,9 @@ define('src/scheduling/technician.ticket.info.gvm', [
       },
 
       columns: [{
-        id: 'ItemName',
+        id: 'ItemDesc',
         name: 'Item Name',
-        field: 'Item Name',
+        field: 'ItemDesc',
       }],
 
     });

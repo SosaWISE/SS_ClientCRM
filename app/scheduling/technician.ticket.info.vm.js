@@ -4,6 +4,7 @@ define('src/scheduling/technician.ticket.info.vm', [
   'src/core/utils',
   'src/core/base.vm',
   'src/scheduling/technician.ticket.info.gvm',
+  'src/core/joiner',
   'ko',
   'src/ukov',
 ], function(
@@ -12,6 +13,7 @@ define('src/scheduling/technician.ticket.info.vm', [
   utils,
   BaseViewModel,
   TechnicianTicketInfoGridViewModel,
+  joiner,
   ko,
   ukov
 ) {
@@ -29,6 +31,7 @@ define('src/scheduling/technician.ticket.info.vm', [
 
   function TechTicketInfoViewModel(options) {
     var _this = this,
+      join = joiner(),
       obj;
 
     TechTicketInfoViewModel.super_.call(_this, options);
@@ -56,6 +59,11 @@ define('src/scheduling/technician.ticket.info.vm', [
 
     //ticket id
     _this.TicketId = obj.TicketID;
+
+    //account id
+    _this.AccountId = obj.AccountID;
+
+    load_technicianTicketEquipments(_this, join.add());
 
     _this.technicianTicketInfoGvm = new TechnicianTicketInfoGridViewModel({
 
@@ -148,6 +156,11 @@ define('src/scheduling/technician.ticket.info.vm', [
 
 
   TechTicketInfoViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) {
+    //var _this = this;
+    //  join = join;
+
+    //load_technicianTicketEquipments(_this, _this.technicianTicketInfoGvm, join.add());
+    //alert(JSON.stringify(_this.rowObj));
 
   };
 
@@ -162,6 +175,33 @@ define('src/scheduling/technician.ticket.info.vm', [
     var _this = this;
     return [_this.layerResult];
   };
+
+  function load_technicianTicketEquipments(_this, cb) {
+
+    dataservice.msaccountsetupsrv.accounts.read({
+      id: _this.AccountId, //for real
+      //id: 100290, //for testing
+      link: 'Equipment'
+    }, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+
+        console.log("TechTicketEquipments:" + JSON.stringify(resp.Value));
+
+        //set list to empty
+        _this.technicianTicketInfoGvm.list([]);
+
+        //populate ticket equipment list
+        for (var x = 0; x < resp.Value.length; x++) {
+          _this.technicianTicketInfoGvm.list.push(resp.Value[x]);
+        }
+
+      } else {
+        notify.error(err);
+      }
+    }));
+
+  }
 
   return TechTicketInfoViewModel;
 });
