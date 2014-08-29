@@ -31,7 +31,9 @@ define('src/scheduling/technician.signup.vm', [
 
 
   function TechSignUpViewModel(options) {
-    var _this = this;
+    var _this = this,
+      block;
+
     TechSignUpViewModel.super_.call(_this, options);
 
     //Set title
@@ -54,13 +56,17 @@ define('src/scheduling/technician.signup.vm', [
 
       console.log("@TODO save signup schedule block...");
 
+      block = (parseInt(_this.blockTime, 10) < 12) ? 'AM' : 'PM';
+
       var param = {
-        TechnicianId: app.user.peek().GPEmployeeID,
-        StartDateTime: _this.data.AvailableStartTime(),
-        EndDateTime: _this.data.AvailableEndTime()
+        'TechnicianId': app.user.peek().GPEmployeeID,
+        'Block': block,
+        'StartTime': _this.data.AvailableStartTime(),
+        'EndTime': _this.data.AvailableEndTime()
       };
 
-      dataservice.scheduleenginesrv.SeTechnicianAvailability.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+      //dataservice.scheduleenginesrv.SeTechnicianAvailability.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+      dataservice.scheduleenginesrv.SeScheduleBlock.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
         if (resp.Code === 0) {
 

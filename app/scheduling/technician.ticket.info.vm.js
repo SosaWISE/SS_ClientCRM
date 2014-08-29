@@ -61,7 +61,7 @@ define('src/scheduling/technician.ticket.info.vm', [
     _this.TicketId = obj.TicketID;
 
     //account id
-    _this.AccountId = obj.AccountID;
+    _this.AccountId = obj.AccountId;
 
     load_technicianTicketEquipments(_this, join.add());
 

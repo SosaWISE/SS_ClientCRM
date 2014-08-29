@@ -140,14 +140,28 @@ define('src/scheduling/technician.availability.vm', [
 
   function UpdateEvent(EventID, EventStart, EventEnd) {
 
-    dataservice.scheduleenginesrv.SeTechnicianAvailability.save({
-      id: EventID,
-      data: {
-        TechnicianAvailabilityID: EventID,
-        StartDateTime: $.fullCalendar.formatDate(EventStart, 'MM/dd/yyyy HH:mm'),
-        EndDateTime: $.fullCalendar.formatDate(EventEnd, 'MM/dd/yyyy HH:mm'),
-      },
-    }, null, utils.safeCallback(null, function(err, resp) {
+    var block,
+      param = {};
+
+    block = (parseInt($.fullCalendar.formatDate(EventEnd, 'HH:mm'), 10) < 12) ? 'AM' : 'PM';
+
+    param = {
+      'BlockID': EventID,
+      'Block': block,
+      'StartTime': $.fullCalendar.formatDate(EventStart, 'MM/dd/yyyy HH:mm'),
+      'EndTime': $.fullCalendar.formatDate(EventEnd, 'MM/dd/yyyy HH:mm'),
+    };
+
+    dataservice.scheduleenginesrv.SeScheduleBlock.post(EventID, param, null, utils.safeCallback(null, function(err, resp) {
+
+      // dataservice.scheduleenginesrv.SeTechnicianAvailability.save({
+      //   id: EventID,
+      //   data: {
+      //     TechnicianAvailabilityID: EventID,
+      //     StartDateTime: $.fullCalendar.formatDate(EventStart, 'MM/dd/yyyy HH:mm'),
+      //     EndDateTime: $.fullCalendar.formatDate(EventEnd, 'MM/dd/yyyy HH:mm'),
+      //   },
+      // }, null, utils.safeCallback(null, function(err, resp) {
 
       console.log(resp);
 
@@ -166,25 +180,56 @@ define('src/scheduling/technician.availability.vm', [
 
     //@TODO retrieve and display the list of technician availability
 
-    dataservice.scheduleenginesrv.SeTechnicianAvailabilityList.read({}, null, utils.safeCallback(cb, function(err, resp) {
+    var current = new Date(), // get current date    
+      weekstart = current.getDate() - current.getDay() + 1,
+      weekend = weekstart + 5, // end day 5 for saturday 
+      start = new Date(current.setDate(weekstart)),
+      end = new Date(current.setDate(weekend)),
+      param,
+      data = {},
+      result = [],
+      tColor,
+      isRed,
+      isTechConfirmed,
+      x;
+
+
+    param = {
+      'DateFrom': $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
+      'DateTo': $.fullCalendar.formatDate(end, 'MM/dd/yyyy')
+    };
+
+    //dataservice.scheduleenginesrv.SeTechnicianAvailabilityList.read({}, null, utils.safeCallback(cb, function(err, resp) {
+    dataservice.scheduleenginesrv.SeScheduleBlockList.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
 
-        console.log("SeTechnicianAvailabilityList:" + JSON.stringify(resp.Value));
+        console.log("SeScheduleBlockList:" + JSON.stringify(resp.Value));
 
-        var data = {},
-          result = [],
-          x;
 
         for (x = 0; x < resp.Value.length; x++) {
 
+          isRed = (resp.Value[x].IsRed) ? true : false;
+          isTechConfirmed = (resp.Value[x].IsTechConfirmed) ? true : false;
+
+          //light red - #FFBAC2
+          //light green - #C9FFD7'
+
+          //set each tech availability a right color
+          if (isTechConfirmed) {
+            tColor = (isRed) ? '#FFBAC2' : '#C9FFD7';
+          } else {
+            tColor = (isRed) ? 'red' : 'green';
+          }
+
           //objects to display on technician availability grid
           data = {
-            id: resp.Value[x].TechnicianAvailabilityID,
+            id: resp.Value[x].BlockID,
             title: null,
-            start: resp.Value[x].StartDateTime,
-            end: resp.Value[x].EndDateTime,
+            start: resp.Value[x].StartTime,
+            end: resp.Value[x].EndTime,
             allDay: false,
+            backgroundColor: tColor,
           };
 
           //list of blocks from server

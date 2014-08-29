@@ -58,13 +58,13 @@ define('src/scheduling/ticket.editor.vm', [
 
     _this.ticket = _this.ticket || {
       TicketID: null,
-      AccountID: null,
-      TicketTypeID: null,
+      AccountId: null,
+      TicketTypeId: null,
       MoniNumber: null,
-      StatusCodeID: null,
+      StatusCodeId: null,
       MoniConfirmation: null,
       TechConfirmation: null,
-      TechnicianID: null,
+      TechnicianId: null,
       TripCharges: null,
       Appointment: null,
       AgentConfirmation: null,
@@ -102,6 +102,7 @@ define('src/scheduling/ticket.editor.vm', [
         cb();
         return;
       }
+
       var model = _this.data.getValue();
       dataservice.scheduleenginesrv.SeTicket.save({
         id: model.TicketID, // if no value create, else update
@@ -110,7 +111,7 @@ define('src/scheduling/ticket.editor.vm', [
         _this.data.markClean(model, true);
 
         var data = resp.Value;
-        alert(JSON.stringify(data));
+        //alert(JSON.stringify(data));
 
         _this.layerResult = data;
         _this.isDeleted = false;
