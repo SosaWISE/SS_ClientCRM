@@ -97,6 +97,20 @@ define('src/core/strings', [
       }
       return dt.format('MM/DD/YYYY hh:mm a');
     },
+    datetimesec: function(dt, isUtc) {
+      // Local by default ???
+      //@REVEIW: the web server should always return UTC dates, so i don't know about this default...
+      //to allow display of nullable dates
+      if (dt === null || dt === '') {
+        return '';
+      }
+      if (isUtc) {
+        dt = moment.utc(dt);
+      } else {
+        dt = moment(dt);
+      }
+      return dt.format('MM/DD/YYYY hh:mm:ss a');
+    },
     phone: function(val, outputFormat) {
       if (!val) {
         return val;

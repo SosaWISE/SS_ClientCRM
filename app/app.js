@@ -25,6 +25,11 @@ define('src/app', [
       });
     },
     pathToPanelOptionsMap: {
+      'src/alarm/alarm.panel.vm': {
+        id: 'alarm',
+        title: 'Alarm',
+        ico: '&#8962;',
+      },
       'src/home/home.panel.vm': {
         id: 'home',
         title: 'Home',
@@ -66,6 +71,7 @@ define('src/app', [
       //
       // add routes
       //
+      router.addRoute(idTpPanelsMap.alarm, 'alarm', '', {});
       router.addRoute(idTpPanelsMap.accounts, 'accounts', ':masterid/:id/:tab/:p1', {});
       router.addRoute(idTpPanelsMap.accounts, 'leads', ':id/:tab/:p1', {});
       router.addRoute(idTpPanelsMap.home, 'home', '', {});
