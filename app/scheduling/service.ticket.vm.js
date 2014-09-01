@@ -3,11 +3,14 @@ define('src/scheduling/service.ticket.vm', [
   'src/core/combo.vm',
   'src/core/notify',
   'src/core/utils',
+  'src/core/router',
   'src/core/controller.vm',
   'src/scheduling/service.ticket.gvm',
-  'src/scheduling/create.ticket.vm',
+  'src/scheduling/ticket.editor.vm',
   'src/core/layers.vm',
   'src/core/joiner',
+  'src/slick/slickgrid.vm',
+  'src/slick/rowevent',
   'ko',
   'src/ukov',
 ], function(
@@ -15,11 +18,14 @@ define('src/scheduling/service.ticket.vm', [
   ComboViewModel,
   notify,
   utils,
+  Router,
   ControllerViewModel,
   ServiceTicketGridViewModel,
-  CreateTicketViewModel,
+  TicketEditorViewModel,
   LayersViewModel,
   joiner,
+  SlickGridViewModel,
+  RowEvent,
   ko,
   ukov
 ) {
@@ -38,14 +44,29 @@ define('src/scheduling/service.ticket.vm', [
 
     ServiceTicketViewModel.super_.call(_this, options);
 
+
+    _this.layersVm = _this.layersVm || new LayersViewModel({
+      controller: _this,
+    });
+
     _this.data = ukov.wrap(_this.item || {
       TicketStatus: null,
     }, schema);
 
     //Ticket history grid
     _this.serviceTicketGvm = new ServiceTicketGridViewModel({
+      edit: function(ticket, cb) {
+        //alert(JSON.stringify(ticket));
+        //console.log("before showTicketEditor call");
+        //console.log("_this"+_this);
+        //console.log("ticket"+utils.clone(ticket));
+        //alert(JSON.stringify(utils.clone(ticket)));
+        //console.log("cb"+cb);
 
+        showTicketEditor(_this, utils.clone(ticket), cb);
+      }
     });
+
 
     //This a layer for creating new ticket
     _this.layersVm = new LayersViewModel({
@@ -66,9 +87,16 @@ define('src/scheduling/service.ticket.vm', [
     //
 
     _this.cmdNewTicket = ko.command(function(cb /*, vm*/ ) {
+      /*_this.goTo({
 
-      //Go to Enter Barcodes screen
-      _this.layersVm.show(new CreateTicketViewModel({
+            route:"scheduling",
+            id:"schedule",
+
+        });
+        */
+      //Go to TicketEditor  screen
+
+      _this.layersVm.show(new TicketEditorViewModel({
         title: 'Create New Service Ticket'
       }), function onClose() {
         load_tickets({}, _this.serviceTicketGvm, cb);
@@ -76,6 +104,7 @@ define('src/scheduling/service.ticket.vm', [
 
 
       cb();
+
     });
 
     _this.data.TicketStatus.subscribe(function(statusId, cb) {
@@ -120,13 +149,22 @@ define('src/scheduling/service.ticket.vm', [
 
   };
 
+  function showTicketEditor(_this, ticket, cb) {
+    var vm = new TicketEditorViewModel({
+      pcontroller: _this,
+      title: "Update Ticket",
+      ticket: ticket
+    });
+    _this.layersVm.show(vm, cb);
+  }
+
   function load_ticketStatusList(cvm, cb) {
 
     dataservice.scheduleenginesrv.TicketStatusCodeList.read({}, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
 
-        console.log("TicketStatusCodeList:" + JSON.stringify(resp.Value));
+        //console.log("TicketStatusCodeList:" + JSON.stringify(resp.Value));
 
         if (resp.Value.length > 0) {
           //Set result to Location combo list

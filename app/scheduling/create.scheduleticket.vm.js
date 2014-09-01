@@ -139,13 +139,14 @@ define('src/scheduling/create.scheduleticket.vm', [
   function createServiceTicket(_this, cb) {
 
     var param = {
-      AccountID: 1, //temp
+      //AccountID: 1, //temp
+      AccountId: 1, //temp
       MoniNumber: null, //temp
-      TicketTypeID: _this.data.ScheduleTicketType(),
-      StatusCodeID: 1, //temp
+      TicketTypeId: _this.data.ScheduleTicketType(),
+      StatusCodeId: 1, //temp
       MoniConfirmation: 'MONI CONFIRM', //temp
       TechConfirmation: '07/22/2014', //temp
-      TechnicianID: 1, //temp
+      TechnicianId: 1, //temp
       TripCharges: 123.5, //temp
       Appointment: _this.data.ScheduleAppointmentDate(),
       AgentConfirmation: 'AGENT CONFIRMATION', //temp
@@ -159,6 +160,7 @@ define('src/scheduling/create.scheduleticket.vm', [
     dataservice.scheduleenginesrv.SeTicket.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
+
         console.log("Create Ticket:" + JSON.stringify(resp.Value));
 
         //get TicketID

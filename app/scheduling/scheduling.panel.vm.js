@@ -1,7 +1,8 @@
 define('src/scheduling/scheduling.panel.vm', [
   'src/scheduling/service.ticket.vm',
   'src/scheduling/schedule.vm',
-  //'src/scheduling/report.inventory.vm',
+  'src/scheduling/technician.availability.vm',
+  'src/scheduling/technician.ticket.vm',
   'ko',
   'src/core/helpers',
   'src/core/strings',
@@ -11,7 +12,8 @@ define('src/scheduling/scheduling.panel.vm', [
 ], function(
   ServiceTicketViewModel,
   ScheduleViewModel,
-  //ReportInventoryViewModel,
+  TechAvailabilityViewModel,
+  TechTicketsViewModel,
   ko,
   helpers,
   strings,
@@ -20,6 +22,7 @@ define('src/scheduling/scheduling.panel.vm', [
   ControllerViewModel
 ) {
   "use strict";
+
 
   function SchedulingViewModel(options) {
     var _this = this;
@@ -44,6 +47,22 @@ define('src/scheduling/scheduling.panel.vm', [
   SchedulingViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
+    //Original script
+    /*  _this.list([
+      new ServiceTicketViewModel({
+        routeName: 'scheduling',
+        pcontroller: _this,
+        id: 'serviceticket',
+        title: 'Service Ticket'
+      }),
+      new ScheduleViewModel({
+        routeName: 'scheduling',
+        pcontroller: _this,
+        id: 'schedule',
+        title: 'Schedule'
+      }),
+  */
+
     _this.list([
       new ServiceTicketViewModel({
         routeName: 'scheduling',
@@ -57,12 +76,19 @@ define('src/scheduling/scheduling.panel.vm', [
         id: 'schedule',
         title: 'Schedule'
       }),
-      // new ReportInventoryViewModel({
-      //   routeName: 'inventory',
-      //   pcontroller: _this,
-      //   id: 'audit',
-      //   title: 'Audit'
-      // }),
+      new TechAvailabilityViewModel({
+        routeName: 'scheduling',
+        pcontroller: _this,
+        id: 'technicianavailability',
+        title: 'Technician Availability'
+      }),
+      new TechTicketsViewModel({
+        routeName: 'scheduling',
+        pcontroller: _this,
+        id: 'techniciantickets',
+        title: 'Technician Tickets'
+      }),
+
     ]);
     join.add()();
   };

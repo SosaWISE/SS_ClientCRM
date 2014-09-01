@@ -1,0 +1,13 @@
+div(class="acct-security-service-ticket")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+        div(class="title") Service Tickets
+        ul(class="actions left cf")
+          li
+            a(class="btn small add-btn",tabindex="0",data-bind="cmd:cmdAddServiceTicket") Add Service Ticket
+    tr
+      td(class="fh-body")
+        div(class="fh-contents relative")
+          div(class="slickgrid",data-bind="slickgrid:serviceTicketGvm")
+          div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

@@ -2,15 +2,18 @@ define('src/scheduling/service.ticket.gvm', [
   'ko',
   'src/slick/slickgrid.vm',
   'src/core/utils',
-
+  'src/slick/rowevent'
 ], function(
   ko,
   SlickGridViewModel,
-  utils
+  utils,
+  RowEvent
 ) {
   "use strict";
 
-  function ServiceTicketGridViewModel( /*options*/ ) {
+  // function ServiceTicketGridViewModel( /*options*/ ) {
+  function ServiceTicketGridViewModel(options) {
+
     var _this = this;
     ServiceTicketGridViewModel.super_.call(_this, {
       gridOptions: {
@@ -18,6 +21,32 @@ define('src/scheduling/service.ticket.gvm', [
         forceFitColumns: true,
         rowHeight: 27,
       },
+
+      plugins: [
+        new RowEvent({
+          eventName: 'onDblClick',
+          fn: function(ticket) {
+            //console.log("Ticked double clicked: ", ticket);
+            options.edit(ticket, function(model, deleted) {
+              if (!model) { // nothing changed
+                //   console.log("not model"+model);
+                //    console.log("nothing changed");
+                return;
+              }
+              if (deleted) { // remove deleted item
+                //   console.log("deleted ticket");
+                _this.list.remove(ticket);
+
+              } else { // update in place
+                //  console.log("replaced");
+                _this.list.replace(ticket, model);
+              }
+            });
+            // alert('double clicked');
+
+          },
+        }),
+      ],
 
       columns: [{
         id: 'TicketID',
@@ -32,9 +61,9 @@ define('src/scheduling/service.ticket.gvm', [
         name: 'Service Ticket Type',
         field: 'TicketTypeName',
       }, {
-        id: 'StatusCodeID',
+        id: 'StatusCodeId',
         name: 'Status',
-        field: 'StatusCodeID',
+        field: 'StatusCodeId',
       }, {
         id: 'MoniConfirmation',
         name: 'Moni Confirmation',
@@ -45,9 +74,9 @@ define('src/scheduling/service.ticket.gvm', [
         field: 'TechConfirmation',
         formatter: SlickGridViewModel.formatters.datetime,
       }, {
-        id: 'TechnicianID',
+        id: 'TechnicianId',
         name: 'Tech',
-        field: 'TechnicianID',
+        field: 'TechnicianId',
       }, {
         id: 'AgentConfirmation',
         name: 'Agent Confirmation',

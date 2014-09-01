@@ -9,7 +9,7 @@ define('src/core/strings', [
   arrays,
   utils
 ) {
-  "use strict";
+  'use strict';
 
   var strings = {},
     formatRegex = /\{([0-9]+)(?::([0-9A-Z$]+))?\}/gi, // {0} or {0:decoratorName}
@@ -55,9 +55,9 @@ define('src/core/strings', [
     currency: function(val) {
       if (!usdFormatter) {
         if (window.Intl) {
-          usdFormatter = new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
+          usdFormatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
             minimumFractionDigits: 2,
           });
         } else {
@@ -86,6 +86,10 @@ define('src/core/strings', [
     datetime: function(dt, isUtc) {
       // Local by default ???
       //@REVEIW: the web server should always return UTC dates, so i don't know about this default...
+      //to allow display of nullable dates
+      if (dt === null || dt === '') {
+        return '';
+      }
       if (isUtc) {
         dt = moment.utc(dt);
       } else {
@@ -171,7 +175,7 @@ define('src/core/strings', [
 
   // from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
   strings.escapeRegExp = function(string) {
-    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
   };
   // escapeRegExp: function(text) {
   //   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");

@@ -1,0 +1,13 @@
+ul(class="edit-form")
+	li
+		input(type="hidden" id="eventID")
+	li
+		label Start Date & Time
+		input(type="text" disabled data-bind="ukov:data.AvailableStartTime, value:data.AvailableStartTime, valueUpdate:'keyup'")
+	li
+		label End Date & Time
+		input(type="text" disabled data-bind="ukov:data.AvailableEndTime, value:data.AvailableEndTime, valueUpdate:'keyup'")
+	li
+div(class="actions")
+	span(class="btn-bg", id="btnPopupSave" tabindex="0", data-bind="cmd: cmdSaveAvailability") Save
+	span(class="btn-bg", id="btnPopupCancel" tabindex="0", data-bind="cmd:clickClose") Cancel

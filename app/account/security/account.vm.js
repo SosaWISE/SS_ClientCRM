@@ -2,6 +2,7 @@ define('src/account/security/account.vm', [
   'src/account/security/checklist.vm',
   'src/account/security/summary.vm',
   'src/account/security/equipment.vm',
+  'src/account/security/service.ticket.vm',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
@@ -10,6 +11,7 @@ define('src/account/security/account.vm', [
   ChecklistViewModel,
   SummaryViewModel,
   EquipmentViewModel,
+  ServiceTicketViewModel,
   notify,
   utils,
   ControllerViewModel,
@@ -59,6 +61,7 @@ define('src/account/security/account.vm', [
         createEquipment(_this, 'Equipment'),
         createFauxController(_this, 'Contract Approval'),
         checklist,
+        createServiceTicket(_this, 'Schedule Service')
       ]);
       cb();
     }, 0);
@@ -88,6 +91,16 @@ define('src/account/security/account.vm', [
       viewTmpl: 'tmpl-temptitle',
     });
   }
+
+  function createServiceTicket(pcontroller, title) {
+    return new ServiceTicketViewModel({
+      pcontroller: pcontroller,
+      id: titleToId(title),
+      title: title
+    });
+
+  }
+
 
   function titleToId(title) {
     return title.toLowerCase().replace(/\s+/g, '').replace(/\//g, '-');
