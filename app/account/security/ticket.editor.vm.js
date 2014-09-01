@@ -54,7 +54,7 @@ define('src/account/security/ticket.editor.vm', [
     //Set  field as first focusable
     _this.focusFirst = ko.observable(true);
 
-   //  alert(_this.accountId);
+    //  alert(_this.accountId);
 
     //  console.log("AccountId on ticket editor"+_this.AccountId);
 
@@ -63,7 +63,7 @@ define('src/account/security/ticket.editor.vm', [
       AccountId: _this.accountId,
       TicketTypeId: null,
       MoniNumber: null,
-      StatusCodeId  : null,
+      StatusCodeId: null,
       MoniConfirmation: null,
       TechnicianId: null,
       TripCharges: null,
@@ -132,7 +132,7 @@ define('src/account/security/ticket.editor.vm', [
       _this.goTo({
         // pcontroller: _this,
         route: 'scheduling',
-    //    tab: 'schedule',
+        //    tab: 'schedule',
         id: 1
       });
 
@@ -199,7 +199,7 @@ define('src/account/security/ticket.editor.vm', [
     var _this = this;
 
     console.log('on ticket editor route id: ' + routeData.id);
-    
+
     alert(_this.AccountId);
     _this.AccountId = routeData.id;
     //load ticket type list
