@@ -134,7 +134,6 @@ define('src/account/security/ticket.editor.vm', [
       var model = _this.data.getValue();
 
       _this.goTo({
-        pcontroller: _this,
         route: 'scheduling',
         id: 'schedule',
         ticketid: '10061' //temp
@@ -151,8 +150,8 @@ define('src/account/security/ticket.editor.vm', [
 
         var data = resp.Value;
 
-        //console.log('schedule: ' + _this);  
-        /*  
+        //console.log('schedule: ' + _this);
+        /*
         _this.goTo({
           pcontroller: _this,
           route: 'scheduling',

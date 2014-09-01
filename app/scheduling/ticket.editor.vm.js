@@ -130,7 +130,7 @@ define('src/scheduling/ticket.editor.vm', [
       //alert("go save the ticket and go directly to the schedule tab");
       // _this.goTo({
       //           route: 'scheduling',
-      //           id:"schedule", 
+      //           id:"schedule",
       //           ticketid:1
       //     });
       if (!_this.data.isValid()) {
@@ -150,7 +150,6 @@ define('src/scheduling/ticket.editor.vm', [
         var data = resp.Value;
 
         _this.goTo({
-          pcontroller: _this,
           route: 'scheduling',
           id: 'schedule',
           ticketid: data.TicketID,
