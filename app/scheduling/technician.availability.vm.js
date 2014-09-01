@@ -7,6 +7,7 @@ define('src/scheduling/technician.availability.vm', [
   'src/core/utils',
   'src/core/controller.vm',
   'src/scheduling/technician.signup.vm',
+  'src/scheduling/technician.confirm.vm',
   'src/core/layers.vm',
   'src/core/joiner',
   //'src/ukov',
@@ -20,6 +21,7 @@ define('src/scheduling/technician.availability.vm', [
   utils,
   ControllerViewModel,
   TechSignUpViewModel,
+  TechConfirmViewModel,
   LayersViewModel,
   joiner
   //ukov
@@ -86,16 +88,17 @@ define('src/scheduling/technician.availability.vm', [
       selectHelper: true,
       aspectRatio: 2.1,
       hiddenDays: [0], //hide sunday      
-      eventClick: function( /*calEvent , jsEvent, view*/ ) {
-        //show create ticket screen only when there are still spaces available for a specific block
-        // if (parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10)) {
-        //   _this.layersVm.show(new ScheduleTicketViewModel({
-        //     date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
-        //     blockId: calEvent.id,
-        //   }), function onClose(cb) {
-        //     load_scheduleBlockList(cb);
-        //   });
-        // }
+      eventClick: function(Event /*, jsEvent, view*/ ) {
+
+        //show confirm pop up only if IsTechConfirmed is false        
+        if (true) {
+          _this.layersVm.show(new TechConfirmViewModel({
+            'BlockID': Event.id,
+            'tColor': Event.backgroundColor,
+          }), function onClose(cb) {
+            load_technicianAvailabilityList(cb);
+          });
+        }
 
       },
 
