@@ -75,6 +75,8 @@ define('src/app', [
       router.addRoute(idTpPanelsMap.swing, 'swing', '', {});
       router.addRoute(idTpPanelsMap.inventory, 'inventory', ':tab', {});
       router.addRoute(idTpPanelsMap.scheduling, 'scheduling', ':id/:ticketid', {});
+     // router.addRoute(idTpPanelsMap.scheduling, 'scheduling', 'schedule/:ticketid', {});
+      
     },
   });
 
