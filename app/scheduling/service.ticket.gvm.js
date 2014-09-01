@@ -61,9 +61,9 @@ define('src/scheduling/service.ticket.gvm', [
         name: 'Service Ticket Type',
         field: 'TicketTypeName',
       }, {
-        id: 'StatusCodeID',
+        id: 'StatusCodeId',
         name: 'Status',
-        field: 'StatusCodeID',
+        field: 'StatusCodeId',
       }, {
         id: 'MoniConfirmation',
         name: 'Moni Confirmation',
@@ -74,9 +74,9 @@ define('src/scheduling/service.ticket.gvm', [
         field: 'TechConfirmation',
         formatter: SlickGridViewModel.formatters.datetime,
       }, {
-        id: 'TechnicianID',
+        id: 'TechnicianId',
         name: 'Tech',
-        field: 'TechnicianID',
+        field: 'TechnicianId',
       }, {
         id: 'AgentConfirmation',
         name: 'Agent Confirmation',

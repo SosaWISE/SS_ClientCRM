@@ -28,13 +28,13 @@ define('src/scheduling/ticket.editor.vm', [
   schema = {
     _model: true,
     TicketID: {},
-    AccountID: {},
-    TicketTypeID: {},
+    AccountId: {},
+    TicketTypeId: {},
     MoniNumber: {},
-    StatusCodeID: {},
+    StatusCodeId: {},
     MoniConfirmation: {},
     TechConfirmation: {},
-    TechnicianID: {},
+    TechnicianId: {},
     TripCharges: {},
     Appointment: {},
     AgentConfirmation: {},
@@ -74,9 +74,12 @@ define('src/scheduling/ticket.editor.vm', [
 
     _this.data = ukov.wrap(utils.clone(_this.ticket), schema);
 
+    //console.log(JSON.stringify(_this.ticket));
+    _this.data.TicketTypeId(_this.ticket.TicketTypeId);
+
     //Ticket type dropdown
     _this.data.ticketTypeCvm = new ComboViewModel({
-      selectedValue: _this.data.TicketTypeID,
+      selectedValue: _this.data.TicketTypeId,
       fields: {
         value: 'TicketTypeID',
         text: 'TicketTypeName',

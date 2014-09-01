@@ -58,6 +58,7 @@ define('src/account/security/ticket.editor.vm', [
 
     //  console.log("AccountId on ticket editor"+_this.AccountId);
 
+
     _this.ticket = _this.ticket || {
       TicketID: null,
       AccountId: _this.accountId,
@@ -73,7 +74,10 @@ define('src/account/security/ticket.editor.vm', [
       Notes: null,
     };
 
+
     _this.data = ukov.wrap(utils.clone(_this.ticket), schema);
+
+    _this.data.TicketTypeId(_this.ticket.TicketTypeId);
 
     //Ticket type dropdown
     _this.data.ticketTypeCvm = new ComboViewModel({
