@@ -2,12 +2,12 @@ define('src/scheduling/technician.availability.vm', [
   'jquery',
   'fullcalendar',
   'src/dataservice',
+  'src/app',
   'src/core/combo.vm',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
   'src/scheduling/technician.signup.vm',
-  'src/scheduling/technician.confirm.vm',
   'src/core/layers.vm',
   'src/core/joiner',
   //'src/ukov',
@@ -16,12 +16,12 @@ define('src/scheduling/technician.availability.vm', [
   $,
   fullCalendar,
   dataservice,
+  app,
   ComboViewModel,
   notify,
   utils,
   ControllerViewModel,
   TechSignUpViewModel,
-  TechConfirmViewModel,
   LayersViewModel,
   joiner
   //ukov
@@ -68,6 +68,8 @@ define('src/scheduling/technician.availability.vm', [
   TechnicianViewModel.prototype.onActivate = function( /*routeData*/ ) { // override me  
 
     var _this = this,
+      isTech = true, //temp
+      isBlockOwned = true, //temp
       join = joiner();
 
     //load technician availability list    
@@ -88,26 +90,36 @@ define('src/scheduling/technician.availability.vm', [
       selectHelper: true,
       aspectRatio: 2.1,
       hiddenDays: [0], //hide sunday      
-      eventClick: function(Event /*, jsEvent, view*/ ) {
+      eventClick: function( /*Event, jsEvent, view*/ ) {
+        //alert(Event.technicianid);
+        if (isBlockOwned) {
+          //alert("@TODO do stuff");
+        } else {
+          notify.warn("That availability block does not belong to you.", null, 3);
+          return;
+        }
+      },
 
-        //show confirm pop up only if IsTechConfirmed is false        
-        if (true) {
-          _this.layersVm.show(new TechConfirmViewModel({
-            'BlockID': Event.id,
-            'tColor': Event.backgroundColor,
-          }), function onClose(cb) {
-            load_technicianAvailabilityList(cb);
-          });
+      eventDrop: function(event /*, dayDelta, minuteDelta, allDay, revertFunc*/ ) {
+
+        if (isBlockOwned) {
+          new UpdateEvent(event.id, event.start, event.end);
+        } else {
+          notify.warn("That availability block does not belong to you.", null, 3);
+          return;
         }
 
       },
 
-      eventDrop: function(event /*, dayDelta, minuteDelta, allDay, revertFunc*/ ) {
-        new UpdateEvent(event.id, event.start, event.end);
-      },
-
       eventResize: function(event /*, dayDelta, minuteDelta, revertFunc*/ ) {
-        new UpdateEvent(event.id, event.start, event.end);
+
+        if (isBlockOwned) {
+          new UpdateEvent(event.id, event.start, event.end);
+        } else {
+          notify.warn("That availability block does not belong to you.", null, 3);
+          return;
+        }
+
       },
 
       dayClick: function( /*date , allDay, jsEvent, view*/ ) {
@@ -116,24 +128,32 @@ define('src/scheduling/technician.availability.vm', [
 
       select: function(start, end /*, jsEvent, view*/ ) {
 
-        _this.layersVm.show(new TechSignUpViewModel({
-          date: $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
-          stime: $.fullCalendar.formatDate(start, 'MM/dd/yyyy HH:mm'),
-          etime: $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm'),
-          blockTime: $.fullCalendar.formatDate(end, 'HH:mm'),
-        }), function onClose(result, cb) {
-          if (!result) {
-            load_technicianAvailabilityList(cb);
-          }
+        //isTech = false; //for testing
 
-        });
+        if (isTech) {
+          _this.layersVm.show(new TechSignUpViewModel({
+            date: $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
+            stime: $.fullCalendar.formatDate(start, 'MM/dd/yyyy HH:mm'),
+            etime: $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm'),
+            blockTime: $.fullCalendar.formatDate(end, 'HH:mm'),
+          }), function onClose(result, cb) {
+            if (!result) {
+              load_technicianAvailabilityList(cb);
+            }
+
+          });
+        } else {
+          notify.warn("You are a not a technician and you cannot add availability", null, 3);
+          return;
+        }
+
       },
 
       viewRender: function( /*view, element*/ ) {},
 
       //add some more info on blocks
-      eventRender: function( /*event, element*/ ) {
-        //element.find('.fc-event-title').append('<br/>' + event.someInfo);
+      eventRender: function(event, element) {
+        element.find('.fc-event-title').append('<br/>' + event.someInfo);
       }
 
     });
@@ -156,15 +176,6 @@ define('src/scheduling/technician.availability.vm', [
     };
 
     dataservice.scheduleenginesrv.SeScheduleBlock.post(EventID, param, null, utils.safeCallback(null, function(err, resp) {
-
-      // dataservice.scheduleenginesrv.SeTechnicianAvailability.save({
-      //   id: EventID,
-      //   data: {
-      //     TechnicianAvailabilityID: EventID,
-      //     StartDateTime: $.fullCalendar.formatDate(EventStart, 'MM/dd/yyyy HH:mm'),
-      //     EndDateTime: $.fullCalendar.formatDate(EventEnd, 'MM/dd/yyyy HH:mm'),
-      //   },
-      // }, null, utils.safeCallback(null, function(err, resp) {
 
       console.log(resp);
 
@@ -192,8 +203,8 @@ define('src/scheduling/technician.availability.vm', [
       data = {},
       result = [],
       tColor,
-      isRed,
-      isTechConfirmed,
+      IsOwned,
+      tName,
       x;
 
 
@@ -212,21 +223,16 @@ define('src/scheduling/technician.availability.vm', [
 
         for (x = 0; x < resp.Value.length; x++) {
 
-          isRed = (resp.Value[x].IsRed) ? true : false;
-          isTechConfirmed = (resp.Value[x].IsTechConfirmed) ? true : false;
+          //Own blocks - lightblue, otherwise white
+          IsOwned = true; //for testing
 
-          console.log("isRed:" + isRed.toString());
-          console.log("isTechConfirmed:" + isTechConfirmed.toString());
-
-          //light red - #FFBAC2
-          //light green - #C9FFD7'
-
-          //set each tech availability a right color
-          if (isTechConfirmed) {
-            tColor = (isRed) ? '#FFBAC2' : '#C9FFD7';
-          } else {
-            tColor = (isRed) ? 'red' : 'green';
+          //if technicianid equals current user, block is owned
+          if (resp.Value[x].TenicianId === app.user.peek().GPEmployeeID) {
+            IsOwned = true;
           }
+
+          tColor = (IsOwned) ? 'lightblue' : 'white';
+          tName = resp.Value[x].TechnicianName;
 
           //objects to display on technician availability grid
           data = {
@@ -235,7 +241,9 @@ define('src/scheduling/technician.availability.vm', [
             start: resp.Value[x].StartTime,
             end: resp.Value[x].EndTime,
             allDay: false,
+            technicianid: 12345,
             backgroundColor: tColor,
+            someInfo: 'Technician Name:' + tName,
           };
 
           //list of blocks from server

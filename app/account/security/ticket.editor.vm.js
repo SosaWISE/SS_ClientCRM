@@ -134,10 +134,10 @@ define('src/account/security/ticket.editor.vm', [
       var model = _this.data.getValue();
 
       _this.goTo({
-        // pcontroller: _this,
+        pcontroller: _this,
         route: 'scheduling',
-        //    tab: 'schedule',
-        id: 1
+        id: 'schedule',
+        ticketid: '10061' //temp
       });
 
 
