@@ -215,6 +215,9 @@ define('src/scheduling/technician.availability.vm', [
           isRed = (resp.Value[x].IsRed) ? true : false;
           isTechConfirmed = (resp.Value[x].IsTechConfirmed) ? true : false;
 
+          console.log("isRed:" + isRed.toString());
+          console.log("isTechConfirmed:" + isTechConfirmed.toString());
+
           //light red - #FFBAC2
           //light green - #C9FFD7'
 

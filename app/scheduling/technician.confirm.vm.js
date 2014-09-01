@@ -52,15 +52,11 @@ define('src/scheduling/technician.confirm.vm', [
 
           data.IsTechConfirmed = true;
 
-          //temp logic
-          if (_this.tColor === "green") {
-            //data.IsRed = "1";                    
+          if (_this.tColor === "green" || _this.tColor === "#C9FFD7") {
             data.IsRed = true;
-          } else if (_this.tColor === "red") {
-            //data.IsRed = "0";                    
+          } else if (_this.tColor === "red" || _this.tColor === "#FFBAC2") {
             data.IsRed = false;
           } else {
-            //data.IsRed = "1";
             data.IsRed = true;
           }
 
