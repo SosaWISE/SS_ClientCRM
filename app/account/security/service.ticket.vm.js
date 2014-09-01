@@ -84,7 +84,7 @@ define('src/account/security/service.ticket.vm', [
 
     _this.cmdAddServiceTicket = ko.command(function(cb /*, vm*/ ) {
       //Go to TicketEditor  screen
-      alert('account id ' + _this.AccountId);
+      //alert('account id ' + _this.AccountId);
 
       _this.layersVm.show(new TicketEditorViewModel({
         title: 'Create New Service Ticket',

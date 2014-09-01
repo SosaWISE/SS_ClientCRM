@@ -104,7 +104,7 @@ define('src/account/security/ticket.editor.vm', [
         return;
       }
       var model = _this.data.getValue();
-      alert(JSON.stringify(model));
+      //alert(JSON.stringify(model));
 
       dataservice.scheduleenginesrv.SeTicket.save({
         id: model.TicketID, // if no value create, else update
@@ -200,7 +200,7 @@ define('src/account/security/ticket.editor.vm', [
 
     console.log('on ticket editor route id: ' + routeData.id);
 
-    alert(_this.AccountId);
+    //alert(_this.AccountId);
     _this.AccountId = routeData.id;
     //load ticket type list
     load_ticketTypeList(_this.data.ticketTypeCvm, join.add());
