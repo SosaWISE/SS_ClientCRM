@@ -28,13 +28,13 @@ define('src/scheduling/ticket.editor.vm', [
   schema = {
     _model: true,
     TicketID: {},
-    AccountID: {},
-    TicketTypeID: {},
+    AccountId: {},
+    TicketTypeId: {},
     MoniNumber: {},
-    StatusCodeID: {},
+    StatusCodeId: {},
     MoniConfirmation: {},
     TechConfirmation: {},
-    TechnicianID: {},
+    TechnicianId: {},
     TripCharges: {},
     Appointment: {},
     AgentConfirmation: {},
@@ -58,13 +58,13 @@ define('src/scheduling/ticket.editor.vm', [
 
     _this.ticket = _this.ticket || {
       TicketID: null,
-      AccountID: null,
-      TicketTypeID: null,
+      AccountId: null,
+      TicketTypeId: null,
       MoniNumber: null,
-      StatusCodeID: null,
+      StatusCodeId: null,
       MoniConfirmation: null,
       TechConfirmation: null,
-      TechnicianID: null,
+      TechnicianId: null,
       TripCharges: null,
       Appointment: null,
       AgentConfirmation: null,
@@ -74,9 +74,12 @@ define('src/scheduling/ticket.editor.vm', [
 
     _this.data = ukov.wrap(utils.clone(_this.ticket), schema);
 
+    //console.log(JSON.stringify(_this.ticket));
+    _this.data.TicketTypeId(_this.ticket.TicketTypeId);
+
     //Ticket type dropdown
     _this.data.ticketTypeCvm = new ComboViewModel({
-      selectedValue: _this.data.TicketTypeID,
+      selectedValue: _this.data.TicketTypeId,
       fields: {
         value: 'TicketTypeID',
         text: 'TicketTypeName',
@@ -102,6 +105,7 @@ define('src/scheduling/ticket.editor.vm', [
         cb();
         return;
       }
+
       var model = _this.data.getValue();
       dataservice.scheduleenginesrv.SeTicket.save({
         id: model.TicketID, // if no value create, else update
@@ -110,7 +114,7 @@ define('src/scheduling/ticket.editor.vm', [
         _this.data.markClean(model, true);
 
         var data = resp.Value;
-        alert(JSON.stringify(data));
+        //alert(JSON.stringify(data));
 
         _this.layerResult = data;
         _this.isDeleted = false;
@@ -126,7 +130,7 @@ define('src/scheduling/ticket.editor.vm', [
       //alert("go save the ticket and go directly to the schedule tab");
       // _this.goTo({
       //           route: 'scheduling',
-      //           id:"schedule", 
+      //           id:"schedule",
       //           ticketid:1
       //     });
       if (!_this.data.isValid()) {
@@ -146,7 +150,6 @@ define('src/scheduling/ticket.editor.vm', [
         var data = resp.Value;
 
         _this.goTo({
-          pcontroller: _this,
           route: 'scheduling',
           id: 'schedule',
           ticketid: data.TicketID,

@@ -49,46 +49,49 @@ define('src/account/security/service.ticket.gvm', [
       ],
 
       columns: [{
-        id: 'TicketID',
-        name: 'TicketID',
-        field: 'TicketID',
-      }, {
-        id: 'MoniNumber',
-        name: 'Moni Ticket#',
-        field: 'MoniNumber',
-      }, {
-        id: 'TicketTypeName',
-        name: 'Service Ticket Type',
-        field: 'TicketTypeName',
-      }, {
-        id: 'StatusCodeID',
-        name: 'Status',
-        field: 'StatusCode',
+          id: 'TicketID',
+          name: 'TicketID',
+          field: 'TicketID',
+        }, {
+          id: 'MoniNumber',
+          name: 'Moni Ticket#',
+          field: 'MoniNumber',
+        }, {
+          id: 'TicketTypeName',
+          name: 'Service Ticket Type',
+          field: 'TicketTypeName',
+        }, {
+          id: 'StatusCodeId',
+          name: 'Status',
+          field: 'StatusCode',
 
-        //field: 'StatusCodeID',
-      }, {
-        id: 'MoniConfirmation',
-        name: 'Moni Confirmation',
-        field: 'MoniConfirmation',
-      }, {
+          //field: 'StatusCodeID',
+        }, {
+          id: 'MoniConfirmation',
+          name: 'Moni Confirmation',
+          field: 'MoniConfirmation',
+        },
+        /* {
         id: 'TechConfirmation',
         name: 'Tech Confirmation',
         field: 'TechConfirmation',
         formatter: SlickGridViewModel.formatters.datetime,
-      }, {
-        id: 'TechnicianID',
-        name: 'Tech',
-        field: 'TechnicianID',
-      }, {
-        id: 'AgentConfirmation',
-        name: 'Agent Confirmation',
-        field: 'AgentConfirmation',
-      }, {
-        id: 'ExpirationDate',
-        name: 'Expiration Date',
-        field: 'ExpirationDate',
-        formatter: SlickGridViewModel.formatters.datetime,
-      }, ],
+      },*/
+        {
+          id: 'TechnicianId',
+          name: 'Tech',
+          field: 'TechnicianId',
+        }, {
+          id: 'AgentConfirmation',
+          name: 'Agent Confirmation',
+          field: 'AgentConfirmation',
+        }, {
+          id: 'ExpirationDate',
+          name: 'Expiration Date',
+          field: 'ExpirationDate',
+          formatter: SlickGridViewModel.formatters.datetime,
+        },
+      ],
 
     });
 
