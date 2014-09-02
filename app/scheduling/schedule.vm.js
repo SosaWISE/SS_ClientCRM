@@ -93,6 +93,7 @@ define('src/scheduling/schedule.vm', [
     }, schema);
 
     //alert(JSON.stringify(_this.data.getValue()));
+    console.log(_this.data.getValue());
 
     //alert(routeData.ticketid);
     // _this.title = routeData.ticketid;
@@ -119,12 +120,20 @@ define('src/scheduling/schedule.vm', [
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
 
         //console.log(parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10));
-
         //show create ticket screen only when there are still spaces available for a specific block
         if (parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10)) {
+
+          var model = _this.data.getValue();
+          //console.log('model'+model); 
+          //alert(JSON.stringify(model));
+          //alert(JSON.stringify(model.Ticket));
+
           _this.layersVm.show(new ScheduleTicketViewModel({
             date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
             blockId: calEvent.id,
+            ticket: model.Ticket
+          }, {
+            Ticket: model.Ticket
           }), function onClose(cb) {
             load_scheduleBlockList(cb);
           });
@@ -183,29 +192,30 @@ define('src/scheduling/schedule.vm', [
   function UpdateEvent(EventID, EventStart, EventEnd) {
 
     var block,
-      param;
+      scheduleBlock = {};
 
     block = (parseInt($.fullCalendar.formatDate(EventEnd, 'HH:mm'), 10) < 12) ? 'AM' : 'PM';
 
-    //console.log("Block to update:" + block);
-
-    param = {
+    scheduleBlock = {
       'BlockID': EventID,
       'Block': block,
       'StartTime': $.fullCalendar.formatDate(EventStart, 'MM/dd/yyyy HH:mm'),
       'EndTime': $.fullCalendar.formatDate(EventEnd, 'MM/dd/yyyy HH:mm'),
+      'IsTechConfirmed': true
     };
 
-    //@TODO update block info
-    // console.log("Updating block info:" + JSON.stringify(param));
+    dataservice.scheduleenginesrv.SeScheduleBlock.save({
+      id: EventID,
+      data: scheduleBlock,
+      link: 'SE',
+    }, null, utils.safeCallback(null, function(err, resp) {
 
-    dataservice.scheduleenginesrv.SeScheduleBlock.post(EventID, param, null, utils.safeCallback(null, function( /*err, resp*/ ) {
-      //console.log("Block updated:" + JSON.stringify(resp.Value));
-      //reload all blocks
-      load_scheduleBlockList();
-
-    }, notify.error, false));
-
+        if (resp && resp.Value) {
+          //$('#techCalendar').fullCalendar('addEventSource', result);
+          load_scheduleBlockList();
+        }
+      },
+      notify.error, false));
 
   }
 
@@ -268,7 +278,7 @@ define('src/scheduling/schedule.vm', [
             slot: slotAvailable,
             nTickets: numTickets,
             allDay: false,
-            someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + resp.Value[x].ZipCode + ' <br /> Max Radius: ' + resp.Value[x].MaxRadius + ' miles <br /> Distance: ' + resp.Value[x].Distance + ' miles <br /> Available: ' + numTickets + ' of ' + resp.Value[x].AvailableSlots + ' <br /><hr> Daniel Ellis (0 of 2) <br />',
+            someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + resp.Value[x].ZipCode + ' <br /> Max Radius: ' + resp.Value[x].MaxRadius + ' miles <br /> Distance: ' + resp.Value[x].Distance + ' miles <br /> Available: ' + numTickets + ' of ' + resp.Value[x].AvailableSlots + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' (0 of 2) <br />',
             backgroundColor: tColor,
           };
 

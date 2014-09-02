@@ -31,7 +31,8 @@ define('src/scheduling/technician.availability.vm', [
   var schema;
 
   schema = {
-    _model: true
+    _model: true,
+    RuTechnician: {}
   };
 
 
@@ -40,9 +41,6 @@ define('src/scheduling/technician.availability.vm', [
 
     TechnicianViewModel.super_.call(_this, options);
 
-    // _this.data = ukov.wrap(_this.item || {
-    //   TicketStatus: null,
-    // }, schema);
 
     //This a layer for creating new ticket (Pop-up)
     _this.layersVm = new LayersViewModel({
@@ -51,7 +49,6 @@ define('src/scheduling/technician.availability.vm', [
 
     //events
     //
-
   }
 
   utils.inherits(TechnicianViewModel, ControllerViewModel);
@@ -62,15 +59,19 @@ define('src/scheduling/technician.availability.vm', [
   //
 
   TechnicianViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // override me    
-    //var join = joiner();
+    var join = joiner(),
+      _this = this;
+    load_technician(_this, join.add());
   };
 
   TechnicianViewModel.prototype.onActivate = function( /*routeData*/ ) { // override me  
 
     var _this = this,
-      isTech = true, //temp
-      isBlockOwned = true, //temp
+      isTech = false, //temp
+      isBlockOwned = false, //temp
       join = joiner();
+
+    //load_technician(join.add());
 
     //load technician availability list    
     load_technicianAvailabilityList(join.add());
@@ -83,6 +84,7 @@ define('src/scheduling/technician.availability.vm', [
         right: 'month,agendaWeek,agendaDay'
       },
       defaultView: 'agendaWeek',
+      lazyFetching: false,
       editable: true,
       allDaySlot: false,
       selectable: true,
@@ -90,10 +92,15 @@ define('src/scheduling/technician.availability.vm', [
       selectHelper: true,
       aspectRatio: 2.1,
       hiddenDays: [0], //hide sunday      
-      eventClick: function( /*Event, jsEvent, view*/ ) {
-        //alert(Event.technicianid);
+      eventClick: function(event /*, jsEvent, view*/ ) {
+        console.log(_this.RuTechnician);
+        isBlockOwned = false;
+        if (_this.RuTechnician != null) {
+          isBlockOwned = (_this.RuTechnician.TechnicianId === event.technicianId) ? true : false;
+        }
+
         if (isBlockOwned) {
-          //alert("@TODO do stuff");
+          alert("@TODO do stuff on eventClick");
         } else {
           notify.warn("That availability block does not belong to you.", null, 3);
           return;
@@ -101,9 +108,16 @@ define('src/scheduling/technician.availability.vm', [
       },
 
       eventDrop: function(event /*, dayDelta, minuteDelta, allDay, revertFunc*/ ) {
+        console.log(_this.RuTechnician);
+        isBlockOwned = false;
+        if (_this.RuTechnician != null) {
+          isBlockOwned = (_this.RuTechnician.TechnicianId === event.technicianId) ? true : false;
+        }
 
         if (isBlockOwned) {
-          new UpdateEvent(event.id, event.start, event.end);
+          //new UpdateEvent(event.id, event.start, event.end);
+          new UpdateEvent(event);
+
         } else {
           notify.warn("That availability block does not belong to you.", null, 3);
           return;
@@ -112,9 +126,15 @@ define('src/scheduling/technician.availability.vm', [
       },
 
       eventResize: function(event /*, dayDelta, minuteDelta, revertFunc*/ ) {
+        console.log(_this.RuTechnician);
+        isBlockOwned = false;
+        if (_this.RuTechnician != null) {
+          isBlockOwned = (_this.RuTechnician.TechnicianId === event.technicianId) ? true : false;
+        }
 
         if (isBlockOwned) {
-          new UpdateEvent(event.id, event.start, event.end);
+          // new UpdateEvent(event.id, event.start, event.end);
+          new UpdateEvent(event);
         } else {
           notify.warn("That availability block does not belong to you.", null, 3);
           return;
@@ -126,9 +146,10 @@ define('src/scheduling/technician.availability.vm', [
 
       },
 
+      //select: function(start, end /*, jsEvent, view*/ ) {
       select: function(start, end /*, jsEvent, view*/ ) {
 
-        //isTech = false; //for testing
+        isTech = (_this.RuTechnician != null) ? true : false; //for testing
 
         if (isTech) {
           _this.layersVm.show(new TechSignUpViewModel({
@@ -154,41 +175,95 @@ define('src/scheduling/technician.availability.vm', [
       //add some more info on blocks
       eventRender: function(event, element) {
         element.find('.fc-event-title').append('<br/>' + event.someInfo);
-      }
+      },
+
+      // events: function(start, end, timezone, callback) {
+      //   //alert(start+end);
+      //   load_technicianAvailabilityList(callback);  
+      //   //callback(events);
+      // }
 
     });
 
   };
 
-
-  function UpdateEvent(EventID, EventStart, EventEnd) {
+  function UpdateEvent(event) {
 
     var block,
-      param = {};
+      scheduleBlock = {};
 
-    block = (parseInt($.fullCalendar.formatDate(EventEnd, 'HH:mm'), 10) < 12) ? 'AM' : 'PM';
+    block = (parseInt($.fullCalendar.formatDate(event.end, 'HH:mm'), 10) < 12) ? 'AM' : 'PM';
 
-    param = {
-      'BlockID': EventID,
+    scheduleBlock = {
+      'BlockID': event.id,
       'Block': block,
-      'StartTime': $.fullCalendar.formatDate(EventStart, 'MM/dd/yyyy HH:mm'),
-      'EndTime': $.fullCalendar.formatDate(EventEnd, 'MM/dd/yyyy HH:mm'),
+      'StartTime': $.fullCalendar.formatDate(event.start, 'MM/dd/yyyy HH:mm'),
+      'EndTime': $.fullCalendar.formatDate(event.end, 'MM/dd/yyyy HH:mm'),
+      'IsTechConfirmed': true
     };
+    dataservice.scheduleenginesrv.SeScheduleBlock.save({
+      id: scheduleBlock.BlockID,
+      data: scheduleBlock,
+      link: 'SE',
+    }, null, utils.safeCallback(null, function(err, resp) {
 
-    dataservice.scheduleenginesrv.SeScheduleBlock.post(EventID, param, null, utils.safeCallback(null, function(err, resp) {
+        if (resp && resp.Value) {
+          var oSchedubleBlock = resp.Value;
 
-      console.log(resp);
+          var modifiedEvent = {
+            id: oSchedubleBlock.BlockID,
+            title: null,
+            start: oSchedubleBlock.StartTime,
+            end: oSchedubleBlock.EndTime,
+            allDay: false,
+            technicianId: oSchedubleBlock.TechnicianId,
+            backgroundColor: oSchedubleBlock.Color,
+            someInfo: 'Technician Name:' + oSchedubleBlock.TechnicianName,
+          };
 
-      if (resp && resp.Value) {
-        load_technicianAvailabilityList();
-      }
-
-    }, function(err) {
-      notify.error(err);
-    }));
-
-
+          //to avoid reload
+          $('#techCalendar').fullCalendar('updateEvent', modifiedEvent);
+          //$('#techCalendar').fullCalendar('addEventSource', result);
+          // load_technicianAvailabilityList();
+        }
+      },
+      notify.error, false));
   }
+
+  // function UpdateEvent(EventID, EventStart, EventEnd) {
+
+  //   var block,
+  //     scheduleBlock = {};
+
+  //   block = (parseInt($.fullCalendar.formatDate(EventEnd, 'HH:mm'), 10) < 12) ? 'AM' : 'PM';
+
+  //   scheduleBlock = {
+  //     'BlockID': EventID,
+  //     'Block': block,
+  //     'StartTime': $.fullCalendar.formatDate(EventStart, 'MM/dd/yyyy HH:mm'),
+  //     'EndTime': $.fullCalendar.formatDate(EventEnd, 'MM/dd/yyyy HH:mm'),
+  //     'IsTechConfirmed': true
+  //   };
+
+  //   dataservice.scheduleenginesrv.SeScheduleBlock.save({
+  //       id: EventID, 
+  //       data: scheduleBlock, 
+  //       link:'SE',
+  //     }, null, utils.safeCallback(null, function(err, resp) {
+
+  //       if (resp && resp.Value) {
+
+  //         //$('#techCalendar').fullCalendar('removeEvents');
+  //         //$('#techCalendar').fullCalendar('addEventSource', result);
+  //         load_technicianAvailabilityList();
+  //       }
+  //     }, 
+  //     notify.error, false)
+  //   );
+
+
+
+  // }
 
   function load_technicianAvailabilityList(cb) {
 
@@ -224,16 +299,16 @@ define('src/scheduling/technician.availability.vm', [
         for (x = 0; x < resp.Value.length; x++) {
 
           //Own blocks - lightblue, otherwise white
-          IsOwned = true; //for testing
+          IsOwned = false; //for testing
 
           //if technicianid equals current user, block is owned
-          if (resp.Value[x].TenicianId === app.user.peek().GPEmployeeID) {
+          if (resp.Value[x].TechnicianId === app.user.peek().GPEmployeeID) {
             IsOwned = true;
           }
 
           tColor = (IsOwned) ? 'lightblue' : 'white';
           tName = resp.Value[x].TechnicianName;
-
+          console.log(tName);
           //objects to display on technician availability grid
           data = {
             id: resp.Value[x].BlockID,
@@ -241,7 +316,7 @@ define('src/scheduling/technician.availability.vm', [
             start: resp.Value[x].StartTime,
             end: resp.Value[x].EndTime,
             allDay: false,
-            technicianid: 12345,
+            technicianId: resp.Value[x].TechnicianId,
             backgroundColor: tColor,
             someInfo: 'Technician Name:' + tName,
           };
@@ -262,6 +337,25 @@ define('src/scheduling/technician.availability.vm', [
     }));
 
   }
+
+  function load_technician(_this, cb) {
+    console.log('load_technician called');
+    dataservice.humanresourcesrv.RuTechnician.read({
+      id: app.user.peek().GPEmployeeID,
+      link: 'TID'
+    }, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+        _this.RuTechnician = resp.Value;
+        console.log(resp.Value);
+      } else {
+        _this.RuTechnician(null);
+      }
+    }));
+
+  }
+
+
 
   return TechnicianViewModel;
 });

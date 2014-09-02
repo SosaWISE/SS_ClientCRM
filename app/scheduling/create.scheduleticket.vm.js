@@ -38,20 +38,39 @@ define('src/scheduling/create.scheduleticket.vm', [
 
   function ScheduleTicketViewModel(options) {
     var _this = this;
+
     ScheduleTicketViewModel.super_.call(_this, options);
+
+    var ticket = _this.ticket;
+    console.log('options' + options);
+    //alert(JSON.stringify(ticket));
+
 
     //Set title
     _this.title = _this.title || 'Create New Schedule Ticket';
 
-    _this.data = ukov.wrap(_this.item || {
-      ScheduleTicketID: null,
-      ScheduleTicketType: null,
-      ScheduleTicketAppointment: null,
-      ScheduleTicketNotes: null,
-      ScheduleAppointmentDate: null,
-      ScheduleTravelTime: null
-    }, schema);
+    if (ticket != null) {
+      _this.data = ukov.wrap({
+        ScheduleTicketID: ticket.TicketID,
+        ScheduleTicketType: ticket.TicketTypeId,
+        ScheduleTicketAppointment: null,
+        ScheduleTicketNotes: ticket.Notes,
+        ScheduleAppointmentDate: null,
+        ScheduleTravelTime: null
+      }, schema);
 
+    } else {
+
+      _this.data = ukov.wrap({
+        ScheduleTicketID: null,
+        ScheduleTicketType: null,
+        ScheduleTicketAppointment: null,
+        ScheduleTicketNotes: null,
+        ScheduleAppointmentDate: null,
+        ScheduleTravelTime: null
+      }, schema);
+
+    }
     //Ticket type dropdown
     _this.data.ScheduleTicketTypeCvm = new ComboViewModel({
       selectedValue: _this.data.ScheduleTicketType,
@@ -97,15 +116,32 @@ define('src/scheduling/create.scheduleticket.vm', [
   ScheduleTicketViewModel.prototype.width = 400;
   ScheduleTicketViewModel.prototype.height = 'auto';
 
-  ScheduleTicketViewModel.prototype.onActivate = function( /*routeData*/ ) {
+  ScheduleTicketViewModel.prototype.onActivate = function(routeData, extraData, join) {
 
-    var _this = this,
-      join = joiner();
+    var _this = this;
+    // join = joiner();
+    //console.log('routeData'+routeData);
+    //console.log('extra data'+extraData);
+    //alert(JSON.stringify(extraData));
+    //load ticket type list
+    load_ticketTypeList(_this.data.ScheduleTicketTypeCvm, join.add());
+
+  };
+
+  ScheduleTicketViewModel.prototype.onLoad = function(routeData, extraData, join) {
+
+    var _this = this;
+
+
+    // alert(JSON.stringify(extraData));
 
     //load ticket type list
     load_ticketTypeList(_this.data.ScheduleTicketTypeCvm, join.add());
 
   };
+
+
+
 
   function closeLayer(_this) {
     if (_this.layer) {
@@ -197,11 +233,15 @@ define('src/scheduling/create.scheduleticket.vm', [
         console.log("SeScheduleTicket:" + JSON.stringify(resp.Value));
 
         //clear fields
+
         _this.data.ScheduleTicketID(null);
         _this.data.ScheduleTicketAppointment(null);
         _this.data.ScheduleTicketNotes(null);
         _this.data.ScheduleTicketType(null);
         _this.data.ScheduleTravelTime(null);
+
+        //clear ticket
+        _this.ticket = null;
 
       } else {
         notify.error(err);
