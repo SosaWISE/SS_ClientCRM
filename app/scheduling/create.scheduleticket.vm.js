@@ -116,10 +116,10 @@ define('src/scheduling/create.scheduleticket.vm', [
   ScheduleTicketViewModel.prototype.width = 400;
   ScheduleTicketViewModel.prototype.height = 'auto';
 
-  ScheduleTicketViewModel.prototype.onActivate = function(routeData, extraData, join) {
+  ScheduleTicketViewModel.prototype.onActivate = function( /*routeData, extraData, join*/ ) {
 
-    var _this = this;
-    // join = joiner();
+    var _this = this,
+      join = joiner();
     //console.log('routeData'+routeData);
     //console.log('extra data'+extraData);
     //alert(JSON.stringify(extraData));
