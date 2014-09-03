@@ -23,6 +23,9 @@ ul(class="edit-form")
 						div(class="grid-wrap")
 							div(class="slickgrid", style="background:white; color:black;", data-bind="slickgrid:technicianTicketInfoGvm")
 	li
+		span(class="label") General Note
+		textarea(rows="5" data-bind="ukov:data.TechTicketNotes, value:data.TechTicketNotes,valueUpdate:'keyup'")
+	li
 		span(class="btn-bg", style="width: 25%;" id="btnPopupCancel" tabindex="0", data-bind="cmd: cmdComplete") Complete
 div(class="actions")
-	span(class="btn-bg", style="width: 25%;" id="btnPopupCancel" tabindex="0", data-bind="cmd:clickClose") Close
+	//-span(class="btn-bg", style="width: 25%;" id="btnPopupCancel" tabindex="0", data-bind="cmd:clickClose") Close

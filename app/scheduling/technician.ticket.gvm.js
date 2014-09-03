@@ -35,9 +35,9 @@ define('src/scheduling/technician.ticket.gvm', [
         name: 'Name',
         field: 'CustomerFullName',
       }, {
-        id: 'Address',
+        id: 'CompleteAddress',
         name: 'Address',
-        field: 'Address',
+        field: 'CompleteAddress',
       }, {
         id: 'StartTime', //temporary - not sure where to pull the Appointment Time yet
         name: 'Appointment Time',

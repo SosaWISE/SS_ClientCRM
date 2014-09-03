@@ -233,7 +233,9 @@ define('src/scheduling/schedule.vm', [
       slotAvailable,
       numTickets,
       data = {},
-      result = [];
+      result = [],
+      distance = 0,
+      distanceText;
 
     param = {
       'DateFrom': $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
@@ -246,7 +248,7 @@ define('src/scheduling/schedule.vm', [
 
       if (resp.Code === 0) {
 
-        //console.log("SeScheduleBlockList:" + JSON.stringify(resp.Value));
+        console.log("SeScheduleBlockList:" + JSON.stringify(resp.Value));
 
         for (x = 0; x < resp.Value.length; x++) {
 
@@ -269,6 +271,26 @@ define('src/scheduling/schedule.vm', [
             tColor = 'white';
           }
 
+          //calculate distance - this is temporary, we might use the distance computation from api
+          if (resp.Value[x].CurrentTicketId) {
+
+            distance = calculateDistance(
+              resp.Value[x].BlockLatitude,
+              resp.Value[x].BlockLongitude,
+              resp.Value[x].TicketLatitude,
+              resp.Value[x].TicketLongitude
+            ).toFixed(0);
+
+            //if customer does not have coordinates, set distance = 0
+            if (resp.Value[x].TicketLatitude === null && resp.Value[x].TicketLongitude) {
+              distance = 0;
+            }
+
+          }
+
+          distanceText = (distance <= 0) ? "" : "<br />Distance: " + distance + " mile(s)";
+          //distanceText = (resp.Value[x].Distance === null) ? "" : "<br />Distance: "+resp.Value[x].Distance+ " mile(s)";
+          distance = 0; //reset
           //objects to display on scheduler grid
           data = {
             id: resp.Value[x].BlockID,
@@ -278,7 +300,7 @@ define('src/scheduling/schedule.vm', [
             slot: slotAvailable,
             nTickets: numTickets,
             allDay: false,
-            someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + resp.Value[x].ZipCode + ' <br /> Max Radius: ' + resp.Value[x].MaxRadius + ' miles <br /> Distance: ' + resp.Value[x].Distance + ' miles <br /> Available: ' + numTickets + ' of ' + resp.Value[x].AvailableSlots + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' (0 of 2) <br />',
+            someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + resp.Value[x].ZipCode + ' <br /> Max Radius: ' + resp.Value[x].MaxRadius + ' miles ' + distanceText + '  <br /> Available: ' + numTickets + ' of ' + resp.Value[x].AvailableSlots + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' (0 of 2) <br />',
             backgroundColor: tColor,
           };
 
@@ -298,6 +320,28 @@ define('src/scheduling/schedule.vm', [
       }
     }));
 
+  }
+
+  //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
+  function calculateDistance(lat1, lon1, lat2, lon2) {
+
+    //var R = 6371, // km
+    var R = 3958.755866, // mile
+      dLat = toRad(lat2 - lat1),
+      dLon = toRad(lon2 - lon1),
+      dlat1 = toRad(lat1),
+      dlat2 = toRad(lat2);
+
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(dlat1) * Math.cos(dlat2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c;
+    return d;
+  }
+
+  // Converts numeric degrees to radians
+  function toRad(Value) {
+    return Value * Math.PI / 180;
   }
 
 

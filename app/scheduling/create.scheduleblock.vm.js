@@ -1,6 +1,7 @@
 define('src/scheduling/create.scheduleblock.vm', [
   'jquery',
   'fullcalendar',
+  'src/app',
   'src/dataservice',
   'src/core/notify',
   'src/core/utils',
@@ -10,6 +11,7 @@ define('src/scheduling/create.scheduleblock.vm', [
 ], function(
   $,
   fullCalendar,
+  app,
   dataservice,
   notify,
   utils,
@@ -94,7 +96,8 @@ define('src/scheduling/create.scheduleblock.vm', [
         'StartTime': _this.data.ScheduleStartTime(),
         'EndTime': _this.data.ScheduleEndTime(),
         'AvailableSlots': _this.data.ScheduleAvailableSlot(),
-        'TechnicianId': 1,
+        //'TechnicianId': 1,
+        'TechnicianId': app.user.peek().GPEmployeeID,
       };
 
       console.log("Data to save:" + JSON.stringify(param));
