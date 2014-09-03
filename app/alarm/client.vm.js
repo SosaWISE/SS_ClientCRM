@@ -3,6 +3,7 @@ define('src/alarm/client.vm', [
   'src/ukov',
   'src/config',
   'src/alarm/socket',
+  'src/core/jsonhelpers',
   'src/core/combo.vm',
   'src/core/notify',
   'src/core/utils',
@@ -12,6 +13,7 @@ define('src/alarm/client.vm', [
   ukov,
   config,
   Socket,
+  jsonhelpers,
   ComboViewModel,
   notify,
   utils,
@@ -57,6 +59,14 @@ define('src/alarm/client.vm', [
         }, 100);
       }
     });
+    _this.connectText = ko.computed(function() {
+      var socket = _this.socket();
+      if (socket && socket.connected()) {
+        return "Disconnect";
+      } else {
+        return "Connect";
+      }
+    });
 
     //
     // events
@@ -73,24 +83,35 @@ define('src/alarm/client.vm', [
           _this.logText('disconnected');
         };
         socket.onerror = function(evt) {
-          _this.logText('error', JSON.stringify(evt));
+          _this.logText('error: ' + stringify(evt));
         };
         socket.on('system:state', _this, function(data) {
           _this.data.setValue(data);
           _this.data.markClean(data, true);
-          _this.logText('event - system:state ' + JSON.stringify(data));
+          _this.logText('event - system:state ' + stringify(data));
+        });
+        socket.on('alarm:triggered', _this, function(data) {
+          _this.logText('event - alarm:triggered ' + stringify(data));
         });
         _this.socket(socket);
-      } else {
+      } else if (!socket.connected()) {
         _this.logText('reconnecting...');
         socket.reconnect();
+      } else {
+        _this.logText('disconnecting...');
+        socket.disconnect();
       }
       cb();
     }, function(busy) {
       var socket = _this.socket();
+      if (!busy && socket && socket.connected()) {
+        // allow disconnecting
+        return true;
+      }
+      // allow connecting and reconnecting
       return !busy && _this.alarmid.isValid() && (!socket || (socket && !socket.connected()));
     });
-    _this.cmdSave = ko.command(function(cb) {
+    _this.cmdSaveArmStatus = ko.command(function(cb) {
       if (!_this.data.isValid()) {
         notify.warn(_this.data.errMsg(), null, 7);
         cb();
@@ -103,7 +124,7 @@ define('src/alarm/client.vm', [
       }
       var model = _this.data.getValue();
       _this.logText('saving system state...');
-      _this.socket.peek().post('/arm', model, null, utils.safeCallback(cb, function(err, resp) {
+      _this.socket.peek().service().post('/arm', model, null, utils.safeCallback(cb, function(err, resp) {
         console.log('ws call result:', resp);
         _this.data.markClean(model, true);
         _this.logText('saved system state');
@@ -114,6 +135,14 @@ define('src/alarm/client.vm', [
     });
   }
   utils.inherits(ClientViewModel, BaseViewModel);
+
+  ClientViewModel.prototype.dispose = function() {
+    var _this = this,
+      socket = _this.socket();
+    if (socket) {
+      socket.disconnect();
+    }
+  };
 
   ClientViewModel.prototype.logText = function(text) {
     var _this = this;
@@ -135,6 +164,10 @@ define('src/alarm/client.vm', [
       text: 'Arm (Away)',
     },
   ];
+
+  function stringify(data) {
+    return jsonhelpers.stringify(data, '  ');
+  }
 
   return ClientViewModel;
 });

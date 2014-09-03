@@ -1,9 +1,11 @@
 define('src/alarm/alarm.panel.vm', [
+  'ko',
   'src/alarm/system.vm',
   'src/alarm/client.vm',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  ko,
   SystemViewModel,
   ClientViewModel,
   utils,
@@ -18,8 +20,9 @@ define('src/alarm/alarm.panel.vm', [
 
     _this.projects = _this.childs;
 
-    _this.systemVm = new SystemViewModel();
-    _this.clientVm = new ClientViewModel();
+    _this.systemVm = ko.observable();
+    _this.clientVm = ko.observable();
+    _this.mayReload = ko.observable(false);
 
     //
     // events
@@ -37,8 +40,23 @@ define('src/alarm/alarm.panel.vm', [
   utils.inherits(AlarmPanelViewModel, ControllerViewModel);
 
   AlarmPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    // var _this = this;
+    var _this = this,
+      vm;
     //load_projects(_this, join);
+
+    // incase of reload
+    vm = _this.systemVm();
+    if (vm) {
+      vm.dispose();
+    }
+    vm = _this.clientVm();
+    if (vm) {
+      vm.dispose();
+    }
+
+    // set new
+    _this.systemVm(new SystemViewModel());
+    _this.clientVm(new ClientViewModel());
 
     join.add()();
   };

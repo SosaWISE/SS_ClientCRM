@@ -6,71 +6,79 @@ define('src/alarm/protocol', [
   "use strict";
 
   var protocol = {},
-    packetTypeList = [
+    packageTypeList = [
       'PREFIX',
       'WELCOME',
       'CALL',
       'CALLRESULT',
       'EVENT'
     ],
-    packetTypes = {};
-  packetTypeList.forEach(function(ptype, index) {
-    packetTypes[ptype] = index;
+    packageTypes = {};
+  packageTypeList.forEach(function(ptype, index) {
+    packageTypes[ptype] = index;
   });
 
-  protocol.packetTypes = packetTypes;
-  protocol.createPacket = function(packetType, dataArray) {
-    return new Packet(packetType, dataArray);
+  protocol.packageTypes = packageTypes;
+  protocol.createPackage = function(packageType, dataArray) {
+    return new Package(packageType, dataArray);
   };
-  protocol.createCallPacket = function(obj) {
-    return new Packet(packetTypes.CALL, [
-      obj.cid, // 0
+
+  protocol.createCallPackage = function(obj) {
+    return new Package(packageTypes.CALL, [
+      obj.cid + '', // 0
       obj.method, // 1
       obj.path, // 2
       obj.data, // 3
     ]);
   };
-  protocol.decodePacket = function(str) {
-    var pckt, packetType = Number(str.charAt(0));
-    if (packetType < 0 || packetTypeList.length <= packetType) {
-      throw new Error('unsupported packet type ' + packetType);
+  protocol.createCallResultPackage = function(obj) {
+    return new Package(packageTypes.CALLRESULT, [
+      obj.cid + '', // 0
+      obj.result, // 1
+    ]);
+  };
+
+  protocol.decodePackage = function(str) {
+    var pkg, packageType = Number(str.charAt(0));
+    if (packageType < 0 || packageTypeList.length <= packageType) {
+      throw new Error('unsupported package type ' + packageType);
     }
 
-    pckt = new Packet(packetType, jsonhelpers.parse(str.substr(1)));
-    switch (packetType) {
-      // case packetTypes.PREFIX:
-      // case packetTypes.WELCOME:
+    pkg = new Package(packageType, jsonhelpers.parse(str.substr(1)));
+    switch (packageType) {
+      // case packageTypes.PREFIX:
+      // case packageTypes.WELCOME:
       //   break;
-      case packetTypes.CALL:
-        pckt.cid = pckt.dataArray[0];
-        pckt.method = pckt.dataArray[1];
-        pckt.path = pckt.dataArray[2];
-        pckt.data = pckt.dataArray[3];
+      case packageTypes.CALL:
+        pkg.cid = pkg.dataArray[0];
+        pkg.method = pkg.dataArray[1];
+        pkg.path = pkg.dataArray[2];
+        pkg.data = pkg.dataArray[3];
         break;
-      case packetTypes.CALLRESULT:
-        pckt.cid = pckt.dataArray[0];
-        pckt.result = pckt.dataArray[1];
+      case packageTypes.CALLRESULT:
+        pkg.cid = pkg.dataArray[0];
+        pkg.result = pkg.dataArray[1];
         break;
-      case packetTypes.EVENT:
-        pckt.eventName = pckt.dataArray[0];
-        pckt.data = pckt.dataArray[1];
+      case packageTypes.EVENT:
+        pkg.eventName = pkg.dataArray[0];
+        pkg.data = pkg.dataArray[1];
         break;
     }
-    return pckt;
+    return pkg;
   };
 
   //
-  // Packet
+  // Package
   //
-  function Packet(packetType, dataArray) {
+  function Package(packageType, dataArray) {
     var _this = this;
-    _this.packetType = packetType;
+    _this.packageType = packageType;
     _this.dataArray = dataArray;
   }
-  Packet.prototype.encode = function() {
+  Package.prototype.encode = function() {
     var _this = this;
     // '4["eventName",obj]
-    return _this.packetType + jsonhelpers.stringify(_this.dataArray);
+    return _this.packageType + jsonhelpers.stringify(_this.dataArray);
   };
 
   return protocol;

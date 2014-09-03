@@ -3,76 +3,84 @@ div(class="panel alarm",data-bind="active:active")
     div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
 
   div(class="system-wrap",data-bind="with:systemVm")
-    h1 System
-    div(class="line-top")
-      ul(class="edit-form")
-        li
-          span(class="label") Alarm ID
-          input(type="text",placeholder="",
-            data-bind="ukov:alarmid,value:alarmid,valueUpdate:'keyup',enter:cmdConnect,select:focusFirst")
-        li
-          span(class="btn-bg", tabindex="0", data-bind="cmd:cmdConnect") Connect
-    div(class="line-top")
-      //- available actions
-      //-   arm/disarm system
-      h2 State
-      ul(class="edit-form")
-        li
-          span(class="label") Alarm Status
-          div(data-bind="cvm:data.armStatusCvm")
-        li
-          span(class="btn-bg", tabindex="0", data-bind="cmd:cmdSave") Save
-    div(class="line-top")
-      ul(class="edit-form",data-bind="foreach:log")
-        li
-          span(data-bind="datetimesectext:time")
-          span &nbsp;-&nbsp;
-          span(data-bind="text:text")
+    table(class="fh-wrap")
+      tr
+        td(class="fh-header")
+          h1 System
+          div(class="line-top")
+            ul(class="edit-form")
+              li
+                span(class="label") Alarm ID
+                input(type="text",placeholder="",
+                  data-bind="ukov:alarmid,value:alarmid,valueUpdate:'keyup',enter:cmdConnect,select:focusFirst")
+                span(class="btn-bg", tabindex="0", data-bind="cmd:cmdConnect,text:connectText")
+          div(class="line-top")
+            //- available actions
+            //-   arm/disarm system
+            h2 State
+            ul(class="edit-form")
+              li
+                span(class="label") Alarm Status
+                div(data-bind="cvm:data.armStatusCvm")
+                span(class="btn-bg", tabindex="0", data-bind="cmd:cmdSaveArmStatus") Save
+          div(class="line-top")
+            //- available events
+            //-   trigger
+            h2 Trigger Events
+            ul(class="trigger-events")
+              li
+                span(class="btn-bg", tabindex="0", data-bind="cmd:cmdTriggerWindowBreak") Trigger Window Break
+      tr
+        td(class="fh-body")
+          div(class="fh-contents line-top")
+            //- show list of:
+            //-   actions performed and who/which device performed them
+            //-   events triggered
+            ul(class="edit-form log",data-bind="foreach:log")
+              li
+                span(data-bind="datetimesectext:time")
+                span &nbsp;-&nbsp;
+                span(class="pre-wrap",data-bind="text:text")
 
-    //-
-    //- available events
-    //-   trigger
+
     //-
     //- handle actions
     //-   arm/disarm system
     //-
-    //- show list of:
-    //-   actions performed and who/which device performed them
-    //-   events triggered
-    //-
+
+
+
+
 
   div(class="client-wrap",data-bind="with:clientVm")
-    h1 Client
-    div(class="line-top")
-      ul(class="edit-form")
-        li
-          span(class="label") Alarm ID
-          input(type="text",placeholder="",
-            data-bind="ukov:alarmid,value:alarmid,valueUpdate:'keyup',enter:cmdConnect,select:focusFirst")
-        li
-          span(class="btn-bg", tabindex="0", data-bind="cmd:cmdConnect") Connect
-    div(class="line-top")
-      //- available actions
-      //-   arm/disarm system
-      h2 State
-      ul(class="edit-form")
-        li
-          span(class="label") Alarm Status
-          div(data-bind="cvm:data.armStatusCvm")
-        li
-          span(class="btn-bg", tabindex="0", data-bind="cmd:cmdSave") Save
-    div(class="line-top")
-      ul(class="edit-form",data-bind="foreach:log")
-        li
-          span(data-bind="datetimesectext:time")
-          span &nbsp;-&nbsp;
-          span(data-bind="text:text")
-
-    //-
-    //- handle events
-    //-   display event (see below)
-    //-
-    //- show list of:
-    //-   actions performed
-    //-   events triggered
-    //-
+    table(class="fh-wrap")
+      tr
+        td(class="fh-header")
+          h1 Client
+          div(class="line-top")
+            ul(class="edit-form")
+              li
+                span(class="label") Alarm ID
+                input(type="text",placeholder="",
+                  data-bind="ukov:alarmid,value:alarmid,valueUpdate:'keyup',enter:cmdConnect,select:focusFirst")
+                span(class="btn-bg", tabindex="0", data-bind="cmd:cmdConnect,text:connectText")
+          div(class="line-top")
+            //- available actions
+            //-   arm/disarm system
+            h2 State
+            ul(class="edit-form")
+              li
+                span(class="label") Alarm Status
+                div(data-bind="cvm:data.armStatusCvm")
+                span(class="btn-bg", tabindex="0", data-bind="cmd:cmdSaveArmStatus") Save
+      tr
+        td(class="fh-body")
+          div(class="fh-contents line-top")
+            //- show list of:
+            //-   actions performed
+            //-   events received
+            ul(class="edit-form",data-bind="foreach:log")
+              li
+                span(data-bind="datetimesectext:time")
+                span &nbsp;-&nbsp;
+                span(class="pre-wrap",data-bind="text:text")

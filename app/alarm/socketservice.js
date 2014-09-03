@@ -18,11 +18,18 @@ define('src/alarm/socketservice', [
   }
   utils.inherits(SocketService, DataserviceBase);
 
+  SocketService.prototype.createRequestUrl = function(id, link /*, queryObj, httpVerb*/ ) { // overrides base
+    return link;
+  };
+  SocketService.prototype.prepareData = function(data) { // overrides base
+    return data;
+  };
+
   // make call
   SocketService.prototype.execute = function(context) { // overrides base
     var _this = this,
       cid = context.request.id,
-      pckt = protocol.createCallPacket({
+      pkg = protocol.createCallPackage({
         cid: cid,
         method: context.httpVerb,
         path: context.requestUrl,
@@ -30,20 +37,19 @@ define('src/alarm/socketservice', [
       });
 
     _this.pendingCalls[cid] = context;
-    _this.socket.sendPacket(pckt);
+    _this.socket.sendPackage(pkg);
   };
 
   // handle call result
-  SocketService.prototype.handleCallResult = function(pckt) {
+  SocketService.prototype.handleCallResult = function(pkg) {
     var _this = this,
-      context = _this.pendingCalls[pckt.cid];
+      context = _this.pendingCalls[pkg.cid];
     if (context) {
-      delete _this.pendingCalls[pckt.cid];
-      _this.onComplete(pckt.data, null, null, context);
-      // context.callback(null, resp, {});
-      notify.warn('WebSocket response', JSON.stringify(pckt.dataArray));
+      delete _this.pendingCalls[pkg.cid];
+      _this.onComplete(pkg.result, null, null, context);
+      // notify.warn('WebSocket response', JSON.stringify(pkg.dataArray));
     } else {
-      notify.warn('Unexpected WebSocket response', JSON.stringify(pckt.dataArray));
+      notify.warn('Unexpected WebSocket response', JSON.stringify(pkg.dataArray));
     }
   };
 

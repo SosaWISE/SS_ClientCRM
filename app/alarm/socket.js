@@ -34,9 +34,12 @@ define('src/alarm/socket', [
     _this.handleClose = _this.handleClose.bind(_this);
     _this.handleError = _this.handleError.bind(_this);
     _this.handleMessage = _this.handleMessage.bind(_this);
+    //
     _this.onopen = utils.noop;
     _this.onclose = utils.noop;
     _this.onerror = utils.noop;
+    //
+    _this.onCall = utils.noop;
 
     //
     _this.reconnect = function() {
@@ -44,10 +47,17 @@ define('src/alarm/socket', [
         createWebSocket(_this, uri);
       }
     };
+    _this.disconnect = function() {
+      if (_this.connected.peek()) {
+        _this.transport.close();
+        _this.transport = null;
+        _this.connected(false);
+      }
+    };
     _this.reconnect();
   }
   Socket.prototype.service = function() {
-    var _this,
+    var _this = this,
       service = _this._service;
     if (!service) {
       _this._service = service = new SocketService(_this);
@@ -58,6 +68,9 @@ define('src/alarm/socket', [
   // websocket handlers
   //
   function createWebSocket(_this, uri) {
+    if (_this.transport) {
+      throw new Error('transport already exists');
+    }
     _this.transport = new WebSocket(uri);
     _this.transport.onopen = _this.handleOpen;
     _this.transport.onclose = _this.handleClose;
@@ -73,38 +86,44 @@ define('src/alarm/socket', [
   };
   Socket.prototype.handleClose = function(evt) {
     var _this = this;
-    _this.connected(false);
+    _this.disconnect();
     // notify.info('WebSocket connection closed', null, 5);
     _this.onclose(evt);
   };
   Socket.prototype.handleError = function(evt) {
     var _this = this;
-    _this.connected(false);
+    _this.disconnect();
     // notify.warn('WebSocket error', JSON.stringify(evt), 5);
     _this.onerror(evt);
   };
   Socket.prototype.handleMessage = function(evt) {
     var _this = this,
-      pckt;
+      pkg, result;
     try {
-      pckt = protocol.decodePacket(evt.data);
+      pkg = protocol.decodePackage(evt.data);
     } catch (ex) {
       //@TODO: do something with errors??
       notify.warn('handleMessage error', ex, 5);
       return;
     }
-    switch (pckt.packetType) {
-      // case protocol.packetTypes.PREFIX:
-      // case protocol.packetTypes.WELCOME:
+    switch (pkg.packageType) {
+      // case protocol.packageTypes.PREFIX:
+      // case protocol.packageTypes.WELCOME:
       //   break;
-      case protocol.packetTypes.CALL:
-        _this.handleCall(pckt);
+      case protocol.packageTypes.CALL:
+        // handle call
+        result = _this.onCall(pkg);
+        // respond to call
+        _this.sendPackage(protocol.createCallResultPackage({
+          cid: pkg.cid,
+          result: true,
+        }));
         break;
-      case protocol.packetTypes.CALLRESULT:
-        _this.service().handleCallResult(pckt);
+      case protocol.packageTypes.CALLRESULT:
+        _this.service().handleCallResult(pkg);
         break;
-      case protocol.packetTypes.EVENT:
-        _this.howie.send(pckt.eventName, pckt.data);
+      case protocol.packageTypes.EVENT:
+        _this.howie.send(pkg.eventName, pkg.data);
         break;
     }
   };
@@ -118,17 +137,17 @@ define('src/alarm/socket', [
   };
   Socket.prototype.emit = function(eventName, obj) {
     var _this = this,
-      pckt = protocol.createPacket(protocol.packetTypes.EVENT, [eventName, obj]);
-    _this.sendPacket(pckt);
+      pkg = protocol.createPackage(protocol.packageTypes.EVENT, [eventName, obj]);
+    _this.sendPackage(pkg);
+  };
+  Socket.prototype.sendPackage = function(pkg) {
+    var _this = this;
+    _this.transport.send(pkg.encode());
   };
 
   //
   // Socket static functions
   //
-  Socket.prototype.sendPacket = function(pckt) {
-    var _this = this;
-    _this.transport.send(pckt.encode());
-  };
 
   return Socket;
 });

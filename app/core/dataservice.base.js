@@ -56,6 +56,9 @@ define('src/core/dataservice.base', [
     var query = querystring.toQuerystring(queryObj);
     return this.baseUrl + frontSlash(id) + frontSlash(link) + (query ? ('?' + query) : '');
   };
+  DataserviceBase.prototype.prepareData = function(data) {
+    return (data && !utils.isStr(data)) ? jsonhelpers.stringify(data) : data;
+  };
   DataserviceBase.prototype.ajax = function(httpVerb, id, link, queryObj, data, setter, callback) {
     queryObj = (queryObj || {});
     if (!queryObj.SessionId) {
@@ -78,7 +81,7 @@ define('src/core/dataservice.base', [
       // Delete  - DELETE
       // Replace - PUT
       httpVerb: httpVerb,
-      data: (data && !utils.isStr(data)) ? jsonhelpers.stringify(data) : data,
+      data: this.prepareData(data),
 
       contentType: 'application/json',
       dataType: 'json',

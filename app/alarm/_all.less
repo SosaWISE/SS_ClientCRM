@@ -7,6 +7,42 @@ body.alarm {
 
   color: white;
 
+  .pre-wrap {
+    white-space: pre-wrap;
+  }
+
+  ul.edit-form {
+    > li {
+      position: relative;
+
+      > *:not(.btn-bg) {
+        width: ~"calc(100% - 160px)";
+      }
+      > .btn-bg {
+        width: 150px;
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+      }
+
+      .label.mid {
+        padding-top: 5px;
+      }
+    }
+  }
+
+  ul.trigger-events {
+    li {
+      list-style: none;
+      display: inline-block;
+      width: 200px;
+    }
+  }
+
+  div.fh-contents {
+    overflow: auto !important;
+  }
+
   .system-wrap {
     position:absolute;
     top:0px;width:50%;bottom:0px;left:0px;
