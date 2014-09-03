@@ -133,11 +133,21 @@ define('src/account/security/ticket.editor.vm', [
 
       var model = _this.data.getValue();
 
+      /* _this.goTo({
+        route: 'scheduling',
+        id: 'schedule',
+        ticketid: model.TicketID
+      });
+      */
+
+
       _this.goTo({
         route: 'scheduling',
         id: 'schedule',
-        ticketid: '10061' //temp
-      });
+        ticketid: model.TicketID,
+      }, {
+        ticket: model
+      }, false);
 
 
 
