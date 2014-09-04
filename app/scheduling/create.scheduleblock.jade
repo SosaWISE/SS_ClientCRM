@@ -23,6 +23,8 @@ ul(class="edit-form")
 		//-label Block Endtime
 		input(type="hidden" data-bind="ukov:data.ScheduleEndTime, value:data.ScheduleEndTime, valueUpdate:'keyup'")
 	li
+		label Technician
+		div(data-bind="cvm:data.TechnicianCvm") 	
 div(class="actions")
 	span(class="btn-bg", id="btnPopupSave" tabindex="0", data-bind="cmd: cmdSaveBlock") Save Block
 	span(class="btn-bg", id="btnPopupCancel" tabindex="0", data-bind="cmd:clickClose") Cancel

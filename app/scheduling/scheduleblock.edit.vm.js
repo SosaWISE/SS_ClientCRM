@@ -47,7 +47,7 @@ define('src/scheduling/scheduleblock.edit.vm', [
     }, schema);
 
     //populate fields
-    _this.data.ScheduleEditSlot(_this.blockInfo.NoOfTickets);
+    _this.data.ScheduleEditSlot(_this.blockInfo.AvailableSlots);
     _this.data.ScheduleEditZip(_this.blockInfo.ZipCode);
     _this.data.ScheduleEditMaxRadius(_this.blockInfo.MaxRadius);
     _this.data.TechnicianId(_this.blockInfo.TechnicianId);
