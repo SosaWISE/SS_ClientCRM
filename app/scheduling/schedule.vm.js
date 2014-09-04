@@ -8,6 +8,7 @@ define('src/scheduling/schedule.vm', [
   'src/core/controller.vm',
   'src/scheduling/create.scheduleblock.vm',
   'src/scheduling/create.scheduleticket.vm',
+  'src/scheduling/scheduleblock.edit.vm',
   'src/core/layers.vm',
   'src/core/joiner',
   'ko',
@@ -23,6 +24,7 @@ define('src/scheduling/schedule.vm', [
   ControllerViewModel,
   ScheduleBlockViewModel,
   ScheduleTicketViewModel,
+  EditScheduleBlockViewModel,
   LayersViewModel,
   joiner,
   ko,
@@ -119,6 +121,21 @@ define('src/scheduling/schedule.vm', [
       hiddenDays: [0], //hide sunday      
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
 
+        //if zipcode is null, let the user input zip, no. of slots, etc
+        // if(calEvent.zipCode === null){
+
+        //   _this.layersVm.show(new ScheduleBlockViewModel({
+        //     BlockID: calEvent.id,
+        //     date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
+        //     stime: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy HH:mm'),
+        //     etime: $.fullCalendar.formatDate(calEvent.end, 'MM/dd/yyyy HH:mm'),
+        //     blockTime: $.fullCalendar.formatDate(calEvent.end, 'HH:mm'),
+        //   }), function onClose(cb) {
+        //     load_scheduleBlockList(cb);
+        //   });
+
+        // }else{
+
         //console.log(parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10));
         //show create ticket screen only when there are still spaces available for a specific block
         if (parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10)) {
@@ -138,6 +155,7 @@ define('src/scheduling/schedule.vm', [
             load_scheduleBlockList(cb);
           });
         }
+        //}
 
       },
 
@@ -178,16 +196,31 @@ define('src/scheduling/schedule.vm', [
         //     //   $('#calendar').fullCalendar('addEventSource', sourceFullView);
         //   }
         // }
+
       },
 
       //add some more info on blocks
       eventRender: function(event, element) {
         element.find('.fc-event-title').append('<br/>' + event.someInfo);
-      }
+
+        //enable editing of blocks          
+        element.find('.fc-event-time').append('<button style="float: right !important; z-index: 999999 !important;" id="btnEdit' + event.id + '">Edit</button>');
+        $("#btnEdit" + event.id).click(function(e) {
+
+          _this.layersVm.show(new EditScheduleBlockViewModel({
+            blockInfo: event.blockInfo,
+          }), function onClose(cb) {
+            load_scheduleBlockList(cb);
+          });
+
+          e.stopPropagation();
+        });
+      },
 
     });
 
   };
+
 
   function UpdateEvent(EventID, EventStart, EventEnd) {
 
@@ -305,6 +338,8 @@ define('src/scheduling/schedule.vm', [
             end: resp.Value[x].EndTime,
             slot: slotAvailable,
             nTickets: numTickets,
+            zipCode: resp.Value[x].ZipCode,
+            blockInfo: resp.Value[x],
             allDay: false,
             someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + resp.Value[x].ZipCode + ' <br /> Max Radius: ' + resp.Value[x].MaxRadius + ' miles ' + distanceText + '  <br /> Available: ' + numTickets + ' of ' + resp.Value[x].AvailableSlots + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' (0 of 2) <br />',
             backgroundColor: tColor,

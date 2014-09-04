@@ -88,11 +88,12 @@ define('src/scheduling/create.scheduleblock.vm', [
       console.log("Block:" + block);
 
       param = {
+        'BlockID': _this.BlockID,
         'Color': 'white',
         'Block': block,
         'ZipCode': _this.data.ScheduleZip(),
         'MaxRadius': _this.data.ScheduleMaxRadius(),
-        'Distance': _this.data.ScheduleDistance(),
+        //'Distance': _this.data.ScheduleDistance(),
         'StartTime': _this.data.ScheduleStartTime(),
         'EndTime': _this.data.ScheduleEndTime(),
         'AvailableSlots': _this.data.ScheduleAvailableSlot(),
@@ -102,9 +103,12 @@ define('src/scheduling/create.scheduleblock.vm', [
 
       console.log("Data to save:" + JSON.stringify(param));
 
-      //@TODO Save block
-
-      dataservice.scheduleenginesrv.SeScheduleBlock.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+      //@TODO Save block      
+      dataservice.scheduleenginesrv.SeScheduleBlock.save({
+        id: _this.BlockID,
+        data: param
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        //dataservice.scheduleenginesrv.SeScheduleBlock.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
         if (resp.Code === 0) {
           console.log("SeScheduleBlock:" + JSON.stringify(resp.Value));
