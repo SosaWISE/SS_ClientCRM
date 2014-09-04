@@ -62,7 +62,8 @@ define('src/scheduling/technician.signup.vm', [
         'TechnicianId': app.user.peek().GPEmployeeID,
         'Block': block,
         'StartTime': _this.data.AvailableStartTime(),
-        'EndTime': _this.data.AvailableEndTime()
+        'EndTime': _this.data.AvailableEndTime(),
+        'IsTechConfirmed': true
       };
 
       //dataservice.scheduleenginesrv.SeTechnicianAvailability.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
