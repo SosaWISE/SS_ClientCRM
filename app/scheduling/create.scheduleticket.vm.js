@@ -241,39 +241,90 @@ define('src/scheduling/create.scheduleticket.vm', [
   //do scheduling stuff
   function setScheduleTicket(_this, cb) {
 
-    var param = {
-      'BlockId': _this.blockId,
-      'Notes': _this.data.ScheduleTicketNotes(),
-      'TicketTypeId': _this.data.ScheduleTicketType(),
-      'AppointmentDate': _this.data.ScheduleAppointmentDate(),
-      'TravelTime': _this.data.ScheduleTravelTime(),
-      'TicketId': _this.data.ScheduleTicketID()
-    };
+    //check if ticket already scheduled on a block
+    dataservice.scheduleenginesrv.SeScheduleTicket.read({
+      id: _this.data.ScheduleTicketID(),
+      link: 'TID'
+    }, null, utils.safeCallback(cb, function(err, resp) {
 
-    console.log("Data to save:" + JSON.stringify(param));
+      console.log("Check ticket if does exist:" + JSON.stringify(resp.Value));
 
-    dataservice.scheduleenginesrv.SeScheduleTicket.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
-
-      if (resp.Code === 0) {
-
-        console.log("SeScheduleTicket:" + JSON.stringify(resp.Value));
-
-        //clear fields
-
-        _this.data.AccountId(null);
-        _this.data.ScheduleTicketID(null);
-        _this.data.ScheduleTicketAppointment(null);
-        _this.data.ScheduleTicketNotes(null);
-        _this.data.ScheduleTicketType(null);
-        _this.data.ScheduleTravelTime(null);
-
-        //clear ticket
-        _this.ticket = null;
-
+      if (resp.Code === 0 && resp.Value) {
+        notify.warn('TicketID:' + _this.data.ScheduleTicketID() + ' was already assigned on a block.', null, 3);
       } else {
-        notify.error(err);
+
+        var param = {
+          'BlockId': _this.blockId,
+          'Notes': _this.data.ScheduleTicketNotes(),
+          'TicketTypeId': _this.data.ScheduleTicketType(),
+          'AppointmentDate': _this.data.ScheduleAppointmentDate(),
+          'TravelTime': _this.data.ScheduleTravelTime(),
+          'TicketId': _this.data.ScheduleTicketID()
+        };
+
+        console.log("Data to save:" + JSON.stringify(param));
+
+        dataservice.scheduleenginesrv.SeScheduleTicket.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+
+          if (resp.Code === 0) {
+
+            console.log("SeScheduleTicket:" + JSON.stringify(resp.Value));
+
+            //clear fields
+
+            _this.data.AccountId(null);
+            _this.data.ScheduleTicketID(null);
+            _this.data.ScheduleTicketAppointment(null);
+            _this.data.ScheduleTicketNotes(null);
+            _this.data.ScheduleTicketType(null);
+            _this.data.ScheduleTravelTime(null);
+
+            //clear ticket
+            _this.ticket = null;
+
+          } else {
+            notify.error(err);
+          }
+        }));
+
       }
+
     }));
+
+
+    // var param = {
+    //   'BlockId': _this.blockId,
+    //   'Notes': _this.data.ScheduleTicketNotes(),
+    //   'TicketTypeId': _this.data.ScheduleTicketType(),
+    //   'AppointmentDate': _this.data.ScheduleAppointmentDate(),
+    //   'TravelTime': _this.data.ScheduleTravelTime(),
+    //   'TicketId': _this.data.ScheduleTicketID()
+    // };
+
+    // console.log("Data to save:" + JSON.stringify(param));
+
+    // dataservice.scheduleenginesrv.SeScheduleTicket.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+
+    //   if (resp.Code === 0) {
+
+    //     console.log("SeScheduleTicket:" + JSON.stringify(resp.Value));
+
+    //     //clear fields
+
+    //     _this.data.AccountId(null);
+    //     _this.data.ScheduleTicketID(null);
+    //     _this.data.ScheduleTicketAppointment(null);
+    //     _this.data.ScheduleTicketNotes(null);
+    //     _this.data.ScheduleTicketType(null);
+    //     _this.data.ScheduleTravelTime(null);
+
+    //     //clear ticket
+    //     _this.ticket = null;
+
+    //   } else {
+    //     notify.error(err);
+    //   }
+    // }));
 
   }
 

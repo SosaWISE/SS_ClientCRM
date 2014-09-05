@@ -26,6 +26,7 @@ define('src/scheduling/scheduleblock.edit.vm', [
   schema = {
     _model: true,
     ScheduleEditSlot: {
+      converter: ukov.converters.number(0),
       validators: [
         ukov.validators.isInt(),
       ],
@@ -37,6 +38,7 @@ define('src/scheduling/scheduleblock.edit.vm', [
       ],
     },
     ScheduleEditMaxRadius: {
+      converter: ukov.converters.number(0),
       validators: [
         ukov.validators.isInt(),
       ],
