@@ -28,7 +28,9 @@ define('src/scheduling/ticket.editor.vm', [
   schema = {
     _model: true,
     TicketID: {},
-    AccountId: {},
+    AccountId: {
+      converter: ukov.converters.number(0),
+    },
     TicketTypeId: {},
     MoniNumber: {},
     StatusCodeId: {},
@@ -148,42 +150,87 @@ define('src/scheduling/ticket.editor.vm', [
     });
 
     _this.cmdSchedule = ko.command(function(cb) {
-      //alert("go save the ticket and go directly to the schedule tab");
-      // _this.goTo({
-      //           route: 'scheduling',
-      //           id:"schedule",
-      //           ticketid:1
-      //     });
-      if (!_this.data.isValid()) {
-        notify.warn(_this.data.errMsg(), null, 7);
-        cb();
-        return;
-      }
-      var model = _this.data.getValue();
 
-      dataservice.scheduleenginesrv.SeTicket.save({
-        id: model.TicketID, // if no value create, else update
-        data: model,
+      //checking account id
+      dataservice.monitoringstationsrv.accounts.read({
+        id: _this.data.AccountId(),
+        link: 'Details',
       }, null, utils.safeCallback(cb, function(err, resp) {
 
-        _this.data.markClean(model, true);
+        if (resp.Code === 0 && resp.Value) {
 
-        var data = resp.Value;
+          console.log("Account Details:" + JSON.stringify(resp.Value));
 
-        _this.goTo({
-          route: 'scheduling',
-          id: 'schedule',
-          ticketid: data.TicketID,
-          title: 'test'
-        }, {
-          ticket: data
-        }, false);
+          if (!_this.data.isValid()) {
+            notify.warn(_this.data.errMsg(), null, 7);
+            cb();
+            return;
+          }
+          var model = _this.data.getValue();
 
-        _this.layerResult = data;
-        _this.isDeleted = false;
-        closeLayer(_this);
+          dataservice.scheduleenginesrv.SeTicket.save({
+            id: model.TicketID, // if no value create, else update
+            data: model,
+          }, null, utils.safeCallback(cb, function(err, resp) {
+
+            _this.data.markClean(model, true);
+
+            var data = resp.Value;
+
+            _this.goTo({
+              route: 'scheduling',
+              id: 'schedule',
+              ticketid: data.TicketID,
+              title: 'test'
+            }, {
+              ticket: data
+            }, false);
+
+            _this.layerResult = data;
+            _this.isDeleted = false;
+            closeLayer(_this);
+
+          }, notify.error, false));
+
+
+        } else {
+          notify.warn('Account ID is invalid.', null, 3);
+        }
 
       }, notify.error, false));
+
+
+      // if (!_this.data.isValid()) {
+      //   notify.warn(_this.data.errMsg(), null, 7);
+      //   cb();
+      //   return;
+      // }
+      // var model = _this.data.getValue();
+
+      // dataservice.scheduleenginesrv.SeTicket.save({
+      //   id: model.TicketID, // if no value create, else update
+      //   data: model,
+      // }, null, utils.safeCallback(cb, function(err, resp) {
+
+      //   _this.data.markClean(model, true);
+
+      //   var data = resp.Value;
+      //   alert(data.TicketID);
+      //   _this.goTo({
+      //     route: 'scheduling',
+      //     id: 'schedule',
+      //     ticketid: data.TicketID,
+      //     title: 'test'
+      //   }, {
+      //     ticket: data
+      //   }, false);
+
+      //   _this.layerResult = data;
+      //   _this.isDeleted = false;
+      //   closeLayer(_this);
+
+      // }, notify.error, false));
+
     }, function(busy) {
       //return !busy && !_this.cmdSearch.busy() && !_this.cmdDelete.busy();
       return !busy;
