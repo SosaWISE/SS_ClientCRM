@@ -87,16 +87,9 @@ define('src/scheduling/service.ticket.vm', [
     //
 
     _this.cmdNewTicket = ko.command(function(cb /*, vm*/ ) {
-      /*_this.goTo({
-
-            route:"scheduling",
-            id:"schedule",
-
-        });
-        */
-      //Go to TicketEditor  screen
 
       _this.layersVm.show(new TicketEditorViewModel({
+        pcontroller: _this,
         title: 'Create New Service Ticket'
       }), function onClose() {
         load_tickets({}, _this.serviceTicketGvm, cb);
