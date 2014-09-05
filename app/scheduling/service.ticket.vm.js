@@ -195,7 +195,7 @@ define('src/scheduling/service.ticket.vm', [
         }
 
       } else {
-        notify.warn('No records found.', null, 3);
+        //notify.warn('No records found.', null, 3);
       }
     }));
   }

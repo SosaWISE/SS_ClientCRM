@@ -27,6 +27,7 @@ define('src/scheduling/create.scheduleticket.vm', [
 
   schema = {
     _model: true,
+    AccountId: {},
     ScheduleTicketID: {},
     ScheduleTicketType: {},
     ScheduleTicketAppointment: {},
@@ -51,6 +52,7 @@ define('src/scheduling/create.scheduleticket.vm', [
 
     if (ticket != null) {
       _this.data = ukov.wrap({
+        AccountId: ticket.AccountId,
         ScheduleTicketID: ticket.TicketID,
         ScheduleTicketType: ticket.TicketTypeId,
         ScheduleTicketAppointment: null,
@@ -62,6 +64,7 @@ define('src/scheduling/create.scheduleticket.vm', [
     } else {
 
       _this.data = ukov.wrap({
+        AccountId: null,
         ScheduleTicketID: null,
         ScheduleTicketType: null,
         ScheduleTicketAppointment: null,
@@ -92,13 +95,37 @@ define('src/scheduling/create.scheduleticket.vm', [
       var TicketId = _this.data.ScheduleTicketID();
 
       //@TODO
+
+      //account id validation
+      dataservice.monitoringstationsrv.accounts.read({
+        id: _this.data.AccountId(),
+        link: 'Details',
+      }, null, utils.safeCallback(cb, function(err, resp) {
+
+        if (resp.Code === 0 && resp.Value) {
+
+          console.log("Account Details:" + JSON.stringify(resp.Value));
+
+          if (!TicketId) {
+            createServiceTicket(_this, cb);
+          } else {
+            setScheduleTicket(_this, cb);
+          }
+
+        } else {
+          notify.warn('Account ID is invalid.', null, 3);
+        }
+
+      }, notify.error, false));
+
+
       //if ticketid does not exist, create ticket first to obtain ticketid otherwise proceed to scheduling
 
-      if (!TicketId) {
-        createServiceTicket(_this, cb);
-      } else {
-        setScheduleTicket(_this, cb);
-      }
+      // if (!TicketId) {
+      //   createServiceTicket(_this, cb);
+      // } else {
+      //   setScheduleTicket(_this, cb);
+      // }
 
 
     });
@@ -175,8 +202,7 @@ define('src/scheduling/create.scheduleticket.vm', [
   function createServiceTicket(_this, cb) {
 
     var param = {
-      //AccountID: 1, //temp
-      AccountId: 1, //temp
+      AccountId: _this.data.AccountId(),
       MoniNumber: null, //temp
       TicketTypeId: _this.data.ScheduleTicketType(),
       StatusCodeId: 1, //temp
@@ -188,7 +214,7 @@ define('src/scheduling/create.scheduleticket.vm', [
       AgentConfirmation: 'AGENT CONFIRMATION', //temp
       ExpirationDate: '07/22/2014', //temp
       Notes: _this.data.ScheduleTicketNotes(),
-
+      BlockID: _this.blockId,
     };
 
     console.log(JSON.stringify("Create Ticket Parameters:" + JSON.stringify(param)));
@@ -234,6 +260,7 @@ define('src/scheduling/create.scheduleticket.vm', [
 
         //clear fields
 
+        _this.data.AccountId(null);
         _this.data.ScheduleTicketID(null);
         _this.data.ScheduleTicketAppointment(null);
         _this.data.ScheduleTicketNotes(null);

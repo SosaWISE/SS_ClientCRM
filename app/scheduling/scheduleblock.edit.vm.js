@@ -25,9 +25,22 @@ define('src/scheduling/scheduleblock.edit.vm', [
 
   schema = {
     _model: true,
-    ScheduleEditSlot: {},
-    ScheduleEditZip: {},
-    ScheduleEditMaxRadius: {},
+    ScheduleEditSlot: {
+      validators: [
+        ukov.validators.isInt(),
+      ],
+    },
+    ScheduleEditZip: {
+      converter: ukov.converters.nullString(),
+      validators: [
+        ukov.validators.isZipCode(),
+      ],
+    },
+    ScheduleEditMaxRadius: {
+      validators: [
+        ukov.validators.isInt(),
+      ],
+    },
     TechnicianId: {}
   };
 
@@ -69,35 +82,19 @@ define('src/scheduling/scheduleblock.edit.vm', [
 
 
       //@TODO
-      //update block info
+      //check zip code
 
-      var param = {
-        'BlockID': _this.blockInfo.BlockID,
-        'ZipCode': _this.data.ScheduleEditZip(),
-        'MaxRadius': _this.data.ScheduleEditMaxRadius(),
-        'TechnicianId': _this.data.TechnicianId(),
-        'AvailableSlots': _this.data.ScheduleEditSlot(),
-        'Block': _this.blockInfo.Block,
-        'StartTime': _this.blockInfo.StartTime,
-        'EndTime': _this.blockInfo.EndTime,
-      };
-
-      console.log("Data to save:" + JSON.stringify(param));
-
-      //@TODO Save block info    
-      dataservice.scheduleenginesrv.SeScheduleBlock.save({
-        id: _this.blockInfo.BlockID,
-        data: param
+      dataservice.scheduleenginesrv.SeZipCode.read({
+        id: _this.data.ScheduleEditZip(),
+        link: 'ZC'
       }, null, utils.safeCallback(cb, function(err, resp) {
 
         if (resp.Code === 0) {
-          console.log("Update schedule block:" + JSON.stringify(resp.Value));
+          console.log("Checking Zipcode result:" + JSON.stringify(resp.Value));
 
-          //close popup
-          closeLayer(_this);
-
+          updateBlockInfo(_this, cb);
         } else {
-          notify.error(err);
+          notify.warn("Invalid Zip Code.", null, 3);
         }
       }));
 
@@ -150,6 +147,39 @@ define('src/scheduling/scheduleblock.edit.vm', [
       }
     }));
 
+  }
+
+  function updateBlockInfo(_this, cb) {
+
+    var param = {
+      'BlockID': _this.blockInfo.BlockID,
+      'ZipCode': _this.data.ScheduleEditZip(),
+      'MaxRadius': _this.data.ScheduleEditMaxRadius(),
+      'TechnicianId': _this.data.TechnicianId(),
+      'AvailableSlots': _this.data.ScheduleEditSlot(),
+      'Block': _this.blockInfo.Block,
+      'StartTime': _this.blockInfo.StartTime,
+      'EndTime': _this.blockInfo.EndTime,
+    };
+
+    console.log("Data to save:" + JSON.stringify(param));
+
+    //@TODO Save block info    
+    dataservice.scheduleenginesrv.SeScheduleBlock.save({
+      id: _this.blockInfo.BlockID,
+      data: param
+    }, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+        console.log("Update schedule block:" + JSON.stringify(resp.Value));
+
+        //close popup
+        closeLayer(_this);
+
+      } else {
+        notify.error(err);
+      }
+    }));
   }
 
 
