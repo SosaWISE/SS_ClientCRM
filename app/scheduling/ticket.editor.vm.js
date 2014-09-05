@@ -123,27 +123,6 @@ define('src/scheduling/ticket.editor.vm', [
       }, notify.error, false));
 
 
-      // if (!_this.data.isValid()) {
-      //   notify.warn(_this.data.errMsg(), null, 7);
-      //   cb();
-      //   return;
-      // }
-
-      // var model = _this.data.getValue();
-      // dataservice.scheduleenginesrv.SeTicket.save({
-      //   id: model.TicketID, // if no value create, else update
-      //   data: model,
-      // }, null, utils.safeCallback(cb, function(err, resp) {
-      //   _this.data.markClean(model, true);
-
-      //   var data = resp.Value;        
-
-      //   _this.layerResult = data;
-      //   _this.isDeleted = false;
-      //   closeLayer(_this);
-
-      // }, notify.error, false));
-
     }, function(busy) {
       //return !busy && !_this.cmdSearch.busy() && !_this.cmdDelete.busy();
       return !busy;
@@ -178,13 +157,15 @@ define('src/scheduling/ticket.editor.vm', [
             var data = resp.Value;
 
             _this.goTo({
+              pcontroller: _this,
               route: 'scheduling',
               id: 'schedule',
               ticketid: data.TicketID,
-              title: 'test'
+
             }, {
               ticket: data
             }, false);
+
 
             _this.layerResult = data;
             _this.isDeleted = false;
@@ -199,37 +180,6 @@ define('src/scheduling/ticket.editor.vm', [
 
       }, notify.error, false));
 
-
-      // if (!_this.data.isValid()) {
-      //   notify.warn(_this.data.errMsg(), null, 7);
-      //   cb();
-      //   return;
-      // }
-      // var model = _this.data.getValue();
-
-      // dataservice.scheduleenginesrv.SeTicket.save({
-      //   id: model.TicketID, // if no value create, else update
-      //   data: model,
-      // }, null, utils.safeCallback(cb, function(err, resp) {
-
-      //   _this.data.markClean(model, true);
-
-      //   var data = resp.Value;
-      //   alert(data.TicketID);
-      //   _this.goTo({
-      //     route: 'scheduling',
-      //     id: 'schedule',
-      //     ticketid: data.TicketID,
-      //     title: 'test'
-      //   }, {
-      //     ticket: data
-      //   }, false);
-
-      //   _this.layerResult = data;
-      //   _this.isDeleted = false;
-      //   closeLayer(_this);
-
-      // }, notify.error, false));
 
     }, function(busy) {
       //return !busy && !_this.cmdSearch.busy() && !_this.cmdDelete.busy();

@@ -97,6 +97,16 @@ define('src/scheduling/schedule.vm', [
     //alert(JSON.stringify(_this.data.getValue()));
     console.log(_this.data.getValue());
 
+    //populate account info if data is available
+    if (_this.data.getValue().Ticket) {
+
+      $('#accountNumber').html(_this.data.getValue().Ticket.AccountId);
+      $('#accountName').html(_this.data.getValue().Ticket.CustomerFullName);
+      $('#accountAddress').html(_this.data.getValue().Ticket.CompleteAddress);
+    } else {
+      $('#accountInfo').hide();
+    }
+
     //alert(routeData.ticketid);
     // _this.title = routeData.ticketid;
 
