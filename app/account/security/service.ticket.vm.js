@@ -87,6 +87,7 @@ define('src/account/security/service.ticket.vm', [
       //alert('account id ' + _this.AccountId);
 
       _this.layersVm.show(new TicketEditorViewModel({
+        pcontroller: _this,
         title: 'Create New Service Ticket',
         accountId: _this.AccountId
       }), function onClose() {
