@@ -25,7 +25,8 @@ define('src/scheduling/technician.ticket.info.vm', [
     _model: true,
     custName: {},
     custAddress: {},
-    custPhone: {}
+    custPhone: {},
+    TechTicketNotes: {},
   };
 
 
@@ -42,7 +43,8 @@ define('src/scheduling/technician.ticket.info.vm', [
     _this.data = ukov.wrap(_this.item || {
       custName: null,
       custAddress: null,
-      custPhone: null
+      custPhone: null,
+      TechTicketNotes: null
     }, schema);
 
     obj = _this.rowObj;
@@ -62,6 +64,9 @@ define('src/scheduling/technician.ticket.info.vm', [
 
     //account id
     _this.AccountId = obj.AccountId;
+
+    //general note
+    _this.data.TechTicketNotes(obj.Notes);
 
     load_technicianTicketEquipments(_this, join.add());
 
