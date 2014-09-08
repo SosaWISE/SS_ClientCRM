@@ -46,6 +46,12 @@ define('src/scheduling/create.scheduleticket.vm', [
     console.log('options' + options);
     //alert(JSON.stringify(ticket));
 
+    //show TicketID if ticket has data
+    if (ticket) {
+      _this.isTicketIdVisible = true;
+    } else {
+      _this.isTicketIdVisible = false;
+    }
 
     //Set title
     _this.title = _this.title || 'Create New Schedule Ticket';
