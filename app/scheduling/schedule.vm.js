@@ -168,8 +168,25 @@ define('src/scheduling/schedule.vm', [
             ticket: model.Ticket
           }, {
             Ticket: model.Ticket
-          }), function onClose(cb) {
-            load_scheduleBlockList(cb);
+          }), function onClose(result, cb) {
+
+            //clear ticket data from accounts
+            if (result) {
+              if (result.AccountTicket === "1") {
+
+                _this.goTo({
+                  pcontroller: _this,
+                  route: 'scheduling',
+                  id: 'schedule',
+                });
+
+              } else if (result.AccountTicket === "0") {
+                //load all blocks
+                load_scheduleBlockList(cb);
+              }
+
+            }
+
           });
         }
         //}

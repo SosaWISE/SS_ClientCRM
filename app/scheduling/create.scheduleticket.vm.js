@@ -131,7 +131,8 @@ define('src/scheduling/create.scheduleticket.vm', [
     });
 
     _this.clickClose = function() {
-      _this.layerResult = null;
+      //_this.layerResult = null;           
+      _this.layerResult = _this.ticket;
       closeLayer(_this);
     };
 
@@ -172,7 +173,7 @@ define('src/scheduling/create.scheduleticket.vm', [
 
   function closeLayer(_this) {
     if (_this.layer) {
-      _this.layer.close();
+      _this.layer.close(_this.layerResult);
     }
   }
   ScheduleTicketViewModel.prototype.getResults = function() {
@@ -280,7 +281,17 @@ define('src/scheduling/create.scheduleticket.vm', [
             _this.data.ScheduleTravelTime(null);
 
             //clear ticket
-            _this.ticket = null;
+            if (_this.ticket) {
+              _this.ticket = null;
+              _this.ticket = _this.ticket = {
+                "AccountTicket": "1"
+              }; //ticket from accounts added
+            } else {
+              _this.ticket = _this.ticket = {
+                "AccountTicket": "0"
+              }; //new ticket added
+            }
+
 
           } else {
             notify.error(err);
