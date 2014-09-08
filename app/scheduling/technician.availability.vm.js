@@ -175,6 +175,28 @@ define('src/scheduling/technician.availability.vm', [
       //add some more info on blocks
       eventRender: function(event, element) {
         element.find('.fc-event-title').append('<br/>' + event.someInfo);
+
+        //enable delete of technician availability
+        element.find('.fc-event-time').append('<button style="float: right !important; z-index: 999999 !important;" id="btnDelete' + event.id + '">Delete</button>');
+        $("#btnDelete" + event.id).click(function(e) {
+
+          //notify.confirm("Delete", "Are you sure want to delete?", null, null);
+
+          dataservice.scheduleenginesrv.ScheduleBlock.del(event.id, null, utils.safeCallback(null, function(err, resp) {
+
+            if (resp.Code === 0) {
+              notify.info("Success deleting availability with id:" + event.id + ".");
+              load_technicianAvailabilityList();
+            }
+
+          }, function(err) {
+            notify.error(err);
+          }));
+
+
+          e.stopPropagation();
+        });
+
       },
 
       // events: function(start, end, timezone, callback) {
