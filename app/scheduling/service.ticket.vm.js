@@ -104,7 +104,8 @@ define('src/scheduling/service.ticket.vm', [
 
       if (statusId) {
         load_tickets({
-          id: statusId
+          id: statusId,
+          link: 'TSCID'
         }, _this.serviceTicketGvm, cb);
       }
 
@@ -130,7 +131,7 @@ define('src/scheduling/service.ticket.vm', [
     load_ticketStatusList(_this.data.ticketStatusCvm, join.add());
 
     //load all tickets created
-    load_tickets({}, _this.serviceTicketGvm, join.add());
+    //load_tickets({}, _this.serviceTicketGvm, join.add());
 
   };
 
