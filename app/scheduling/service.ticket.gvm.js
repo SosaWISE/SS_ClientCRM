@@ -63,7 +63,9 @@ define('src/scheduling/service.ticket.gvm', [
       }, {
         id: 'StatusCodeId',
         name: 'Status',
-        field: 'StatusCodeId',
+        //field: 'StatusCodeId',
+        field: 'StatusCode',
+        
       }, {
         id: 'MoniConfirmation',
         name: 'Moni Confirmation',
