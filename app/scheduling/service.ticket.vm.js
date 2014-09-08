@@ -82,7 +82,6 @@ define('src/scheduling/service.ticket.vm', [
       },
     });
 
-
     //events
     //
 
@@ -102,7 +101,8 @@ define('src/scheduling/service.ticket.vm', [
 
     _this.data.TicketStatus.subscribe(function(statusId, cb) {
 
-      if (statusId) {
+      // 0 - All
+      if (statusId || statusId === 0) {
         load_tickets({
           id: statusId,
           link: 'TSCID'
@@ -138,8 +138,15 @@ define('src/scheduling/service.ticket.vm', [
   ServiceTicketViewModel.prototype.onActivate = function(cb) { // override me
     var _this = this;
 
+    //set default to All and load all tickets
+    _this.data.TicketStatus(0);
+
     //load all tickets created
-    load_tickets({}, _this.serviceTicketGvm, cb);
+    //load_tickets({}, _this.serviceTicketGvm, cb);
+    load_tickets({
+      id: 0,
+      link: 'TSCID'
+    }, _this.serviceTicketGvm, cb);
 
   };
 
@@ -158,11 +165,30 @@ define('src/scheduling/service.ticket.vm', [
 
       if (resp.Code === 0) {
 
-        //console.log("TicketStatusCodeList:" + JSON.stringify(resp.Value));
+        //clear dropdown first before inserting
+        cvm.setList([]);
+
+        console.log("TicketStatusCodeList:" + JSON.stringify(resp.Value));
 
         if (resp.Value.length > 0) {
-          //Set result to Location combo list
-          cvm.setList(resp.Value);
+
+          var data = [{
+              StatusCodeID: 0,
+              StatusCode: 'All'
+            }],
+            x;
+
+
+          for (x = 0; x < resp.Value.length; x++) {
+            data.push({
+              StatusCodeID: resp.Value[x].StatusCodeID,
+              StatusCode: resp.Value[x].StatusCode
+            });
+          }
+
+          //Set result to Location combo list          
+          cvm.setList(data);
+
         }
 
       } else {
