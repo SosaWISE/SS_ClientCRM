@@ -1,11 +1,11 @@
 table(class="fh-wrap")
 	tr
 		td
-			div(id="accountInfo" style="margin: 10px;")
+			div(id="accountInfo" style="margin: 10px;", data-bind="visible: IsNowScheduling")
 				label Now Scheduling: 
-				label(id="accountNumber")
-				label(id="accountName")
-				label(id="accountAddress")
+				label(id="accountNumber", data-bind="text:AccountNumber")
+				label(id="accountName" , data-bind="text:AccountName")
+				label(id="accountAddress", data-bind="text:AccountAddress")
 
 	tr
 		td(class="fh-body")

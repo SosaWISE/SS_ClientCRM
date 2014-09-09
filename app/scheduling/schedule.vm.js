@@ -56,6 +56,10 @@ define('src/scheduling/schedule.vm', [
       controller: _this,
     });
 
+    _this.IsNowScheduling = false;
+    _this.AccountNumber = "";
+    _this.AccountName = "";
+    _this.AccountAddress = "";
 
     //events
     //
@@ -91,28 +95,38 @@ define('src/scheduling/schedule.vm', [
     //console.log(routeData.extraData);
 
     _this.data = ukov.wrap({
-      Ticket: routeData.extraData.ticket,
+      Ticket: routeData.extraData.ticket
     }, schema);
 
     //alert(JSON.stringify(_this.data.getValue()));
     console.log(_this.data.getValue());
 
-    //populate account info if data is available
     if (_this.data.getValue().Ticket) {
 
-      if (_this.data.getValue().Ticket.AccountId) {
-        $('#accountNumber').html(_this.data.getValue().Ticket.AccountId + ' ');
-      }
-      if (_this.data.getValue().Ticket.CustomerFullName) {
-        $('#accountName').html(_this.data.getValue().Ticket.CustomerFullName + ' ');
-      }
-      if (_this.data.getValue().Ticket.CompleteAddress) {
-        $('#accountAddress').html(_this.data.getValue().Ticket.CompleteAddress + ' ');
-      }
-
+      _this.IsNowScheduling = true;
+      _this.AccountNumber = _this.data.getValue().Ticket.AccountId;
+      _this.AccountName = _this.data.getValue().Ticket.CustomerFullName;
+      _this.AccountAddress = _this.data.getValue().Ticket.CompleteAddress;
     } else {
-      $('#accountInfo').hide();
+      _this.IsNowScheduling = false;
     }
+
+    //populate account info if data is available
+    // if (_this.data.getValue().Ticket) {
+
+    //   if (_this.data.getValue().Ticket.AccountId) {
+    //     $('#accountNumber').html(_this.data.getValue().Ticket.AccountId + ' ');
+    //   }
+    //   if (_this.data.getValue().Ticket.CustomerFullName) {
+    //     $('#accountName').html(_this.data.getValue().Ticket.CustomerFullName + ' ');
+    //   }
+    //   if (_this.data.getValue().Ticket.CompleteAddress) {
+    //     $('#accountAddress').html(_this.data.getValue().Ticket.CompleteAddress + ' ');
+    //   }
+
+    // } else {
+    //   $('#accountInfo').hide();
+    // }
 
     //alert(routeData.ticketid);
     // _this.title = routeData.ticketid;

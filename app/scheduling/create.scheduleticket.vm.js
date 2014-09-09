@@ -210,7 +210,7 @@ define('src/scheduling/create.scheduleticket.vm', [
 
     var param = {
       AccountId: _this.data.AccountId(),
-      MoniNumber: null, //temp
+      MonitoringStationNo: null, //temp
       TicketTypeId: _this.data.ScheduleTicketType(),
       StatusCodeId: 1, //temp
       MoniConfirmation: 'MONI CONFIRM', //temp

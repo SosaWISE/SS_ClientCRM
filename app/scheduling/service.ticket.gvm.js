@@ -53,9 +53,9 @@ define('src/scheduling/service.ticket.gvm', [
         name: 'TicketID',
         field: 'TicketID',
       }, {
-        id: 'MoniNumber',
+        id: 'MonitoringStationNo',
         name: 'Moni Ticket#',
-        field: 'MoniNumber',
+        field: 'MonitoringStationNo',
       }, {
         id: 'TicketTypeName',
         name: 'Service Ticket Type',
