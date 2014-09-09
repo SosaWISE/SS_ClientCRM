@@ -1,4 +1,6 @@
 define('src/scheduling/scheduleblock.edit.vm', [
+  'jquery',
+  'fullcalendar',
   'src/app',
   'src/dataservice',
   'src/core/notify',
@@ -9,6 +11,8 @@ define('src/scheduling/scheduleblock.edit.vm', [
   'ko',
   'src/ukov',
 ], function(
+  $,
+  fullCalendar,
   app,
   dataservice,
   notify,
@@ -43,6 +47,8 @@ define('src/scheduling/scheduleblock.edit.vm', [
         ukov.validators.isInt(),
       ],
     },
+    ScheduleEditStartDateTime: {},
+    ScheduleEditEndDateTime: {},
     TechnicianId: {}
   };
 
@@ -65,6 +71,10 @@ define('src/scheduling/scheduleblock.edit.vm', [
     _this.data.ScheduleEditSlot(_this.blockInfo.AvailableSlots);
     _this.data.ScheduleEditZip(_this.blockInfo.ZipCode);
     _this.data.ScheduleEditMaxRadius(_this.blockInfo.MaxRadius);
+    //_this.data.ScheduleEditStartDateTime($.fullCalendar.formatDate(_this.blockInfo.StartTime, 'MM/dd/yyyy HH:mm'));
+    //_this.data.ScheduleEditEndDateTime($.fullCalendar.formatDate(_this.blockInfo.EndTime, 'MM/dd/yyyy HH:mm'));
+    _this.data.ScheduleEditStartDateTime(_this.blockInfo.StartTime);
+    _this.data.ScheduleEditEndDateTime(_this.blockInfo.EndTime);
     _this.data.TechnicianId(_this.blockInfo.TechnicianId);
 
     //This is the dropdown for technicians

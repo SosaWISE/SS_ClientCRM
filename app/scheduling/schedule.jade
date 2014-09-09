@@ -3,9 +3,10 @@ table(class="fh-wrap")
 		td
 			div(id="accountInfo" style="margin: 10px;", data-bind="visible: IsNowScheduling")
 				label Now Scheduling: 
-				label(id="accountNumber", data-bind="text:AccountNumber")
-				label(id="accountName" , data-bind="text:AccountName")
-				label(id="accountAddress", data-bind="text:AccountAddress")
+				label(data-bind="text:AccountMasterFileNumber")
+				label(data-bind="text:AccountNumber")
+				label(data-bind="text:AccountName")
+				label(data-bind="text:AccountAddress")
 
 	tr
 		td(class="fh-body")

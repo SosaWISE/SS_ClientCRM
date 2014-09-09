@@ -55,6 +55,7 @@ define('src/scheduling/schedule.vm', [
     });
 
     _this.IsNowScheduling = ko.observable(true);
+    _this.AccountMasterFileNumber = ko.observable();
     _this.AccountNumber = ko.observable();
     _this.AccountName = ko.observable();
     _this.AccountAddress = ko.observable();
@@ -92,9 +93,22 @@ define('src/scheduling/schedule.vm', [
     if (_this.data.getValue().Ticket) {
 
       _this.IsNowScheduling(true);
-      _this.AccountNumber(_this.data.getValue().Ticket.AccountId);
-      _this.AccountName(_this.data.getValue().Ticket.CustomerFullName);
-      _this.AccountAddress(_this.data.getValue().Ticket.CompleteAddress);
+
+      if (_this.data.getValue().Ticket.CustomerMasterFileId) {
+        _this.AccountMasterFileNumber("Customer Master File#:" + _this.data.getValue().Ticket.CustomerMasterFileId + ' ');
+      }
+
+      if (_this.data.getValue().Ticket.AccountId) {
+        _this.AccountNumber("Account ID:" + _this.data.getValue().Ticket.AccountId + ' ');
+      }
+
+      if (_this.data.getValue().Ticket.CustomerFullName) {
+        _this.AccountName("Name:" + _this.data.getValue().Ticket.CustomerFullName + ' ');
+      }
+
+      if (_this.data.getValue().Ticket.CompleteAddress) {
+        _this.AccountAddress("Address:" + _this.data.getValue().Ticket.CompleteAddress + ' ');
+      }
 
     } else {
       _this.IsNowScheduling(false);
