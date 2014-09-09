@@ -2,21 +2,21 @@ div(class="panel scrum",data-bind="active:active,css:{'hide-nav':hideNav}")
   //- div(data-bind="if:false")
     div(class="spinner-wrap white", data-bind="template:'tmpl-spinner'")
 
-  //- div(class="p-module",data-bind="if:activeChild()")
-  //-   div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}")
-  //- div(class="p-nav")
-  //-   div(class="toggle-btn", data-bind="click:clickToggleNav,css:{'closed':hideNav}")
-  //-     div(class="close")
-  //-     div(class="open")
-  //-   div(class="contents-wrap")
-  //-     div(class="contents")
-  //-       div(class="section")
-  //-         span(class="title") Projects
-  //-         div(class="contents")
-  //-           ul(class="projects",data-bind="foreach:projects")
-  //-             li
-  //-               a(data-bind="active:active,click:$parent.clickItem")
-  //-                 span(class="name",data-bind="text:title")
+  div(class="p-module",data-bind="if:activeChild()")
+    div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}")
+  div(class="p-nav")
+    div(class="toggle-btn", data-bind="click:clickToggleNav,css:{'closed':hideNav}")
+      div(class="close")
+      div(class="open")
+    div(class="contents-wrap")
+      div(class="contents")
+        div(class="section")
+          span(class="title") Projects
+          div(class="contents")
+            ul(class="projects",data-bind="foreach:projects")
+              li
+                a(data-bind="active:active,click:$parent.clickItem")
+                  span(class="name",data-bind="text:title")
 
   <!-- ko with:chatVm -->
   div(class="chat-wrap",data-bind="css:{'show':show}")

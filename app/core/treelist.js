@@ -18,7 +18,7 @@
     var _this = this;
 
     _this.childs = ko.observableArray([]);
-    _this.folded = ko.observable(false);
+    // _this.folded = ko.observable(false); //@NOTE: folding not supported yet
   }
   Node.prototype.data = null;
   Node.prototype.next = null; // next node
@@ -32,6 +32,9 @@
   //
   //
   function TreeList(comparer) {
+    if (!comparer) {
+      throw new Error('no comparer');
+    }
     var _this = this;
     TreeList.super_.call(_this);
     _this.data = {
@@ -49,6 +52,7 @@
       buffer = [];
     walkDown(_this, function(node, index, parent, depth) {
       buffer.push(strings.repeat('  ', depth) + node.data.sid);
+      return true;
     });
     return buffer.join('\n');
   };
@@ -72,11 +76,44 @@
       if (childCount !== length) {
         errs.push(strings.format('Child length mismatch: {0}, {1}', childCount, length));
       }
+      return true;
     });
     return errs;
   };
 
+  TreeList.prototype.has = function(data) {
+    if (!data.sid) {
+      throw new Error('no sid');
+    }
+    var _this = this,
+      // lookup by sid
+      node = _this.map[data.sid];
+    return !!node;
+  };
+  TreeList.prototype.remove = function(data) {
+    if (!data.sid) {
+      throw new Error('no sid');
+    }
+    var _this = this,
+      // lookup by sid
+      node = _this.map[data.sid];
+    if (node) {
+      //@TODO: compare versions
+      // if (data.version <= node.data.version) {
+      //   return; // attempted to update with lower version
+      // }
+
+      // update (remove, then re-add)
+      removeNode(_this, node);
+      delete _this.map[data.sid];
+      return true;
+    }
+    return false;
+  };
   TreeList.prototype.update = function(data) {
+    if (!data.sid) {
+      throw new Error('no sid');
+    }
     var _this = this,
       // lookup by sid
       node = _this.map[data.sid];
@@ -95,6 +132,76 @@
     // add node
     node.data = data;
     addNode(_this, node);
+  };
+
+
+  TreeList.prototype.getLength = function() {
+    var _this = this;
+    return _this.length;
+  };
+  TreeList.prototype.getItemMetadata = function() {
+    return null;
+    // TreeList.prototype.getItemMetadata = function(index) {
+    //   var _this = this,
+    //     item, result;
+    //   item = _this.getItem(index);
+    //   if (item.depth() > 0) {
+    //     result = {
+    //       // selectable: true,
+    //       // focusable: false,
+    //       // cssClasses: '',
+    //       columns: [ //
+    //         {
+    //           id: '#',
+    //         },
+    //         // {
+    //         //   id: '#c',
+    //         // },
+    //         {
+    //           id: "name",
+    //           formatter: function(row, cell, value, columnDef, dataCtx) {
+    //             var i = item.depth(),
+    //               tab = '';
+    //             while (i--) {
+    //               tab += '<span class="cell-tab">&nbsp;</span>';
+    //             }
+    //             return tab + dataCtx.item.Name;
+    //             // return '<span class="parent-cell" style="width:' + (item.depth() * 25) + 'px;">&nbsp;</span>' + dataCtx.item.Name;
+    //           },
+    //         }, {
+    //           id: "points",
+    //           formatter: function(row, cell, value, columnDef, dataCtx) {
+    //             return dataCtx.points();
+    //           },
+    //         },
+    //       ]
+    //     };
+    //   }
+    //   return result;
+  };
+  TreeList.prototype.getItem = function(index) {
+    var _this = this,
+      result, length;
+    if (index < 0 || _this.length <= index) {
+      throw new Error('index outside of bounds');
+    }
+    walkDown(_this, function(node /*, index, parent, depth*/ ) {
+      if (index === 0) {
+        // found it
+        result = node.data;
+        return; // step out
+      }
+
+      length = node.length + 1;
+      if (index <= length) {
+        index--;
+        return true; // step in
+      } else {
+        index -= length;
+        return false; // step over
+      }
+    });
+    return result;
   };
 
   function getParent(tree, node) {
@@ -117,7 +224,7 @@
     prevNode = parent;
     nextNode = parent.down;
     while (nextNode) {
-      if (comparer(node, nextNode) < 0) {
+      if (comparer(node.data, nextNode.data) < 0) {
         // found position
         break;
       }
@@ -205,15 +312,33 @@
 
   function walkDown(tree, func) {
     (function step(parent, node, depth) {
-      var index = 0;
+      var index = 0,
+        stepIn;
       while (node) {
-        func(node, index, parent, depth);
-        // walk childs
-        step(node, node.down, depth + 1);
-        // move next
-        node = node.next;
-        index++;
+        stepIn = func(node, index, parent, depth);
+        if (typeof(stepIn) !== 'boolean') {
+          return; // if stepIn is not a boolean step out
+        }
+
+        if (stepIn) {
+          // walk childs
+          stepIn = step(node, node.down, depth + 1);
+          if (typeof(stepIn) !== 'boolean') {
+            return; // if stepIn is not a boolean step out
+          }
+
+          // move next
+          node = node.next;
+          index++;
+        } else { // step over childs
+          // add length of child
+          index += node.length + 1;
+          // move next
+          node = node.next;
+        }
       }
+      // keep going
+      return true;
     })(tree, tree.down, 0);
   }
 

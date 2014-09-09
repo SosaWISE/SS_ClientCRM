@@ -1,25 +1,13 @@
 define('src/scrum/project.vm', [
-  'src/scrum/stream.gvm',
-
-  'src/scrum/taskboard.vm',
-  'src/scrum/backloggrids.vm',
-  'src/scrum/backlog.vm',
-  'src/scrum/sprint.vm',
+  'src/scrum/open.vm',
   'src/dataservice',
   'ko',
-  'src/core/layers.vm',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
-  StreamGridViewModel,
-
-  TaskBoardViewModel,
-  BacklogGridsViewModel,
-  BacklogViewModel,
-  SprintViewModel,
+  OpenViewModel,
   dataservice,
   ko,
-  LayersViewModel,
   utils,
   ControllerViewModel
 ) {
@@ -30,14 +18,6 @@ define('src/scrum/project.vm', [
     ProjectViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ['id']);
 
-    _this.gvm = new StreamGridViewModel({
-
-    });
-
-    _this.layersVm = new LayersViewModel({
-      controller: _this,
-    });
-
     //
     // events
     //
@@ -47,28 +27,61 @@ define('src/scrum/project.vm', [
 
   ProjectViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this,
-      epics, storys;
+      cb = join.add(),
+      j2 = join.create(),
+      sprint, storys, sprintStorys;
 
-    load_epics(_this, function(val) {
-      epics = val;
-    }, join.add());
+    load_currentSprint(_this, function(val) {
+      sprint = val || {};
+    }, j2.add());
     load_storys(_this, function(val) {
-      storys = val;
-    }, join.add());
+      storys = val || [];
+    }, j2.add());
+
+    j2.when(function(err) {
+      if (err) {
+        return;
+      }
+
+      load_sprintStorys(sprint, function(val) {
+        sprintStorys = val || [];
+
+        //
+        //
+        //
+        _this.childs([
+          new OpenViewModel({
+            pcontroller: _this,
+            title: 'Open',
+            sprint: sprint,
+            storys: sprintStorys.concat(storys),
+          }),
+        ]);
+
+        cb();
+      }, join.add());
+    });
   };
 
 
-  function load_epics(_this, setter, cb) {
+  function load_currentSprint(_this, setter, cb) {
     dataservice.scrum.projects.read({
       id: _this.id,
-      link: 'epics'
+      link: 'currentSprint'
     }, setter, cb);
   }
 
   function load_storys(_this, setter, cb) { // with sub data (tasks, images, etc.)
     dataservice.scrum.projects.read({
       id: _this.id,
-      link: 'storys/full',
+      link: 'storys', // /full',
+    }, setter, cb);
+  }
+
+  function load_sprintStorys(sprint, setter, cb) { // with sub data (tasks, images, etc.)
+    dataservice.scrum.sprints.read({
+      id: sprint.id,
+      link: 'storys', // /full',
     }, setter, cb);
   }
 

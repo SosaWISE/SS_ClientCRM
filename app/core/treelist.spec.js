@@ -9,7 +9,7 @@ define('src/core/treelist.spec', [
     beforeEach(function() {
       tree = new TreeList(function(a, b) {
         // descending
-        return b.data.priority - a.data.priority;
+        return b.priority - a.priority;
       });
     });
 
@@ -80,6 +80,9 @@ define('src/core/treelist.spec', [
       });
 
       it('should nest childs', function() {
+        var childs, validateResults,
+          a2, a1, b1;
+
         tree.update({
           psid: 'A1',
           sid: 'B2',
@@ -91,13 +94,16 @@ define('src/core/treelist.spec', [
           priority: 15, // first
         });
 
-        console.log(tree.toText());
-        console.log('validate:', tree.validate());
+
+        console.log('\n' + tree.toText());
+        validateResults = tree.validate();
+        console.log('validate:', validateResults);
+        expect(validateResults.length).toBe(0);
+
 
         expect(tree.length).toBe(6);
 
-        var childs = tree.childs.peek(),
-          a2, a1, b1;
+        childs = tree.childs.peek();
 
         a2 = childs[0];
         a1 = childs[1];
@@ -138,6 +144,12 @@ define('src/core/treelist.spec', [
         expect(childs[2].data.sid).toBe('C3');
 
 
+        console.log('\n' + tree.toText());
+        validateResults = tree.validate();
+        console.log('validate:', validateResults);
+        expect(validateResults.length).toBe(0);
+
+
         //
         tree.update({
           psid: 'A2',
@@ -150,10 +162,167 @@ define('src/core/treelist.spec', [
         expect(a2.length).toBe(4);
         expect(tree.length).toBe(9);
 
-        console.log(tree.toText());
-        console.log('validate:', tree.validate());
+
+        console.log('\n' + tree.toText());
+        validateResults = tree.validate();
+        console.log('validate:', validateResults);
+        expect(validateResults.length).toBe(0);
       });
     });
 
+    describe('getItem', function() {
+      beforeEach(function() {
+        //
+        tree.update({
+          psid: null,
+          sid: 'A1',
+          priority: 20,
+        });
+        tree.update({
+          psid: null,
+          sid: 'A2',
+          priority: 20,
+        });
+        tree.update({
+          psid: null,
+          sid: 'A3',
+          priority: 20,
+        });
+        tree.update({
+          psid: null,
+          sid: 'A4',
+          priority: 20,
+        });
+        tree.update({
+          psid: null,
+          sid: 'A5',
+          priority: 20,
+        });
+        tree.update({
+          psid: null,
+          sid: 'A6',
+          priority: 20,
+        });
+        //
+        tree.update({
+          psid: 'A1',
+          sid: 'B1',
+          priority: 20,
+        });
+        tree.update({
+          psid: 'A1',
+          sid: 'B2',
+          priority: 20,
+        });
+        //
+        tree.update({
+          psid: 'B1',
+          sid: 'C1',
+          priority: 20,
+        });
+        tree.update({
+          psid: 'B1',
+          sid: 'C2',
+          priority: 20,
+        });
+        tree.update({
+          psid: 'B2',
+          sid: 'C3',
+          priority: 20,
+        });
+        tree.update({
+          psid: 'B2',
+          sid: 'C4',
+          priority: 20,
+        });
+        //
+        tree.update({
+          psid: 'C1',
+          sid: 'D1',
+          priority: 20,
+        });
+        tree.update({
+          psid: 'C1',
+          sid: 'D2',
+          priority: 20,
+        });
+        tree.update({
+          psid: 'C4',
+          sid: 'D3',
+          priority: 20,
+        });
+        tree.update({
+          psid: 'C4',
+          sid: 'D4',
+          priority: 20,
+        });
+      });
+
+      it('should return item at index', function() {
+        var validateResults, index = -1;
+
+        console.log('\n' + tree.toText());
+        validateResults = tree.validate();
+        console.log('validate:', validateResults);
+        expect(validateResults.length).toBe(0);
+
+        expect(function() {
+          tree.getItem(index++);
+        }).toThrow();
+        expect(tree.getItem(index++).sid).toBe('A1');
+        expect(tree.getItem(index++).sid).toBe('B1');
+        expect(tree.getItem(index++).sid).toBe('C1');
+        expect(tree.getItem(index++).sid).toBe('D1');
+        expect(tree.getItem(index++).sid).toBe('D2');
+        expect(tree.getItem(index++).sid).toBe('C2');
+        expect(tree.getItem(index++).sid).toBe('B2');
+        expect(tree.getItem(index++).sid).toBe('C3');
+        expect(tree.getItem(index++).sid).toBe('C4');
+        expect(tree.getItem(index++).sid).toBe('D3');
+        expect(tree.getItem(index++).sid).toBe('D4');
+        expect(tree.getItem(index++).sid).toBe('A2');
+        expect(tree.getItem(index++).sid).toBe('A3');
+        expect(tree.getItem(index++).sid).toBe('A4');
+        expect(tree.getItem(index++).sid).toBe('A5');
+        expect(tree.getItem(index++).sid).toBe('A6');
+        expect(function() {
+          tree.getItem(index++);
+        }).toThrow();
+
+
+        // move A1 under A2
+        tree.update({
+          psid: 'A2',
+          sid: 'A1',
+          priority: 20,
+        });
+
+        console.log('\n' + tree.toText());
+        validateResults = tree.validate();
+        console.log('validate:', validateResults);
+        expect(validateResults.length).toBe(0);
+
+        index = 0;
+        expect(tree.getItem(index++).sid).toBe('A2');
+        expect(tree.getItem(index++).sid).toBe('A1');
+        expect(tree.getItem(index++).sid).toBe('B1');
+        expect(tree.getItem(index++).sid).toBe('C1');
+        expect(tree.getItem(index++).sid).toBe('D1');
+        expect(tree.getItem(index++).sid).toBe('D2');
+        expect(tree.getItem(index++).sid).toBe('C2');
+        expect(tree.getItem(index++).sid).toBe('B2');
+        expect(tree.getItem(index++).sid).toBe('C3');
+        expect(tree.getItem(index++).sid).toBe('C4');
+        expect(tree.getItem(index++).sid).toBe('D3');
+        expect(tree.getItem(index++).sid).toBe('D4');
+        expect(tree.getItem(index++).sid).toBe('A3');
+        expect(tree.getItem(index++).sid).toBe('A4');
+        expect(tree.getItem(index++).sid).toBe('A5');
+        expect(tree.getItem(index++).sid).toBe('A6');
+        expect(function() {
+          tree.getItem(index++);
+        }).toThrow();
+      });
+    });
   });
 });

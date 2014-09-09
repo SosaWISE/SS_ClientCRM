@@ -2,18 +2,20 @@ div(class="scrum project",data-bind="if:loaded")
   table(class="fh-wrap")
     tr
       td(class="fh-header")
-        ul(class="tabs cf",)
+        ul(class="tabs cf")
           //-HACK to not be convered up by toggle-btn
           li(class="tab under-toggle-btn")
-          //-TO ADD
-          //- filter text (textbox)
-          //- filter sprint (cvm)
+          <!-- ko foreach:childs -->
+          li(class="tab",data-bind="active:active")
+            a(data-bind="click:$parent.clickItem,text:title")
+            //- span(data-bind="if:active")
+              a(class="close",data-bind="click:close")
+          <!-- /ko -->
     tr
       td(class="fh-body")
         div(class="fh-contents")
-          div(class="grid-wrap")
-            div(class="slickgrid",style="margin:10px",data-bind="slickgrid:gvm")
-          div(class="people-wrap")
-            div(class="people")
-              | Bob
-
+          <!-- ko foreach:childs -->
+          <!-- ko if:active -->
+          div(class="tab", data-bind="template:viewTmpl,active:active")
+          <!-- /ko -->
+          <!-- /ko -->

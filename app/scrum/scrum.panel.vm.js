@@ -44,32 +44,28 @@ define('src/scrum/scrum.panel.vm', [
     };
   }
   utils.inherits(ScrumPanelViewModel, ControllerViewModel);
-  ScrumPanelViewModel.prototype.viewTmpl = 'tmpl-panel_scrum';
 
   ScrumPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
     _this.chatVm(new ChatViewModel());
 
-    //load_projects(_this, join);
-
-    join.add()();
+    load_projects(_this, _this.projects, join.add());
   };
 
-  // function load_projects(_this, join) {
-  //   var cb = join.add();
-  //   dataservice.scrum.projects.read({}, null, utils.safeCallback(cb, function(err, resp) {
-  //     var list = resp.Value.map(function(item) {
-  //       return new deps.ProjectViewModel({
-  //         pcontroller: _this,
-  //         id: item.ID,
-  //         title: item.Name,
-  //         item: item,
-  //       });
-  //     });
-  //     _this.projects(list);
-  //   }, utils.noop));
-  // }
+  function load_projects(_this, setter, cb) {
+    dataservice.scrum.projects.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      var list = resp.Value.map(function(item) {
+        return new ProjectViewModel({
+          pcontroller: _this,
+          id: item.ID,
+          title: item.Name,
+          item: item,
+        });
+      });
+      setter(list);
+    }, utils.noop));
+  }
 
   return ScrumPanelViewModel;
 });

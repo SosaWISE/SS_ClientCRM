@@ -32,7 +32,7 @@ define('src/scrum/chat.vm', [
       validators: [ukov.validators.isRequired()],
     });
     _this.focus = ko.observable(false);
-    _this.show = ko.observable(true);
+    _this.show = ko.observable(false);
     _this.msgs = ko.observableArray();
     typingMsgs = ko.observableArray();
     _this.allMsgs = ko.computed(function() {

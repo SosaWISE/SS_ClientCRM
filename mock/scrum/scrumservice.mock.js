@@ -76,11 +76,11 @@ define('mock/scrum/scrumservice.mock', [
         case null:
           result = findSingleOrAll(projects, 'ID', id);
           break;
-        case 'epics':
-          result = filterListBy(epics, 'ProjectId', id);
-          break;
         case 'sprints':
           result = filterListBy(sprints, 'ProjectId', id);
+          break;
+        case 'storys':
+          result = filterListBy(storys, 'ProjectId', id);
           break;
       }
       send(result, setter, cb);
@@ -101,15 +101,6 @@ define('mock/scrum/scrumservice.mock', [
           result.forEach(function(story) {
             story.Tasks = filterListBy(tasks, 'StoryId', story.ID);
           });
-          break;
-      }
-      send(result, setter, cb);
-    };
-    dataservice.scrum.epics.read = function(params, setter, cb) {
-      var result;
-      switch (params.link || null) {
-        case null:
-          result = epics;
           break;
       }
       send(result, setter, cb);
@@ -161,15 +152,6 @@ define('mock/scrum/scrumservice.mock', [
 
 
 
-    dataservice.scrum.epics.save = function(data, setter, cb) {
-      send(createOrUpdate(epics, 'ID', '@INC(epics)', {
-        ID: data.ID,
-        Name: data.Name,
-        ProjectId: data.ProjectId,
-        ParentId: data.ParentId,
-        SortOrder: data.SortOrder,
-      }), setter, cb);
-    };
     dataservice.scrum.storys.save = function(data, setter, cb) {
       var result = createOrUpdate(storys, 'ID', '@INC(storys)', {
         ID: data.ID,
@@ -177,11 +159,10 @@ define('mock/scrum/scrumservice.mock', [
         SprintId: data.SprintId,
         ParentId: data.ParentId,
         PersonId: data.PersonId,
-        EpicId: data.EpicId,
         Name: data.Name,
         Description: data.Description,
         Points: data.Points,
-        SortOrder: data.SortOrder,
+        ProjectOrder: data.ProjectOrder,
         IsDeleted: data.IsDeleted,
         Version: data.Version ? data.Version + 1 : 1,
       });
@@ -263,7 +244,6 @@ define('mock/scrum/scrumservice.mock', [
   var persons,
     projects,
     sprints,
-    epics,
     storytypes,
     storys,
     tasksteps,
@@ -300,30 +280,6 @@ define('mock/scrum/scrumservice.mock', [
     ],
   }).list;
 
-  epics = mockery.fromTemplate({
-    'list|2-2': [ //
-      {
-        ID: '@INC(epics)',
-        ProjectId: 1,
-        ParentId: null,
-        Name: '@EPIC_PNAME',
-        SortOrder: '@NUMBER(0,100000)',
-        Version: 1,
-      },
-    ],
-  }).list.concat(mockery.fromTemplate({
-    'list|5-5': [ //
-      {
-        ID: '@INC(epics)',
-        ProjectId: 1,
-        ParentId: '@REF_INC(epics)',
-        Name: '@EPIC_CNAME',
-        SortOrder: '@NUMBER(0,100000)',
-        Version: 1,
-      },
-    ],
-  }).list);
-
   storytypes = mockery.fromTemplate({
     'list|2-2': [ //
       {
@@ -336,14 +292,14 @@ define('mock/scrum/scrumservice.mock', [
     'list|10-10': [ //
       {
         ID: '@INC(storys)',
+        ProjectId: 1,
         StoryTypeId: '@REF_INC(storytypes)',
         SprintId: '@REF_INC(sprints)',
         PersonId: '@REF_INC(persons)',
-        EpicId: '@REF_INC(epics)',
         Name: '@TEXT(20,30)',
         Description: '@TEXT(50,80)',
         Points: '@STORY_POINTS',
-        SortOrder: '@NUMBER(0,100000)',
+        ProjectOrder: '@NUMBER(0,100000)',
         IsDeleted: false,
         Version: 1,
       },
@@ -353,14 +309,31 @@ define('mock/scrum/scrumservice.mock', [
     'list|10-10': [ //
       {
         ID: '@INC(storys)',
+        ProjectId: 1,
         StoryTypeId: '@REF_INC(storytypes)',
         SprintId: null,
         PersonId: null,
-        EpicId: '@FK(epics)',
         Name: '@TEXT(20,30)',
         Description: '@TEXT(50,80)',
         Points: '@STORY_POINTS',
-        SortOrder: '@NUMBER(0,100000)',
+        ProjectOrder: '@NUMBER(-100000, -1)',
+        IsDeleted: false,
+        Version: 1,
+      },
+    ],
+  }).list).concat(mockery.fromTemplate({
+    // cooler storys
+    'list|10-10': [ //
+      {
+        ID: '@INC(storys)',
+        ProjectId: 1,
+        StoryTypeId: '@REF_INC(storytypes)',
+        SprintId: null,
+        PersonId: null,
+        Name: '@TEXT(20,30)',
+        Description: '@TEXT(50,80)',
+        Points: null,
+        ProjectOrder: null,
         IsDeleted: false,
         Version: 1,
       },

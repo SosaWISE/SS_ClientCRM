@@ -32,21 +32,49 @@ body.sockets {
       background-color: @scrumbg;
     }
 
-    @people-width: 200px;
+    @cooler-width: 35%;
+    @filter-width: 0px;
 
-    .grid-wrap {
+    .cooler {
       position: absolute;
-      top:0;right:@people-width;bottom:0;left:0;
+      top:0;width:@cooler-width;bottom:0;left:0;
     }
-    .people-wrap {
+    .storys {
       position: absolute;
-      top:0;right:0;bottom:0;width:@people-width;
+      top:0;right:@filter-width;bottom:0;left:@cooler-width;
 
-      .people {
+      .current {
+        position: absolute;
+        top:0;right:0;bottom:50%;left:0;
+      }
+      .backlog {
+        position: absolute;
+        top:50%;right:0;bottom:0;left:0;
+      }
+    }
+    .filter {
+      position: absolute;
+      top:0;right:0;bottom:0;width:@filter-width;
+
+      > div {
         margin: 10px 10px 10px 0px;
         height: ~"calc(100% - 20px)";
       }
     }
+
+    // .grid-wrap {
+    //   position: absolute;
+    //   top:0;right:@filter-width;bottom:0;left:0;
+    // }
+    // .people-wrap {
+    //   position: absolute;
+    //   top:0;right:0;bottom:0;width:@filter-width;
+    //
+    //   .people {
+    //     margin: 10px 10px 10px 0px;
+    //     height: ~"calc(100% - 20px)";
+    //   }
+    // }
   }
 
   @tranSec: .25s;

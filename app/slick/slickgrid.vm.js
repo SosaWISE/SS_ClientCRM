@@ -55,10 +55,10 @@ define('src/slick/slickgrid.vm', [
     });
 
     _this.gridOptions = _this.gridOptions || {};
-    if (!_this.list || !ko.isObservable(_this.list)) {
+    if (!_this.dataView && (!_this.list || !ko.isObservable(_this.list))) {
       _this.list = ko.observableArray(_this.list);
     }
-    _this.updateGrid = function() {
+    _this.updateGrid = function() { // ensure correct scope
       var grid = _this.grid;
       if (grid) {
         // update grid layout
@@ -66,19 +66,21 @@ define('src/slick/slickgrid.vm', [
         grid.render();
       }
     };
-    _this.list.subscribe(function(list) {
-      var grid = _this.grid;
-      if (grid) {
-        grid.setData(list, _this.scrollToTop); // false - don't scroll to top
-        _this.updateGrid();
-        if (_this.handleSelectedRowsChanged) {
-          _this.handleSelectedRowsChanged(null, {
-            grid: grid,
-            rows: grid.getSelectedRows(),
-          });
+    if (_this.list) {
+      _this.list.subscribe(function(list) {
+        var grid = _this.grid;
+        if (grid) {
+          grid.setData(list, _this.scrollToTop); // false - don't scroll to top
+          _this.updateGrid();
+          if (_this.handleSelectedRowsChanged) {
+            _this.handleSelectedRowsChanged(null, {
+              grid: grid,
+              rows: grid.getSelectedRows(),
+            });
+          }
         }
-      }
-    });
+      });
+    }
 
     if (_this.onSelectedRowsChanged) {
       _this.handleSelectedRowsChanged = function(e, data) {
@@ -124,6 +126,7 @@ define('src/slick/slickgrid.vm', [
   }
   utils.inherits(SlickGridViewModel, BaseViewModel);
   SlickGridViewModel.ensureProps = BaseViewModel.ensureProps;
+  SlickGridViewModel.prototype.dataView = null;
 
   SlickGridViewModel.prototype.onBound = function(element) {
     // create a new grid everytime this view model is bound/rebound
@@ -135,7 +138,7 @@ define('src/slick/slickgrid.vm', [
     _this.bindTimeout = setTimeout(function() {
       _this.bindTimeout = null;
 
-      _this.grid = new Slick.Grid(element, _this.list(), _this.columns, _this.gridOptions);
+      _this.grid = new Slick.Grid(element, _this.dataView || _this.list(), _this.columns, _this.gridOptions);
       if (!_this.noSelection) {
         var selectionModel = new Slick.RowSelectionModel({
           // selectActiveRow: false
