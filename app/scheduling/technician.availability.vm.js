@@ -182,7 +182,7 @@ define('src/scheduling/technician.availability.vm', [
 
           //notify.confirm("Delete", "Are you sure want to delete?", null, null);
 
-          dataservice.scheduleenginesrv.ScheduleBlock.del(event.id, null, utils.safeCallback(null, function(err, resp) {
+          dataservice.scheduleenginesrv.SeScheduleBlock.del(event.id, null, utils.safeCallback(null, function(err, resp) {
 
             if (resp.Code === 0) {
               notify.info("Success deleting availability with id:" + event.id + ".");
