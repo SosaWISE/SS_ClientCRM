@@ -10,9 +10,9 @@ ul(class="edit-form")
 	li
 		label Max Radius
 		input(type="text" data-bind="ukov:data.ScheduleMaxRadius, value:data.ScheduleMaxRadius, valueUpdate:'keyup'")
-	li
-		label Distance
-		input(type="text" data-bind="ukov:data.ScheduleDistance, value:data.ScheduleDistance, valueUpdate:'keyup'")
+	//-li
+		//-label Distance
+		//-input(type="text" data-bind="ukov:data.ScheduleDistance, value:data.ScheduleDistance, valueUpdate:'keyup'")
 	li
 		//-Appointment Date
 		input(type="hidden" data-bind="ukov:data.ScheduleDate, value:data.ScheduleDate, valueUpdate:'keyup'")
@@ -23,6 +23,8 @@ ul(class="edit-form")
 		//-label Block Endtime
 		input(type="hidden" data-bind="ukov:data.ScheduleEndTime, value:data.ScheduleEndTime, valueUpdate:'keyup'")
 	li
+		label Technician
+		div(data-bind="cvm:data.TechnicianCvm") 	
 div(class="actions")
 	span(class="btn-bg", id="btnPopupSave" tabindex="0", data-bind="cmd: cmdSaveBlock") Save Block
 	span(class="btn-bg", id="btnPopupCancel" tabindex="0", data-bind="cmd:clickClose") Cancel

@@ -30,7 +30,7 @@ define('src/account/security/ticket.editor.vm', [
     TicketID: {},
     AccountId: {},
     TicketTypeId: {},
-    MoniNumber: {},
+    MonitoringStationNo: {},
     StatusCodeId: {},
     MoniConfirmation: {},
     TechnicianId: {},
@@ -63,7 +63,7 @@ define('src/account/security/ticket.editor.vm', [
       TicketID: null,
       AccountId: _this.accountId,
       TicketTypeId: null,
-      MoniNumber: null,
+      MonitoringStationNo: null,
       StatusCodeId: null,
       MoniConfirmation: null,
       TechnicianId: null,
@@ -141,16 +141,6 @@ define('src/account/security/ticket.editor.vm', [
       */
 
 
-      _this.goTo({
-        route: 'scheduling',
-        id: 'schedule',
-        ticketid: model.TicketID,
-      }, {
-        ticket: model
-      }, false);
-
-
-
       dataservice.scheduleenginesrv.SeTicket.save({
         id: model.TicketID, // if no value create, else update
         data: model,
@@ -160,21 +150,28 @@ define('src/account/security/ticket.editor.vm', [
 
         var data = resp.Value;
 
-        //console.log('schedule: ' + _this);
-        /*
+        console.log('save and schedule: ' + _this);
+
         _this.goTo({
           pcontroller: _this,
           route: 'scheduling',
           id: 'schedule',
-          ticketid: data.TicketID,
-          title: 'test'
+          ticketid: data.TicketID
         }, {
           ticket: data
         }, false);
-        */
 
 
+        /*
+        _this.goTo({
+          route: 'scheduling',
+          id: 'schedule',
+          ticketid: data.TicketID,
+        }, {
+          ticket: data
+        }, false);
 
+ */
         _this.layerResult = data;
         _this.isDeleted = false;
         closeLayer(_this);

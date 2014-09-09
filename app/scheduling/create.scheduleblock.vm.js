@@ -6,6 +6,8 @@ define('src/scheduling/create.scheduleblock.vm', [
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
+  'src/core/combo.vm',
+  'src/core/joiner',
   'ko',
   'src/ukov',
 ], function(
@@ -16,6 +18,8 @@ define('src/scheduling/create.scheduleblock.vm', [
   notify,
   utils,
   BaseViewModel,
+  ComboViewModel,
+  joiner,
   ko,
   ukov
 ) {
@@ -42,7 +46,8 @@ define('src/scheduling/create.scheduleblock.vm', [
     ScheduleDistance: {},
     ScheduleDate: {},
     ScheduleStartTime: {},
-    ScheduleEndTime: {}
+    ScheduleEndTime: {},
+    TechnicianId: {},
   };
 
 
@@ -63,13 +68,23 @@ define('src/scheduling/create.scheduleblock.vm', [
       ScheduleDistance: null,
       ScheduleDate: null,
       ScheduleStartTime: null,
-      ScheduleEndTime: null
+      ScheduleEndTime: null,
+      TechnicianId: null,
     }, schema);
 
     //Set values
     _this.data.ScheduleDate(_this.date);
     _this.data.ScheduleStartTime(_this.stime);
     _this.data.ScheduleEndTime(_this.etime);
+
+    //This is the dropdown for technicians
+    _this.data.TechnicianCvm = new ComboViewModel({
+      selectedValue: _this.data.TechnicianId,
+      fields: {
+        value: 'TechnicianId',
+        text: 'FullName',
+      },
+    });
 
     //
     // events
@@ -88,35 +103,48 @@ define('src/scheduling/create.scheduleblock.vm', [
       console.log("Block:" + block);
 
       param = {
+        'BlockID': _this.BlockID,
         'Color': 'white',
         'Block': block,
         'ZipCode': _this.data.ScheduleZip(),
         'MaxRadius': _this.data.ScheduleMaxRadius(),
-        'Distance': _this.data.ScheduleDistance(),
         'StartTime': _this.data.ScheduleStartTime(),
         'EndTime': _this.data.ScheduleEndTime(),
         'AvailableSlots': _this.data.ScheduleAvailableSlot(),
-        //'TechnicianId': 1,
-        'TechnicianId': app.user.peek().GPEmployeeID,
+        'TechnicianId': _this.data.TechnicianId(),
       };
 
       console.log("Data to save:" + JSON.stringify(param));
 
-      //@TODO Save block
-
-      dataservice.scheduleenginesrv.SeScheduleBlock.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
+      dataservice.scheduleenginesrv.SeZipCode.read({
+        id: _this.data.ScheduleZip(),
+        link: 'ZC'
+      }, null, utils.safeCallback(cb, function(err, resp) {
 
         if (resp.Code === 0) {
-          console.log("SeScheduleBlock:" + JSON.stringify(resp.Value));
+          console.log("Checking Zipcode result:" + JSON.stringify(resp.Value));
 
-          //close popup
-          closeLayer(_this);
+          //@TODO Save block      
+          dataservice.scheduleenginesrv.SeScheduleBlock.save({
+            id: _this.BlockID,
+            data: param
+          }, null, utils.safeCallback(cb, function(err, resp) {
+
+            if (resp.Code === 0) {
+              console.log("SeScheduleBlock:" + JSON.stringify(resp.Value));
+
+              //close popup
+              closeLayer(_this);
+
+            } else {
+              notify.error(err);
+            }
+          }));
 
         } else {
-          notify.error(err);
+          notify.warn("Invalid Zip Code.", null, 3);
         }
       }));
-
 
     });
 
@@ -142,7 +170,11 @@ define('src/scheduling/create.scheduleblock.vm', [
   ScheduleBlockViewModel.prototype.width = 400;
   ScheduleBlockViewModel.prototype.height = 'auto';
 
-  ScheduleBlockViewModel.prototype.onActivate = function( /*routeData*/ ) {};
+  ScheduleBlockViewModel.prototype.onActivate = function() {
+    var _this = this,
+      join = joiner();
+    load_technicianList(_this.data.TechnicianCvm, join.add());
+  };
 
   function closeLayer(_this) {
     if (_this.layer) {
@@ -153,6 +185,24 @@ define('src/scheduling/create.scheduleblock.vm', [
     var _this = this;
     return [_this.layerResult];
   };
+
+  function load_technicianList(cvm, cb) {
+
+    dataservice.humanresourcesrv.RuTechnicianList.read({}, null, utils.safeCallback(cb, function(err, resp) {
+
+      if (resp.Code === 0) {
+
+        console.log("RuTechnicianList:" + JSON.stringify(resp.Value));
+
+        //Set result to Location combo list
+        cvm.setList(resp.Value);
+
+      } else {
+        notify.warn('No records found.', null, 3);
+      }
+    }));
+
+  }
 
   return ScheduleBlockViewModel;
 });

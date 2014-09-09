@@ -87,6 +87,7 @@ define('src/account/security/service.ticket.vm', [
       //alert('account id ' + _this.AccountId);
 
       _this.layersVm.show(new TicketEditorViewModel({
+        pcontroller: _this,
         title: 'Create New Service Ticket',
         accountId: _this.AccountId
       }), function onClose() {
@@ -194,7 +195,7 @@ define('src/account/security/service.ticket.vm', [
 
       if (resp.Code === 0) {
 
-        //console.log("Tickets:" + JSON.stringify(resp.Value));
+        console.log("Tickets:" + JSON.stringify(resp.Value));
 
         //empty the list before adding some data
         cvm.list([]);

@@ -28,9 +28,11 @@ define('src/scheduling/ticket.editor.vm', [
   schema = {
     _model: true,
     TicketID: {},
-    AccountId: {},
+    AccountId: {
+      converter: ukov.converters.number(0),
+    },
     TicketTypeId: {},
-    MoniNumber: {},
+    MonitoringStationNo: {},
     StatusCodeId: {},
     MoniConfirmation: {},
     TechConfirmation: {},
@@ -60,7 +62,7 @@ define('src/scheduling/ticket.editor.vm', [
       TicketID: null,
       AccountId: null,
       TicketTypeId: null,
-      MoniNumber: null,
+      MonitoringStationNo: null,
       StatusCodeId: null,
       MoniConfirmation: null,
       TechConfirmation: null,
@@ -71,6 +73,7 @@ define('src/scheduling/ticket.editor.vm', [
       ExpirationDate: null,
       Notes: null,
     };
+
 
     _this.data = ukov.wrap(utils.clone(_this.ticket), schema);
 
@@ -100,69 +103,84 @@ define('src/scheduling/ticket.editor.vm', [
     //  });
 
     _this.cmdSave = ko.command(function(cb) {
-      if (!_this.data.isValid()) {
-        notify.warn(_this.data.errMsg(), null, 7);
-        cb();
-        return;
-      }
 
-      var model = _this.data.getValue();
-      dataservice.scheduleenginesrv.SeTicket.save({
-        id: model.TicketID, // if no value create, else update
-        data: model,
+      //account id validation
+      dataservice.monitoringstationsrv.accounts.read({
+        id: _this.data.AccountId(),
+        link: 'Details',
       }, null, utils.safeCallback(cb, function(err, resp) {
-        _this.data.markClean(model, true);
 
-        var data = resp.Value;
-        //alert(JSON.stringify(data));
+        if (resp.Code === 0 && resp.Value) {
 
-        _this.layerResult = data;
-        _this.isDeleted = false;
-        closeLayer(_this);
-        //_this.clickCancel();
+          console.log("Account Details:" + JSON.stringify(resp.Value));
+
+          saveTicket(_this, cb);
+
+        } else {
+          notify.warn('Account ID is invalid.', null, 3);
+        }
+
       }, notify.error, false));
+
+
     }, function(busy) {
       //return !busy && !_this.cmdSearch.busy() && !_this.cmdDelete.busy();
       return !busy;
     });
 
     _this.cmdSchedule = ko.command(function(cb) {
-      //alert("go save the ticket and go directly to the schedule tab");
-      // _this.goTo({
-      //           route: 'scheduling',
-      //           id:"schedule",
-      //           ticketid:1
-      //     });
-      if (!_this.data.isValid()) {
-        notify.warn(_this.data.errMsg(), null, 7);
-        cb();
-        return;
-      }
-      var model = _this.data.getValue();
 
-      dataservice.scheduleenginesrv.SeTicket.save({
-        id: model.TicketID, // if no value create, else update
-        data: model,
+      //checking account id
+      dataservice.monitoringstationsrv.accounts.read({
+        id: _this.data.AccountId(),
+        link: 'Details',
       }, null, utils.safeCallback(cb, function(err, resp) {
 
-        _this.data.markClean(model, true);
+        if (resp.Code === 0 && resp.Value) {
 
-        var data = resp.Value;
+          console.log("Account Details:" + JSON.stringify(resp.Value));
 
-        _this.goTo({
-          route: 'scheduling',
-          id: 'schedule',
-          ticketid: data.TicketID,
-          title: 'test'
-        }, {
-          ticket: data
-        }, false);
+          if (!_this.data.isValid()) {
+            notify.warn(_this.data.errMsg(), null, 7);
+            cb();
+            return;
+          }
+          var model = _this.data.getValue();
 
-        _this.layerResult = data;
-        _this.isDeleted = false;
-        closeLayer(_this);
+          dataservice.scheduleenginesrv.SeTicket.save({
+            id: model.TicketID, // if no value create, else update
+            data: model,
+          }, null, utils.safeCallback(cb, function(err, resp) {
+
+            _this.data.markClean(model, true);
+
+            var data = resp.Value;
+
+            _this.goTo({
+              pcontroller: _this,
+              route: 'scheduling',
+              id: 'schedule',
+              ticketid: data.TicketID,
+
+            }, {
+              ticket: data
+            }, false);
+
+
+            _this.layerResult = data;
+            _this.isDeleted = false;
+            closeLayer(_this);
+
+          }, notify.error, false));
+
+
+        } else {
+          notify.warn('Account ID is invalid.', null, 3);
+        }
 
       }, notify.error, false));
+
+
     }, function(busy) {
       //return !busy && !_this.cmdSearch.busy() && !_this.cmdDelete.busy();
       return !busy;
@@ -218,6 +236,31 @@ define('src/scheduling/ticket.editor.vm', [
         notify.warn('No records found.', null, 3);
       }
     }));
+
+  }
+
+  function saveTicket(_this, cb) {
+
+    if (!_this.data.isValid()) {
+      notify.warn(_this.data.errMsg(), null, 7);
+      cb();
+      return;
+    }
+
+    var model = _this.data.getValue();
+    dataservice.scheduleenginesrv.SeTicket.save({
+      id: model.TicketID, // if no value create, else update
+      data: model,
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      _this.data.markClean(model, true);
+
+      var data = resp.Value;
+
+      _this.layerResult = data;
+      _this.isDeleted = false;
+      closeLayer(_this);
+
+    }, notify.error, false));
 
   }
 

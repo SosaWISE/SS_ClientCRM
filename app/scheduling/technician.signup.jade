@@ -8,6 +8,8 @@ ul(class="edit-form")
 		label End Date & Time
 		input(type="text" disabled data-bind="ukov:data.AvailableEndTime, value:data.AvailableEndTime, valueUpdate:'keyup'")
 	li
+		label Technician
+		div(data-bind="cvm:data.TechnicianCvm")
 div(class="actions")
 	span(class="btn-bg", id="btnPopupSave" tabindex="0", data-bind="cmd: cmdSaveAvailability") Save
 	span(class="btn-bg", id="btnPopupCancel" tabindex="0", data-bind="cmd:clickClose") Cancel
