@@ -6,12 +6,12 @@ define('src/scheduling/technician.ticket.gvm', [
 ], function(
   ko,
   SlickGridViewModel,
-  utils
-  //RowEvent
+  utils,
+  RowEvent
 ) {
   "use strict";
 
-  function TechnicianTicketGridViewModel( /*options*/ ) {
+  function TechnicianTicketGridViewModel(options) {
 
     var _this = this;
     TechnicianTicketGridViewModel.super_.call(_this, {
@@ -21,38 +21,28 @@ define('src/scheduling/technician.ticket.gvm', [
         rowHeight: 27,
       },
 
-      // plugins: [
-      //   new RowEvent({
-      //     eventName: 'onDblClick',
-      //     fn: function(ticket) {
-
-      //       options.edit(ticket, function(model, deleted) {
-      //         if (!model) { // nothing changed                
-      //           return;
-      //         }
-      //         if (deleted) { // remove deleted item            
-      //           _this.list.remove(ticket);
-      //         } else { // update in place            
-      //           _this.list.replace(ticket, model);
-      //         }
-      //       });            
-
-      //     },
-      //   }),
-      // ],
+      plugins: [
+        new RowEvent({
+          eventName: 'onDblClick',
+          fn: function(ticket) {
+            options.ticketInfo(ticket);
+          },
+        }),
+      ],
 
       columns: [{
-        id: 'Name',
+        id: 'CustomerFullName',
         name: 'Name',
-        field: 'Name',
+        field: 'CustomerFullName',
       }, {
-        id: 'Address',
+        id: 'CompleteAddress',
         name: 'Address',
-        field: 'Address',
+        field: 'CompleteAddress',
       }, {
-        id: 'AppointmentTime',
+        id: 'StartTime', //temporary - not sure where to pull the Appointment Time yet
         name: 'Appointment Time',
-        field: 'AppointmentTime',
+        field: 'StartTime',
+        formatter: SlickGridViewModel.formatters.datetime,
       }, ],
 
     });

@@ -84,9 +84,10 @@ define('src/account/security/service.ticket.vm', [
 
     _this.cmdAddServiceTicket = ko.command(function(cb /*, vm*/ ) {
       //Go to TicketEditor  screen
-      //alert('account id '+ _this.AccountId);
+      //alert('account id ' + _this.AccountId);
 
       _this.layersVm.show(new TicketEditorViewModel({
+        pcontroller: _this,
         title: 'Create New Service Ticket',
         accountId: _this.AccountId
       }), function onClose() {
@@ -125,7 +126,7 @@ define('src/account/security/service.ticket.vm', [
     join = join;
 
     //console.log("routeData: "+routeData);
-    //console.log("routeData.id: "+routeData.id);
+    // console.log("routeData.id: "+routeData.id);
     //    _this.accountId = routeData.id;
     _this.AccountId = routeData.id;
 
@@ -194,7 +195,7 @@ define('src/account/security/service.ticket.vm', [
 
       if (resp.Code === 0) {
 
-        //console.log("Tickets:" + JSON.stringify(resp.Value));
+        console.log("Tickets:" + JSON.stringify(resp.Value));
 
         //empty the list before adding some data
         cvm.list([]);

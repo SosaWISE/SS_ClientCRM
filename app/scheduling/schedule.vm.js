@@ -8,6 +8,7 @@ define('src/scheduling/schedule.vm', [
   'src/core/controller.vm',
   'src/scheduling/create.scheduleblock.vm',
   'src/scheduling/create.scheduleticket.vm',
+  'src/scheduling/scheduleblock.edit.vm',
   'src/core/layers.vm',
   'src/core/joiner',
   'ko',
@@ -23,6 +24,7 @@ define('src/scheduling/schedule.vm', [
   ControllerViewModel,
   ScheduleBlockViewModel,
   ScheduleTicketViewModel,
+  EditScheduleBlockViewModel,
   LayersViewModel,
   joiner,
   ko,
@@ -41,8 +43,6 @@ define('src/scheduling/schedule.vm', [
   function ScheduleViewModel(options) {
     var _this = this;
 
-    // console.log(options);
-    //alert("schedule vm active");
     ScheduleViewModel.super_.call(_this, options);
 
     // _this.data = ukov.wrap(_this.item || {
@@ -54,6 +54,11 @@ define('src/scheduling/schedule.vm', [
       controller: _this,
     });
 
+    _this.IsNowScheduling = ko.observable(true);
+    _this.AccountMasterFileNumber = ko.observable();
+    _this.AccountNumber = ko.observable();
+    _this.AccountName = ko.observable();
+    _this.AccountAddress = ko.observable();
 
     //events
     //
@@ -78,24 +83,36 @@ define('src/scheduling/schedule.vm', [
 
     var _this = this,
       join = joiner();
-    //CalLoading = true;
-
-    //console.log(_this);
-    //console.log("routeData");
-
-    //alert("schedule vm onactivate");
-    //console.log(routeData.ticketid);
-    //console.log(routeData);
-    //console.log(routeData.extraData);
 
     _this.data = ukov.wrap({
-      Ticket: routeData.extraData.ticket,
+      Ticket: routeData.extraData.ticket
     }, schema);
 
-    //alert(JSON.stringify(_this.data.getValue()));
+    console.log(_this.data.getValue());
 
-    //alert(routeData.ticketid);
-    // _this.title = routeData.ticketid;
+    if (_this.data.getValue().Ticket) {
+
+      _this.IsNowScheduling(true);
+
+      if (_this.data.getValue().Ticket.CustomerMasterFileId) {
+        _this.AccountMasterFileNumber("Customer Master File#:" + _this.data.getValue().Ticket.CustomerMasterFileId + ' ');
+      }
+
+      if (_this.data.getValue().Ticket.AccountId) {
+        _this.AccountNumber("Account ID:" + _this.data.getValue().Ticket.AccountId + ' ');
+      }
+
+      if (_this.data.getValue().Ticket.CustomerFullName) {
+        _this.AccountName("Name:" + _this.data.getValue().Ticket.CustomerFullName + ' ');
+      }
+
+      if (_this.data.getValue().Ticket.CompleteAddress) {
+        _this.AccountAddress("Address:" + _this.data.getValue().Ticket.CompleteAddress + ' ');
+      }
+
+    } else {
+      _this.IsNowScheduling(false);
+    }
 
     //load block list    
     load_scheduleBlockList(join.add());
@@ -118,15 +135,36 @@ define('src/scheduling/schedule.vm', [
       hiddenDays: [0], //hide sunday      
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
 
-        //console.log(parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10));
-
         //show create ticket screen only when there are still spaces available for a specific block
         if (parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10)) {
+
+          var model = _this.data.getValue();
+
           _this.layersVm.show(new ScheduleTicketViewModel({
             date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
             blockId: calEvent.id,
-          }), function onClose(cb) {
-            load_scheduleBlockList(cb);
+            ticket: model.Ticket
+          }, {
+            Ticket: model.Ticket
+          }), function onClose(result, cb) {
+
+            //clear ticket data from accounts
+            if (result) {
+              if (result.AccountTicket === "1") {
+
+                _this.goTo({
+                  pcontroller: _this,
+                  route: 'scheduling',
+                  id: 'schedule',
+                });
+
+              } else if (result.AccountTicket === "0") {
+                //load all blocks
+                load_scheduleBlockList(cb);
+              }
+
+            }
+
           });
         }
 
@@ -158,54 +196,58 @@ define('src/scheduling/schedule.vm', [
 
       viewRender: function( /*view, element*/ ) {
 
-        // if (!CalLoading) {
-        //   if (view.name === 'month') {
-        //     //   $('#calendar').fullCalendar('removeEventSource', sourceFullView);
-        //     //$('#calendar').fullCalendar('removeEvents');
-        //     //   $('#calendar').fullCalendar('addEventSource', sourceSummaryView);
-        //   } else {
-        //     //   $('#calendar').fullCalendar('removeEventSource', sourceSummaryView);
-        //     //$('#calendar').fullCalendar('removeEvents');
-        //     //   $('#calendar').fullCalendar('addEventSource', sourceFullView);
-        //   }
-        // }
       },
 
       //add some more info on blocks
       eventRender: function(event, element) {
         element.find('.fc-event-title').append('<br/>' + event.someInfo);
-      }
+
+        //enable editing of blocks          
+        element.find('.fc-event-time').append('<button style="float: right !important; z-index: 999999 !important;" id="btnEdit' + event.id + '">Edit</button>');
+        $("#btnEdit" + event.id).click(function(e) {
+
+          _this.layersVm.show(new EditScheduleBlockViewModel({
+            blockInfo: event.blockInfo,
+          }), function onClose(cb) {
+            load_scheduleBlockList(cb);
+          });
+
+          e.stopPropagation();
+        });
+      },
 
     });
 
   };
 
+
   function UpdateEvent(EventID, EventStart, EventEnd) {
 
     var block,
-      param;
+      scheduleBlock = {};
 
     block = (parseInt($.fullCalendar.formatDate(EventEnd, 'HH:mm'), 10) < 12) ? 'AM' : 'PM';
 
-    //console.log("Block to update:" + block);
-
-    param = {
+    scheduleBlock = {
       'BlockID': EventID,
       'Block': block,
       'StartTime': $.fullCalendar.formatDate(EventStart, 'MM/dd/yyyy HH:mm'),
       'EndTime': $.fullCalendar.formatDate(EventEnd, 'MM/dd/yyyy HH:mm'),
+      'IsTechConfirmed': true
     };
 
-    //@TODO update block info
-    // console.log("Updating block info:" + JSON.stringify(param));
+    dataservice.scheduleenginesrv.SeScheduleBlock.save({
+      id: EventID,
+      data: scheduleBlock,
+      link: 'SE',
+    }, null, utils.safeCallback(null, function(err, resp) {
 
-    dataservice.scheduleenginesrv.SeScheduleBlock.post(EventID, param, null, utils.safeCallback(null, function( /*err, resp*/ ) {
-      //console.log("Block updated:" + JSON.stringify(resp.Value));
-      //reload all blocks
-      load_scheduleBlockList();
-
-    }, notify.error, false));
-
+        if (resp && resp.Value) {
+          //$('#techCalendar').fullCalendar('addEventSource', result);
+          load_scheduleBlockList();
+        }
+      },
+      notify.error, false));
 
   }
 
@@ -223,7 +265,9 @@ define('src/scheduling/schedule.vm', [
       slotAvailable,
       numTickets,
       data = {},
-      result = [];
+      result = [],
+      distance = 0,
+      distanceText;
 
     param = {
       'DateFrom': $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
@@ -236,7 +280,7 @@ define('src/scheduling/schedule.vm', [
 
       if (resp.Code === 0) {
 
-        //console.log("SeScheduleBlockList:" + JSON.stringify(resp.Value));
+        console.log("SeScheduleBlockList:" + JSON.stringify(resp.Value));
 
         for (x = 0; x < resp.Value.length; x++) {
 
@@ -259,6 +303,15 @@ define('src/scheduling/schedule.vm', [
             tColor = 'white';
           }
 
+
+          if (resp.Value[x].NoOfTickets > 0) {
+            distance = resp.Value[x].Distance.toFixed(2);
+          } else {
+            distance = 0;
+          }
+
+          distanceText = (distance <= 0) ? "" : "<br />Distance: " + distance + " mile(s)";
+
           //objects to display on scheduler grid
           data = {
             id: resp.Value[x].BlockID,
@@ -267,8 +320,11 @@ define('src/scheduling/schedule.vm', [
             end: resp.Value[x].EndTime,
             slot: slotAvailable,
             nTickets: numTickets,
+            zipCode: resp.Value[x].ZipCode,
+            blockInfo: resp.Value[x],
             allDay: false,
-            someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + resp.Value[x].ZipCode + ' <br /> Max Radius: ' + resp.Value[x].MaxRadius + ' miles <br /> Distance: ' + resp.Value[x].Distance + ' miles <br /> Available: ' + numTickets + ' of ' + resp.Value[x].AvailableSlots + ' <br /><hr> Daniel Ellis (0 of 2) <br />',
+            //someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') + distanceText + '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' <br />',
+            someInfo: 'Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') + distanceText + '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' <br />',
             backgroundColor: tColor,
           };
 
@@ -289,7 +345,6 @@ define('src/scheduling/schedule.vm', [
     }));
 
   }
-
 
   return ScheduleViewModel;
 });

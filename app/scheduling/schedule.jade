@@ -1,5 +1,14 @@
 table(class="fh-wrap")
 	tr
+		td
+			div(id="accountInfo" style="margin: 10px;", data-bind="visible: IsNowScheduling")
+				label Now Scheduling: 
+				label(data-bind="text:AccountMasterFileNumber")
+				label(data-bind="text:AccountNumber")
+				label(data-bind="text:AccountName")
+				label(data-bind="text:AccountAddress")
+
+	tr
 		td(class="fh-body")
 			div(class="fh-contents relative")
 				div(class="grid-wrap")

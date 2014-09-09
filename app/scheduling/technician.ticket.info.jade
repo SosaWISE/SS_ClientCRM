@@ -1,0 +1,31 @@
+div(style="text-align: right;")		
+		button(type="button" class="btn-bg" style="margin-left: 10px; width: 25%; display: inline-block; !important;", data-bind="cmd: cmdEnRoute") En-Route
+		button(type="button" class="btn-bg" style="margin-left: 10px; width: 25%; display: inline-block; !important;", data-bind="cmd: cmdDelay") Delay
+ul(class="edit-form")
+	li
+		span(class="label") Name
+		input(type="text" disabled data-bind="ukov:data.custName, value:data.custName, valueUpdate:'keyup'")
+		//-input(type="text" disabled)
+	li
+		span(class="label") Address
+		input(type="text" disabled data-bind="ukov:data.custAddress, value:data.custAddress, valueUpdate:'keyup'")
+		//-input(type="text" disabled)
+	li
+		span(class="label") Phone
+		input(type="text" disabled data-bind="ukov:data.custPhone, value:data.custPhone, valueUpdate:'keyup'")			
+		//-input(type="text" disabled)
+	li(style="height: 300px;")
+		span(class="label") Order Items				
+		table(class="fh-wrap")
+			tr
+				td(class="fh-body")
+					div(class="fh-contents")
+						div(class="grid-wrap")
+							div(class="slickgrid", style="background:white; color:black;", data-bind="slickgrid:technicianTicketInfoGvm")
+	li
+		span(class="label") General Note
+		textarea(rows="5" data-bind="ukov:data.TechTicketNotes, value:data.TechTicketNotes,valueUpdate:'keyup'")
+	li(style="text-align: right;")
+		span(class="btn-bg", style="width: 25%; display: inline-block; !important;" tabindex="0", data-bind="cmd: cmdComplete") Complete
+div(class="actions")
+	//-span(class="btn-bg", style="width: 25%;" id="btnPopupCancel" tabindex="0", data-bind="cmd:clickClose") Close
