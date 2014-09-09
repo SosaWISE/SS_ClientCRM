@@ -43,8 +43,6 @@ define('src/scheduling/schedule.vm', [
   function ScheduleViewModel(options) {
     var _this = this;
 
-    // console.log(options);
-    //alert("schedule vm active");
     ScheduleViewModel.super_.call(_this, options);
 
     // _this.data = ukov.wrap(_this.item || {
@@ -56,10 +54,10 @@ define('src/scheduling/schedule.vm', [
       controller: _this,
     });
 
-    _this.IsNowScheduling = false;
-    _this.AccountNumber = "";
-    _this.AccountName = "";
-    _this.AccountAddress = "";
+    _this.IsNowScheduling = ko.observable(true);
+    _this.AccountNumber = ko.observable();
+    _this.AccountName = ko.observable();
+    _this.AccountAddress = ko.observable();
 
     //events
     //
@@ -84,52 +82,23 @@ define('src/scheduling/schedule.vm', [
 
     var _this = this,
       join = joiner();
-    //CalLoading = true;
-
-    //console.log(_this);
-    //console.log("routeData");
-
-    //alert("schedule vm onactivate");
-    //console.log(routeData.ticketid);
-    //console.log(routeData);
-    //console.log(routeData.extraData);
 
     _this.data = ukov.wrap({
       Ticket: routeData.extraData.ticket
     }, schema);
 
-    //alert(JSON.stringify(_this.data.getValue()));
     console.log(_this.data.getValue());
 
     if (_this.data.getValue().Ticket) {
 
-      _this.IsNowScheduling = true;
-      _this.AccountNumber = _this.data.getValue().Ticket.AccountId;
-      _this.AccountName = _this.data.getValue().Ticket.CustomerFullName;
-      _this.AccountAddress = _this.data.getValue().Ticket.CompleteAddress;
+      _this.IsNowScheduling(true);
+      _this.AccountNumber(_this.data.getValue().Ticket.AccountId);
+      _this.AccountName(_this.data.getValue().Ticket.CustomerFullName);
+      _this.AccountAddress(_this.data.getValue().Ticket.CompleteAddress);
+
     } else {
-      _this.IsNowScheduling = false;
+      _this.IsNowScheduling(false);
     }
-
-    //populate account info if data is available
-    // if (_this.data.getValue().Ticket) {
-
-    //   if (_this.data.getValue().Ticket.AccountId) {
-    //     $('#accountNumber').html(_this.data.getValue().Ticket.AccountId + ' ');
-    //   }
-    //   if (_this.data.getValue().Ticket.CustomerFullName) {
-    //     $('#accountName').html(_this.data.getValue().Ticket.CustomerFullName + ' ');
-    //   }
-    //   if (_this.data.getValue().Ticket.CompleteAddress) {
-    //     $('#accountAddress').html(_this.data.getValue().Ticket.CompleteAddress + ' ');
-    //   }
-
-    // } else {
-    //   $('#accountInfo').hide();
-    // }
-
-    //alert(routeData.ticketid);
-    // _this.title = routeData.ticketid;
 
     //load block list    
     load_scheduleBlockList(join.add());
@@ -152,29 +121,10 @@ define('src/scheduling/schedule.vm', [
       hiddenDays: [0], //hide sunday      
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
 
-        //if zipcode is null, let the user input zip, no. of slots, etc
-        // if(calEvent.zipCode === null){
-
-        //   _this.layersVm.show(new ScheduleBlockViewModel({
-        //     BlockID: calEvent.id,
-        //     date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
-        //     stime: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy HH:mm'),
-        //     etime: $.fullCalendar.formatDate(calEvent.end, 'MM/dd/yyyy HH:mm'),
-        //     blockTime: $.fullCalendar.formatDate(calEvent.end, 'HH:mm'),
-        //   }), function onClose(cb) {
-        //     load_scheduleBlockList(cb);
-        //   });
-
-        // }else{
-
-        //console.log(parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10));
         //show create ticket screen only when there are still spaces available for a specific block
         if (parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10)) {
 
           var model = _this.data.getValue();
-          //console.log('model'+model); 
-          //alert(JSON.stringify(model));
-          //alert(JSON.stringify(model.Ticket));
 
           _this.layersVm.show(new ScheduleTicketViewModel({
             date: $.fullCalendar.formatDate(calEvent.start, 'MM/dd/yyyy'),
@@ -203,7 +153,6 @@ define('src/scheduling/schedule.vm', [
 
           });
         }
-        //}
 
       },
 
@@ -232,18 +181,6 @@ define('src/scheduling/schedule.vm', [
       },
 
       viewRender: function( /*view, element*/ ) {
-
-        // if (!CalLoading) {
-        //   if (view.name === 'month') {
-        //     //   $('#calendar').fullCalendar('removeEventSource', sourceFullView);
-        //     //$('#calendar').fullCalendar('removeEvents');
-        //     //   $('#calendar').fullCalendar('addEventSource', sourceSummaryView);
-        //   } else {
-        //     //   $('#calendar').fullCalendar('removeEventSource', sourceSummaryView);
-        //     //$('#calendar').fullCalendar('removeEvents');
-        //     //   $('#calendar').fullCalendar('addEventSource', sourceFullView);
-        //   }
-        // }
 
       },
 
@@ -352,22 +289,6 @@ define('src/scheduling/schedule.vm', [
             tColor = 'white';
           }
 
-          //calculate distance - this is temporary, we might use the distance computation from api
-          // if (resp.Value[x].CurrentTicketId) {
-
-          //   distance = calculateDistance(
-          //     resp.Value[x].BlockLatitude,
-          //     resp.Value[x].BlockLongitude,
-          //     resp.Value[x].TicketLatitude,
-          //     resp.Value[x].TicketLongitude
-          //   ).toFixed(0);
-
-          //   //if customer does not have coordinates, set distance = 0
-          //   if (resp.Value[x].TicketLatitude === null && resp.Value[x].TicketLongitude) {
-          //     distance = 0;
-          //   }
-
-          // }
 
           if (resp.Value[x].NoOfTickets > 0) {
             distance = resp.Value[x].Distance.toFixed(2);
@@ -376,8 +297,7 @@ define('src/scheduling/schedule.vm', [
           }
 
           distanceText = (distance <= 0) ? "" : "<br />Distance: " + distance + " mile(s)";
-          //distanceText = (resp.Value[x].Distance === null) ? "" : "<br />Distance: "+resp.Value[x].Distance+ " mile(s)";
-          //distance = 0; //reset
+
           //objects to display on scheduler grid
           data = {
             id: resp.Value[x].BlockID,
@@ -411,29 +331,6 @@ define('src/scheduling/schedule.vm', [
     }));
 
   }
-
-  //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
-  // function calculateDistance(lat1, lon1, lat2, lon2) {
-
-  //   //var R = 6371, // km
-  //   var R = 3958.755866, // mile
-  //     dLat = toRad(lat2 - lat1),
-  //     dLon = toRad(lon2 - lon1),
-  //     dlat1 = toRad(lat1),
-  //     dlat2 = toRad(lat2);
-
-  //   var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-  //     Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(dlat1) * Math.cos(dlat2);
-  //   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  //   var d = R * c;
-  //   return d;
-  // }
-
-  // // Converts numeric degrees to radians
-  // function toRad(Value) {
-  //   return Value * Math.PI / 180;
-  // }
-
 
   return ScheduleViewModel;
 });
