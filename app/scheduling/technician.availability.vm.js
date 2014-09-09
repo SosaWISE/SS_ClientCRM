@@ -149,7 +149,8 @@ define('src/scheduling/technician.availability.vm', [
       //select: function(start, end /*, jsEvent, view*/ ) {
       select: function(start, end /*, jsEvent, view*/ ) {
 
-        isTech = (_this.RuTechnician != null) ? true : false; //for testing
+        //isTech = (_this.RuTechnician != null) ? true : false; //for real
+        isTech = true; // for now - Allow non technicians to schedule availability
 
         if (isTech) {
           _this.layersVm.show(new TechSignUpViewModel({
@@ -157,6 +158,7 @@ define('src/scheduling/technician.availability.vm', [
             stime: $.fullCalendar.formatDate(start, 'MM/dd/yyyy HH:mm'),
             etime: $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm'),
             blockTime: $.fullCalendar.formatDate(end, 'HH:mm'),
+            RuTechnician: _this.RuTechnician,
           }), function onClose(result, cb) {
             if (!result) {
               load_technicianAvailabilityList(cb);
