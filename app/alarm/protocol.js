@@ -23,6 +23,12 @@ define('src/alarm/protocol', [
     return new Package(packageType, dataArray);
   };
 
+  protocol.createEventPackage = function(eventName, data) {
+    return new Package(packageTypes.EVENT, [
+      eventName, // 0
+      data, // 1
+    ]);
+  };
   protocol.createCallPackage = function(obj) {
     return new Package(packageTypes.CALL, [
       obj.cid + '', // 0
@@ -50,18 +56,21 @@ define('src/alarm/protocol', [
       // case packageTypes.WELCOME:
       //   break;
       case packageTypes.CALL:
-        pkg.cid = pkg.dataArray[0];
-        pkg.method = pkg.dataArray[1];
-        pkg.path = pkg.dataArray[2];
-        pkg.data = pkg.dataArray[3];
+        pkg.cid = pkg.dataArray[0]; // string
+        pkg.method = pkg.dataArray[1]; // string
+        pkg.path = pkg.dataArray[2]; // string
+        pkg.data = pkg.dataArray[3]; // object
+        delete pkg.dataArray;
         break;
       case packageTypes.CALLRESULT:
-        pkg.cid = pkg.dataArray[0];
-        pkg.result = pkg.dataArray[1];
+        pkg.cid = pkg.dataArray[0]; // string
+        pkg.result = pkg.dataArray[1]; // object
+        delete pkg.dataArray;
         break;
       case packageTypes.EVENT:
-        pkg.eventName = pkg.dataArray[0];
-        pkg.data = pkg.dataArray[1];
+        pkg.eventName = pkg.dataArray[0]; // string
+        pkg.data = pkg.dataArray[1]; // object
+        delete pkg.dataArray;
         break;
     }
     return pkg;

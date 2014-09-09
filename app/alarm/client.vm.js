@@ -71,27 +71,39 @@ define('src/alarm/client.vm', [
     //
     // events
     //
+    _this.clearLog = function() {
+      _this.log([]);
+    };
     _this.cmdConnect = ko.command(function(cb) {
       var socket = _this.socket.peek();
       if (!socket) {
         _this.logText('connecting...');
         socket = new Socket(config.wsBasePath + '/client/ws?alarmid=' + _this.alarmid.getValue());
+        _this.alarmid.markClean();
         socket.onopen = function() {
           _this.logText('connected');
+          socket.service().get('/arm', {}, null, utils.safeCallback(cb, function(err, resp, ctx) {
+            _this.logText('CALLRESULT - get alarm status - ' + stringify(ctx.pkg));
+            _this.data.setValue(resp.Value);
+            _this.data.markClean(resp.Value, true);
+          }, notify.error));
+          _this.logText('CALL - get alarm status - ' + stringify(socket.getLastSent()));
         };
         socket.onclose = function() {
           _this.logText('disconnected');
+          _this.socket(null);
         };
         socket.onerror = function(evt) {
           _this.logText('error: ' + stringify(evt));
         };
-        socket.on('system:state', _this, function(data) {
+        socket.on('system:state', _this, function(pkg) {
+          var data = pkg.data;
           _this.data.setValue(data);
           _this.data.markClean(data, true);
-          _this.logText('event - system:state ' + stringify(data));
+          _this.logText('EVENT - handled ' + stringify(pkg));
         });
-        socket.on('alarm:triggered', _this, function(data) {
-          _this.logText('event - alarm:triggered ' + stringify(data));
+        socket.on('alarm:triggered', _this, function(pkg) {
+          _this.logText('EVENT - handled ' + stringify(pkg));
         });
         _this.socket(socket);
       } else if (!socket.connected()) {
@@ -100,6 +112,7 @@ define('src/alarm/client.vm', [
       } else {
         _this.logText('disconnecting...');
         socket.disconnect();
+        _this.socket(null);
       }
       cb();
     }, function(busy) {
@@ -122,13 +135,13 @@ define('src/alarm/client.vm', [
         cb();
         return;
       }
-      var model = _this.data.getValue();
-      _this.logText('saving system state...');
-      _this.socket.peek().service().post('/arm', model, null, utils.safeCallback(cb, function(err, resp) {
-        console.log('ws call result:', resp);
+      var socket = _this.socket.peek(),
+        model = _this.data.getValue();
+      socket.service().post('/arm', model, null, utils.safeCallback(cb, function(err, resp, ctx) {
+        _this.logText('CALLRESULT - set alarm status - ' + stringify(ctx.pkg));
         _this.data.markClean(model, true);
-        _this.logText('saved system state');
       }, notify.error));
+      _this.logText('CALL - set alarm status - ' + stringify(socket.getLastSent()));
     }, function(busy) {
       var socket = _this.socket();
       return !busy && socket && socket.connected();
@@ -158,15 +171,15 @@ define('src/alarm/client.vm', [
       text: 'Disarmed',
     }, {
       value: 'stay',
-      text: 'Arm (Stay)',
+      text: 'Armed (Stay)',
     }, {
       value: 'away',
-      text: 'Arm (Away)',
+      text: 'Armed (Away)',
     },
   ];
 
   function stringify(data) {
-    return jsonhelpers.stringify(data, '  ');
+    return jsonhelpers.stringify(data, '    ');
   }
 
   return ClientViewModel;

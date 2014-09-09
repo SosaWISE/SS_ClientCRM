@@ -7,6 +7,7 @@ div(class="panel alarm",data-bind="active:active")
       tr
         td(class="fh-header")
           h1 System
+          div(data-bind="text:socket()?socket().uri:''")
           div(class="line-top")
             ul(class="edit-form")
               li
@@ -26,7 +27,7 @@ div(class="panel alarm",data-bind="active:active")
           div(class="line-top")
             //- available events
             //-   trigger
-            h2 Trigger Events
+            h2 Events
             ul(class="trigger-events")
               li
                 span(class="btn-bg", tabindex="0", data-bind="cmd:cmdTriggerWindowBreak") Trigger Window Break
@@ -36,6 +37,7 @@ div(class="panel alarm",data-bind="active:active")
             //- show list of:
             //-   actions performed and who/which device performed them
             //-   events triggered
+            span(class="btn-bg", tabindex="0", data-bind="cmd:clearLog") Clear
             ul(class="edit-form log",data-bind="foreach:log")
               li
                 span(data-bind="datetimesectext:time")
@@ -57,6 +59,7 @@ div(class="panel alarm",data-bind="active:active")
       tr
         td(class="fh-header")
           h1 Client
+          div(data-bind="text:socket()?socket().uri:''")
           div(class="line-top")
             ul(class="edit-form")
               li
@@ -79,6 +82,7 @@ div(class="panel alarm",data-bind="active:active")
             //- show list of:
             //-   actions performed
             //-   events received
+            span(class="btn-bg", tabindex="0", data-bind="cmd:clearLog") Clear
             ul(class="edit-form",data-bind="foreach:log")
               li
                 span(data-bind="datetimesectext:time")

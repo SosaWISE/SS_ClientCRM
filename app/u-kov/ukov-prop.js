@@ -85,6 +85,10 @@ define('src/u-kov/ukov-prop', [
     var _this = this;
     return _this.model[_this.key];
   };
+  fn.getCleanValue = function() {
+    var _this = this;
+    return _this.cleanVal.peek();
+  };
 
   function setAndNotify(_this, value) {
     //

@@ -74,32 +74,53 @@ define('src/alarm/system.vm', [
     //
     // events
     //
+    _this.clearLog = function() {
+      _this.log([]);
+    };
     _this.cmdConnect = ko.command(function(cb) {
       var socket = _this.socket.peek();
       if (!socket) {
         _this.logText('connecting...');
         socket = new Socket(config.wsBasePath + '/system/ws?alarmid=' + _this.alarmid.getValue());
+        _this.alarmid.markClean();
         socket.onopen = function() {
           _this.logText('connected');
         };
         socket.onclose = function() {
           _this.logText('disconnected');
+          _this.socket(null);
         };
         socket.onerror = function(evt) {
           _this.logText('error: ' + stringify(evt));
         };
         socket.onCall = function(pkg) {
+          var result, data;
           switch (pkg.path) {
             case '/arm':
-              _this.data.setValue(pkg.data);
-              _this.data.markClean(pkg.data, true);
-              _this.logText('system state set');
+              switch (pkg.method) {
+                case "GET":
+                  _this.logText('CALL - handled get alarm status - ' + stringify(pkg));
+                  result = _this.data.getCleanValue();
+                  break;
+                case "POST":
+                  data = pkg.data;
+                  _this.data.setValue(data);
+                  _this.data.markClean(data, true);
+                  _this.logText('CALL - handled set alarm status - ' + stringify(pkg));
+                  _this.publishEvent('system:state', data);
+                  result = true;
+                  break;
+                default:
+                  notify.warn('CALL - dropped package', stringify(pkg), 7);
+                  break;
+              }
               break;
             default:
-              notify.warn('dropped package', stringify(pkg), 7);
+              notify.warn('CALL - dropped package', stringify(pkg), 7);
+              break;
           }
           // return result value
-          return true;
+          return result;
         };
         _this.socket(socket);
       } else if (!socket.connected()) {
@@ -108,6 +129,7 @@ define('src/alarm/system.vm', [
       } else {
         _this.logText('disconnecting...');
         socket.disconnect();
+        _this.socket(null);
       }
       cb();
     }, function(busy) {
@@ -164,9 +186,10 @@ define('src/alarm/system.vm', [
     });
   };
   SystemViewModel.prototype.publishEvent = function(eventName, data) {
-    var _this = this;
-    _this.socket.peek().emit(eventName, data);
-    _this.logText('published event - ' + eventName);
+    var _this = this,
+      socket = _this.socket.peek();
+    socket.emit(eventName, data);
+    _this.logText('EVENT - published ' + stringify(socket.getLastSent()));
   };
 
   SystemViewModel.prototype.logText = function(text) {
@@ -183,15 +206,15 @@ define('src/alarm/system.vm', [
       text: 'Disarmed',
     }, {
       value: 'stay',
-      text: 'Arm (Stay)',
+      text: 'Armed (Stay)',
     }, {
       value: 'away',
-      text: 'Arm (Away)',
+      text: 'Armed (Away)',
     },
   ];
 
   function stringify(data) {
-    return jsonhelpers.stringify(data, '  ');
+    return jsonhelpers.stringify(data, '    ');
   }
 
   return SystemViewModel;

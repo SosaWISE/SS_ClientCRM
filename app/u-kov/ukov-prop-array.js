@@ -148,6 +148,15 @@ define('src/u-kov/ukov-prop-array', [
     }, this);
     return result;
   };
+  fn.getCleanValue = function() {
+    //@REVIEW: this isn't completely correct, but all of this file isn't completely correct
+    //@REVIEW: doesn't work if items have been added or removed
+    var result = [];
+    this().forEach(function(item) {
+      result.push(item.getCleanValue());
+    }, this);
+    return result;
+  };
 
   return {
     create: createUkovPropArray,

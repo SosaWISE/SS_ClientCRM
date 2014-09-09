@@ -143,11 +143,27 @@ define('src/u-kov/ukov-model', [
       prop = _this[key];
       if (!onlyDirty || !prop.isClean()) {
         if (!excludeIgnored || !prop.ignore()) {
-          result[key] = prop.getValue();
+          result[key] = prop.getValue(onlyDirty, excludeIgnored);
         } else {
           // use null for ignored values
           result[key] = null;
         }
+      }
+    }, _this);
+    return result;
+  };
+
+  UkovModel.prototype.getCleanValue = function(excludeIgnored) {
+    var _this = this,
+      result = {},
+      prop;
+    Object.keys(_this.doc).forEach(function(key) {
+      prop = _this[key];
+      if (!excludeIgnored || !prop.ignore()) {
+        result[key] = prop.getCleanValue(excludeIgnored);
+      } else {
+        // use null for ignored values
+        result[key] = null;
       }
     }, _this);
     return result;

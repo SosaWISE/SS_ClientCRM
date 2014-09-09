@@ -45,7 +45,16 @@ define('src/alarm/socketservice', [
     var _this = this,
       context = _this.pendingCalls[pkg.cid];
     if (context) {
+      context.pkg = pkg;
+      //
       delete _this.pendingCalls[pkg.cid];
+      // prevent Url from showing in JSON.stringify
+      Object.defineProperty(pkg.result, 'Url', {
+        enumerable: false,
+        value: null,
+        writable: true,
+        configurable: true,
+      });
       _this.onComplete(pkg.result, null, null, context);
       // notify.warn('WebSocket response', JSON.stringify(pkg.dataArray));
     } else {

@@ -23,6 +23,8 @@ define('src/alarm/socket', [
   function Socket(uri) {
     var _this = this;
 
+    _this.uri = uri;
+
     _this.connected = ko.observable(false);
 
     _this.howie = harold.create();
@@ -101,6 +103,7 @@ define('src/alarm/socket', [
       pkg, result;
     try {
       pkg = protocol.decodePackage(evt.data);
+      _this._lastReceived = pkg;
     } catch (ex) {
       //@TODO: do something with errors??
       notify.warn('handleMessage error', ex, 5);
@@ -116,14 +119,14 @@ define('src/alarm/socket', [
         // respond to call
         _this.sendPackage(protocol.createCallResultPackage({
           cid: pkg.cid,
-          result: true,
+          result: result,
         }));
         break;
       case protocol.packageTypes.CALLRESULT:
         _this.service().handleCallResult(pkg);
         break;
       case protocol.packageTypes.EVENT:
-        _this.howie.send(pkg.eventName, pkg.data);
+        _this.howie.send(pkg.eventName, pkg);
         break;
     }
   };
@@ -137,12 +140,24 @@ define('src/alarm/socket', [
   };
   Socket.prototype.emit = function(eventName, obj) {
     var _this = this,
-      pkg = protocol.createPackage(protocol.packageTypes.EVENT, [eventName, obj]);
+      pkg = protocol.createEventPackage(eventName, obj);
     _this.sendPackage(pkg);
   };
   Socket.prototype.sendPackage = function(pkg) {
     var _this = this;
-    _this.transport.send(pkg.encode());
+    _this.transport.send(_this._lastSent = pkg.encode());
+  };
+
+
+  Socket.prototype.getLastReceived = function() {
+    var _this = this;
+    return _this._lastReceived;
+  };
+  Socket.prototype.getLastSent = function() {
+    var _this = this;
+    if (_this._lastSent) {
+      return protocol.decodePackage(_this._lastSent);
+    }
   };
 
   //
