@@ -35,3 +35,5 @@ div(class="panel scrum",data-bind="active:active,css:{'hide-nav':hideNav}")
       //- a(class="btn small send",tabindex="0",data-bind="cmd:cmdSend") Send
       a(class="btn small send",tabindex="0",data-bind="cmd:clickSend") Send
   <!-- /ko -->
+
+  div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

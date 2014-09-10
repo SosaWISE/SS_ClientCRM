@@ -1,30 +1,45 @@
 div(class="story-editor")
-  h2(class="title",data-bind="text:title")
-  ul(class="edit-form")
-    li
-      span(class="label") StoryTypeId
-      div(data-bind="template:{name:data.StoryTypeCvm.viewTmpl,data:data.StoryTypeCvm}")
-    li
-      span(class="label") Name
-      input(type="text", placeholder="",
-        data-bind="ukov:data.Name,value:data.Name,valueUpdate:'keyup'")
-    li
-      span(class="label") Description
-      textarea(placeholder="",
-        data-bind="ukov:data.Description,value:data.Description,valueUpdate:'keyup'")
-    li
-      span(class="label") Points
-      div(data-bind="template:{name:data.PointsCvm.viewTmpl,data:data.PointsCvm}")
-    li
-      span(class="label") Person
-      div(data-bind="template:{name:data.PersonCvm.viewTmpl,data:data.PersonCvm}")
-    li
-      span(class="label") Sprint
-      div(data-bind="template:{name:data.SprintCvm.viewTmpl,data:data.SprintCvm}")
-    li
-      span(class="label") Epic
-      div(data-bind="template:{name:data.EpicCvm.viewTmpl,data:data.EpicCvm}")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+        h2(class="title",data-bind="text:title")
+        div(class="line-top")
+          ul(class="edit-form")
+            //- li
+            //-   span(class="label") StoryTypeId
+            //-   div(data-bind="template:{name:data.StoryTypeCvm.viewTmpl,data:data.StoryTypeCvm}")
+            li
+              //- span(class="",data-bind="text:data.sid")
+              //- span(class="label") Name
+              input(type="text", placeholder="",
+                data-bind="ukov:data.Name,value:data.Name,valueUpdate:'keyup'")
 
-  div(class="actions")
-    span(class="btn-bg", tabindex="0", data-bind="cmd:cmdSave") Ok
-    span(class="btn-bg", tabindex="0", data-bind="cmd:cmdClose") Cancel
+    tr
+      td(class="fh-body")
+        div(class="fh-contents")
+          div(class="lower-wrap line-top")
+            div(class="details")
+              ul(class="edit-form")
+                li
+                  //- span(class="label") Description
+                  textarea(rows="14",placeholder="",
+                    data-bind="ukov:data.Description,value:data.Description,valueUpdate:'keyup'")
+
+            div(class="status")
+              ul(class="edit-form")
+                li
+                  span(class="label") Points
+                  div(data-bind="cvm:data.PointsCvm")
+                li
+                  span(class="label") State
+                  |cvm goes here
+                  //- div(data-bind="cvm:data.StateCvm")
+                li
+                  span(class="label") Assigned To
+                  div(data-bind="cvm:data.PersonCvm")
+
+          ul(class="actions")
+            li
+              a(class="btn",tabindex="0",data-bind="cmd:cmdClose") Cancel
+            li
+              a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save and Close

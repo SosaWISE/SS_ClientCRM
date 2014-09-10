@@ -1,15 +1,15 @@
 define('src/scrum/open.vm', [
+  'src/scrum/story.editor.vm',
   'src/scrum/storyboard.gvm',
   'src/core/treelist',
   'ko',
-  'src/core/layers.vm',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  StoryEditorViewModel,
   StoryBoardGridViewModel,
   TreeList,
   ko,
-  LayersViewModel,
   utils,
   ControllerViewModel
 ) {
@@ -18,23 +18,29 @@ define('src/scrum/open.vm', [
   function OpenViewModel(options) {
     var _this = this;
     OpenViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['sprint', 'storys']);
-
-    _this.layersVm = new LayersViewModel({
-      controller: _this,
-    });
+    ControllerViewModel.ensureProps(_this, [
+      'layersVm',
+      'sprint',
+      'storys',
+    ]);
 
     _this.cooler = createSection(function(a, b) {
       // descending
       return b.ID - a.ID;
+    }, function(item, cb) {
+      _this.editItem('story', item, cb);
     });
     _this.backlog = createSection(function(a, b) {
       // descending
       return b.ProjectOrder - a.ProjectOrder;
+    }, function(item, cb) {
+      _this.editItem('story', item, cb);
     });
     _this.storyBoard = createSection(function(a, b) {
       // descending
       return b.ProjectOrder - a.ProjectOrder;
+    }, function(item, cb) {
+      _this.editItem('story', item, cb);
     });
     _this.sections = [_this.cooler, _this.backlog, _this.storyBoard];
 
@@ -94,12 +100,51 @@ define('src/scrum/open.vm', [
     newSection.gvm.updateGrid();
   };
 
-  function createSection(comparer) {
+  OpenViewModel.prototype.editItem = function(type, item, cb) {
+    var _this = this,
+      vm = _this.makeEditor(type, item);
+    _this.layersVm.show(vm, function(result) {
+      if (result) {
+        switch (type) {
+          default: throw new Error('invalid item type: ' + type);
+          case 'story':
+            _this.storyUpdated(result);
+            break;
+          case 'task':
+            _this.taskUpdated(result);
+            break;
+        }
+      }
+      cb();
+    });
+  };
+  OpenViewModel.prototype.makeEditor = function(type, item /*, parentId*/ ) {
+    var vm;
+    switch (type) {
+      default: throw new Error('invalid item type: ' + type);
+      case 'story':
+        vm = new StoryEditorViewModel({
+          item: utils.clone(item),
+        });
+        break;
+        // case 'task':
+        //   vm = new TaskEditorViewModel({
+        //     storyId: parentId,
+        //     item: item,
+        //     taskSteps: _this.taskSteps,
+        //   });
+        //   break;
+    }
+    return vm;
+  };
+
+  function createSection(comparer, editFn) {
     var tree = new TreeList(comparer);
     return {
       tree: tree,
       gvm: new StoryBoardGridViewModel({
         dataView: tree,
+        edit: editFn,
       }),
     };
   }

@@ -23,33 +23,26 @@ define('src/scrum/storyboard.gvm', [
         multiSelect: false,
       },
       dataView: options.dataView,
-      // plugins: [ //
-      //   new MoveSubRows({
-      //     dataView: options.dataView,
-      //     // orderName: 'OrderNumber',
-      //     onOrderChanged: function(changedRows) {
-      //       console.log('changedRows', changedRows);
-      //       // changedRows.forEach(function(item) {
-      //       //   options.save(item);
-      //       // });
-      //     },
-      //   }),
-      //   // new RowEvent({
-      //   //   eventName: 'onDblClick',
-      //   //   fn: function(item) {
-      //   //     options.edit(item, function(model, deleted) {
-      //   //       if (!model) { // nothing changed
-      //   //         return;
-      //   //       }
-      //   //       if (deleted) { // remove deleted item
-      //   //         _this.list.remove(item);
-      //   //       } else { // update in place
-      //   //         _this.list.replace(item, model);
-      //   //       }
-      //   //     });
-      //   //   },
-      //   // }),
-      // ],
+      plugins: [ //
+        // new MoveSubRows({
+        //   dataView: options.dataView,
+        //   // orderName: 'OrderNumber',
+        //   onOrderChanged: function(changedRows) {
+        //     console.log('changedRows', changedRows);
+        //     // changedRows.forEach(function(item) {
+        //     //   options.save(item);
+        //     // });
+        //   },
+        // }),
+        new RowEvent({
+          eventName: 'onDblClick',
+          fn: function(item) {
+            options.edit(item, function() {
+              // ??
+            });
+          },
+        }),
+      ],
       columns: [ //
         {
           id: 'sid',

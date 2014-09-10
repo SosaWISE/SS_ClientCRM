@@ -18,8 +18,7 @@ define('src/scrum/story.editor.vm', [
   "use strict";
 
   var schema,
-    strConverter = ukov.converters.string(),
-    intConverter = ukov.converters.number(0);
+    strConverter = ukov.converters.string();
 
   schema = {
     _model: true,
@@ -34,16 +33,9 @@ define('src/scrum/story.editor.vm', [
       ],
     },
     Description: {},
-    Points: {
-      converter: intConverter,
-    },
+    Points: {},
     PersonId: {},
-    SprintId: {},
-    EpicId: {},
-
-    SortOrder: {
-      converter: intConverter,
-    },
+    ProjectOrder: {},
 
     IsDeleted: {},
     Version: {},
@@ -52,18 +44,16 @@ define('src/scrum/story.editor.vm', [
   function StoryEditorViewModel(options) {
     var _this = this;
     StoryEditorViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, ['epics']);
+    BaseViewModel.ensureProps(_this, []);
 
     _this.title = (_this.item ? 'Edit' : 'New') + ' Story';
     _this.data = ukov.wrap(_this.item || {
-      EpicId: _this.epicId,
       StoryTypeId: 1,
       Name: '',
       Description: '',
       Points: null,
       PersonId: null,
-      SprintId: null,
-      SortOrder: null,
+      ProjectOrder: null,
       IsDeleted: false,
       Version: 1,
     }, schema);
@@ -81,20 +71,6 @@ define('src/scrum/story.editor.vm', [
       list: [],
       nullable: true,
     });
-    _this.data.SprintCvm = new ComboViewModel({
-      selectedValue: _this.data.SprintId,
-      list: [],
-      nullable: true,
-    });
-    _this.data.EpicCvm = new ComboViewModel({
-      selectedValue: _this.data.EpicId,
-      list: _this.epics,
-      fields: {
-        value: 'ID',
-        text: 'Name',
-      },
-      nullable: true,
-    });
 
     //
     // events
@@ -103,6 +79,7 @@ define('src/scrum/story.editor.vm', [
       _this.save(cb);
     });
     _this.cmdClose = ko.command(function(cb) {
+      closeLayer(_this);
       if (_this.layer) {
         _this.layer.close(null);
       }
@@ -113,8 +90,27 @@ define('src/scrum/story.editor.vm', [
   }
   utils.inherits(StoryEditorViewModel, BaseViewModel);
   StoryEditorViewModel.prototype.viewTmpl = 'tmpl-scrum_story_editor';
-  StoryEditorViewModel.prototype.width = 400;
+  StoryEditorViewModel.prototype.width = 800;
   StoryEditorViewModel.prototype.height = 'auto';
+
+
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  StoryEditorViewModel.prototype.getResults = function() {
+    var _this = this;
+    return [_this.layerResult, _this.isDeleted];
+  };
+  StoryEditorViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdSave.busy() && !_this.layerResult) {
+      msg = 'Please wait for save to finish.';
+    }
+    return msg;
+  };
 
   StoryEditorViewModel.prototype.save = function(cb) {
     var _this = this,
@@ -130,9 +126,9 @@ define('src/scrum/story.editor.vm', [
     dataservice.scrum.storys.save(model, null, function(err, resp) {
       if (err) {
         notify.notify('error', err.Message);
-      } else if (_this.layer) {
-        _this.layer.close(resp.Value);
       }
+      _this.layerResult = resp.Value;
+      closeLayer(_this);
       cb(resp.Value);
     });
   };

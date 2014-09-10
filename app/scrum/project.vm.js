@@ -16,7 +16,10 @@ define('src/scrum/project.vm', [
   function ProjectViewModel(options) {
     var _this = this;
     ProjectViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['id']);
+    ControllerViewModel.ensureProps(_this, [
+      'layersVm',
+      'id',
+    ]);
 
     //
     // events
@@ -53,6 +56,7 @@ define('src/scrum/project.vm', [
           new OpenViewModel({
             pcontroller: _this,
             title: 'Open',
+            layersVm: _this.layersVm,
             sprint: sprint,
             storys: sprintStorys.concat(storys),
           }),

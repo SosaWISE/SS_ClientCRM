@@ -6,9 +6,9 @@ body.sockets {
 }
 
 #sockets-panel .scrum {
-  .fh-body {
-    background: #fff;
-  }
+  // .fh-body {
+  //   background: #fff;
+  // }
 
   .btn {
     background-color: @scrumbg;
@@ -76,6 +76,32 @@ body.sockets {
     //   }
     // }
   }
+
+  .story-editor {
+    background-color: @scrumbg;
+
+    @status-width: 300px;
+
+    .lower-wrap {
+      min-height: 300px;
+      position: relative;
+
+      .details {
+        position: absolute;
+        top:5px;right:@status-width;bottom:0;left:0;
+      }
+      .status {
+        position: absolute;
+        top:5px;right:0;bottom:0;width:@status-width - 10px;
+      }
+    }
+  }
+
+
+
+
+
+
 
   @tranSec: .25s;
   @navWidth: 150px;

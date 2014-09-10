@@ -4,6 +4,7 @@ define('src/scrum/scrum.panel.vm', [
   'src/scrum/chat.vm',
   'src/scrum/project.vm',
   'ko',
+  'src/core/layers.vm',
   'src/core/utils',
   'src/core/controller.vm',
   // don't care about reference
@@ -15,6 +16,7 @@ define('src/scrum/scrum.panel.vm', [
   ChatViewModel,
   ProjectViewModel,
   ko,
+  LayersViewModel,
   utils,
   ControllerViewModel
 ) {
@@ -24,6 +26,10 @@ define('src/scrum/scrum.panel.vm', [
     var _this = this;
     ScrumPanelViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, []);
+
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
+    });
 
     _this.projects = _this.childs;
     _this.hideNav = ko.observable(false);
@@ -61,6 +67,7 @@ define('src/scrum/scrum.panel.vm', [
           id: item.ID,
           title: item.Name,
           item: item,
+          layersVm: _this.layersVm,
         });
       });
       setter(list);
