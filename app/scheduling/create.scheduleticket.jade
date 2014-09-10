@@ -4,7 +4,7 @@ ul(class="edit-form")
 	li
 		span(class="label") Account ID 
 		input(type="text" data-bind="ukov:data.AccountId, value:data.AccountId,valueUpdate:'keyup'")
-	li
+	li(data-bind="visible: isTicketIdVisible")
 		span(class="label") Ticket ID
 		input(type="text" data-bind="ukov:data.ScheduleTicketID, value:data.ScheduleTicketID, valueUpdate:'keyup'")
 	li

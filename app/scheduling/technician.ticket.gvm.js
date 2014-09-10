@@ -42,6 +42,7 @@ define('src/scheduling/technician.ticket.gvm', [
         id: 'StartTime', //temporary - not sure where to pull the Appointment Time yet
         name: 'Appointment Time',
         field: 'StartTime',
+        formatter: SlickGridViewModel.formatters.datetime,
       }, ],
 
     });

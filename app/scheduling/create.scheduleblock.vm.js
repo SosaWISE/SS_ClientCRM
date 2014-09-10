@@ -116,24 +116,35 @@ define('src/scheduling/create.scheduleblock.vm', [
 
       console.log("Data to save:" + JSON.stringify(param));
 
-      //@TODO Save block      
-      dataservice.scheduleenginesrv.SeScheduleBlock.save({
-        id: _this.BlockID,
-        data: param
+      dataservice.scheduleenginesrv.SeZipCode.read({
+        id: _this.data.ScheduleZip(),
+        link: 'ZC'
       }, null, utils.safeCallback(cb, function(err, resp) {
-        //dataservice.scheduleenginesrv.SeScheduleBlock.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
         if (resp.Code === 0) {
-          console.log("SeScheduleBlock:" + JSON.stringify(resp.Value));
+          console.log("Checking Zipcode result:" + JSON.stringify(resp.Value));
 
-          //close popup
-          closeLayer(_this);
+          //@TODO Save block      
+          dataservice.scheduleenginesrv.SeScheduleBlock.save({
+            id: _this.BlockID,
+            data: param
+          }, null, utils.safeCallback(cb, function(err, resp) {
+
+            if (resp.Code === 0) {
+              console.log("SeScheduleBlock:" + JSON.stringify(resp.Value));
+
+              //close popup
+              closeLayer(_this);
+
+            } else {
+              notify.error(err);
+            }
+          }));
 
         } else {
-          notify.error(err);
+          notify.warn("Invalid Zip Code.", null, 3);
         }
       }));
-
 
     });
 

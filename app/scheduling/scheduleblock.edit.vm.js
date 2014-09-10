@@ -6,6 +6,7 @@ define('src/scheduling/scheduleblock.edit.vm', [
   'src/core/base.vm',
   'src/core/combo.vm',
   'src/core/joiner',
+  'moment',
   'ko',
   'src/ukov',
 ], function(
@@ -16,6 +17,7 @@ define('src/scheduling/scheduleblock.edit.vm', [
   BaseViewModel,
   ComboViewModel,
   joiner,
+  moment,
   ko,
   ukov
 ) {
@@ -43,6 +45,8 @@ define('src/scheduling/scheduleblock.edit.vm', [
         ukov.validators.isInt(),
       ],
     },
+    ScheduleEditStartDateTime: {},
+    ScheduleEditEndDateTime: {},
     TechnicianId: {}
   };
 
@@ -58,6 +62,8 @@ define('src/scheduling/scheduleblock.edit.vm', [
       ScheduleEditSlot: null,
       ScheduleEditZip: null,
       ScheduleEditMaxRadius: null,
+      ScheduleEditStartDateTime: null,
+      ScheduleEditEndDateTime: null,
       TechnicianId: {}
     }, schema);
 
@@ -65,6 +71,9 @@ define('src/scheduling/scheduleblock.edit.vm', [
     _this.data.ScheduleEditSlot(_this.blockInfo.AvailableSlots);
     _this.data.ScheduleEditZip(_this.blockInfo.ZipCode);
     _this.data.ScheduleEditMaxRadius(_this.blockInfo.MaxRadius);
+    _this.data.ScheduleEditStartDateTime(moment(_this.blockInfo.StartTime).format('MM/DD/YYYY HH:mm'));
+    _this.data.ScheduleEditEndDateTime(moment(_this.blockInfo.EndTime).format('MM/DD/YYYY HH:mm'));
+
     _this.data.TechnicianId(_this.blockInfo.TechnicianId);
 
     //This is the dropdown for technicians
@@ -160,8 +169,9 @@ define('src/scheduling/scheduleblock.edit.vm', [
       'TechnicianId': _this.data.TechnicianId(),
       'AvailableSlots': _this.data.ScheduleEditSlot(),
       'Block': _this.blockInfo.Block,
-      'StartTime': _this.blockInfo.StartTime,
-      'EndTime': _this.blockInfo.EndTime,
+      'StartTime': _this.data.ScheduleEditStartDateTime(),
+      'EndTime': _this.data.ScheduleEditEndDateTime(),
+
     };
 
     console.log("Data to save:" + JSON.stringify(param));

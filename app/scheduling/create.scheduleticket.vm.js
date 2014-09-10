@@ -46,6 +46,12 @@ define('src/scheduling/create.scheduleticket.vm', [
     console.log('options' + options);
     //alert(JSON.stringify(ticket));
 
+    //show TicketID if ticket has data
+    if (ticket) {
+      _this.isTicketIdVisible = true;
+    } else {
+      _this.isTicketIdVisible = false;
+    }
 
     //Set title
     _this.title = _this.title || 'Create New Schedule Ticket';
@@ -131,7 +137,8 @@ define('src/scheduling/create.scheduleticket.vm', [
     });
 
     _this.clickClose = function() {
-      _this.layerResult = null;
+      //_this.layerResult = null;           
+      _this.layerResult = _this.ticket;
       closeLayer(_this);
     };
 
@@ -172,7 +179,7 @@ define('src/scheduling/create.scheduleticket.vm', [
 
   function closeLayer(_this) {
     if (_this.layer) {
-      _this.layer.close();
+      _this.layer.close(_this.layerResult);
     }
   }
   ScheduleTicketViewModel.prototype.getResults = function() {
@@ -203,7 +210,7 @@ define('src/scheduling/create.scheduleticket.vm', [
 
     var param = {
       AccountId: _this.data.AccountId(),
-      MoniNumber: null, //temp
+      MonitoringStationNo: null, //temp
       TicketTypeId: _this.data.ScheduleTicketType(),
       StatusCodeId: 1, //temp
       MoniConfirmation: 'MONI CONFIRM', //temp
@@ -280,7 +287,17 @@ define('src/scheduling/create.scheduleticket.vm', [
             _this.data.ScheduleTravelTime(null);
 
             //clear ticket
-            _this.ticket = null;
+            if (_this.ticket) {
+              _this.ticket = null;
+              _this.ticket = _this.ticket = {
+                "AccountTicket": "1"
+              }; //ticket from accounts added
+            } else {
+              _this.ticket = _this.ticket = {
+                "AccountTicket": "0"
+              }; //new ticket added
+            }
+
 
           } else {
             notify.error(err);

@@ -1,10 +1,12 @@
 table(class="fh-wrap")
 	tr
-		div(id="accountInfo" style="margin: 10px;")
-			label Now Scheduling: 
-			label(id="accountNumber")
-			label(id="accountName")
-			label(id="accountAddress")
+		td
+			div(id="accountInfo" style="margin: 10px;", data-bind="visible: IsNowScheduling")
+				label Now Scheduling: 
+				label(data-bind="text:AccountMasterFileNumber")
+				label(data-bind="text:AccountNumber")
+				label(data-bind="text:AccountName")
+				label(data-bind="text:AccountAddress")
 
 	tr
 		td(class="fh-body")

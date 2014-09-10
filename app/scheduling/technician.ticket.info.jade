@@ -25,7 +25,8 @@ ul(class="edit-form")
 	li
 		span(class="label") General Note
 		textarea(rows="5" data-bind="ukov:data.TechTicketNotes, value:data.TechTicketNotes,valueUpdate:'keyup'")
-	li
-		span(class="btn-bg", style="width: 25%;" id="btnPopupCancel" tabindex="0", data-bind="cmd: cmdComplete") Complete
+	li(style="text-align: right;")
+		span(class="btn-bg", style="width: 25%; display: inline-block; !important;" tabindex="0", data-bind="cmd: cmdComplete") Complete
 div(class="actions")
 	//-span(class="btn-bg", style="width: 25%;" id="btnPopupCancel" tabindex="0", data-bind="cmd:clickClose") Close
+//-div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

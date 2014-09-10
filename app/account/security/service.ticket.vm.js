@@ -195,7 +195,7 @@ define('src/account/security/service.ticket.vm', [
 
       if (resp.Code === 0) {
 
-        //console.log("Tickets:" + JSON.stringify(resp.Value));
+        console.log("Tickets:" + JSON.stringify(resp.Value));
 
         //empty the list before adding some data
         cvm.list([]);
