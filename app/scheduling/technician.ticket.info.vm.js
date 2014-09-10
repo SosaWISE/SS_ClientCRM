@@ -4,6 +4,8 @@ define('src/scheduling/technician.ticket.info.vm', [
   'src/core/utils',
   'src/core/base.vm',
   'src/scheduling/technician.ticket.info.gvm',
+  'src/scheduling/technician.ticket.complete.note.vm',
+  'src/core/layers.vm',
   'src/core/joiner',
   'ko',
   'src/ukov',
@@ -13,6 +15,8 @@ define('src/scheduling/technician.ticket.info.vm', [
   utils,
   BaseViewModel,
   TechnicianTicketInfoGridViewModel,
+  TechTicketCompleteNoteViewModel,
+  LayersViewModel,
   joiner,
   ko,
   ukov
@@ -27,6 +31,8 @@ define('src/scheduling/technician.ticket.info.vm', [
     custAddress: {},
     custPhone: {},
     TechTicketNotes: {},
+    ClosingNote: {},
+    ConfirmationNo: {},
   };
 
 
@@ -44,8 +50,14 @@ define('src/scheduling/technician.ticket.info.vm', [
       custName: null,
       custAddress: null,
       custPhone: null,
-      TechTicketNotes: null
+      TechTicketNotes: null,
+      ClosingNote: null,
+      ConfirmationNo: null,
     }, schema);
+
+    _this.layersVm = _this.layersVm || new LayersViewModel({
+      controller: _this,
+    });
 
     obj = _this.rowObj;
 
@@ -125,22 +137,53 @@ define('src/scheduling/technician.ticket.info.vm', [
       //@TODO 
       // this method will set IsTechCompleted(ITC) status to true      
 
-      dataservice.scheduleenginesrv.SeTicket.save({
-        id: _this.TicketId,
-        link: 'ITC'
-      }, null, utils.safeCallback(cb, function(err, resp) {
+      //show confirmation note screen
+      _this.layersVm.show(new TechTicketCompleteNoteViewModel({
 
-        console.log("Ticket Completed:" + JSON.stringify(resp));
+      }), function onClose(result) {
+        if (result) {
 
-        if (resp && resp.Value && !err) {
-          notify.info("Ticket Completed.", null, 3);
+          if (!result.ClosingNote) {
+            cb();
+            return;
+          }
 
-          closeLayer(_this);
+          _this.data.ClosingNote(result.ClosingNote);
+          _this.data.ConfirmationNo(result.ConfirmationNo);
+
+          var ticketData = {
+            TicketID: _this.TicketId,
+            ClosingNote: _this.data.ClosingNote(),
+            ConfirmationNo: _this.data.ConfirmationNo(),
+          };
+
+          console.log("ticketData:" + JSON.stringify(ticketData));
+
+          //save completed ticket information
+          dataservice.scheduleenginesrv.SeTicket.save({
+            id: _this.TicketId,
+            link: 'ITC',
+            data: ticketData,
+          }, null, utils.safeCallback(cb, function(err, resp) {
+
+            console.log("Ticket Completed:" + JSON.stringify(resp));
+
+            if (resp && resp.Value && !err) {
+              notify.info("Ticket Completed.", null, 3);
+
+              closeLayer(_this);
+            }
+
+          }, function(err) {
+            notify.error(err);
+          }));
+
+        } else {
+          cb();
+          return;
         }
 
-      }, function(err) {
-        notify.error(err);
-      }));
+      });
 
     });
 

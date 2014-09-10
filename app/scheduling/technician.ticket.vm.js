@@ -119,7 +119,15 @@ define('src/scheduling/technician.ticket.vm', [
     _this.layersVm.show(new TechTicketInfoViewModel({
       title: 'Technician Ticket Info',
       rowObj: ticket,
-    }), function onClose( /*result, cb*/ ) {
+    }), function onClose(cb) {
+
+      var param = {
+        id: app.user.peek().GPEmployeeID,
+        link: 'TID'
+      };
+
+      load_tickets(param, _this.technicianTicketGvm, cb);
+
 
     });
 
