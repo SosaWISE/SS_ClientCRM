@@ -35,7 +35,7 @@ define('src/core/dataservice.base', [
 
   // post/get with params object (easy to mock)
   DataserviceBase.prototype.save = function(params, setter, callback) {
-    this.ajax('POST', params.id, params.link, null, params.data, setter, callback);
+    this.ajax('POST', params.id, params.link, params.query, params.data, setter, callback);
   };
   DataserviceBase.prototype.read = function(params, setter, callback) {
     this.ajax('GET', params.id, params.link, params.query, null, setter, callback);

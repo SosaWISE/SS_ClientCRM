@@ -1,4 +1,4 @@
-h2(class="title") Run Credit
+//- h2(class="title") Run Credit
 div(class="runcredit-form", data-bind="toggle:{'override':override}")
   ul(class="edit-form limit-width")
     li
@@ -39,7 +39,8 @@ div(class="runcredit-form", data-bind="toggle:{'override':override}")
       div(data-bind="cvm:localizationCvm")
 
 div(style="margin-bottom:20px;")
-    span(class="btn-bg", tabindex="0", data-bind="cmd:cmdRun") Run Credit
+  span(class="btn-bg", tabindex="0", data-bind="cmd:cmdRun") Run Credit
+  span(class="btn-bg", tabindex="0", data-bind="cmd:cmdBypass") Bypass Credit
 
 div(data-bind="if:loaded&&creditResult")
   div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult}")
