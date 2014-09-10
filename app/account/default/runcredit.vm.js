@@ -203,35 +203,22 @@ define('src/account/default/runcredit.vm', [
       return !busy && creditResult && creditResult.IsHit;
     });
     _this.cmdRun = ko.command(function(cb) {
-      _this.data.validate();
-      _this.data.update();
-      if (!_this.data.isValid()) {
-        notify.warn(_this.data.errMsg(), null, 7);
-        return cb();
-      }
-
-      var model = _this.data.getValue();
-      // store now since we want to use this even if escape key is pressed... (and assuming the credit is a hit)
-      _this.customerResult = {
-        SSN: model.SSN,
-        DOB: model.DOB,
-        Email: model.Email,
-        CustomerName: strings.joinTrimmed(' ', model.Salutation, model.FirstName, model.MiddleName, model.LastName, model.Suffix),
-      };
-      _this.loaded(false);
-      dataservice.qualify.runcredit.post(null, model, null, utils.safeCallback(cb, function(err, resp) {
-        _this.loaded(true);
-        _this.data.markClean(model, true);
-        var creditResult = resp.Value;
-        _this.creditResult(creditResult);
-        // show credit result popup
-        showCreditResult(_this);
-      }, function(err) {
-        notify.error(err, 10);
-      }));
+      runCredit(_this, false, cb);
     }, function(busy) {
       var creditResult = _this.creditResult();
-      return !busy && (!creditResult || !creditResult.IsHit);
+      return !busy && !_this.cmdBypass.busy() && (!creditResult || !creditResult.IsHit);
+    });
+    _this.cmdBypass = ko.command(function(cb) {
+      notify.confirm('Bypass Credit Check?', 'This is a dialog to ensure you really want to bypass the credit check. Click YES to bypass.', function(result) {
+        if (result === 'yes') {
+          runCredit(_this, true, cb);
+        } else {
+          cb();
+        }
+      });
+    }, function(busy) {
+      var creditResult = _this.creditResult();
+      return !busy && !_this.cmdRun.busy() && (!creditResult || !creditResult.IsHit);
     });
   }
   utils.inherits(RunCreditViewModel, BaseViewModel);
@@ -293,6 +280,40 @@ define('src/account/default/runcredit.vm', [
         viewTmpl: 'tmpl-acct-default-runcredit-result',
       }));
     }
+  }
+
+  function runCredit(_this, bypass, cb) {
+    _this.data.validate();
+    _this.data.update();
+    if (!_this.data.isValid()) {
+      notify.warn(_this.data.errMsg(), null, 7);
+      return cb();
+    }
+
+    var model = _this.data.getValue();
+    // store now since we want to use this even if escape key is pressed... (and assuming the credit is a hit)
+    _this.customerResult = {
+      SSN: model.SSN,
+      DOB: model.DOB,
+      Email: model.Email,
+      CustomerName: strings.joinTrimmed(' ', model.Salutation, model.FirstName, model.MiddleName, model.LastName, model.Suffix),
+    };
+    _this.loaded(false);
+    dataservice.qualify.runcredit.save({
+      data: model,
+      query: {
+        bypass: bypass,
+      },
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      _this.loaded(true);
+      _this.data.markClean(model, true);
+      var creditResult = resp.Value;
+      _this.creditResult(creditResult);
+      // show credit result popup
+      showCreditResult(_this);
+    }, function(err) {
+      notify.error(err, 10);
+    }));
   }
 
   return RunCreditViewModel;
