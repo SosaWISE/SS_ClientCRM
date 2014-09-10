@@ -9,6 +9,7 @@ define('src/scheduling/schedule.vm', [
   'src/scheduling/create.scheduleblock.vm',
   'src/scheduling/create.scheduleticket.vm',
   'src/scheduling/scheduleblock.edit.vm',
+  'src/scheduling/scheduleblock.viewticket.vm',
   'src/core/layers.vm',
   'src/core/joiner',
   'ko',
@@ -25,6 +26,7 @@ define('src/scheduling/schedule.vm', [
   ScheduleBlockViewModel,
   ScheduleTicketViewModel,
   EditScheduleBlockViewModel,
+  ScheduleBlockTicketsViewModel,
   LayersViewModel,
   joiner,
   ko,
@@ -59,6 +61,7 @@ define('src/scheduling/schedule.vm', [
     _this.AccountNumber = ko.observable();
     _this.AccountName = ko.observable();
     _this.AccountAddress = ko.observable();
+
 
     //events
     //
@@ -204,6 +207,7 @@ define('src/scheduling/schedule.vm', [
 
         //enable editing of blocks          
         element.find('.fc-event-time').append('<button style="float: right !important; z-index: 999999 !important;" id="btnEdit' + event.id + '">Edit</button>');
+        element.find('.fc-event-time').append('<button style="float: right !important; z-index: 999999 !important;" id="btnView' + event.id + '">View Tickets</button>');
         $("#btnEdit" + event.id).click(function(e) {
 
           _this.layersVm.show(new EditScheduleBlockViewModel({
@@ -211,6 +215,24 @@ define('src/scheduling/schedule.vm', [
           }), function onClose(cb) {
             load_scheduleBlockList(cb);
           });
+
+          e.stopPropagation();
+        });
+
+        //view block tickets
+        $("#btnView" + event.id).click(function(e) {
+
+          if (event.blockInfo.NoOfTickets > 0) {
+
+            _this.layersVm.show(new ScheduleBlockTicketsViewModel({
+              BlockID: event.id,
+            }), function onClose(cb) {
+              load_scheduleBlockList(cb);
+            });
+
+          } else {
+            notify.info("No ticket to view.", null, 3);
+          }
 
           e.stopPropagation();
         });
@@ -325,6 +347,14 @@ define('src/scheduling/schedule.vm', [
             allDay: false,
             //someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') + distanceText + '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' <br />',
             someInfo: 'Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') + distanceText + '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' <br />',
+            // someInfo: '<table class="fh-wrap"><tr><td class="fh-header relative">' +
+            //           'Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + 
+            //           ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') +
+            //           distanceText + 
+            //           '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + 
+            //           ' <br /><hr> ' + resp.Value[x].TechnicianName + 
+            //           ' <br /></td></tr>'+
+            //           '<tr><td class="fh-body"><div class="fh-contents"><div class="grid-wrap"><div class="slickgrid" style="background:white;color:black;"></div></div></div></td></tr></table>',
             backgroundColor: tColor,
           };
 
