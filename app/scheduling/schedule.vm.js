@@ -144,6 +144,12 @@ define('src/scheduling/schedule.vm', [
       hiddenDays: [0], //hide sunday      
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
 
+        //prevent adding tickets if no zipcode specified on the block
+        if (!calEvent.zipCode) {
+          notify.warn("Please provide 'zip code' on this block.", null, 3);
+          return;
+        }
+
         //show create ticket screen only when there are still spaces available for a specific block
         if (parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10)) {
 
