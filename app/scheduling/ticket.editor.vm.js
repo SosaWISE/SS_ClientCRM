@@ -107,12 +107,12 @@ define('src/scheduling/ticket.editor.vm', [
       //account id validation
       dataservice.monitoringstationsrv.accounts.read({
         id: _this.data.AccountId(),
-        link: 'Details',
+        link: 'Validate',
       }, null, utils.safeCallback(cb, function(err, resp) {
 
         if (resp.Code === 0 && resp.Value) {
 
-          console.log("Account Details:" + JSON.stringify(resp.Value));
+          console.log("Account Validate:" + JSON.stringify(resp.Value));
 
           saveTicket(_this, cb);
 
@@ -133,12 +133,12 @@ define('src/scheduling/ticket.editor.vm', [
       //checking account id
       dataservice.monitoringstationsrv.accounts.read({
         id: _this.data.AccountId(),
-        link: 'Details',
+        link: 'Validate',
       }, null, utils.safeCallback(cb, function(err, resp) {
 
         if (resp.Code === 0 && resp.Value) {
 
-          console.log("Account Details:" + JSON.stringify(resp.Value));
+          console.log("Account Validate:" + JSON.stringify(resp.Value));
 
           if (!_this.data.isValid()) {
             notify.warn(_this.data.errMsg(), null, 7);

@@ -27,7 +27,12 @@ define('src/scheduling/create.scheduleticket.vm', [
 
   schema = {
     _model: true,
-    AccountId: {},
+    AccountId: {
+      // converters: ukov.converters.number(0),
+      // validators: [
+      //   ukov.validators.isInt("Please input a number."),
+      // ],      
+    },
     ScheduleTicketID: {},
     ScheduleTicketType: {},
     ScheduleTicketAppointment: {},
@@ -98,19 +103,30 @@ define('src/scheduling/create.scheduleticket.vm', [
 
     _this.cmdSaveScheduleTicket = ko.command(function(cb) {
 
-      var TicketId = _this.data.ScheduleTicketID();
+      var TicketId = _this.data.ScheduleTicketID(),
+        convAccountId;
 
-      //@TODO
+      //@TODO      
+
+      //doing manual number conversion for now
+      convAccountId = Number(_this.data.AccountId());
+
+      if (convAccountId === 0 || isNaN(convAccountId)) {
+        notify.warn("For AccountID, please input a number.", null, 3);
+        cb();
+        return;
+      }
+
 
       //account id validation
       dataservice.monitoringstationsrv.accounts.read({
         id: _this.data.AccountId(),
-        link: 'Details',
+        link: 'Validate',
       }, null, utils.safeCallback(cb, function(err, resp) {
 
         if (resp.Code === 0 && resp.Value) {
 
-          console.log("Account Details:" + JSON.stringify(resp.Value));
+          console.log("Account Validate:" + JSON.stringify(resp.Value));
 
           if (!TicketId) {
             createServiceTicket(_this, cb);
