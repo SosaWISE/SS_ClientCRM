@@ -2,8 +2,8 @@ ul(class="edit-form")
 	li
 		input(type="hidden" id="eventID")
 	li
-		label Number of Slots
-		input(type="text" data-bind="ukov:data.ScheduleAvailableSlot, value:data.ScheduleAvailableSlot, valueUpdate:'keyup', select:focusFirst")
+		//-label Number of Slots
+		input(type="hidden" data-bind="ukov:data.ScheduleAvailableSlot, value:data.ScheduleAvailableSlot, valueUpdate:'keyup', select:focusFirst")
 	li
 		label Zip
 		input(type="text" data-bind="ukov:data.ScheduleZip, value:data.ScheduleZip, valueUpdate:'keyup'")

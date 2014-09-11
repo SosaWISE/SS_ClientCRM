@@ -8,6 +8,7 @@ define('src/scheduling/technician.signup.vm', [
   'src/core/base.vm',
   'src/core/combo.vm',
   'src/core/joiner',
+  'moment',
   'ko',
   'src/ukov',
 ], function(
@@ -20,6 +21,7 @@ define('src/scheduling/technician.signup.vm', [
   BaseViewModel,
   ComboViewModel,
   joiner,
+  moment,
   ko,
   ukov
 ) {
@@ -31,12 +33,14 @@ define('src/scheduling/technician.signup.vm', [
     _model: true,
     AvailableStartTime: {},
     AvailableEndTime: {},
-    TechnicianId: {}
+    TechnicianId: {},
+    ScheduleAvailableSlot: {},
   };
 
 
   function TechSignUpViewModel(options) {
     var _this = this,
+      join = joiner(),
       block;
 
     TechSignUpViewModel.super_.call(_this, options);
@@ -46,7 +50,8 @@ define('src/scheduling/technician.signup.vm', [
 
     _this.data = ukov.wrap(_this.item || {
       AvailableStartTime: null,
-      AvailableEndTime: null
+      AvailableEndTime: null,
+      ScheduleAvailableSlot: null,
     }, schema);
 
     //Set values    
@@ -76,6 +81,9 @@ define('src/scheduling/technician.signup.vm', [
 
       block = (parseInt(_this.blockTime, 10) < 12) ? 'AM' : 'PM';
 
+      //time slots are 1 hour
+      extendToHour(_this, join.add());
+
       //technician validation
       if (!_this.data.TechnicianId()) {
         notify.warn("Please select a technician.", null, 3);
@@ -88,6 +96,7 @@ define('src/scheduling/technician.signup.vm', [
         'Block': block,
         'StartTime': _this.data.AvailableStartTime(),
         'EndTime': _this.data.AvailableEndTime(),
+        'AvailableSlots': _this.data.ScheduleAvailableSlot(),
         'IsTechConfirmed': true
       };
 
@@ -158,6 +167,40 @@ define('src/scheduling/technician.signup.vm', [
     }));
 
   }
+
+  //time slots are 1 hour
+  function extendToHour(_this) {
+
+    var startDuration,
+      endDuration,
+      minuteDiff,
+      minuteExtra,
+      hourDiff;
+
+    //these will do the following - to always achive 1 hour slot implementation
+
+    // - get moments of start and end time
+    startDuration = moment(_this.data.AvailableStartTime());
+    endDuration = moment(_this.data.AvailableEndTime());
+    // - get the hour difference
+    hourDiff = endDuration.diff(startDuration, 'hour');
+    // - get the minute difference
+    minuteDiff = endDuration.diff(startDuration, 'minutes');
+    // - get the modulo by 60 of minute difference and if greater than 0, add 1/extend to 1 hour
+    minuteExtra = minuteDiff % 60;
+
+    if (minuteExtra) {
+      hourDiff++;
+    }
+
+    //set the final endtime of block
+    _this.data.AvailableEndTime(moment(startDuration.add("hour", hourDiff)).format("MM/DD/YYYY HH:mm"));
+
+    //set the number of slots for a block
+    _this.data.ScheduleAvailableSlot(hourDiff);
+
+  }
+
 
   return TechSignUpViewModel;
 });

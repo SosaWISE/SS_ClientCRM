@@ -8,6 +8,7 @@ define('src/scheduling/create.scheduleblock.vm', [
   'src/core/base.vm',
   'src/core/combo.vm',
   'src/core/joiner',
+  'moment',
   'ko',
   'src/ukov',
 ], function(
@@ -20,6 +21,7 @@ define('src/scheduling/create.scheduleblock.vm', [
   BaseViewModel,
   ComboViewModel,
   joiner,
+  moment,
   ko,
   ukov
 ) {
@@ -53,6 +55,8 @@ define('src/scheduling/create.scheduleblock.vm', [
 
   function ScheduleBlockViewModel(options) {
     var _this = this;
+    //join = joiner();
+
     ScheduleBlockViewModel.super_.call(_this, options);
 
     //Set the first focus on slot # field
@@ -73,10 +77,10 @@ define('src/scheduling/create.scheduleblock.vm', [
     }, schema);
 
     //Set values
-    _this.data.ScheduleDate(_this.date);
+    //_this.data.ScheduleDate(_this.date);
     _this.data.ScheduleStartTime(_this.stime);
     _this.data.ScheduleEndTime(_this.etime);
-
+    _this.data.ScheduleAvailableSlot(_this.slot);
     //This is the dropdown for technicians
     _this.data.TechnicianCvm = new ComboViewModel({
       selectedValue: _this.data.TechnicianId,
@@ -100,7 +104,14 @@ define('src/scheduling/create.scheduleblock.vm', [
       //check am/pm
       block = (parseInt(_this.blockTime, 10) < 12) ? 'AM' : 'PM';
 
-      console.log("Block:" + block);
+
+      //check if technician is available
+      if (!_this.data.TechnicianId()) {
+        notify.warn("Please select a technician.", null, 3);
+        cb();
+        return;
+      }
+
 
       param = {
         'BlockID': _this.BlockID,

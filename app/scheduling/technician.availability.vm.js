@@ -10,8 +10,8 @@ define('src/scheduling/technician.availability.vm', [
   'src/scheduling/technician.signup.vm',
   'src/core/layers.vm',
   'src/core/joiner',
-  //'src/ukov',
-
+  'moment',
+  'ko',
 ], function(
   $,
   fullCalendar,
@@ -23,8 +23,9 @@ define('src/scheduling/technician.availability.vm', [
   ControllerViewModel,
   TechSignUpViewModel,
   LayersViewModel,
-  joiner
-  //ukov
+  joiner,
+  moment,
+  ko
 ) {
   'use strict';
 
@@ -46,6 +47,9 @@ define('src/scheduling/technician.availability.vm', [
     _this.layersVm = new LayersViewModel({
       controller: _this,
     });
+
+    _this.AvailableEndTime = ko.observable();
+    _this.ScheduleAvailableSlot = ko.observable();
 
     //events
     //
@@ -116,7 +120,7 @@ define('src/scheduling/technician.availability.vm', [
 
         if (isBlockOwned) {
           //new UpdateEvent(event.id, event.start, event.end);
-          new UpdateEvent(event);
+          new UpdateEvent(_this, event, join);
 
         } else {
           notify.warn("That availability block does not belong to you.", null, 3);
@@ -134,7 +138,7 @@ define('src/scheduling/technician.availability.vm', [
 
         if (isBlockOwned) {
           // new UpdateEvent(event.id, event.start, event.end);
-          new UpdateEvent(event);
+          new UpdateEvent(_this, event, join);
         } else {
           notify.warn("That availability block does not belong to you.", null, 3);
           return;
@@ -211,10 +215,15 @@ define('src/scheduling/technician.availability.vm', [
 
   };
 
-  function UpdateEvent(event) {
+  function UpdateEvent(_this, event, join) {
 
     var block,
-      scheduleBlock = {};
+      scheduleBlock = {},
+      startTime = $.fullCalendar.formatDate(event.start, 'MM/dd/yyyy HH:mm'),
+      endTime = $.fullCalendar.formatDate(event.end, 'MM/dd/yyyy HH:mm');
+
+    //time slots are 1 hour
+    extendToHour(_this, startTime, endTime, join.add());
 
     block = (parseInt($.fullCalendar.formatDate(event.end, 'HH:mm'), 10) < 12) ? 'AM' : 'PM';
 
@@ -222,9 +231,12 @@ define('src/scheduling/technician.availability.vm', [
       'BlockID': event.id,
       'Block': block,
       'StartTime': $.fullCalendar.formatDate(event.start, 'MM/dd/yyyy HH:mm'),
-      'EndTime': $.fullCalendar.formatDate(event.end, 'MM/dd/yyyy HH:mm'),
+      //'EndTime': $.fullCalendar.formatDate(event.end, 'MM/dd/yyyy HH:mm'),
+      'EndTime': _this.AvailableEndTime(),
+      'AvailableSlots': _this.ScheduleAvailableSlot(),
       'IsTechConfirmed': true
     };
+
     dataservice.scheduleenginesrv.SeScheduleBlock.save({
       id: scheduleBlock.BlockID,
       data: scheduleBlock,
@@ -232,23 +244,25 @@ define('src/scheduling/technician.availability.vm', [
     }, null, utils.safeCallback(null, function(err, resp) {
 
         if (resp && resp.Value) {
-          var oSchedubleBlock = resp.Value;
+          // var oSchedubleBlock = resp.Value;
 
-          var modifiedEvent = {
-            id: oSchedubleBlock.BlockID,
-            title: null,
-            start: oSchedubleBlock.StartTime,
-            end: oSchedubleBlock.EndTime,
-            allDay: false,
-            technicianId: oSchedubleBlock.TechnicianId,
-            backgroundColor: oSchedubleBlock.Color,
-            someInfo: 'Technician Name:' + oSchedubleBlock.TechnicianName,
-          };
+          // var modifiedEvent = {
+          //   id: oSchedubleBlock.BlockID,
+          //   title: null,
+          //   start: oSchedubleBlock.StartTime,
+          //   end: oSchedubleBlock.EndTime,
+          //   allDay: false,
+          //   technicianId: oSchedubleBlock.TechnicianId,
+          //   backgroundColor: oSchedubleBlock.Color,
+          //   someInfo: 'Technician Name:' + oSchedubleBlock.TechnicianName,
+          // };
 
           //to avoid reload
-          $('#techCalendar').fullCalendar('updateEvent', modifiedEvent);
-          //$('#techCalendar').fullCalendar('addEventSource', result);
-          // load_technicianAvailabilityList();
+          //$('#techCalendar').fullCalendar('updateEvent', modifiedEvent);          
+
+          // changed back to reloading all events: the size of the block won't update unless reloading them all
+          load_technicianAvailabilityList();
+
         }
       },
       notify.error, false));
@@ -379,6 +393,38 @@ define('src/scheduling/technician.availability.vm', [
 
   }
 
+  //time slots are 1 hour
+  function extendToHour(_this, start, end) {
+
+    var startDuration,
+      endDuration,
+      minuteDiff,
+      minuteExtra,
+      hourDiff;
+
+    //these will do the following - to always achive 1 hour slot implementation
+
+    // - get moments of start and end time
+    startDuration = moment(start);
+    endDuration = moment(end);
+    // - get the hour difference
+    hourDiff = endDuration.diff(startDuration, 'hour');
+    // - get the minute difference
+    minuteDiff = endDuration.diff(startDuration, 'minutes');
+    // - get the modulo by 60 of minute difference and if greater than 0, add 1/extend to 1 hour
+    minuteExtra = minuteDiff % 60;
+
+    if (minuteExtra) {
+      hourDiff++;
+    }
+
+    //set the final endtime of block
+    _this.AvailableEndTime(moment(startDuration.add("hour", hourDiff)).format("MM/DD/YYYY HH:mm"));
+
+    //set the number of slots for a block
+    _this.ScheduleAvailableSlot(hourDiff);
+
+  }
 
 
   return TechnicianViewModel;

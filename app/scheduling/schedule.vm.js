@@ -12,6 +12,7 @@ define('src/scheduling/schedule.vm', [
   'src/scheduling/scheduleblock.viewticket.vm',
   'src/core/layers.vm',
   'src/core/joiner',
+  'moment',
   'ko',
   'src/ukov'
 
@@ -29,6 +30,7 @@ define('src/scheduling/schedule.vm', [
   ScheduleBlockTicketsViewModel,
   LayersViewModel,
   joiner,
+  moment,
   ko,
   ukov
 ) {
@@ -56,12 +58,16 @@ define('src/scheduling/schedule.vm', [
       controller: _this,
     });
 
+    // now scheduling info
     _this.IsNowScheduling = ko.observable(true);
     _this.AccountMasterFileNumber = ko.observable();
     _this.AccountNumber = ko.observable();
     _this.AccountName = ko.observable();
     _this.AccountAddress = ko.observable();
 
+    //blocks date and time    
+    _this.ScheduleEndTime = ko.observable();
+    _this.ScheduleAvailableSlot = ko.observable();
 
     //events
     //
@@ -174,11 +180,11 @@ define('src/scheduling/schedule.vm', [
       },
 
       eventDrop: function(event /*, dayDelta, minuteDelta, allDay, revertFunc*/ ) {
-        new UpdateEvent(event.id, event.start, event.end);
+        new UpdateEvent(_this, event.id, event.start, event.end, join);
       },
 
       eventResize: function(event /*, dayDelta, minuteDelta, revertFunc*/ ) {
-        new UpdateEvent(event.id, event.start, event.end);
+        new UpdateEvent(_this, event.id, event.start, event.end, join);
       },
 
       dayClick: function( /*date , allDay, jsEvent, view*/ ) {
@@ -187,10 +193,17 @@ define('src/scheduling/schedule.vm', [
 
       select: function(start, end /*, jsEvent, view*/ ) {
 
+        var startTime = $.fullCalendar.formatDate(start, 'MM/dd/yyyy HH:mm'),
+          endTime = $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm');
+        //time slots are 1 hour
+        extendToHour(_this, startTime, endTime, join.add());
+
         _this.layersVm.show(new ScheduleBlockViewModel({
           date: $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
           stime: $.fullCalendar.formatDate(start, 'MM/dd/yyyy HH:mm'),
-          etime: $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm'),
+          //etime: $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm'),          
+          etime: _this.ScheduleEndTime(),
+          slot: _this.ScheduleAvailableSlot(),
           blockTime: $.fullCalendar.formatDate(end, 'HH:mm'),
         }), function onClose(cb) {
           load_scheduleBlockList(cb);
@@ -211,7 +224,7 @@ define('src/scheduling/schedule.vm', [
         $("#btnEdit" + event.id).click(function(e) {
 
           _this.layersVm.show(new EditScheduleBlockViewModel({
-            blockInfo: event.blockInfo,
+            blockInfo: event.blockInfo
           }), function onClose(cb) {
             load_scheduleBlockList(cb);
           });
@@ -243,10 +256,15 @@ define('src/scheduling/schedule.vm', [
   };
 
 
-  function UpdateEvent(EventID, EventStart, EventEnd) {
+  function UpdateEvent(_this, EventID, EventStart, EventEnd, join) {
 
     var block,
-      scheduleBlock = {};
+      scheduleBlock = {},
+      startTime = $.fullCalendar.formatDate(EventStart, 'MM/dd/yyyy HH:mm'),
+      endTime = $.fullCalendar.formatDate(EventEnd, 'MM/dd/yyyy HH:mm');
+
+    //time slots are 1 hour
+    extendToHour(_this, startTime, endTime, join.add());
 
     block = (parseInt($.fullCalendar.formatDate(EventEnd, 'HH:mm'), 10) < 12) ? 'AM' : 'PM';
 
@@ -254,7 +272,8 @@ define('src/scheduling/schedule.vm', [
       'BlockID': EventID,
       'Block': block,
       'StartTime': $.fullCalendar.formatDate(EventStart, 'MM/dd/yyyy HH:mm'),
-      'EndTime': $.fullCalendar.formatDate(EventEnd, 'MM/dd/yyyy HH:mm'),
+      'EndTime': _this.ScheduleEndTime(),
+      'AvailableSlots': _this.ScheduleAvailableSlot(),
       'IsTechConfirmed': true
     };
 
@@ -373,6 +392,39 @@ define('src/scheduling/schedule.vm', [
         notify.error(err);
       }
     }));
+
+  }
+
+  //time slots are 1 hour
+  function extendToHour(_this, start, end) {
+
+    var startDuration,
+      endDuration,
+      minuteDiff,
+      minuteExtra,
+      hourDiff;
+
+    //these will do the following - to always achive 1 hour slot implementation
+
+    // - get moments of start and end time    
+    startDuration = moment(start);
+    endDuration = moment(end);
+    // - get the hour difference
+    hourDiff = endDuration.diff(startDuration, 'hour');
+    // - get the minute difference
+    minuteDiff = endDuration.diff(startDuration, 'minutes');
+    // - get the modulo by 60 of minute difference and if greater than 0, add 1/extend to 1 hour
+    minuteExtra = minuteDiff % 60;
+
+    if (minuteExtra) {
+      hourDiff++;
+    }
+
+    //set the final endtime of block
+    _this.ScheduleEndTime(moment(startDuration.add("hour", hourDiff)).format("MM/DD/YYYY HH:mm"));
+
+    //set the number of slots for a block
+    _this.ScheduleAvailableSlot(hourDiff);
 
   }
 

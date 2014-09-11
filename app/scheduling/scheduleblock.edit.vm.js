@@ -52,7 +52,9 @@ define('src/scheduling/scheduleblock.edit.vm', [
 
 
   function EditScheduleBlockViewModel(options) {
-    var _this = this;
+    var _this = this,
+      join = joiner();
+
     EditScheduleBlockViewModel.super_.call(_this, options);
 
     //Set title
@@ -73,7 +75,6 @@ define('src/scheduling/scheduleblock.edit.vm', [
     _this.data.ScheduleEditMaxRadius(_this.blockInfo.MaxRadius);
     _this.data.ScheduleEditStartDateTime(moment(_this.blockInfo.StartTime).format('MM/DD/YYYY HH:mm'));
     _this.data.ScheduleEditEndDateTime(moment(_this.blockInfo.EndTime).format('MM/DD/YYYY HH:mm'));
-
     _this.data.TechnicianId(_this.blockInfo.TechnicianId);
 
     //This is the dropdown for technicians
@@ -85,6 +86,8 @@ define('src/scheduling/scheduleblock.edit.vm', [
       },
     });
 
+    _this.ScheduleEndTime = ko.observable();
+
     //
     // events
     //
@@ -93,6 +96,10 @@ define('src/scheduling/scheduleblock.edit.vm', [
 
 
       //@TODO
+
+      //time slots are 1 hour
+      extendToHour(_this, _this.data.ScheduleEditStartDateTime(), _this.data.ScheduleEditEndDateTime(), join.add());
+
       //check zip code
 
       dataservice.scheduleenginesrv.SeZipCode.read({
@@ -170,7 +177,7 @@ define('src/scheduling/scheduleblock.edit.vm', [
       'AvailableSlots': _this.data.ScheduleEditSlot(),
       'Block': _this.blockInfo.Block,
       'StartTime': _this.data.ScheduleEditStartDateTime(),
-      'EndTime': _this.data.ScheduleEditEndDateTime(),
+      'EndTime': _this.ScheduleEndTime(),
 
     };
 
@@ -194,7 +201,38 @@ define('src/scheduling/scheduleblock.edit.vm', [
     }));
   }
 
+  //time slots are 1 hour
+  function extendToHour(_this, start, end) {
 
+    var startDuration,
+      endDuration,
+      minuteDiff,
+      minuteExtra,
+      hourDiff;
+
+    //these will do the following - to always achive 1 hour slot implementation
+
+    // - get moments of start and end time    
+    startDuration = moment(start);
+    endDuration = moment(end);
+    // - get the hour difference
+    hourDiff = endDuration.diff(startDuration, 'hour');
+    // - get the minute difference
+    minuteDiff = endDuration.diff(startDuration, 'minutes');
+    // - get the modulo by 60 of minute difference and if greater than 0, add 1/extend to 1 hour
+    minuteExtra = minuteDiff % 60;
+
+    if (minuteExtra) {
+      hourDiff++;
+    }
+
+    //set the final endtime of block
+    _this.ScheduleEndTime(moment(startDuration.add("hour", hourDiff)).format("MM/DD/YYYY HH:mm"));
+
+    //set the number of slots for a block
+    _this.data.ScheduleEditSlot(hourDiff);
+
+  }
 
   return EditScheduleBlockViewModel;
 });
