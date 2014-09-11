@@ -112,7 +112,7 @@ define('src/scheduling/create.scheduleticket.vm', [
       convAccountId = Number(_this.data.AccountId());
 
       if (convAccountId === 0 || isNaN(convAccountId)) {
-        notify.warn("For AccountID, please input a number.", null, 3);
+        notify.warn("Account ID is invalid.", null, 3);
         cb();
         return;
       }
