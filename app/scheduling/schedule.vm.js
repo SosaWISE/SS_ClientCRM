@@ -216,6 +216,8 @@ define('src/scheduling/schedule.vm', [
 
       //add some more info on blocks
       eventRender: function(event, element) {
+
+        element.find('.fc-event-inner').attr("title", "Click here to schedule ticket in this block");
         element.find('.fc-event-title').append('<br/>' + event.someInfo);
 
         //enable editing of blocks          
