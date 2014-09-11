@@ -40,7 +40,7 @@ define('src/scheduling/technician.signup.vm', [
 
   function TechSignUpViewModel(options) {
     var _this = this,
-      join = joiner(),
+      //join = joiner(),
       block;
 
     TechSignUpViewModel.super_.call(_this, options);
@@ -57,6 +57,7 @@ define('src/scheduling/technician.signup.vm', [
     //Set values    
     _this.data.AvailableStartTime(_this.stime);
     _this.data.AvailableEndTime(_this.etime);
+    _this.data.ScheduleAvailableSlot(_this.slot);
 
     if (typeof _this.RuTechnician === "object") {
       _this.data.TechnicianId(_this.RuTechnician.TechnicianId);
@@ -80,9 +81,6 @@ define('src/scheduling/technician.signup.vm', [
       console.log("@TODO save signup schedule block...");
 
       block = (parseInt(_this.blockTime, 10) < 12) ? 'AM' : 'PM';
-
-      //time slots are 1 hour
-      extendToHour(_this, join.add());
 
       //technician validation
       if (!_this.data.TechnicianId()) {
@@ -165,39 +163,6 @@ define('src/scheduling/technician.signup.vm', [
         notify.warn('No records found.', null, 3);
       }
     }));
-
-  }
-
-  //time slots are 1 hour
-  function extendToHour(_this) {
-
-    var startDuration,
-      endDuration,
-      minuteDiff,
-      minuteExtra,
-      hourDiff;
-
-    //these will do the following - to always achive 1 hour slot implementation
-
-    // - get moments of start and end time
-    startDuration = moment(_this.data.AvailableStartTime());
-    endDuration = moment(_this.data.AvailableEndTime());
-    // - get the hour difference
-    hourDiff = endDuration.diff(startDuration, 'hour');
-    // - get the minute difference
-    minuteDiff = endDuration.diff(startDuration, 'minutes');
-    // - get the modulo by 60 of minute difference and if greater than 0, add 1/extend to 1 hour
-    minuteExtra = minuteDiff % 60;
-
-    if (minuteExtra) {
-      hourDiff++;
-    }
-
-    //set the final endtime of block
-    _this.data.AvailableEndTime(moment(startDuration.add("hour", hourDiff)).format("MM/DD/YYYY HH:mm"));
-
-    //set the number of slots for a block
-    _this.data.ScheduleAvailableSlot(hourDiff);
 
   }
 

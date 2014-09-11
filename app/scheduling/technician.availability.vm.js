@@ -156,11 +156,18 @@ define('src/scheduling/technician.availability.vm', [
         //isTech = (_this.RuTechnician != null) ? true : false; //for real
         isTech = true; // for now - Allow non technicians to schedule availability
 
+        var startTime = $.fullCalendar.formatDate(start, 'MM/dd/yyyy HH:mm'),
+          endTime = $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm');
+
+        //time slots are 1 hour
+        extendToHour(_this, startTime, endTime, join.add());
+
         if (isTech) {
           _this.layersVm.show(new TechSignUpViewModel({
             date: $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
             stime: $.fullCalendar.formatDate(start, 'MM/dd/yyyy HH:mm'),
-            etime: $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm'),
+            etime: _this.AvailableEndTime(),
+            slot: _this.ScheduleAvailableSlot(),
             blockTime: $.fullCalendar.formatDate(end, 'HH:mm'),
             RuTechnician: _this.RuTechnician,
           }), function onClose(result, cb) {
