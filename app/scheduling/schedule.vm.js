@@ -310,13 +310,15 @@ define('src/scheduling/schedule.vm', [
       end = new Date(current.setDate(weekend)),
       param,
       x,
+      y,
       tColor,
       slotAvailable,
       numTickets,
       data = {},
       result = [],
       distance = 0,
-      distanceText;
+      distanceText,
+      curTicket;
 
     param = {
       'DateFrom': $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
@@ -361,6 +363,11 @@ define('src/scheduling/schedule.vm', [
 
           distanceText = (distance <= 0) ? "" : "<br />Distance: " + distance + " mile(s)";
 
+          if (resp.Value[x].TicketList) {
+            //alert(JSON.stringify(resp.Value[x].TicketList));  
+          }
+
+
           //objects to display on scheduler grid
           data = {
             id: resp.Value[x].BlockID,
@@ -373,28 +380,42 @@ define('src/scheduling/schedule.vm', [
             blockInfo: resp.Value[x],
             allDay: false,
             //someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') + distanceText + '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' <br />',
-            someInfo: 'Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') + distanceText + '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' <br />',
-            // someInfo: '<table class="fh-wrap"><tr><td class="fh-header relative">' +
-            //           'Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + 
-            //           ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') +
-            //           distanceText + 
-            //           '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + 
-            //           ' <br /><hr> ' + resp.Value[x].TechnicianName + 
-            //           ' <br /></td></tr>'+
-            //           '<tr><td class="fh-body"><div class="fh-contents"><div class="grid-wrap"><div class="slickgrid" style="background:white;color:black;"></div></div></div></td></tr></table>',
+            //someInfo: 'Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') + distanceText + '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' <br />',
+            someInfo: 'Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') +
+              ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') +
+              distanceText +
+              '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) +
+              ' <br /><hr> ' + resp.Value[x].TechnicianName +
+              ' <br /><hr> ' +
+              '<table id="ticketListGrid' + resp.Value[x].BlockID + '" style="border: 1px solid !important; position: relative; width: 100%;">' +
+              '<tr><th>Name</th><th>Ticket Number</th><th>Ticket Type</th><th>Zip Code</th></tr>' +
+              '</table>',
             backgroundColor: tColor,
           };
 
           //list of blocks from server
           result.push(data);
 
-        }
+        } //end for loop        
 
         //console.log("Final Source:" + JSON.stringify(result));
 
         $('#calendar').fullCalendar('removeEvents');
 
         $('#calendar').fullCalendar('addEventSource', result);
+
+        //another loop to append ticket list on blocks
+        for (x = 0; x < resp.Value.length; x++) {
+
+          console.log("Tickets to append:" + JSON.stringify(resp.Value[x].TicketList));
+          curTicket = resp.Value[x].TicketList;
+
+          for (y = 0; y < curTicket.length; y++) {
+            $("#ticketListGrid" + resp.Value[x].BlockID + " tbody").append('<tr><td>' + curTicket[y].CustomerFullName + '</td><td>' + curTicket[y].TicketID + '</td><td>' + curTicket[y].TicketTypeName + '</td><td>' + curTicket[y].ZipCode + '</td></tr>');
+          }
+
+        }
+
 
       } else {
         notify.error(err);
