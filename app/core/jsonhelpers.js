@@ -26,7 +26,7 @@ define('src/core/jsonhelpers', [
         // }
       } else if (isJSONStringRegx.test(key)) {
         tmp = this[key];
-        value = jsonhelpers.stringify(tmp);
+        value = (tmp == null) ? null : jsonhelpers.stringify(tmp);
       }
       return value;
     },
