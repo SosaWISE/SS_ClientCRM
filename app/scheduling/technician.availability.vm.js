@@ -194,21 +194,26 @@ define('src/scheduling/technician.availability.vm', [
         element.find('.fc-event-time').append('<button style="float: right !important; z-index: 999999 !important;" id="btnDelete' + event.id + '">Delete</button>');
         $("#btnDelete" + event.id).click(function(e) {
 
-          //notify.confirm("Delete", "Are you sure want to delete?", null, null);
-
-          dataservice.scheduleenginesrv.SeScheduleBlock.del(event.id, null, utils.safeCallback(null, function(err, resp) {
-
-            if (resp.Code === 0) {
-              notify.info("Success deleting availability with id:" + event.id + ".");
-              load_technicianAvailabilityList();
+          notify.confirm('Delete?', 'Are you sure you want to delete?', function(result) {
+            if (result !== 'yes') {
+              return;
             }
 
-          }, function(err) {
-            notify.error(err);
-          }));
+            dataservice.scheduleenginesrv.SeScheduleBlock.del(event.id, null, utils.safeCallback(null, function(err, resp) {
 
+              if (resp.Code === 0) {
+                notify.info("Success deleting availability with id:" + event.id + ".");
+                load_technicianAvailabilityList();
+              }
+
+            }, function(err) {
+              notify.error(err);
+            }));
+
+          });
 
           e.stopPropagation();
+
         });
 
       },
