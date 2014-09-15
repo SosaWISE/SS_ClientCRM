@@ -95,7 +95,8 @@ define('src/scheduling/technician.availability.vm', [
       slotMinutes: 15,
       selectHelper: true,
       aspectRatio: 2.1,
-      hiddenDays: [0], //hide sunday      
+      hiddenDays: [0], //hide sunday 
+      minTime: 8, //start at 8am     
       eventClick: function(event /*, jsEvent, view*/ ) {
         console.log(_this.RuTechnician);
         isBlockOwned = false;

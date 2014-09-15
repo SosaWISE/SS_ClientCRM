@@ -141,7 +141,8 @@ define('src/scheduling/schedule.vm', [
       selectHelper: true,
       aspectRatio: 2.1,
       //events: tSource,
-      hiddenDays: [0], //hide sunday      
+      hiddenDays: [0], //hide sunday   
+      minTime: 8, //start at 8am      
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
 
         //prevent adding tickets if no zipcode specified on the block
