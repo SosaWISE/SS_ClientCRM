@@ -154,7 +154,7 @@ define('src/scheduling/create.scheduleticket.vm', [
 
     _this.clickClose = function() {
       //_this.layerResult = null;           
-      _this.layerResult = _this.ticket;
+      //_this.layerResult = _this.ticket;
       closeLayer(_this);
     };
 
@@ -194,6 +194,7 @@ define('src/scheduling/create.scheduleticket.vm', [
 
 
   function closeLayer(_this) {
+    _this.layerResult = _this.ticket;
     if (_this.layer) {
       _this.layer.close(_this.layerResult);
     }
@@ -314,6 +315,7 @@ define('src/scheduling/create.scheduleticket.vm', [
               }; //new ticket added
             }
 
+            closeLayer(_this);
 
           } else {
             notify.error(err);
