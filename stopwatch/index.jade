@@ -1,0 +1,31 @@
+doctype HTML5
+html
+  head
+    style
+      include index.css
+
+  body
+    div(class="time")
+      div(class="min")
+        div(class="value",id="val-min") 0
+        div(class="label") min
+
+      div(class="sec")
+        div(class="value",id="val-sec") 0
+        div(class="label") sec
+
+      div(class="ms")
+        div(class="value",id="val-ms") 0
+        div(class="label") ms
+
+    div(class="btns")
+      button(id="btn-start-pause") Start/Pause
+      br
+      button(id="btn-lap") Lap
+      button(id="btn-clear") Clear
+      button(id="btn-reset" style="float:right;") Reset All
+
+    ul(class="laps",id="laps")
+
+    script
+      include index.js

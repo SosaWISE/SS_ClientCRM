@@ -1,0 +1,109 @@
+body {
+  background: #272822;
+  color: #E0F0E2;
+}
+
+@topHeight: 220px;
+@midHeight: 260px;
+
+div.time {
+  // background-color: red;
+  position: absolute;
+  top:0;right:0;height:@topHeight;left:0;
+
+  > div {
+    display: inline-block;
+    width: 32%;
+    text-align: center;
+
+    > .value {
+      font-size: 120px;
+    }
+    > .label {
+      font-size: 60px;
+    }
+  }
+}
+
+div.btns {
+  // background-color: yellow;
+  position: absolute;
+  top:@topHeight;right:0;height:@midHeight;left:0;
+
+  > button {
+    vertical-align: middle;
+    font-size: 100px;
+    cursor: pointer;
+
+    background: #272822;
+    &:not(:disabled) {
+      color: #E0F0E2;
+    }
+  }
+}
+
+ul.laps {
+  // background-color: blue;
+  position: absolute;
+  top:@topHeight+@midHeight;right:0;bottom:0;left:0;
+  padding: 10px;
+  margin: 0px;
+
+  font-size: 70px;
+  overflow-y: scroll;
+
+  > li {
+    display: inline-block;
+    margin-right: 150px;
+  }
+}
+
+
+
+// body {
+//   background: #272822;
+//   color: #E0F0E2;
+// }
+//
+// div.time {
+//   position: absolute;
+//   top:0;right:0;height:15vh;left:0;
+//
+//   > div {
+//     display: inline-block;
+//     width: 32%;
+//     text-align: center;
+//
+//     > .value {
+//       font-size: 8vh;
+//     }
+//     > .label {
+//       font-size: 4vh;
+//     }
+//   }
+// }
+//
+// div.btns {
+//   position: absolute;
+//   top:15vh;right:0;height:5vh;left:0;
+//
+//   > button {
+//     vertical-align: middle;
+//     font-size: 3vh;
+//     cursor: pointer;
+//
+//     background: #272822;
+//     &:not(:disabled) {
+//       color: #E0F0E2;
+//     }
+//   }
+// }
+//
+// ul.laps {
+//   position: absolute;
+//   top:20vh;right:10px;bottom:10px;left:10px;
+//   padding: 0px;
+//   margin: 0px;
+//
+//   font-size: 3vh;
+// }
