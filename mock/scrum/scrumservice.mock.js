@@ -156,8 +156,6 @@ define('mock/scrum/scrumservice.mock', [
       var result = createOrUpdate(storys, 'ID', '@INC(storys)', {
         ID: data.ID,
         StoryTypeId: data.StoryTypeId,
-        SprintId: data.SprintId,
-        ParentId: data.ParentId,
         PersonId: data.PersonId,
         Name: data.Name,
         Description: data.Description,
@@ -289,34 +287,33 @@ define('mock/scrum/scrumservice.mock', [
     ],
   }).list;
   storys = mockery.fromTemplate({
-    'list|10-10': [ //
-      {
-        ID: '@INC(storys)',
-        ProjectId: 1,
-        StoryTypeId: '@REF_INC(storytypes)',
-        SprintId: '@REF_INC(sprints)',
-        PersonId: '@REF_INC(persons)',
-        Name: '@TEXT(20,30)',
-        Description: '@TEXT(50,80)',
-        Points: '@STORY_POINTS',
-        ProjectOrder: '@NUMBER(0,100000)',
-        IsDeleted: false,
-        Version: 1,
-      },
-    ],
-  }).list.concat(mockery.fromTemplate({
     // backlog storys
     'list|10-10': [ //
       {
         ID: '@INC(storys)',
         ProjectId: 1,
         StoryTypeId: '@REF_INC(storytypes)',
-        SprintId: null,
         PersonId: null,
         Name: '@TEXT(20,30)',
         Description: '@TEXT(50,80)',
         Points: '@STORY_POINTS',
-        ProjectOrder: '@NUMBER(-100000, -1)',
+        ProjectOrder: '@INC(ProjectOrder,-10)', // '@NUMBER(-1000000,-10)',
+        IsDeleted: false,
+        Version: 1,
+      },
+    ],
+  }).list.concat(mockery.fromTemplate({
+    // storyboard storys
+    'list|10-10': [ //
+      {
+        ID: '@INC(storys)',
+        ProjectId: 1,
+        StoryTypeId: '@REF_INC(storytypes)',
+        PersonId: '@REF_INC(persons)',
+        Name: '@TEXT(20,30)',
+        Description: '@TEXT(50,80)',
+        Points: '@STORY_POINTS',
+        ProjectOrder: '@INC(ProjectOrder)', // '@NUMBER(10,1000000)',
         IsDeleted: false,
         Version: 1,
       },
@@ -328,7 +325,6 @@ define('mock/scrum/scrumservice.mock', [
         ID: '@INC(storys)',
         ProjectId: 1,
         StoryTypeId: '@REF_INC(storytypes)',
-        SprintId: null,
         PersonId: null,
         Name: '@TEXT(20,30)',
         Description: '@TEXT(50,80)',

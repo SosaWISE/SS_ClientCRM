@@ -55,7 +55,28 @@ define('src/slick/slickgrid.vm', [
     });
 
     _this.gridOptions = _this.gridOptions || {};
-    if (!_this.dataView && (!_this.list || !ko.isObservable(_this.list))) {
+    if (_this.dataView) {
+      // Make the grid respond to DataView change events.
+      _this.dataView.onRowCountChanged.subscribe(function( /*e, args*/ ) {
+        var grid = _this.grid;
+        if (grid) {
+          grid.updateRowCount();
+          grid.render();
+        }
+      });
+      _this.dataView.onRowsChanged.subscribe(function(e, args) {
+        var grid = _this.grid;
+        if (grid) {
+          if (args.rows.length === 0) {
+            //@HACK: when rows is empty rerender entire grid
+            grid.invalidateAllRows();
+          } else {
+            grid.invalidateRows(args.rows);
+          }
+          grid.render();
+        }
+      });
+    } else if (!_this.list || !ko.isObservable(_this.list)) {
       _this.list = ko.observableArray(_this.list);
     }
     _this.updateGrid = function() { // ensure correct scope
@@ -187,10 +208,25 @@ define('src/slick/slickgrid.vm', [
     }
   };
 
+  SlickGridViewModel.prototype.getData = function() {
+    var _this = this;
+    if (_this.grid) {
+      return _this.grid.getData();
+    } else {
+      return _this.dataView || _this.list.peek();
+    }
+  };
+
   SlickGridViewModel.prototype.setSelectedRows = function(rows) {
     var _this = this;
     if (_this.grid) {
       _this.grid.setSelectedRows(rows);
+    }
+  };
+  SlickGridViewModel.prototype.scrollRowIntoView = function(row, doPaging) {
+    var _this = this;
+    if (_this.grid) {
+      _this.grid.scrollRowIntoView(row, doPaging);
     }
   };
   SlickGridViewModel.prototype.resetActiveCell = function() {

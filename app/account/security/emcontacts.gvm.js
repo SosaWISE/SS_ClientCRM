@@ -56,7 +56,7 @@ define('src/account/security/emcontacts.gvm', [
           id: '#',
           name: '',
           width: 30,
-          behavior: 'selectAndMove',
+          behavior: 'move',
           resizable: false,
           cssClass: 'cell-reorder',
         }, {

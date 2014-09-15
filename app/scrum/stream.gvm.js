@@ -55,7 +55,7 @@ define('src/scrum/stream.gvm', [
           id: 'id',
           name: 'ID',
           width: 30,
-          behavior: 'selectAndMove',
+          behavior: 'move',
           resizable: false,
           cssClass: 'cell-reorder',
         }, {

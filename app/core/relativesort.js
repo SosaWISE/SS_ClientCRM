@@ -7,6 +7,7 @@ define('src/core/relativesort', [], function() {
   function RelativeSort(options) {
     var _this = this;
     options = options || {};
+    _this.start = options.start || 0;
     if (options.increment) {
       _this.increment = options.increment;
     } else {
@@ -18,19 +19,19 @@ define('src/core/relativesort', [], function() {
 
   RelativeSort.prototype.getIntSort = function(a, b) {
     var _this = this,
-      result = getIntSort(a, b, _this.increment);
+      result = getIntSort(a, b, _this.increment, _this.start);
     if (result > max) {
-      console.warn('`result` is greater than' + max + '. truncating.');
+      console.warn('`result` is greater than ' + max + '. truncating.');
       result = max;
     }
     if (result < min) {
-      console.warn('`result` is less than' + min + '. truncating.');
+      console.warn('`result` is less than ' + min + '. truncating.');
       result = min;
     }
     return result;
   };
 
-  function getIntSort(a, b, increment) {
+  function getIntSort(a, b, increment, start) {
     var result;
     if (typeof(a) === 'number' && typeof(b) === 'number') {
       if (a > b) {
@@ -55,7 +56,7 @@ define('src/core/relativesort', [], function() {
     } else if (typeof(a) === 'number') {
       result = a + increment;
     } else {
-      return 0;
+      return start;
     }
     return result;
   }

@@ -1,4 +1,4 @@
-/* global describe, it, expect */
+/* global describe,beforeEach,it,expect */
 define('src/core/relativesort.spec', [
   'src/core/relativesort'
 ], function(
@@ -17,19 +17,28 @@ define('src/core/relativesort.spec', [
     });
 
     describe('getIntSort', function() {
-      var rsort = new RelativeSort({
-        increment: 5,
+      var rsort;
+      beforeEach(function() {
+        rsort = new RelativeSort({
+          // start: 0, default to 0
+          increment: 5,
+        });
       });
 
-      it('first number should be 0', function() {
+      it('first number should be the start value', function() {
         expect(rsort.getIntSort(null, null)).toBe(0);
+        rsort = new RelativeSort({
+          start: 12345,
+          increment: 5,
+        });
+        expect(rsort.getIntSort(null, null)).toBe(12345);
       });
       it('appending should add `increment` to last number', function() {
         expect(rsort.getIntSort(-5, null)).toBe(0);
         expect(rsort.getIntSort(0, null)).toBe(5);
         expect(rsort.getIntSort(5, null)).toBe(10);
       });
-      it('inserting at front should subtract `increment` to first number', function() {
+      it('inserting at front should subtract `increment` from first number', function() {
         expect(rsort.getIntSort(null, 10)).toBe(5);
         expect(rsort.getIntSort(null, 5)).toBe(0);
         expect(rsort.getIntSort(null, 0)).toBe(-5);

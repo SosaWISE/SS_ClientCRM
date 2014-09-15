@@ -7,9 +7,11 @@ define('src/core/treelist.spec', [
   describe('TreeList', function() {
     var tree;
     beforeEach(function() {
-      tree = new TreeList(function(a, b) {
-        // descending
-        return b.priority - a.priority;
+      tree = new TreeList({
+        comparer: function(a, b) {
+          // descending
+          return b.priority - a.priority;
+        },
       });
     });
 
@@ -170,7 +172,7 @@ define('src/core/treelist.spec', [
       });
     });
 
-    describe('getItem', function() {
+    describe('getItem and getItemIndex', function() {
       beforeEach(function() {
         //
         tree.update({
@@ -258,36 +260,41 @@ define('src/core/treelist.spec', [
         });
       });
 
-      it('should return item at index', function() {
-        var validateResults, index = -1;
+      it('index outside of bounds should return null', function() {
+        expect(tree.getItem(-1)).toBeNull();
+        expect(tree.getItem(tree.length)).toBeNull();
+      });
+      it('item at index should match index of item', function() {
+        var validateResults, index;
 
         console.log('\n' + tree.toText());
         validateResults = tree.validate();
         console.log('validate:', validateResults);
         expect(validateResults.length).toBe(0);
 
-        expect(function() {
-          tree.getItem(index++);
-        }).toThrow();
-        expect(tree.getItem(index++).sid).toBe('A1');
-        expect(tree.getItem(index++).sid).toBe('B1');
-        expect(tree.getItem(index++).sid).toBe('C1');
-        expect(tree.getItem(index++).sid).toBe('D1');
-        expect(tree.getItem(index++).sid).toBe('D2');
-        expect(tree.getItem(index++).sid).toBe('C2');
-        expect(tree.getItem(index++).sid).toBe('B2');
-        expect(tree.getItem(index++).sid).toBe('C3');
-        expect(tree.getItem(index++).sid).toBe('C4');
-        expect(tree.getItem(index++).sid).toBe('D3');
-        expect(tree.getItem(index++).sid).toBe('D4');
-        expect(tree.getItem(index++).sid).toBe('A2');
-        expect(tree.getItem(index++).sid).toBe('A3');
-        expect(tree.getItem(index++).sid).toBe('A4');
-        expect(tree.getItem(index++).sid).toBe('A5');
-        expect(tree.getItem(index++).sid).toBe('A6');
-        expect(function() {
-          tree.getItem(index++);
-        }).toThrow();
+        function expectItemAndIndex(index, expectedSid) {
+          var item = tree.getItem(index);
+          expect(item.sid).toBe(expectedSid);
+          expect(tree.getItemIndex(item)).toBe(index);
+        }
+
+        index = 0;
+        expectItemAndIndex(index++, 'A1');
+        expectItemAndIndex(index++, 'B1');
+        expectItemAndIndex(index++, 'C1');
+        expectItemAndIndex(index++, 'D1');
+        expectItemAndIndex(index++, 'D2');
+        expectItemAndIndex(index++, 'C2');
+        expectItemAndIndex(index++, 'B2');
+        expectItemAndIndex(index++, 'C3');
+        expectItemAndIndex(index++, 'C4');
+        expectItemAndIndex(index++, 'D3');
+        expectItemAndIndex(index++, 'D4');
+        expectItemAndIndex(index++, 'A2');
+        expectItemAndIndex(index++, 'A3');
+        expectItemAndIndex(index++, 'A4');
+        expectItemAndIndex(index++, 'A5');
+        expectItemAndIndex(index++, 'A6');
 
 
         // move A1 under A2
@@ -303,25 +310,22 @@ define('src/core/treelist.spec', [
         expect(validateResults.length).toBe(0);
 
         index = 0;
-        expect(tree.getItem(index++).sid).toBe('A2');
-        expect(tree.getItem(index++).sid).toBe('A1');
-        expect(tree.getItem(index++).sid).toBe('B1');
-        expect(tree.getItem(index++).sid).toBe('C1');
-        expect(tree.getItem(index++).sid).toBe('D1');
-        expect(tree.getItem(index++).sid).toBe('D2');
-        expect(tree.getItem(index++).sid).toBe('C2');
-        expect(tree.getItem(index++).sid).toBe('B2');
-        expect(tree.getItem(index++).sid).toBe('C3');
-        expect(tree.getItem(index++).sid).toBe('C4');
-        expect(tree.getItem(index++).sid).toBe('D3');
-        expect(tree.getItem(index++).sid).toBe('D4');
-        expect(tree.getItem(index++).sid).toBe('A3');
-        expect(tree.getItem(index++).sid).toBe('A4');
-        expect(tree.getItem(index++).sid).toBe('A5');
-        expect(tree.getItem(index++).sid).toBe('A6');
-        expect(function() {
-          tree.getItem(index++);
-        }).toThrow();
+        expectItemAndIndex(index++, 'A2');
+        expectItemAndIndex(index++, 'A1');
+        expectItemAndIndex(index++, 'B1');
+        expectItemAndIndex(index++, 'C1');
+        expectItemAndIndex(index++, 'D1');
+        expectItemAndIndex(index++, 'D2');
+        expectItemAndIndex(index++, 'C2');
+        expectItemAndIndex(index++, 'B2');
+        expectItemAndIndex(index++, 'C3');
+        expectItemAndIndex(index++, 'C4');
+        expectItemAndIndex(index++, 'D3');
+        expectItemAndIndex(index++, 'D4');
+        expectItemAndIndex(index++, 'A3');
+        expectItemAndIndex(index++, 'A4');
+        expectItemAndIndex(index++, 'A5');
+        expectItemAndIndex(index++, 'A6');
       });
     });
   });

@@ -1,12 +1,20 @@
 define('src/scrum/open.vm', [
+  'slick',
+  'src/slick/rowmovehelper',
   'src/scrum/story.editor.vm',
+  'src/scrum/cooler.gvm',
+  'src/scrum/backlog.gvm',
   'src/scrum/storyboard.gvm',
   'src/core/treelist',
   'ko',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  Slick,
+  RowMoveHelper,
   StoryEditorViewModel,
+  CoolerGridViewModel,
+  BacklogGridViewModel,
   StoryBoardGridViewModel,
   TreeList,
   ko,
@@ -16,7 +24,8 @@ define('src/scrum/open.vm', [
   "use strict";
 
   function OpenViewModel(options) {
-    var _this = this;
+    var _this = this,
+      gridOptions;
     OpenViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
       'layersVm',
@@ -24,25 +33,17 @@ define('src/scrum/open.vm', [
       'storys',
     ]);
 
-    _this.cooler = createSection(function(a, b) {
-      // descending
-      return b.ID - a.ID;
-    }, function(item, cb) {
-      _this.editItem('story', item, cb);
-    });
-    _this.backlog = createSection(function(a, b) {
-      // descending
-      return b.ProjectOrder - a.ProjectOrder;
-    }, function(item, cb) {
-      _this.editItem('story', item, cb);
-    });
-    _this.storyBoard = createSection(function(a, b) {
-      // descending
-      return b.ProjectOrder - a.ProjectOrder;
-    }, function(item, cb) {
-      _this.editItem('story', item, cb);
-    });
-    _this.sections = [_this.cooler, _this.backlog, _this.storyBoard];
+    gridOptions = {
+      edit: _this.editItem.bind(_this),
+      rowMoveHelper: new RowMoveHelper({
+        cancelEditOnDrag: true,
+      }),
+    };
+
+    _this.coolerGvm = new CoolerGridViewModel(gridOptions, _this);
+    _this.backlogGvm = new BacklogGridViewModel(gridOptions, _this);
+    _this.storyBoardGvm = new StoryBoardGridViewModel(gridOptions, _this);
+    _this.grids = [_this.coolerGvm, _this.backlogGvm, _this.storyBoardGvm];
 
     //
     // events
@@ -62,70 +63,69 @@ define('src/scrum/open.vm', [
     join.add()();
   };
 
-  OpenViewModel.prototype.storyUpdated = function(story) {
+  OpenViewModel.prototype.storyUpdated = function(story, select) {
     var _this = this,
-      currSection, newSection;
+      currGrid, newGrid, index;
     if (!story.sid) {
       // prep
       story.sid = 'us' + story.ID;
       story.psid = null;
     }
-    // find current section
-    _this.sections.some(function(s) {
-      if (s.tree.has(story)) {
-        currSection = s;
-        return true;
+    // find current and new grids
+    _this.grids.some(function(gvm) {
+      var tree = gvm.getData();
+      if (!currGrid && tree.has(story)) {
+        currGrid = gvm;
       }
+      if (!newGrid && tree.takes(story)) {
+        newGrid = gvm;
+      }
+      return currGrid && newGrid;
     });
 
-    // decide new section
-    if (story.Points == null || story.ProjectOrder == null) {
-      // not prioritized
-      newSection = _this.cooler;
-    } else if (story.ProjectOrder < 0) {
-      // not scheduled
-      newSection = _this.backlog;
-    } else {
-      // scheduled and prioritized
-      newSection = _this.storyBoard;
-    }
-
-    if (currSection && currSection !== newSection) {
-      // remove if changing sections
-      currSection.tree.remove(story);
+    if (currGrid && currGrid !== newGrid) {
+      // remove if changing grid
+      currGrid.getData().remove(story);
+      // deselect row
+      currGrid.setSelectedRows([]);
     }
     // update tree
-    newSection.tree.update(story);
-    // update gvm
-    newSection.gvm.updateGrid();
+    newGrid.getData().update(story);
+    if (select) {
+      index = newGrid.getData().getItemIndex(story);
+      newGrid.setSelectedRows([index]);
+      newGrid.scrollRowIntoView(index);
+    }
   };
 
-  OpenViewModel.prototype.editItem = function(type, item, cb) {
+  OpenViewModel.prototype.editItem = function(item, cb, editorOptions) {
     var _this = this,
-      vm = _this.makeEditor(type, item);
+      vm = _this.makeEditor(item, editorOptions),
+      type = 'story'; //@TODO: get type from item
     _this.layersVm.show(vm, function(result) {
       if (result) {
         switch (type) {
           default: throw new Error('invalid item type: ' + type);
           case 'story':
-            _this.storyUpdated(result);
+            _this.storyUpdated(result, true);
             break;
           case 'task':
-            _this.taskUpdated(result);
+            _this.taskUpdated(result, true);
             break;
         }
       }
       cb();
     });
   };
-  OpenViewModel.prototype.makeEditor = function(type, item /*, parentId*/ ) {
-    var vm;
+  OpenViewModel.prototype.makeEditor = function(item, editorOptions /*, parentId*/ ) {
+    var vm,
+      type = 'story'; //@TODO: get type from item
+    editorOptions = editorOptions || {};
+    editorOptions.item = utils.clone(item);
     switch (type) {
       default: throw new Error('invalid item type: ' + type);
       case 'story':
-        vm = new StoryEditorViewModel({
-          item: utils.clone(item),
-        });
+        vm = new StoryEditorViewModel(editorOptions);
         break;
         // case 'task':
         //   vm = new TaskEditorViewModel({
@@ -137,17 +137,6 @@ define('src/scrum/open.vm', [
     }
     return vm;
   };
-
-  function createSection(comparer, editFn) {
-    var tree = new TreeList(comparer);
-    return {
-      tree: tree,
-      gvm: new StoryBoardGridViewModel({
-        dataView: tree,
-        edit: editFn,
-      }),
-    };
-  }
 
   return OpenViewModel;
 });

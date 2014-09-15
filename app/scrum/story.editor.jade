@@ -9,7 +9,6 @@ div(class="story-editor")
             //-   span(class="label") StoryTypeId
             //-   div(data-bind="template:{name:data.StoryTypeCvm.viewTmpl,data:data.StoryTypeCvm}")
             li
-              //- span(class="",data-bind="text:data.sid")
               //- span(class="label") Name
               input(type="text", placeholder="",
                 data-bind="ukov:data.Name,value:data.Name,valueUpdate:'keyup'")
@@ -30,13 +29,16 @@ div(class="story-editor")
                 li
                   span(class="label") Points
                   div(data-bind="cvm:data.PointsCvm")
-                li
+                //- li
                   span(class="label") State
-                  |cvm goes here
-                  //- div(data-bind="cvm:data.StateCvm")
+                  div(data-bind="cvm:data.StateCvm")
                 li
                   span(class="label") Assigned To
                   div(data-bind="cvm:data.PersonCvm")
+                li
+                  span(class="label") Project Order
+                  input(type="text", placeholder="",
+                    data-bind="ukov:data.ProjectOrder,value:data.ProjectOrder,valueUpdate:'keyup'")
 
           ul(class="actions")
             li

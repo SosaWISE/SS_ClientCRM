@@ -1,19 +1,70 @@
 define('src/scrum/storyboard.gvm', [
+  'src/core/relativesort',
+  'src/core/treelist',
   'ko',
   'src/slick/movesubrows',
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
+  'slick',
   'src/core/utils',
 ], function(
+  RelativeSort,
+  TreeList,
   ko,
   MoveSubRows,
   RowEvent,
   SlickGridViewModel,
+  Slick,
   utils
 ) {
   "use strict";
 
-  function StoryBoardGridViewModel(options) {
+  function createTree(openVm) {
+    // start with high positive number and work down to 0
+    var rsort = new RelativeSort({
+      start: (1 << 30), // 1073741824
+      increment: (-1 << 14), // -16384
+    });
+
+    var tree = new TreeList({
+      onRowCountChanged: new Slick.Event(),
+      onRowsChanged: new Slick.Event(),
+      comparer: function(a, b) {
+        return b.ProjectOrder - a.ProjectOrder; // descending
+      },
+      taker: function(item) {
+        return (item.Points != null && item.ProjectOrder != null) && item.ProjectOrder >= 0;
+      },
+      accepter: function(item, parent, prev, next) {
+        return next === next; //@TODO:
+      },
+      inserter: function(item, parent, prev, next, cb) {
+        item = utils.clone(item);
+        // if (parent) {
+        //   item.ParentID = parent.ID;
+        // }
+        item.ProjectOrder = rsort.getIntSort(prev ? prev.data.ProjectOrder : null, next ? next.data.ProjectOrder : null);
+        if (!tree.takes(item)) {
+          // edit item but with more save restrictions
+          openVm.editItem(item, cb, {
+            requirePoints: true,
+          });
+        } else {
+          // save item
+          var editor = openVm.makeEditor(item);
+          editor.save(function(err, resp) {
+            if (!err) {
+              openVm.storyUpdated(resp.Value);
+            }
+            cb();
+          });
+        }
+      },
+    });
+    return tree;
+  }
+
+  function StoryBoardGridViewModel(options, openVm) {
     var _this = this;
     StoryBoardGridViewModel.super_.call(_this, {
       gridOptions: {
@@ -22,18 +73,11 @@ define('src/scrum/storyboard.gvm', [
         rowHeight: 20,
         multiSelect: false,
       },
-      dataView: options.dataView,
+      dataView: createTree(openVm),
       plugins: [ //
-        // new MoveSubRows({
-        //   dataView: options.dataView,
-        //   // orderName: 'OrderNumber',
-        //   onOrderChanged: function(changedRows) {
-        //     console.log('changedRows', changedRows);
-        //     // changedRows.forEach(function(item) {
-        //     //   options.save(item);
-        //     // });
-        //   },
-        // }),
+        new MoveSubRows({
+          rowMoveHelper: options.rowMoveHelper,
+        }),
         new RowEvent({
           eventName: 'onDblClick',
           fn: function(item) {
@@ -48,57 +92,21 @@ define('src/scrum/storyboard.gvm', [
           id: 'sid',
           name: 'ID',
           field: "sid",
-          width: 40,
-          // behavior: 'selectAndMove',
-          resizable: false,
-          // cssClass: 'cell-reorder',
-        },
-        // {
-        //   id: 'sprintId',
-        //   name: 'Sprint',
-        //   // width: 30,
-        //   formatter: function(row, cell, value, columnDef, dataCtx) {
-        //     return '??' + dataCtx.psid;
-        //   },
-        // },
-        // {
-        //   id: '#c',
-        //   name: '',
-        //   width: 30,
-        //   behavior: 'dropChild',
-        //   resizable: false,
-        //   cssClass: 'cell-drop-child',
-        //   formatter: function() {
-        //     return '<div class="target"></div>';
-        //   },
-        // },
-        {
+          width: 50,
+          behavior: 'move',
+          // resizable: false,
+        }, {
           id: "name",
           name: "Name",
           field: "Name",
-          // behavior: 'dropChild',
-
-          // field: "name",
-          // width: 70,
-          // minWidth: 50,
-          // cssClass: "cell-name",
-          // sortable: true,
-          // editor: Slick.Editors.Text
-          // formatter: function(row, cell, value, columnDef, dataCtx) {
-          //   return dataCtx.Name;
-          // },
+          width: 500,
+          behavior: 'dropChild',
         }, {
           id: "points",
           name: "Points",
           field: "Points",
           width: 70,
           minWidth: 50,
-          // cssClass: "cell-points",
-          // sortable: true,
-          // editor: Slick.Editors.Text
-          // formatter: function(row, cell, value, columnDef, dataCtx) {
-          //   return dataCtx.points();
-          // },
         },
       ],
     });

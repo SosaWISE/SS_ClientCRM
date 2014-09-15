@@ -31,10 +31,16 @@
   // TreeList
   //
   //
-  function TreeList(comparer) {
-    if (!comparer) {
+  function TreeList(options) {
+    if (!options.comparer) {
       throw new Error('no comparer');
     }
+    // if (!options.taker) {
+    //   throw new Error('no taker');
+    // }
+    // if (!options.insert) {
+    //   throw new Error('no insert');
+    // }
     var _this = this;
     TreeList.super_.call(_this);
     _this.data = {
@@ -43,7 +49,16 @@
     };
 
     _this.map = {};
-    _this.comparer = comparer;
+    _this._comparer = options.comparer;
+    _this._taker = options.taker || returnTrue;
+    _this._acceptor = options.acceptor || returnTrue;
+    _this._inserter = options.inserter || defaultInserter;
+    _this.onRowCountChanged = options.onRowCountChanged || {
+      notify: utils.noop,
+    };
+    _this.onRowsChanged = options.onRowsChanged || {
+      notify: utils.noop,
+    };
   }
   utils.inherits(TreeList, Node);
 
@@ -81,6 +96,13 @@
     return errs;
   };
 
+  TreeList.prototype.takes = function(data) {
+    if (!data.sid) {
+      throw new Error('no sid');
+    }
+    var _this = this;
+    return _this._taker(data);
+  };
   TreeList.prototype.has = function(data) {
     if (!data.sid) {
       throw new Error('no sid');
@@ -95,6 +117,7 @@
       throw new Error('no sid');
     }
     var _this = this,
+      countBefore = _this.length,
       // lookup by sid
       node = _this.map[data.sid];
     if (node) {
@@ -106,6 +129,16 @@
       // update (remove, then re-add)
       removeNode(_this, node);
       delete _this.map[data.sid];
+
+      // notify that item was removed
+      _this.onRowCountChanged.notify({
+        previous: countBefore,
+        current: _this.length
+      }, null, _this);
+      _this.onRowsChanged.notify({
+        rows: [], //@HACK: this wouldn't do anything if slickgrid.vm didn't call invalidateAllRows
+      }, null, _this);
+
       return true;
     }
     return false;
@@ -132,6 +165,11 @@
     // add node
     node.data = data;
     addNode(_this, node);
+
+    // notify that item was updated
+    _this.onRowsChanged.notify({
+      rows: [], //@HACK: this wouldn't do anything if slickgrid.vm didn't call invalidateAllRows
+    }, null, _this);
   };
 
 
@@ -183,7 +221,8 @@
     var _this = this,
       result, length;
     if (index < 0 || _this.length <= index) {
-      throw new Error('index outside of bounds');
+      // throw new Error('index outside of bounds');
+      return null;
     }
     walkDown(_this, function(node /*, index, parent, depth*/ ) {
       if (index === 0) {
@@ -203,6 +242,123 @@
     });
     return result;
   };
+  TreeList.prototype.getItemIndex = function(data) {
+    if (!data.sid) {
+      throw new Error('no sid');
+    }
+    var _this = this,
+      prev, index = -1,
+      // lookup by sid
+      node = _this.map[data.sid];
+    // walk up
+    while (node) {
+      prev = node.prev;
+      if (prev) {
+        if (prev.down === node) {
+          // prev is parent node
+          index++;
+        } else {
+          // prev is a sibling node
+          index += prev.length + 1;
+        }
+      }
+      // step up
+      node = prev;
+    }
+    return index;
+  };
+  TreeList.prototype.getParent = function(data) {
+    if (!data.sid) {
+      throw new Error('no sid');
+    }
+    var _this = this,
+      node = _this.map[data.sid];
+    if (node) {
+      return getParent(_this, node);
+    }
+  };
+
+  function bob(tree, beforeData) {
+    var childs, parentNode, nextNode,
+      result = {
+        parent: null,
+        prev: null,
+        next: null,
+      };
+
+    if (!beforeData) {
+      // at end
+      result.parent = null;
+      childs = tree.childs.peek();
+      result.prev = childs[childs.length - 1] || null; // get last child at top level
+      result.next = null;
+    } else {
+      // not at end
+      nextNode = tree.map[beforeData.sid];
+      if (!nextNode) {
+        throw new Error('beforeData not in tree');
+      }
+      parentNode = getParent(tree, nextNode);
+      result.parent = parentNode.data;
+      if (nextNode.prev && nextNode.prev !== parentNode) {
+        result.prev = nextNode.prev.data;
+      } else {
+        result.prev = null;
+      }
+      result.next = nextNode.data;
+    }
+    return result;
+  }
+  TreeList.prototype.insertSiblingTest = function(data, beforeData) {
+    if (!data.sid) {
+      throw new Error('data no sid');
+    }
+    if (beforeData && !beforeData.sid) {
+      throw new Error('beforeData no sid');
+    }
+
+    var _this = this,
+      result = bob(_this, beforeData);
+
+    return _this._acceptor(data, result.parent, result.prev, result.next);
+  };
+  TreeList.prototype.insertSibling = function(data, beforeData) {
+    if (!data.sid) {
+      throw new Error('data no sid');
+    }
+    if (beforeData && !beforeData.sid) {
+      throw new Error('beforeData no sid');
+    }
+
+    var _this = this,
+      result = bob(_this, beforeData);
+
+    return _this._inserter(data, result.parent, result.prev, result.next, function() {
+      console.log('insertSibling done:', arguments);
+    });
+  };
+
+  TreeList.prototype.insertChildTest = function(data, underData) {
+    if (!data.sid) {
+      throw new Error('data no sid');
+    }
+    if (underData && !underData.sid) {
+      throw new Error('underData no sid');
+    }
+
+
+    return true;
+  };
+  TreeList.prototype.insertChild = function(data, underData) {
+    if (!data.sid) {
+      throw new Error('data no sid');
+    }
+    if (underData && !underData.sid) {
+      throw new Error('underData no sid');
+    }
+
+
+  };
 
   function getParent(tree, node) {
     if (tree === node) {
@@ -213,7 +369,7 @@
 
   function addNode(tree, node) {
     var parent = getParent(tree, node),
-      comparer = tree.comparer,
+      comparer = tree._comparer,
       index = 0,
       prevNode, nextNode;
     if (!parent) {
@@ -341,6 +497,15 @@
       return true;
     })(tree, tree.down, 0);
   }
+
+  //
+  //
+  //
+  function returnTrue() {
+    return true;
+  }
+  //
+  function defaultInserter() {}
 
   //
   return TreeList;

@@ -17,8 +17,7 @@ define('src/scrum/story.editor.vm', [
 ) {
   "use strict";
 
-  var schema,
-    strConverter = ukov.converters.string();
+  var schema;
 
   schema = {
     _model: true,
@@ -27,15 +26,26 @@ define('src/scrum/story.editor.vm', [
 
     StoryTypeId: {},
     Name: {
-      converter: strConverter,
+      converter: ukov.converters.string(),
       validators: [
         ukov.validators.isRequired('Name is required'),
       ],
     },
     Description: {},
-    Points: {},
+    Points: {
+      validators: [
+        //
+        function(val, model) {
+          if (val == null && model.requirePoints) {
+            return 'Points is required';
+          }
+        },
+      ],
+    },
     PersonId: {},
-    ProjectOrder: {},
+    ProjectOrder: {
+      converter: ukov.converters.number(0),
+    },
 
     IsDeleted: {},
     Version: {},
@@ -46,8 +56,7 @@ define('src/scrum/story.editor.vm', [
     StoryEditorViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, []);
 
-    _this.title = (_this.item ? 'Edit' : 'New') + ' Story';
-    _this.data = ukov.wrap(_this.item || {
+    _this.item = _this.item || {
       StoryTypeId: 1,
       Name: '',
       Description: '',
@@ -56,7 +65,11 @@ define('src/scrum/story.editor.vm', [
       ProjectOrder: null,
       IsDeleted: false,
       Version: 1,
-    }, schema);
+    };
+    _this.item.requirePoints = _this.requirePoints || (_this.item.Points != null);
+
+    _this.title = (_this.item.sid ? _this.item.sid.toUpperCase() : 'New Story');
+    _this.data = ukov.wrap(_this.item, schema);
     _this.data.StoryTypeCvm = new ComboViewModel({
       selectedValue: _this.data.StoryTypeId,
       list: _this.storyTypeOptions,
@@ -116,21 +129,17 @@ define('src/scrum/story.editor.vm', [
     var _this = this,
       model;
     if (!_this.data.isValid()) {
-      notify.notify('warn', _this.data.errMsg(), 7);
-      cb();
+      notify.warn(_this.data.errMsg(), null, 7);
+      cb(_this.data.errMsg(), null);
       return;
     }
 
     model = _this.data.getValue();
-    _this.data.markClean(model, true);
-    dataservice.scrum.storys.save(model, null, function(err, resp) {
-      if (err) {
-        notify.notify('error', err.Message);
-      }
+    dataservice.scrum.storys.save(model, null, utils.safeCallback(cb, function(err, resp) {
+      _this.data.markClean(model, true);
       _this.layerResult = resp.Value;
       closeLayer(_this);
-      cb(resp.Value);
-    });
+    }, notify.error));
   };
 
   StoryEditorViewModel.prototype.storyTypeOptions = [ //

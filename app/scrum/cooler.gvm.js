@@ -1,4 +1,4 @@
-define('src/scrum/backlog.gvm', [
+define('src/scrum/cooler.gvm', [
   'src/core/relativesort',
   'src/core/treelist',
   'ko',
@@ -20,53 +20,44 @@ define('src/scrum/backlog.gvm', [
   "use strict";
 
   function createTree(openVm) {
-    // start with low negative number and work up to 0
-    var rsort = new RelativeSort({
-      start: (-1 << 30), // -1073741824
-      increment: (1 << 14), // 16384
-    });
+    // var rsort = new RelativeSort({
+    //   start: 0,
+    //   increment: 5,
+    // });
+    // rsort.getIntSort(null, null);
 
     var tree = new TreeList({
       onRowCountChanged: new Slick.Event(),
       onRowsChanged: new Slick.Event(),
       comparer: function(a, b) {
-        return b.ProjectOrder - a.ProjectOrder; // descending
+        return b.ID - a.ID; // descending
       },
       taker: function(item) {
-        return (item.Points != null && item.ProjectOrder != null) && item.ProjectOrder < 0;
+        return (item.Points == null || item.ProjectOrder == null);
       },
       accepter: function(item, parent, prev, next) {
-        return next === next; //@TODO:
+        return next !== next; //@TODO:
       },
       inserter: function(item, parent, prev, next, cb) {
         item = utils.clone(item);
-        // if (parent) {
-        //   item.ParentID = parent.ID;
-        // }
-        item.ProjectOrder = rsort.getIntSort(prev ? prev.data.ProjectOrder : null, next ? next.data.ProjectOrder : null);
-        if (!tree.takes(item)) {
-          // edit item but with more save restrictions
-          openVm.editItem(item, cb, {
-            requirePoints: true,
-          });
-        } else {
-          // save item
-          var editor = openVm.makeEditor(item);
-          editor.save(function(err, resp) {
-            if (!err) {
-              openVm.storyUpdated(resp.Value);
-            }
-            cb();
-          });
-        }
+        // item.Points = null;
+        item.ProjectOrder = null;
+        // save item
+        var editor = openVm.makeEditor(item);
+        editor.save(function(err, resp) {
+          if (!err) {
+            openVm.storyUpdated(resp.Value);
+          }
+          cb();
+        });
       },
     });
     return tree;
   }
 
-  function BacklogGridViewModel(options, openVm) {
+  function CoolerGridViewModel(options, openVm) {
     var _this = this;
-    BacklogGridViewModel.super_.call(_this, {
+    CoolerGridViewModel.super_.call(_this, {
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
@@ -111,9 +102,9 @@ define('src/scrum/backlog.gvm', [
       ],
     });
   }
-  utils.inherits(BacklogGridViewModel, SlickGridViewModel);
+  utils.inherits(CoolerGridViewModel, SlickGridViewModel);
 
-  // BacklogGridViewModel.prototype.nextOrderNumber = function() {
+  // CoolerGridViewModel.prototype.nextOrderNumber = function() {
   //   var _this = this,
   //     list = _this.list(),
   //     orderNumber;
@@ -129,5 +120,5 @@ define('src/scrum/backlog.gvm', [
   //   return orderNumber;
   // };
 
-  return BacklogGridViewModel;
+  return CoolerGridViewModel;
 });

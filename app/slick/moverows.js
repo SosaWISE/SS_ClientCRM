@@ -1,60 +1,38 @@
 define('src/slick/moverows', [
-  'src/slick/rowmovemanager',
-  'slick',
-  'jquery',
+  'src/slick/rowmovehelper',
 ], function(
-  RowMoveManager,
-  Slick,
-  jquery
+  RowMoveHelper
 ) {
   'use strict';
 
   function MoveRows(options) {
     var _this = this,
-      _grid,
-      _handler = new Slick.EventHandler(),
-      _moveRowsPlugin = new Slick.RowMoveManager({
+      _rowMoveHelper = new RowMoveHelper({
         cancelEditOnDrag: true
       });
-
-    options = jquery.extend(true, {}, {
-      orderName: 'SortOrder',
-      onOrderChanged: function() {
-        console.warn('onOrderChanged function not set');
-      },
-    }, options);
 
     if (!options.observableArray) {
       throw new Error('observableArray not defined');
     }
+    options.orderName = options.orderName || 'SortOrder';
+    options.onOrderChanged = options.onOrderChanged || function() {
+      console.warn('onOrderChanged function not set');
+    };
 
-    jquery.extend(_this, {
-      'destroy': function() {
-        _moveRowsPlugin.destroy();
-        _handler.unsubscribeAll();
-      },
-      'init': function(grid) {
-        _grid = grid;
-        _grid.registerPlugin(_moveRowsPlugin);
-        _handler.subscribe(_grid.onDragInit, onDragInit);
-        _handler.subscribe(_moveRowsPlugin.onBeforeMoveRows, onBeforeMoveRows);
-        _handler.subscribe(_moveRowsPlugin.onMoveRows, onMoveRows);
-        _handler.subscribe(_moveRowsPlugin.onBeforeMoveChildRows, onBeforeMoveChildRows);
-        _handler.subscribe(_moveRowsPlugin.onMoveChildRows, onMoveChildRows);
-      },
-    });
+    // grid plugin funcs
+    _this.init = function(grid) {
+      _rowMoveHelper.register(_this, grid);
+    };
+    _this.destroy = function() {
+      _rowMoveHelper.unregister(_this);
+    };
 
-    function onDragInit(e /*, dd*/ ) {
-      // prevent the grid from cancelling drag'n'drop by default
-      e.stopImmediatePropagation();
-    }
-
-    function onBeforeMoveRows(e, data) {
-      var rowIndices = data.rows,
+    // handle drag/drop
+    _this.onMoveRowsTest = function(reg, args) {
+      // var dataView = options.dataView;
+      var rowIndices = args.rows,
         i, length = rowIndices.length,
         index, nextIndex;
-
-      sortRowIndices(rowIndices);
 
       for (i = 0, nextIndex = rowIndices[0]; i < length; i++, nextIndex++) {
         index = rowIndices[i];
@@ -68,22 +46,19 @@ define('src/slick/moverows', [
       for (i = 0; i < length; i++) {
         index = rowIndices[i];
         // no point in moving before or after itself
-        if (index === data.insertBefore || index === data.insertBefore - 1) {
-          e.stopPropagation();
+        if (index === args.insertBefore || index === args.insertBefore - 1) {
+          // e.stopPropagation();
           return false;
         }
       }
       return true;
-    }
-
-    function onMoveRows(e, args) {
-      var rowIndices = args.rows,
+    };
+    _this.onMoveRows = function(reg, args) {
+      var grid = reg.grid,
+        rowIndices = args.rows,
         insertBefore = args.insertBefore,
         moveResults, newList, changedRows;
 
-      // rowIndices should already be sorted in OnBeforeMoveRows
-      // sortRowIndices(rowIndices);
-
       // move the rows
       moveResults = moveRows(rowIndices, insertBefore, options.observableArray());
       // make newList by joining top, moved, and bottom
@@ -98,66 +73,17 @@ define('src/slick/moverows', [
       // refresh grid
       options.observableArray(newList);
       // reselect selected rows
-      _grid.setSelectedRows(getSelectedRowIndices(moveResults.top.length, rowIndices.length));
+      grid.setSelectedRows(getSelectedRowIndices(moveResults.top.length, rowIndices.length));
       // unselect selected cell
-      _grid.resetActiveCell();
-    }
-
-    function onBeforeMoveChildRows(e, data) {
-      var rowIndices = data.rows,
-        i, length = rowIndices.length,
-        index;
-
-      sortRowIndices(rowIndices);
-
-      // this only works with one row or sequential rows.
-      for (i = 0; i < length; i++) {
-        index = rowIndices[i];
-        // can't move under self
-        if (index === data.insertUnder) {
-          e.stopPropagation();
-          return false;
-        }
-        //@TODO: need to ask the row value it's self if the data can be a child of it
-      }
-      return true;
-    }
-
-    function onMoveChildRows(e, args) {
-      var rowIndices = args.rows,
-        insertBefore = args.insertUnder + 1,
-        moveResults, newList, changedRows;
-      //@TODO: this is basically copied from onMoveRows. it needs to be changed to work with childs.
-
-      // rowIndices should already be sorted in OnBeforeMoveChildRows
-      // sortRowIndices(rowIndices);
-
-      // move the rows
-      moveResults = moveRows(rowIndices, insertBefore, options.observableArray());
-      // make newList by joining top, moved, and bottom
-      newList = moveResults.top.concat(moveResults.middle, moveResults.bottom);
-
-      // update sortOrder and notify of any changes
-      changedRows = updateSortOrder(rowIndices, insertBefore, options.orderName, newList);
-      if (changedRows.length) {
-        options.onOrderChanged(changedRows);
-      }
-
-      // refresh grid
-      options.observableArray(newList);
-      // reselect selected rows
-      _grid.setSelectedRows(getSelectedRowIndices(moveResults.top.length, rowIndices.length));
-      // unselect selected cell
-      _grid.resetActiveCell();
-    }
-  }
-
-  function sortRowIndices(rowIndices) {
-    // preserve row order - make sure they are in
-    // ascending order, not the order they were selected
-    rowIndices.sort(function(a, b) {
-      return a - b;
-    });
+      grid.resetActiveCell();
+    };
+    _this.onMoveChildRowsTest = function(reg, args) {
+      args = args;
+      return false;
+    };
+    _this.onMoveChildRows = function(reg, args) {
+      args = args;
+    };
   }
 
   function moveRows(rowIndices, insertBefore, list) {
@@ -226,7 +152,7 @@ define('src/slick/moverows', [
     return results;
   }
 
-
+  // export functions for use in specs
   MoveRows.moveRows = moveRows;
   MoveRows.updateSortOrder = updateSortOrder;
   MoveRows.getSelectedRowIndices = getSelectedRowIndices;
