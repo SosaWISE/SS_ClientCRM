@@ -10,6 +10,7 @@ define('src/scheduling/schedule.vm', [
   'src/scheduling/create.scheduleticket.vm',
   'src/scheduling/scheduleblock.edit.vm',
   'src/scheduling/scheduleblock.viewticket.vm',
+  'src/scheduling/scheduleblock.unscheduleticket.vm',
   'src/core/layers.vm',
   'src/core/joiner',
   'moment',
@@ -28,6 +29,7 @@ define('src/scheduling/schedule.vm', [
   ScheduleTicketViewModel,
   EditScheduleBlockViewModel,
   ScheduleBlockTicketsViewModel,
+  UnScheduleTicketViewModel,
   LayersViewModel,
   joiner,
   moment,
@@ -229,7 +231,7 @@ define('src/scheduling/schedule.vm', [
 
         //enable editing of blocks          
         element.find('.fc-event-time').append('<button style="float: right !important; z-index: 999999 !important;" id="btnEdit' + event.id + '">Edit</button>');
-        element.find('.fc-event-time').append('<button style="float: right !important; z-index: 999999 !important;" id="btnView' + event.id + '">View Tickets</button>');
+        // element.find('.fc-event-time').append('<button style="float: right !important; z-index: 999999 !important;" id="btnView' + event.id + '">View Tickets</button>');
         $("#btnEdit" + event.id).click(function(e) {
 
           _this.layersVm.show(new EditScheduleBlockViewModel({
@@ -242,22 +244,61 @@ define('src/scheduling/schedule.vm', [
         });
 
         //view block tickets
-        $("#btnView" + event.id).click(function(e) {
+        // $("#btnView" + event.id).click(function(e) {
 
-          if (event.blockInfo.NoOfTickets > 0) {
+        //   if (event.blockInfo.NoOfTickets > 0) {
 
-            _this.layersVm.show(new ScheduleBlockTicketsViewModel({
-              BlockID: event.id,
-            }), function onClose(cb) {
-              load_scheduleBlockList(cb);
-            });
+        //     _this.layersVm.show(new ScheduleBlockTicketsViewModel({
+        //       BlockID: event.id,
+        //     }), function onClose(cb) {
+        //       load_scheduleBlockList(cb);
+        //     });
 
-          } else {
-            notify.info("No ticket to view.", null, 3);
-          }
+        //   } else {
+        //     notify.info("No ticket to view.", null, 3);
+        //   }
+
+        //   e.stopPropagation();
+        // });
+
+        // determine which block ticket is clicked            
+        $('#ticketListGrid' + event.id).on("click", function(e) {
+
+          // can't use .one - stopPropagation will no longer work
+          //$('tr').one( "click", function(ev) {   
+          $('tr').click(function(ev) {
+
+            var isExecuted = false;
+
+            //check to see if tr clicked is inside the ticketlistGrid              
+            if ($(this).closest('table').attr('id') === ('ticketListGrid' + event.id)) {
+
+              //to be sure pop-up only called once
+              if (!isExecuted) {
+
+                //show ticket info screen if not undefined
+                if ($(this).attr('id')) {
+
+                  _this.layersVm.show(new UnScheduleTicketViewModel({
+                    ScheduleTicketId: $(this).attr('id'),
+                  }), function onClose(cb) {
+                    load_scheduleBlockList(cb);
+                  });
+
+                  isExecuted = true;
+                }
+
+              }
+
+            }
+
+            ev.stopPropagation();
+
+          });
 
           e.stopPropagation();
         });
+
       },
 
     });
@@ -388,8 +429,8 @@ define('src/scheduling/schedule.vm', [
               '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) +
               ' <br /><hr> ' + resp.Value[x].TechnicianName +
               ' <br /><hr> ' +
-              '<table id="ticketListGrid' + resp.Value[x].BlockID + '" style="border: 1px solid !important; position: relative; width: 100%;">' +
-              '<tr><th>Name</th><th>Ticket Number</th><th>Ticket Type</th><th>Zip Code</th></tr>' +
+              '<table id="ticketListGrid' + resp.Value[x].BlockID + '" style="border: 1px solid !important; position: relative; width: 100%; z-index: 999999 !important;">' +
+              '<th>Name</th><th>Ticket Number</th><th>Ticket Type</th><th>Zip Code</th>' +
               '</table>',
             backgroundColor: tColor,
           };
@@ -411,8 +452,13 @@ define('src/scheduling/schedule.vm', [
           console.log("Tickets to append:" + JSON.stringify(resp.Value[x].TicketList));
           curTicket = resp.Value[x].TicketList;
 
+          //hide grid if no tickets available to show
+          if (curTicket.length <= 0) {
+            $("#ticketListGrid" + resp.Value[x].BlockID).hide();
+          }
+
           for (y = 0; y < curTicket.length; y++) {
-            $("#ticketListGrid" + resp.Value[x].BlockID + " tbody").append('<tr><td>' + curTicket[y].CustomerFullName + '</td><td>' + curTicket[y].TicketID + '</td><td>' + curTicket[y].TicketTypeName + '</td><td>' + curTicket[y].ZipCode + '</td></tr>');
+            $("#ticketListGrid" + resp.Value[x].BlockID).append('<tr id=' + curTicket[y].ScheduleTicketId + '><td>' + curTicket[y].CustomerFullName + '</td><td>' + curTicket[y].TicketID + '</td><td>' + curTicket[y].TicketTypeName + '</td><td>' + curTicket[y].ZipCode + '</td></tr>');
           }
 
         }
