@@ -261,43 +261,47 @@ define('src/scheduling/schedule.vm', [
         //   e.stopPropagation();
         // });
 
-        // determine which block ticket is clicked            
-        $('#ticketListGrid' + event.id).on("click", function(e) {
+        // determine which block ticket is clicked                    
+        $("#ticketListGrid" + event.id).on("click", " tr", function(ev) {
 
-          // can't use .one - stopPropagation will no longer work
-          //$('tr').one( "click", function(ev) {   
-          $('tr').click(function(ev) {
+          ev.stopImmediatePropagation();
 
-            var isExecuted = false;
+          var isExecuted = false;
 
-            //check to see if tr clicked is inside the ticketlistGrid              
-            if ($(this).closest('table').attr('id') === ('ticketListGrid' + event.id)) {
+          //check to see if tr clicked is inside the ticketlistGrid              
+          if ($(this).closest('table').attr('id') === ('ticketListGrid' + event.id)) {
 
-              //to be sure pop-up only called once
-              if (!isExecuted) {
+            //to be sure pop-up only called once
+            if (!isExecuted) {
 
-                //show ticket info screen if not undefined
-                if ($(this).attr('id')) {
+              //show ticket info screen if not undefined
+              if ($(this).attr('id')) {
 
-                  _this.layersVm.show(new UnScheduleTicketViewModel({
-                    ScheduleTicketId: $(this).attr('id'),
-                  }), function onClose(cb) {
+                _this.layersVm.show(new UnScheduleTicketViewModel({
+                  ScheduleTicketId: $(this).attr('id'),
+                }), function onClose(result, cb) {
+
+                  //reload only if result is true
+                  if (result) {
                     load_scheduleBlockList(cb);
-                  });
+                  }
 
-                  isExecuted = true;
-                }
+                });
 
+                isExecuted = true;
               }
 
             }
 
-            ev.stopPropagation();
+          }
 
-          });
 
-          e.stopPropagation();
         });
+
+
+        //e.stopImmediatePropagation();
+
+        //});
 
       },
 

@@ -59,6 +59,7 @@ define('src/scheduling/scheduleblock.unscheduleticket.vm', [
       dataservice.scheduleenginesrv.SeScheduleTicket.del(_this.ScheduleTicketId, null, utils.safeCallback(cb, function(err, resp) {
 
         if (resp.Code === 0) {
+          _this.layerResult = resp.Value;
           closeLayer(_this);
         }
 
