@@ -160,6 +160,9 @@ define('src/scheduling/technician.availability.vm', [
         var startTime = $.fullCalendar.formatDate(start, 'MM/dd/yyyy HH:mm'),
           endTime = $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm');
 
+        //clear available slot everytime we create a tech availability
+        _this.ScheduleAvailableSlot(null);
+
         //time slots are 1 hour
         extendToHour(_this, startTime, endTime, join.add());
 
@@ -246,7 +249,7 @@ define('src/scheduling/technician.availability.vm', [
       'StartTime': $.fullCalendar.formatDate(event.start, 'MM/dd/yyyy HH:mm'),
       //'EndTime': $.fullCalendar.formatDate(event.end, 'MM/dd/yyyy HH:mm'),
       'EndTime': _this.AvailableEndTime(),
-      'AvailableSlots': _this.ScheduleAvailableSlot(),
+      'AvailableSlots': event.slot,
       'IsTechConfirmed': true
     };
 
@@ -366,6 +369,7 @@ define('src/scheduling/technician.availability.vm', [
             title: null,
             start: resp.Value[x].StartTime,
             end: resp.Value[x].EndTime,
+            slot: resp.Value[x].AvailableSlots,
             allDay: false,
             technicianId: resp.Value[x].TechnicianId,
             backgroundColor: tColor,
@@ -434,8 +438,10 @@ define('src/scheduling/technician.availability.vm', [
     //set the final endtime of block
     _this.AvailableEndTime(moment(startDuration.add("hour", hourDiff)).format("MM/DD/YYYY HH:mm"));
 
-    //set the number of slots for a block
-    _this.ScheduleAvailableSlot(hourDiff);
+    //set the number of slots for a block, if slot not empty - use what is in the box
+    if (!_this.ScheduleAvailableSlot()) {
+      _this.ScheduleAvailableSlot(hourDiff);
+    }
 
   }
 
