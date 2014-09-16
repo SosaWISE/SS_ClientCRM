@@ -597,7 +597,7 @@ define('src/scheduling/schedule.vm', [
       var endDateTime = new Date(scheduleBlockList[x].EndTime);
       if (endDateTime >= dateFrom && endDateTime <= dateTo) {
         var distance = scheduleBlockList[x].Distance.toFixed(2);
-        if (distance < smallestDistance && distance !== 0) {
+        if (distance < smallestDistance && distance !== 0 && scheduleBlockList[x].NoOfTickets > 0) {
           smallestDistance = distance;
           console.log('current smallest' + endDateTime);
         }
