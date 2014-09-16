@@ -1,4 +1,5 @@
 define('src/survey/takequestion.vm', [
+  'src/survey/questionanswers',
   'src/survey/questionschemas',
   'src/ukov',
   'ko',
@@ -9,6 +10,7 @@ define('src/survey/takequestion.vm', [
   'src/survey/questions.parent.vm', //'src/core/base.vm',
   'src/core/utils',
 ], function(
+  questionanswers,
   questionschemas,
   ukov,
   ko,
@@ -68,7 +70,7 @@ define('src/survey/takequestion.vm', [
         errMsg = 'Auto Fail';
       }
       //
-      answer = _this.answer.getValue();
+      answer = getAnswer(_this, false);
       list.push({
         QuestionId: _this.QuestionID,
         AnswerText: (answer != null) ? String(answer) : null, // ensure it is a string
@@ -129,7 +131,7 @@ define('src/survey/takequestion.vm', [
     } else {
       // editable
       _this.answerMode = calcAnswerMode(_this.questionPossibleAnswerMaps.length);
-      if (_this.answerMode === 'text') {
+      if (_this.answerMode === 'input') {
         _this.answer = createChildProp(_this, _this.MapToToken);
       } else {
         _this.answer = createChildProp(_this);
@@ -147,9 +149,10 @@ define('src/survey/takequestion.vm', [
       }
     }
 
-    // update childs when answer is set
-    _this.answer.subscribe(function(answerText) {
-      var paMap = _this.findPam(answerText),
+    // update childs when answer gets modified
+    _this.answer.subscribe(function() {
+      var answerText = getAnswer(_this, true),
+        paMap = _this.findPam(answerText),
         expands = !!paMap && paMap.Expands;
 
       _this.showSubs(expands);
@@ -163,9 +166,30 @@ define('src/survey/takequestion.vm', [
       _this.ukovModel.update();
     });
 
-    // set correct answerText(not null) and mark it as clean
-    _this.answer(_this.answerText || '');
+    if (_this.readonly) {
+      // set correct answerText (pipes removed)
+      _this.answer.questionanswer.fromAnswer(_this.answer, fixAnswer(_this.answerText));
+    } else {
+      // set correct answerText (not null)
+      _this.answer.questionanswer.fromAnswer(_this.answer, _this.answerText || '');
+    }
     _this.answer.markClean();
+  }
+
+  function getAnswer(_this, removePipes) {
+    var answerText = _this.answer.questionanswer.toAnswer(_this.answer);
+    if (removePipes) {
+      answerText = fixAnswer(answerText);
+    }
+    return answerText;
+  }
+
+  function fixAnswer(answerText) {
+    if (utils.isStr(answerText)) {
+      // replace pipes with spaces
+      return answerText.replace(/\|/g, ' ');
+    }
+    return answerText;
   }
 
   function createChildProp(_this, tokenName) {
@@ -187,13 +211,18 @@ define('src/survey/takequestion.vm', [
     }
 
     child = _this.ukovModel.createChild(key); // value will default to null
+
+    //@REVIEW: why is it named questionanswer? couldn't think of anything better...
+    //- by tokenName, then by answerMode since one should always exist for the answerMode
+    child.questionanswer = questionanswers[tokenName] || questionanswers[_this.answerMode];
+
     return (_this.ukovModel[key] = child);
   }
 
   function calcAnswerMode(num) {
     var result;
     if (num < 1) {
-      result = 'text';
+      result = 'input';
     } else if (num < 3) {
       result = 'radiolist';
     } else {

@@ -3,10 +3,10 @@ ul(class="edit-form")
 		input(type="hidden" id="eventID")
 	li
 		label Start Date & Time
-		input(type="text" disabled data-bind="ukov:data.AvailableStartTime, value:data.AvailableStartTime, valueUpdate:'keyup'")
+		input(type="text" data-bind="ukov:data.AvailableStartTime, value:data.AvailableStartTime, valueUpdate:'keyup'")
 	li
 		label End Date & Time
-		input(type="text" disabled data-bind="ukov:data.AvailableEndTime, value:data.AvailableEndTime, valueUpdate:'keyup'")
+		input(type="text" data-bind="ukov:data.AvailableEndTime, value:data.AvailableEndTime, valueUpdate:'keyup'")
 	li
 		label Technician
 		div(data-bind="cvm:data.TechnicianCvm")

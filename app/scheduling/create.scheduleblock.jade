@@ -17,11 +17,11 @@ ul(class="edit-form")
 		//-Appointment Date
 		input(type="hidden" data-bind="ukov:data.ScheduleDate, value:data.ScheduleDate, valueUpdate:'keyup'")
 	li
-		//-label Block Startime
-		input(type="hidden" data-bind="ukov:data.ScheduleStartTime, value:data.ScheduleStartTime, valueUpdate:'keyup'")
+		label Start Date & Time
+		input(type="text" data-bind="ukov:data.ScheduleStartTime, value:data.ScheduleStartTime, valueUpdate:'keyup'")
 	li
-		//-label Block Endtime
-		input(type="hidden" data-bind="ukov:data.ScheduleEndTime, value:data.ScheduleEndTime, valueUpdate:'keyup'")
+		label End Date & Time
+		input(type="text" data-bind="ukov:data.ScheduleEndTime, value:data.ScheduleEndTime, valueUpdate:'keyup'")
 	li
 		label Technician
 		div(data-bind="cvm:data.TechnicianCvm") 	
