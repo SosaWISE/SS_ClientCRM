@@ -191,6 +191,9 @@ define('src/scheduling/technician.availability.vm', [
 
       //add some more info on blocks
       eventRender: function(event, element) {
+
+        element.find('.fc-event-inner').attr('style', 'border: 1px solid #ADD8E6 !important');
+
         element.find('.fc-event-title').append('<br/>' + event.someInfo);
 
         //enable delete of technician availability

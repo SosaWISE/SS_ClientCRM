@@ -42,7 +42,10 @@ define('src/scheduling/schedule.vm', [
 
   schema = {
     _model: true,
-    Ticket: {}
+    Ticket: {},
+    ScheduleBlockList: {},
+    CalendarWeekStart: {},
+    CalendarWeekEnd: {}
   };
 
 
@@ -126,7 +129,7 @@ define('src/scheduling/schedule.vm', [
     }
 
     //load block list    
-    load_scheduleBlockList(join.add());
+    load_scheduleBlockList(_this, join.add());
 
     /** Fullcalendar plugin **/
     $('#calendar').fullCalendar({
@@ -178,7 +181,7 @@ define('src/scheduling/schedule.vm', [
 
               } else if (result.AccountTicket === "0") {
                 //load all blocks
-                load_scheduleBlockList(cb);
+                load_scheduleBlockList(_this, cb);
               }
 
             }
@@ -218,17 +221,24 @@ define('src/scheduling/schedule.vm', [
             slot: _this.ScheduleAvailableSlot(),
             blockTime: $.fullCalendar.formatDate(end, 'HH:mm'),
           }), function onClose(cb) {
-            load_scheduleBlockList(cb);
+            load_scheduleBlockList(_this, cb);
           });
         }
       },
 
-      viewRender: function( /*view, element*/ ) {
-
+      viewRender: function(view /*, element */ ) {
+        _this.CalendarWeekStart = view.visStart;
+        _this.CalendarWeekEnd = view.visEnd;
       },
 
       //add some more info on blocks
       eventRender: function(event, element) {
+
+        var smallestDistance = getSmallestDistance(_this.ScheduleBlockList, _this.CalendarWeekStart, _this.CalendarWeekEnd);
+        var borderColor = (event.distance === smallestDistance) ? '#00FF00' : '#ADD8E6';
+
+        //assign different border color on smallest distance
+        element.find('.fc-event-inner').attr('style', 'border: 1px solid ' + borderColor + ' !important');
 
         element.find('.fc-event-inner').attr("title", "Click here to schedule ticket in this block");
         element.find('.fc-event-title').append('<br/>' + event.someInfo);
@@ -241,7 +251,7 @@ define('src/scheduling/schedule.vm', [
           _this.layersVm.show(new EditScheduleBlockViewModel({
             blockInfo: event.blockInfo
           }), function onClose(cb) {
-            load_scheduleBlockList(cb);
+            load_scheduleBlockList(_this, cb);
           });
 
           e.stopPropagation();
@@ -287,7 +297,7 @@ define('src/scheduling/schedule.vm', [
 
                   //reload only if result is true
                   if (result) {
-                    load_scheduleBlockList(cb);
+                    load_scheduleBlockList(_this, cb);
                   }
 
                 });
@@ -343,7 +353,7 @@ define('src/scheduling/schedule.vm', [
 
           if (resp && resp.Value) {
             //$('#techCalendar').fullCalendar('addEventSource', result);
-            load_scheduleBlockList();
+            load_scheduleBlockList(_this);
           }
         },
         notify.error, false));
@@ -353,7 +363,7 @@ define('src/scheduling/schedule.vm', [
   }
 
 
-  function load_scheduleBlockList(cb) {
+  function load_scheduleBlockList(_this, cb) {
 
     var current = new Date(), // get current date    
       weekstart = current.getDate() - current.getDay() + 1,
@@ -385,6 +395,8 @@ define('src/scheduling/schedule.vm', [
 
         console.log("SeScheduleBlockList:" + JSON.stringify(resp.Value));
 
+        _this.ScheduleBlockList = resp.Value;
+
         for (x = 0; x < resp.Value.length; x++) {
 
           //color coding blocks
@@ -415,10 +427,6 @@ define('src/scheduling/schedule.vm', [
 
           distanceText = (distance <= 0) ? "" : "<br />Distance: " + distance + " mile(s)";
 
-          if (resp.Value[x].TicketList) {
-            //alert(JSON.stringify(resp.Value[x].TicketList));  
-          }
-
 
           //objects to display on scheduler grid
           data = {
@@ -430,6 +438,7 @@ define('src/scheduling/schedule.vm', [
             nTickets: numTickets,
             zipCode: resp.Value[x].ZipCode,
             blockInfo: resp.Value[x],
+            distance: distance,
             allDay: false,
             //someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') + distanceText + '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' <br />',
             //someInfo: 'Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') + distanceText + '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' <br />',
@@ -579,6 +588,24 @@ define('src/scheduling/schedule.vm', [
   //   _this.ScheduleAvailableSlot(hourDiff);
 
   // }
+
+  //determine the smallest in distance from the scheduleblock list excluding null and zero
+  function getSmallestDistance(scheduleBlockList, dateFrom, dateTo) {
+    // alert("getSmallestDistance");
+    var smallestDistance = 10000000;
+    for (var x = 0; x < scheduleBlockList.length; x++) {
+      var endDateTime = new Date(scheduleBlockList[x].EndTime);
+      if (endDateTime >= dateFrom && endDateTime <= dateTo) {
+        var distance = scheduleBlockList[x].Distance.toFixed(2);
+        if (distance < smallestDistance && distance !== 0) {
+          smallestDistance = distance;
+          console.log('current smallest' + endDateTime);
+        }
+      }
+    }
+    console.log('****************************smallestDistance: ' + smallestDistance);
+    return smallestDistance;
+  }
 
   return ScheduleViewModel;
 });
