@@ -32,11 +32,14 @@ define('src/inventory/transfer.inventory.vm', [
     LocationType: {},
     TransferLocation: {},
     productBarcodeID: {},
+    productBarcodeIdList: {},
   };
 
 
   function TransferInventoryViewModel(options) {
-    var _this = this;
+    var _this = this,
+      join = joiner(),
+      tList;
 
     TransferInventoryViewModel.super_.call(_this, options);
 
@@ -47,6 +50,7 @@ define('src/inventory/transfer.inventory.vm', [
       LocationType: null,
       TransferLocation: null,
       productBarcodeID: null,
+      productBarcodeIdList: null,
     }, schema);
 
     //Intially set previous and new locations to NA
@@ -71,6 +75,7 @@ define('src/inventory/transfer.inventory.vm', [
       },
     });
 
+
     //This is the layer for the "Barcode not found!" error
     _this.layersVm = new LayersViewModel({
       controller: _this,
@@ -78,6 +83,66 @@ define('src/inventory/transfer.inventory.vm', [
 
     //events
     //
+
+    //Transfer list of barcodes
+    _this.clickTransferBarcode = ko.command(function(cb) {
+
+      tList = _this.data.productBarcodeIdList();
+
+      if (!tList) {
+        notify.warn("List of barcodes is empty.", null, 3);
+        cb();
+        return;
+      }
+
+      //empty the list box to display the invalid barcodes
+      _this.data.productBarcodeIdList(null);
+
+      //Transfer barcode only if transfer location is not empty.      
+      if (_this.data.TransferLocation()) {
+
+        tList = tList.split('\n');
+
+        for (var x = 0; x < tList.length; x++) {
+
+          if (tList[x]) {
+
+            //transfer to DB one by one
+            load_productBarcode({
+              id: tList[x],
+              link: 'PBID'
+            }, _this.data.TransferLocation(), _this.data.LocationType, _this, true, join.add());
+
+          }
+        }
+
+      } else {
+        notify.warn('Please select transfer location.', null, 3);
+      }
+
+      cb();
+
+    });
+
+    //update barcode list and convert tab to return on the fly
+    _this.updateBarcodeList = function(data, event) {
+
+      if (event.keyCode === 13 || event.keyCode === 9) {
+
+        if (event.keyCode === 9) {
+          var updatedList = convertTabToEnter(_this.data.productBarcodeIdList());
+          _this.data.productBarcodeIdList(updatedList);
+        }
+
+        if (event.keyCode === 9) {
+          return false;
+        }
+
+      }
+
+      return true;
+    };
+
 
     //This block executes when enter/tab key is hit and barcode field is not empty
     _this.processBarcode = function(data, event) {
@@ -111,7 +176,7 @@ define('src/inventory/transfer.inventory.vm', [
             };
 
             //Check if the barcode entered does exist
-            load_productBarcode(param1, _this.data.TransferLocation(), _this.data.LocationType, _this, join.add());
+            load_productBarcode(param1, _this.data.TransferLocation(), _this.data.LocationType, _this, false, join.add());
 
             //if keycode equals tab, return false
             if (event.keyCode === 9) {
@@ -182,7 +247,9 @@ define('src/inventory/transfer.inventory.vm', [
   };
 
 
-  function load_productBarcode(param, transferLocation, locationType, _this, cb) {
+  function load_productBarcode(param, transferLocation, locationType, _this, listType, cb) {
+
+    var barcodeId = param.id;
 
     //Check if barcode entered does exist
     dataservice.inventoryenginesrv.ProductBarcode.read(param, null, utils.safeCallback(cb, function(err, resp) {
@@ -208,17 +275,29 @@ define('src/inventory/transfer.inventory.vm', [
 
       } else {
 
-        //Show big error "Barcode not found."
-        _this.layersVm.show(new BarcodeErrorViewModel({
-          title: 'Error',
-        }), function onClose(result) {
-          if (!result) {
-            return;
-          }
-        });
+        if (listType) {
+          notify.warn('Barcode: ' + barcodeId + ' is not found.', null, 3);
 
-        //clear barcode field
-        _this.data.productBarcodeID(null);
+          //display on list box the invalid barcodes
+          var invalidBarcodeList = [_this.data.productBarcodeIdList()];
+          invalidBarcodeList = invalidBarcodeList + barcodeId + "\n";
+          _this.data.productBarcodeIdList(invalidBarcodeList);
+
+        } else {
+
+          //Show big error "Barcode not found."
+          _this.layersVm.show(new BarcodeErrorViewModel({
+            title: 'Error',
+          }), function onClose(result) {
+            if (!result) {
+              return;
+            }
+          });
+
+          //clear barcode field
+          _this.data.productBarcodeID(null);
+
+        }
 
       }
     }));
@@ -298,6 +377,17 @@ define('src/inventory/transfer.inventory.vm', [
         notify.warn('No records found.', null, 3);
       }
     }));
+
+  }
+
+  //convert tab to enter on the fly
+  function convertTabToEnter(list) {
+
+    if (list !== null) {
+      list = list + "\n";
+    }
+
+    return list;
 
   }
 
