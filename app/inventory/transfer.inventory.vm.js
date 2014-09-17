@@ -260,7 +260,7 @@ define('src/inventory/transfer.inventory.vm', [
 
         //If tracking id is not null, display previous location
         if (resp.Value.LastProductBarcodeTrackingId != null) {
-          load_productBarcodeTracking(resp.Value.LastProductBarcodeTrackingId, _this, cb);
+          load_productBarcodeTracking(resp.Value.LastProductBarcodeTrackingId, _this, listType, cb);
         }
 
         //parameters for reading/inserting record to ProductBarcodeTracking table
@@ -304,7 +304,7 @@ define('src/inventory/transfer.inventory.vm', [
 
   }
 
-  function load_productBarcodeTracking(ProductBarcodeTrackingID, _this, cb) {
+  function load_productBarcodeTracking(ProductBarcodeTrackingID, _this, listType, cb) {
     dataservice.inventoryenginesrv.ProductBarcodeTracking.read({
       id: ProductBarcodeTrackingID
     }, null, utils.safeCallback(cb, function(err, resp) {
@@ -314,8 +314,10 @@ define('src/inventory/transfer.inventory.vm', [
         console.log("ProductBarcodeTracking-Read:" + JSON.stringify(resp.Value));
 
         //Populate previous location
-        if (resp.Value.LocationID !== null) {
+        if (resp.Value.LocationID !== null && !listType) {
           _this.prevLocation(resp.Value.LocationID);
+        } else {
+          _this.prevLocation('NA');
         }
 
       } else {
