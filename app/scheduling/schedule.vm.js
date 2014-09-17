@@ -1,4 +1,5 @@
 define('src/scheduling/schedule.vm', [
+  'src/app',
   'jquery',
   'fullcalendar',
   'src/dataservice',
@@ -18,6 +19,7 @@ define('src/scheduling/schedule.vm', [
   'src/ukov'
 
 ], function(
+  app,
   $,
   fullCalendar,
   dataservice,
@@ -235,10 +237,28 @@ define('src/scheduling/schedule.vm', [
       eventRender: function(event, element) {
 
         var smallestDistance = getSmallestDistance(_this.ScheduleBlockList, _this.CalendarWeekStart, _this.CalendarWeekEnd);
-        var borderColor = (event.distance === smallestDistance) ? '#00FF00' : '#ADD8E6';
 
-        //assign different border color on smallest distance
-        element.find('.fc-event-inner').attr('style', 'border: 1px solid ' + borderColor + ' !important');
+        if (event.distance === smallestDistance) {
+          element.find('.fc-event-inner').addClass('fc-event-green-border');
+        }
+
+        //checking for manager override color here
+        var isFull = ((event.slot - event.nTickets) === 0) ? true : false;
+        var isDistanceExceedRadius = (event.distance > event.radius) ? true : false;
+
+        if (isFull === true && isSchedulerManager() === false) {
+          //set background to orange to allow manager override
+          //element.find('.fc-event').attr('style', 'background-color:red  !important');
+          element.find('.fc-event-inner').addClass('fc-event-background-red');
+        } else if ((isFull === true || isDistanceExceedRadius === true) && isSchedulerManager() === true) {
+          console.log('allow manager override: orange ****************************************');
+          element.find('.fc-event-inner').addClass('fc-event-background-orange');
+        } else {
+
+          console.log('allow manager override default****************************************');
+          //set default background here 
+        }
+
 
         element.find('.fc-event-inner').attr("title", "Click here to schedule ticket in this block");
         element.find('.fc-event-title').append('<br/>' + event.someInfo);
@@ -606,6 +626,17 @@ define('src/scheduling/schedule.vm', [
     console.log('****************************smallestDistance: ' + smallestDistance);
     return smallestDistance;
   }
+
+  //checking if the current user is a manager
+  function isSchedulerManager() {
+    if (app.user.peek().UserEmployeeTypeName === 'Scheduler Manager') {
+      return true;
+    } else {
+      return false;
+    }
+
+  }
+
 
   return ScheduleViewModel;
 });
