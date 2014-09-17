@@ -159,7 +159,7 @@ define('src/scheduling/schedule.vm', [
         }
 
         //show create ticket screen only when there are still spaces available for a specific block
-        if (parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10)) {
+        if (parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10) || isSchedulerManager()) {
 
           var model = _this.data.getValue();
 
