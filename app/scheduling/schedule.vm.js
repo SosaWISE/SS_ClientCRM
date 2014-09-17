@@ -243,7 +243,8 @@ define('src/scheduling/schedule.vm', [
         }
 
         //checking for manager override color here
-        var isFull = ((event.slot - event.nTickets) === 0) ? true : false;
+        //var isFull = ((event.slot - event.nTickets) === 0) ? true : false;
+        var isFull = ((event.slot - event.nTickets) <= 0) ? true : false;
         var isDistanceExceedRadius = (event.distance > event.radius) ? true : false;
 
         if (isFull === true && isSchedulerManager() === false) {
@@ -465,7 +466,7 @@ define('src/scheduling/schedule.vm', [
             someInfo: 'Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') +
               ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') +
               distanceText +
-              '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) +
+              '  <br /> Available: ' + ((slotAvailable - numTickets) <= 0 ? 0 : (slotAvailable - numTickets)) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) +
               ' <br /><hr> ' + resp.Value[x].TechnicianName +
               ' <br /><hr> ' +
               '<table id="ticketListGrid' + resp.Value[x].BlockID + '" style="border: 1px solid !important; position: relative; width: 100%; z-index: 999999 !important;">' +
@@ -634,7 +635,6 @@ define('src/scheduling/schedule.vm', [
     } else {
       return false;
     }
-
   }
 
 
