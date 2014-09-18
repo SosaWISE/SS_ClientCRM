@@ -2,12 +2,11 @@ table(class="fh-wrap")
 	tr
 		td
 			div(id="accountInfo" style="margin: 10px;", data-bind="visible: IsNowScheduling")
-				label Now Scheduling: 
-				label(data-bind="text:AccountMasterFileNumber")
-				label(data-bind="text:AccountNumber")
-				label(data-bind="text:AccountName")
-				label(data-bind="text:AccountAddress")
-
+				label(span class="label" style="margin-right: 20px;") Now Scheduling:
+				label(style="margin-right: 20px;" data-bind="text:AccountMasterFileNumber")
+				label(style="margin-right: 20px;" data-bind="text:AccountNumber")
+				label(style="margin-right: 20px;" data-bind="text:AccountName")
+				label(style="margin-right: 20px;" data-bind="text:AccountAddress")
 	tr
 		td(class="fh-body")
 			div(class="fh-contents relative")

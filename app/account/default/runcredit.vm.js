@@ -160,7 +160,8 @@ define('src/account/default/runcredit.vm', [
     _this.mixinLoad();
 
     _this.focusFirst = ko.observable(false);
-    _this.layerResult = ko.observable(null);
+    _this.creditResult = ko.observable(null);
+    _this.loaded = ko.observable(false);
     _this.override = ko.observable(false);
     _this.data = ukov.wrap({
       LocalizationID: '',
@@ -188,7 +189,7 @@ define('src/account/default/runcredit.vm', [
       fields: {
         text: 'LocalizationName',
         value: 'LocalizationID',
-      },
+      }
     });
 
     //
@@ -198,47 +199,26 @@ define('src/account/default/runcredit.vm', [
       closeLayer(_this);
       cb();
     }, function(busy) {
-      var layerResult = _this.layerResult();
-      return !busy && layerResult && layerResult.creditResult.IsHit;
+      var creditResult = _this.creditResult();
+      return !busy && creditResult && creditResult.IsHit;
     });
     _this.cmdRun = ko.command(function(cb) {
-      var custModel = validateCustomer(_this);
-      if (!custModel) {
-        return cb();
-      }
-      dataservice.qualify.runcredit.save({
-        data: custModel,
-      }, null, utils.safeCallback(cb, function(err, resp) {
-        trySetResults(_this, custModel, resp.Value, true);
-      }, function(err) {
-        notify.error(err, 10);
-      }));
+      runCredit(_this, false, cb);
     }, function(busy) {
-      var layerResult = _this.layerResult();
-      return !busy && !_this.cmdCreateCustomer.busy() && (!layerResult || !layerResult.creditResult.IsHit);
+      var creditResult = _this.creditResult();
+      return !busy && !_this.cmdBypass.busy() && (!creditResult || !creditResult.IsHit);
     });
-    _this.cmdCreateCustomer = ko.command(function(cb) {
-      var custModel = validateCustomer(_this);
-      if (!custModel) {
-        return cb();
-      }
-      dataservice.qualify.__create_customer_without_running_credit__.save({
-        data: custModel,
-      }, null, utils.safeCallback(cb, function(err, resp) {
-        //@TODO: finish creating customer without running credit
-        resp = resp;
-        trySetResults(_this, custModel, {
-          CreditGroup: 'NotRun',
-          IsHit: true,
-          BureauName: 'No Bureau',
-          LeadId: 11111,
-        }, false);
-      }, function(err) {
-        notify.error(err, 10);
-      }));
+    _this.cmdBypass = ko.command(function(cb) {
+      notify.confirm('Bypass Credit Check?', 'This is a dialog to ensure you really want to bypass the credit check. Click YES to bypass.', function(result) {
+        if (result === 'yes') {
+          runCredit(_this, true, cb);
+        } else {
+          cb();
+        }
+      });
     }, function(busy) {
-      var layerResult = _this.layerResult();
-      return !busy && !_this.cmdRun.busy() && (!layerResult || !layerResult.creditResult.IsHit);
+      var creditResult = _this.creditResult();
+      return !busy && !_this.cmdRun.busy() && (!creditResult || !creditResult.IsHit);
     });
   }
   utils.inherits(RunCreditViewModel, BaseViewModel);
@@ -252,16 +232,19 @@ define('src/account/default/runcredit.vm', [
     }
   }
   RunCreditViewModel.prototype.getResults = function() {
-    var _this = this;
-    return [_this.layerResult.peek()];
+    var _this = this,
+      creditResult = _this.creditResult.peek();
+    if (creditResult && creditResult.IsHit) {
+      return [_this.customerResult, creditResult];
+    } else {
+      return [];
+    }
   };
   RunCreditViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
       msg;
     if (_this.cmdRun.busy()) {
       msg = 'Please wait for credit check to finish.';
-    } else if (_this.cmdCreateCustomer.busy()) {
-      msg = 'Please wait for customer creation to finish.';
     }
     return msg;
   };
@@ -286,39 +269,51 @@ define('src/account/default/runcredit.vm', [
     }, utils.no_op));
   }
 
-  function trySetResults(_this, custModel, creditResult, realRun) {
-    _this.data.markClean(custModel, true);
+  function showCreditResult(_this) {
+    var creditResult = _this.creditResult();
     if (creditResult && creditResult.IsHit) {
-      //set customer
-      _this.layerResult = {
-        SSN: custModel.SSN,
-        DOB: custModel.DOB,
-        Email: custModel.Email,
-        CustomerName: strings.joinTrimmed(' ', custModel.Salutation, custModel.FirstName, custModel.MiddleName, custModel.LastName, custModel.Suffix),
-        //
-        creditResult: creditResult,
-      };
-      if (realRun) {
-        // show credit result popup
-        // layersVm should be defined since this view model is a layer
-        _this.layersVm.show(new BaseViewModel({
-          result: creditResult,
-          width: 300,
-          height: 'auto',
-          viewTmpl: 'tmpl-acct-default-runcredit-result',
-        }));
-      }
+      // layersVm should be defined since this view model is a layer
+      _this.layersVm.show(new BaseViewModel({
+        result: creditResult,
+        width: 300,
+        height: 'auto',
+        viewTmpl: 'tmpl-acct-default-runcredit-result',
+      }));
     }
   }
 
-  function validateCustomer(_this) {
+  function runCredit(_this, bypass, cb) {
     _this.data.validate();
     _this.data.update();
     if (!_this.data.isValid()) {
       notify.warn(_this.data.errMsg(), null, 7);
-      return null;
+      return cb();
     }
-    return _this.data.getValue();
+
+    var model = _this.data.getValue();
+    // store now since we want to use this even if escape key is pressed... (and assuming the credit is a hit)
+    _this.customerResult = {
+      SSN: model.SSN,
+      DOB: model.DOB,
+      Email: model.Email,
+      CustomerName: strings.joinTrimmed(' ', model.Salutation, model.FirstName, model.MiddleName, model.LastName, model.Suffix),
+    };
+    _this.loaded(false);
+    dataservice.qualify.runcredit.save({
+      data: model,
+      query: {
+        bypass: bypass,
+      },
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      _this.loaded(true);
+      _this.data.markClean(model, true);
+      var creditResult = resp.Value;
+      _this.creditResult(creditResult);
+      // show credit result popup
+      showCreditResult(_this);
+    }, function(err) {
+      notify.error(err, 10);
+    }));
   }
 
   return RunCreditViewModel;

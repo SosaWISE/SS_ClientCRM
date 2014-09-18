@@ -28,6 +28,8 @@ define('src/u-kov/ukov-model', [
       configurable: true, // makes it so `delete doc._model` doesn't throw
     });
 
+    _this.__ignore_updates__ = false;
+
     // ensure update always has the correct scope
     _this.update = _this.update.bind(_this);
 
@@ -65,6 +67,11 @@ define('src/u-kov/ukov-model', [
     var _this = this,
       item, isClean = true,
       errMsg;
+
+    if (_this.__ignore_updates__) {
+      return;
+    }
+
     Object.keys(_this.doc).some(function(key) {
       item = _this[key];
       if (drillDown) {
@@ -92,6 +99,15 @@ define('src/u-kov/ukov-model', [
     if (!preventParentUpdate) {
       _this.updateParent();
     }
+
+    // notify to one subscriber that we were updated
+    if (typeof(_this._onUpdate) === 'function' || (_this._onUpdate instanceof Function)) {
+      _this._onUpdate();
+    }
+  };
+  UkovModel.prototype.subscribe = function(cb) {
+    var _this = this;
+    _this._onUpdate = cb;
   };
   UkovModel.prototype.validate = function() {
     var _this = this;
@@ -126,11 +142,13 @@ define('src/u-kov/ukov-model', [
     val = val || {};
 
     var _this = this;
+    _this.__ignore_updates__ = true;
     Object.keys(_this.doc).forEach(function(key) {
       if (val.hasOwnProperty(key)) {
         _this[key].setValue(val[key]);
       }
     }, _this);
+    _this.__ignore_updates__ = false;
 
     _this.update(true);
   };

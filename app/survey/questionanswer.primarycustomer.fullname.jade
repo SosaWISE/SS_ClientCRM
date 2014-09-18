@@ -1,0 +1,21 @@
+ul(class="edit-form",style="min-width:250px;text-align:left;")
+  li
+    span(class="label") Prefix
+    input(type="text", placeholder="Mr.",
+      data-bind="ukov:answer.Prefix,value:answer.Prefix,valueUpdate:'keyup'")
+  li
+    span(class="label") First Name
+    input(type="text", placeholder="",
+      data-bind="ukov:answer.FirstName,value:answer.FirstName,valueUpdate:'keyup'")
+  li
+    span(class="label") Middle Name
+    input(type="text", placeholder="",
+      data-bind="ukov:answer.MiddleName,value:answer.MiddleName,valueUpdate:'keyup'")
+  li
+    span(class="label") Last Name
+    input(type="text", placeholder="",
+      data-bind="ukov:answer.LastName,value:answer.LastName,valueUpdate:'keyup'")
+  li
+    span(class="label") Suffix
+    input(type="text", placeholder="Jr.",
+      data-bind="ukov:answer.Postfix,value:answer.Postfix,valueUpdate:'keyup'")
