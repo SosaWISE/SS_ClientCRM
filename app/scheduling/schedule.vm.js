@@ -98,6 +98,7 @@ define('src/scheduling/schedule.vm', [
   ScheduleViewModel.prototype.onActivate = function(routeData) { // override me
 
     var _this = this,
+      canAddNewTicket = true,
       join = joiner();
 
     _this.data = ukov.wrap({
@@ -158,9 +159,17 @@ define('src/scheduling/schedule.vm', [
           return;
         }
 
-        //show create ticket screen only when there are still spaces available for a specific block
-        if (parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10) || isSchedulerManager()) {
+        //don't show create ticket screen when any condition below are met:
+        if (parseInt(calEvent.nTickets, 10) >= parseInt(calEvent.slot, 10)) {
+          canAddNewTicket = false;
+        }
 
+        if (!isSchedulerManager() && calEvent.isWeightGreaterThanAvailableSlot) {
+          canAddNewTicket = false;
+        }
+
+        //if (parseInt(calEvent.nTickets, 10) < parseInt(calEvent.slot, 10) || (isSchedulerManager() && calEvent.isWeightGreaterThanAvailableSlot)) {
+        if (canAddNewTicket) {
           var model = _this.data.getValue();
 
           _this.layersVm.show(new ScheduleTicketViewModel({
@@ -189,6 +198,9 @@ define('src/scheduling/schedule.vm', [
             }
 
           });
+        } else {
+          //reset flag
+          canAddNewTicket = true;
         }
 
       },
@@ -242,22 +254,45 @@ define('src/scheduling/schedule.vm', [
           element.find('.fc-event-inner').addClass('fc-event-green-border');
         }
 
-        //checking for manager override color here
-        //var isFull = ((event.slot - event.nTickets) === 0) ? true : false;
+        //checking for manager override color here        
+
+        // var isFull = ((event.slot - event.nTickets) <= 0) ? true : false;
+        // var isDistanceExceedRadius = (event.distance > event.radius) ? true : false;
+
+        // if (isFull === true && isSchedulerManager() === false) {                   
+        //   element.find('.fc-event-inner').addClass('fc-event-background-red');
+
+        // } else if ((isFull === true || isDistanceExceedRadius === true) && isSchedulerManager() === true) {
+
+        //   console.log('allow manager override: orange ****************************************');
+        //   element.find('.fc-event-inner').addClass('fc-event-background-orange');
+
+        // } else {
+
+        //   console.log('allow manager override default****************************************');
+        //   //set default background here 
+
+        // }
+
+        //blocks orange/red color coding
+
+        //************************orange******************//
+        //If the distance from the customer to the zip code exceeds the maximum radius.
+        //If total weight of the block exceeds number of available slots.
+
+        //************************red******************//
+        //Can't add more tickets - if there are 0 available slots.
+
         var isFull = ((event.slot - event.nTickets) <= 0) ? true : false;
         var isDistanceExceedRadius = (event.distance > event.radius) ? true : false;
 
-        if (isFull === true && isSchedulerManager() === false) {
-          //set background to orange to allow manager override
-          //element.find('.fc-event').attr('style', 'background-color:red  !important');
+        //if full, regardless of manager or not, maket it red
+        if (isFull) {
           element.find('.fc-event-inner').addClass('fc-event-background-red');
-        } else if ((isFull === true || isDistanceExceedRadius === true) && isSchedulerManager() === true) {
-          console.log('allow manager override: orange ****************************************');
-          element.find('.fc-event-inner').addClass('fc-event-background-orange');
         } else {
-
-          console.log('allow manager override default****************************************');
-          //set default background here 
+          if (isDistanceExceedRadius || event.isWeightGreaterThanAvailableSlot) {
+            element.find('.fc-event-inner').addClass('fc-event-background-orange');
+          }
         }
 
 
@@ -394,6 +429,7 @@ define('src/scheduling/schedule.vm', [
       param,
       x,
       y,
+      z,
       tColor,
       slotAvailable,
       numTickets,
@@ -401,7 +437,10 @@ define('src/scheduling/schedule.vm', [
       result = [],
       distance = 0,
       distanceText,
-      curTicket;
+      curTicket,
+      blockRemainingSlot,
+      totalWeight,
+      tempIsWeightGreaterThanAvailableSlot;
 
     param = {
       'DateFrom': $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
@@ -433,8 +472,8 @@ define('src/scheduling/schedule.vm', [
 
           if (numTickets > 0 && numTickets < slotAvailable) {
             tColor = 'skyblue';
-          } else if (numTickets >= slotAvailable) {
-            tColor = 'orange';
+            //} else if (numTickets >= slotAvailable) {
+            //tColor = 'orange';
           } else {
             tColor = 'white';
           }
@@ -448,6 +487,31 @@ define('src/scheduling/schedule.vm', [
 
           distanceText = (distance <= 0) ? "" : "<br />Distance: " + distance + " mile(s)";
 
+          //determine if weight exceeds number of slot available
+
+          totalWeight = 0;
+
+          //get the remaining slots of the block
+          blockRemainingSlot = ((slotAvailable - numTickets) <= 0 ? 0 : (slotAvailable - numTickets));
+
+          console.log("Calculating total weight on block:" + resp.Value[x].BlockID);
+
+          //get the total weight of all tikets for each block
+          if (resp.Value[x].TicketList.length > 0) {
+            for (z = 0; z < resp.Value[x].TicketList.length; z++) {
+              console.log("Weight:" + resp.Value[x].TicketList[z].Weight);
+              totalWeight += resp.Value[x].TicketList[z].Weight;
+            }
+          }
+
+          console.log("totalWeight:" + totalWeight);
+
+          if (totalWeight > blockRemainingSlot) {
+            tempIsWeightGreaterThanAvailableSlot = true;
+          } else {
+            tempIsWeightGreaterThanAvailableSlot = false;
+          }
+
 
           //objects to display on scheduler grid
           data = {
@@ -460,13 +524,14 @@ define('src/scheduling/schedule.vm', [
             zipCode: resp.Value[x].ZipCode,
             blockInfo: resp.Value[x],
             distance: distance,
+            isWeightGreaterThanAvailableSlot: tempIsWeightGreaterThanAvailableSlot,
             allDay: false,
             //someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') + distanceText + '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' <br />',
             //someInfo: 'Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') + distanceText + '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' <br />',
             someInfo: 'Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') +
               ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') +
               distanceText +
-              '  <br /> Available: ' + ((slotAvailable - numTickets) <= 0 ? 0 : (slotAvailable - numTickets)) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) +
+              '  <br /> Available: ' + blockRemainingSlot + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) +
               ' <br /><hr> ' + resp.Value[x].TechnicianName +
               ' <br /><hr> ' +
               '<table id="ticketListGrid' + resp.Value[x].BlockID + '" style="border: 1px solid !important; position: relative; width: 100%; z-index: 999999 !important;">' +
