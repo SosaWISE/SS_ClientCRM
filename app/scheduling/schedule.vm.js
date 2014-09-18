@@ -164,7 +164,7 @@ define('src/scheduling/schedule.vm', [
           canAddNewTicket = false;
         }
 
-        if (!isSchedulerManager() && calEvent.isWeightGreaterThanAvailableSlot) {
+        if (!isSchedulerManager() && !isEmployeeHasSecurityLevelToOverride() && calEvent.isWeightGreaterThanAvailableSlot) {
           canAddNewTicket = false;
         }
 
@@ -700,6 +700,17 @@ define('src/scheduling/schedule.vm', [
     } else {
       return false;
     }
+  }
+
+  //checking if the current user has security level 5 or higher
+  function isEmployeeHasSecurityLevelToOverride() {
+
+    if (app.user.peek().SecurityLevel >= 5) {
+      return true;
+    } else {
+      return false;
+    }
+
   }
 
 
