@@ -3,6 +3,7 @@ define('src/scheduling/scheduling.panel.vm', [
   'src/scheduling/schedule.vm',
   'src/scheduling/technician.availability.vm',
   'src/scheduling/technician.ticket.vm',
+  'src/scheduling/reschedule.ticket.vm',
   'ko',
   'src/core/helpers',
   'src/core/strings',
@@ -14,6 +15,7 @@ define('src/scheduling/scheduling.panel.vm', [
   ScheduleViewModel,
   TechAvailabilityViewModel,
   TechTicketsViewModel,
+  ReScheduleTicketViewModel,
   ko,
   helpers,
   strings,
@@ -87,6 +89,12 @@ define('src/scheduling/scheduling.panel.vm', [
         pcontroller: _this,
         id: 'techniciantickets',
         title: 'Technician Tickets'
+      }),
+      new ReScheduleTicketViewModel({
+        routeName: 'scheduling',
+        pcontroller: _this,
+        id: 'recheduletickets',
+        title: 'Reschedule Tickets'
       }),
 
     ]);
