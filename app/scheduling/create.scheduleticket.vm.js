@@ -27,12 +27,7 @@ define('src/scheduling/create.scheduleticket.vm', [
 
   schema = {
     _model: true,
-    AccountId: {
-      // converters: ukov.converters.number(0),
-      // validators: [
-      //   ukov.validators.isInt("Please input a number."),
-      // ],      
-    },
+    AccountId: {},
     ScheduleTicketID: {},
     ScheduleTicketType: {},
     ScheduleTicketAppointment: {},
@@ -140,21 +135,9 @@ define('src/scheduling/create.scheduleticket.vm', [
 
       }, notify.error, false));
 
-
-      //if ticketid does not exist, create ticket first to obtain ticketid otherwise proceed to scheduling
-
-      // if (!TicketId) {
-      //   createServiceTicket(_this, cb);
-      // } else {
-      //   setScheduleTicket(_this, cb);
-      // }
-
-
     });
 
     _this.clickClose = function() {
-      //_this.layerResult = null;           
-      //_this.layerResult = _this.ticket;
       closeLayer(_this);
     };
 
@@ -170,9 +153,7 @@ define('src/scheduling/create.scheduleticket.vm', [
 
     var _this = this,
       join = joiner();
-    //console.log('routeData'+routeData);
-    //console.log('extra data'+extraData);
-    //alert(JSON.stringify(extraData));
+
     //load ticket type list
     load_ticketTypeList(_this.data.ScheduleTicketTypeCvm, join.add());
 
@@ -181,9 +162,6 @@ define('src/scheduling/create.scheduleticket.vm', [
   ScheduleTicketViewModel.prototype.onLoad = function(routeData, extraData, join) {
 
     var _this = this;
-
-
-    // alert(JSON.stringify(extraData));
 
     //load ticket type list
     load_ticketTypeList(_this.data.ScheduleTicketTypeCvm, join.add());
@@ -326,40 +304,6 @@ define('src/scheduling/create.scheduleticket.vm', [
 
     }));
 
-
-    // var param = {
-    //   'BlockId': _this.blockId,
-    //   'Notes': _this.data.ScheduleTicketNotes(),
-    //   'TicketTypeId': _this.data.ScheduleTicketType(),
-    //   'AppointmentDate': _this.data.ScheduleAppointmentDate(),
-    //   'TravelTime': _this.data.ScheduleTravelTime(),
-    //   'TicketId': _this.data.ScheduleTicketID()
-    // };
-
-    // console.log("Data to save:" + JSON.stringify(param));
-
-    // dataservice.scheduleenginesrv.SeScheduleTicket.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
-
-    //   if (resp.Code === 0) {
-
-    //     console.log("SeScheduleTicket:" + JSON.stringify(resp.Value));
-
-    //     //clear fields
-
-    //     _this.data.AccountId(null);
-    //     _this.data.ScheduleTicketID(null);
-    //     _this.data.ScheduleTicketAppointment(null);
-    //     _this.data.ScheduleTicketNotes(null);
-    //     _this.data.ScheduleTicketType(null);
-    //     _this.data.ScheduleTravelTime(null);
-
-    //     //clear ticket
-    //     _this.ticket = null;
-
-    //   } else {
-    //     notify.error(err);
-    //   }
-    // }));
 
   }
 

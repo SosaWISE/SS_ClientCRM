@@ -56,13 +56,6 @@ define('src/scheduling/service.ticket.vm', [
     //Ticket history grid
     _this.serviceTicketGvm = new ServiceTicketGridViewModel({
       edit: function(ticket, cb) {
-        //alert(JSON.stringify(ticket));
-        //console.log("before showTicketEditor call");
-        //console.log("_this"+_this);
-        //console.log("ticket"+utils.clone(ticket));
-        //alert(JSON.stringify(utils.clone(ticket)));
-        //console.log("cb"+cb);
-
         showTicketEditor(_this, utils.clone(ticket), cb);
       }
     });
@@ -130,9 +123,6 @@ define('src/scheduling/service.ticket.vm', [
     //load status list
     load_ticketStatusList(_this.data.ticketStatusCvm, join.add());
 
-    //load all tickets created
-    //load_tickets({}, _this.serviceTicketGvm, join.add());
-
   };
 
   ServiceTicketViewModel.prototype.onActivate = function(cb) { // override me
@@ -141,8 +131,7 @@ define('src/scheduling/service.ticket.vm', [
     //set default to All and load all tickets
     _this.data.TicketStatus(0);
 
-    //load all tickets created
-    //load_tickets({}, _this.serviceTicketGvm, cb);
+    //load all tickets created    
     load_tickets({
       id: 0,
       link: 'TSCID'
