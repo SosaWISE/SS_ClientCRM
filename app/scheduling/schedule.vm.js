@@ -56,10 +56,6 @@ define('src/scheduling/schedule.vm', [
 
     ScheduleViewModel.super_.call(_this, options);
 
-    // _this.data = ukov.wrap(_this.item || {
-    //   TicketStatus: null,
-    // }, schema);
-
     //This a layer for creating new ticket (Pop-up)
     _this.layersVm = new LayersViewModel({
       controller: _this,
@@ -94,7 +90,6 @@ define('src/scheduling/schedule.vm', [
 
   };
 
-  //ScheduleViewModel.prototype.onActivate = function( /*routeData, extraData, join*/ ) { // override me
   ScheduleViewModel.prototype.onActivate = function(routeData) { // override me
 
     var _this = this,
@@ -148,7 +143,6 @@ define('src/scheduling/schedule.vm', [
       slotMinutes: 15,
       selectHelper: true,
       aspectRatio: 2.1,
-      //events: tSource,
       hiddenDays: [0], //hide sunday   
       minTime: 8, //start at 8am      
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
@@ -230,7 +224,6 @@ define('src/scheduling/schedule.vm', [
           _this.layersVm.show(new ScheduleBlockViewModel({
             date: $.fullCalendar.formatDate(start, 'MM/dd/yyyy'),
             stime: $.fullCalendar.formatDate(start, 'MM/dd/yyyy HH:mm'),
-            //etime: $.fullCalendar.formatDate(end, 'MM/dd/yyyy HH:mm'),          
             etime: _this.ScheduleEndTime(),
             slot: _this.ScheduleAvailableSlot(),
             blockTime: $.fullCalendar.formatDate(end, 'HH:mm'),
@@ -255,24 +248,6 @@ define('src/scheduling/schedule.vm', [
         }
 
         //checking for manager override color here        
-
-        // var isFull = ((event.slot - event.nTickets) <= 0) ? true : false;
-        // var isDistanceExceedRadius = (event.distance > event.radius) ? true : false;
-
-        // if (isFull === true && isSchedulerManager() === false) {                   
-        //   element.find('.fc-event-inner').addClass('fc-event-background-red');
-
-        // } else if ((isFull === true || isDistanceExceedRadius === true) && isSchedulerManager() === true) {
-
-        //   console.log('allow manager override: orange ****************************************');
-        //   element.find('.fc-event-inner').addClass('fc-event-background-orange');
-
-        // } else {
-
-        //   console.log('allow manager override default****************************************');
-        //   //set default background here 
-
-        // }
 
         //blocks orange/red color coding
 
@@ -367,11 +342,6 @@ define('src/scheduling/schedule.vm', [
 
 
         });
-
-
-        //e.stopImmediatePropagation();
-
-        //});
 
       },
 
@@ -526,8 +496,6 @@ define('src/scheduling/schedule.vm', [
             distance: distance,
             isWeightGreaterThanAvailableSlot: tempIsWeightGreaterThanAvailableSlot,
             allDay: false,
-            //someInfo: '' + resp.Value[x].Block + ' Block <br/> Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') + distanceText + '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' <br />',
-            //someInfo: 'Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') + ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') + distanceText + '  <br /> Available: ' + (slotAvailable - numTickets) + ' of ' + ((resp.Value[x].AvailableSlots) ? resp.Value[x].AvailableSlots : 0) + ' <br /><hr> ' + resp.Value[x].TechnicianName + ' <br />',
             someInfo: 'Zip: ' + ((resp.Value[x].ZipCode) ? resp.Value[x].ZipCode : '') +
               ' <br /> Max Radius: ' + ((resp.Value[x].MaxRadius) ? resp.Value[x].MaxRadius + ' mile(s)' : '') +
               distanceText +
@@ -642,38 +610,6 @@ define('src/scheduling/schedule.vm', [
 
   }
 
-  // //time slots are 1 hour
-  // function extendToHour(_this, start, end) {
-
-  //   var startDuration,
-  //     endDuration,
-  //     minuteDiff,
-  //     minuteExtra,
-  //     hourDiff;
-
-  //   //these will do the following - to always achive 1 hour slot implementation
-
-  //   // - get moments of start and end time    
-  //   startDuration = moment(start);
-  //   endDuration = moment(end);
-  //   // - get the hour difference
-  //   hourDiff = endDuration.diff(startDuration, 'hour');
-  //   // - get the minute difference
-  //   minuteDiff = endDuration.diff(startDuration, 'minutes');
-  //   // - get the modulo by 60 of minute difference and if greater than 0, add 1/extend to 1 hour
-  //   minuteExtra = minuteDiff % 60;
-
-  //   if (minuteExtra) {
-  //     hourDiff++;
-  //   }
-
-  //   //set the final endtime of block
-  //   _this.ScheduleEndTime(moment(startDuration.add("hour", hourDiff)).format("MM/DD/YYYY HH:mm"));
-
-  //   //set the number of slots for a block
-  //   _this.ScheduleAvailableSlot(hourDiff);
-
-  // }
 
   //determine the smallest in distance from the scheduleblock list excluding null and zero
   function getSmallestDistance(scheduleBlockList, dateFrom, dateTo) {

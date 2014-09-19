@@ -56,8 +56,6 @@ define('src/scheduling/ticket.editor.vm', [
     //Set  field as first focusable
     _this.focusFirst = ko.observable(true);
 
-    // alert(JSON.stringify(_this.ticket));
-
     _this.ticket = _this.ticket || {
       TicketID: null,
       AccountId: null,
@@ -97,10 +95,6 @@ define('src/scheduling/ticket.editor.vm', [
       closeLayer(_this);
     };
 
-    // _this.cmdSave = ko.command(function(cb,vm) {
-    //    saveTicket(vm, cb);
-    //    cb();
-    //  });
 
     _this.cmdSave = ko.command(function(cb) {
 
@@ -124,7 +118,6 @@ define('src/scheduling/ticket.editor.vm', [
 
 
     }, function(busy) {
-      //return !busy && !_this.cmdSearch.busy() && !_this.cmdDelete.busy();
       return !busy;
     });
 

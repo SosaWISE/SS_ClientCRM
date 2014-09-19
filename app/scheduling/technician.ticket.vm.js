@@ -39,10 +39,6 @@ define('src/scheduling/technician.ticket.vm', [
     var _this = this;
     TechTicketsViewModel.super_.call(_this, options);
 
-    // _this.layersVm = new LayersViewModel({
-    //   controller: _this,
-    // });      
-
     _this.layersVm = _this.layersVm || new LayersViewModel({
       controller: _this,
     });
