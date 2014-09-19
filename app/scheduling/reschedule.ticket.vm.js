@@ -94,8 +94,7 @@ define('src/scheduling/reschedule.ticket.vm', [
 
     //load all tickets created - no filtering yet that includes un-completed ticket that have passed 4 hours
     load_tickets({
-      id: 0,
-      link: 'TSCID'
+      id: 4,
     }, _this.reScheduleTicketGvm, cb);
 
   };
@@ -111,11 +110,11 @@ define('src/scheduling/reschedule.ticket.vm', [
 
   function load_tickets(param, cvm, cb) {
 
-    dataservice.scheduleenginesrv.SeTicketList.read(param, null, utils.safeCallback(cb, function(err, resp) {
+    dataservice.scheduleenginesrv.SeTicketReScheduleList.read(param, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
 
-        console.log("Tickets:" + JSON.stringify(resp.Value));
+        console.log("Re-schedule Tickets:" + JSON.stringify(resp.Value));
 
         //empty the list before adding some data
         cvm.list([]);
