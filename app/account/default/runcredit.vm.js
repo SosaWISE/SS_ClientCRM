@@ -198,12 +198,12 @@ define('src/account/default/runcredit.vm', [
     _this.override = ko.observable(false);
     _this.data = ukov.wrap(_this.item, schema);
 
-    // /////TESTING//////////////////////
-    // _this.data.FirstName('Bob');
-    // _this.data.LastName('Bobbins');
-    // _this.data.SSN('123456789');
-    // _this.data.DOB('1/1/1');
-    // /////TESTING//////////////////////
+    /////TESTING//////////////////////
+    _this.data.FirstName('Bob');
+    _this.data.LastName('Bobbins');
+    _this.data.SSN('123456789');
+    _this.data.DOB('1/1/1');
+    /////TESTING//////////////////////
 
     _this.localizationCvm = new ComboViewModel({
       selectedValue: _this.data.LocalizationId,
