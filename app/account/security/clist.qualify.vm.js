@@ -33,10 +33,11 @@ define('src/account/security/clist.qualify.vm', [
 
     _this.repModel = ko.observable();
     _this.addressModel = ko.observable();
-    _this.customerData = '';
-    _this.customerModel = ko.observable();
-    _this.creditResult = ko.observable();
-
+    // _this.creditResult = ko.observable();
+    _this.customers = [
+      createCustomerVm('PRI'), // 0
+      createCustomerVm('SEC'), // 1
+    ];
 
     //
     // events
@@ -54,7 +55,8 @@ define('src/account/security/clist.qualify.vm', [
           }
           setter.apply(null, args);
           if (ko.isCommand(nextCmd)) {
-            nextCmd.execute();
+            // call with first customer since cmdCustomer is expecting a customer as 'this'
+            nextCmd.execute.call(_this.customers[0]);
           }
         }
       });
@@ -73,32 +75,41 @@ define('src/account/security/clist.qualify.vm', [
       }, !item);
       cb();
     }, function(busy) {
-      return !busy && (_this.step() === 1 || _this.step() === 2);
+      var step = _this.step();
+      return !busy && (step === 1 || step === 2);
     });
     _this.cmdCustomer = ko.command(function(cb) {
-      showLayer(AccountRunCreditViewModel, function(customer) {
-        if (customer) {
-          _this.customerModel(customer);
+      var currentCustomer = this; // primary or secondary customer
+      showLayer(AccountRunCreditViewModel, function(lead, creditResult) {
+        if (creditResult) {
+          lead.CustomerName = getCustomerName(lead);
+          currentCustomer.lead(lead);
+          currentCustomer.creditResult(creditResult);
 
           //
           // set new id and title on parent and update url
           //
-          _this.pcontroller.id = customer.creditResult.LeadId;
-          _this.pcontroller.title(strings.format('{0}(Lead)', _this.pcontroller.id));
+          _this.pcontroller.id = lead.CustomerMasterFileId;
+          _this.pcontroller.title(lead.CustomerMasterFileId);
           _this.goTo(_this.getRouteData());
         }
       }, null, {
+        customerMasterFileId: (_this.pcontroller.id > 0) ? _this.pcontroller.id : 0,
+        customerTypeId: currentCustomer.customerTypeId,
+        item: utils.clone(currentCustomer.lead.peek()),
         addressId: _this.addressModel().AddressID,
         repModel: _this.repModel()
       }, true);
       cb();
     }, function(busy) {
-      return !busy && _this.step() === 2;
+      var step = _this.step();
+      return !busy && (1 < step && step <= 3);
     });
 
     _this.cmdCreateAccount = ko.command(function(cb) {
+      var primary = _this.customers[0];
       dataservice.msaccountsetupsrv.accounts.post(null, {
-        leadId: _this.customerModel().creditResult.LeadId
+        leadId: primary.creditResult().LeadId
       }, null, function(err, resp) {
         if (err) {
           notify.error(err);
@@ -123,82 +134,81 @@ define('src/account/security/clist.qualify.vm', [
         cb();
       });
     }, function(busy) {
-      return !busy && _this.step() === 3 && _this.canCreateAccount && _this.customerModel();
-    });
-
-    _this.cmdSendToIS = ko.command(function(cb) {
-      dataservice.qualify.insideSales.save({
-        id: _this.customerModel().creditResult.LeadId,
-      }, null, utils.safeCallback(cb, function(err, resp) {
-        if (resp.Message && resp.Message !== 'Success') {
-          notify.error(resp, 3);
-        }
-      }, notify.error));
-    }, function(busy) {
-      return !busy && _this.customerModel();
+      var step = _this.step(),
+        primary = _this.customers[0];
+      return !busy && 3 < step && _this.canCreateAccount && primary.lead() && primary.creditResult();
     });
   }
   utils.inherits(CListQualifyViewModel, ControllerViewModel);
   CListQualifyViewModel.prototype.viewTmpl = 'tmpl-security-clist_qualify';
 
-  CListQualifyViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-    // var _this = this,
-    // _this.cmdFindRep.execute();
-    join.add()();
-
+  CListQualifyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
-      link;
-    if (routeData.route === 'accounts') {
-      link = 'account';
-    } else if (routeData.id > 0) {
-      link = 'lead';
-    } else {
+      id = routeData.masterid;
+    if (id <= 0) {
       // lead not saved yet
       return;
     }
 
-    dataservice.qualify.qualifyCustomerInfos.read({
-      id: routeData.id,
-      link: link,
-    }, null, utils.safeCallback(join.add(), function(err, resp) {
-      resp = resp;
-      console.log(resp.Value);
-      var data = resp.Value;
+    // get leads for master file
+    dataservice.qualify.customerMasterFiles.read({
+      id: id,
+      link: 'leads',
+    }, function(leads) {
+      // primary lead
+      leads.some(function(lead) {
+        if (lead.CustomerTypeId !== 'LEAD' && lead.CustomerTypeId !== 'PRI') {
+          return false;
+        }
+        // there is a primary lead
+        _this.step(3);
+        // load data
+        load_qualifyCustomerInfos(lead.LeadID, function(data) {
+          // set data
+          setCustomerData(_this.customers[0], data);
 
-      // load sales rep
-      dataservice.qualify.salesrep.read({
-        id: data.CompanyID,
-      }, _this.repModel, join.add());
+          //
+          //- use primary lead data for SalesRep and Premise Address.
+          //- the secondary lead should have the same data,
+          //   but it is possible for them to be different.
+          //
 
-      // load address
-      dataservice.qualify.addressValidation.read({
-        id: data.AddressID,
-      }, function(val) {
-        // normalize data
-        val.PhoneNumber = val.PhoneNumber || data.Phone;
-        val.TimeZone = val.TimeZone || data.TimeZoneName;
-        _this.addressModel(val);
-      }, join.add());
+          // load sales rep
+          dataservice.qualify.salesrep.read({
+            id: data.CompanyID,
+          }, _this.repModel, join.add());
 
-      // customer and credit
-      _this.customerModel({
-        // normalize data
-        CustomerName: data.CustomerName,
-        SSN: data.SSN,
-        DOB: data.DOB,
-        Email: data.CustomerEmail,
-        //
-        creditResult: {
-          LeadId: data.LeadID,
-          IsHit: data.IsHit,
-          CreditGroup: data.CreditGroup,
-          BureauName: data.BureauName,
-        },
+          // load address
+          dataservice.qualify.addressValidation.read({
+            id: data.AddressID,
+          }, function(val) {
+            // normalize data
+            val.PhoneNumber = val.PhoneNumber || data.Phone;
+            val.TimeZone = val.TimeZone || data.TimeZoneName;
+            _this.addressModel(val);
+          }, join.add());
+        }, join.add());
+        // break loop
+        return true;
       });
 
-      //
-      _this.step(3);
-    }, utils.no_op));
+      // secondary lead
+      leads.some(function(lead) {
+        if (lead.CustomerTypeId !== 'SEC') {
+          return false;
+        }
+        // there is a secondary lead
+        _this.step(4);
+        // load data
+        load_qualifyCustomerInfos(lead.LeadID, function(data) {
+          // set data
+          setCustomerData(_this.customers[1], data);
+        }, join.add());
+        // break loop
+        return true;
+      });
+
+    }, join.add());
   };
   CListQualifyViewModel.prototype.onActivate = function( /*routeCtx*/ ) { // overrides base
     var _this = this;
@@ -218,6 +228,75 @@ define('src/account/security/clist.qualify.vm', [
       }
     }
   };
+
+  function load_qualifyCustomerInfos(leadID, setter, cb) {
+    dataservice.qualify.qualifyCustomerInfos.read({
+      id: leadID,
+      link: 'lead',
+    }, setter, cb);
+  }
+
+  function createCustomerVm(customerTypeId) {
+    var _this = {
+      customerTypeId: customerTypeId,
+      customerType: getCustomerTypeName(customerTypeId),
+      lead: ko.observable(),
+      creditResult: ko.observable(),
+    };
+    _this.cmdSendToIS = ko.command(function(cb) {
+      dataservice.qualify.insideSales.save({
+        id: _this.creditResult().LeadId,
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        if (resp.Message && resp.Message !== 'Success') {
+          notify.error(resp, 3);
+        }
+      }, notify.error));
+    }, function(busy) {
+      return !busy && _this.creditResult();
+    });
+
+    return _this;
+  }
+
+  function getCustomerTypeName(customerTypeId) {
+    //@REVIEW: load from server?
+    var customerType;
+    switch (customerTypeId) {
+      case 'LEAD':
+      case 'PRI':
+        customerType = 'Primary Customer';
+        break;
+      case 'SEC':
+        customerType = 'Secondary Customer';
+        break;
+      default:
+        return customerTypeId + ' Customer';
+    }
+    return customerType;
+  }
+
+  function setCustomerData(cust, data) {
+    // set customer
+    cust.lead({
+      // normalize data
+      CustomerName: getCustomerName(data),
+      SSN: data.SSN,
+      DOB: data.DOB,
+      Email: data.CustomerEmail,
+    });
+
+    // set credit
+    cust.creditResult({
+      LeadId: data.LeadID,
+      IsHit: data.IsHit,
+      CreditGroup: data.CreditGroup,
+      BureauName: data.BureauName,
+    });
+  }
+
+  function getCustomerName(data) {
+    return strings.joinTrimmed(' ', data.Salutation, data.FirstName, data.MiddleName, data.LastName, data.Suffix);
+  }
 
   return CListQualifyViewModel;
 });

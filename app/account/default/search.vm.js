@@ -127,7 +127,8 @@ define('src/account/default/search.vm', [
             })) {
               _this.goTo({
                 route: 'leads',
-                id: acct.FkId,
+                // id: acct.FkId,
+                masterid: acct.CustomerMasterFileID,
               });
             } else {
               _this.goTo({

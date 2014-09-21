@@ -89,27 +89,29 @@ define('src/account/default/runcredit.vm', [
 
   schema = {
     _model: true,
-    LeadSourceId: {},
-    LeadDispositionId: {},
-    TeamLocationId: {},
+    LeadID: {},
+    AddressID: {
+      converters: ukov.converters.number(0),
+      validators: [
+        ukov.validators.isRequired('AddressID is required'),
+      ],
+    },
+    CustomerTypeId: {},
+    CustomerMasterFileId: {},
     DealerId: {},
-    Gender: {},
+    LocalizationId: {
+      converter: strConverter,
+      validators: [max20],
+    },
+    TeamLocationId: {},
     SeasonId: {},
-
     SalesRepId: {
       converter: strConverter,
       validators: [max25],
     },
-    LocalizationID: {
-      converter: strConverter,
-      validators: [max20],
-    },
-    AddressId: {
-      converters: ukov.converters.number(0),
-      validators: [
-        ukov.validators.isRequired('AddressId is required'),
-      ],
-    },
+    LeadSourceId: {},
+    LeadDispositionId: {},
+    // LeadDispositionDateChange: {},
     Salutation: {
       converter: nullStrConverter,
       validators: [max50],
@@ -136,6 +138,7 @@ define('src/account/default/runcredit.vm', [
       converter: nullStrConverter,
       validators: [max50],
     },
+    Gender: {},
     SSN: {
       converter: ukov.converters.ssn(),
       validationGroup: validationGroup,
@@ -147,28 +150,32 @@ define('src/account/default/runcredit.vm', [
       ],
       validationGroup: validationGroup,
     },
+    DL: {},
+    DLStateId: {},
     Email: {
       converter: strConverter,
       validators: [max256, ukov.validators.isEmail()],
     },
+    PhoneWork: {},
+    PhoneMobile: {},
+    PhoneHome: {},
+    ProductSkwId: {},
   };
 
   function RunCreditViewModel(options) {
     var _this = this;
     RunCreditViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, ['addressId']);
+    BaseViewModel.ensureProps(_this, ['addressId', 'customerTypeId']);
     _this.mixinLoad();
 
-    _this.focusFirst = ko.observable(false);
-    _this.creditResult = ko.observable(null);
-    _this.loaded = ko.observable(false);
-    _this.override = ko.observable(false);
-    _this.data = ukov.wrap({
-      LocalizationID: '',
+    _this.item = _this.item || {
+      CustomerTypeId: _this.customerTypeId,
+      CustomerMasterFileId: _this.customerMasterFileId,
+      LocalizationId: '',
       LeadSourceId: config.leadSourceId,
       LeadDispositionId: config.leadDispositionId,
       DealerId: app.user().DealerId,
-      AddressId: _this.addressId,
+      AddressID: _this.addressId,
       SalesRepId: _this.repModel.CompanyID,
       TeamLocationId: _this.repModel.TeamLocationId,
       SeasonId: _this.repModel.Seasons[0].SeasonID,
@@ -177,15 +184,29 @@ define('src/account/default/runcredit.vm', [
       MiddleName: '',
       LastName: '',
       // Suffix: '',
-      Gender: 'Male',
+      Gender: '',
       SSN: '',
       DOB: '',
       Email: '',
       ProductSkwId: 'HSSS001' // *OPTIONAL  it will default to 'HSSS001' if not passed.  This Prodcut Skw is for an alarm system.  Depending on what type of lead we are creating you would pass the appropriate Product Skw.
-    }, schema);
+    };
+
+    _this.focusFirst = ko.observable(false);
+    _this.leadResult = ko.observable(null);
+    _this.creditResult = ko.observable(null);
+    _this.loaded = ko.observable(false);
+    _this.override = ko.observable(false);
+    _this.data = ukov.wrap(_this.item, schema);
+
+    // /////TESTING//////////////////////
+    // _this.data.FirstName('Bob');
+    // _this.data.LastName('Bobbins');
+    // _this.data.SSN('123456789');
+    // _this.data.DOB('1/1/1');
+    // /////TESTING//////////////////////
 
     _this.localizationCvm = new ComboViewModel({
-      selectedValue: _this.data.LocalizationID,
+      selectedValue: _this.data.LocalizationId,
       fields: {
         text: 'LocalizationName',
         value: 'LocalizationID',
@@ -203,7 +224,14 @@ define('src/account/default/runcredit.vm', [
       return !busy && creditResult && creditResult.IsHit;
     });
     _this.cmdRun = ko.command(function(cb) {
-      runCredit(_this, false, cb);
+      // save lead and then run credit
+      saveLead(_this, function(err) {
+        if (err) {
+          cb(err);
+        } else {
+          runLeadCredit(_this, false, cb);
+        }
+      });
     }, function(busy) {
       var creditResult = _this.creditResult();
       return !busy && !_this.cmdBypass.busy() && (!creditResult || !creditResult.IsHit);
@@ -211,7 +239,8 @@ define('src/account/default/runcredit.vm', [
     _this.cmdBypass = ko.command(function(cb) {
       notify.confirm('Bypass Credit Check?', 'This is a dialog to ensure you really want to bypass the credit check. Click YES to bypass.', function(result) {
         if (result === 'yes') {
-          runCredit(_this, true, cb);
+          // runCredit(_this, true, cb);
+          cb();
         } else {
           cb();
         }
@@ -219,6 +248,10 @@ define('src/account/default/runcredit.vm', [
     }, function(busy) {
       var creditResult = _this.creditResult();
       return !busy && !_this.cmdRun.busy() && (!creditResult || !creditResult.IsHit);
+    });
+
+    _this.busy = ko.computed(function() {
+      return _this.cmdRun.busy() || _this.cmdBypass.busy();
     });
   }
   utils.inherits(RunCreditViewModel, BaseViewModel);
@@ -235,7 +268,7 @@ define('src/account/default/runcredit.vm', [
     var _this = this,
       creditResult = _this.creditResult.peek();
     if (creditResult && creditResult.IsHit) {
-      return [_this.customerResult, creditResult];
+      return [_this.leadResult.peek(), creditResult];
     } else {
       return [];
     }
@@ -243,7 +276,7 @@ define('src/account/default/runcredit.vm', [
   RunCreditViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
       msg;
-    if (_this.cmdRun.busy()) {
+    if (_this.cmdRun.busy() || _this.cmdBypass.busy()) {
       msg = 'Please wait for credit check to finish.';
     }
     return msg;
@@ -269,11 +302,13 @@ define('src/account/default/runcredit.vm', [
     }, utils.no_op));
   }
 
-  function showCreditResult(_this) {
-    var creditResult = _this.creditResult();
+  function tryShowCreditResult(_this) {
+    var lead = _this.leadResult.peek(),
+      creditResult = _this.creditResult.peek();
     if (creditResult && creditResult.IsHit) {
       // layersVm should be defined since this view model is a layer
       _this.layersVm.show(new BaseViewModel({
+        lead: lead,
         result: creditResult,
         width: 300,
         height: 'auto',
@@ -282,35 +317,46 @@ define('src/account/default/runcredit.vm', [
     }
   }
 
-  function runCredit(_this, bypass, cb) {
+  function saveLead(_this, cb) {
     _this.data.validate();
     _this.data.update();
     if (!_this.data.isValid()) {
       notify.warn(_this.data.errMsg(), null, 7);
-      return cb();
+      return cb('invalid lead data');
     }
 
     var model = _this.data.getValue();
-    // store now since we want to use this even if escape key is pressed... (and assuming the credit is a hit)
-    _this.customerResult = {
-      SSN: model.SSN,
-      DOB: model.DOB,
-      Email: model.Email,
-      CustomerName: strings.joinTrimmed(' ', model.Salutation, model.FirstName, model.MiddleName, model.LastName, model.Suffix),
-    };
-    _this.loaded(false);
-    dataservice.qualify.runcredit.save({
+    dataservice.qualify.leads.save({
       data: model,
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      var data = resp.Value;
+      _this.data.markClean(data, true);
+      // normalize data
+      data.CustomerName = strings.joinTrimmed(' ', data.Salutation, data.FirstName, data.MiddleName, data.LastName, data.Suffix);
+      // set lead result
+      _this.leadResult(data);
+    }, function(err) {
+      notify.error(err, 10);
+    }));
+  }
+
+  function runLeadCredit(_this, bypass, cb) {
+    var lead = _this.leadResult.peek();
+    if (!lead) {
+      notify.warn('No lead??', null, 7);
+      return cb();
+    }
+
+    dataservice.qualify.runCredit.save({
+      id: lead.LeadID,
       query: {
         bypass: bypass,
       },
     }, null, utils.safeCallback(cb, function(err, resp) {
-      _this.loaded(true);
-      _this.data.markClean(model, true);
-      var creditResult = resp.Value;
-      _this.creditResult(creditResult);
+      var data = resp.Value;
+      _this.creditResult(data);
       // show credit result popup
-      showCreditResult(_this);
+      tryShowCreditResult(_this);
     }, function(err) {
       notify.error(err, 10);
     }));
