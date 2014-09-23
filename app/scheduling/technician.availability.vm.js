@@ -224,11 +224,6 @@ define('src/scheduling/technician.availability.vm', [
 
       },
 
-      // events: function(start, end, timezone, callback) {
-      //   //alert(start+end);
-      //   load_technicianAvailabilityList(callback);  
-      //   //callback(events);
-      // }
 
     });
 

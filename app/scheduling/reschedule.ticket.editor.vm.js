@@ -1,7 +1,6 @@
-define('src/scheduling/ticket.editor.vm', [
+define('src/scheduling/reschedule.ticket.editor.vm', [
   'src/core/notify',
   'src/core/utils',
-  //'src/core/base.vm',
   'src/core/combo.vm',
   'ko',
   'src/ukov',
@@ -12,7 +11,6 @@ define('src/scheduling/ticket.editor.vm', [
 ], function(
   notify,
   utils,
-  // BaseViewModel,
   ComboViewModel,
   ko,
   ukov,
@@ -42,16 +40,16 @@ define('src/scheduling/ticket.editor.vm', [
     AgentConfirmation: {},
     ExpirationDate: {},
     Notes: {},
-
   };
 
 
-  function TicketEditorViewModel(options) {
+  function ReScheduleTicketEditorViewModel(options) {
     var _this = this;
-    TicketEditorViewModel.super_.call(_this, options);
+    ReScheduleTicketEditorViewModel.super_.call(_this, options);
     _this.mixinLoad();
+
     //Set title
-    _this.title = _this.title || 'Create New Service Ticket';
+    _this.title = _this.title || 'Reschedule Ticket';
 
     //Set  field as first focusable
     _this.focusFirst = ko.observable(true);
@@ -72,10 +70,8 @@ define('src/scheduling/ticket.editor.vm', [
       Notes: null,
     };
 
-
     _this.data = ukov.wrap(utils.clone(_this.ticket), schema);
 
-    //console.log(JSON.stringify(_this.ticket));
     _this.data.TicketTypeId(_this.ticket.TicketTypeId);
 
     //Ticket type dropdown
@@ -95,33 +91,16 @@ define('src/scheduling/ticket.editor.vm', [
       closeLayer(_this);
     };
 
-
-    _this.cmdSave = ko.command(function(cb) {
-
-      //account id validation
-      dataservice.monitoringstationsrv.accounts.read({
-        id: _this.data.AccountId(),
-        link: 'Validate',
-      }, null, utils.safeCallback(cb, function(err, resp) {
-
-        if (resp.Code === 0 && resp.Value) {
-
-          console.log("Account Validate:" + JSON.stringify(resp.Value));
-
-          saveTicket(_this, cb);
-
-        } else {
-          notify.warn('Account ID is invalid.', null, 3);
-        }
-
-      }, notify.error, false));
-
-
+    _this.cmdUserAccount = ko.command(function() {
+      _this.goTo({
+        route: 'accounts',
+        masterid: _this.ticket.CustomerMasterFileId,
+      });
     }, function(busy) {
       return !busy;
     });
 
-    _this.cmdSchedule = ko.command(function(cb) {
+    _this.cmdSaveAndSchedule = ko.command(function(cb) {
 
       //checking account id
       dataservice.monitoringstationsrv.accounts.read({
@@ -175,9 +154,9 @@ define('src/scheduling/ticket.editor.vm', [
 
 
     }, function(busy) {
-      //return !busy && !_this.cmdSearch.busy() && !_this.cmdDelete.busy();
       return !busy;
     });
+
 
     _this.active.subscribe(function(active) {
       if (active) {
@@ -189,18 +168,14 @@ define('src/scheduling/ticket.editor.vm', [
     });
 
   }
-  utils.inherits(TicketEditorViewModel, ControllerViewModel);
-  // utils.inherits(TicketEditorViewModel, BaseViewModel);
-  TicketEditorViewModel.prototype.viewTmpl = 'tmpl-ticket-editor';
-  TicketEditorViewModel.prototype.width = 400;
-  TicketEditorViewModel.prototype.height = 'auto';
+  utils.inherits(ReScheduleTicketEditorViewModel, ControllerViewModel);
+  ReScheduleTicketEditorViewModel.prototype.viewTmpl = 'tmpl-reschedule-ticket-editor';
+  ReScheduleTicketEditorViewModel.prototype.width = 400;
+  ReScheduleTicketEditorViewModel.prototype.height = 'auto';
 
-  TicketEditorViewModel.prototype.onActivate = function( /*routeData*/ ) {
-    //routeData.action="scheduling";
-    //alert("on activate");
-  };
+  ReScheduleTicketEditorViewModel.prototype.onActivate = function( /*routeData*/ ) {};
 
-  TicketEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
+  ReScheduleTicketEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
     //load ticket type list
     load_ticketTypeList(_this.data.ticketTypeCvm, join.add());
@@ -212,7 +187,7 @@ define('src/scheduling/ticket.editor.vm', [
       _this.layer.close();
     }
   }
-  TicketEditorViewModel.prototype.getResults = function() {
+  ReScheduleTicketEditorViewModel.prototype.getResults = function() {
     var _this = this;
     return [_this.layerResult];
   };
@@ -222,7 +197,6 @@ define('src/scheduling/ticket.editor.vm', [
     dataservice.scheduleenginesrv.TicketTypeList.read({}, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
-        //console.log("TicketTypeList:" + JSON.stringify(resp.Value));
         //Set result to TicketType combo list
         cvm.setList(resp.Value);
       } else {
@@ -232,31 +206,6 @@ define('src/scheduling/ticket.editor.vm', [
 
   }
 
-  function saveTicket(_this, cb) {
 
-    if (!_this.data.isValid()) {
-      notify.warn(_this.data.errMsg(), null, 7);
-      cb();
-      return;
-    }
-
-    var model = _this.data.getValue();
-    dataservice.scheduleenginesrv.SeTicket.save({
-      id: model.TicketID, // if no value create, else update
-      data: model,
-    }, null, utils.safeCallback(cb, function(err, resp) {
-      _this.data.markClean(model, true);
-
-      var data = resp.Value;
-
-      _this.layerResult = data;
-      _this.isDeleted = false;
-      closeLayer(_this);
-
-    }, notify.error, false));
-
-  }
-
-
-  return TicketEditorViewModel;
+  return ReScheduleTicketEditorViewModel;
 });
