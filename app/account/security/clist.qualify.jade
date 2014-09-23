@@ -18,16 +18,29 @@ div(data-bind="if:!loadErr()&&!loading()")
         span(class="title") Premise
         div(class="contents",data-bind="if:addressModel")
           div(data-bind="template:{data:addressModel,name:'tmpl-acct-default-address'}")
-      div(class="section",data-bind="cmd:cmdCustomer,toggle:{empty:!customerModel()}")
-        span(class="title") Customer
-        div(class="contents",data-bind="if:customerModel()&&creditResult()")
-          div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult}")
-          div(data-bind="template:{name:'tmpl-acct-default-customer',data:customerModel}")
+      <!-- ko foreach:customers -->
+      div(class="section",data-bind="cmd:cmdCustomer,toggle:{empty:!lead()}")
+        span(class="title",data-bind="text:customerType") e.g.: Premise/Primary or Secondary
+        div(class="contents")
+          div(data-bind="if:lead")
+            div(data-bind="template:{name:'tmpl-acct-default-customer',data:lead}")
+          div(data-bind="if:creditResult")
+            div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult}")
+          ul(class="actions")
+            li
+              span(class="btn",tabindex="0",data-bind="cmd:cmdSendToIS") Send to InsideSales.com
+      <!-- /ko -->
+
+      //- div(class="section",data-bind="cmd:cmdCustomer,toggle:{empty:!customerModel()}")
+      //-   span(class="title") Customer
+      //-   div(class="contents",data-bind="if:customerModel()&&creditResult()")
+      //-     div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult}")
+      //-     div(data-bind="template:{name:'tmpl-acct-default-customer',data:customerModel}")
 
     ul(class="actions")
       li
         span(class="btn",tabindex="0",data-bind="cmd:cmdCreateAccount") Create Account
-      li
+      //- li
         span(class="btn",tabindex="0",data-bind="cmd:cmdSendToIS") Send to InsideSales.com
 
 div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")

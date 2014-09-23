@@ -103,7 +103,7 @@ define('src/account/accounts.panel.vm', [
         if (typeof(id) !== 'undefined' && parseInt(id, 10) == id && id > 0) {
           if (routeData.route === 'leads') {
             // create child and add to list
-            result = createChecklistVM(_this, parseInt(id, 10), strings.format('{0}(Lead)', id));
+            result = createChecklistVM(_this, parseInt(id, 10), id + '');
           } else {
             result = createMasterAccountVM(_this, parseInt(id, 10), id + '');
           }

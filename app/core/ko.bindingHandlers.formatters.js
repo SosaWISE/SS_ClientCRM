@@ -108,4 +108,19 @@ define('src/core/ko.bindingHandlers.formatters', [
   }
   ko.bindingHandlers.phonevalue = createFormatter('value', makeFormattedPhoneValueAccessor);
   ko.bindingHandlers.phonetext = createFormatter('text', makeFormattedPhoneValueAccessor);
+
+
+  //
+  // SSN binding
+  //
+  function makeSsnValueAccessor(valueAccessor) {
+    return function() {
+      var ssn = valueAccessor();
+      if (ssn) {
+        ssn = 'XXX-XX-' + ssn.substr(-4);
+      }
+      return ssn;
+    };
+  }
+  ko.bindingHandlers.ssn = createFormatter('text', makeSsnValueAccessor);
 });

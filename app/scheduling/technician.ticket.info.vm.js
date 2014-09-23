@@ -204,11 +204,6 @@ define('src/scheduling/technician.ticket.info.vm', [
 
 
   TechTicketInfoViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) {
-    //var _this = this;
-    //  join = join;
-
-    //load_technicianTicketEquipments(_this, _this.technicianTicketInfoGvm, join.add());
-    //alert(JSON.stringify(_this.rowObj));
 
   };
 
@@ -227,8 +222,7 @@ define('src/scheduling/technician.ticket.info.vm', [
   function load_technicianTicketEquipments(_this, cb) {
 
     dataservice.msaccountsetupsrv.accounts.read({
-      id: _this.AccountId, //for real
-      //id: 100290, //for testing
+      id: _this.AccountId, //for real      
       link: 'Equipment'
     }, null, utils.safeCallback(cb, function(err, resp) {
 

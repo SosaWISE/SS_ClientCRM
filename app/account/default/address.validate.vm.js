@@ -191,9 +191,9 @@ define('src/account/default/address.validate.vm', [
     _this.data.TeamLocationId(_this.repModel.TeamLocationId);
 
     // /////TESTING//////////////////////
-    // _this.data.PostalCode('84057');
-    // _this.data.StreetAddress('1517 N 1335 W');
-    // _this.data.PhoneNumber('801 822 1234');
+    // _this.data.PostalCode('12345');
+    // _this.data.StreetAddress('adsf');
+    // _this.data.PhoneNumber('1234567890');
     // _this.data.PhoneNumber(_this.data.model.PhoneNumber);
     // /////TESTING//////////////////////
 

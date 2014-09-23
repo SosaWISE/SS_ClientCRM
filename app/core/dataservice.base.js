@@ -58,9 +58,9 @@ define('src/core/dataservice.base', [
   };
   DataserviceBase.prototype.ajax = function(httpVerb, id, link, queryObj, data, setter, callback) {
     queryObj = (queryObj || {});
-    if (!queryObj.SessionId) {
-      queryObj.SessionId = _sessionId;
-    }
+    // if (!queryObj.SessionId) {
+    //   queryObj.SessionId = _sessionId;
+    // }
 
     var context = {
       request: {

@@ -39,12 +39,15 @@ div(class="runcredit-form", data-bind="toggle:{'override':override}")
       div(data-bind="cvm:localizationCvm")
 
 div(style="margin-bottom:20px;")
-  span(class="btn-bg", tabindex="0", data-bind="cmd:cmdRun") Run Credit
-  span(class="btn-bg", tabindex="0", data-bind="cmd:cmdBypass") Bypass Credit
+  ul
+    li
+      span(class="btn-bg", tabindex="0", data-bind="cmd:cmdRun") Run Credit
+    li
+      span(class="btn-bg", tabindex="0", data-bind="cmd:cmdBypass") Bypass Credit
 
 div(data-bind="if:loaded&&creditResult")
   div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult}")
   div(class="actions")
     span(class="btn-bg", tabindex="0", data-bind="cmd:cmdAccept") Ok
 
-div(data-bind="spinner:cmdRun.busy,spinner-rgb:'black'")
+div(data-bind="spinner:busy,spinner-rgb:'black'")

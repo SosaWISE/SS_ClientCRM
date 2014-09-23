@@ -40,6 +40,10 @@ define('src/account/default/rep.find.vm', [
     }, schema);
     _this.rep = ko.observable();
 
+    // /////TESTING//////////////////////
+    // _this.repData.CompanyID('sosa001');
+    // /////TESTING//////////////////////
+
     //
     // events
     //
