@@ -16,10 +16,18 @@ define('src/account/security/clist.qualify.vm', [
   ControllerViewModel,
   RepFindViewModel,
   AddressValidateViewModel,
-  AccountRunCreditViewModel,
+  RunCreditViewModel,
   ko
 ) {
   "use strict";
+
+  var steps = {
+    SALES_REP: 0,
+    ADDRESS: 1,
+    PRI_LEAD: 2,
+    SEC_LEAD: 3,
+    CREATE_CUST: 4,
+  };
 
   function CListQualifyViewModel(options) {
     var _this = this;
@@ -28,82 +36,43 @@ define('src/account/security/clist.qualify.vm', [
 
     _this.mayReload = ko.observable(false);
     _this.title = ko.observable(_this.title);
-    // _this.hideNotes = ko.observable(false);
-    _this.step = ko.observable(0);
+    _this.step = ko.observable(steps.SALES_REP);
 
     _this.repModel = ko.observable();
     _this.addressModel = ko.observable();
-    // _this.creditResult = ko.observable();
     _this.customers = [
-      createCustomerVm('PRI'), // 0
-      createCustomerVm('SEC'), // 1
+      createCustomerVm(_this, 'PRI', steps.PRI_LEAD), // 0
+      createCustomerVm(_this, 'SEC', steps.SEC_LEAD), // 1
     ];
 
     //
     // events
     //
-    function showLayer(Ctor, setter, nextCmd, options, canMove) {
-      if (_this.layer) {
-        return;
-      }
-      _this.layer = _this.layersVm.show(new Ctor(options), function onClose() {
-        _this.layer = null;
-        var args = ko.utils.makeArray(arguments);
-        if (args[args.length - 1]) {
-          if (canMove) {
-            _this.step(_this.step() + 1);
-          }
-          setter.apply(null, args);
-          if (ko.isCommand(nextCmd)) {
-            // call with first customer since cmdCustomer is expecting a customer as 'this'
-            nextCmd.execute.call(_this.customers[0]);
-          }
-        }
-      });
-    }
     _this.cmdFindRep = ko.command(function(cb) {
-      showLayer(RepFindViewModel, _this.repModel, _this.cmdAddress, null, true);
+      showLayer(_this, RepFindViewModel, function(val) {
+        _this.repModel(val);
+        // step if a rep was found
+        return !!val;
+      }, _this.cmdAddress, null);
       cb();
     }, function(busy) {
-      return !busy && _this.step() === 0;
+      return !busy && _this.step() === steps.SALES_REP;
     });
     _this.cmdAddress = ko.command(function(cb) {
-      var item = utils.clone(_this.addressModel());
-      showLayer(AddressValidateViewModel, _this.addressModel, _this.cmdCustomer, {
-        repModel: _this.repModel(),
-        item: item,
-      }, !item);
-      cb();
-    }, function(busy) {
-      var step = _this.step();
-      return !busy && (step === 1 || step === 2);
-    });
-    _this.cmdCustomer = ko.command(function(cb) {
-      var currentCustomer = this; // primary or secondary customer
-      showLayer(AccountRunCreditViewModel, function(lead, creditResult) {
-        if (creditResult) {
-          lead.CustomerName = getCustomerName(lead);
-          currentCustomer.lead(lead);
-          currentCustomer.creditResult(creditResult);
-
-          //
-          // set new id and title on parent and update url
-          //
-          _this.pcontroller.id = lead.CustomerMasterFileId;
-          _this.pcontroller.title(lead.CustomerMasterFileId);
-          _this.goTo(_this.getRouteData());
+      showLayer(_this, AddressValidateViewModel, function(val) {
+        if (val) {
+          _this.addressModel(val);
+          // step if is an address and we are still on the address step
+          return _this.step.peek() === steps.ADDRESS;
         }
-      }, null, {
-        customerMasterFileId: (_this.pcontroller.id > 0) ? _this.pcontroller.id : 0,
-        customerTypeId: currentCustomer.customerTypeId,
-        item: utils.clone(currentCustomer.lead.peek()),
-        addressId: _this.addressModel().AddressID,
-        repModel: _this.repModel()
-      }, true);
+      }, _this.primaryCustCmd, {
+        repModel: _this.repModel(),
+        item: utils.clone(_this.addressModel()),
+      });
       cb();
     }, function(busy) {
       var step = _this.step();
-      return !busy && (1 < step && step <= 3);
+      return !busy && (step === steps.ADDRESS || step === steps.PRI_LEAD);
     });
 
     _this.cmdCreateAccount = ko.command(function(cb) {
@@ -134,9 +103,8 @@ define('src/account/security/clist.qualify.vm', [
         cb();
       });
     }, function(busy) {
-      var step = _this.step(),
-        primary = _this.customers[0];
-      return !busy && 3 < step && _this.canCreateAccount && primary.lead() && primary.creditResult();
+      var primary = _this.customers[0];
+      return !busy && _this.canCreateAccount && primary.lead() && primary.creditResult();
     });
   }
   utils.inherits(CListQualifyViewModel, ControllerViewModel);
@@ -144,7 +112,11 @@ define('src/account/security/clist.qualify.vm', [
 
   CListQualifyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
+      maxStep = steps.SALES_REP,
       id = routeData.masterid;
+
+    load_localizations(_this, join.add());
+
     if (id <= 0) {
       // lead not saved yet
       return;
@@ -155,17 +127,27 @@ define('src/account/security/clist.qualify.vm', [
       id: id,
       link: 'leads',
     }, function(leads) {
+      if (!leads.length) {
+        return;
+      }
+      maxStep = steps.PRI_LEAD;
+
       // primary lead
       leads.some(function(lead) {
         if (lead.CustomerTypeId !== 'LEAD' && lead.CustomerTypeId !== 'PRI') {
           return false;
         }
-        // there is a primary lead
-        _this.step(3);
         // load data
         load_qualifyCustomerInfos(lead.LeadID, function(data) {
+          if (data && data.IsHit) {
+            // there is a primary lead credit result
+            if (maxStep < steps.SEC_LEAD) {
+              maxStep = steps.SEC_LEAD;
+            }
+          }
+
           // set data
-          setCustomerData(_this.customers[0], data);
+          setCustomerData(_this.customers[0], lead, data);
 
           //
           //- use primary lead data for SalesRep and Premise Address.
@@ -197,18 +179,30 @@ define('src/account/security/clist.qualify.vm', [
         if (lead.CustomerTypeId !== 'SEC') {
           return false;
         }
-        // there is a secondary lead
-        _this.step(4);
         // load data
         load_qualifyCustomerInfos(lead.LeadID, function(data) {
+          if (data && data.IsHit) {
+            // there is a secondary lead credit result
+            if (maxStep < steps.CREATE_CUST) {
+              maxStep = steps.CREATE_CUST;
+            }
+          }
+
           // set data
-          setCustomerData(_this.customers[1], data);
+          setCustomerData(_this.customers[1], lead, data);
         }, join.add());
         // break loop
         return true;
       });
 
     }, join.add());
+
+    join.when(function(err) {
+      if (err) {
+        return;
+      }
+      _this.step(maxStep);
+    });
   };
   CListQualifyViewModel.prototype.onActivate = function( /*routeCtx*/ ) { // overrides base
     var _this = this;
@@ -236,26 +230,58 @@ define('src/account/security/clist.qualify.vm', [
     }, setter, cb);
   }
 
-  function createCustomerVm(customerTypeId) {
-    var _this = {
+  function createCustomerVm(_this, customerTypeId, enabledStep) {
+    var vm = {
       customerTypeId: customerTypeId,
       customerType: getCustomerTypeName(customerTypeId),
       lead: ko.observable(),
       creditResult: ko.observable(),
     };
-    _this.cmdSendToIS = ko.command(function(cb) {
+    vm.cmdSendToIS = ko.command(function(cb) {
       dataservice.qualify.insideSales.save({
-        id: _this.creditResult().LeadId,
+        id: vm.creditResult().LeadId,
       }, null, utils.safeCallback(cb, function(err, resp) {
         if (resp.Message && resp.Message !== 'Success') {
           notify.error(resp, 3);
         }
       }, notify.error));
     }, function(busy) {
-      return !busy && _this.creditResult();
+      return !busy && vm.creditResult();
     });
 
-    return _this;
+    vm.cmdCustomer = createCustCmd(_this, vm, enabledStep);
+
+    return vm;
+  }
+
+  function createCustCmd(_this, cust, enabledStep) {
+    return ko.command(function(cb) {
+      showLayer(_this, RunCreditViewModel, function(lead, creditResult) {
+        if (lead) {
+          setCustomerData(cust, lead, creditResult);
+          if (_this.pcontroller.id !== lead.CustomerMasterFileId) {
+            //
+            // set new id and title on parent and update url
+            //
+            _this.pcontroller.id = lead.CustomerMasterFileId;
+            _this.pcontroller.title(lead.CustomerMasterFileId);
+            _this.goTo(_this.getRouteData());
+          }
+          // step if there is a lead and a credit result
+          return !!creditResult;
+        }
+      }, null, {
+        addressId: _this.addressModel().AddressID,
+        repModel: _this.repModel(),
+        cache: _this.cache,
+        customerTypeId: cust.customerTypeId,
+        item: utils.clone(cust.lead.peek()),
+        customerMasterFileId: (_this.pcontroller.id > 0) ? _this.pcontroller.id : 0,
+      });
+      cb();
+    }, function(busy) {
+      return !busy && _this.step() === enabledStep;
+    });
   }
 
   function getCustomerTypeName(customerTypeId) {
@@ -275,27 +301,51 @@ define('src/account/security/clist.qualify.vm', [
     return customerType;
   }
 
-  function setCustomerData(cust, data) {
+  function setCustomerData(cust, lead, data) {
     // set customer
-    cust.lead({
-      // normalize data
-      CustomerName: getCustomerName(data),
-      SSN: data.SSN,
-      DOB: data.DOB,
-      Email: data.CustomerEmail,
-    });
+    lead.CustomerName = getCustomerName(lead);
+    cust.lead(lead);
 
     // set credit
-    cust.creditResult({
-      LeadId: data.LeadID,
-      IsHit: data.IsHit,
-      CreditGroup: data.CreditGroup,
-      BureauName: data.BureauName,
-    });
+    if (!data || !data.IsHit) {
+      cust.creditResult(null);
+    } else {
+      cust.creditResult({
+        LeadId: data.LeadID,
+        IsHit: data.IsHit,
+        CreditGroup: data.CreditGroup,
+        BureauName: data.BureauName,
+      });
+    }
   }
 
   function getCustomerName(data) {
     return strings.joinTrimmed(' ', data.Salutation, data.FirstName, data.MiddleName, data.LastName, data.Suffix);
+  }
+
+  function load_localizations(_this, cb) {
+    _this.cache = _this.cache || {};
+    _this.cache.localizations = [];
+    dataservice.maincore.localizations.read({}, function(val) {
+      _this.cache.localizations = val;
+    }, cb);
+  }
+
+  function showLayer(_this, Ctor, setter, nextCmd, options) {
+    if (_this.layer) {
+      return;
+    }
+    _this.layer = _this.layersVm.show(new Ctor(options), function onClose() {
+      _this.layer = null;
+      var args = ko.utils.makeArray(arguments);
+      if (setter.apply(null, args)) {
+        _this.step(_this.step() + 1);
+
+        if (ko.isCommand(nextCmd)) {
+          nextCmd.execute.call();
+        }
+      }
+    });
   }
 
   return CListQualifyViewModel;

@@ -19,7 +19,7 @@ div(data-bind="if:!loadErr()&&!loading()")
         div(class="contents",data-bind="if:addressModel")
           div(data-bind="template:{data:addressModel,name:'tmpl-acct-default-address'}")
       <!-- ko foreach:customers -->
-      div(class="section",data-bind="cmd:$parent.cmdCustomer,toggle:{empty:!lead()}")
+      div(class="section",data-bind="cmd:cmdCustomer,toggle:{empty:!lead()}")
         span(class="title",data-bind="text:customerType") e.g.: Premise/Primary or Secondary
         div(class="contents")
           div(data-bind="if:lead")

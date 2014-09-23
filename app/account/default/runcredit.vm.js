@@ -2,7 +2,6 @@ define('src/account/default/runcredit.vm', [
   'src/app',
   'src/config',
   'src/core/combo.vm',
-  'src/core/strings',
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
@@ -14,7 +13,6 @@ define('src/account/default/runcredit.vm', [
   app,
   config,
   ComboViewModel,
-  strings,
   notify,
   utils,
   BaseViewModel,
@@ -27,30 +25,20 @@ define('src/account/default/runcredit.vm', [
 
   // -- Credit Score Group
   ko.bindingHandlers.crg = {
-    //init: function(element, valueAccessor) {},
     update: function(element, valueAccessor) {
-      var cls,
-        creditGroup = valueAccessor();
+      var cls, creditGroup = valueAccessor();
       switch (creditGroup) {
         case "Excellent":
-          cls = "excellent";
-          break;
         case "Good":
-          cls = "good";
-          break;
         case "Sub":
-          cls = "sub";
-          break;
         case "Poor":
-          cls = "poor";
+          cls = creditGroup.toLowerCase();
           break;
         default:
           cls = "blank";
           break;
       }
-      if (cls) {
-        jquery(element).addClass(cls);
-      }
+      jquery(element).addClass(cls);
     }
   };
   // -- Credit Score Status
@@ -165,7 +153,15 @@ define('src/account/default/runcredit.vm', [
   function RunCreditViewModel(options) {
     var _this = this;
     RunCreditViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, ['addressId', 'customerTypeId']);
+    BaseViewModel.ensureProps(_this, [
+      'addressId',
+      'customerTypeId',
+      'cache',
+      'repModel',
+    ]);
+    BaseViewModel.ensureProps(_this.cache, [
+      'localizations',
+    ]);
     _this.mixinLoad();
 
     _this.item = _this.item || {
@@ -198,20 +194,26 @@ define('src/account/default/runcredit.vm', [
     _this.override = ko.observable(false);
     _this.data = ukov.wrap(_this.item, schema);
 
-    /////TESTING//////////////////////
-    _this.data.FirstName('Bob');
-    _this.data.LastName('Bobbins');
-    _this.data.SSN('123456789');
-    _this.data.DOB('1/1/1');
-    /////TESTING//////////////////////
+    // /////TESTING//////////////////////
+    // if (!_this.item.LeadID) {
+    //   _this.data.FirstName('Bob');
+    //   _this.data.LastName('Bobbins');
+    //   _this.data.SSN('123456789');
+    //   _this.data.DOB('1/1/1');
+    // }
+    // /////TESTING//////////////////////
 
     _this.localizationCvm = new ComboViewModel({
       selectedValue: _this.data.LocalizationId,
       fields: {
         text: 'LocalizationName',
         value: 'LocalizationID',
-      }
+      },
+      list: _this.cache.localizations,
     });
+    if (!_this.localizationCvm.selectedValue.peek()) {
+      _this.localizationCvm.selectFirst();
+    }
 
     //
     // events
@@ -224,14 +226,7 @@ define('src/account/default/runcredit.vm', [
       return !busy && creditResult && creditResult.IsHit;
     });
     _this.cmdRun = ko.command(function(cb) {
-      // save lead and then run credit
-      saveLead(_this, function(err) {
-        if (err) {
-          cb(err);
-        } else {
-          runLeadCredit(_this, false, cb);
-        }
-      });
+      saveLeadAndRunCredit(_this, false, cb);
     }, function(busy) {
       var creditResult = _this.creditResult();
       return !busy && !_this.cmdBypass.busy() && (!creditResult || !creditResult.IsHit);
@@ -239,8 +234,7 @@ define('src/account/default/runcredit.vm', [
     _this.cmdBypass = ko.command(function(cb) {
       notify.confirm('Bypass Credit Check?', 'This is a dialog to ensure you really want to bypass the credit check. Click YES to bypass.', function(result) {
         if (result === 'yes') {
-          // runCredit(_this, true, cb);
-          cb();
+          saveLeadAndRunCredit(_this, true, cb);
         } else {
           cb();
         }
@@ -267,11 +261,10 @@ define('src/account/default/runcredit.vm', [
   RunCreditViewModel.prototype.getResults = function() {
     var _this = this,
       creditResult = _this.creditResult.peek();
-    if (creditResult && creditResult.IsHit) {
-      return [_this.leadResult.peek(), creditResult];
-    } else {
-      return [];
+    if (creditResult && !creditResult.IsHit) {
+      creditResult = null;
     }
+    return [_this.leadResult.peek(), creditResult];
   };
   RunCreditViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
@@ -288,19 +281,12 @@ define('src/account/default/runcredit.vm', [
       _this.focusFirst(true);
     }, 100);
   };
-  RunCreditViewModel.prototype.onLoad = function(routeData, extraData, join) {
-    var _this = this,
-      cb = join.add();
-
-    load_localization(_this.localizationCvm, cb);
+  RunCreditViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+    join.add()();
+    // var _this = this,
+    //   cb = join.add();
+    // load_localization(_this.localizationCvm, cb);
   };
-
-  function load_localization(cvm, cb) {
-    dataservice.maincore.localizations.read({}, null, utils.safeCallback(cb, function(err, resp) {
-      cvm.setList(resp.Value);
-      cvm.selectItem(cvm.list()[0]);
-    }, utils.no_op));
-  }
 
   function tryShowCreditResult(_this) {
     var lead = _this.leadResult.peek(),
@@ -317,6 +303,17 @@ define('src/account/default/runcredit.vm', [
     }
   }
 
+  function saveLeadAndRunCredit(_this, bypass, cb) {
+    // save lead and then run credit
+    saveLead(_this, function(err) {
+      if (err) {
+        cb(err);
+      } else {
+        runLeadCredit(_this, bypass, cb);
+      }
+    });
+  }
+
   function saveLead(_this, cb) {
     _this.data.validate();
     _this.data.update();
@@ -330,9 +327,8 @@ define('src/account/default/runcredit.vm', [
       data: model,
     }, null, utils.safeCallback(cb, function(err, resp) {
       var data = resp.Value;
+      _this.data.setValue(data);
       _this.data.markClean(data, true);
-      // normalize data
-      data.CustomerName = strings.joinTrimmed(' ', data.Salutation, data.FirstName, data.MiddleName, data.LastName, data.Suffix);
       // set lead result
       _this.leadResult(data);
     }, function(err) {

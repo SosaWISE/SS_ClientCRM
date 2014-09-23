@@ -190,12 +190,12 @@ define('src/account/default/address.validate.vm', [
     _this.data.SalesRepId(_this.repModel.CompanyID);
     _this.data.TeamLocationId(_this.repModel.TeamLocationId);
 
-    /////TESTING//////////////////////
-    _this.data.PostalCode('12345');
-    _this.data.StreetAddress('adsf');
-    _this.data.PhoneNumber('1234567890');
-    _this.data.PhoneNumber(_this.data.model.PhoneNumber);
-    /////TESTING//////////////////////
+    // /////TESTING//////////////////////
+    // _this.data.PostalCode('12345');
+    // _this.data.StreetAddress('adsf');
+    // _this.data.PhoneNumber('1234567890');
+    // _this.data.PhoneNumber(_this.data.model.PhoneNumber);
+    // /////TESTING//////////////////////
 
     //
     // events
