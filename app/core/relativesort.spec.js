@@ -60,6 +60,26 @@ define('src/core/relativesort.spec', [
         expect(rsort.getIntSort(-2, 5)).toBe(1);
       });
 
+      it('w/ min and max should keep results between min and max', function() {
+        rsort = new RelativeSort({
+          zero: 0, // doesn't do anything since it is outside the bounds of min and max
+          increment: 5,
+          min: 1,
+          max: 20,
+        });
+        expect(rsort.getIntSort(null, null)).toBe(1); // zero
+        expect(rsort.getIntSort(null, 19)).toBe(20); // at top
+        expect(rsort.getIntSort(2, null)).toBe(1); // at bottom
+      });
+      it('should swap min and max when needed', function() {
+        rsort = new RelativeSort({
+          min: 20,
+          max: 0,
+        });
+        expect(rsort.min).toBe(0);
+        expect(rsort.max).toBe(20);
+      });
+
       it('should count the number of possible resorts', function() {
         var a, b, result, pow, count = 0;
         a = 1;

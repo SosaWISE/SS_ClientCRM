@@ -1,32 +1,43 @@
-define('src/core/relativesort', [], function() {
+define('src/core/relativesort', [
+  'src/core/utils',
+], function(
+  utils
+) {
   "use strict";
 
-  var min = (Math.pow(2, 31) * -1), // min int
-    max = (Math.pow(2, 31) - 1); // max int
+  // var min = (Math.pow(2, 31) * -1), // min int
+  //   max = (Math.pow(2, 31) - 1); // max int
 
   function RelativeSort(options) {
-    var _this = this;
+    var tmp, _this = this;
     options = options || {};
-    _this.zero = options.zero || 0; // from where we start counting
+    _this.min = utils.ifNull(options.min, (Math.pow(2, 31) * -1)); // default to min int
+    _this.max = utils.ifNull(options.max, (Math.pow(2, 31) - 1)); // default to max int
+    if (_this.min > _this.max) {
+      tmp = _this.min;
+      _this.min = _this.max;
+      _this.max = tmp;
+    }
+    _this.zero = utils.ifNull(options.zero, 0); // from where we start counting
     if (options.increment) {
       _this.increment = options.increment;
     } else {
       options.maxItems = options.maxItems || (1 << 14); // default to 16384 items
       // calculate increment using min, max and maxItems
-      _this.increment = Math.floor(((max - min) / 2) / options.maxItems);
+      _this.increment = Math.floor(((_this.max - _this.min) / 2) / options.maxItems);
     }
   }
 
   RelativeSort.prototype.getIntSort = function(up, down) {
     var _this = this,
       result = getIntSort(up, down, _this.increment, _this.zero);
-    if (result > max) {
-      console.warn('`result` is greater than ' + max + '. truncating.');
-      result = max;
+    if (result > _this.max) {
+      console.warn(result + ' is greater than ' + _this.max + '. truncating.');
+      result = _this.max;
     }
-    if (result < min) {
-      console.warn('`result` is less than ' + min + '. truncating.');
-      result = min;
+    if (result < _this.min) {
+      console.warn(result + ' is less than ' + _this.min + '. truncating.');
+      result = _this.min;
     }
     console.log('up:', up, 'down:', down, 'result:', result);
     return result;

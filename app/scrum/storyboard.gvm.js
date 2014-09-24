@@ -23,7 +23,8 @@ define('src/scrum/storyboard.gvm', [
     // start with high positive number and work down to 0
     var rsort = new RelativeSort({
       zero: (1 << 30), // 1073741824
-      increment: (-1 << 14), // -16384
+      increment: (1 << 14), // 16384
+      min: 1,
     });
 
     var tree = new TreeList({

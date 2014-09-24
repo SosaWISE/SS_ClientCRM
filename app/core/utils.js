@@ -84,6 +84,19 @@ define('src/core/utils', [
       }
     },
 
+    // returns first argument that is not null/undefined or it returns undefined
+    ifNull: function() {
+      var val, i = 0,
+        args = arguments,
+        length = args.length;
+      for (; i < length; i++) {
+        val = args[i];
+        if (val != null) {
+          return val;
+        }
+      }
+    },
+
   };
   utils.no_op = utils.noop; // only for backwards compatibiltiy
 
