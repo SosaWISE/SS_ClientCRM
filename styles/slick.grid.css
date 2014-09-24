@@ -140,6 +140,9 @@ classes should alter those!
   opacity: 0.15;
   filter: ~"alpha(opacity = 15)";
   cursor: move;
+
+  position: absolute;
+  z-index: 99999;
 }
 
 .slick-reorder-guide {
@@ -148,6 +151,9 @@ classes should alter those!
   background: blue;
   opacity: 0.7;
   filter: ~"alpha(opacity = 70)";
+
+  position: absolute;
+  z-index: 99998;
 }
 
 .slick-selection {

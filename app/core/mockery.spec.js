@@ -80,7 +80,7 @@ define('src/core/mockery.spec', [
           'names|3-3': [
             '@NAME',
           ],
-        }, Math.random); // sometimes tests fail from lack of randomness
+        }, mockery.incrementalRandom(mockery.fn.NAME.length)); // sometimes tests fail from random values being too similar
       });
 
       it('should be cached per call', function() {

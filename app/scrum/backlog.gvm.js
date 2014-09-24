@@ -2,7 +2,7 @@ define('src/scrum/backlog.gvm', [
   'src/core/relativesort',
   'src/core/treelist',
   'ko',
-  'src/slick/movesubrows',
+  'src/slick/dragdrop',
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'slick',
@@ -11,7 +11,7 @@ define('src/scrum/backlog.gvm', [
   RelativeSort,
   TreeList,
   ko,
-  MoveSubRows,
+  DragDrop,
   RowEvent,
   SlickGridViewModel,
   Slick,
@@ -22,7 +22,7 @@ define('src/scrum/backlog.gvm', [
   function createTree(openVm) {
     // start with low negative number and work up to 0
     var rsort = new RelativeSort({
-      start: (-1 << 30), // -1073741824
+      zero: (-1 << 30), // -1073741824
       increment: (1 << 14), // 16384
     });
 
@@ -43,7 +43,7 @@ define('src/scrum/backlog.gvm', [
         // if (parent) {
         //   item.ParentID = parent.ID;
         // }
-        item.ProjectOrder = rsort.getIntSort(prev ? prev.data.ProjectOrder : null, next ? next.data.ProjectOrder : null);
+        item.ProjectOrder = rsort.getIntSort(prev ? prev.ProjectOrder : null, next ? next.ProjectOrder : null);
         if (!tree.takes(item)) {
           // edit item but with more save restrictions
           openVm.editItem(item, cb, {
@@ -75,8 +75,8 @@ define('src/scrum/backlog.gvm', [
       },
       dataView: createTree(openVm),
       plugins: [ //
-        new MoveSubRows({
-          rowMoveHelper: options.rowMoveHelper,
+        new DragDrop({
+          dragHub: options.dragHub,
         }),
         new RowEvent({
           eventName: 'onDblClick',

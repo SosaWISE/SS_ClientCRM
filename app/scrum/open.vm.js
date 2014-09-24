@@ -1,6 +1,6 @@
 define('src/scrum/open.vm', [
   'slick',
-  'src/slick/rowmovehelper',
+  'src/slick/draghub',
   'src/scrum/story.editor.vm',
   'src/scrum/cooler.gvm',
   'src/scrum/backlog.gvm',
@@ -11,7 +11,7 @@ define('src/scrum/open.vm', [
   'src/core/controller.vm',
 ], function(
   Slick,
-  RowMoveHelper,
+  DragHub,
   StoryEditorViewModel,
   CoolerGridViewModel,
   BacklogGridViewModel,
@@ -35,7 +35,7 @@ define('src/scrum/open.vm', [
 
     gridOptions = {
       edit: _this.editItem.bind(_this),
-      rowMoveHelper: new RowMoveHelper({
+      dragHub: new DragHub({
         cancelEditOnDrag: true,
       }),
     };

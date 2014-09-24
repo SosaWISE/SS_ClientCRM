@@ -7,7 +7,7 @@ define('src/core/relativesort', [], function() {
   function RelativeSort(options) {
     var _this = this;
     options = options || {};
-    _this.start = options.start || 0;
+    _this.zero = options.zero || 0; // from where we start counting
     if (options.increment) {
       _this.increment = options.increment;
     } else {
@@ -17,9 +17,9 @@ define('src/core/relativesort', [], function() {
     }
   }
 
-  RelativeSort.prototype.getIntSort = function(a, b) {
+  RelativeSort.prototype.getIntSort = function(up, down) {
     var _this = this,
-      result = getIntSort(a, b, _this.increment, _this.start);
+      result = getIntSort(up, down, _this.increment, _this.zero);
     if (result > max) {
       console.warn('`result` is greater than ' + max + '. truncating.');
       result = max;
@@ -28,35 +28,38 @@ define('src/core/relativesort', [], function() {
       console.warn('`result` is less than ' + min + '. truncating.');
       result = min;
     }
+    console.log('up:', up, 'down:', down, 'result:', result);
     return result;
   };
 
-  function getIntSort(a, b, increment, start) {
+  function getIntSort(up, down, increment, zero) {
     var result;
-    if (typeof(a) === 'number' && typeof(b) === 'number') {
-      if (a > b) {
+    if (typeof(up) === 'number' && typeof(down) === 'number') {
+      if (up > down) {
         // swap values
-        result = a;
-        a = b;
-        b = result;
+        result = up;
+        up = down;
+        down = result;
       }
-      if (a === b) {
-        result = a;
+      if (up === down) {
+        result = up;
       } else {
-        result = a + Math.floor((b - a) / 2);
+        result = up + Math.floor((down - up) / 2);
       }
-      if (result < a) {
-        console.warn('`result` is less than `a`');
+      if (result < up) {
+        console.warn('`result` is less than `up`');
       }
-      if (result > b) {
-        console.warn('`result` is greater than `b`');
+      if (result > down) {
+        console.warn('`result` is greater than `down`');
       }
-    } else if (typeof(b) === 'number') {
-      result = b - increment;
-    } else if (typeof(a) === 'number') {
-      result = a + increment;
+    } else if (typeof(down) === 'number') {
+      // at top, going up
+      result = down + increment;
+    } else if (typeof(up) === 'number') {
+      // at bottom, going down
+      result = up - increment;
     } else {
-      return start;
+      return zero;
     }
     return result;
   }

@@ -2,7 +2,7 @@ define('src/scrum/cooler.gvm', [
   'src/core/relativesort',
   'src/core/treelist',
   'ko',
-  'src/slick/movesubrows',
+  'src/slick/dragdrop',
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'slick',
@@ -11,7 +11,7 @@ define('src/scrum/cooler.gvm', [
   RelativeSort,
   TreeList,
   ko,
-  MoveSubRows,
+  DragDrop,
   RowEvent,
   SlickGridViewModel,
   Slick,
@@ -60,14 +60,14 @@ define('src/scrum/cooler.gvm', [
     CoolerGridViewModel.super_.call(_this, {
       gridOptions: {
         enableColumnReorder: false,
-        forceFitColumns: true,
+        // forceFitColumns: true,
         rowHeight: 20,
         multiSelect: false,
       },
       dataView: createTree(openVm),
       plugins: [ //
-        new MoveSubRows({
-          rowMoveHelper: options.rowMoveHelper,
+        new DragDrop({
+          dragHub: options.dragHub,
         }),
         new RowEvent({
           eventName: 'onDblClick',

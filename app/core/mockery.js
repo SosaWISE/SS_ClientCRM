@@ -462,6 +462,20 @@ define('src/core/mockery', [
     }, timeout || 100);
   };
 
+  mockery.incrementalRandom = function(nValues) {
+    var increment = 1 / nValues,
+      rnd = 0;
+    // every value should be used before resetting. this isn't thoroughly tested but it seems to work...
+    return function() {
+      rnd += increment;
+      if (rnd > 1) {
+        // reset
+        rnd = 0;
+      }
+      return rnd;
+    };
+  };
+
 
   return mockery;
 });

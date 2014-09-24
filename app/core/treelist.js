@@ -117,7 +117,7 @@
       throw new Error('no sid');
     }
     var _this = this,
-      countBefore = _this.length,
+      prevLength = _this.length,
       // lookup by sid
       node = _this.map[data.sid];
     if (node) {
@@ -132,7 +132,7 @@
 
       // notify that item was removed
       _this.onRowCountChanged.notify({
-        previous: countBefore,
+        previous: prevLength,
         current: _this.length
       }, null, _this);
       _this.onRowsChanged.notify({
@@ -148,6 +148,7 @@
       throw new Error('no sid');
     }
     var _this = this,
+      prevLength = _this.length,
       // lookup by sid
       node = _this.map[data.sid];
     if (node) {
@@ -166,6 +167,12 @@
     node.data = data;
     addNode(_this, node);
 
+    if (prevLength !== _this.length) {
+      _this.onRowCountChanged.notify({
+        previous: prevLength,
+        current: _this.length
+      }, null, _this);
+    }
     // notify that item was updated
     _this.onRowsChanged.notify({
       rows: [], //@HACK: this wouldn't do anything if slickgrid.vm didn't call invalidateAllRows
@@ -290,7 +297,12 @@
       // at end
       result.parent = null;
       childs = tree.childs.peek();
-      result.prev = childs[childs.length - 1] || null; // get last child at top level
+      if (childs.length) {
+        // get last child at top level
+        result.prev = childs[childs.length - 1].data;
+      } else {
+        result.prev = null;
+      }
       result.next = null;
     } else {
       // not at end
@@ -334,7 +346,7 @@
       result = bob(_this, beforeData);
 
     return _this._inserter(data, result.parent, result.prev, result.next, function() {
-      console.log('insertSibling done:', arguments);
+      // console.log('insertSibling done:', arguments);
     });
   };
 

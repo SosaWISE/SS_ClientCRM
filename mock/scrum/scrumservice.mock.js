@@ -320,7 +320,7 @@ define('mock/scrum/scrumservice.mock', [
     ],
   }).list).concat(mockery.fromTemplate({
     // cooler storys
-    'list|10-10': [ //
+    'list|100-100': [ //
       {
         ID: '@INC(storys)',
         ProjectId: 1,

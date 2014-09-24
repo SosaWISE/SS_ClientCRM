@@ -20,7 +20,7 @@ define('src/core/relativesort.spec', [
       var rsort;
       beforeEach(function() {
         rsort = new RelativeSort({
-          // start: 0, default to 0
+          // zero: 0, default to 0
           increment: 5,
         });
       });
@@ -28,30 +28,38 @@ define('src/core/relativesort.spec', [
       it('first number should be the start value', function() {
         expect(rsort.getIntSort(null, null)).toBe(0);
         rsort = new RelativeSort({
-          start: 12345,
+          zero: 12345,
           increment: 5,
         });
         expect(rsort.getIntSort(null, null)).toBe(12345);
       });
-      it('appending should add `increment` to last number', function() {
-        expect(rsort.getIntSort(-5, null)).toBe(0);
-        expect(rsort.getIntSort(0, null)).toBe(5);
-        expect(rsort.getIntSort(5, null)).toBe(10);
+
+      it('adding at top should add `increment` to top number', function() {
+        expect(rsort.getIntSort(null, -1000)).toBe(-995);
+        expect(rsort.getIntSort(null, 1000)).toBe(1005);
+        expect(rsort.getIntSort(null, -5)).toBe(0);
+        expect(rsort.getIntSort(null, 0)).toBe(5);
+        expect(rsort.getIntSort(null, 5)).toBe(10);
       });
-      it('inserting at front should subtract `increment` from first number', function() {
-        expect(rsort.getIntSort(null, 10)).toBe(5);
-        expect(rsort.getIntSort(null, 5)).toBe(0);
-        expect(rsort.getIntSort(null, 0)).toBe(-5);
+      it('adding at bottom should subtract `increment` from bottom number', function() {
+        expect(rsort.getIntSort(-1000, null)).toBe(-1005);
+        expect(rsort.getIntSort(1000, null)).toBe(995);
+        expect(rsort.getIntSort(-5, null)).toBe(-10);
+        expect(rsort.getIntSort(0, null)).toBe(-5);
+        expect(rsort.getIntSort(5, null)).toBe(0);
       });
-      it('inserting between the same numbers should the first number', function() {
+
+      it('inserting between the same number should return that number', function() {
         expect(rsort.getIntSort(5, 5)).toBe(5);
       });
+
       it('inserting between should use the floored average of the two numbers', function() {
         expect(rsort.getIntSort(4, 10)).toBe(7);
         expect(rsort.getIntSort(5, 10)).toBe(7);
         expect(rsort.getIntSort(-3, 5)).toBe(1);
         expect(rsort.getIntSort(-2, 5)).toBe(1);
       });
+
       it('should count the number of possible resorts', function() {
         var a, b, result, pow, count = 0;
         a = 1;
@@ -111,35 +119,29 @@ define('src/core/relativesort.spec', [
       var rsort = new RelativeSort();
 
       it('adding to list', function() {
-        var a, result;
+        var a = null;
 
-        result = rsort.getIntSort(a, null);
-        expect(result).toBe(0);
-        a = result;
+        a = rsort.getIntSort(a, null);
+        expect(a).toBe(0);
 
-        result = rsort.getIntSort(a, null);
-        expect(result).toBe(131071); // max int / (1024*16)
-        a = result;
+        a = rsort.getIntSort(a, null);
+        expect(a).toBe(-131071); // max int / (1024*16)
 
-        result = rsort.getIntSort(a, null);
-        expect(result).toBe(262142); // 131071 + 131071
-        a = result;
+        a = rsort.getIntSort(a, null);
+        expect(a).toBe(-262142); // 131071 + 131071
       });
 
       it('move to start', function() {
-        var a, result;
+        var a = null;
 
-        result = rsort.getIntSort(a, null);
-        expect(result).toBe(0);
-        a = result;
+        a = rsort.getIntSort(a, null);
+        expect(a).toBe(0);
 
-        result = rsort.getIntSort(null, a);
-        expect(result).toBe(-131071); // max int / (1024*16)
-        a = result;
+        a = rsort.getIntSort(null, a);
+        expect(a).toBe(131071); // max int / (1024*16)
 
-        result = rsort.getIntSort(null, a);
-        expect(result).toBe(-262142); // 131071 + 131071
-        a = result;
+        a = rsort.getIntSort(null, a);
+        expect(a).toBe(262142); // 131071 + 131071
       });
     });
 
