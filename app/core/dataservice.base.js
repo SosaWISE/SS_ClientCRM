@@ -154,7 +154,7 @@ define('src/core/dataservice.base', [
         msg = 'Request timed out';
       } else if (xhr.readyState === 0) {
         code = 990000;
-        msg = 'Unabled to connect to server';
+        msg = 'Unable to connect to server';
       } else {
         code = 990002;
         msg = 'Error making request';

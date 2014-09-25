@@ -24,21 +24,18 @@ define('src/account/security/clist.industrynums.vm', [
     // events
     //
     _this.cmdGenerate = ko.command(function(cb) {
-      dataservice.monitoringstationsrv.msAccounts.read({ //@TODO: this should be a POST
+      dataservice.monitoringstationsrv.msAccounts.save({
         id: _this.accountId,
         link: 'GenerateIndustryAccount',
-      }, null, utils.safeCallback(null, function( /*err, resp*/ ) {
-        // console.log(resp);
-        load_industryAccounts(_this, function(err) {
-          if (err) {
-            notify.error(err);
+      }, null, function(genErr /*, resp*/ ) {
+        // always reload industry accounts since after an industry number is generated there can be errors
+        load_industryAccounts(_this, utils.safeCallback(cb, function() {
+          // show generation error if there was one
+          if (genErr) {
+            notify.error(genErr);
           }
-          cb();
-        });
-      }, function(err) {
-        notify.error(err);
-        cb();
-      }));
+        }, notify.error));
+      });
     });
   }
   utils.inherits(CListIndustryViewModel, ControllerViewModel);
@@ -51,12 +48,14 @@ define('src/account/security/clist.industrynums.vm', [
   };
 
   function load_industryAccounts(_this, cb) {
-    _this.industryAccounts([]);
+    // _this.industryAccounts([]); // don't reset
     dataservice.monitoringstationsrv.msAccounts.read({
       id: _this.accountId,
       link: 'IndustryAccounts',
     }, null, utils.safeCallback(cb, function(err, resp) {
-      _this.industryAccounts(resp.Value);
+      if (!err) {
+        _this.industryAccounts(resp.Value);
+      }
     }));
   }
 
