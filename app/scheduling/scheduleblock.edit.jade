@@ -1,0 +1,26 @@
+ul(class="edit-form")
+	li
+		input(type="hidden" id="eventID")
+	li
+		label Number of Slots
+		input(type="text" data-bind="ukov:data.ScheduleEditSlot, value:data.ScheduleEditSlot, valueUpdate:'keyup'")
+	li
+		label Zip
+		input(type="text" data-bind="ukov:data.ScheduleEditZip, value:data.ScheduleEditZip, valueUpdate:'keyup'")
+	li
+		label Max Radius
+		input(type="text" data-bind="ukov:data.ScheduleEditMaxRadius, value:data.ScheduleEditMaxRadius, valueUpdate:'keyup'")
+	li
+		label Start Date & Time
+		input(type="text" data-bind="ukov:data.ScheduleEditStartDateTime, value:data.ScheduleEditStartDateTime, valueUpdate:'keyup'")		
+	li
+		label End Date & Time
+		input(type="text" data-bind="ukov:data.ScheduleEditEndDateTime, value:data.ScheduleEditEndDateTime, valueUpdate:'keyup'")				
+	li
+		label Technician
+		div(data-bind="cvm:data.TechnicianCvm") 
+div(class="actions")
+	//-span(class="btn-bg", tabindex="0", data-bind="cmd: cmdUpdateBlock") Update Block
+	//-span(class="btn-bg", tabindex="0", data-bind="cmd:clickClose") Cancel
+	span(class="btn-bg", tabindex="0", data-bind="cmd: cmdUpdateBlock") Update Block
+	span(class="btn-bg", tabindex="0", data-bind="cmd:clickClose") Cancel

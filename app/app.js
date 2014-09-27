@@ -72,7 +72,7 @@ define('src/app', [
       // add routes
       //
       router.addRoute(idTpPanelsMap.accounts, 'accounts', ':masterid/:id/:tab/:p1', {});
-      router.addRoute(idTpPanelsMap.accounts, 'leads', ':id/:tab/:p1', {});
+      router.addRoute(idTpPanelsMap.accounts, 'leads', ':masterid/:tab/:p1', {});
       router.addRoute(idTpPanelsMap.home, 'home', '', {});
       router.addRoute(idTpPanelsMap.hr, 'hr', '', {});
       router.addRoute(idTpPanelsMap.surveys, 'surveys', ':surveytypeid/:surveyid/:locale', {
@@ -81,6 +81,7 @@ define('src/app', [
       router.addRoute(idTpPanelsMap.swing, 'swing', '', {});
       router.addRoute(idTpPanelsMap.inventory, 'inventory', ':tab', {});
       router.addRoute(idTpPanelsMap.scheduling, 'scheduling', ':id/:ticketid', {});
+
     },
   });
 

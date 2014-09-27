@@ -1,15 +1,15 @@
 h2(class="title") Found Credit Result!
 div(class="runcredit-result line-top")
-  ul(data-bind="with:result")
+  ul
     li
       span(class="label") Customer #:
-      span(data-bind="text:CustomerMasterFileId")
+      span(data-bind="text:lead.CustomerMasterFileId")
     li
       span(class="label") Credit Group:
-      span(data-bind="text:CreditGroup")
+      span(data-bind="text:result.CreditGroup")
     li
       span(class="label") Lead ID:
-      span(data-bind="text:LeadId")
+      span(data-bind="text:result.LeadId")
     li
       span(class="label") Account ID:
       span [account not yet created]

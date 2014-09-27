@@ -28,13 +28,12 @@ define('src/account/security/ticket.editor.vm', [
   schema = {
     _model: true,
     TicketID: {},
-    AccountID: {},
-    TicketTypeID: {},
-    MoniNumber: {},
-    StatusCodeID: {},
+    AccountId: {},
+    TicketTypeId: {},
+    MonitoringStationNo: {},
+    StatusCodeId: {},
     MoniConfirmation: {},
-    TechConfirmation: {},
-    TechnicianID: {},
+    TechnicianId: {},
     TripCharges: {},
     Appointment: {},
     AgentConfirmation: {},
@@ -55,19 +54,19 @@ define('src/account/security/ticket.editor.vm', [
     //Set  field as first focusable
     _this.focusFirst = ko.observable(true);
 
-    // alert(JSON.stringify(_this));
+    //  alert(_this.accountId);
 
-    //  console.log("AccountID on ticket editor"+_this.AccountID);
+    //  console.log("AccountId on ticket editor"+_this.AccountId);
+
 
     _this.ticket = _this.ticket || {
       TicketID: null,
-      AccountID: _this.accountId,
-      TicketTypeID: null,
-      MoniNumber: null,
-      StatusCodeID: null,
+      AccountId: _this.accountId,
+      TicketTypeId: null,
+      MonitoringStationNo: null,
+      StatusCodeId: null,
       MoniConfirmation: null,
-      TechConfirmation: null,
-      TechnicianID: null,
+      TechnicianId: null,
       TripCharges: null,
       Appointment: null,
       AgentConfirmation: null,
@@ -75,11 +74,14 @@ define('src/account/security/ticket.editor.vm', [
       Notes: null,
     };
 
+
     _this.data = ukov.wrap(utils.clone(_this.ticket), schema);
+
+    _this.data.TicketTypeId(_this.ticket.TicketTypeId);
 
     //Ticket type dropdown
     _this.data.ticketTypeCvm = new ComboViewModel({
-      selectedValue: _this.data.TicketTypeID,
+      selectedValue: _this.data.TicketTypeId,
       fields: {
         value: 'TicketTypeID',
         text: 'TicketTypeName',
@@ -106,6 +108,8 @@ define('src/account/security/ticket.editor.vm', [
         return;
       }
       var model = _this.data.getValue();
+      //alert(JSON.stringify(model));
+
       dataservice.scheduleenginesrv.SeTicket.save({
         id: model.TicketID, // if no value create, else update
         data: model,
@@ -129,13 +133,12 @@ define('src/account/security/ticket.editor.vm', [
 
       var model = _this.data.getValue();
 
-      _this.goTo({
-        // pcontroller: _this,
-        route: 'schedule',
-        tab: 'schedule',
-        id: 1
+      /* _this.goTo({
+        route: 'scheduling',
+        id: 'schedule',
+        ticketid: model.TicketID
       });
-
+      */
 
 
       dataservice.scheduleenginesrv.SeTicket.save({
@@ -147,21 +150,28 @@ define('src/account/security/ticket.editor.vm', [
 
         var data = resp.Value;
 
-        //console.log('schedule: ' + _this);  
-        /*  
+        console.log('save and schedule: ' + _this);
+
         _this.goTo({
           pcontroller: _this,
           route: 'scheduling',
           id: 'schedule',
-          ticketid: data.TicketID,
-          title: 'test'
+          ticketid: data.TicketID
         }, {
           ticket: data
         }, false);
-        */
 
 
+        /*
+        _this.goTo({
+          route: 'scheduling',
+          id: 'schedule',
+          ticketid: data.TicketID,
+        }, {
+          ticket: data
+        }, false);
 
+ */
         _this.layerResult = data;
         _this.isDeleted = false;
         closeLayer(_this);
@@ -198,7 +208,9 @@ define('src/account/security/ticket.editor.vm', [
   TicketEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
 
-    //console.log('on ticket editor route id: ' + routeData.id);
+    console.log('on ticket editor route id: ' + routeData.id);
+
+    //alert(_this.AccountId);
     _this.AccountId = routeData.id;
     //load ticket type list
     load_ticketTypeList(_this.data.ticketTypeCvm, join.add());

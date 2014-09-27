@@ -35,7 +35,7 @@ define('src/core/dataservice.base', [
 
   // post/get with params object (easy to mock)
   DataserviceBase.prototype.save = function(params, setter, callback) {
-    this.ajax('POST', params.id, params.link, null, params.data, setter, callback);
+    this.ajax('POST', params.id, params.link, params.query, params.data, setter, callback);
   };
   DataserviceBase.prototype.read = function(params, setter, callback) {
     this.ajax('GET', params.id, params.link, params.query, null, setter, callback);
@@ -58,9 +58,9 @@ define('src/core/dataservice.base', [
   };
   DataserviceBase.prototype.ajax = function(httpVerb, id, link, queryObj, data, setter, callback) {
     queryObj = (queryObj || {});
-    if (!queryObj.SessionId) {
-      queryObj.SessionId = _sessionId;
-    }
+    // if (!queryObj.SessionId) {
+    //   queryObj.SessionId = _sessionId;
+    // }
 
     var context = {
       request: {
@@ -154,7 +154,7 @@ define('src/core/dataservice.base', [
         msg = 'Request timed out';
       } else if (xhr.readyState === 0) {
         code = 990000;
-        msg = 'Unabled to connect to server';
+        msg = 'Unable to connect to server';
       } else {
         code = 990002;
         msg = 'Error making request';

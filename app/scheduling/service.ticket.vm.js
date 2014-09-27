@@ -56,13 +56,6 @@ define('src/scheduling/service.ticket.vm', [
     //Ticket history grid
     _this.serviceTicketGvm = new ServiceTicketGridViewModel({
       edit: function(ticket, cb) {
-        //alert(JSON.stringify(ticket));
-        //console.log("before showTicketEditor call");
-        //console.log("_this"+_this);
-        //console.log("ticket"+utils.clone(ticket));
-        //alert(JSON.stringify(utils.clone(ticket)));
-        //console.log("cb"+cb);
-
         showTicketEditor(_this, utils.clone(ticket), cb);
       }
     });
@@ -82,21 +75,13 @@ define('src/scheduling/service.ticket.vm', [
       },
     });
 
-
     //events
     //
 
     _this.cmdNewTicket = ko.command(function(cb /*, vm*/ ) {
-      /*_this.goTo({
-
-            route:"scheduling",
-            id:"schedule",
-
-        });
-        */
-      //Go to TicketEditor  screen
 
       _this.layersVm.show(new TicketEditorViewModel({
+        pcontroller: _this,
         title: 'Create New Service Ticket'
       }), function onClose() {
         load_tickets({}, _this.serviceTicketGvm, cb);
@@ -109,9 +94,11 @@ define('src/scheduling/service.ticket.vm', [
 
     _this.data.TicketStatus.subscribe(function(statusId, cb) {
 
-      if (statusId) {
+      // 0 - All
+      if (statusId || statusId === 0) {
         load_tickets({
-          id: statusId
+          id: statusId,
+          link: 'TSCID'
         }, _this.serviceTicketGvm, cb);
       }
 
@@ -136,16 +123,19 @@ define('src/scheduling/service.ticket.vm', [
     //load status list
     load_ticketStatusList(_this.data.ticketStatusCvm, join.add());
 
-    //load all tickets created
-    load_tickets({}, _this.serviceTicketGvm, join.add());
-
   };
 
   ServiceTicketViewModel.prototype.onActivate = function(cb) { // override me
     var _this = this;
 
-    //load all tickets created
-    load_tickets({}, _this.serviceTicketGvm, cb);
+    //set default to All and load all tickets
+    _this.data.TicketStatus(0);
+
+    //load all tickets created    
+    load_tickets({
+      id: 0,
+      link: 'TSCID'
+    }, _this.serviceTicketGvm, cb);
 
   };
 
@@ -164,11 +154,30 @@ define('src/scheduling/service.ticket.vm', [
 
       if (resp.Code === 0) {
 
-        //console.log("TicketStatusCodeList:" + JSON.stringify(resp.Value));
+        //clear dropdown first before inserting
+        cvm.setList([]);
+
+        console.log("TicketStatusCodeList:" + JSON.stringify(resp.Value));
 
         if (resp.Value.length > 0) {
-          //Set result to Location combo list
-          cvm.setList(resp.Value);
+
+          var data = [{
+              StatusCodeID: 0,
+              StatusCode: 'All'
+            }],
+            x;
+
+
+          for (x = 0; x < resp.Value.length; x++) {
+            data.push({
+              StatusCodeID: resp.Value[x].StatusCodeID,
+              StatusCode: resp.Value[x].StatusCode
+            });
+          }
+
+          //Set result to Location combo list          
+          cvm.setList(data);
+
         }
 
       } else {
@@ -184,7 +193,7 @@ define('src/scheduling/service.ticket.vm', [
 
       if (resp.Code === 0) {
 
-        //console.log("Tickets:" + JSON.stringify(resp.Value));
+        console.log("Tickets:" + JSON.stringify(resp.Value));
 
         //empty the list before adding some data
         cvm.list([]);
@@ -195,7 +204,7 @@ define('src/scheduling/service.ticket.vm', [
         }
 
       } else {
-        notify.warn('No records found.', null, 3);
+        //notify.warn('No records found.', null, 3);
       }
     }));
   }

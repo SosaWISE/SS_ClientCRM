@@ -63,6 +63,7 @@ define('src/core/app.vm', [
       // LazyPanel.activate should never be called again, after this point.
       //
       // copy props
+      panelVm.router = _this.router;
       panelVm.routeName = _this.routeName;
       panelVm.routesMap = _this.routesMap;
       panelVm.active = _this.active;
