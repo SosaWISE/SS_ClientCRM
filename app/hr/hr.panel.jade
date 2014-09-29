@@ -1,24 +1,15 @@
-div(class="hr",data-bind="if:loaded")
-  table(class="fh-wrap")
-    tr
-      td(class="fh-header")
-        ul(class="tabs cf")
-          li(class="tab",data-bind="active:searchVm.active")
-            a(data-bind="click:clickSearch") Search
-          <!-- ko foreach:list -->
-          li(class="tab",data-bind="active:active")
-            a(data-bind="click:$parent.clickItem,text:title")
-            span(data-bind="if:active")
-              a(class="close",data-bind="click:close")
-          <!-- /ko -->
-    tr
-      td(class="fh-body")
-        div(class="fh-contents")
-          <!-- ko if:searchVm.loaded()&&searchVm.active() -->
-          div(class="tab", data-bind="template:{name:searchVm.viewTmpl,data:searchVm},active:searchVm.active")
-          <!-- /ko -->
-          <!-- ko foreach:list -->
-          <!-- ko if:active -->
-          div(class="tab", data-bind="template:viewTmpl,active:active")
-          <!-- /ko -->
-          <!-- /ko -->
+div(class="hr-panel dock l3-160",data-bind="toggle:{'l-show':showNav}")
+
+  div(class="dock-content",data-bind="if:activeChild")
+    div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}")
+
+  div(class="dock-left")
+    div(class="btn-dock",data-bind="click:function(){showNav(!showNav())},toggle:{'closed':!showNav()}")
+      div(class="close")
+      div(class="open")
+
+    h2 Hiring Manager
+    ul(class="nav",data-bind="foreach:childs")
+      li
+        a(data-bind="active:active,click:$parent.clickItem")
+          span(data-bind="text:title")

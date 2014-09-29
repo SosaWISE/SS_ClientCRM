@@ -115,7 +115,7 @@ define('src/core/ko.bindingHandlers.formatters', [
   //
   function makeSsnValueAccessor(valueAccessor) {
     return function() {
-      var ssn = valueAccessor();
+      var ssn = ko.unwrap(valueAccessor());
       if (ssn) {
         ssn = 'XXX-XX-' + ssn.substr(-4);
       }

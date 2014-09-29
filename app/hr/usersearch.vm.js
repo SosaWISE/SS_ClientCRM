@@ -1,8 +1,8 @@
-define('src/hr/search.vm', [
+define('src/hr/usersearch.vm', [
   'src/account/default/address.validate.vm',
   'src/core/combo.vm',
   'src/dataservice',
-  'src/hr/search.gvm',
+  'src/hr/usersearch.gvm',
   'src/ukov',
   'src/core/notify',
   'src/core/utils',
@@ -127,7 +127,7 @@ define('src/hr/search.vm', [
     });
   }
   utils.inherits(SearchViewModel, ControllerViewModel);
-  SearchViewModel.prototype.viewTmpl = 'tmpl-hr-search';
+  SearchViewModel.prototype.viewTmpl = 'tmpl-hr-usersearch';
 
   SearchViewModel.prototype.clearData = function() {
     var _this = this,
