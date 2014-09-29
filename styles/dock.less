@@ -1,0 +1,159 @@
+
+// .makeLeftDock(@width) {
+// }
+
+.dock {
+  position: absolute;
+  top:0;right:0;bottom:0;left:0;
+  &.scrollable {
+    overflow: auto;
+  }
+
+  @defaultWidth: 250px;
+  @defaultHeight: 300px;
+
+  > .dock-content,
+  > .dock-left,
+  > .dock-right,
+  > .dock-bottom {
+    position: absolute;
+    .transition(top 0.25s, right 0.25s, bottom 0.25s, left 0.25s;);
+  }
+
+  > .dock-left,
+  > .dock-right,
+  > .dock-bottom {
+    color: #fff;
+  }
+
+  > .dock-content {
+    background-color: #fff;
+    top:0;right:0;bottom:0;left:0;
+    overflow: auto;
+  }
+  > .dock-left {
+    .box-shadow(inset -5px 0 5px -5px #000000;); // right
+    color: #fff;
+    top:0;
+    // right:0;
+    bottom:0;
+    left: -@defaultWidth;
+
+    width: @defaultWidth;
+  }
+  > .dock-right {
+    .box-shadow(inset -2px -5px 5px -5px #000000;); // left
+    top:0;
+    right: -@defaultWidth;
+    bottom:0;
+    // left:0;
+
+    width: @defaultWidth;
+  }
+  > .dock-bottom {
+    .box-shadow(inset 0 5px 5px -5px #000000;); // top
+    // top:0;
+    right:0;
+    bottom: -@defaultHeight;
+    left:0;
+
+    height: @defaultHeight;
+  }
+
+
+
+  //
+  //
+  //
+  &.l-show {
+    > .dock-left {
+      left: 0px;
+    }
+    > .dock-content,
+    > .dock-bottom {
+      left: @defaultWidth;
+    }
+  }
+  &.r-show {
+    > .dock-right {
+      right: 0px;
+    }
+    > .dock-content,
+    > .dock-bottom {
+      right: @defaultWidth;
+    }
+  }
+  &.b-show {
+    > .dock-bottom {
+      bottom: 0px;
+    }
+    > .dock-content {
+      bottom: @defaultHeight;
+    }
+  }
+
+  // &.l3-200 {
+  //   @dockWidth: 200px;
+  // }
+
+
+  //
+  //
+  //
+
+  > .dock-left {
+    > .btn-toggle {
+      top: 0px;
+      right: -17px;
+    }
+  }
+  > .dock-right {
+    > .btn-toggle {
+      top: 0px;
+      left: -18px;
+      .transform(rotate(180deg));
+    }
+  }
+  > .dock-bottom {
+    > .btn-toggle {
+      top: -28px;
+      left: 10px;
+      .transform(rotate(-90deg));
+    }
+  }
+
+
+  //
+  //
+  //
+  > div > .btn-toggle {
+    font-family: entypo;
+    font-size: 28;
+    padding: 5px;
+    cursor: pointer;
+    > .open {
+      display: none;
+      &:before {
+        content: '\E75E';
+      }
+    }
+    > .close {
+      display: block;
+      &:before {
+        content: '\E75D';
+      }
+    }
+    &.closed > .open {
+      display: block;
+    }
+    &.closed > .close {
+      display: none;
+    }
+
+    .box-shadow(inset 0 5px 5px -5px #000000, inset -5px 0 5px -5px #000000, inset -2px -5px 5px -5px #000000;);
+    position: absolute;
+    .border-radius(0px 5px 5px 0px);
+    color: #fff;
+    background-color: @site-purple;
+  }
+}

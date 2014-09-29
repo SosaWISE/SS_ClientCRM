@@ -1,2 +1,24 @@
-h3 HR Panel
-div content
+div(class="hr",data-bind="if:loaded")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+        ul(class="tabs cf")
+          li(class="tab",data-bind="active:searchVm.active")
+            a(data-bind="click:clickSearch") Search
+          <!-- ko foreach:list -->
+          li(class="tab",data-bind="active:active")
+            a(data-bind="click:$parent.clickItem,text:title")
+            span(data-bind="if:active")
+              a(class="close",data-bind="click:close")
+          <!-- /ko -->
+    tr
+      td(class="fh-body")
+        div(class="fh-contents")
+          <!-- ko if:searchVm.loaded()&&searchVm.active() -->
+          div(class="tab", data-bind="template:{name:searchVm.viewTmpl,data:searchVm},active:searchVm.active")
+          <!-- /ko -->
+          <!-- ko foreach:list -->
+          <!-- ko if:active -->
+          div(class="tab", data-bind="template:viewTmpl,active:active")
+          <!-- /ko -->
+          <!-- /ko -->

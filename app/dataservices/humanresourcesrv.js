@@ -14,7 +14,9 @@ define('src/dataservices/humanresourcesrv', [
 
       'RuTeamLocationList',
       'RuTechnician',
-      'RuTechnicianList'
+      'RuTechnicianList',
+
+      'users',
 
     ].forEach(function(collectionName) {
       result[collectionName] = new DataserviceBase(collectionName, serviceDomain);

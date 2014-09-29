@@ -1,0 +1,64 @@
+div(class="hr-item hr-user load-err", data-bind="if:loadErr,toggle:{'may-reload':mayReload}")
+  div(class="col")
+    div Failed to load user
+    //- ul(class="actions")
+      li
+        a(class="btn small",tabindex="0",data-bind="hasfocus:true,cmd:clickReload") Retry
+      li
+        a(class="btn small",tabindex="0",data-bind="cmd:close") Close
+
+div(data-bind="if:!loadErr()&&!loading()")
+
+  div(class="dock hr-user",data-bind="toggle:{'l-show':showNav,'r-show':showRight,'b-show':showBottom,'may-reload':mayReload}")
+
+    div(class="dock-content",data-bind="if:activeChild()")
+      div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}")
+
+    div(class="dock-left")
+      div(class="btn-toggle", data-bind="click:function(){showNav(!showNav())},toggle:{'closed':!showNav()}")
+        div(class="close")
+        div(class="open")
+
+      div(class="contents-wrap")
+        div(class="contents")
+          div(class="section")
+            //- span(class="title")
+            div(class="contents")
+              div(class="info userinfo",data-bind="with:user")
+                div(class="img-wrap")
+                  div(class="img", style="background-image:url(http://lorempixel.com/80/80/people/);")
+                div(class="name",data-bind="text:data.FullName")
+                div(class="companyid",data-bind="text:data.GPEmployeeID")
+                div(class="userid",data-bind="text:data.UserID")
+
+          div(class="section")
+            div(class="contents",data-bind="with:user")
+              ul(class="nav")
+                li
+                  a(data-bind="active:active,click:$parent.clickItem")
+                    span(class="name") User Info
+
+          div(class="section")
+            div(class="title")
+              span Recruits
+              span(class="btn small add-btn",tabindex="0",data-bind="cmd:clickNewRecruit") New Season
+            div(class="contents")
+              ul(class="nav",data-bind="foreach:recruits")
+                li
+                  a(data-bind="active:active,click:$parent.clickItem")
+                    //- span(class="name",data-bind="text:title")
+                    span(class="name") Title goes here
+
+
+    //- div(class="dock-right")
+    //-   div(class="btn-toggle", data-bind="click:function(){showRight(!showRight())},toggle:{'closed':!showRight()}")
+    //-     div(class="close")
+    //-     div(class="open")
+    //-   div Right
+    //- div(class="dock-bottom")
+    //-   div(class="btn-toggle", data-bind="click:function(){showBottom(!showBottom())},toggle:{'closed':!showBottom()}")
+    //-     div(class="close")
+    //-     div(class="open")
+    //-   div Bottom
+
+div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
