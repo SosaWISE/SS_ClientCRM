@@ -1,4 +1,4 @@
-define('src/hr/search.gvm', [
+define('src/hr/usersearch.gvm', [
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/core/utils',
@@ -9,10 +9,10 @@ define('src/hr/search.gvm', [
 ) {
   "use strict";
 
-  function SearchGridViewModel(options) {
+  function UserSearchGridViewModel(options) {
     var _this = this;
     SlickGridViewModel.ensureProps(options, []);
-    SearchGridViewModel.super_.call(_this, {
+    UserSearchGridViewModel.super_.call(_this, {
       scrollToTop: true,
       gridOptions: {
         enableColumnReorder: false,
@@ -62,7 +62,7 @@ define('src/hr/search.gvm', [
       ],
     });
   }
-  utils.inherits(SearchGridViewModel, SlickGridViewModel);
+  utils.inherits(UserSearchGridViewModel, SlickGridViewModel);
 
-  return SearchGridViewModel;
+  return UserSearchGridViewModel;
 });

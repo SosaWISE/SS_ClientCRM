@@ -9,8 +9,9 @@
     overflow: auto;
   }
 
-  @defaultWidth: 250px;
-  @defaultHeight: 300px;
+  // default sizes
+  @dockWidth: 250px;
+  @dockHeight: 300px;
 
   > .dock-content,
   > .dock-left,
@@ -27,7 +28,6 @@
   }
 
   > .dock-content {
-    background-color: #fff;
     top:0;right:0;bottom:0;left:0;
     overflow: auto;
   }
@@ -37,31 +37,28 @@
     top:0;
     // right:0;
     bottom:0;
-    left: -@defaultWidth;
+    left: -@dockWidth;
 
-    width: @defaultWidth;
+    width: @dockWidth;
   }
   > .dock-right {
     .box-shadow(inset -2px -5px 5px -5px #000000;); // left
     top:0;
-    right: -@defaultWidth;
+    right: -@dockWidth;
     bottom:0;
     // left:0;
 
-    width: @defaultWidth;
+    width: @dockWidth;
   }
   > .dock-bottom {
     .box-shadow(inset 0 5px 5px -5px #000000;); // top
     // top:0;
     right:0;
-    bottom: -@defaultHeight;
+    bottom: -@dockHeight;
     left:0;
 
-    height: @defaultHeight;
+    height: @dockHeight;
   }
-
-
-
   //
   //
   //
@@ -71,7 +68,7 @@
     }
     > .dock-content,
     > .dock-bottom {
-      left: @defaultWidth;
+      left: @dockWidth;
     }
   }
   &.r-show {
@@ -80,7 +77,7 @@
     }
     > .dock-content,
     > .dock-bottom {
-      right: @defaultWidth;
+      right: @dockWidth;
     }
   }
   &.b-show {
@@ -88,13 +85,29 @@
       bottom: 0px;
     }
     > .dock-content {
-      bottom: @defaultHeight;
+      bottom: @dockHeight;
     }
   }
+  //
+  //
+  //
+  &.l3-160 {
+    @dockWidth: 160px;
 
-  // &.l3-200 {
-  //   @dockWidth: 200px;
-  // }
+    > .dock-left {
+      left: -@dockWidth;
+      width: @dockWidth;
+    }
+    &.l-show {
+      > .dock-left {
+        left: 0px;
+      }
+      > .dock-content,
+      > .dock-bottom {
+        left: @dockWidth;
+      }
+    }
+  }
 
 
   //
@@ -102,20 +115,20 @@
   //
 
   > .dock-left {
-    > .btn-toggle {
+    > .btn-dock {
       top: 0px;
       right: -17px;
     }
   }
   > .dock-right {
-    > .btn-toggle {
+    > .btn-dock {
       top: 0px;
       left: -18px;
       .transform(rotate(180deg));
     }
   }
   > .dock-bottom {
-    > .btn-toggle {
+    > .btn-dock {
       top: -28px;
       left: 10px;
       .transform(rotate(-90deg));
@@ -126,7 +139,7 @@
   //
   //
   //
-  > div > .btn-toggle {
+  > div > .btn-dock {
     font-family: entypo;
     font-size: 28;
     padding: 5px;
@@ -155,5 +168,8 @@
     .border-radius(0px 5px 5px 0px);
     color: #fff;
     background-color: @site-purple;
+  }
+  .under-toggle-btn {
+    width:17px;height:39px;
   }
 }

@@ -248,6 +248,11 @@ define('src/core/combo.vm', [
     }
     return null;
   };
+  ComboViewModel.prototype.selectedText = function() {
+    var _this = this,
+      selectedItem = _this.selectedItem();
+    return (selectedItem) ? selectedItem.text : '';
+  };
   ComboViewModel.prototype.setList = function(list) {
     list = list || [];
     var _this = this,

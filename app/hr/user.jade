@@ -15,7 +15,7 @@ div(data-bind="if:!loadErr()&&!loading()")
       div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}")
 
     div(class="dock-left")
-      div(class="btn-toggle", data-bind="click:function(){showNav(!showNav())},toggle:{'closed':!showNav()}")
+      div(class="btn-dock", data-bind="click:function(){showNav(!showNav())},toggle:{'closed':!showNav()}")
         div(class="close")
         div(class="open")
 
@@ -24,7 +24,7 @@ div(data-bind="if:!loadErr()&&!loading()")
           div(class="section")
             //- span(class="title")
             div(class="contents")
-              div(class="info userinfo",data-bind="with:user")
+              div(class="info userinfo",data-bind="with:defaultChild")
                 div(class="img-wrap")
                   div(class="img", style="background-image:url(http://lorempixel.com/80/80/people/);")
                 div(class="name",data-bind="text:data.FullName")
@@ -32,7 +32,7 @@ div(data-bind="if:!loadErr()&&!loading()")
                 div(class="userid",data-bind="text:data.UserID")
 
           div(class="section")
-            div(class="contents",data-bind="with:user")
+            div(class="contents",data-bind="with:defaultChild")
               ul(class="nav")
                 li
                   a(data-bind="active:active,click:$parent.clickItem")
@@ -51,12 +51,12 @@ div(data-bind="if:!loadErr()&&!loading()")
 
 
     //- div(class="dock-right")
-    //-   div(class="btn-toggle", data-bind="click:function(){showRight(!showRight())},toggle:{'closed':!showRight()}")
+    //-   div(class="btn-dock", data-bind="click:function(){showRight(!showRight())},toggle:{'closed':!showRight()}")
     //-     div(class="close")
     //-     div(class="open")
     //-   div Right
     //- div(class="dock-bottom")
-    //-   div(class="btn-toggle", data-bind="click:function(){showBottom(!showBottom())},toggle:{'closed':!showBottom()}")
+    //-   div(class="btn-dock", data-bind="click:function(){showBottom(!showBottom())},toggle:{'closed':!showBottom()}")
     //-     div(class="close")
     //-     div(class="open")
     //-   div Bottom

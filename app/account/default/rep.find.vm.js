@@ -21,7 +21,7 @@ define('src/account/default/rep.find.vm', [
       converter: ukov.converters.toUpper(),
       validators: [
         ukov.validators.isRequired('Company ID is required'),
-        ukov.validators.isPattern(/^[a-z]{2,5}[0-9]{3}$/i, 'Invalid Company ID. Expected format: AAAA000'),
+        ukov.validators.isCompanyID(),
       ],
     },
     // SeasonId: {},

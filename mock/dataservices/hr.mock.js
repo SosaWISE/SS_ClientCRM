@@ -43,7 +43,7 @@ define('mock/dataservices/hr.mock', [
   (function() {
 
     mockery.fn.FAKE_COMPANYID = function(cache) {
-      return mockery.fromTemplate('@CHAR_UPPER(0)@CHAR_UPPER(1)@CHAR_UPPER(2)@NUMBER(100,109)', null, cache);
+      return mockery.fromTemplate('@CHAR_LOWER(0)@CHAR_UPPER(1)@CHAR_UPPER(2)@NUMBER(100,109)', null, cache);
     };
 
   })();
@@ -68,7 +68,7 @@ define('mock/dataservices/hr.mock', [
       PhoneCellCarrierID: (data.PhoneCellCarrierID || null),
       RightToWorkStatusID: (data.RightToWorkStatusID || null),
 
-      SSN: (data.SSN || '123-12-1234'),
+      SSN: (data.SSN || '123121234'),
       FirstName: (data.FirstName || '@NAME'),
       MiddleName: (data.MiddleName || null),
       LastName: (data.LastName || '@LASTNAME'),

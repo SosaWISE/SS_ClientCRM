@@ -42,7 +42,7 @@ html
 
         div(class="wrap")
           div(class="panels", data-bind="foreach:panels")
-            <!-- ko with:panel -->
+            <!-- ko if:!lazy -->
             div(data-bind="active:active")
               div(data-bind="template:viewTmpl,attr:{id:id+'-panel'}")
             <!-- /ko -->
