@@ -11,6 +11,7 @@ module.exports = function(grunt) {
     '!node_modules/**/*.js',
     '!testing/**/*.js',
     '!tparty/**/*.js',
+    '!app/depends/lib/**/*.js',
   ];
 
   grunt.loadNpmTasks('grunt-contrib-clean');
@@ -63,7 +64,7 @@ module.exports = function(grunt) {
               'stuff/img/**/*',
               // specs
               'tparty/jasmine/**/*',
-              'tparty/depends.js',
+              'app/depends/depends.js',
             ],
             dest: '<%= www %>/'
           }, {
@@ -121,6 +122,7 @@ module.exports = function(grunt) {
           // exclude specs and packages
           '!app/**/*.spec.js',
           '!app/account/**/*',
+          '!app/depends/**/*',
           '!app/survey/**/*',
           '!app/core/**/*',
           '!app/slick/**/*',
@@ -131,7 +133,7 @@ module.exports = function(grunt) {
       // third party libs
       tparty: {
         src: [
-          'tparty/depends.js',
+          'app/depends/depends.js',
 
           'tparty/jquery-1.10.2.js',
           'tparty/jquery-ui-1.10.4.custom.js',
