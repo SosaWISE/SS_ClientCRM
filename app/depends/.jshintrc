@@ -1,0 +1,28 @@
+{
+  "evil": true,
+
+  "strict": false,
+  "node": true,
+  "browser": true,
+
+  "onevar": true,
+  "laxcomma": true,
+
+  "eqeqeq": true,
+  "eqnull": true,
+  "immed": true,
+  "undef": true,
+  "unused": true,
+  "latedef": true,
+  "curly": true,
+  "trailing": true,
+
+  "smarttabs": true,
+
+  "predef": [
+    "requirejs",
+    "define",
+
+    "alert"
+  ]
+}
