@@ -148,6 +148,9 @@ define('src/u-kov/ukov-prop-array', [
     }, this);
     return result;
   };
+  fn.reset = function() {
+    // currently does nothing since we lack the data
+  };
 
   return {
     create: createUkovPropArray,

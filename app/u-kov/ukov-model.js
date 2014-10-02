@@ -149,7 +149,6 @@ define('src/u-kov/ukov-model', [
       }
     }, _this);
     _this.__ignore_updates__ = false;
-
     _this.update(true);
   };
 
@@ -169,6 +168,15 @@ define('src/u-kov/ukov-model', [
       }
     }, _this);
     return result;
+  };
+  UkovModel.prototype.reset = function(allowParentUpdate) {
+    var _this = this;
+    _this.__ignore_updates__ = true;
+    Object.keys(_this.doc).forEach(function(key) {
+      _this[key].reset();
+    });
+    _this.__ignore_updates__ = false;
+    _this.update(!allowParentUpdate && _this.parentModel);
   };
 
   return UkovModel;

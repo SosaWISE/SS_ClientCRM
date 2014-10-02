@@ -10,11 +10,14 @@ div(class="user-data")
         div(class="contents")
           ul(class="edit-form")
             li
-              span(class="label") Email/Username
-              div(class="text",data-bind="text:data.Email")
+              span(class="label") Username
+              div(class="text",data-bind="text:data.UserName")
             li
               span(class="label") Password
-              div(class="text",data-bind="text:data.Password")
+              div(class="text") **********
+            li
+              span(class="label") Email
+              div(class="text",data-bind="text:data.Email")
 
 
       div(class="section")
@@ -63,11 +66,11 @@ div(class="user-data")
           ul(class="edit-form")
             li
               span(class="label") Cell Phone
-              div(class="text",data-bind="text:data.PhoneCell")
+              div(class="text",data-bind="phonetext:data.PhoneCell")
             li
               span(class="label") Provider
               div(class="text",data-bind="text:data.PhoneCellCarrierCvm.selectedText()")
-            li
+            //- li
               span(class="label") Home Phone
               div(class="text",data-bind="text:data.PhoneHome")
 
@@ -78,7 +81,7 @@ div(class="user-data")
           ul(class="edit-form")
             li
               span(class="label") DOB
-              div(class="text",data-bind="text:data.BirthDate")
+              div(class="text",data-bind="datetext:data.BirthDate")
             li
               span(class="label") Country
               div(class="text",data-bind="text:data.BirthCountry")
@@ -102,7 +105,7 @@ div(class="user-data")
               div(class="text",data-bind="text:data.DLState")
             li
               span(class="label") Expiration
-              div(class="text",data-bind="text:data.DLExpiration")
+              div(class="text",data-bind="datetext:data.DLExpiresOn")
 
 
       //- div(class="section")
@@ -120,7 +123,13 @@ div(class="user-data")
               div(class="text",data-bind="text:data.RightToWorkNotes")
 
 
-      //- div(class="section")
+      div(class="section")
         span(class="title") Recruiting Info
         div(class="contents")
-          | blah
+          ul(class="edit-form")
+            li
+              span(class="label") Recruited By
+              div(class="text",data-bind="text:recruitedBy().FullName")
+            li
+              span(class="label") Date
+              div(class="text",data-bind="datetext:data.RecruitedDate")

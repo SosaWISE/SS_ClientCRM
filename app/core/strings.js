@@ -219,5 +219,17 @@ define('src/core/strings', [
     return new Array(num + 1).join(text);
   };
 
+  // Random text that excludes chars that look similar such as 1liO0o
+  var passwordChars = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%&*";
+  strings.randomPassword = function(length) {
+    var rayLength = passwordChars.length,
+      ray = new Array(length),
+      i = length;
+    while (0 < i--) {
+      ray[i] = passwordChars[Math.round(Math.random() * rayLength)];
+    }
+    return ray.join('');
+  };
+
   return strings;
 });

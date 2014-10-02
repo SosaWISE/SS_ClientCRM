@@ -36,6 +36,9 @@ define('src/u-kov/string-converters', [
   converters.toUpper = function() {
     return convToUpper;
   };
+  converters.toLower = function() {
+    return convToLower;
+  };
   converters.bool = function() {
     return convBool;
   };
@@ -247,7 +250,15 @@ define('src/u-kov/string-converters', [
     if (val) {
       val = val.toUpperCase();
     }
-    return val;
+    return val || null;
+  }
+
+  function convToLower(val) {
+    val = trim(val);
+    if (val) {
+      val = val.toLowerCase();
+    }
+    return val || null;
   }
 
   function convBool(val) {

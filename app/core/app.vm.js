@@ -100,6 +100,7 @@ define('src/core/app.vm', [
       'doLogout',
       'createLogin',
       'pathToPanelOptionsMap',
+      'addAnonRoutes',
       'addRoutes',
     ]);
     ko.utils.extend(_this, options);
@@ -145,32 +146,42 @@ define('src/core/app.vm', [
   AppViewModel.prototype.routePart = 'route';
   AppViewModel.prototype.init = function() {
     var _this = this,
-      login, panels;
+      login;
 
     // create
     login = _this.createLogin(_this.setUser, _this.routePart);
     setTemplate([login], _this.prefix, _this.postfix);
-    panels = [];
-    Object.keys(_this.pathToPanelOptionsMap).forEach(function(path) {
-      var panelOptions = _this.pathToPanelOptionsMap[path];
-      panelOptions.routePart = _this.routePart;
-      panels.push(new LazyPanelViewModel(_this.panels, path, panelOptions));
-    });
-    setTemplate(panels, _this.prefix, _this.postfix);
-
     // add view models
     _this.login(login);
-    _this.panels(panels);
-    // add routes
-    _this.addRoutes(_this.router, login, createMap(panels));
+    // add anonymous routes
+    _this.addAnonRoutes(_this.router, login);
   };
-  AppViewModel.prototype.setUser = function(user, useDestPath) {
-    var _this = this;
-    _this.user(user);
-    // start router
-    _this.router.init(_this.user);
-    if (useDestPath) {
-      _this.router.useDestPath();
+  AppViewModel.prototype.setUser = function(user, destPath) {
+    var _this = this,
+      panels;
+    // do nothing if the user being set is null or we already have a user
+    if (user && !_this.user.peek()) {
+      // add routes
+      panels = [];
+      Object.keys(_this.pathToPanelOptionsMap).forEach(function(path) {
+        var panelOptions = _this.pathToPanelOptionsMap[path];
+        panelOptions.routePart = _this.routePart;
+        panels.push(new LazyPanelViewModel(_this.panels, path, panelOptions));
+      });
+      setTemplate(panels, _this.prefix, _this.postfix);
+      _this.panels(panels);
+      _this.addRoutes(_this.router, user, createMap(panels));
+      // set user
+      _this.user(user);
+      // ensure the router is started
+      _this.router.init(_this.user);
+      if (destPath) {
+        // go to destination path
+        _this.router.goToPath(destPath);
+      }
+    } else {
+      // ensure the router is started
+      _this.router.init(_this.user);
     }
   };
 

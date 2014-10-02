@@ -37,15 +37,16 @@ define('src/core/route.spec', [
     });
     it('`regx` property should be a RexExp with expected value', function() {
       expect(route.regx instanceof RegExp).toBe(true);
-      expect(route.regx.toString()).toBe('/^(\/devices)(\/[^\/]*)?(\/[^\/]*)?(\/[^\/]*)?$/');
+      expect(route.regx.toString()).toBe('/^(\/devices)(\/[^\/]*)?(\/[^\/]*)?(\/[^\/]*)?(.*)$/');
     });
     it('`parts` property should be an array with expected values', function() {
       expect(Array.isArray(route.parts)).toBe(true);
-      expect(route.parts.length).toBe(4);
+      expect(route.parts.length).toBe(5);
       expect(route.parts[0]).toBe('route');
       expect(route.parts[1]).toBe('tab');
       expect(route.parts[2]).toBe('id');
       expect(route.parts[3]).toBe('action');
+      expect(route.parts[4]).toBe('_glob');
     });
 
     describe('addDefaults', function() {

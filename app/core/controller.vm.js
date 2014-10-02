@@ -111,6 +111,15 @@ define('src/core/controller.vm', [
     var _this = this;
     return _this.getRoute(routeName).getNextPart(_this.routePart);
   };
+  ControllerViewModel.prototype.routePartId = function(routeData, id) {
+    var _this = this;
+    if (arguments.length > 1) {
+      routeData[_this.routePart] = id;
+    } else {
+      id = routeData[_this.routePart];
+    }
+    return id;
+  };
 
 
   // activate async
@@ -154,7 +163,8 @@ define('src/core/controller.vm', [
     if (!child) {
       // no child found
       _this.resetRouteData(routeData);
-      if (_this._prevChild && typeof(routeData[_this._prevChild.routePart]) === 'undefined') {
+      // if (_this._prevChild && typeof(routeData[_this._prevChild.routePart]) === 'undefined') {
+      if (_this._prevChild && typeof(_this._prevChild.routePartId(routeData)) === 'undefined') {
         //
         child = _this._prevChild;
         //@REVIEW: do i need to copy child's last route data to routeCtx.routeData???
@@ -169,7 +179,8 @@ define('src/core/controller.vm', [
     }
     if (child) {
       if (child.routePart) {
-        routeData[child.routePart] = child.id;
+        // routeData[child.routePart] = child.id;
+        child.routePartId(routeData, child.id);
       }
       child.activate(routeCtx);
     }
@@ -286,7 +297,8 @@ define('src/core/controller.vm', [
 
     if (_this.pcontroller) {
       //
-      routeData[_this.routePart] = _this.id;
+      // routeData[_this.routePart] = _this.id;
+      _this.routePartId(routeData, _this.id);
       // recursively walk parent controllers
       _this.pcontroller.applyRouteData(routeData);
     } else if (!routeData.route) {

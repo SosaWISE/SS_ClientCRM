@@ -19,7 +19,6 @@ define('src/core/router', [
     _this.routes = [];
     _this.anonRoutes = [];
 
-    _this.destPath = null;
     _this.currRouteCtx = null;
     _this._ignoreCount = 0;
   }
@@ -44,12 +43,6 @@ define('src/core/router', [
       _this.goToPath(_this.getPath(), null, false);
     }
 
-    // check the user is logged in
-    if (!_this.getUser()) {
-      // save destination path
-      _this.destPath = _this.getPath();
-    }
-
     // go to initial route, then listen for the route to change
     changePath();
     window.addEventListener('hashchange', function() {
@@ -63,11 +56,11 @@ define('src/core/router', [
       // }, 0);
     });
   };
-  Router.prototype.useDestPath = function() {
-    var _this = this;
-    _this.goToPath(_this.destPath, null, false);
-    _this.destPath = null;
-  };
+  // Router.prototype.useDestPath = function() {
+  //   var _this = this,
+  //     destPath = decodeDestPath(_this.getPath());
+  //   _this.goToPath(destPath, null, false);
+  // };
 
   Router.prototype.addRoute = function(controller, routeName, routePath, defaultRouteData) {
     addRoute(this, this.routes, controller, routeName, routePath, defaultRouteData);
@@ -104,6 +97,9 @@ define('src/core/router', [
       user = _this.getUser(),
       routes = user ? _this.routes : _this.anonRoutes,
       route;
+
+    extraData = extraData || {};
+    extraData.destPath = path;
 
     // find the first route that matches the path
     route = findFirstRoute(routes, path);
@@ -152,6 +148,10 @@ define('src/core/router', [
       user = _this.getUser(),
       routes = user ? _this.routes : _this.anonRoutes;
     return findRouteByName(routes, routeName);
+  };
+  Router.prototype.anonRouteFromPath = function(path) {
+    var _this = this;
+    return findFirstRoute(_this.anonRoutes, path);
   };
 
 

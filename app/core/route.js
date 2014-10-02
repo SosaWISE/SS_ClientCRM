@@ -51,6 +51,9 @@ define('src/core/route', [], function() {
       parts.push(name.substr(1)); // remove colon
     });
 
+    // match anything after
+    regxParts.push('(.*)');
+    parts.push('_glob');
     // anchor match to end of string
     regxParts.push('$');
 
@@ -84,7 +87,7 @@ define('src/core/route', [], function() {
       this.parts.some(function(part, index) {
         var match = matches[index + 1];
         if (match) {
-          routeData[part] = match.substr(1);
+          routeData[part] = window.decodeURIComponent(match.substr(1));
         }
       });
       this.addDefaults(routeData);
@@ -107,7 +110,7 @@ define('src/core/route', [], function() {
         }
       }
       // add value to path
-      pathParts.push(value);
+      pathParts.push(window.encodeURIComponent(value));
     });
     // merge parts into path
     return pathParts.join('/');

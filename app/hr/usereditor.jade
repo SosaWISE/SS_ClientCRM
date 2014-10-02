@@ -1,9 +1,9 @@
 div(class="user-data")
   ul(class="actions")
-    li
-      a(class="btn",tabindex="0",data-bind="cmd:clickSave") Save
-    li
+    li(data-bind="if:data.UserID()>0")
       a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
 
   div(class="content-wrap")
     div(class="col")
@@ -12,11 +12,15 @@ div(class="user-data")
         div(class="contents")
           ul(class="edit-form")
             li
-              span(class="label") Email/Username
-              input(type="text",placeholder="",data-bind="hasfocus:focusFirst,ukov:data.Email,value:data.Email,valueUpdate:'keyup'")
-            li
+              span(class="label") Username
+              input(type="text",placeholder="",data-bind="hasfocus:focusFirst,ukov:data.UserName,value:data.UserName,valueUpdate:'keyup'")
+            li(class="password")
               span(class="label") Password
-              input(type="text",placeholder="",data-bind="ukov:data.Password,value:data.Password,valueUpdate:'keyup'")
+              a(class="btn small",tabindex="0",data-bind="cmd:clickNewPassword") Generate Random Password
+              div(class="text blank",data-bind="ukov:data.Password,text:data.Password,clickSelect:1",style="cursor:pointer")
+            li
+              span(class="label") Email
+              input(type="text",placeholder="",data-bind="ukov:data.Email,value:data.Email,valueUpdate:'keyup'")
 
 
       div(class="section")
@@ -65,13 +69,13 @@ div(class="user-data")
           ul(class="edit-form")
             li
               span(class="label") Cell Phone
-              input(type="text",placeholder="",data-bind="ukov:data.PhoneCell,value:data.PhoneCell,valueUpdate:'keyup'")
+              input(type="text",placeholder="",data-bind="ukov:data.PhoneCell,phonevalue:data.PhoneCell,valueUpdate:'keyup'")
             li
               span(class="label") Provider
               div(data-bind="cvm:data.PhoneCellCarrierCvm")
-            li
+            //- li
               span(class="label") Home Phone
-              input(type="text",placeholder="",data-bind="ukov:data.PhoneHome,value:data.PhoneHome,valueUpdate:'keyup'")
+              input(type="text",placeholder="",data-bind="ukov:data.PhoneHome,phonevalue:data.PhoneHome,valueUpdate:'keyup'")
 
 
       div(class="section")
@@ -104,7 +108,7 @@ div(class="user-data")
               input(type="text",placeholder="",data-bind="ukov:data.DLState,value:data.DLState,valueUpdate:'keyup'")
             li
               span(class="label") Expiration
-              input(type="text",placeholder="",data-bind="ukov:data.DLExpiration,value:data.DLExpiration,valueUpdate:'keyup'")
+              input(type="text",placeholder="",data-bind="ukov:data.DLExpiresOn,datevalue:data.DLExpiresOn,valueUpdate:'keyup'")
 
 
       //- div(class="section")
@@ -116,13 +120,19 @@ div(class="user-data")
               input(type="text",placeholder="",data-bind="ukov:data.RightToWorkStatusID,value:data.RightToWorkStatusID,valueUpdate:'keyup'")
             li
               span(class="label") RightToWorkExpirationDate
-              input(type="text",placeholder="",data-bind="ukov:data.RightToWorkExpirationDate,value:data.RightToWorkExpirationDate,valueUpdate:'keyup'")
+              input(type="text",placeholder="",data-bind="ukov:data.RightToWorkExpirationDate,datevalue:data.RightToWorkExpirationDate,valueUpdate:'keyup'")
             li
               span(class="label") Notes
               input(type="text",placeholder="",data-bind="ukov:data.RightToWorkNotes,value:data.RightToWorkNotes,valueUpdate:'keyup'")
 
 
-      //- div(class="section")
+      div(class="section")
         span(class="title") Recruiting Info
         div(class="contents")
-          | blah
+          ul(class="edit-form")
+            li
+              span(class="label") Recruited By
+              div(class="text input",tabindex="0",data-bind="ukov:data.RecruitedByID,text:recruitedBy().FullName,cmd:clickRecruitedBy",style="cursor:pointer")
+            li
+              span(class="label") Date
+              input(type="text",placeholder="",data-bind="ukov:data.RecruitedDate,datevalue:data.RecruitedDate,valueUpdate:'keyup'")
