@@ -93,7 +93,7 @@ define('mock/dataservices/hr.mock', [
       BirthCountry: (data.BirthCountry || null),
       Sex: (data.Sex || 1),
       ShirtSize: (data.ShirtSize || 4),
-      HatSize: (data.HatSize || 4),
+      HatSize: (data.HatSize || 2),
       DLNumber: (data.DLNumber || null),
       DLState: (data.DLState || null),
       DLCountry: (data.DLCountry || null),

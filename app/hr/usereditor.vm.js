@@ -6,7 +6,7 @@ define('src/hr/usereditor.vm', [
   'src/core/strings',
   'src/core/notify',
   'src/core/utils',
-  'src/core/base.vm',
+  'src/core/controller.vm',
   'ko'
 ], function(
   UserSearchViewModel,
@@ -16,7 +16,7 @@ define('src/hr/usereditor.vm', [
   strings,
   notify,
   utils,
-  BaseViewModel,
+  ControllerViewModel,
   ko
 ) {
   "use strict";
@@ -83,7 +83,11 @@ define('src/hr/usereditor.vm', [
     },
     PermanentAddressID: {},
     SSN: {
+      // converter: nullStrConverter,
       converter: ukov.converters.ssn(),
+      validators: [
+        ukov.validators.isSsn(),
+      ],
     },
     FirstName: {
       validators: [
@@ -215,11 +219,11 @@ define('src/hr/usereditor.vm', [
   function UserEditorViewModel(options) {
     var _this = this;
     UserEditorViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, [
+    ControllerViewModel.ensureProps(_this, [
       'cache',
       'layersVm',
     ]);
-    BaseViewModel.ensureProps(_this.cache, [
+    ControllerViewModel.ensureProps(_this.cache, [
       'shirtSizeOptions',
       'hatSizeOptions',
       'sexOptions',
@@ -351,7 +355,7 @@ define('src/hr/usereditor.vm', [
     // always start with a generated password
     genPassword(_this);
   }
-  utils.inherits(UserEditorViewModel, BaseViewModel);
+  utils.inherits(UserEditorViewModel, ControllerViewModel);
   // UserEditorViewModel.prototype.viewTmpl = 'tmpl-hr-usereditor';
   // viewTmpl: 'tmpl-hr-userinfo',
 

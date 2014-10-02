@@ -113,14 +113,31 @@ define('src/core/ko.bindingHandlers.formatters', [
   //
   // SSN binding
   //
+  function makeSsnMaskedValueAccessor(valueAccessor) {
+    return function() {
+      return strings.formatters.ssnmasked(ko.unwrap(valueAccessor()));
+    };
+    // return function() {
+    //   var ssn = ko.unwrap(valueAccessor());
+    //   if (ssn) {
+    //     ssn = 'XXX-XX-' + ssn.substr(-4);
+    //   }
+    //   return ssn;
+    // };
+  }
+  ko.bindingHandlers.ssnmasked = createFormatter('text', makeSsnMaskedValueAccessor);
+  //
   function makeSsnValueAccessor(valueAccessor) {
     return function() {
-      var ssn = ko.unwrap(valueAccessor());
-      if (ssn) {
-        ssn = 'XXX-XX-' + ssn.substr(-4);
-      }
-      return ssn;
+      return strings.formatters.ssn(ko.unwrap(valueAccessor()));
     };
+    // return function() {
+    //   var ssn = ko.unwrap(valueAccessor());
+    //   if (ssn) {
+    //     ssn = ssn.substr(0, 3) + '-' + ssn.substr(3, 2) + '-' + ssn.substr(-4);
+    //   }
+    //   return ssn;
+    // };
   }
-  ko.bindingHandlers.ssn = createFormatter('text', makeSsnValueAccessor);
+  ko.bindingHandlers.ssnvalue = createFormatter('value', makeSsnValueAccessor);
 });

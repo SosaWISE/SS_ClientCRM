@@ -119,8 +119,7 @@ define('src/core/mockery', [
     },
     DATE: function(cache) {
       var dt = randomDate(cache);
-      // MM/DD/YYYY
-      return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+      return padLeft(dt.getFullYear(), '0', 4) + '-' + padLeft(dt.getMonth() + 1, '0', 2) + '-' + padLeft(dt.getDate(), '0', 2) + 'T00:00:00.000Z';
     },
     DATETIME: function(cache, startDaysFromNow, endDaysFromNow) {
       return randomDate(cache, startDaysFromNow, endDaysFromNow).toISOString();
@@ -306,6 +305,30 @@ define('src/core/mockery', [
       refCount = mockery.fn.INC(cache, key) - obj.idSeed;
     return (refCount % count) + obj.idSeed;
   }
+
+  function pad(isLeft, txt, letter, minLength) {
+    if (!txt && txt !== 0) {
+      txt = '';
+    }
+    txt += '';
+    if (isLeft) {
+      while (txt.length < minLength) {
+        txt = letter + txt;
+      }
+    } else {
+      while (txt.length < minLength) {
+        txt += letter;
+      }
+    }
+    return txt;
+  }
+
+  function padLeft(txt, letter, minLength) {
+    return pad(true, txt, letter, minLength);
+  }
+  // function padRight(txt, letter, minLength) {
+  //   return pad(false, txt, letter, minLength);
+  // }
 
   function randomFromRange(cache, min, max, defaultMin, defaultMax) {
     min = (min) ? parseInt(min, 10) : (defaultMin || 0);
