@@ -163,8 +163,8 @@ define('src/core/controller.vm', [
     if (!child) {
       // no child found
       _this.resetRouteData(routeData);
-      // if (_this._prevChild && typeof(routeData[_this._prevChild.routePart]) === 'undefined') {
-      if (_this._prevChild && typeof(_this._prevChild.routePartId(routeData)) === 'undefined') {
+      // check for a previous child and ...
+      if (_this._prevChild && typeof(routeData[_this._prevChild.routePart]) === 'undefined') {
         //
         child = _this._prevChild;
         //@REVIEW: do i need to copy child's last route data to routeCtx.routeData???

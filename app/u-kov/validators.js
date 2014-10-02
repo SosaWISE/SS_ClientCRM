@@ -29,7 +29,9 @@ define('src/u-kov/validators', [
 
     // 1 uppercase, 1 lowercase, and 1 number
     passwordRegex = /^(?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])\S+$/,
-    ssnExactRegx = /^(?!000)(?!666)[0-8]\d{2}[- ](?!00)\d{2}[- ](?!0000)\d{4}$/,
+    // ssnExactRegx = /^(?!000)(?!666)[0-8]\d{2}[- ](?!00)\d{2}[- ](?!0000)\d{4}$/,
+    // ssnStrictRegx = /^(?!000)(?!666)[0-8]\d{2}[- ]?(?!00)\d{2}[- ]?(?!0000)\d{4}$/,
+    ssnRelaxedRegx = /^\d{3}-?\d{2}-?\d{4}$/,
     usernameRegx = /^[a-z0-9]+([._]?[a-z0-9]+)*$/,
 
     relaxedEmailRegx = /^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}\b$/i,
@@ -168,7 +170,7 @@ define('src/u-kov/validators', [
       if (!val) {
         return;
       }
-      if (!ssnExactRegx.test(val)) {
+      if (!ssnRelaxedRegx.test(val)) {
         return message;
       }
     };

@@ -25,7 +25,7 @@ define('src/u-kov/string-converters', [
       /^(\w+ [0-9]{1,2} )([0-9]{1,2} )/, // MMM DD YY
       /^([0-9]{1,2} \w+ )([0-9]{1,2} )/, // DD MMM YY
     ],
-    ssnRegx = /^(\d{3})(\d{2})(\d{4})$/;
+    removeNonDigitsRegx = /[^0-9]/g;
 
   converters.string = function() {
     return convString;
@@ -201,10 +201,10 @@ define('src/u-kov/string-converters', [
       }
 
       var matches = phoneRegx.exec(val);
-      if (!matches) {
-        return new Error('Invalid phone number. Expected format: (123) 123-1234');
-      } else {
+      if (matches) {
         return matches[1] + matches[2] + matches[3];
+      } else {
+        return new Error('Invalid phone number. Expected format: (123) 123-1234');
       }
     };
   };
@@ -284,14 +284,11 @@ define('src/u-kov/string-converters', [
     if (!val) {
       return null;
     }
-
     // remove everything but digits
-    val = val.replace(/[^0-9]/g, '');
-
+    val = val.replace(removeNonDigitsRegx, '');
     // try to match
-    var matches = ssnRegx.exec(val);
-    if (matches) {
-      return strings.format('{0}-{1}-{2}', matches[1], matches[2], matches[3]);
+    if (val.length === 9) {
+      return val;
     } else {
       return new Error('Invalid Social Security Number. Expected format: 123-12-1234');
     }

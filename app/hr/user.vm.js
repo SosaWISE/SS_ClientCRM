@@ -34,7 +34,8 @@ define('src/hr/user.vm', [
     _this.showBottom = ko.observable(false);
 
     _this.defaultChild = new UserEditorViewModel({
-      // pcontroller: _this,
+      pcontroller: _this,
+      id: 'info',
       cache: options.cache,
       layersVm: _this.layersVm,
     });
@@ -96,6 +97,17 @@ define('src/hr/user.vm', [
       msg;
     msg = _this.defaultChild.closeMsg();
     return msg;
+  };
+
+  UserViewModel.prototype.findChild = function(routeData) {
+    var _this = this,
+      result;
+    if (_this.defaultChild.routePartId(routeData) === _this.defaultChild.id) {
+      result = _this.defaultChild;
+    } else {
+      result = UserViewModel.super_.prototype.findChild.call(_this, routeData);
+    }
+    return result;
   };
 
   // UserViewModel.prototype.findChild = function(routeData) {

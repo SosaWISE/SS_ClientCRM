@@ -14,6 +14,7 @@ define('src/core/strings', [
   var strings = {},
     formatRegex = /\{([0-9]+)(?::([0-9A-Z$]+))?\}/gi, // {0} or {0:decoratorName}
     phoneRegx = /^\(?\b([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
+    ssnRegx = /^(\d{3})[-]?(\d{2})[-]?(\d{4})$/,
     usdFormatter;
 
   // e.g.: strings.format('{0} {1}', 'bob', 'bobbins') === 'bob bobbins'
@@ -102,10 +103,32 @@ define('src/core/strings', [
         return val;
       }
       var matches = phoneRegx.exec(val);
-      if (!matches) {
-        return val;
-      } else {
+      if (matches) {
         return strings.format(outputFormat || '({0}) {1}-{2}', matches[1], matches[2], matches[3]);
+      } else {
+        return val;
+      }
+    },
+    ssn: function(val) {
+      if (!val) {
+        return val;
+      }
+      var matches = ssnRegx.exec(val);
+      if (matches) {
+        return strings.format('{0}-{1}-{2}', matches[1], matches[2], matches[3]);
+      } else {
+        return val;
+      }
+    },
+    ssnmasked: function(val) {
+      if (!val) {
+        return val;
+      }
+      var matches = ssnRegx.exec(val);
+      if (matches) {
+        return 'XXX-XX-' + matches[3];
+      } else {
+        return val;
       }
     },
   };
