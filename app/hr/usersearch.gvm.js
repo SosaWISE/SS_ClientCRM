@@ -31,6 +31,9 @@ define('src/hr/usersearch.gvm', [
           name: 'UserID',
           field: 'UserID',
           width: 50,
+          formatter: function(row, cell, value) {
+            return 'U' + value;
+          },
         }, {
           id: 'GPEmployeeID',
           name: 'CompanyID',

@@ -1,4 +1,4 @@
-@hr-bg: @site-purple;
+@hr-bg: @site-blue;
 
 body.hr,
 body.users {
@@ -9,6 +9,9 @@ body.users {
 .hr .hr-panel {
   @tranSec: .25s;
 
+  .btn-dock {
+    background-color: @hr-bg;
+  }
   > .dock-left {
     padding: 10px;
 
@@ -82,6 +85,8 @@ body.users {
 
   .col {
     // padding-left: 20px;
+    margin-bottom: 200px;
+
     > .title {
       font-size: 1.3em;
       font-weight: 500;
@@ -288,7 +293,7 @@ body.users {
 
     .user-data {
       > ul.actions {
-        margin-right: 20px;
+        margin-right: 40px;
         text-align: right;
       }
       > div.content-wrap {
@@ -322,11 +327,29 @@ body.users {
           }
 
           > .text {
-            line-height: 31px;
-            color: black;
-            padding-left: 8px;
+            &:not(.input) {
+              line-height: 31px;
+              color: black;
+              padding-left: 8px;
+            }
             &:empty:before {
               content: "---";
+            }
+            &.blank:before {
+              content: "";
+            }
+          }
+
+          &.password {
+            span {
+              display: inline;
+              padding-right: 10px;
+            }
+            a {
+              padding: 1px 5px;
+            }
+            .text {
+              line-height: 30px;
             }
           }
         }

@@ -185,21 +185,25 @@ define('src/core/mockery.spec', [
         expect(resp.id3).toBeLessThan(resp.id1);
       });
 
+      var dateTimeRegx = /-?([1-9][0-9]*)?[0-9]{4}-(1[0-2]|0[1-9])-(3[0-1]|0[1-9]|[1-2][0-9])T(2[0-3]|[0-1][0-9]):[0-5][0-9]:[0-5][0-9](\.[0-9]+)?(Z|[+-](2[0-3]|[0-1][0-9]):[0-5][0-9])?/;
       it('@DATETIME with zero params should return a random date', function() {
-        expect(utils.isDate(resp.datetime)).toBe(true);
+        expect(dateTimeRegx.test(resp.datetime)).toBe(true);
       });
       it('@DATETIME with two params should return a random date within the parameters', function() {
-        expect(utils.isDate(resp.datetimeParams1)).toBe(true);
-        expect(resp.datetimeParams1 >= new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6))).toBe(true, 'datetimeParams1 not >= now');
-        expect(resp.datetimeParams1 <= new Date(Date.UTC(2000, 5, 20, 9, 8, 7, 6))).toBe(true, 'datetimeParams1 not <= 10 days in the future');
+        expect(dateTimeRegx.test(resp.datetimeParams1)).toBe(true);
+        var dt = new Date(resp.datetimeParams1);
+        expect(dt >= new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6))).toBe(true, 'datetimeParams1 not >= now');
+        expect(dt <= new Date(Date.UTC(2000, 5, 20, 9, 8, 7, 6))).toBe(true, 'datetimeParams1 not <= 10 days in the future');
 
-        expect(utils.isDate(resp.datetimeParams2)).toBe(true);
-        expect(resp.datetimeParams2 >= new Date(Date.UTC(2000, 4, 31, 9, 8, 7, 6))).toBe(true, 'datetimeParams2 not >= 10 days in the past');
-        expect(resp.datetimeParams2 <= new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6))).toBe(true, 'datetimeParams2 not <= now');
+        expect(dateTimeRegx.test(resp.datetimeParams2)).toBe(true);
+        dt = new Date(resp.datetimeParams2);
+        expect(dt >= new Date(Date.UTC(2000, 4, 31, 9, 8, 7, 6))).toBe(true, 'datetimeParams2 not >= 10 days in the past');
+        expect(dt <= new Date(Date.UTC(2000, 5, 10, 9, 8, 7, 6))).toBe(true, 'datetimeParams2 not <= now');
 
-        expect(utils.isDate(resp.datetimeParams3)).toBe(true);
-        expect(resp.datetimeParams3 >= new Date(Date.UTC(2000, 4, 31, 9, 8, 7, 6))).toBe(true, 'datetimeParams3 not >= 10 days in the past');
-        expect(resp.datetimeParams3 <= new Date(Date.UTC(2000, 5, 20, 9, 8, 7, 6))).toBe(true, 'datetimeParams3 not <= 10 days in the future');
+        expect(dateTimeRegx.test(resp.datetimeParams3)).toBe(true);
+        dt = new Date(resp.datetimeParams3);
+        expect(dt >= new Date(Date.UTC(2000, 4, 31, 9, 8, 7, 6))).toBe(true, 'datetimeParams3 not >= 10 days in the past');
+        expect(dt <= new Date(Date.UTC(2000, 5, 20, 9, 8, 7, 6))).toBe(true, 'datetimeParams3 not <= 10 days in the future');
       });
     });
   });

@@ -38,7 +38,7 @@ define('src/core/dataservice.base', [
     this.ajax('POST', params.id, params.link, params.query, params.data, setter, callback);
   };
   DataserviceBase.prototype.read = function(params, setter, callback) {
-    this.ajax('GET', params.id, params.link, params.query, null, setter, callback);
+    this.ajax('GET', params.id, params.link, params.query, params.data, setter, callback);
   };
   // DataserviceBase.prototype.update = function(id, data, setter, callback) {
   //   this.ajax('PATCH', id, null, null, data, setter, callback);

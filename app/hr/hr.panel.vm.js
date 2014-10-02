@@ -44,6 +44,7 @@ define('src/hr/hr.panel.vm', [
         pcontroller: _this,
         id: 'users',
         title: 'Users',
+        layersVm: _this.layersVm,
       }),
     ]);
 

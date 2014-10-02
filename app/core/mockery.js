@@ -118,11 +118,12 @@ define('src/core/mockery', [
       return new Date();
     },
     DATE: function(cache) {
-      //@TODO: correctly
-      return randomDate(cache);
+      var dt = randomDate(cache);
+      // MM/DD/YYYY
+      return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
     },
     DATETIME: function(cache, startDaysFromNow, endDaysFromNow) {
-      return randomDate(cache, startDaysFromNow, endDaysFromNow);
+      return randomDate(cache, startDaysFromNow, endDaysFromNow).toISOString();
     },
 
     ADDRESS: function(cache) {
@@ -318,6 +319,7 @@ define('src/core/mockery', [
   }
 
   function randomDate(cache, startDaysFromNow, endDaysFromNow) {
+    var dt;
     // startDaysFromNow/endDaysFromNow: number of days before or after now
     //   - positive number goes into the future
     //   - negative number goes into the past
@@ -326,10 +328,11 @@ define('src/core/mockery', [
     if (!isNaN(startDaysFromNow) && !isNaN(endDaysFromNow)) {
       var nowTimestamp = mockery.fn.NOW().valueOf(),
         val = randomFromRange(cache, nowTimestamp + (startDaysFromNow * 86400000), nowTimestamp + (endDaysFromNow * 86400000));
-      return new Date(val);
+      dt = new Date(val);
     } else {
-      return new Date(Math.floor(cache.__funcs.random() * Date.now()));
+      dt = new Date(Math.floor(cache.__funcs.random() * Date.now()));
     }
+    return dt;
   }
 
   // set to Math.random if you want more random

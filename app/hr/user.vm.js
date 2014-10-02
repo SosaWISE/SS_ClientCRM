@@ -21,6 +21,9 @@ define('src/hr/user.vm', [
   function UserViewModel(options) {
     var _this = this;
     UserViewModel.super_.call(_this, options);
+    ControllerViewModel.ensureProps(_this, [
+      'layersVm',
+    ]);
 
     _this.mayReload = ko.observable(false);
     _this.focusFirst = ko.observable(false);
@@ -31,18 +34,20 @@ define('src/hr/user.vm', [
     _this.showBottom = ko.observable(false);
 
     _this.defaultChild = new UserEditorViewModel({
-      pcontroller: _this,
+      // pcontroller: _this,
+      cache: options.cache,
+      layersVm: _this.layersVm,
     });
     _this.title = ko.computed(function() {
       if (_this.id > 0) {
         var data = _this.defaultChild.data;
         if (_this.loaded()) {
-          return data.FullName() + ' (' + _this.id + ')';
+          return data.FullName() + ' (' + data.GPEmployeeID() + ', U' + _this.id + ')';
         } else {
-          return 'Loading... (' + _this.id + ')';
+          return 'Loading... (U' + _this.id + ')';
         }
       } else {
-        return 'New Recruit';
+        return 'New Recruit' + _this.id;
       }
     });
 
@@ -76,14 +81,21 @@ define('src/hr/user.vm', [
 
   UserViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
-      userid = routeData.id;
+      userid = _this.routePartId(routeData);
 
     if (userid > 0) {
       load_user(userid, function(val) {
         _this.defaultChild.data.setValue(val);
-        _this.defaultChild.data.markClean();
+        _this.defaultChild.data.markClean(val);
       }, join.add());
     }
+  };
+
+  UserViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    msg = _this.defaultChild.closeMsg();
+    return msg;
   };
 
   // UserViewModel.prototype.findChild = function(routeData) {

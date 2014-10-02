@@ -78,7 +78,7 @@ define('src/hr/usersearch.vm', [
     _this.title = ko.observable(_this.title);
     _this.focusFirst = ko.observable(false);
     _this.data = ukov.wrap({}, schema);
-    _this.clearData();
+    clearData(_this);
     _this.data.SeasonCvm = new ComboViewModel({
       // matchStart: true,
       selectedValue: _this.data.SeasonID,
@@ -93,7 +93,7 @@ define('src/hr/usersearch.vm', [
     });
 
     _this.gvm = new SearchGridViewModel({
-      open: function(item) {
+      open: _this.open || function(item) {
         _this.goTo({
           route: 'hr',
           collection: 'users',
@@ -109,10 +109,10 @@ define('src/hr/usersearch.vm', [
       _this.openAccount(cb);
     });
     _this.cmdSearch = ko.command(function(cb) {
-      _this.search(cb);
+      search(_this, cb);
     });
     _this.clickClear = function() {
-      _this.clearData();
+      clearData(_this);
       _this.focusFirst(true);
     };
 
@@ -128,29 +128,30 @@ define('src/hr/usersearch.vm', [
   }
   utils.inherits(SearchViewModel, ControllerViewModel);
   SearchViewModel.prototype.viewTmpl = 'tmpl-hr-usersearch';
+  SearchViewModel.prototype.height = 500;
+  SearchViewModel.prototype.width = '80%';
 
-  SearchViewModel.prototype.clearData = function() {
-    var _this = this,
-      data = {
-        CompanyID: null,
-        FirstName: null,
-        LastName: null,
-        Email: null,
-        UserName: null,
-        UserID: null,
-        RecruitID: null,
-        Ssn: null,
-        PhoneCell: null,
-        PhoneHome: null,
-        SeasonID: null,
-        UserEmployeeTypeId: null,
-      };
+  function clearData(_this) {
+    var data = {
+      CompanyID: null,
+      FirstName: null,
+      LastName: null,
+      Email: null,
+      UserName: null,
+      UserID: null,
+      RecruitID: null,
+      Ssn: null,
+      PhoneCell: null,
+      PhoneHome: null,
+      SeasonID: null,
+      UserEmployeeTypeId: null,
+    };
     _this.data.setValue(data);
     _this.data.markClean(data, true);
-  };
-  SearchViewModel.prototype.search = function(cb) {
-    var _this = this,
-      model;
+  }
+
+  function search(_this, cb) {
+    var model;
     if (!_this.data.isValid()) {
       notify.warn(_this.data.errMsg(), null, 7);
       cb();
@@ -163,8 +164,9 @@ define('src/hr/usersearch.vm', [
       // clear grid
       _this.gvm.list([]);
       // do search
-      dataservice.humanresourcesrv.users.read({
+      dataservice.humanresourcesrv.users.save({
         data: model,
+        link: 'search',
       }, null, utils.safeCallback(cb, function(err, resp) {
         // mark search query as the new clean
         _this.data.markClean(model, true);
@@ -175,7 +177,7 @@ define('src/hr/usersearch.vm', [
         notify.error(err, 30);
       }));
     }
-  };
+  }
 
   return SearchViewModel;
 });

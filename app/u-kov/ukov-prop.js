@@ -29,7 +29,7 @@ define('src/u-kov/ukov-prop', [
     }
     var prop = ko.observable(null),
       currVal;
-    prop.setValue = prop;
+    // prop.setValue = prop;
     ko.utils.extend(prop, fn);
 
     prop.uid = 'prop' + (++count);
@@ -54,7 +54,10 @@ define('src/u-kov/ukov-prop', [
     } else {
       prop(currVal);
     }
-    prop.updateStoredValue();
+    currVal = prop.updateStoredValue();
+    if (!(currVal instanceof Error)) {
+      prop(currVal);
+    }
     prop.markClean();
 
     // get notified when the prop's value changes
@@ -73,18 +76,26 @@ define('src/u-kov/ukov-prop', [
   }
   fn.updateStoredValue = function() {
     var _this = this,
-      val = _this.peek(),
-      converter = _this.doc.converter;
-    if (converter && typeof(val) === 'string') {
-      val = converter(val);
-    }
-    _this.model[_this.key] = val;
+      val = _this.peek();
+    _this.model[_this.key] = val = convert(_this.doc.converter, val);
     return val;
   };
   fn.getValue = function() {
     var _this = this;
     return _this.model[_this.key];
   };
+  fn.setValue = function(val) {
+    var _this = this;
+    val = convert(_this.doc.converter, val);
+    _this(val);
+  };
+
+  function convert(converter, val) {
+    if (converter && typeof(val) === 'string') {
+      val = converter(val);
+    }
+    return val;
+  }
 
   function setAndNotify(_this, value) {
     //
@@ -208,6 +219,10 @@ define('src/u-kov/ukov-prop', [
     }
 
     return true;
+  };
+  fn.reset = function() {
+    var _this = this;
+    _this(_this.cleanVal.peek());
   };
 
   function getValidationMsg(validators, val, model, ukovModel, prop) {

@@ -61,13 +61,16 @@ define('src/app', [
         ico: '&#128101;',
       },
     },
-    addRoutes: function(router, loginVm, idTpPanelsMap) {
+    addAnonRoutes: function(router, loginVm) {
       //
       // add anonymous routes
       //
-      router.addAnonRoute(loginVm, 'user', ':action', {
-        action: 'login',
+      router.addAnonRoute(loginVm, 'login', ':type/:destPath/:p1', {
+        type: 'user',
       });
+    },
+    addRoutes: function(router, user, idTpPanelsMap) {
+      //@TODO: use user roles/permissions/something to decide which routes to add...
       //
       // add routes
       //
@@ -75,7 +78,7 @@ define('src/app', [
       router.addRoute(idTpPanelsMap.accounts, 'leads', ':masterid/:tab/:p1', {});
       router.addRoute(idTpPanelsMap.home, 'home', '', {});
       router.addRoute(idTpPanelsMap.surveys, 'surveys', ':surveytypeid/:surveyid/:locale', {
-        locale: 'en',
+        // locale: 'en',
       });
       router.addRoute(idTpPanelsMap.swing, 'swing', '', {});
       router.addRoute(idTpPanelsMap.inventory, 'inventory', ':tab', {});

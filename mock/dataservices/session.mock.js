@@ -18,12 +18,12 @@ define('mock/dataservices/session.mock', [
           Code: 0,
           Message: '',
           Value: {
-            // logged in
-            AuthUser: {
-              boh: '???',
-            },
-            // // logged out
-            // AuthUser: null,
+            // // logged in
+            // AuthUser: {
+            //   boh: '???',
+            // },
+            // logged out
+            AuthUser: null,
           },
         });
         cb(null, resp);
