@@ -1,4 +1,5 @@
 define('src/hr/users.vm', [
+  'src/dataservice',
   'src/hr/user.vm',
   'src/hr/usersearch.vm',
   'ko',
@@ -6,6 +7,7 @@ define('src/hr/users.vm', [
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
+  dataservice,
   UserViewModel,
   UserSearchViewModel,
   ko,
@@ -15,7 +17,8 @@ define('src/hr/users.vm', [
 ) {
   'use strict';
 
-  var userid = -1;
+  var userid = -1,
+    usersCache = {};
 
   function UsersViewModel(options) {
     var _this = this;
@@ -24,6 +27,7 @@ define('src/hr/users.vm', [
       'layersVm',
     ]);
 
+    _this.searchVm = ko.observable();
     _this.list = _this.childs;
 
     //
@@ -33,7 +37,7 @@ define('src/hr/users.vm', [
       _this.selectChild(vm);
     };
     _this.clickSearch = function() {
-      _this.selectChild(_this.searchVm);
+      _this.selectChild(_this.searchVm.peek());
     };
     _this.clickNew = function() {
       var vm = createUserViewModel(_this, userid--);
@@ -44,32 +48,46 @@ define('src/hr/users.vm', [
   utils.inherits(UsersViewModel, ControllerViewModel);
   UsersViewModel.prototype.viewTmpl = 'tmpl-hr-users';
 
-  UsersViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // overrides base
+  UsersViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
-    _this.searchVm = new UserSearchViewModel({
-      pcontroller: _this,
-      id: 'search',
-      title: 'Search',
-    });
-    _this.defaultChild = _this.searchVm;
 
     _this.cache = {};
-    _this.cache.shirtSizeOptions = _this.shirtSizeOptions;
-    _this.cache.hatSizeOptions = _this.hatSizeOptions;
-    _this.cache.sexOptions = _this.sexOptions;
-    _this.cache.maritalStatusOptions = _this.maritalStatusOptions;
+    _this.cache.shirtSizes = usersCache.shirtSizes;
+    _this.cache.hatSizes = usersCache.hatSizes;
+    _this.cache.sexs = usersCache.sexs;
+    _this.cache.maritalStatuss = usersCache.maritalStatuss;
     //
-    //@TODO: get the below options from the web api
-    //
-    _this.cache.userEmployeeOptions = _this.userEmployeeOptions;
-    _this.cache.phoneCellCarrierOptions = _this.phoneCellCarrierOptions;
+    dataservice.humanresourcesrv.userEmployeeTypes.read({}, function(val) {
+      _this.cache.userEmployeeTypes = val;
+    }, join.add());
+    dataservice.humanresourcesrv.phoneCellCarriers.read({}, function(val) {
+      _this.cache.phoneCellCarriers = val;
+    }, join.add());
+    dataservice.humanresourcesrv.seasons.read({}, function(val) {
+      _this.cache.seasons = val;
+    }, join.add());
+
+    join.when(function(err) {
+      if (err) {
+        return;
+      }
+      var vm = new UserSearchViewModel({
+        pcontroller: _this,
+        id: 'search',
+        title: 'Search',
+        cache: _this.cache,
+      });
+      _this.defaultChild = vm;
+      _this.searchVm(vm);
+    });
   };
 
   UsersViewModel.prototype.findChild = function(routeData) {
     var _this = this,
-      result, id;
-    if (routeData[_this.searchVm.routePart] === _this.searchVm.id) {
-      result = _this.searchVm;
+      searchVm, result, id;
+    searchVm = _this.searchVm.peek();
+    if (searchVm && routeData[searchVm.routePart] === searchVm.id) {
+      result = searchVm;
     } else {
       result = UsersViewModel.super_.prototype.findChild.call(_this, routeData);
       if (!result) {
@@ -94,8 +112,7 @@ define('src/hr/users.vm', [
     });
   }
 
-
-  UsersViewModel.prototype.shirtSizeOptions = [ //
+  usersCache.shirtSizes = [ //
     {
       value: 1,
       text: 'XXS'
@@ -122,7 +139,7 @@ define('src/hr/users.vm', [
       text: 'XXXL'
     },
   ];
-  UsersViewModel.prototype.hatSizeOptions = [ //
+  usersCache.hatSizes = [ //
     {
       value: 1,
       text: 'S'
@@ -134,7 +151,7 @@ define('src/hr/users.vm', [
       text: 'L'
     },
   ];
-  UsersViewModel.prototype.sexOptions = [ //
+  usersCache.sexs = [ //
     {
       value: 1,
       text: 'Male'
@@ -143,125 +160,13 @@ define('src/hr/users.vm', [
       text: 'Female'
     },
   ];
-  UsersViewModel.prototype.maritalStatusOptions = [ //
+  usersCache.maritalStatuss = [ //
     {
       value: false,
       text: 'Single'
     }, {
       value: true,
       text: 'Married'
-    },
-  ];
-
-  //
-  //@TODO: get the below options from the web api
-  //
-  UsersViewModel.prototype.userEmployeeOptions = [ //
-    {
-      value: 'CONT',
-      text: ' Contractor',
-    }, {
-      value: 'CORP',
-      text: ' Corporate',
-    }, {
-      value: 'DEFAULT',
-      text: 'Default',
-    }, {
-      value: 'SALESREP',
-      text: 'Sales Rep',
-    }, {
-      value: 'SUBCONT',
-      text: 'Sub Contractor',
-    }, {
-      value: 'TECHNCN',
-      text: 'Technician',
-    }, {
-      value: 'VENDOR',
-      text: 'Vendor',
-    },
-  ];
-  UsersViewModel.prototype.phoneCellCarrierOptions = [ //
-    {
-      value: 1,
-      text: 'Verizon'
-    }, {
-      value: 2,
-      text: 'TMobile'
-    }, {
-      value: 3,
-      text: 'Sprint'
-    }, {
-      value: 4,
-      text: 'CricKet'
-    }, {
-      value: 5,
-      text: 'Cingular AT&T'
-    }, {
-      value: 6,
-      text: 'NEXTEL'
-    }, {
-      value: 7,
-      text: 'Unknown'
-    }, {
-      value: 8,
-      text: 'amp\'d'
-    }, {
-      value: 9,
-      text: 'Virgin mobile'
-    }, {
-      value: 10,
-      text: 'Beyond GSM'
-    }, {
-      value: 11,
-      text: 'boost mobile'
-    }, {
-      value: 12,
-      text: 'Tracfone'
-    }, {
-      value: 13,
-      text: 'Airvoice'
-    }, {
-      value: 14,
-      text: 'Alltel'
-    }, {
-      value: 15,
-      text: 'Qwest'
-    }, {
-      value: 16,
-      text: 'metroPCS'
-    }, {
-      value: 17,
-      text: 'Bell'
-    }, {
-      value: 18,
-      text: 'Telus'
-    }, {
-      value: 19,
-      text: 'Rogers'
-    }, {
-      value: 20,
-      text: 'Fido'
-    }, {
-      value: 21,
-      text: 'Edge'
-    }, {
-      value: 22,
-      text: 'US Cellular'
-    }, {
-      value: 23,
-      text: 'Cellular South'
-    }, {
-      value: 24,
-      text: 'Centennial'
-    }, {
-      value: 25,
-      text: 'Cingular'
-    }, {
-      value: 26,
-      text: 'SunCom'
-    }, {
-      value: 27,
-      text: 'US Cellular'
     },
   ];
 

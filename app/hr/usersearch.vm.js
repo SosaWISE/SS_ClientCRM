@@ -1,5 +1,4 @@
 define('src/hr/usersearch.vm', [
-  'src/account/default/address.validate.vm',
   'src/core/combo.vm',
   'src/dataservice',
   'src/hr/usersearch.gvm',
@@ -9,7 +8,6 @@ define('src/hr/usersearch.vm', [
   'src/core/controller.vm',
   'ko'
 ], function(
-  AddressValidateViewModel,
   ComboViewModel,
   dataservice,
   SearchGridViewModel,
@@ -71,25 +69,38 @@ define('src/hr/usersearch.vm', [
   };
 
   // ctor
-  function SearchViewModel(options) {
+  function UserSearchViewModel(options) {
     var _this = this;
-    SearchViewModel.super_.call(_this, options);
+    UserSearchViewModel.super_.call(_this, options);
+    ControllerViewModel.ensureProps(_this, [
+      'cache',
+    ]);
+    ControllerViewModel.ensureProps(_this.cache, [
+      'seasons',
+      'userEmployeeTypes',
+    ]);
 
     _this.title = ko.observable(_this.title);
     _this.focusFirst = ko.observable(false);
     _this.data = ukov.wrap({}, schema);
     clearData(_this);
     _this.data.SeasonCvm = new ComboViewModel({
-      // matchStart: true,
       selectedValue: _this.data.SeasonID,
-      list: [],
+      list: _this.cache.seasons,
       nullable: true,
+      fields: {
+        value: 'SeasonID',
+        text: 'SeasonName',
+      },
     });
     _this.data.UserTypeCvm = new ComboViewModel({
-      // matchStart: true,
       selectedValue: _this.data.UserEmployeeTypeId,
-      list: [],
+      list: _this.cache.userEmployeeTypes,
       nullable: true,
+      fields: {
+        value: 'UserEmployeeTypeID',
+        text: 'UserEmployeeTypeName',
+      },
     });
 
     _this.gvm = new SearchGridViewModel({
@@ -126,10 +137,10 @@ define('src/hr/usersearch.vm', [
       }
     });
   }
-  utils.inherits(SearchViewModel, ControllerViewModel);
-  SearchViewModel.prototype.viewTmpl = 'tmpl-hr-usersearch';
-  SearchViewModel.prototype.height = 500;
-  SearchViewModel.prototype.width = '80%';
+  utils.inherits(UserSearchViewModel, ControllerViewModel);
+  UserSearchViewModel.prototype.viewTmpl = 'tmpl-hr-usersearch';
+  UserSearchViewModel.prototype.height = 500;
+  UserSearchViewModel.prototype.width = '80%';
 
   function clearData(_this) {
     var data = {
@@ -179,5 +190,5 @@ define('src/hr/usersearch.vm', [
     }
   }
 
-  return SearchViewModel;
+  return UserSearchViewModel;
 });

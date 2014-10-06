@@ -26,7 +26,7 @@ define('src/core/joiner', [
   Joiner.prototype.timeout = 1000 * 30;
 
   function no_op() {}
-  Joiner.prototype.add = function(name) {
+  Joiner.prototype.add = function(name, timeoutMultiplier, timeoutCb) {
     var _this = this,
       waiting, results, addKey,
       timeout;
@@ -69,11 +69,14 @@ define('src/core/joiner', [
     }
 
     timeout = setTimeout(function() {
+      if (timeoutCb) {
+        timeoutCb();
+      }
       cb({
         Code: 1, // ???,
         Message: 'Joiner timed out - ' + (name || '[unnamed]'),
       });
-    }, _this.timeout);
+    }, _this.timeout * (timeoutMultiplier || 1));
 
     return cb;
   };

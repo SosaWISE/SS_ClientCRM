@@ -1,0 +1,14 @@
+h2(class="title") New Recruit Season
+ul(class="edit-form")
+  li
+    span(class="label") Season
+    div(data-bind="cvm:data.SeasonCvm")
+  li
+    span(class="label") Copy Recruit
+    div(data-bind="cvm:data.CopyRecruitCvm")
+
+ul(class="actions")
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:clickAdd") Ok

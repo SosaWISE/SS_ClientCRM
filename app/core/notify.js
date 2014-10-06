@@ -94,6 +94,10 @@ define('src/core/notify', [
       intervalId, n;
 
     delay = (delay > 0) ? Math.max(1.5, delay) : 0;
+    if (delay === 3) {
+      // delay of 3 doesn't work correctly. it hides before sliding.
+      delay = 3.1;
+    }
 
     // removed unwanted html formatting
     message = (message ? String(message) : '')

@@ -1,0 +1,161 @@
+div(class="user-data")
+  ul(class="actions")
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:clickEdit") Edit
+
+  div(class="content-wrap")
+    div(class="col")
+      div(class="section")
+        span(class="title") General Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Role
+              div(class="text",data-bind="text:data.UserTypeCvm.selectedText()")
+            li
+              span(class="label") Manager
+              div(class="text",data-bind="text:data.ReportsToCvm.selectedText()")
+            li
+              span(class="label") Team
+              div(class="text",data-bind="text:data.TeamCvm.selectedText()")
+            li
+              span(class="label") Office
+              //- div(class="text",data-bind="text:data.asdf")
+            li
+              span(class="label") PayScale
+              div(class="text",data-bind="text:data.PayScaleCvm.selectedText()")
+            li
+              span(class="label") Previous Company
+              div(class="text",data-bind="text:data.PreviousSummer")
+            li
+              span(class="label") Sign/Hire Date
+              div(class="text",data-bind="datetext:data.SignatureDate")
+            li
+              span(class="label") Manager Signed Date
+              div(class="text",data-bind="datetext:data.ManagerApprovalDate")
+            li
+              span(class="label") Owner Approval Date
+              div(class="text",data-bind="datetext:data.OwnerApprovalDate")
+            li
+              span(class="label") Approval Owner
+              div(class="text",data-bind="text:data.OwnerApprovalCvm.selectedText()")
+            li
+              span(class="label") School
+              div(class="text",data-bind="text:data.SchoolCvm.selectedText()")
+
+      div(class="section")
+        span(class="title") Documentation
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") DL Status
+              div(class="text",data-bind="text:data.DriversLicenseStatusCvm.selectedText()")
+            li
+              span(class="label") DL Notes
+              div(class="text",data-bind="text:data.DriversLicenseNotes")
+            li
+              span(class="label") I9 Status
+              div(class="text",data-bind="text:data.I9StatusCvm.selectedText()")
+            li
+              span(class="label") I9 Notes
+              div(class="text",data-bind="text:data.I9Notes")
+            li
+              span(class="label") W9 Status
+              div(class="text",data-bind="text:data.W9StatusCvm.selectedText()")
+            li
+              span(class="label") W9 Notes
+              div(class="text",data-bind="text:data.W9Notes")
+            li
+              span(class="label") W4 Status
+              div(class="text",data-bind="text:data.W4StatusCvm.selectedText()")
+            li
+              span(class="label") W4 Notes
+              div(class="text",data-bind="text:data.W4Notes")
+
+      div(class="section")
+        span(class="title") Emergency Contact Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Name
+              div(class="text",data-bind="text:data.EmergencyName")
+            li
+              span(class="label") Relationship
+              div(class="text",data-bind="text:data.EmergencyRelationship")
+            li
+              span(class="label") Phone
+              div(class="text",data-bind="phonetext:data.EmergencyPhone")
+
+      div(class="section")
+        span(class="title") Current Address
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Country
+              div(class="text",data-bind="text:data.CountryCvm.selectedText()")
+            li
+              //-
+            li
+              span(class="label") Street Address
+              div(class="text",data-bind="text:data.StreetAddress")
+            li
+              span(class="label") City
+              div(class="text",data-bind="text:data.City")
+            li
+              span(class="label") State
+              div(class="text",data-bind="text:data.StateCvm.selectedText()")
+            li
+              span(class="label") Zip
+              div(class="text",data-bind="text:data.PostalCode")
+
+      div(class="section")
+        span(class="title") Costs
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Cohabit Type
+              div(class="text",data-bind="text:data.RecruitCohabbitTypeCvm.selectedText()")
+            li
+              span(class="label") Buddy
+              div(class="text",data-bind="text:buddy().FullName")
+            li
+              span(class="label") Rent
+              div(class="text",data-bind="currencytext:data.Rent")
+            li
+              span(class="label") Pet
+              div(class="text",data-bind="currencytext:data.Pet")
+            li
+              span(class="label") Utilities
+              div(class="text",data-bind="currencytext:data.Utilities")
+            li
+              span(class="label") Fuel
+              div(class="text",data-bind="currencytext:data.Fuel")
+
+      //- div(class="section")
+        span(class="title") Tax Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") EIN
+              div(class="text",data-bind="text:data.EIN")
+            li
+              span(class="label") Fed Filing Status
+              div(class="text",data-bind="text:data.FedFilingStatus")
+            li
+              span(class="label") SUTA
+              div(class="text",data-bind="text:data.SUTA")
+            li
+              span(class="label") EIC Filing Status
+              div(class="text",data-bind="text:data.EICFilingStatus")
+            li
+              span(class="label") Workers Comp
+              div(class="text",data-bind="text:data.WorkersComp")
+            li
+              span(class="label") State Filing Status
+              div(class="text",data-bind="text:data.StateFilingStatus")
+            li
+              span(class="label") Tax Witholding State
+              div(class="text",data-bind="text:data.TaxWitholdingState")
+            li
+              span(class="label") Dependents
+              div(class="text",data-bind="text:data.GPDependents")
