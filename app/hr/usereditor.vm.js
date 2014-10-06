@@ -20,21 +20,22 @@ define('src/hr/usereditor.vm', [
   ko
 ) {
   "use strict";
-  var pwdSchema, schema,
+  var schema,
     max50 = ukov.validators.maxLength(50),
     max100 = ukov.validators.maxLength(100),
+    isEmailValidator = ukov.validators.isEmail(),
     nullStrConverter = ukov.converters.nullString(),
+    dateConverter = ukov.converters.date(),
+    boolConverter = ukov.converters.bool(),
+    phoneConverter = ukov.converters.phone(),
+    toLowerConverter = ukov.converters.toLower(),
+    toUpperConverter = ukov.converters.toUpper(),
+    ssnConverter = ukov.converters.ssn(),
+    intConverter = ukov.converters.number(0),
     defaultRecruitedBy = {
       UserID: 0,
       FullName: '',
     };
-
-  pwdSchema = {
-    validators: [
-      ukov.validators.isRequired('Password is required'),
-      ukov.validators.isPassword(),
-    ],
-  };
 
   schema = {
     _model: true,
@@ -47,7 +48,7 @@ define('src/hr/usereditor.vm', [
     },
 
     UserName: {
-      converter: ukov.converters.toLower(),
+      converter: toLowerConverter,
       validators: [
         ukov.validators.isRequired('Username is required'),
         ukov.validators.isUsername(),
@@ -61,16 +62,16 @@ define('src/hr/usereditor.vm', [
       // ],
     },
     Email: {
-      converter: ukov.converters.toLower(),
-      validators: [max100, ukov.validators.isEmail()],
+      converter: toLowerConverter,
+      validators: [max100, isEmailValidator],
     },
     CorporateEmail: {
       // converter: strConverter,
-      validators: [max100, ukov.validators.isEmail()],
+      validators: [max100, isEmailValidator],
     },
 
     GPEmployeeID: {
-      converter: ukov.converters.toUpper(),
+      converter: toUpperConverter,
       validators: [
         ukov.validators.isRequired('CompanyID is required'),
         ukov.validators.isCompanyID(),
@@ -84,7 +85,7 @@ define('src/hr/usereditor.vm', [
     PermanentAddressID: {},
     SSN: {
       // converter: nullStrConverter,
-      converter: ukov.converters.ssn(),
+      converter: ssnConverter,
       validators: [
         ukov.validators.isSsn(),
       ],
@@ -114,14 +115,14 @@ define('src/hr/usereditor.vm', [
       validators: [max50],
     },
     MaritalStatus: {
-      converter: ukov.converters.bool,
+      converter: boolConverter,
     },
     SpouseName: {
       converter: nullStrConverter,
       validators: [max50],
     },
     BirthDate: {
-      converter: ukov.converters.date(),
+      converter: dateConverter,
     },
     HomeTown: {
       converter: nullStrConverter,
@@ -159,7 +160,7 @@ define('src/hr/usereditor.vm', [
       validators: [max50],
     },
     DLExpiresOn: {
-      converter: ukov.converters.date(),
+      converter: dateConverter,
       validators: [max50],
     },
     Height: {},
@@ -167,34 +168,34 @@ define('src/hr/usereditor.vm', [
     EyeColor: {},
     HairColor: {},
     PhoneHome: {
-      converter: ukov.converters.phone(),
+      converter: phoneConverter,
     },
     PhoneCell: {
-      converter: ukov.converters.phone(),
+      converter: phoneConverter,
     },
     PhoneCellCarrierID: {
-      converter: ukov.converters.number(0),
+      converter: intConverter,
     },
     PhoneFax: {
-      converter: ukov.converters.phone(),
+      converter: phoneConverter,
     },
     TreeLevel: {},
     HasVerifiedAddress: {
-      converter: ukov.converters.bool(),
+      converter: boolConverter,
     },
     RightToWorkExpirationDate: {
-      converter: ukov.converters.date(),
+      converter: dateConverter,
     },
     RightToWorkNotes: {},
     RightToWorkStatusID: {},
     IsLocked: {
-      converter: ukov.converters.bool(),
+      converter: boolConverter,
     },
     IsActive: {
-      converter: ukov.converters.bool(),
+      converter: boolConverter,
     },
     IsDeleted: {
-      converter: ukov.converters.bool(),
+      converter: boolConverter,
     },
 
     RecruitedByID: {
@@ -203,7 +204,7 @@ define('src/hr/usereditor.vm', [
       ],
     },
     RecruitedDate: {
-      converter: ukov.converters.date(),
+      converter: dateConverter,
       validators: [
         ukov.validators.isRequired('Recruited date is required'),
       ],
@@ -224,12 +225,12 @@ define('src/hr/usereditor.vm', [
       'layersVm',
     ]);
     ControllerViewModel.ensureProps(_this.cache, [
-      'shirtSizeOptions',
-      'hatSizeOptions',
-      'sexOptions',
-      'maritalStatusOptions',
-      'userEmployeeOptions',
-      'phoneCellCarrierOptions',
+      'shirtSizes',
+      'hatSizes',
+      'sexs',
+      'maritalStatuss',
+      'userEmployeeTypes',
+      'phoneCellCarriers',
     ]);
 
     _this.title = ko.observable(_this.title);
@@ -237,32 +238,40 @@ define('src/hr/usereditor.vm', [
     _this.data = ukov.wrap({}, schema);
     _this.data.ShirtSizeCvm = new ComboViewModel({
       selectedValue: _this.data.ShirtSize,
-      list: _this.cache.shirtSizeOptions,
+      list: _this.cache.shirtSizes,
       nullable: true,
     });
     _this.data.UserEmployeeTypeCvm = new ComboViewModel({
       selectedValue: _this.data.UserEmployeeTypeId,
-      list: _this.cache.userEmployeeOptions,
+      list: _this.cache.userEmployeeTypes,
       nullable: true,
+      fields: {
+        value: 'UserEmployeeTypeID',
+        text: 'UserEmployeeTypeName',
+      },
     });
     _this.data.HatSizeCvm = new ComboViewModel({
       selectedValue: _this.data.HatSize,
-      list: _this.cache.hatSizeOptions,
+      list: _this.cache.hatSizes,
       nullable: true,
     });
     _this.data.SexCvm = new ComboViewModel({
       selectedValue: _this.data.Sex,
-      list: _this.cache.sexOptions,
+      list: _this.cache.sexs,
     });
     _this.data.MaritalStatusCvm = new ComboViewModel({
       selectedValue: _this.data.MaritalStatus,
-      list: _this.cache.maritalStatusOptions,
+      list: _this.cache.maritalStatuss,
       nullable: true,
     });
     _this.data.PhoneCellCarrierCvm = new ComboViewModel({
       selectedValue: _this.data.PhoneCellCarrierID,
-      list: _this.cache.phoneCellCarrierOptions,
+      list: _this.cache.phoneCellCarriers,
       nullable: true,
+      fields: {
+        value: 'PhoneCellCarrierID',
+        text: 'Description',
+      },
     });
 
     _this.editing = ko.observable(false);
@@ -324,6 +333,7 @@ define('src/hr/usereditor.vm', [
     _this.clickRecruitedBy = function() {
       var vm = new UserSearchViewModel({
         pcontroller: _this,
+        cache: _this.cache,
         open: function(item) {
           item.FullName = calcFullName(item.PreferredName, item.FirstName, item.LastName);
           _this.recruitedBy(item);

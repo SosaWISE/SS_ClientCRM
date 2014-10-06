@@ -16,6 +16,10 @@ define('src/dataservices/humanresourcesrv', [
       'RuTechnician',
       'RuTechnicianList',
 
+      'phoneCellCarriers',
+      'recruits',
+      'seasons',
+      'userEmployeeTypes',
       'users',
 
     ].forEach(function(collectionName) {

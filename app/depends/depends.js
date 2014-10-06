@@ -140,6 +140,7 @@
   function requireDeps(dependant, deps, cb) {
     cb = cb;
     var remaining = deps.length,
+      expectedIndex = 0,
       resolvedDeps = new Array(remaining);
 
     if (remaining === 0) {
@@ -155,6 +156,12 @@
       }
     }
     deps.forEach(function(name, index) {
+      if (index !== expectedIndex) {
+        throw new Error('DEPENDS: index doesn\'t match expectedIndex. deps array contains undefined indexes.');
+      }
+      // increment expected index
+      expectedIndex++;
+
       if (dependant) {
         if (walkUp(dependant, name)) {
           // circular dependency, use undefined as the dependency value
@@ -360,4 +367,6 @@
   define.amd = {
     jQuery: true,
   };
+  // for debugging purposes
+  require.pendingDefineMap = pendingDefineMap;
 })();

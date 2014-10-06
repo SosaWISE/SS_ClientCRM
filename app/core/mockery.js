@@ -131,9 +131,14 @@ define('src/core/mockery', [
     CITY: function(cache) {
       return fromTemplate('@LASTNAME(City)ton', cache);
     },
-    STATEAB: function(cache) {
-      return fromTemplate('@CHAR_UPPER(StateA)@CHAR_UPPER(StateB)', cache);
-    },
+    // STATEAB: function(cache) {
+    //   return fromTemplate('@CHAR_UPPER(StateA)@CHAR_UPPER(StateB)', cache);
+    // },
+    STATEAB: ['AK', 'AL', 'AR', 'AS', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'FM', 'GA', 'GU',
+      'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME', 'MH', 'MI', 'MN', 'MO',
+      'MP', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM', 'NV', 'NY', 'OH', 'OK', 'OR', 'PA',
+      'PR', 'PW', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VA', 'VI', 'VT', 'WA', 'WI', 'WV', 'WY',
+    ],
     ZIP: function(cache) {
       return fromTemplate('8@NUMBER(1000,9999)', cache);
     },
@@ -301,8 +306,12 @@ define('src/core/mockery', [
 
   function incModulus(cache, refKey, key) {
     var obj = incMap[refKey],
-      count = obj.val - obj.idSeed + 1,
-      refCount = mockery.fn.INC(cache, key) - obj.idSeed;
+      count, refCount;
+    if (!obj) {
+      throw new Error('invalid refKey \'' + refKey + '\'');
+    }
+    count = obj.val - obj.idSeed + 1;
+    refCount = mockery.fn.INC(cache, key) - obj.idSeed;
     return (refCount % count) + obj.idSeed;
   }
 

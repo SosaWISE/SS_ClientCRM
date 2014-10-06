@@ -102,7 +102,6 @@ define('src/account/default/search.vm', [
       list: _this.pageSizeOptions,
     });
     _this.data.StateCvm = new ComboViewModel({
-      matchStart: true,
       selectedValue: _this.data.StateId,
       list: AddressValidateViewModel.prototype.stateOptions, //@TODO: load states from server
       nullable: true,

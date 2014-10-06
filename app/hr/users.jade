@@ -5,7 +5,7 @@ div(class="users",data-bind="if:loaded")
         ul(class="tabs cf")
           //-HACK to not be convered up by toggle-btn
           li(class="tab under-toggle-btn")
-          li(class="tab",data-bind="active:searchVm.active")
+          li(class="tab",data-bind="active:searchVm()&&searchVm().active")
             a(data-bind="click:clickSearch") Search
           <!-- ko foreach:list -->
           li(class="tab",data-bind="active:active")
@@ -18,8 +18,8 @@ div(class="users",data-bind="if:loaded")
     tr
       td(class="fh-body")
         div(class="fh-contents")
-          <!-- ko if:searchVm.loaded()&&searchVm.active() -->
-          div(class="tab", data-bind="template:{name:searchVm.viewTmpl,data:searchVm},active:searchVm.active")
+          <!-- ko if:searchVm()&&searchVm().loaded()&&searchVm().active() -->
+          div(class="tab", data-bind="template:{name:searchVm().viewTmpl,data:searchVm()},active:searchVm().active")
           <!-- /ko -->
           <!-- ko foreach:list -->
           <!-- ko if:active -->

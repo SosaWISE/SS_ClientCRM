@@ -46,8 +46,7 @@ div(data-bind="if:!loadErr()&&!loading()")
               ul(class="nav",data-bind="foreach:recruits")
                 li
                   a(data-bind="active:active,click:$parent.clickItem")
-                    //- span(class="name",data-bind="text:title")
-                    span(class="name") Title goes here
+                    span(class="name",data-bind="text:title")
 
 
     //- div(class="dock-right")
