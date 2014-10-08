@@ -1,4 +1,5 @@
 define('src/hr/usersearch.vm', [
+  'src/hr/hr-cache',
   'src/core/combo.vm',
   'src/dataservice',
   'src/hr/usersearch.gvm',
@@ -8,6 +9,7 @@ define('src/hr/usersearch.vm', [
   'src/core/controller.vm',
   'ko'
 ], function(
+  hrcache,
   ComboViewModel,
   dataservice,
   SearchGridViewModel,
@@ -72,13 +74,9 @@ define('src/hr/usersearch.vm', [
   function UserSearchViewModel(options) {
     var _this = this;
     UserSearchViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, [
-      'cache',
-    ]);
-    ControllerViewModel.ensureProps(_this.cache, [
-      'seasons',
-      'userEmployeeTypes',
-    ]);
+    // ControllerViewModel.ensureProps(_this, [
+    //   'cache',
+    // ]);
 
     _this.title = ko.observable(_this.title);
     _this.focusFirst = ko.observable(false);
@@ -86,16 +84,14 @@ define('src/hr/usersearch.vm', [
     clearData(_this);
     _this.data.SeasonCvm = new ComboViewModel({
       selectedValue: _this.data.SeasonID,
-      list: _this.cache.seasons,
       nullable: true,
       fields: {
         value: 'SeasonID',
         text: 'SeasonName',
       },
     });
-    _this.data.UserTypeCvm = new ComboViewModel({
+    _this.data.UserEmployeeTypeCvm = new ComboViewModel({
       selectedValue: _this.data.UserEmployeeTypeId,
-      list: _this.cache.userEmployeeTypes,
       nullable: true,
       fields: {
         value: 'UserEmployeeTypeID',
@@ -116,9 +112,6 @@ define('src/hr/usersearch.vm', [
     //
     // events
     //
-    _this.cmdOpenAccount = ko.command(function(cb) {
-      _this.openAccount(cb);
-    });
     _this.cmdSearch = ko.command(function(cb) {
       search(_this, cb);
     });
@@ -141,6 +134,22 @@ define('src/hr/usersearch.vm', [
   UserSearchViewModel.prototype.viewTmpl = 'tmpl-hr-usersearch';
   UserSearchViewModel.prototype.height = 500;
   UserSearchViewModel.prototype.width = '80%';
+
+  UserSearchViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+    var _this = this;
+
+    hrcache.ensure('userEmployeeTypes', join.add());
+    hrcache.ensure('phoneCellCarriers', join.add());
+    hrcache.ensure('seasons', join.add());
+
+    join.when(function(err) {
+      if (err) {
+        return;
+      }
+      _this.data.SeasonCvm.setList(hrcache.getList('seasons').peek());
+      _this.data.UserEmployeeTypeCvm.setList(hrcache.getList('userEmployeeTypes').peek());
+    });
+  };
 
   function clearData(_this) {
     var data = {

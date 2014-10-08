@@ -1,19 +1,23 @@
 define('src/hr/user.vm', [
+  'src/hr/hr-cache',
   'src/hr/recruiteditor.vm',
   'src/hr/recruitseason.vm',
   'src/hr/usereditor.vm',
   'ko',
   'src/dataservice',
+  'src/core/strings',
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
   'src/core/controller.vm',
 ], function(
+  hrcache,
   RecruitEditorViewModel,
   RecruitSeasonViewModel,
   UserEditorViewModel,
   ko,
   dataservice,
+  strings,
   notify,
   utils,
   BaseViewModel,
@@ -40,20 +44,13 @@ define('src/hr/user.vm', [
     _this.defaultChild = _this.editorVm = new UserEditorViewModel({
       pcontroller: _this,
       id: 'info',
-      cache: _this.cache,
       layersVm: _this.layersVm,
     });
+
+
     _this.title = ko.computed(function() {
-      if (_this.id > 0) {
-        var data = _this.editorVm.data;
-        if (_this.loaded()) {
-          return data.FullName() + ' (' + data.GPEmployeeID() + ', U' + _this.id + ')';
-        } else {
-          return 'Loading... (U' + _this.id + ')';
-        }
-      } else {
-        return 'New Recruit' + _this.id;
-      }
+      var data = _this.editorVm.data;
+      return strings.format('{0} ({1}, U{2})', data.FullName(), data.GPEmployeeID(), data.UserID() || _this.id);
     });
 
     //
@@ -65,7 +62,7 @@ define('src/hr/user.vm', [
     _this.clickNewRecruit = function() {
       var vm = new RecruitSeasonViewModel({
         userid: _this.editorVm.data.UserID.peek(),
-        cache: _this.cache,
+        seasons: hrcache.getList('seasons').peek(),
         recruitVms: _this.childs.peek(),
       });
       _this.layersVm.show(vm, function(recruit) {
@@ -100,10 +97,11 @@ define('src/hr/user.vm', [
     var _this = this,
       userid = _this.routePartId(routeData);
 
+    hrcache.ensure('seasons', join.add());
+
     if (userid > 0) {
       load_user(userid, function(val) {
-        _this.editorVm.data.setValue(val);
-        _this.editorVm.data.markClean(val);
+        _this.editorVm.setItem(val);
       }, join.add('u'));
 
       load_recruits(userid, function(recruits) {
@@ -113,26 +111,10 @@ define('src/hr/user.vm', [
         });
         _this.childs(vms);
       }, join.add('r'));
+    } else {
+
     }
   };
-
-  function createRecruitEditorViewModel(_this, r) {
-    return new RecruitEditorViewModel({
-      pcontroller: _this,
-      id: r.RecruitID,
-      item: r,
-      cache: _this.cache,
-      layersVm: _this.layersVm,
-    });
-  }
-
-  UserViewModel.prototype.closeMsg = function() { // overrides base
-    var _this = this,
-      msg;
-    msg = _this.editorVm.closeMsg();
-    return msg;
-  };
-
   UserViewModel.prototype.findChild = function(routeData) {
     var _this = this,
       result;
@@ -142,6 +124,24 @@ define('src/hr/user.vm', [
       result = UserViewModel.super_.prototype.findChild.call(_this, routeData);
     }
     return result;
+  };
+
+  function createRecruitEditorViewModel(_this, r) {
+    var vm = new RecruitEditorViewModel({
+      pcontroller: _this,
+      id: r.RecruitID,
+      layersVm: _this.layersVm,
+      seasons: hrcache.getList('seasons').peek(),
+    });
+    vm.setItem(r);
+    return vm;
+  }
+
+  UserViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    msg = _this.editorVm.closeMsg();
+    return msg;
   };
 
   // UserViewModel.prototype.findChild = function(routeData) {

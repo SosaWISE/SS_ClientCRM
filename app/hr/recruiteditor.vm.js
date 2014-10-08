@@ -1,4 +1,5 @@
 define('src/hr/recruiteditor.vm', [
+  'src/hr/hr-cache',
   'src/account/default/address.validate.vm',
   'src/hr/usersearch.vm',
   'src/core/combo.vm',
@@ -10,6 +11,7 @@ define('src/hr/recruiteditor.vm', [
   'src/core/controller.vm',
   'ko'
 ], function(
+  hrcache,
   AddressValidateViewModel,
   UserSearchViewModel,
   ComboViewModel,
@@ -22,7 +24,7 @@ define('src/hr/recruiteditor.vm', [
   ko
 ) {
   "use strict";
-  var schema, rcache,
+  var schema,
     max50 = ukov.validators.maxLength(50),
     max200 = ukov.validators.maxLength(200),
     max250 = ukov.validators.maxLength(250),
@@ -203,11 +205,7 @@ define('src/hr/recruiteditor.vm', [
     var _this = this;
     RecruitEditorViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
-      'item',
       'layersVm',
-      'cache',
-    ]);
-    ControllerViewModel.ensureProps(_this.cache, [
       'seasons',
     ]);
 
@@ -215,57 +213,66 @@ define('src/hr/recruiteditor.vm', [
     _this.data = ukov.wrap({}, schema);
     _this.data.UserTypeCvm = new ComboViewModel({
       selectedValue: _this.data.UserTypeId,
-      list: rcache.userTypes,
+      fields: {
+        value: 'UserTypeID',
+        text: 'Description',
+      },
     });
     _this.data.ReportsToCvm = new ComboViewModel({
       selectedValue: _this.data.ReportsToID,
-      list: rcache.reportsTos,
       nullable: true,
     });
     _this.data.TeamCvm = new ComboViewModel({
       selectedValue: _this.data.TeamID,
-      list: rcache.teams,
       nullable: true,
     });
     _this.data.PayScaleCvm = new ComboViewModel({
       selectedValue: _this.data.PayScaleID,
-      list: rcache.payScales,
       nullable: true,
     });
     _this.data.OwnerApprovalCvm = new ComboViewModel({
       selectedValue: _this.data.OwnerApprovalId,
-      list: rcache.ownerApprovals,
       nullable: true,
     });
     _this.data.SchoolCvm = new ComboViewModel({
       selectedValue: _this.data.SchoolId,
-      list: rcache.schools,
       nullable: true,
     });
     _this.data.DriversLicenseStatusCvm = new ComboViewModel({
       selectedValue: _this.data.DriversLicenseStatusID,
-      list: rcache.docStatuses,
+      fields: {
+        value: 'ID',
+        text: 'Txt',
+      },
     });
     _this.data.I9StatusCvm = new ComboViewModel({
       selectedValue: _this.data.I9StatusID,
-      list: rcache.docStatuses,
+      fields: {
+        value: 'ID',
+        text: 'Txt',
+      },
     });
     _this.data.W9StatusCvm = new ComboViewModel({
       selectedValue: _this.data.W9StatusID,
-      list: rcache.docStatuses,
+      fields: {
+        value: 'ID',
+        text: 'Txt',
+      },
     });
     _this.data.W4StatusCvm = new ComboViewModel({
       selectedValue: _this.data.W4StatusID,
-      list: rcache.docStatuses,
+      fields: {
+        value: 'ID',
+        text: 'Txt',
+      },
     });
     _this.data.CountryCvm = new ComboViewModel({
       selectedValue: _this.data.CountryId,
-      list: rcache.countrys,
       nullable: true,
     });
     _this.data.StateCvm = new ComboViewModel({
       selectedValue: _this.data.StateId,
-      list: rcache.states,
+      list: AddressValidateViewModel.prototype.stateOptions,
       nullable: true,
       fields: {
         text: function(item) {
@@ -275,18 +282,16 @@ define('src/hr/recruiteditor.vm', [
     });
     _this.data.RecruitCohabbitTypeCvm = new ComboViewModel({
       selectedValue: _this.data.RecruitCohabbitTypeId,
-      list: rcache.recruitCohabbitTypes,
       nullable: true,
+      fields: {
+        value: 'ID',
+        text: 'Txt',
+      },
     });
 
-    _this.cache.seasons.some(function(s) {
-      if (_this.item.SeasonID === s.SeasonID) {
-        _this.seasonName = s.SeasonName;
-        return true;
-      }
-    });
+    _this.seasonName = ko.observable('unknown season');
     _this.title = ko.computed(function() {
-      return (_this.isNew() ? '(NEW) ' : '') + _this.seasonName;
+      return (!_this.isOld() ? '(NEW) ' : '') + _this.seasonName();
     });
 
     _this.buddy = ko.observable(defaultBuddy);
@@ -345,7 +350,6 @@ define('src/hr/recruiteditor.vm', [
     _this.clickBuddy = function() {
       var vm = new UserSearchViewModel({
         pcontroller: _this,
-        cache: _this.cache,
         open: function(item) {
           item.FullName = calcFullName(item.PreferredName, item.FirstName, item.LastName);
           _this.buddy(item);
@@ -371,7 +375,7 @@ define('src/hr/recruiteditor.vm', [
       }
     });
 
-    if (_this.isNew()) {
+    if (!_this.isOld()) {
       _this.clickEdit();
     }
   }
@@ -380,12 +384,50 @@ define('src/hr/recruiteditor.vm', [
   RecruitEditorViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
-    // set data to passed in item
-    // setting here instead of in ctor to more closely follow the onLoad pattern
-    _this.data.setValue(_this.item);
-    _this.data.markClean(_this.item);
+    hrcache.ensure('payscales', join.add());
+    hrcache.ensure('schools', join.add());
+    hrcache.ensure('userTypes', join.add());
+    // hrcache.ensure('owners', join.add());
 
-    join.add()();
+    hrcache.ensure('docStatuses', join.add());
+    hrcache.ensure('countrys', join.add());
+    hrcache.ensure('recruitCohabbitTypes', join.add());
+
+    join.when(function(err) {
+      if (err) {
+        return;
+      }
+      _this.data.PayScaleCvm.setList(hrcache.getList('payscales').peek());
+      _this.data.SchoolCvm.setList(hrcache.getList('schools').peek());
+      _this.data.UserTypeCvm.setList(hrcache.getList('userTypes').peek());
+      // _this.data.OwnerApprovalCvm.setList(hrcache.getList('owners').peek());
+
+      _this.data.DriversLicenseStatusCvm.setList(hrcache.getList('docStatuses').peek());
+      _this.data.I9StatusCvm.setList(hrcache.getList('docStatuses').peek());
+      _this.data.W9StatusCvm.setList(hrcache.getList('docStatuses').peek());
+      _this.data.W4StatusCvm.setList(hrcache.getList('docStatuses').peek());
+      // _this.data.CountryCvm.setList(hrcache.getList('countrys').peek());
+      _this.data.RecruitCohabbitTypeCvm.setList(hrcache.getList('recruitCohabbitTypes').peek());
+
+      // SeasonID, UserTypeID - reportsTos, teams
+      // _this.data.ReportsToCvm.setList(hrcache.getList('ReportsTo').peek());
+      // _this.data.TeamCvm.setList(hrcache.getList('teams').peek());
+    });
+  };
+  RecruitEditorViewModel.prototype.setItem = function(item) {
+    var _this = this;
+    // set seasonName
+    _this.seasons.some(function(s) {
+      if (item.SeasonID === s.SeasonID) {
+        _this.seasonName(s.SeasonName);
+        return true;
+      }
+    });
+    // set item once we're loaded
+    _this.loader.onLoad(function() {
+      _this.data.setValue(item);
+      _this.data.markClean(item);
+    });
   };
 
   RecruitEditorViewModel.prototype.closeMsg = function() { // overrides base
@@ -398,10 +440,10 @@ define('src/hr/recruiteditor.vm', [
     }
     return msg;
   };
-  RecruitEditorViewModel.prototype.isNew = function() {
+  RecruitEditorViewModel.prototype.isOld = function() {
     var _this = this;
     //@NOTE: this function is used in computables so peek should not be used
-    return _this.data.RecruitID() < 0;
+    return (_this.data.RecruitID() > 0);
   };
 
   function calcFullName(pname, fname, lname) {
@@ -419,151 +461,21 @@ define('src/hr/recruiteditor.vm', [
       }, null, utils.safeCallback(cb, function(err, resp) {
         var data = resp.Value;
         if (data) {
-          _this.data.setValue(data);
-          _this.data.markClean(data, true);
-          // end editing
-          _this.editing(false);
-
           if (_this.id !== data.RecruitID) {
-            // new
+            // was a new recruit
             _this.id = data.RecruitID;
             // redirect
             _this.goTo(_this.getRouteData());
           }
+
+          _this.data.setValue(data);
+          _this.data.markClean(data, true);
+          // end editing
+          _this.editing(false);
         }
       }, notify.error));
     }
   }
-
-  // function load_teams(setter, cb) {
-  //   //@TODO: load from the web api
-  //   setter([]);
-  //   setTimeout(function() {
-  //     setter(usersCache.userEmployees);
-  //     cb();
-  //   }, 0);
-  // }
-  // function load_userTypes(setter, cb) {
-  //   //@TODO: load from the web api
-  //   setter([]);
-  //   setTimeout(function() {
-  //     setter(rcache.userTypes);
-  //     cb();
-  //   }, 0);
-  // }
-
-  rcache = {
-    reportsTos: [ //
-    ],
-    teams: [ //
-    ],
-    ownerApprovals: [ //
-    ],
-
-
-    payScales: [ //
-    ],
-    schools: [ //
-    ],
-    states: AddressValidateViewModel.prototype.stateOptions,
-
-
-    userTypes: [ //
-      {
-        value: 1,
-        text: 'Administrator',
-      }, {
-        value: 2,
-        text: 'Sales Manager',
-      }, {
-        value: 3,
-        text: 'Sales Co-Manager',
-      }, {
-        value: 4,
-        text: 'Sales Assistant Manager',
-      }, {
-        value: 5,
-        text: 'Sales Rep',
-      }, {
-        value: 6,
-        text: 'Technician Lead',
-      }, {
-        value: 7,
-        text: 'Technician',
-      }, {
-        value: 8,
-        text: 'Regional Manager - Technician',
-      }, {
-        value: 10,
-        text: 'Technician Assistant Lead',
-      }, {
-        value: 11,
-        text: 'Regional Manager - Sales',
-      }, {
-        value: 12,
-        text: 'Corporate',
-      }, {
-        value: 13,
-        text: 'Office Assistant',
-      }, {
-        value: 14,
-        text: 'Inventory Manager',
-      }, {
-        value: 15,
-        text: 'Corporate Service',
-      }, {
-        value: 18,
-        text: 'Senior Regional - Sales',
-      }, {
-        value: 19,
-        text: 'National Regional - Sales',
-      }, {
-        value: 20,
-        text: 'National Regional - Technician',
-      }, {
-        value: 22,
-        text: 'Service Technician',
-      }, {
-        value: 23,
-        text: 'Vendor',
-      },
-    ],
-
-    docStatuses: [ //
-      {
-        value: 1,
-        text: 'Not Received',
-      }, {
-        value: 2,
-        text: 'Incomplete',
-      }, {
-        value: 3,
-        text: 'Complete',
-      },
-    ],
-    countrys: [ //
-      // {
-      //   value: 'CAN',
-      //   text: 'Canada',
-      // },
-      {
-        value: 'USA',
-        text: 'United States of America',
-      },
-    ],
-    recruitCohabbitTypes: [ //
-      {
-        value: 1,
-        text: 'Single',
-      }, {
-        value: 2,
-        text: 'Cohabbit',
-      }, {
-        value: 3,
-        text: 'Off Site',
-      },
-    ],
-  };
 
   return RecruitEditorViewModel;
 });
