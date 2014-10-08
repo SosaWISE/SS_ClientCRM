@@ -17,8 +17,7 @@ define('src/hr/users.vm', [
 ) {
   'use strict';
 
-  var userid = -1,
-    usersCache = {};
+  var newUserID = -1;
 
   function UsersViewModel(options) {
     var _this = this;
@@ -40,7 +39,7 @@ define('src/hr/users.vm', [
       _this.selectChild(_this.searchVm.peek());
     };
     _this.clickNew = function() {
-      var vm = createUserViewModel(_this, userid--);
+      var vm = createUserViewModel(_this, newUserID--);
       _this.list.push(vm);
       _this.selectChild(vm);
     };
@@ -50,36 +49,14 @@ define('src/hr/users.vm', [
 
   UsersViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
+    _this.searchVm(new UserSearchViewModel({
+      pcontroller: _this,
+      id: 'search',
+      title: 'Search',
+    }));
+    _this.defaultChild = _this.searchVm.peek();
 
-    _this.cache = {};
-    _this.cache.shirtSizes = usersCache.shirtSizes;
-    _this.cache.hatSizes = usersCache.hatSizes;
-    _this.cache.sexs = usersCache.sexs;
-    _this.cache.maritalStatuss = usersCache.maritalStatuss;
-    //
-    dataservice.humanresourcesrv.userEmployeeTypes.read({}, function(val) {
-      _this.cache.userEmployeeTypes = val;
-    }, join.add());
-    dataservice.humanresourcesrv.phoneCellCarriers.read({}, function(val) {
-      _this.cache.phoneCellCarriers = val;
-    }, join.add());
-    dataservice.humanresourcesrv.seasons.read({}, function(val) {
-      _this.cache.seasons = val;
-    }, join.add());
-
-    join.when(function(err) {
-      if (err) {
-        return;
-      }
-      var vm = new UserSearchViewModel({
-        pcontroller: _this,
-        id: 'search',
-        title: 'Search',
-        cache: _this.cache,
-      });
-      _this.defaultChild = vm;
-      _this.searchVm(vm);
-    });
+    join.add()();
   };
 
   UsersViewModel.prototype.findChild = function(routeData) {
@@ -107,68 +84,9 @@ define('src/hr/users.vm', [
     return new UserViewModel({
       pcontroller: _this,
       id: id,
-      cache: _this.cache,
       layersVm: _this.layersVm,
     });
   }
-
-  usersCache.shirtSizes = [ //
-    {
-      value: 1,
-      text: 'XXS'
-    }, {
-      value: 2,
-      text: 'XS'
-    }, {
-      value: 3,
-      text: 'S'
-    }, {
-      value: 4,
-      text: 'M'
-    }, {
-      value: 5,
-      text: 'L'
-    }, {
-      value: 6,
-      text: 'XL'
-    }, {
-      value: 7,
-      text: 'XXL'
-    }, {
-      value: 8,
-      text: 'XXXL'
-    },
-  ];
-  usersCache.hatSizes = [ //
-    {
-      value: 1,
-      text: 'S'
-    }, {
-      value: 2,
-      text: 'M'
-    }, {
-      value: 3,
-      text: 'L'
-    },
-  ];
-  usersCache.sexs = [ //
-    {
-      value: 1,
-      text: 'Male'
-    }, {
-      value: 2,
-      text: 'Female'
-    },
-  ];
-  usersCache.maritalStatuss = [ //
-    {
-      value: false,
-      text: 'Single'
-    }, {
-      value: true,
-      text: 'Married'
-    },
-  ];
 
   return UsersViewModel;
 });

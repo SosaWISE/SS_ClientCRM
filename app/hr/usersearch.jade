@@ -7,7 +7,7 @@ div(class="hr-search")
             li
               span(class="label") Company ID
               input(type="text", placeholder="",
-                data-bind="ukov:data.CompanyID,value:data.CompanyID,valueUpdate:'keyup',enter:cmdOpenAccount,select:focusFirst")
+                data-bind="ukov:data.CompanyID,value:data.CompanyID,valueUpdate:'keyup',enter:cmdSearch,select:focusFirst")
             li
               span(class="label") First Name
               input(type="text", placeholder="",
@@ -49,7 +49,7 @@ div(class="hr-search")
               div(data-bind="cvm:data.SeasonCvm")
             li
               span(class="label") User Type
-              div(data-bind="cvm:data.UserTypeCvm")
+              div(data-bind="cvm:data.UserEmployeeTypeCvm")
 
         div(class="actions")
           a(class="btn",tabindex="0",data-bind="cmd:cmdSearch") Search

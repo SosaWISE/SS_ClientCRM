@@ -1,4 +1,5 @@
 define('src/hr/usereditor.vm', [
+  'src/hr/hr-cache',
   'src/hr/usersearch.vm',
   'src/core/combo.vm',
   'src/dataservice',
@@ -9,6 +10,7 @@ define('src/hr/usereditor.vm', [
   'src/core/controller.vm',
   'ko'
 ], function(
+  hrcache,
   UserSearchViewModel,
   ComboViewModel,
   dataservice,
@@ -221,29 +223,29 @@ define('src/hr/usereditor.vm', [
     var _this = this;
     UserEditorViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
-      'cache',
       'layersVm',
     ]);
-    ControllerViewModel.ensureProps(_this.cache, [
-      'shirtSizes',
-      'hatSizes',
-      'sexs',
-      'maritalStatuss',
-      'userEmployeeTypes',
-      'phoneCellCarriers',
-    ]);
+    // ControllerViewModel.ensureProps(_this.cache, [
+    //   'shirtSizes',
+    //   'hatSizes',
+    //   'sexs',
+    //   'maritalStatuses',
+    //   'userEmployeeTypes',
+    //   'phoneCellCarriers',
+    // ]);
 
-    _this.title = ko.observable(_this.title);
     _this.focusFirst = ko.observable(false);
     _this.data = ukov.wrap({}, schema);
     _this.data.ShirtSizeCvm = new ComboViewModel({
       selectedValue: _this.data.ShirtSize,
-      list: _this.cache.shirtSizes,
       nullable: true,
+      fields: {
+        value: 'ID',
+        text: 'Txt',
+      },
     });
     _this.data.UserEmployeeTypeCvm = new ComboViewModel({
       selectedValue: _this.data.UserEmployeeTypeId,
-      list: _this.cache.userEmployeeTypes,
       nullable: true,
       fields: {
         value: 'UserEmployeeTypeID',
@@ -252,21 +254,29 @@ define('src/hr/usereditor.vm', [
     });
     _this.data.HatSizeCvm = new ComboViewModel({
       selectedValue: _this.data.HatSize,
-      list: _this.cache.hatSizes,
       nullable: true,
+      fields: {
+        value: 'ID',
+        text: 'Txt',
+      },
     });
     _this.data.SexCvm = new ComboViewModel({
       selectedValue: _this.data.Sex,
-      list: _this.cache.sexs,
+      fields: {
+        value: 'ID',
+        text: 'Txt',
+      },
     });
     _this.data.MaritalStatusCvm = new ComboViewModel({
       selectedValue: _this.data.MaritalStatus,
-      list: _this.cache.maritalStatuss,
       nullable: true,
+      fields: {
+        value: 'ID',
+        text: 'Txt',
+      },
     });
     _this.data.PhoneCellCarrierCvm = new ComboViewModel({
       selectedValue: _this.data.PhoneCellCarrierID,
-      list: _this.cache.phoneCellCarriers,
       nullable: true,
       fields: {
         value: 'PhoneCellCarrierID',
@@ -333,7 +343,6 @@ define('src/hr/usereditor.vm', [
     _this.clickRecruitedBy = function() {
       var vm = new UserSearchViewModel({
         pcontroller: _this,
-        cache: _this.cache,
         open: function(item) {
           item.FullName = calcFullName(item.PreferredName, item.FirstName, item.LastName);
           _this.recruitedBy(item);
@@ -369,6 +378,39 @@ define('src/hr/usereditor.vm', [
   // UserEditorViewModel.prototype.viewTmpl = 'tmpl-hr-usereditor';
   // viewTmpl: 'tmpl-hr-userinfo',
 
+  UserEditorViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+    var _this = this;
+
+    hrcache.ensure('shirtSizes', join.add());
+    hrcache.ensure('hatSizes', join.add());
+    hrcache.ensure('sexs', join.add());
+    hrcache.ensure('maritalStatuses', join.add());
+    hrcache.ensure('userEmployeeTypes', join.add());
+    hrcache.ensure('phoneCellCarriers', join.add());
+
+    join.when(function(err) {
+      if (err) {
+        return;
+      }
+      _this.data.ShirtSizeCvm.setList(hrcache.getList('shirtSizes').peek());
+      _this.data.HatSizeCvm.setList(hrcache.getList('hatSizes').peek());
+      _this.data.SexCvm.setList(hrcache.getList('sexs').peek());
+      _this.data.MaritalStatusCvm.setList(hrcache.getList('maritalStatuses').peek());
+      _this.data.UserEmployeeTypeCvm.setList(hrcache.getList('userEmployeeTypes').peek());
+      _this.data.PhoneCellCarrierCvm.setList(hrcache.getList('phoneCellCarriers').peek());
+    });
+  };
+  UserEditorViewModel.prototype.setItem = function(item) {
+    var _this = this;
+    // set item now in order to show title even if onLoad is never called
+    _this.data.setValue(item);
+    // set item once we're loaded
+    _this.loader.onLoad(function() {
+      _this.data.setValue(item);
+      _this.data.markClean(item);
+    });
+  };
+
   UserEditorViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
       msg;
@@ -398,17 +440,22 @@ define('src/hr/usereditor.vm', [
       dataservice.humanresourcesrv.users.save({
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
-        var data = resp.Value;
-        if (data) {
-          _this.data.setValue(data);
-          _this.data.markClean(data, true);
-          // end editing
-          _this.editing(false);
-
-          if (!model.UserID) {
-
-          }
+        var data = resp.Value,
+          pcontroller = _this.pcontroller;
+        if (!data) {
+          return;
         }
+        if (pcontroller.id !== data.UserID) {
+          // was a new user
+          pcontroller.id = data.UserID;
+          // redirect
+          _this.goTo(pcontroller.getRouteData());
+        }
+
+        _this.data.setValue(data);
+        _this.data.markClean(data, true);
+        // end editing
+        _this.editing(false);
       }, notify.error));
     }
   }

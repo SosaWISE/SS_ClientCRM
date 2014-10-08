@@ -70,6 +70,16 @@ define('src/core/helpers', [
           return true;
         }
       };
+      once.onLoad = function(cb) {
+        if (!utils.isFunc(cb)) {
+          return;
+        }
+        if (loaded()) {
+          cb();
+        } else {
+          callbacks.push(cb);
+        }
+      };
       return once;
     },
   };

@@ -1,4 +1,5 @@
 define('src/hr/recruitseason.vm', [
+  'src/hr/hr-cache',
   'src/ukov',
   'src/dataservice',
   'ko',
@@ -7,6 +8,7 @@ define('src/hr/recruitseason.vm', [
   'src/core/base.vm',
   'src/core/utils',
 ], function(
+  hrcache,
   ukov,
   dataservice,
   ko,
@@ -26,7 +28,7 @@ define('src/hr/recruitseason.vm', [
         ukov.validators.isRequired('Season is required'),
       ],
     },
-    CopyRecruitID: {},
+    CopyRecruit: {},
   };
 
   function RecruitSeasonViewModel(options) {
@@ -34,29 +36,26 @@ define('src/hr/recruitseason.vm', [
     RecruitSeasonViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
       'userid',
-      'cache',
-      'recruitVms',
-    ]);
-    BaseViewModel.ensureProps(_this.cache, [
       'seasons',
+      'recruitVms',
     ]);
 
     _this.data = ukov.wrap({}, schema);
     _this.data.SeasonCvm = new ComboViewModel({
       selectedValue: _this.data.SeasonID,
+      list: filterSeasons(_this.seasons, _this.recruitVms),
       fields: {
         value: 'SeasonID',
         text: 'SeasonName'
       },
-      list: filterSeasons(_this.cache.seasons, _this.recruitVms),
     });
     _this.data.CopyRecruitCvm = new ComboViewModel({
-      selectedValue: _this.data.CopyRecruitID,
+      selectedValue: _this.data.CopyRecruit,
+      list: createCopyRecruitCvmList(_this.seasons, _this.recruitVms),
       fields: {
-        value: 'RecruitID',
+        value: 'Recruit',
         text: 'SeasonName'
       },
-      list: createCopyRecruitCvmList(_this.cache.seasons, _this.recruitVms),
       nullable: true,
     });
     //
@@ -70,18 +69,45 @@ define('src/hr/recruitseason.vm', [
         notify.warn(_this.data.errMsg(), null, 10);
         return;
       }
-      var recruit, model = _this.data.getValue();
-      if (model.CopyRecruitID) {
-        //@TODO: copy
-        notify.warn('Copy is not implemented', null, 4);
-        return;
+      var recruit, managerId, model = _this.data.getValue();
+      if (model.CopyRecruit) {
+        recruit = model.CopyRecruit;
+
+        // reset team since we don't know the id in the new season
+        recruit.TeamID = null;
+        // ReportsToID
+        if (recruit.ReportsToID != null) {
+          notify.warn('Manager not copied', null, 4);
+          // get manager's id for new recruit's season
+          managerId = recruit.ReportsToID;
+          recruit.ReportsToID = null; // reset incase the manager isn't found in the season
+
+          //@TODO: find manager in selected season by UserID, SeasonID, and manager's UserTypeId
+
+          // //get manager
+          // RU_Recruit manager = _service.GetRecruit(managerID);
+          // if (manager != null) {
+          //
+          //   //get manager for season
+          //   RU_Recruit newManager = _service.GetRecruitByUserSeasonAndUserType(manager.UserID, seasonID, manager.UserTypeId);
+          //   if (newManager != null) {
+          //
+          //     //set manager
+          //     recruit.ReportsToID = newManager.RecruitID;
+          //   }
+          // }
+        }
+
+        recruit.CurrentAddressID = null; // ensure null since it should not be used
       } else {
         recruit = {
           UserID: _this.userid,
-          RecruitID: newRecruitTempID--,
-          SeasonID: model.SeasonID
         };
       }
+      recruit.UserID = _this.userid;
+      recruit.RecruitID = newRecruitTempID--;
+      recruit.SeasonID = model.SeasonID;
+
       _this.layerResult = recruit;
       closeLayer(_this);
     };
