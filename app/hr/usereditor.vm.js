@@ -54,7 +54,7 @@ define('src/hr/usereditor.vm', [
       validators: [
         ukov.validators.isRequired('Username is required'),
         ukov.validators.isUsername(),
-        ukov.validators.isInLengthRange(6, 50),
+        ukov.validators.isInLengthRange(2, 50),
       ],
     },
     Password: {

@@ -39,7 +39,7 @@ define('src/core/jsonhelpers', [
           value = new Date(value);
         } else if (typeof(value) === 'string' && dateTimeRegx.test(value)) {
           // parse datetime string
-          value = moment(value).toDate();
+          value = moment.utc(value).toDate(); // all dates from server should be UTC
         }
       } else if (isJSONStringRegx.test(key)) {
         if (typeof(value) === 'string') {

@@ -99,9 +99,9 @@ define('src/core/app.vm', [
     ControllerViewModel.ensureProps(options, [
       'doLogout',
       'createLogin',
-      'pathToPanelOptionsMap',
-      'addAnonRoutes',
-      'addRoutes',
+      'panelSettings',
+      // 'addAnonRoutes',
+      // 'addRoutes',
     ]);
     ko.utils.extend(_this, options);
 
@@ -140,37 +140,62 @@ define('src/core/app.vm', [
     });
 
     _this.init();
+
+    _this.os = navigator.platform.split(' ')[0].toLowerCase(); // detect os
   }
   AppViewModel.prototype.prefix = '';
   AppViewModel.prototype.postfix = '-panel';
   AppViewModel.prototype.routePart = 'route';
   AppViewModel.prototype.init = function() {
     var _this = this,
-      login;
+      loginVm;
 
     // create
-    login = _this.createLogin(_this.setUser, _this.routePart);
-    setTemplate([login], _this.prefix, _this.postfix);
+    loginVm = _this.createLogin(_this.setUser, _this.routePart);
+    setTemplate(loginVm, _this.prefix, _this.postfix);
     // add view models
-    _this.login(login);
+    _this.login(loginVm);
     // add anonymous routes
-    _this.addAnonRoutes(_this.router, login);
+    _this.addAnonRoutes(_this.router, loginVm);
   };
   AppViewModel.prototype.setUser = function(user, destPath) {
     var _this = this,
-      panels;
+      appsMap, panels, tmpRoutes;
     // do nothing if the user being set is null or we already have a user
     if (user && !_this.user.peek()) {
       // add routes
+      appsMap = makeAppsMap(user.Apps);
       panels = [];
-      Object.keys(_this.pathToPanelOptionsMap).forEach(function(path) {
-        var panelOptions = _this.pathToPanelOptionsMap[path];
-        panelOptions.routePart = _this.routePart;
-        panels.push(new LazyPanelViewModel(_this.panels, path, panelOptions));
+      tmpRoutes = [];
+      _this.panelSettings.forEach(function(data) {
+        var panelVm;
+        // allow everyone or those with the appid
+        if (data.appid !== -1 && !appsMap[data.appid]) {
+          return;
+        }
+        //
+        data.options.routePart = _this.routePart;
+        panelVm = new LazyPanelViewModel(_this.panels, data.path, data.options);
+        //
+        setTemplate(panelVm, _this.prefix, _this.postfix);
+        // add routes to temp array
+        data.routes.forEach(function(rdata) {
+          rdata.panelVm = panelVm;
+          rdata.precedence = rdata.precedence || 999;
+          tmpRoutes.push(rdata);
+        });
+        //
+        panels.push(panelVm);
       });
-      setTemplate(panels, _this.prefix, _this.postfix);
+      // sort routes by precedence then add to router
+      tmpRoutes.sort(function(a, b) {
+        return a.precedence - b.precedence;
+      });
+      tmpRoutes.forEach(function(rdata) {
+        _this.router.addRoute(rdata.panelVm, rdata.name, rdata.path, rdata.defaultRouteData || {});
+      });
+      //
       _this.panels(panels);
-      _this.addRoutes(_this.router, user, createMap(panels));
       // set user
       _this.user(user);
       // ensure the router is started
@@ -185,17 +210,19 @@ define('src/core/app.vm', [
     }
   };
 
-  function setTemplate(panels, prefix, postfix) {
-    panels.forEach(function(panel) {
-      panel.viewTmpl = 'tmpl-' + (prefix || '') + panel.id + (postfix || '');
-    });
+  function setTemplate(panel, prefix, postfix) {
+    panel.viewTmpl = 'tmpl-' + (prefix || '') + panel.id + (postfix || '');
   }
 
-  function createMap(panels) {
+  function makeAppsMap(apps) {
     var map = {};
-    panels.forEach(function(panel) {
-      map[panel.id] = panel;
-    });
+    if (apps) {
+      apps.forEach(function(app) {
+        if (app) {
+          map[app.toLowerCase()] = true;
+        }
+      });
+    }
     return map;
   }
 

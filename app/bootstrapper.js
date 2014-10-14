@@ -42,7 +42,6 @@ define('src/bootstrapper', [
   console.log("Application Token: " + config.token);
   console.log("CORS Domain: " + config.serviceDomain);
   console.log("Log Errors: " + config.logErrors);
-  app.os = navigator.platform.split(' ')[0].toLowerCase(); // detect os
   console.log("OS: " + app.os);
 
   ControllerViewModel.titlePrefix = config.titlePrefix;
