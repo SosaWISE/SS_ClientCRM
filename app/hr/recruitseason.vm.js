@@ -111,6 +111,9 @@ define('src/hr/recruitseason.vm', [
       recruit.RecruitID = newRecruitTempID--;
       recruit.SeasonID = model.SeasonID;
 
+      recruit.IsActive = true;
+      recruit.IsDeleted = false;
+
       _this.layerResult = recruit;
       closeLayer(_this);
     };
@@ -149,7 +152,7 @@ define('src/hr/recruitseason.vm', [
     return recruitVms.map(function(r) {
       var season = map[r.data.SeasonID.peek()];
       return {
-        RecruitID: r.data.RecruitID.peek(),
+        Recruit: utils.clone(r.getItem()),
         SeasonName: season.SeasonName,
       };
     });

@@ -39,6 +39,9 @@ define('src/hr/hr-cache', [
         case 'seasons':
           ensureType(name, 'SeasonID', cb);
           break;
+        case 'teams':
+          ensureType(name, 'TeamID', cb);
+          break;
         case 'userEmployeeTypes':
           ensureType(name, 'UserEmployeeTypeID', cb);
           break;

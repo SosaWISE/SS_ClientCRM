@@ -227,6 +227,10 @@ define('src/hr/recruiteditor.vm', [
     _this.data.TeamCvm = new ComboViewModel({
       selectedValue: _this.data.TeamID,
       nullable: true,
+      fields: {
+        value: 'TeamID',
+        text: 'Description',
+      },
     });
     _this.data.PayScaleCvm = new ComboViewModel({
       selectedValue: _this.data.PayScaleID,
@@ -388,6 +392,7 @@ define('src/hr/recruiteditor.vm', [
 
     hrcache.ensure('payscales', join.add());
     hrcache.ensure('schools', join.add());
+    hrcache.ensure('teams', join.add());
     hrcache.ensure('userTypes', join.add());
     // hrcache.ensure('owners', join.add());
 
@@ -401,6 +406,7 @@ define('src/hr/recruiteditor.vm', [
       }
       _this.data.PayScaleCvm.setList(hrcache.getList('payscales').peek());
       _this.data.SchoolCvm.setList(hrcache.getList('schools').peek());
+      _this.data.TeamCvm.setList(hrcache.getList('teams').peek());
       _this.data.UserTypeCvm.setList(hrcache.getList('userTypes').peek());
       // _this.data.OwnerApprovalCvm.setList(hrcache.getList('owners').peek());
 
@@ -418,18 +424,26 @@ define('src/hr/recruiteditor.vm', [
   };
   RecruitEditorViewModel.prototype.setItem = function(item) {
     var _this = this;
-    // set seasonName
+    // set seasonName and SeasonID
     _this.seasons.some(function(s) {
       if (item.SeasonID === s.SeasonID) {
         _this.seasonName(s.SeasonName);
         return true;
       }
     });
+    _this.data.SeasonID(item.SeasonID);
+    _this.data.RecruitID(item.RecruitID);
     // set item once we're loaded
+    _this._item = item;
     _this.loader.onLoad(function() {
+      _this._item = null;
       _this.data.setValue(item);
       _this.data.markClean(item);
     });
+  };
+  RecruitEditorViewModel.prototype.getItem = function() {
+    var _this = this;
+    return _this._item || _this.data.getValue();
   };
 
   RecruitEditorViewModel.prototype.closeMsg = function() { // overrides base
