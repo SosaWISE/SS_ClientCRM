@@ -24,43 +24,6 @@ define('src/app', [
         ico: null,
       });
     },
-    pathToPanelOptionsMap: {
-      'src/home/home.panel.vm': {
-        id: 'home',
-        title: 'Home',
-        ico: '&#8962;',
-      },
-      'src/account/accounts.panel.vm': {
-        id: 'accounts',
-        title: 'Accounts',
-        ico: '&#128101;',
-      },
-      'src/survey/surveys.panel.vm': {
-        id: 'surveys',
-        title: 'Surveys',
-        ico: '&#128101;',
-      },
-      'src/swing/swing.panel.vm': {
-        id: 'swing',
-        title: 'Swing',
-        ico: '&#128101;',
-      },
-      'src/inventory/inventory.panel.vm': {
-        id: 'inventory',
-        title: 'Inventory',
-        ico: '&#128101;',
-      },
-      'src/scheduling/scheduling.panel.vm': {
-        id: 'scheduling',
-        title: 'Scheduling',
-        ico: '&#128101;',
-      },
-      'src/hr/hr.panel.vm': {
-        id: 'hr',
-        title: 'HR',
-        ico: '&#128101;',
-      },
-    },
     addAnonRoutes: function(router, loginVm) {
       //
       // add anonymous routes
@@ -69,23 +32,121 @@ define('src/app', [
         type: 'user',
       });
     },
-    addRoutes: function(router, user, idTpPanelsMap) {
-      //@TODO: use user roles/permissions/something to decide which routes to add...
-      //
-      // add routes
-      //
-      router.addRoute(idTpPanelsMap.accounts, 'accounts', ':masterid/:id/:tab/:p1', {});
-      router.addRoute(idTpPanelsMap.accounts, 'leads', ':masterid/:tab/:p1', {});
-      router.addRoute(idTpPanelsMap.home, 'home', '', {});
-      router.addRoute(idTpPanelsMap.surveys, 'surveys', ':surveytypeid/:surveyid/:locale', {
-        // locale: 'en',
-      });
-      router.addRoute(idTpPanelsMap.swing, 'swing', '', {});
-      router.addRoute(idTpPanelsMap.inventory, 'inventory', ':tab', {});
-      router.addRoute(idTpPanelsMap.scheduling, 'scheduling', ':id/:ticketid', {});
-
-      router.addRoute(idTpPanelsMap.hr, 'hr', ':collection/:id/:p1', {});
-    },
+    panelSettings: [ //
+      {
+        appid: -1,
+        path: 'src/home/home.panel.vm',
+        options: {
+          id: 'home',
+          title: 'Home',
+          ico: '&#8962;',
+        },
+        routes: [ //
+          {
+            precedence: 2,
+            name: 'home',
+            path: '',
+          },
+        ],
+      }, {
+        appid: 'sse_cms_cors',
+        path: 'src/account/accounts.panel.vm',
+        options: {
+          id: 'accounts',
+          title: 'Accounts',
+          ico: '&#128101;',
+        },
+        routes: [ //
+          {
+            precedence: 1,
+            name: 'accounts',
+            path: ':masterid/:id/:tab/:p1',
+          }, {
+            precedence: 1,
+            name: 'leads',
+            path: ':masterid/:tab/:p1',
+          },
+        ],
+      }, {
+        appid: 'survey_man',
+        path: 'src/survey/surveys.panel.vm',
+        options: {
+          id: 'surveys',
+          title: 'Surveys',
+          ico: '&#128101;',
+        },
+        routes: [ //
+          {
+            precedence: 1,
+            name: 'surveys',
+            path: ':surveytypeid/:surveyid/:locale',
+            defaultRouteData: {
+              // locale: 'en',
+            },
+          },
+        ],
+      }, {
+        appid: 'sse_cms_cors',
+        path: 'src/swing/swing.panel.vm',
+        options: {
+          id: 'swing',
+          title: 'Swing',
+          ico: '&#128101;',
+        },
+        routes: [ //
+          {
+            precedence: 1,
+            name: 'swing',
+            path: '',
+          },
+        ],
+      }, {
+        appid: 'sse_cms_cors',
+        path: 'src/inventory/inventory.panel.vm',
+        options: {
+          id: 'inventory',
+          title: 'Inventory',
+          ico: '&#128101;',
+        },
+        routes: [ //
+          {
+            precedence: 1,
+            name: 'inventory',
+            path: ':tab',
+          },
+        ],
+      }, {
+        appid: 'sse_cms_cors',
+        path: 'src/scheduling/scheduling.panel.vm',
+        options: {
+          id: 'scheduling',
+          title: 'Scheduling',
+          ico: '&#128101;',
+        },
+        routes: [ //
+          {
+            precedence: 1,
+            name: 'scheduling',
+            path: ':id/:ticketid',
+          },
+        ],
+      }, {
+        appid: 'hr_man',
+        path: 'src/hr/hr.panel.vm',
+        options: {
+          id: 'hr',
+          title: 'HR',
+          ico: '&#128101;',
+        },
+        routes: [ //
+          {
+            precedence: 1,
+            name: 'hr',
+            path: ':collection/:id/:p1',
+          },
+        ],
+      },
+    ],
   });
 
   return app;

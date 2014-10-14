@@ -53,7 +53,9 @@ define('src/core/cacher', [
 
     // load
     obj.loader(cb);
-    read(utils.safeCallback(obj.loader.loadCb, function(err, resp) {
+    read(utils.safeCallback(function(err) {
+      obj.loader.loadCb(err, true);
+    }, function(err, resp) {
       if (!Array.isArray(resp.Value)) {
         throw new Error('resp.Value is not an array');
       }

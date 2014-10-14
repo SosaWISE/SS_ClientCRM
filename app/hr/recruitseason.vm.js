@@ -82,7 +82,9 @@ define('src/hr/recruitseason.vm', [
           managerId = recruit.ReportsToID;
           recruit.ReportsToID = null; // reset incase the manager isn't found in the season
 
+          //@TODO: get manager recruit /recruits/{managerId}
           //@TODO: find manager in selected season by UserID, SeasonID, and manager's UserTypeId
+
 
           // //get manager
           // RU_Recruit manager = _service.GetRecruit(managerID);
@@ -104,6 +106,7 @@ define('src/hr/recruitseason.vm', [
           UserID: _this.userid,
         };
       }
+      // set data relevant to user and season
       recruit.UserID = _this.userid;
       recruit.RecruitID = newRecruitTempID--;
       recruit.SeasonID = model.SeasonID;
