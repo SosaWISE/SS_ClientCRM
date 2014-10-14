@@ -133,3 +133,5 @@ div(class="user-data")
             li
               span(class="label") Date
               div(class="text",data-bind="datetext:data.RecruitedDate")
+
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'white'")

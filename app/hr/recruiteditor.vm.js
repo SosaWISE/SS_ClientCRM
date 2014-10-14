@@ -210,7 +210,9 @@ define('src/hr/recruiteditor.vm', [
     ]);
 
     _this.focusFirst = ko.observable(false);
-    _this.data = ukov.wrap({}, schema);
+    _this.data = ukov.wrap({
+      RecruitID: _this.id,
+    }, schema);
     _this.data.UserTypeCvm = new ComboViewModel({
       selectedValue: _this.data.UserTypeId,
       fields: {

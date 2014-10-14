@@ -1,7 +1,7 @@
 div(class="hr-panel dock l3-160",data-bind="toggle:{'l-show':showNav}")
 
-  div(class="dock-content",data-bind="if:activeChild")
-    div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}")
+  div(class="dock-content",data-bind="with:activeChild")
+    div(data-bind="template:{name:viewTmpl}")
 
   div(class="dock-left")
     div(class="btn-dock",data-bind="click:function(){showNav(!showNav())},toggle:{'closed':!showNav()}")

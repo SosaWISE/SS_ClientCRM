@@ -63,3 +63,5 @@ div(class="hr-search")
               data-bind="slickgrid:gvm")
 
           div(data-bind="spinner:cmdSearch.busy,spinner-rgb:'white'")
+
+div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'white'")

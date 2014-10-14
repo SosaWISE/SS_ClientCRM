@@ -159,3 +159,5 @@ div(class="user-data")
             li
               span(class="label") Dependents
               div(class="text",data-bind="text:data.GPDependents")
+
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'white'")

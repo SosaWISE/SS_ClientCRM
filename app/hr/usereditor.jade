@@ -136,3 +136,5 @@ div(class="user-data")
             li
               span(class="label") Date
               input(type="text",placeholder="",data-bind="ukov:data.RecruitedDate,datevalue:data.RecruitedDate,valueUpdate:'keyup'")
+
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'white'")

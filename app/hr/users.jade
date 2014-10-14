@@ -18,7 +18,7 @@ div(class="users",data-bind="if:loaded")
     tr
       td(class="fh-body")
         div(class="fh-contents")
-          <!-- ko if:searchVm()&&searchVm().loaded()&&searchVm().active() -->
+          <!-- ko if:searchVm()&&searchVm().active() -->
           div(class="tab", data-bind="template:{name:searchVm().viewTmpl,data:searchVm()},active:searchVm().active")
           <!-- /ko -->
           <!-- ko foreach:list -->
