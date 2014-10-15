@@ -140,9 +140,18 @@ define('src/hr/user.vm', [
   UserViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
       msg;
-    msg = _this.editorVm.closeMsg();
+    msg = _this.editorVm.closeMsg() || closeMsg_firstRecruit(_this);
     return msg;
   };
+
+  function closeMsg_firstRecruit(_this) {
+    var msg;
+    _this.childs.peek().some(function(vm) {
+      msg = vm.closeMsg();
+      return !!msg;
+    });
+    return msg;
+  }
 
   // UserViewModel.prototype.findChild = function(routeData) {
   //   var _this = this,

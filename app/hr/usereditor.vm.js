@@ -292,6 +292,12 @@ define('src/hr/usereditor.vm', [
         return 'tmpl-hr-userinfo';
       }
     });
+    _this.isDirty = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        return _this.editing() && !_this.data.isClean();
+      },
+    });
     _this.data.FullName = ko.computed(function() {
       return calcFullName(_this.data.PreferredName(), _this.data.FirstName(), _this.data.LastName());
     });
@@ -330,7 +336,7 @@ define('src/hr/usereditor.vm', [
       }
     }
     _this.clickCancel = function() {
-      if (_this.data.isClean()) {
+      if (!_this.isDirty()) {
         resetData('yes');
       } else {
         notify.confirm('Reset changes?', 'There are unsaved changes. Click yes to undo these changes.', resetData);
@@ -416,8 +422,8 @@ define('src/hr/usereditor.vm', [
       msg;
     if (_this.cmdSave.busy()) {
       msg = 'Please wait for save to finish.';
-    } else if (!_this.data.isClean() && _this.data.UserID.peek() > 0) {
-      msg = 'There are unsaved changes. Please cancel the edit before closing.';
+    } else if (_this.isDirty.peek() && _this.data.UserID.peek() > 0) {
+      msg = 'There are unsaved changes for User Info. Please cancel the edit before closing.';
     }
     return msg;
   };

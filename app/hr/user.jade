@@ -36,6 +36,7 @@ div(data-bind="if:!loadErr()&&!loading()")
               ul(class="nav")
                 li
                   a(data-bind="active:active,click:$parent.clickItem")
+                    span(data-bind="visible:isDirty") *&nbsp;
                     span(class="name") User Info
 
           div(class="section")
@@ -46,6 +47,7 @@ div(data-bind="if:!loadErr()&&!loading()")
               ul(class="nav",data-bind="foreach:recruits")
                 li
                   a(data-bind="active:active,click:$parent.clickItem")
+                    span(data-bind="visible:isDirty") *&nbsp;
                     span(class="name",data-bind="text:title")
 
 

@@ -332,6 +332,12 @@ define('src/hr/recruiteditor.vm', [
         return 'tmpl-hr-recruitinfo';
       }
     });
+    _this.isDirty = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        return _this.editing() && !_this.data.isClean();
+      },
+    });
 
     //
     // events
@@ -343,7 +349,7 @@ define('src/hr/recruiteditor.vm', [
       }
     }
     _this.clickCancel = function() {
-      if (_this.data.isClean()) {
+      if (!_this.isDirty()) {
         resetData('yes');
       } else {
         notify.confirm('Reset changes?', 'There are unsaved changes. Click yes to undo these changes.', resetData);
@@ -451,8 +457,8 @@ define('src/hr/recruiteditor.vm', [
       msg;
     if (_this.cmdSave.busy()) {
       msg = 'Please wait for save to finish.';
-    } else if (!_this.data.isClean() && _this.data.RecruitID.peek() > 0) {
-      msg = 'There are unsaved changes. Please cancel the edit before closing.';
+    } else if (_this.isDirty.peek() && _this.data.RecruitID.peek() > 0) {
+      msg = 'There are unsaved changes for ' + _this.title.peek() + '. Please cancel the edit before closing.';
     }
     return msg;
   };
