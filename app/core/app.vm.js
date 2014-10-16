@@ -118,10 +118,14 @@ define('src/core/app.vm', [
     //
     _this.clickPanel = function(panelVm) {
       if (panelVm === _this) {
-        panelVm = _this.panelMap.home;
+        // try to find home route
+        var route = _this.router.findRoute('home');
+        if (!route) {
+          return;
+        }
+        panelVm = route.topController;
       }
-
-      if (panelVm.active()) {
+      if (!panelVm || panelVm.active()) {
         return;
       }
       panelVm.goTo(panelVm.getRouteData(), null, true);
