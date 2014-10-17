@@ -3,7 +3,7 @@
  * To override the defaults, set the values in webconfig.js
  */
 // define config module
-define('src/config', [
+define('src/crm/config', [
   'webconfig',
 ], function(
   config

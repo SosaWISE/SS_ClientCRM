@@ -55,7 +55,7 @@ module.exports = function(grunt) {
             src: 'webconfig-example.js',
             dest: '<%= www %>/webconfig.js',
             filter: function() { // only copy if webconfig.js doesn't exist in output dir
-              return !grunt.file.exists(path.join(path.join(grunt.config('www'), 'webconfig.js')));
+              return !grunt.file.exists(path.join(grunt.config('www'), 'webconfig.js'));
             },
           }, {
             src: [
@@ -118,15 +118,16 @@ module.exports = function(grunt) {
       app: {
         src: [
           // include app files
-          'app/**/*.js',
-          // exclude specs and packages
+          'app/crm/*.js',
+          'app/dataservices/*.js',
+          'app/home/*.js',
+          'app/hr/*.js',
+          'app/inventory/*.js',
+          'app/login/*.js',
+          'app/scheduling/*.js',
+          'app/swing/*.js',
+          // exclude specs
           '!app/**/*.spec.js',
-          '!app/account/**/*',
-          '!app/depends/**/*',
-          '!app/survey/**/*',
-          '!app/core/**/*',
-          '!app/slick/**/*',
-          '!app/u-kov/**/*',
         ],
         dest: '<%= www %>/app.debug.js',
       },

@@ -1,4 +1,15 @@
-define('src/bootstrapper', [
+// conventional paths
+define('src/app', ['src/crm/app'], function(app) { // alias actual app
+  "use strict";
+  return app;
+});
+define('src/config', ['src/crm/config'], function(config) { // alias actual config
+  "use strict";
+  return config;
+});
+
+//
+define('src/crm/bootstrapper', [
   // load main libs
   'jquery',
   'ko',
@@ -15,10 +26,10 @@ define('src/bootstrapper', [
   'src/core/dataservice.base',
   'src/core/joiner',
   'src/dataservice',
-  'src/ping',
-  'src/apilogger',
-  'src/config', 'src/resources', 'src/errorcodes',
-  'src/app'
+  'src/crm/ping',
+  'src/crm/apilogger',
+  'src/crm/config', 'src/crm/resources', 'src/crm/errorcodes',
+  'src/crm/app',
 ], function(
   jquery, ko, // main libs
   p1, p2, p3, //plugins

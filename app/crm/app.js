@@ -1,7 +1,7 @@
-define('src/app', [
+define('src/crm/app', [
   'ko',
   'src/dataservice',
-  'src/home/login.panel.vm',
+  'src/login/login.panel.vm',
   'src/core/app.vm',
 ], function(
   ko,
