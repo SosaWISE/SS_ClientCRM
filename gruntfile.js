@@ -119,7 +119,8 @@ module.exports = function(grunt) {
         src: [
           // include app files
           'app/crm/*.js',
-          'app/dataservices/*.js',
+          'app/ukov.js',
+          'app/dataservices/*.js', 'app/dataservice.js',
           'app/home/*.js',
           'app/hr/*.js',
           'app/inventory/*.js',
