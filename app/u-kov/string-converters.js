@@ -25,6 +25,7 @@ define('src/u-kov/string-converters', [
       /^(\w+ [0-9]{1,2} )([0-9]{1,2} )/, // MMM DD YY
       /^([0-9]{1,2} \w+ )([0-9]{1,2} )/, // DD MMM YY
     ],
+    allDigitsRegx = /^[0-9]+$/,
     removeNonDigitsRegx = /[^0-9]/g;
 
   converters.string = function() {
@@ -91,6 +92,13 @@ define('src/u-kov/string-converters', [
       }
 
       var day;
+
+      if ((val.length === 6 || val.length === 8) && allDigitsRegx.test(val)) {
+        // convert number string to date
+        // e.g.: 050614 -> 05/06/14
+        // e.g.: 05062014 -> 05/06/2014
+        val = strings.format('{0}/{1}/{2}', val.substr(0, 2), val.substr(2, 2), val.substr(4));
+      }
 
       // add space at end to match regxs
       val += ' ';
