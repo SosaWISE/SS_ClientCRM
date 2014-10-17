@@ -191,7 +191,12 @@ define('src/core/combo.vm', [
           return false; // prevent default action
         case 13: // enter
         case 9: // tab
-          _this.selectItem(_this.list.peek()[_this.activeIndex]);
+          if (_this.activeIndex < 0) {
+            // close without changing selection
+            _this.clickClose(true);
+          } else {
+            _this.selectItem(_this.list.peek()[_this.activeIndex]);
+          }
           return keyCode === 9; // for tab key do default action
         case 38: // up arrow
           _this.activateNext(false);
