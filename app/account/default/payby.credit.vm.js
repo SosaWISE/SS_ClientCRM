@@ -42,6 +42,7 @@ define('src/account/default/payby.credit.vm', [
 
 
   var schema,
+    nullStrConverter = ukov.converters.nullString(),
     cardTypeIdToNameMap,
     cardValidationGroup,
     expirationValidationGroup,
@@ -100,11 +101,14 @@ define('src/account/default/payby.credit.vm', [
       ],
     },
     VerificationValue: {
-      // converter: ukov.converters.toUpper(),
+      converter: nullStrConverter,
       validationGroup: cardValidationGroup,
       validators: [
-        ukov.validators.isRequired('Security Code is required'),
+        // ukov.validators.isRequired('Security Code is required'),
         function(val, model) {
+          if (val == null) {
+            return;
+          }
           var length = val.length,
             isAmex = model.CardTypeId === 4; // American Express
           if ((isAmex && length !== 4) || (!isAmex && length !== 3)) {
