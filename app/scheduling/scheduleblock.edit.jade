@@ -12,13 +12,13 @@ ul(class="edit-form")
 		input(type="text" data-bind="ukov:data.ScheduleEditMaxRadius, value:data.ScheduleEditMaxRadius, valueUpdate:'keyup'")
 	li
 		label Start Date & Time
-		input(type="text" data-bind="ukov:data.ScheduleEditStartDateTime, value:data.ScheduleEditStartDateTime, valueUpdate:'keyup'")		
+		input(type="text" data-bind="ukov:data.ScheduleEditStartDateTime, value:data.ScheduleEditStartDateTime, valueUpdate:'keyup'")
 	li
 		label End Date & Time
-		input(type="text" data-bind="ukov:data.ScheduleEditEndDateTime, value:data.ScheduleEditEndDateTime, valueUpdate:'keyup'")				
+		input(type="text" data-bind="ukov:data.ScheduleEditEndDateTime, value:data.ScheduleEditEndDateTime, valueUpdate:'keyup'")
 	li
 		label Technician
-		div(data-bind="cvm:data.TechnicianCvm") 
+		div(data-bind="cvm:data.TechnicianCvm")
 div(class="actions")
 	//-span(class="btn-bg", tabindex="0", data-bind="cmd: cmdUpdateBlock") Update Block
 	//-span(class="btn-bg", tabindex="0", data-bind="cmd:clickClose") Cancel

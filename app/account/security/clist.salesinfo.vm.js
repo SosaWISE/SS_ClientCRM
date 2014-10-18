@@ -337,6 +337,7 @@ define('src/account/security/clist.salesinfo.vm', [
   CListSalesInfoViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       accountid = routeData.id,
+      customerEmail,
       join1 = join.create(),
       join2 = join.create(),
       join3 = join.create(),
@@ -366,6 +367,7 @@ define('src/account/security/clist.salesinfo.vm', [
       id: accountid,
       link: 'account',
     }, null, utils.safeCallback(join1.add(), function(err, resp) {
+      customerEmail = resp.CustomerEmail;
       // load sales rep
       dataservice.qualify.salesrep.read({
         id: resp.Value.CompanyID,
@@ -386,7 +388,7 @@ define('src/account/security/clist.salesinfo.vm', [
         // skip to next one
         join2.add()(err);
       } else {
-        load_invoiceMsInstalls(_this.data, join2);
+        load_invoiceMsInstalls(_this.data, customerEmail, join2);
       }
     });
     //
@@ -495,20 +497,20 @@ define('src/account/security/clist.salesinfo.vm', [
     }, null, cb);
   }
 
-  function load_invoiceMsInstalls(data, join) {
+  function load_invoiceMsInstalls(data, customerEmail, join) {
     dataservice.salessummary.invoiceMsIsntalls.read({
       id: data.AccountId(),
       link: 'accountid'
     }, null, utils.safeCallback(join.add('7'), function(err, resp) {
       if (resp.Value) {
-        load_msAccountSalesInformations(resp.Value, data, join.add('8'));
+        load_msAccountSalesInformations(resp.Value, data, customerEmail, join.add('8'));
       }
     }, function(err) {
       notify.error(err);
     }));
   }
 
-  function load_msAccountSalesInformations(invoice, data, cb) {
+  function load_msAccountSalesInformations(invoice, data, customerEmail, cb) {
     dataservice.monitoringstationsrv.msAccountSalesInformations.read({
       id: data.AccountId(),
     }, null, utils.safeCallback(cb, function(err, resp) {
@@ -525,6 +527,8 @@ define('src/account/security/clist.salesinfo.vm', [
         // set both here instead of after loading invoice so the UI looks more fluid??
         // set invoice data
         data.setValue(invoice);
+        // default to customer's email
+        val.Email = val.Email || customerEmail;
         // set sales info data
         data.setValue(val);
         // mark current values as the clean values

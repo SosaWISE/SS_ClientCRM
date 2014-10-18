@@ -1,5 +1,8 @@
 # Only add patterns specific to this project
 
+# anything dir that ends with 2
+*2/
+
 ## Windows
 Thumbs.db
 Desktop.ini
@@ -16,7 +19,6 @@ Desktop.ini
 ## OTHER
 index.css
 index.html
-.git2
 www
 /testing/
 /zzz/

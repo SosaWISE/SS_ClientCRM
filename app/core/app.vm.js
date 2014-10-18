@@ -18,15 +18,15 @@ define('src/core/app.vm', [
   //
   //
   //
-  function LazyPanelViewModel(path, panelOptions) {
+  function LazyPanelViewModel(panels, path, panelOptions) {
     var _this = this;
     LazyPanelViewModel.super_.call(_this, panelOptions);
-
-    _this.panel = ko.observable();
+    _this.panels = panels;
     _this.path = path;
     _this.panelOptions = panelOptions;
   }
   utils.inherits(LazyPanelViewModel, ControllerViewModel);
+  LazyPanelViewModel.prototype.lazy = true;
   LazyPanelViewModel.prototype.activate = function(routeCtx) { // overrides base
     var _this = this;
     if (!routeCtx.active()) {
@@ -34,47 +34,57 @@ define('src/core/app.vm', [
     }
     // immdediately set as active
     _this.active(true);
+    // store last route
+    _this._lastRouteData = routeCtx.routeData;
     // load actual panel
     _this.load(routeCtx.routeData, routeCtx.extraData, function() {
-      //@NOTE: This function can be called multiple times, but `onLoad` will only be once.
-      // activate it (if the routeCtx has been disposed, this will do nothing)
-      _this.panel().activate(routeCtx);
+      //@NOTE: This callback can be called multiple times, but `onLoad` will only be called once.
+      if (_this.panel) {
+        // activate it (if the routeCtx has been disposed, this will do nothing)
+        _this.panel.activate(routeCtx);
+      }
     });
   };
   LazyPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
-    if (_this.panel()) {
-      // somehow this panel has already been loaded...
-      cb();
-      return;
-    }
     require(_this.path, function(PanelViewModel) {
       if (!PanelViewModel) {
         setTimeout(function() { // show message after depends.js error
           notify.warn('Failed to load ' + _this.title + ' panel code.');
         }, 0);
-        return;
+      } else {
+        // create
+        var index = _this.panels.peek().indexOf(_this),
+          panelVm;
+        if (index < 0) {
+          notify.warn('Failed to find panel in list of panels');
+        } else {
+          panelVm = new PanelViewModel(_this.panelOptions);
+          // set as not a lazy panel
+          panelVm.lazy = false;
+          // copy props
+          panelVm._lastRouteData = _this.routeData;
+          panelVm.router = _this.router;
+          panelVm.routeName = _this.routeName;
+          panelVm.routesMap = _this.routesMap;
+          panelVm.active = _this.active;
+          panelVm.viewTmpl = _this.viewTmpl;
+          // set new topController on all routes
+          Object.keys(panelVm.routesMap).forEach(function(routeName) {
+            panelVm.routesMap[routeName].topController = panelVm;
+          });
+
+          //
+          // replace lazy panel with the new panel
+          //
+          _this.panels.splice(index, 1, panelVm);
+
+          // set panel so it can be activated the first time
+          _this.panel = panelVm;
+        }
       }
-      // create
-      var panelVm = new PanelViewModel(_this.panelOptions);
-      //
-      // Replace LazyPanel in the routing chain with the new panel.
-      // LazyPanel.activate should never be called again, after this point.
-      //
-      // copy props
-      panelVm.router = _this.router;
-      panelVm.routeName = _this.routeName;
-      panelVm.routesMap = _this.routesMap;
-      panelVm.active = _this.active;
-      panelVm.viewTmpl = _this.viewTmpl;
-      // set new topController on all routes
-      Object.keys(panelVm.routesMap).forEach(function(routeName) {
-        panelVm.routesMap[routeName].topController = panelVm;
-      });
-      // set as panel
-      _this.panel(panelVm);
-      //
+      // and we're done
       cb();
     });
   };
@@ -89,8 +99,9 @@ define('src/core/app.vm', [
     ControllerViewModel.ensureProps(options, [
       'doLogout',
       'createLogin',
-      'pathToPanelOptionsMap',
-      'addRoutes',
+      'panelSettings',
+      // 'addAnonRoutes',
+      // 'addRoutes',
     ]);
     ko.utils.extend(_this, options);
 
@@ -107,10 +118,14 @@ define('src/core/app.vm', [
     //
     _this.clickPanel = function(panelVm) {
       if (panelVm === _this) {
-        panelVm = _this.panelMap.home;
+        // try to find home route
+        var route = _this.router.findRoute('home');
+        if (!route) {
+          return;
+        }
+        panelVm = route.topController;
       }
-
-      if (panelVm.active()) {
+      if (!panelVm || panelVm.active()) {
         return;
       }
       panelVm.goTo(panelVm.getRouteData(), null, true);
@@ -129,52 +144,89 @@ define('src/core/app.vm', [
     });
 
     _this.init();
+
+    _this.os = navigator.platform.split(' ')[0].toLowerCase(); // detect os
   }
   AppViewModel.prototype.prefix = '';
   AppViewModel.prototype.postfix = '-panel';
   AppViewModel.prototype.routePart = 'route';
   AppViewModel.prototype.init = function() {
     var _this = this,
-      login, panels;
+      loginVm;
 
     // create
-    login = _this.createLogin(_this.setUser, _this.routePart);
-    setTemplate([login], _this.prefix, _this.postfix);
-    panels = [];
-    Object.keys(_this.pathToPanelOptionsMap).forEach(function(path) {
-      var panelOptions = _this.pathToPanelOptionsMap[path];
-      panelOptions.routePart = _this.routePart;
-      panels.push(new LazyPanelViewModel(path, panelOptions));
-    });
-    setTemplate(panels, _this.prefix, _this.postfix);
-
+    loginVm = _this.createLogin(_this.setUser, _this.routePart);
+    setTemplate(loginVm, _this.prefix, _this.postfix);
     // add view models
-    _this.login(login);
-    _this.panels(panels);
-    // add routes
-    _this.addRoutes(_this.router, login, createMap(panels));
+    _this.login(loginVm);
+    // add anonymous routes
+    _this.addAnonRoutes(_this.router, loginVm);
   };
-  AppViewModel.prototype.setUser = function(user, useDestPath) {
-    var _this = this;
-    _this.user(user);
-    // start router
-    _this.router.init(_this.user);
-    if (useDestPath) {
-      _this.router.useDestPath();
+  AppViewModel.prototype.setUser = function(user, destPath) {
+    var _this = this,
+      appsMap, panels, tmpRoutes;
+    // do nothing if the user being set is null or we already have a user
+    if (user && !_this.user.peek()) {
+      // add routes
+      appsMap = makeAppsMap(user.Apps);
+      panels = [];
+      tmpRoutes = [];
+      _this.panelSettings.forEach(function(data) {
+        var panelVm;
+        // allow everyone or those with the appid
+        if (data.appid !== -1 && !appsMap[data.appid]) {
+          return;
+        }
+        //
+        data.options.routePart = _this.routePart;
+        panelVm = new LazyPanelViewModel(_this.panels, data.path, data.options);
+        //
+        setTemplate(panelVm, _this.prefix, _this.postfix);
+        // add routes to temp array
+        data.routes.forEach(function(rdata) {
+          rdata.panelVm = panelVm;
+          rdata.precedence = rdata.precedence || 999;
+          tmpRoutes.push(rdata);
+        });
+        //
+        panels.push(panelVm);
+      });
+      // sort routes by precedence then add to router
+      tmpRoutes.sort(function(a, b) {
+        return a.precedence - b.precedence;
+      });
+      tmpRoutes.forEach(function(rdata) {
+        _this.router.addRoute(rdata.panelVm, rdata.name, rdata.path, rdata.defaultRouteData || {});
+      });
+      //
+      _this.panels(panels);
+      // set user
+      _this.user(user);
+      // ensure the router is started
+      _this.router.init(_this.user);
+      if (destPath) {
+        // go to destination path
+        _this.router.goToPath(destPath);
+      }
+    } else {
+      // ensure the router is started
+      _this.router.init(_this.user);
     }
   };
 
-  function setTemplate(panels, prefix, postfix) {
-    panels.forEach(function(panel) {
-      panel.viewTmpl = 'tmpl-' + (prefix || '') + panel.id + (postfix || '');
-    });
+  function setTemplate(panel, prefix, postfix) {
+    panel.viewTmpl = 'tmpl-' + (prefix || '') + panel.id + (postfix || '');
   }
 
-  function createMap(panels) {
+  function makeAppsMap(apps) {
     var map = {};
-    panels.forEach(function(panel) {
-      map[panel.id] = panel;
-    });
+    if (apps) {
+      apps.forEach(function(app) {
+        if (app) {
+          map[app.toLowerCase()] = true;
+        }
+      });
+    }
     return map;
   }
 

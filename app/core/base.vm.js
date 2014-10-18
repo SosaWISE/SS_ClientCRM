@@ -191,7 +191,7 @@ define('src/core/base.vm', [
         }
         // tell the loader we're done
         // - we already showed the error so don't pass it along
-        loader.loadCb(errResp, true);
+        loader.loadCb(errResp, false);
       });
     } else {
       // add callback to list of waiting callbacks

@@ -1,4 +1,4 @@
-define('src/ping', [
+define('src/crm/ping', [
   'src/dataservice',
   'src/config'
 ], function(

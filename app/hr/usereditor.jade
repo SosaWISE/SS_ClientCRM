@@ -1,0 +1,140 @@
+div(class="user-data")
+  ul(class="actions")
+    li(data-bind="if:data.UserID()>0")
+      a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
+
+  div(class="content-wrap")
+    div(class="col")
+      div(class="section")
+        span(class="title") Login Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Username
+              input(type="text",placeholder="",data-bind="hasfocus:focusFirst,ukov:data.UserName,value:data.UserName,valueUpdate:'keyup'")
+            li(class="password")
+              span(class="label") Password
+              a(class="btn small",tabindex="0",data-bind="cmd:clickNewPassword") Generate Random Password
+              div(class="text blank",data-bind="ukov:data.Password,text:data.Password,clickSelect:1",style="cursor:pointer")
+            li
+              span(class="label") Email
+              input(type="text",placeholder="",data-bind="ukov:data.Email,value:data.Email,valueUpdate:'keyup'")
+
+
+      div(class="section")
+        span(class="title") General Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") CompanyID
+              input(type="text",placeholder="",data-bind="ukov:data.GPEmployeeID,value:data.GPEmployeeID,valueUpdate:'keyup'")
+            li
+              span(class="label") Employee Type
+              div(data-bind="cvm:data.UserEmployeeTypeCvm")
+            li(class="full")
+              span(class="label") Name
+              input(class="name",type="text",placeholder="",data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup'")
+              input(class="mname",type="text",placeholder="",data-bind="ukov:data.MiddleName,value:data.MiddleName,valueUpdate:'keyup'")
+              input(class="name",type="text",placeholder="",data-bind="ukov:data.LastName,value:data.LastName,valueUpdate:'keyup'")
+            li
+              span(class="label") Preferred Name
+              input(type="text",placeholder="",data-bind="ukov:data.PreferredName,value:data.PreferredName,valueUpdate:'keyup'")
+            li
+              span(class="label") SSN
+              input(type="text",placeholder="",data-bind="ukov:data.SSN,ssnvalue:data.SSN,valueUpdate:'keyup'")
+            li
+              span(class="label") Shirt Size
+              div(data-bind="cvm:data.ShirtSizeCvm")
+            li
+              span(class="label") Hat Size
+              div(data-bind="cvm:data.HatSizeCvm")
+            li
+              span(class="label") Gender
+              div(data-bind="cvm:data.SexCvm")
+            li
+              //-
+            li
+              span(class="label") Marital Status
+              div(data-bind="cvm:data.MaritalStatusCvm")
+            li
+              span(class="label") Spouse Name
+              input(type="text",placeholder="",data-bind="ukov:data.SpouseName,value:data.SpouseName,valueUpdate:'keyup'")
+
+
+      div(class="section")
+        span(class="title") Contact Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Cell Phone
+              input(type="text",placeholder="",data-bind="ukov:data.PhoneCell,phonevalue:data.PhoneCell,valueUpdate:'keyup'")
+            li
+              span(class="label") Provider
+              div(data-bind="cvm:data.PhoneCellCarrierCvm")
+            //- li
+              span(class="label") Home Phone
+              input(type="text",placeholder="",data-bind="ukov:data.PhoneHome,phonevalue:data.PhoneHome,valueUpdate:'keyup'")
+
+
+      div(class="section")
+        span(class="title") Place of Birth
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") DOB
+              input(type="text",placeholder="",data-bind="ukov:data.BirthDate,datevalue:data.BirthDate,valueUpdate:'keyup'")
+            li
+              span(class="label") Country
+              input(type="text",placeholder="",data-bind="ukov:data.BirthCountry,value:data.BirthCountry,valueUpdate:'keyup'")
+            li
+              span(class="label") City
+              input(type="text",placeholder="",data-bind="ukov:data.BirthCity,value:data.BirthCity,valueUpdate:'keyup'")
+            li
+              span(class="label") State
+              input(type="text",placeholder="",data-bind="ukov:data.BirthState,value:data.BirthState,valueUpdate:'keyup'")
+
+
+      div(class="section")
+        span(class="title") Driver's License
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Number
+              input(type="text",placeholder="",data-bind="ukov:data.DLNumber,value:data.DLNumber,valueUpdate:'keyup'")
+            li
+              span(class="label") State
+              input(type="text",placeholder="",data-bind="ukov:data.DLState,value:data.DLState,valueUpdate:'keyup'")
+            li
+              span(class="label") Expiration
+              input(type="text",placeholder="",data-bind="ukov:data.DLExpiresOn,datevalue:data.DLExpiresOn,valueUpdate:'keyup'")
+
+
+      //- div(class="section")
+        span(class="title") Documentation
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Right to Work
+              input(type="text",placeholder="",data-bind="ukov:data.RightToWorkStatusID,value:data.RightToWorkStatusID,valueUpdate:'keyup'")
+            li
+              span(class="label") RightToWorkExpirationDate
+              input(type="text",placeholder="",data-bind="ukov:data.RightToWorkExpirationDate,datevalue:data.RightToWorkExpirationDate,valueUpdate:'keyup'")
+            li
+              span(class="label") Notes
+              input(type="text",placeholder="",data-bind="ukov:data.RightToWorkNotes,value:data.RightToWorkNotes,valueUpdate:'keyup'")
+
+
+      div(class="section")
+        span(class="title") Recruiting Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Recruited By
+              div(class="text input",tabindex="0",data-bind="ukov:data.RecruitedByID,text:recruitedBy().FullName,cmd:clickRecruitedBy",style="cursor:pointer")
+            li
+              span(class="label") Date
+              input(type="text",placeholder="",data-bind="ukov:data.RecruitedDate,datevalue:data.RecruitedDate,valueUpdate:'keyup'")
+
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'white'")

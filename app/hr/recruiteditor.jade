@@ -1,0 +1,165 @@
+div(class="user-data")
+  ul(class="actions")
+    li(data-bind="if:data.RecruitID()>0")
+      a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
+
+  div(class="content-wrap")
+    div(class="col")
+      div(class="section")
+        span(class="title") General Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Role
+              div(data-bind="cvm:data.UserTypeCvm")
+            li
+              span(class="label") Manager
+              div(data-bind="cvm:data.ReportsToCvm")
+            li
+              span(class="label") Team
+              div(data-bind="cvm:data.TeamCvm")
+            li
+              span(class="label") Office
+              //- div(class="text",data-bind="text:data.asdf")
+            li
+              span(class="label") PayScale
+              div(data-bind="cvm:data.PayScaleCvm")
+            li
+              span(class="label") Previous Company
+              input(type="text",placeholder="",data-bind="ukov:data.PreviousSummer,value:data.PreviousSummer,valueUpdate:'keyup'")
+            li
+              span(class="label") Sign/Hire Date
+              input(type="text",placeholder="",data-bind="ukov:data.SignatureDate,datevalue:data.SignatureDate,valueUpdate:'keyup'")
+            li
+              span(class="label") Manager Signed Date
+              input(type="text",placeholder="",data-bind="ukov:data.ManagerApprovalDate,datevalue:data.ManagerApprovalDate,valueUpdate:'keyup'")
+            li
+              span(class="label") Owner Approval Date
+              input(type="text",placeholder="",data-bind="ukov:data.OwnerApprovalDate,datevalue:data.OwnerApprovalDate,valueUpdate:'keyup'")
+            li
+              span(class="label") Approval Owner
+              div(data-bind="cvm:data.OwnerApprovalCvm")
+            li
+              span(class="label") School
+              div(data-bind="cvm:data.SchoolCvm")
+
+      div(class="section")
+        span(class="title") Documentation
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") DL Status
+              div(data-bind="cvm:data.DriversLicenseStatusCvm")
+            li
+              span(class="label") DL Notes
+              input(type="text",placeholder="",data-bind="ukov:data.DriversLicenseNotes,value:data.DriversLicenseNotes,valueUpdate:'keyup'")
+            li
+              span(class="label") I9 Status
+              div(data-bind="cvm:data.I9StatusCvm")
+            li
+              span(class="label") I9 Notes
+              input(type="text",placeholder="",data-bind="ukov:data.I9Notes,value:data.I9Notes,valueUpdate:'keyup'")
+            li
+              span(class="label") W9 Status
+              div(data-bind="cvm:data.W9StatusCvm")
+            li
+              span(class="label") W9 Notes
+              input(type="text",placeholder="",data-bind="ukov:data.W9Notes,value:data.W9Notes,valueUpdate:'keyup'")
+            li
+              span(class="label") W4 Status
+              div(data-bind="cvm:data.W4StatusCvm")
+            li
+              span(class="label") W4 Notes
+              input(type="text",placeholder="",data-bind="ukov:data.W4Notes,value:data.W4Notes,valueUpdate:'keyup'")
+
+      div(class="section")
+        span(class="title") Emergency Contact Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Name
+              input(type="text",placeholder="",data-bind="ukov:data.EmergencyName,value:data.EmergencyName,valueUpdate:'keyup'")
+            li
+              span(class="label") Relationship
+              input(type="text",placeholder="",data-bind="ukov:data.EmergencyRelationship,value:data.EmergencyRelationship,valueUpdate:'keyup'")
+            li
+              span(class="label") Phone
+              input(type="text",placeholder="",data-bind="ukov:data.EmergencyPhone,phonevalue:data.EmergencyPhone,valueUpdate:'keyup'")
+
+      div(class="section")
+        span(class="title") Current Address
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Country
+              div(data-bind="cvm:data.CountryCvm")
+            li
+              //-
+            li
+              span(class="label") Street Address
+              input(type="text",placeholder="",data-bind="ukov:data.StreetAddress,value:data.StreetAddress,valueUpdate:'keyup'")
+            li
+              span(class="label") City
+              input(type="text",placeholder="",data-bind="ukov:data.City,value:data.City,valueUpdate:'keyup'")
+            li
+              span(class="label") State
+              div(data-bind="cvm:data.StateCvm")
+            li
+              span(class="label") Zip
+              input(type="text",placeholder="",data-bind="ukov:data.PostalCode,value:data.PostalCode,valueUpdate:'keyup'")
+
+      div(class="section")
+        span(class="title") Costs
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Cohabit Type
+              div(data-bind="cvm:data.RecruitCohabbitTypeCvm")
+            li
+              span(class="label") Buddy
+              div(class="text input",tabindex="0",data-bind="ukov:data.ShackingUpId,text:buddy().FullName,cmd:clickBuddy",style="cursor:pointer")
+            li
+              span(class="label") Rent
+              input(type="text",placeholder="",data-bind="ukov:data.Rent,likecurrencyvalue:data.Rent,valueUpdate:'keyup'")
+            li
+              span(class="label") Pet
+              input(type="text",placeholder="",data-bind="ukov:data.Pet,likecurrencyvalue:data.Pet,valueUpdate:'keyup'")
+            li
+              span(class="label") Utilities
+              input(type="text",placeholder="",data-bind="ukov:data.Utilities,likecurrencyvalue:data.Utilities,valueUpdate:'keyup'")
+            li
+              span(class="label") Fuel
+              input(type="text",placeholder="",data-bind="ukov:data.Fuel,likecurrencyvalue:data.Fuel,valueUpdate:'keyup'")
+
+      //- div(class="section")
+        span(class="title") Tax Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") EIN
+              div(class="text",data-bind="text:data.EIN")
+            li
+              span(class="label") Fed Filing Status
+              div(data-bind="cvm:data.FedFilingStatusCvm")
+            li
+              span(class="label") SUTA
+              div(data-bind="cvm:data.SUTACvm")
+            li
+              span(class="label") EIC Filing Status
+              div(data-bind="cvm:data.EICFilingStatusCvm")
+            li
+              span(class="label") Workers Comp
+              div(data-bind="cvm:data.WorkersCompCvm")
+            li
+              span(class="label") State Filing Status
+              div(data-bind="cvm:data.StateFilingStatusCvm")
+            li
+              span(class="label") Tax Witholding State
+              div(data-bind="cvm:data.TaxWitholdingStateCvm")
+            li
+              span(class="label") Dependents
+              div(class="text",data-bind="text:data.GPDependents")
+
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'white'")

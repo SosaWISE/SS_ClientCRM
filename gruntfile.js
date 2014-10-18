@@ -10,7 +10,7 @@ module.exports = function(grunt) {
     '!app/flowMap/**/*.js',
     '!node_modules/**/*.js',
     '!testing/**/*.js',
-    '!tparty/**/*.js',
+    '!**/tparty/**/*.js', // exclude any and every tparty folder
   ];
 
   grunt.loadNpmTasks('grunt-contrib-clean');
@@ -54,7 +54,7 @@ module.exports = function(grunt) {
             src: 'webconfig-example.js',
             dest: '<%= www %>/webconfig.js',
             filter: function() { // only copy if webconfig.js doesn't exist in output dir
-              return !grunt.file.exists(path.join(path.join(grunt.config('www'), 'webconfig.js')));
+              return !grunt.file.exists(path.join(grunt.config('www'), 'webconfig.js'));
             },
           }, {
             src: [
@@ -63,7 +63,7 @@ module.exports = function(grunt) {
               'stuff/img/**/*',
               // specs
               'tparty/jasmine/**/*',
-              'tparty/depends.js',
+              'app/depends/depends.js',
             ],
             dest: '<%= www %>/'
           }, {
@@ -94,14 +94,16 @@ module.exports = function(grunt) {
       slick_pkg: {
         src: [
           // third party libs
-          'tparty/jquery.event.drag-*.js',
-          'tparty/slick.core.js',
-          'tparty/slick.grid.js',
-          'tparty/slick.rowselectionmodel.js',
-          'tparty/slick.editors.js',
-          'tparty/slick-production.js',
+          'app/slick/tparty/slick.core.js',
+          'app/slick/tparty/slick.grid.js',
+          'app/slick/tparty/slick.rowselectionmodel.js',
+          'app/slick/tparty/slick.editors.js',
+          'app/slick/tparty/slick-production.js',
           // actual package
-          'app/slick/**/*.js', '!app/slick/**/*.spec.js',
+          'app/slick/*.js',
+          // except
+          '!app/slick/slick-dev.js',
+          '!app/slick/*.spec.js',
         ],
         dest: '<%= www %>/slick.debug.js',
       },
@@ -117,24 +119,28 @@ module.exports = function(grunt) {
       app: {
         src: [
           // include app files
-          'app/**/*.js',
-          // exclude specs and packages
+          'app/crm/*.js',
+          'app/ukov.js',
+          'app/dataservices/*.js', 'app/dataservice.js',
+          'app/home/*.js',
+          'app/hr/*.js',
+          'app/inventory/*.js',
+          'app/login/*.js',
+          'app/scheduling/*.js',
+          'app/swing/*.js',
+          // exclude specs
           '!app/**/*.spec.js',
-          '!app/account/**/*',
-          '!app/survey/**/*',
-          '!app/core/**/*',
-          '!app/slick/**/*',
-          '!app/u-kov/**/*',
         ],
         dest: '<%= www %>/app.debug.js',
       },
       // third party libs
       tparty: {
         src: [
-          'tparty/depends.js',
+          'app/depends/depends.js',
 
           'tparty/jquery-1.10.2.js',
           'tparty/jquery-ui-1.10.4.custom.js',
+          'tparty/jquery.event.drag-*.js',
           'tparty/knockout.js',
           'tparty/moment.js',
           'tparty/underscore.js',

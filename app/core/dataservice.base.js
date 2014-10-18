@@ -38,7 +38,7 @@ define('src/core/dataservice.base', [
     this.ajax('POST', params.id, params.link, params.query, params.data, setter, callback);
   };
   DataserviceBase.prototype.read = function(params, setter, callback) {
-    this.ajax('GET', params.id, params.link, params.query, null, setter, callback);
+    this.ajax('GET', params.id, params.link, params.query, params.data, setter, callback);
   };
   // DataserviceBase.prototype.update = function(id, data, setter, callback) {
   //   this.ajax('PATCH', id, null, null, data, setter, callback);
@@ -154,7 +154,7 @@ define('src/core/dataservice.base', [
         msg = 'Request timed out';
       } else if (xhr.readyState === 0) {
         code = 990000;
-        msg = 'Unabled to connect to server';
+        msg = 'Unable to connect to server';
       } else {
         code = 990002;
         msg = 'Error making request';

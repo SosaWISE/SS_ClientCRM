@@ -1,0 +1,67 @@
+div(class="hr-search")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header relative")
+        div(class="search-form")
+          ul(class="edit-form cf")
+            li
+              span(class="label") Company ID
+              input(type="text", placeholder="",
+                data-bind="ukov:data.CompanyID,value:data.CompanyID,valueUpdate:'keyup',enter:cmdSearch,select:focusFirst")
+            li
+              span(class="label") First Name
+              input(type="text", placeholder="",
+                data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup',enter:cmdSearch")
+            li
+              span(class="label") Last Name
+              input(type="text", placeholder="",
+                data-bind="ukov:data.LastName,value:data.LastName,valueUpdate:'keyup',enter:cmdSearch")
+            li
+              span(class="label") Email
+              input(type="text", placeholder="",
+                data-bind="ukov:data.Email,value:data.Email,valueUpdate:'keyup',enter:cmdSearch")
+            li
+              span(class="label") User Name
+              input(type="text", placeholder="",
+                data-bind="ukov:data.UserName,value:data.UserName,valueUpdate:'keyup',enter:cmdSearch")
+            li
+              span(class="label") User ID
+              input(type="text", placeholder="",
+                data-bind="ukov:data.UserID,value:data.UserID,valueUpdate:'keyup',enter:cmdSearch")
+            li
+              span(class="label") Recruit ID
+              input(type="text", placeholder="",
+                data-bind="ukov:data.RecruitID,value:data.RecruitID,valueUpdate:'keyup',enter:cmdSearch")
+            li
+              span(class="label") SSN
+              input(type="text", placeholder="",
+                data-bind="ukov:data.Ssn,value:data.Ssn,valueUpdate:'keyup',enter:cmdSearch")
+            li
+              span(class="label") Cell Phone
+              input(type="text", placeholder="",
+                data-bind="ukov:data.PhoneCell,phonevalue:data.PhoneCell,valueUpdate:'keyup',enter:cmdSearch")
+            li
+              span(class="label") Home Phone
+              input(type="text", placeholder="",
+                data-bind="ukov:data.PhoneHome,phonevalue:data.PhoneHome,valueUpdate:'keyup',enter:cmdSearch")
+            li
+              span(class="label") Season
+              div(data-bind="cvm:data.SeasonCvm")
+            li
+              span(class="label") User Type
+              div(data-bind="cvm:data.UserEmployeeTypeCvm")
+
+        div(class="actions")
+          a(class="btn",tabindex="0",data-bind="cmd:cmdSearch") Search
+          a(class="btn",tabindex="0",data-bind="cmd:clickClear") Clear
+
+    tr
+      td(class="fh-body")
+        div(class="fh-contents")
+          div(class="grid-wrap")
+            div(class="slickgrid",style="background:white;margin:10px;color:black",
+              data-bind="slickgrid:gvm")
+
+          div(data-bind="spinner:cmdSearch.busy,spinner-rgb:'white'")
+
+div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'white'")

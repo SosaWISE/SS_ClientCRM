@@ -1,5 +1,5 @@
 // needed when app is compiled
-define('slick', [], function() {
+define('slick', ['jquery'], function() {
   "use strict";
   return window.Slick;
 });

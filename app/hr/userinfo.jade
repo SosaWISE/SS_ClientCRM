@@ -1,0 +1,137 @@
+div(class="user-data")
+  ul(class="actions")
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:clickEdit") Edit
+
+  div(class="content-wrap")
+    div(class="col")
+      div(class="section")
+        span(class="title") Login Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Username
+              div(class="text",data-bind="text:data.UserName")
+            li
+              span(class="label") Password
+              div(class="text") **********
+            li
+              span(class="label") Email
+              div(class="text",data-bind="text:data.Email")
+
+
+      div(class="section")
+        span(class="title") General Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") CompanyID
+              div(class="text",data-bind="text:data.GPEmployeeID")
+            li
+              span(class="label") Employee Type
+              div(class="text",data-bind="text:data.UserEmployeeTypeCvm.selectedText()")
+            li(class="full")
+              span(class="label") Name
+              div(class="name text",data-bind="text:data.FirstName")
+              div(class="mname text",data-bind="text:data.MiddleName")
+              div(class="name text",data-bind="text:data.LastName")
+            li
+              span(class="label") Preferred Name
+              div(class="text",data-bind="text:data.PreferredName")
+            li
+              span(class="label") SSN
+              div(class="text",data-bind="ssnmasked:data.SSN")
+            li
+              span(class="label") Shirt Size
+              div(class="text",data-bind="text:data.ShirtSizeCvm.selectedText()")
+            li
+              span(class="label") Hat Size
+              div(class="text",data-bind="text:data.HatSizeCvm.selectedText()")
+            li
+              span(class="label") Gender
+              div(class="text",data-bind="text:data.SexCvm.selectedText()")
+            li
+              //-
+            li
+              span(class="label") Marital Status
+              div(class="text",data-bind="text:data.MaritalStatusCvm.selectedText()")
+            li
+              span(class="label") Spouse Name
+              div(class="text",data-bind="text:data.SpouseName")
+
+
+      div(class="section")
+        span(class="title") Contact Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Cell Phone
+              div(class="text",data-bind="phonetext:data.PhoneCell")
+            li
+              span(class="label") Provider
+              div(class="text",data-bind="text:data.PhoneCellCarrierCvm.selectedText()")
+            //- li
+              span(class="label") Home Phone
+              div(class="text",data-bind="text:data.PhoneHome")
+
+
+      div(class="section")
+        span(class="title") Place of Birth
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") DOB
+              div(class="text",data-bind="datetext:data.BirthDate")
+            li
+              span(class="label") Country
+              div(class="text",data-bind="text:data.BirthCountry")
+            li
+              span(class="label") City
+              div(class="text",data-bind="text:data.BirthCity")
+            li
+              span(class="label") State
+              div(class="text",data-bind="text:data.BirthState")
+
+
+      div(class="section")
+        span(class="title") Driver's License
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Number
+              div(class="text",data-bind="text:data.DLNumber")
+            li
+              span(class="label") State
+              div(class="text",data-bind="text:data.DLState")
+            li
+              span(class="label") Expiration
+              div(class="text",data-bind="datetext:data.DLExpiresOn")
+
+
+      //- div(class="section")
+        span(class="title") Documentation
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Right to Work
+              div(class="text",data-bind="text:data.RightToWorkStatusID")
+            li
+              span(class="label") RightToWorkExpirationDate
+              div(class="text",data-bind="text:data.RightToWorkExpirationDate")
+            li
+              span(class="label") Notes
+              div(class="text",data-bind="text:data.RightToWorkNotes")
+
+
+      div(class="section")
+        span(class="title") Recruiting Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Recruited By
+              div(class="text",data-bind="text:recruitedBy().FullName")
+            li
+              span(class="label") Date
+              div(class="text",data-bind="datetext:data.RecruitedDate")
+
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'white'")

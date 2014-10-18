@@ -35,7 +35,7 @@ define('src/core/helpers', [
         }
       }
 
-      function loadCb(err, preventErrPassing) {
+      function loadCb(err, bubbleErr) {
         if (!loading()) {
           console.log('onetimer: loadCb called but wasn\'t loading');
           return;
@@ -44,7 +44,7 @@ define('src/core/helpers', [
         loaded(true);
         loadErr(err);
 
-        if (preventErrPassing) {
+        if (!bubbleErr) {
           err = null;
         }
         callbacks.forEach(function(cb) {
@@ -68,6 +68,16 @@ define('src/core/helpers', [
           loaded(false);
           loadErr(false);
           return true;
+        }
+      };
+      once.onLoad = function(cb) {
+        if (!utils.isFunc(cb)) {
+          return;
+        }
+        if (loaded()) {
+          cb();
+        } else {
+          callbacks.push(cb);
         }
       };
       return once;

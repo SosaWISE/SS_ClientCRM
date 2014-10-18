@@ -1,13 +1,11 @@
-#tmpl-loginform
-  include ./loginform.jade
-
 #tmpl-temptitle
-  include ./temptitle.jade
+  div(data-bind="text:title")
 
-
+include ./login/_all.jade
 include ./account/_all.jade
 include ./core/_all.jade
 include ./home/_all.jade
+include ./hr/_all.jade
 include ./inventory/_all.jade
 include ./scheduling/_all.jade
 include ./scrum/_all.jade

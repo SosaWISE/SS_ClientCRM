@@ -1,4 +1,4 @@
-define('src/home/login.panel.vm', [
+define('src/login/login.panel.vm', [
   'src/core/notify',
   'ko',
   'src/core/utils',
@@ -39,23 +39,24 @@ define('src/home/login.panel.vm', [
       };
     })();
     _this.cmdLogin = ko.command(function(cb) {
-      setTimeout(function() {
-        dataservice.user.auth({
-          SessionID: dataservice.session.sessionID(),
-          Username: _this.username(),
-          Password: _this.password(),
-          RememberMe: _this.rememberMe(),
-        }, function(err, resp) {
-          if (err) {
-            console.error(err);
-            notify.error(err, 10);
-          } else {
-            _this.setUser(resp.Value, true);
-          }
+      // setTimeout(function() {
+      dataservice.user.auth({
+        SessionID: dataservice.session.sessionID(),
+        Username: _this.username(),
+        Password: _this.password(),
+        RememberMe: _this.rememberMe(),
+      }, function(err, resp) {
+        if (err) {
+          console.error(err);
+          notify.error(err, 10);
+        } else {
+          var routeData = _this.getRouteData();
+          _this.setUser(resp.Value, routeData.destPath || '/');
+        }
 
-          cb();
-        });
-      }, 500); // the login call is too fast for development purposes...
+        cb();
+      });
+      // }, 500); // the login call is too fast for development purposes...
 
       // must return true so the form will be submitted and the
       // browser will ask the user if the login info should be saved.
@@ -73,8 +74,14 @@ define('src/home/login.panel.vm', [
   LoginViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
     join = join;
   };
-  LoginViewModel.prototype.onActivate = function(routeData) {
-    routeData.action = 'login';
+  LoginViewModel.prototype.onActivate = function(routeCtx) {
+    var _this = this,
+      destPath = routeCtx.extraData.destPath;
+    routeCtx.routeData.type = 'user';
+    // set destination path if it doesn't match an anonymous route
+    if (!_this.getRouter().anonRouteFromPath(destPath)) {
+      routeCtx.routeData.destPath = destPath;
+    }
   };
 
   return LoginViewModel;

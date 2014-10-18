@@ -18,7 +18,23 @@ define('mock/dataservices/user.mock', [
           Code: 0,
           Message: '',
           Value: {
-            boh: '???',
+            UserID: 0,
+            DealerId: 5000,
+            Ssid: null,
+            SessionID: 0,
+            Username: "DevUser",
+            Firstname: "Master",
+            Lastname: "Account",
+            GPEmployeeID: "MSTR001",
+            UserEmployeeTypeID: "CORP",
+            UserEmployeeTypeName: "Corporate",
+            SecurityLevel: 9,
+            Apps: [
+              "hr_man"
+            ],
+            Actions: [
+              "hr_user_edit"
+            ],
           },
         });
         cb(null, resp);

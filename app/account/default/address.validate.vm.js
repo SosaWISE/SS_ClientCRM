@@ -228,6 +228,9 @@ define('src/account/default/address.validate.vm', [
         }
       }, function(err) {
         _this.setManualOverride(true);
+        _this.layerResult = _this.result.peek();
+        //
+        _this.focusOk(true);
         notify.error(err);
       }));
     }, function(busy) {
@@ -307,181 +310,181 @@ define('src/account/default/address.validate.vm', [
   AddressValidateViewModel.prototype.stateOptions = [ //
     {
       value: 'AK',
-      text: 'ALASKA'
+      text: 'Alaska'
     }, {
       value: 'AL',
-      text: 'ALABAMA'
+      text: 'Alabama'
     }, {
       value: 'AR',
-      text: 'ARKANSAS'
+      text: 'Arkansas'
     }, {
       value: 'AS',
-      text: 'AMERICAN SAMOA'
+      text: 'American Samoa'
     }, {
       value: 'AZ',
-      text: 'ARIZONA'
+      text: 'Arizona'
     }, {
       value: 'CA',
-      text: 'CALIFORNIA'
+      text: 'California'
     }, {
       value: 'CO',
-      text: 'COLORADO'
+      text: 'Colorado'
     }, {
       value: 'CT',
-      text: 'CONNECTICUT'
+      text: 'Connecticut'
     }, {
       value: 'DC',
-      text: 'DISTRICT OF COLUMBIA'
+      text: 'District of Columbia'
     }, {
       value: 'DE',
-      text: 'DELAWARE'
+      text: 'Delaware'
     }, {
       value: 'FL',
-      text: 'FLORIDA'
+      text: 'Florida'
     }, {
       value: 'FM',
-      text: 'FEDERATED STATES OF MICRONESIA'
+      text: 'Federated States of Micronesia'
     }, {
       value: 'GA',
-      text: 'GEORGIA'
+      text: 'Georgia'
     }, {
       value: 'GU',
-      text: 'GUAM'
+      text: 'Guam'
     }, {
       value: 'HI',
-      text: 'HAWAII'
+      text: 'Hawaii'
     }, {
       value: 'IA',
-      text: 'IOWA'
+      text: 'Iowa'
     }, {
       value: 'ID',
-      text: 'IDAHO'
+      text: 'Idaho'
     }, {
       value: 'IL',
-      text: 'ILLINOIS'
+      text: 'Illinois'
     }, {
       value: 'IN',
-      text: 'INDIANA'
+      text: 'Indiana'
     }, {
       value: 'KS',
-      text: 'KANSAS'
+      text: 'Kansas'
     }, {
       value: 'KY',
-      text: 'KENTUCKY'
+      text: 'Kentucky'
     }, {
       value: 'LA',
-      text: 'LOUISIANA'
+      text: 'Louisiana'
     }, {
       value: 'MA',
-      text: 'MASSACHUSETTS'
+      text: 'Massachusetts'
     }, {
       value: 'MD',
-      text: 'MARYLAND'
+      text: 'Maryland'
     }, {
       value: 'ME',
-      text: 'MAINE'
+      text: 'Maine'
     }, {
       value: 'MH',
-      text: 'MARSHALL ISLANDS'
+      text: 'Marshall Islands'
     }, {
       value: 'MI',
-      text: 'MICHIGAN'
+      text: 'Michigan'
     }, {
       value: 'MN',
-      text: 'MINNESOTA'
+      text: 'Minnesota'
     }, {
       value: 'MO',
-      text: 'MISSOURI'
+      text: 'Missouri'
     }, {
       value: 'MP',
-      text: 'NORTHERN MARIANA ISLANDS'
+      text: 'Northern Mariana Islands'
     }, {
       value: 'MS',
-      text: 'MISSISSIPPI'
+      text: 'Mississippi'
     }, {
       value: 'MT',
-      text: 'MONTANA'
+      text: 'Montana'
     }, {
       value: 'NC',
-      text: 'NORTH CAROLINA'
+      text: 'North Carolina'
     }, {
       value: 'ND',
-      text: 'NORTH DAKOTA'
+      text: 'North Dakota'
     }, {
       value: 'NE',
-      text: 'NEBRASKA'
+      text: 'Nebraska'
     }, {
       value: 'NH',
-      text: 'NEW HAMPSHIRE'
+      text: 'New Hampshire'
     }, {
       value: 'NJ',
-      text: 'NEW JERSEY'
+      text: 'New Jersey'
     }, {
       value: 'NM',
-      text: 'NEW MEXICO'
+      text: 'New Mexico'
     }, {
       value: 'NV',
-      text: 'NEVADA'
+      text: 'Nevada'
     }, {
       value: 'NY',
-      text: 'NEW YORK'
+      text: 'New York'
     }, {
       value: 'OH',
-      text: 'OHIO'
+      text: 'Ohio'
     }, {
       value: 'OK',
-      text: 'OKLAHOMA'
+      text: 'Oklahoma'
     }, {
       value: 'OR',
-      text: 'OREGON'
+      text: 'Oregon'
     }, {
       value: 'PA',
-      text: 'PENNSYLVANIA'
+      text: 'Pennsylvania'
     }, {
       value: 'PR',
-      text: 'PUERTO RICO'
+      text: 'Puerto Rico'
     }, {
       value: 'PW',
-      text: 'PALAU'
+      text: 'Palau'
     }, {
       value: 'RI',
-      text: 'RHODE ISLAND'
+      text: 'Rhode Island'
     }, {
       value: 'SC',
-      text: 'SOUTH CAROLINA'
+      text: 'South Carolina'
     }, {
       value: 'SD',
-      text: 'SOUTH DAKOTA'
+      text: 'South Dakota'
     }, {
       value: 'TN',
-      text: 'TENNESSEE'
+      text: 'Tennessee'
     }, {
       value: 'TX',
-      text: 'TEXAS'
+      text: 'Texas'
     }, {
       value: 'UT',
-      text: 'UTAH'
+      text: 'Utah'
     }, {
       value: 'VA',
-      text: 'VIRGINIA'
+      text: 'Virginia'
     }, {
       value: 'VI',
-      text: 'VIRGIN ISLANDS'
+      text: 'Virgin Islands'
     }, {
       value: 'VT',
-      text: 'VERMONT'
+      text: 'Vermont'
     }, {
       value: 'WA',
-      text: 'WASHINGTON'
+      text: 'Washington'
     }, {
       value: 'WI',
-      text: 'WISCONSIN'
+      text: 'Wisconsin'
     }, {
       value: 'WV',
-      text: 'WEST VIRGINIA'
+      text: 'West Virginia'
     }, {
       value: 'WY',
-      text: 'WYOMING WY'
+      text: 'Wyoming'
     },
   ];
   AddressValidateViewModel.prototype.timeZoneOptions = [ //

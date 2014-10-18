@@ -118,11 +118,11 @@ define('src/core/mockery', [
       return new Date();
     },
     DATE: function(cache) {
-      //@TODO: correctly
-      return randomDate(cache);
+      var dt = randomDate(cache);
+      return padLeft(dt.getFullYear(), '0', 4) + '-' + padLeft(dt.getMonth() + 1, '0', 2) + '-' + padLeft(dt.getDate(), '0', 2) + 'T00:00:00.000Z';
     },
     DATETIME: function(cache, startDaysFromNow, endDaysFromNow) {
-      return randomDate(cache, startDaysFromNow, endDaysFromNow);
+      return randomDate(cache, startDaysFromNow, endDaysFromNow).toISOString();
     },
 
     ADDRESS: function(cache) {
@@ -131,9 +131,14 @@ define('src/core/mockery', [
     CITY: function(cache) {
       return fromTemplate('@LASTNAME(City)ton', cache);
     },
-    STATEAB: function(cache) {
-      return fromTemplate('@CHAR_UPPER(StateA)@CHAR_UPPER(StateB)', cache);
-    },
+    // STATEAB: function(cache) {
+    //   return fromTemplate('@CHAR_UPPER(StateA)@CHAR_UPPER(StateB)', cache);
+    // },
+    STATEAB: ['AK', 'AL', 'AR', 'AS', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'FM', 'GA', 'GU',
+      'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME', 'MH', 'MI', 'MN', 'MO',
+      'MP', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM', 'NV', 'NY', 'OH', 'OK', 'OR', 'PA',
+      'PR', 'PW', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VA', 'VI', 'VT', 'WA', 'WI', 'WV', 'WY',
+    ],
     ZIP: function(cache) {
       return fromTemplate('8@NUMBER(1000,9999)', cache);
     },
@@ -301,10 +306,38 @@ define('src/core/mockery', [
 
   function incModulus(cache, refKey, key) {
     var obj = incMap[refKey],
-      count = obj.val - obj.idSeed + 1,
-      refCount = mockery.fn.INC(cache, key) - obj.idSeed;
+      count, refCount;
+    if (!obj) {
+      throw new Error('invalid refKey \'' + refKey + '\'');
+    }
+    count = obj.val - obj.idSeed + 1;
+    refCount = mockery.fn.INC(cache, key) - obj.idSeed;
     return (refCount % count) + obj.idSeed;
   }
+
+  function pad(isLeft, txt, letter, minLength) {
+    if (!txt && txt !== 0) {
+      txt = '';
+    }
+    txt += '';
+    if (isLeft) {
+      while (txt.length < minLength) {
+        txt = letter + txt;
+      }
+    } else {
+      while (txt.length < minLength) {
+        txt += letter;
+      }
+    }
+    return txt;
+  }
+
+  function padLeft(txt, letter, minLength) {
+    return pad(true, txt, letter, minLength);
+  }
+  // function padRight(txt, letter, minLength) {
+  //   return pad(false, txt, letter, minLength);
+  // }
 
   function randomFromRange(cache, min, max, defaultMin, defaultMax) {
     min = (min) ? parseInt(min, 10) : (defaultMin || 0);
@@ -318,6 +351,7 @@ define('src/core/mockery', [
   }
 
   function randomDate(cache, startDaysFromNow, endDaysFromNow) {
+    var dt;
     // startDaysFromNow/endDaysFromNow: number of days before or after now
     //   - positive number goes into the future
     //   - negative number goes into the past
@@ -326,10 +360,11 @@ define('src/core/mockery', [
     if (!isNaN(startDaysFromNow) && !isNaN(endDaysFromNow)) {
       var nowTimestamp = mockery.fn.NOW().valueOf(),
         val = randomFromRange(cache, nowTimestamp + (startDaysFromNow * 86400000), nowTimestamp + (endDaysFromNow * 86400000));
-      return new Date(val);
+      dt = new Date(val);
     } else {
-      return new Date(Math.floor(cache.__funcs.random() * Date.now()));
+      dt = new Date(Math.floor(cache.__funcs.random() * Date.now()));
     }
+    return dt;
   }
 
   // set to Math.random if you want more random

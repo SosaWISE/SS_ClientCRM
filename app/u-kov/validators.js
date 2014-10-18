@@ -22,13 +22,17 @@ define('src/u-kov/validators', [
     valRequired = 'Value is required',
     passwordMsg = 'A password must be atleast {0} or more letters and contain at least one upper case letter, one lower case letter and one digit.',
     ssnMsg = 'Invalid social security number. Expected format: 123-12-1234.',
+    usernameMsg = 'Invalid username. Example format: user.name_1_2_3. Allowed characters are letters, numbers, underscore, and period. Must start and end with a letter or a number and underscores and periods cannot be repeated.',
     minAgeMsg = 'Minimum age allowed in {0}',
     emailMsg = 'Invalid email',
     zipMsg = 'Invalid postal code. Expected format: 12345',
 
     // 1 uppercase, 1 lowercase, and 1 number
     passwordRegex = /^(?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])\S+$/,
-    ssnExactRegx = /^(?!000)(?!666)[0-8]\d{2}[- ](?!00)\d{2}[- ](?!0000)\d{4}$/,
+    // ssnExactRegx = /^(?!000)(?!666)[0-8]\d{2}[- ](?!00)\d{2}[- ](?!0000)\d{4}$/,
+    // ssnStrictRegx = /^(?!000)(?!666)[0-8]\d{2}[- ]?(?!00)\d{2}[- ]?(?!0000)\d{4}$/,
+    ssnRelaxedRegx = /^\d{3}-?\d{2}-?\d{4}$/,
+    usernameRegx = /^[a-z0-9]+([._]?[a-z0-9]+)*$/,
 
     relaxedEmailRegx = /^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}\b$/i,
     zipRegx = /^[0-9]{5}$/;
@@ -148,6 +152,17 @@ define('src/u-kov/validators', [
       }
     };
   };
+  validators.isUsername = function(message) {
+    message = message || usernameMsg;
+    return function(val /*, model*/ ) {
+      if (val == null) {
+        return;
+      }
+      if (!usernameRegx.test(val)) {
+        return message;
+      }
+    };
+  };
 
   validators.isSsn = function(message) {
     message = message || ssnMsg;
@@ -155,7 +170,7 @@ define('src/u-kov/validators', [
       if (!val) {
         return;
       }
-      if (!ssnExactRegx.test(val)) {
+      if (!ssnRelaxedRegx.test(val)) {
         return message;
       }
     };
@@ -209,6 +224,16 @@ define('src/u-kov/validators', [
       }
     };
   };
+
+  //
+  //
+  validators.isCompanyID = function(msg) {
+    return validators.isPattern(/^[a-z]{2,5}[0-9]{3}$/i, msg || 'Invalid Company ID. Expected format: AAAA000');
+  };
+
+  //
+  //
+
 
   return validators;
 });

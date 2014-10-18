@@ -42,7 +42,7 @@ html
 
         div(class="wrap")
           div(class="panels", data-bind="foreach:panels")
-            <!-- ko with:panel -->
+            <!-- ko if:!lazy -->
             div(data-bind="active:active")
               div(data-bind="template:viewTmpl,attr:{id:id+'-panel'}")
             <!-- /ko -->
@@ -69,5 +69,5 @@ html
       script(src="app.debug.js")
     else
       script(src="depends.conf.js")
-      script(src="tparty/depends.js")
-    script require('src/bootstrapper');
+      script(src="app/depends/depends.js")
+    script require('src/crm/bootstrapper');

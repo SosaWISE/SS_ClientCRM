@@ -64,7 +64,7 @@ define('src/core/combo.vm', [
     _this.deselectInput = ko.observable(false);
 
     _this.filterText.subscribe(function(filterText) {
-      filterList(_this.list.peek(), filterText, _this.matchStart);
+      filterList(_this.list.peek(), filterText);
       _this.deactivateCurrent();
       _this.activateNext(true);
     });
@@ -191,7 +191,12 @@ define('src/core/combo.vm', [
           return false; // prevent default action
         case 13: // enter
         case 9: // tab
-          _this.selectItem(_this.list.peek()[_this.activeIndex]);
+          if (_this.activeIndex < 0) {
+            // close without changing selection
+            _this.clickClose(true);
+          } else {
+            _this.selectItem(_this.list.peek()[_this.activeIndex]);
+          }
           return keyCode === 9; // for tab key do default action
         case 38: // up arrow
           _this.activateNext(false);
@@ -248,6 +253,11 @@ define('src/core/combo.vm', [
     }
     return null;
   };
+  ComboViewModel.prototype.selectedText = function() {
+    var _this = this,
+      selected = _this.selected();
+    return (selected) ? selected.text : '';
+  };
   ComboViewModel.prototype.setList = function(list) {
     list = list || [];
     var _this = this,
@@ -261,7 +271,7 @@ define('src/core/combo.vm', [
       wrapList.unshift(_this.noneItem);
     }
     _this.list(wrapList);
-    filterList(_this.list.peek(), _this.filterText(), _this.matchStart);
+    filterList(_this.list.peek(), _this.filterText());
 
     //
     // set selected value to item in the new list
@@ -408,20 +418,33 @@ define('src/core/combo.vm', [
     return -1;
   }
 
-  function filterList(list, filterText, matchStart) {
-    var matches = getMatches(filterText),
-      regx, letterRegxList;
-    regx = createRegx(matches, matchStart);
-    letterRegxList = createLetterRegxList(matches);
+  function filterList(list, filterText) {
+    var matches = getMatches(filterText);
+    //@NOTE: this is a ghetto matching algorithm, but i currently don't feel
+    //       like putting in the effort to rank and reorder the matching items
+    // attempt to match at the start
+    if (!doFilter(list, matches, true)) {
+      // match start is false or nothing matched at the start
+      // so try matching as usual
+      doFilter(list, matches, false);
+    }
+  }
+
+  function doFilter(list, matches, matchStart) {
+    var regx = createRegx(matches, matchStart),
+      letterRegxList = createLetterRegxList(matches),
+      foundMatch = false;
     list.forEach(function(wrappedItem) {
       if (regx.test(wrappedItem.text)) {
         wrappedItem.html(makeHtml(letterRegxList, wrappedItem.text));
         wrappedItem.matches(true);
+        foundMatch = true;
       } else {
         wrappedItem.html(wrappedItem.text);
         wrappedItem.matches(false);
       }
     });
+    return foundMatch;
   }
 
   function getMatches(filterText) {
