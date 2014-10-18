@@ -9,13 +9,13 @@ window.require = {
     specui: '/specui',
     mock: '/mock',
 
-    // external libs
+    // libs
     jquery: '/tparty/jquery-1.10.2',
     ko: '/tparty/knockout',
     moment: '/tparty/moment', // Used for Date object
     underscore: '/tparty/underscore', // Allows for excellent data manipulation like linq in C#.
     markdown: '/tparty/markdown',
-    slick: '/tparty/slick-dev',
+    slick: '/app/slick/slick-dev',
     fullcalendar: '/tparty/fullcalendar',
   },
 

@@ -10,8 +10,7 @@ module.exports = function(grunt) {
     '!app/flowMap/**/*.js',
     '!node_modules/**/*.js',
     '!testing/**/*.js',
-    '!tparty/**/*.js',
-    '!app/depends/lib/**/*.js',
+    '!**/tparty/**/*.js', // exclude any and every tparty folder
   ];
 
   grunt.loadNpmTasks('grunt-contrib-clean');
@@ -95,14 +94,16 @@ module.exports = function(grunt) {
       slick_pkg: {
         src: [
           // third party libs
-          'tparty/jquery.event.drag-*.js',
-          'tparty/slick.core.js',
-          'tparty/slick.grid.js',
-          'tparty/slick.rowselectionmodel.js',
-          'tparty/slick.editors.js',
-          'tparty/slick-production.js',
+          'app/slick/tparty/slick.core.js',
+          'app/slick/tparty/slick.grid.js',
+          'app/slick/tparty/slick.rowselectionmodel.js',
+          'app/slick/tparty/slick.editors.js',
+          'app/slick/tparty/slick-production.js',
           // actual package
-          'app/slick/**/*.js', '!app/slick/**/*.spec.js',
+          'app/slick/*.js',
+          // except
+          '!app/slick/slick-dev.js',
+          '!app/slick/*.spec.js',
         ],
         dest: '<%= www %>/slick.debug.js',
       },
@@ -139,6 +140,7 @@ module.exports = function(grunt) {
 
           'tparty/jquery-1.10.2.js',
           'tparty/jquery-ui-1.10.4.custom.js',
+          'tparty/jquery.event.drag-*.js',
           'tparty/knockout.js',
           'tparty/moment.js',
           'tparty/underscore.js',
