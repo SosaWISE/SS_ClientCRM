@@ -20,13 +20,26 @@ define('src/account/default/masteraccount.vm', [
   "use strict";
 
   var agingList = [
-    'Current',
-    '1 to 30',
-    '31 to 60',
-    '61 to 90',
-    '91 to 120',
-    '> 120',
-  ];
+      'Current',
+      '1 to 30',
+      '31 to 60',
+      '61 to 90',
+      '91 to 120',
+      '> 120',
+    ],
+    customerTypePrecedence = {
+      PRI: 1,
+      LEAD: 1,
+      SEC: 2,
+      BILL: 3,
+      SHIP: 4,
+    };
+
+  function sortByCustomerTypeId(a, b) {
+    var aP = customerTypePrecedence[a.CustomerTypeId] || 9,
+      bP = customerTypePrecedence[b.CustomerTypeId] || 9;
+    return aP - bP;
+  }
 
   function MasterAccountViewModel(options) {
     var _this = this;
@@ -38,7 +51,7 @@ define('src/account/default/masteraccount.vm', [
     _this.hideNotes = ko.observable(config.accounts.hideNotes);
     _this.hideNav = ko.observable(config.accounts.hideNav);
 
-    _this.customerData = ko.observable();
+    _this.customers = ko.observableArray();
 
     _this.accounts = ko.observableArray();
     _this.paymentHistory = ko.observableArray();
@@ -92,11 +105,14 @@ define('src/account/default/masteraccount.vm', [
     var _this = this,
       cb = join.add();
 
-    load_customerInfoCard(_this.customerData, _this.id, function(err) {
+    load_customers(_this.id, function(err, resp) {
       if (err) {
         cb(err);
         return;
       }
+      var data = resp.Value;
+      data.sort(sortByCustomerTypeId);
+      _this.customers(data);
 
       _this.notesVm.loader.reset(); //incase of reload
       _this.notesVm.load(routeData, extraData, function(err) {
@@ -135,10 +151,11 @@ define('src/account/default/masteraccount.vm', [
     return msg;
   };
 
-  function load_customerInfoCard(customerData, masterId, cb) {
-    dataservice.accountingengine.customerCardInfos.read({
-      id: masterId
-    }, customerData, cb);
+  function load_customers(masterId, cb) {
+    dataservice.qualify.customerMasterFiles.read({
+      id: masterId,
+      link: 'customers',
+    }, null, cb);
   }
 
   function load_billingInfoSummary(pcontroller, masterId, accounts, cb) {

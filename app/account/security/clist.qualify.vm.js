@@ -78,10 +78,11 @@ define('src/account/security/clist.qualify.vm', [
     _this.cmdCreateAccount = ko.command(function(cb) {
       var primary = _this.customers[0];
       dataservice.msaccountsetupsrv.accounts.post(null, {
-        leadId: primary.lead().LeadID
+        CustomerMasterFileId: primary.lead().CustomerMasterFileId,
       }, null, function(err, resp) {
         if (err) {
           notify.error(err);
+          cb();
           return;
         }
         var checklistVm = _this.pcontroller;

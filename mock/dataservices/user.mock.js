@@ -30,7 +30,8 @@ define('mock/dataservices/user.mock', [
             UserEmployeeTypeName: "Corporate",
             SecurityLevel: 9,
             Apps: [
-              "hr_man"
+              "sse_cms_cors",
+              "hr_man",
             ],
             Actions: [
               "hr_user_edit"
