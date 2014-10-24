@@ -19,7 +19,7 @@ define('src/account/security/emcontacteditor.vm', [
 ) {
   "use strict";
 
-  var schema,
+  var schema, allPhones,
     strConverter = ukov.converters.string(),
     phoneConverter = ukov.converters.phone(),
     phone2ValidationGroup, phone3ValidationGroup;
@@ -52,6 +52,21 @@ define('src/account/security/emcontacteditor.vm', [
   }
   phone2ValidationGroup = createPhoneAndTypeValidationGroup('Phone2', 'Phone2TypeId');
   phone3ValidationGroup = createPhoneAndTypeValidationGroup('Phone3', 'Phone3TypeId');
+
+  function uniquePhoneValidator(val, model, ukovModel, prop) {
+    if (!val) {
+      return;
+    }
+
+    var errMsg, dependents = prop.doc.dependents;
+    dependents.some(function(key) {
+      if (val === ukovModel[key].getValue()) {
+        errMsg = 'Duplicate Phone# ' + strings.formatters.phone(val);
+        return true;
+      }
+    });
+    return errMsg;
+  }
 
   schema = {
     _model: true,
@@ -105,8 +120,10 @@ define('src/account/security/emcontacteditor.vm', [
 
     Phone1: {
       converter: phoneConverter,
+      dependents: ['Phone2', 'Phone3'],
       validators: [
         ukov.validators.isRequired('Primary phone is required'),
+        uniquePhoneValidator,
       ],
     },
     Phone1TypeId: {
@@ -116,6 +133,8 @@ define('src/account/security/emcontacteditor.vm', [
     },
     Phone2: {
       converter: phoneConverter,
+      dependents: ['Phone1', 'Phone3'],
+      validators: [uniquePhoneValidator],
       validationGroup: phone2ValidationGroup,
     },
     Phone2TypeId: {
@@ -123,12 +142,15 @@ define('src/account/security/emcontacteditor.vm', [
     },
     Phone3: {
       converter: phoneConverter,
+      dependents: ['Phone1', 'Phone2'],
+      validators: [uniquePhoneValidator],
       validationGroup: phone3ValidationGroup,
     },
     Phone3TypeId: {
       validationGroup: phone3ValidationGroup,
     },
   };
+  allPhones = [schema.Phone1, schema.Phone2, schema.Phone3];
 
 
   function EmContactEditorViewModel(options) {
