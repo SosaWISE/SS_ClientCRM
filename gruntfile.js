@@ -179,6 +179,11 @@ module.exports = function(grunt) {
       }
     },
     jade: {
+      index: {
+        files: {
+          'index.html': 'index.jade',
+        },
+      },
       prod: {
         options: {
           data: {
@@ -188,7 +193,7 @@ module.exports = function(grunt) {
           },
         },
         files: {
-          '<%= www %>/index.html': 'index.jade',
+          '<%= www %>/crm/index.html': 'crm/index.jade',
           '<%= www %>/spec/index.html': 'spec/index.jade',
         },
       },
@@ -200,7 +205,7 @@ module.exports = function(grunt) {
           },
         },
         files: {
-          '<%= www %>/index.debug.html': 'index.jade',
+          '<%= www %>/crm/index.debug.html': 'crm/index.jade',
           '<%= www %>/spec/index.debug.html': 'spec/index.jade',
         },
       },
@@ -211,7 +216,7 @@ module.exports = function(grunt) {
           },
         },
         files: {
-          'index.html': 'index.jade',
+          'crm/index.html': 'crm/index.jade',
           'spec/index.html': 'spec/index.jade',
         },
       },
@@ -270,6 +275,7 @@ module.exports = function(grunt) {
     'copy:prod',
     'concat',
     'uglify',
+    'jade:index',
     'jade:prod',
     'jade:prod_debug',
     'less:prod',

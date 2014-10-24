@@ -1,4 +1,5 @@
 define('src/account/security/checklist.vm', [
+  'src/dataservice',
   'ko',
   'src/account/security/clist.qualify.vm',
   'src/account/security/clist.salesinfo.vm',
@@ -13,6 +14,7 @@ define('src/account/security/checklist.vm', [
   'src/core/layers.vm',
   'src/core/notify', 'src/core/utils', 'src/core/controller.vm',
 ], function(
+  dataservice,
   ko,
   CListQualifyViewModel,
   CListSalesInfoViewModel,
@@ -41,14 +43,6 @@ define('src/account/security/checklist.vm', [
       controller: _this,
     });
 
-    _this.qualifyVm = new CListQualifyViewModel({
-      pcontroller: _this,
-      id: 'qualify',
-      title: 'Qualify Customer',
-      layersVm: _this.layersVm,
-      canCreateAccount: true,
-    });
-
     //
     // events
     //
@@ -65,76 +59,100 @@ define('src/account/security/checklist.vm', [
   ChecklistViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
 
-    _this.checklist([
-      _this.qualifyVm,
-      new CListSalesInfoViewModel({
-        pcontroller: _this,
-        id: 'salesinfo',
-        title: 'Sales Info',
-        layersVm: _this.layersVm,
-      }),
-      new CListSurveyViewModel({
-        pcontroller: _this,
-        id: 'presurvey',
-        title: 'Pre Survey',
-        surveyTypeId: 1000, //@HACK: need better way of knowing the id of the survey type
-      }),
-      new CListIndustryViewModel({
-        pcontroller: _this,
-        id: 'industrynums',
-        title: 'Industry #\'s',
-      }),
-      new CListEmcontactsViewModel({
-        pcontroller: _this,
-        id: 'emcontacts',
-        title: 'Emergency Contacts',
-        layersVm: _this.layersVm,
-      }),
-      new CListSystemDetailsViewModel({
-        pcontroller: _this,
-        id: 'systemdetails',
-        title: 'System Details',
-        layersVm: _this.layersVm,
-      }),
-      new CListRegisterCellViewModel({
-        pcontroller: _this,
-        id: 'registercell',
-        title: 'Register Cell',
-        layersVm: _this.layersVm,
-      }),
-      new CListSystemTestViewModel({
-        pcontroller: _this,
-        id: 'systemtest',
-        title: 'System Test',
-        layersVm: _this.layersVm,
-      }),
-      // for now we're not doing Tech inspections
-      // new CListSurveyViewModel({
-      //   pcontroller: _this,
-      //   id: 'techinspection',
-      //   title: 'Tech Inspection',
-      // }),
-      new CListSurveyViewModel({
-        pcontroller: _this,
-        id: 'postsurvey',
-        title: 'Post Survey',
-        surveyTypeId: 1001, //@HACK: need better way of knowing the id of the survey type
-      }),
-      new CListInitialPaymentViewModel({
-        pcontroller: _this,
-        id: 'initialpayment',
-        title: 'Initial Payment',
-        layersVm: _this.layersVm,
-      }),
-      new CListSubmitOnlineViewModel({
-        pcontroller: _this,
-        id: 'submitonline',
-        title: 'Submit Account Online',
-        layersVm: _this.layersVm,
-      }),
-    ]);
+    call_hasCustomer(routeData.masterid, utils.safeCallback(join.add(), function(err, resp) {
+      var hasCustomer = resp.Value;
+      if (_this.id === routeData.masterid && hasCustomer) {
+        // close this tab
+        _this.closeMsg = utils.noop; // allows closing
+        _this.close();
+        // then redirect to masteraccount
+        _this.goTo({
+          route: 'accounts',
+          masterid: routeData.masterid,
+        });
+        notify.info('Redirected to account', null, 2);
+        // we're done here
+        return;
+      }
 
-    join.add()();
+      _this.qualifyVm = new CListQualifyViewModel({
+        pcontroller: _this,
+        id: 'qualify',
+        title: 'Qualify Customer',
+        layersVm: _this.layersVm,
+        canCreateAccount: !hasCustomer,
+      });
+
+      _this.checklist([
+        _this.qualifyVm,
+        new CListSalesInfoViewModel({
+          pcontroller: _this,
+          id: 'salesinfo',
+          title: 'Sales Info',
+          layersVm: _this.layersVm,
+        }),
+        new CListSurveyViewModel({
+          pcontroller: _this,
+          id: 'presurvey',
+          title: 'Pre Survey',
+          surveyTypeId: 1000, //@HACK: need better way of knowing the id of the survey type
+        }),
+        new CListIndustryViewModel({
+          pcontroller: _this,
+          id: 'industrynums',
+          title: 'Industry #\'s',
+        }),
+        new CListEmcontactsViewModel({
+          pcontroller: _this,
+          id: 'emcontacts',
+          title: 'Emergency Contacts',
+          layersVm: _this.layersVm,
+        }),
+        new CListSystemDetailsViewModel({
+          pcontroller: _this,
+          id: 'systemdetails',
+          title: 'System Details',
+          layersVm: _this.layersVm,
+        }),
+        new CListRegisterCellViewModel({
+          pcontroller: _this,
+          id: 'registercell',
+          title: 'Register Cell',
+          layersVm: _this.layersVm,
+        }),
+        new CListSystemTestViewModel({
+          pcontroller: _this,
+          id: 'systemtest',
+          title: 'System Test',
+          layersVm: _this.layersVm,
+        }),
+        // for now we're not doing Tech inspections
+        // new CListSurveyViewModel({
+        //   pcontroller: _this,
+        //   id: 'techinspection',
+        //   title: 'Tech Inspection',
+        // }),
+        new CListSurveyViewModel({
+          pcontroller: _this,
+          id: 'postsurvey',
+          title: 'Post Survey',
+          surveyTypeId: 1001, //@HACK: need better way of knowing the id of the survey type
+        }),
+        new CListInitialPaymentViewModel({
+          pcontroller: _this,
+          id: 'initialpayment',
+          title: 'Initial Payment',
+          layersVm: _this.layersVm,
+        }),
+        new CListSubmitOnlineViewModel({
+          pcontroller: _this,
+          id: 'submitonline',
+          title: 'Submit Account Online',
+          layersVm: _this.layersVm,
+        }),
+      ]);
+
+    }, utils.noop));
   };
 
   ChecklistViewModel.prototype.onActivate = function(routeCtx) { // overrides base
@@ -150,6 +168,13 @@ define('src/account/security/checklist.vm', [
     }
     ChecklistViewModel.super_.prototype.onActivate.call(_this, routeCtx);
   };
+
+  function call_hasCustomer(masterId, cb) {
+    dataservice.qualify.customerMasterFiles.read({
+      id: masterId,
+      link: 'hasCustomer',
+    }, null, cb);
+  }
 
   return ChecklistViewModel;
 });

@@ -16,29 +16,29 @@ define('src/home/home.panel.vm', [
   utils.inherits(HomePanelViewModel, ControllerViewModel);
 
   HomePanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this;
-    notify.info('/surveys/1/1', null, 0, {
-      actions: {
-        view: function() {
-          _this.goTo({
-            route: 'surveys',
-            surveytypeid: 1,
-            surveyid: 1,
-          });
-        },
-      },
-    });
-    notify.info('/surveys/2/2', null, 0, {
-      actions: {
-        view: function() {
-          _this.goTo({
-            route: 'surveys',
-            surveytypeid: 2,
-            surveyid: 2,
-          });
-        },
-      },
-    });
+    // var _this = this;
+    // notify.info('/surveys/1/1', null, 0, {
+    //   actions: {
+    //     view: function() {
+    //       _this.goTo({
+    //         route: 'surveys',
+    //         surveytypeid: 1,
+    //         surveyid: 1,
+    //       });
+    //     },
+    //   },
+    // });
+    // notify.info('/surveys/2/2', null, 0, {
+    //   actions: {
+    //     view: function() {
+    //       _this.goTo({
+    //         route: 'surveys',
+    //         surveytypeid: 2,
+    //         surveyid: 2,
+    //       });
+    //     },
+    //   },
+    // });
 
     // notify.counter = 0;
     // setInterval(function() {

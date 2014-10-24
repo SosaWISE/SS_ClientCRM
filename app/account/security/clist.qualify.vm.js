@@ -138,9 +138,19 @@ define('src/account/security/clist.qualify.vm', [
         if (lead.CustomerTypeId !== 'LEAD' && lead.CustomerTypeId !== 'PRI') {
           return false;
         }
+        var cb = join.add();
         // load data
-        load_qualifyCustomerInfos(lead.LeadID, function(data) {
-          if (data && data.IsHit) {
+        load_qualifyCustomerInfos(lead.LeadID, null, utils.safeCallback(function(err) {
+          if (true) {
+            err = null;
+          }
+          cb(err);
+        }, function(err, resp) {
+          if (err) {
+            notify.error(err, 10);
+          }
+          var creditResultAndStuff = resp.Value || {};
+          if (creditResultAndStuff.IsHit) {
             // there is a primary lead credit result
             if (maxStep < steps.SEC_LEAD) {
               maxStep = steps.SEC_LEAD;
@@ -148,7 +158,7 @@ define('src/account/security/clist.qualify.vm', [
           }
 
           // set data
-          setCustomerData(_this.customers[0], lead, data);
+          setCustomerData(_this.customers[0], lead, creditResultAndStuff);
 
           //
           //- use primary lead data for SalesRep and Premise Address.
@@ -156,21 +166,24 @@ define('src/account/security/clist.qualify.vm', [
           //   but it is possible for them to be different.
           //
 
-          // load sales rep
-          dataservice.qualify.salesrep.read({
-            id: data.CompanyID,
-          }, _this.repModel, join.add());
-
-          // load address
-          dataservice.qualify.addressValidation.read({
-            id: data.AddressID,
-          }, function(val) {
-            // normalize data
-            val.PhoneNumber = val.PhoneNumber || data.Phone;
-            val.TimeZone = val.TimeZone || data.TimeZoneName;
-            _this.addressModel(val);
-          }, join.add());
-        }, join.add());
+          if (creditResultAndStuff.CompanyID) {
+            // load sales rep
+            dataservice.qualify.salesrep.read({
+              id: creditResultAndStuff.CompanyID,
+            }, _this.repModel, join.add());
+          }
+          if (creditResultAndStuff.AddressID) {
+            // load address
+            dataservice.qualify.addressValidation.read({
+              id: creditResultAndStuff.AddressID,
+            }, function(val) {
+              // normalize data
+              val.PhoneNumber = val.PhoneNumber || creditResultAndStuff.Phone;
+              val.TimeZone = val.TimeZone || creditResultAndStuff.TimeZoneName;
+              _this.addressModel(val);
+            }, join.add());
+          }
+        }));
         // break loop
         return true;
       });
@@ -181,8 +194,8 @@ define('src/account/security/clist.qualify.vm', [
           return false;
         }
         // load data
-        load_qualifyCustomerInfos(lead.LeadID, function(data) {
-          if (data && data.IsHit) {
+        load_qualifyCustomerInfos(lead.LeadID, function(creditResultAndStuff) {
+          if (creditResultAndStuff && creditResultAndStuff.IsHit) {
             // there is a secondary lead credit result
             if (maxStep < steps.CREATE_CUST) {
               maxStep = steps.CREATE_CUST;
@@ -190,7 +203,7 @@ define('src/account/security/clist.qualify.vm', [
           }
 
           // set data
-          setCustomerData(_this.customers[1], lead, data);
+          setCustomerData(_this.customers[1], lead, creditResultAndStuff);
         }, join.add());
         // break loop
         return true;
@@ -302,20 +315,20 @@ define('src/account/security/clist.qualify.vm', [
     return customerType;
   }
 
-  function setCustomerData(cust, lead, data) {
+  function setCustomerData(cust, lead, creditResultAndStuff) {
     // set customer
     lead.CustomerName = getCustomerName(lead);
     cust.lead(lead);
 
     // set credit
-    if (!data || !data.IsHit) {
+    if (!creditResultAndStuff || !creditResultAndStuff.IsHit) {
       cust.creditResult(null);
     } else {
       cust.creditResult({
-        LeadId: data.LeadID,
-        IsHit: data.IsHit,
-        CreditGroup: data.CreditGroup,
-        BureauName: data.BureauName,
+        LeadId: creditResultAndStuff.LeadID,
+        IsHit: creditResultAndStuff.IsHit,
+        CreditGroup: creditResultAndStuff.CreditGroup,
+        BureauName: creditResultAndStuff.BureauName,
       });
     }
   }
