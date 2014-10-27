@@ -1,0 +1,83 @@
+doctype HTML5
+html
+  head
+    title Nexsense
+    meta(http-equiv='X-UA-Compatible', content='IE=Edge,chrome=1')
+    meta(http-equiv='content-type', content='text/html; charset=utf-8')
+    link(rel="stylesheet", type='text/css', media='screen', href="/index.css")
+    link(rel="shortcut icon",href="/stuff/img/favicon.ico",type="image/x-icon")
+    //- include contents of index.js
+    script
+      include index.js
+    //- script(src="index.js")
+  body
+    div(id="siteLoading",style="background-color:#772E6D;color:#fff;height:100%;width:100%;display:table;text-align:center;")
+      span(style="display:table-cell;vertical-align:middle;font-weight:500;")
+        |Loading...
+        span(id="loadingSeconds")
+
+    div(id="main",data-bind="attr:{'class':os}")
+
+      div(style="display:none;", id="login-container", data-bind="with:login")
+        div(data-bind="template:viewTmpl", id="login-panel")
+
+      div(style="display:none;", id="site-container")
+        nav(class="primary")
+          //- home
+          a(class="logo",data-bind="cmd:clickPanel")
+            span(class="ico")
+            h1(class="txt") &nbsp;
+
+          //- panels
+          <!-- ko foreach:panels -->
+          div(data-bind="active:active")
+            a(data-bind="css:id,cmd:$parent.clickPanel")
+              div(data-bind="visible:active")
+                div(class="indicator")
+              span(class="ico", data-bind="html:ico")
+              span(class="txt", data-bind="text:title")
+          <!-- /ko -->
+          a(class="logout",data-bind="cmd:cmdLogout")
+            span(class="txt") Logout
+
+        div(class="wrap")
+          div(class="panels", data-bind="foreach:panels")
+            <!-- ko if:!lazy -->
+            div(data-bind="active:active")
+              div(data-bind="template:viewTmpl,attr:{id:id+'-panel'}")
+            <!-- /ko -->
+            div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
+
+      div(data-bind="template:{name:'tmpl-notices',data:notify}")
+      div(class="notify-position-toggle",data-bind="cmd:notify.clickToggle")
+
+    //- templates
+    div(style="display:none")
+      #tmpl-temptitle
+        div(data-bind="text:title")
+      include ../login/_all.jade
+      include ../account/_all.jade
+      include ../core/_all.jade
+      include ../home/_all.jade
+      include ../hr/_all.jade
+      include ../inventory/_all.jade
+      include ../scheduling/_all.jade
+      include ../survey/_all.jade
+      include ../swing/_all.jade
+
+    //- testing
+    script parent.browser && parent.browser.init(window);
+
+    //- js
+    if release
+      script(src="/depends.conf.js")
+      script(src="/lib.js")
+      script(src="/app.js")
+    else if debug
+      script(src="/depends.debug.conf.js")
+      script(src="/lib.debug.js")
+      script(src="/app.debug.js")
+    else
+      script(src="/depends.conf.js")
+      script(src="/app/depends/depends.js")
+    script require('src/crm/bootstrapper');
