@@ -181,7 +181,7 @@ module.exports = function(grunt) {
     jade: {
       index: {
         files: {
-          'index.html': 'index.jade',
+          '<%= www %>/index.html': 'index.jade',
         },
       },
       prod: {
