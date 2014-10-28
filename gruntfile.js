@@ -289,6 +289,7 @@ module.exports = function(grunt) {
   ]);
 
 
+
   grunt.registerTask('precommit', [
     // 'exec:npm_install', // before running make sure node_modules match package.json
     'jsbeautifier:test', // faster than jshint
