@@ -1,8 +1,10 @@
 define('src/hr/usersearch.gvm', [
+  'src/hr/hr-cache',
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/core/utils',
 ], function(
+  hrcache,
   RowEvent,
   SlickGridViewModel,
   utils
@@ -28,20 +30,20 @@ define('src/hr/usersearch.gvm', [
       columns: [ //
         {
           id: 'UserID',
-          name: 'UserID',
+          name: 'User ID',
           field: 'UserID',
           width: 50,
           formatter: function(row, cell, value) {
             return 'U' + value;
           },
         }, {
-          id: 'GPEmployeeID',
-          name: 'CompanyID',
-          field: 'GPEmployeeID',
+          id: 'GPEmployeeId',
+          name: 'Company ID',
+          field: 'GPEmployeeId',
           width: 50,
         }, {
           id: 'FullName',
-          name: 'Full Nname',
+          name: 'Full Name',
           field: 'FullName',
         }, {
           id: 'Email',
@@ -49,18 +51,22 @@ define('src/hr/usersearch.gvm', [
           field: 'Email',
         }, {
           id: 'PhoneCell',
-          name: 'PhoneCell',
+          name: 'Cell Phone',
           field: 'PhoneCell',
           formatter: SlickGridViewModel.formatters.phone,
         }, {
           id: 'PhoneHome',
-          name: 'PhoneHome',
+          name: 'Home Phone',
           field: 'PhoneHome',
           formatter: SlickGridViewModel.formatters.phone,
         }, {
           id: 'UserEmployeeTypeId',
-          name: 'UserEmployeeTypeId',
+          name: 'User Type',
           field: 'UserEmployeeTypeId',
+          formatter: function(row, cell, value) {
+            var userEmployeeType = hrcache.getMap('userEmployeeTypes')[value];
+            return (userEmployeeType) ? userEmployeeType.UserEmployeeTypeName : 'Unknown Type';
+          },
         },
       ],
     });

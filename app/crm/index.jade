@@ -43,7 +43,7 @@ html
         div(class="wrap")
           div(class="panels", data-bind="foreach:panels")
             <!-- ko if:!lazy -->
-            div(data-bind="active:active")
+            div(data-bind="active:active,if:active")
               div(data-bind="template:viewTmpl,attr:{id:id+'-panel'}")
             <!-- /ko -->
             div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
@@ -64,6 +64,7 @@ html
       include ../scheduling/_all.jade
       include ../survey/_all.jade
       include ../swing/_all.jade
+      include ../viz/_all.jade
 
     //- testing
     script parent.browser && parent.browser.init(window);

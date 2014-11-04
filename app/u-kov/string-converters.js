@@ -26,6 +26,7 @@ define('src/u-kov/string-converters', [
       /^([0-9]{1,2} \w+ )([0-9]{1,2} )/, // DD MMM YY
     ],
     allDigitsRegx = /^[0-9]+$/,
+    removeNonStarAndDigitsRegx = /[^*0-9]/g,
     removeNonDigitsRegx = /[^0-9]/g;
 
   converters.string = function() {
@@ -201,20 +202,8 @@ define('src/u-kov/string-converters', [
       }
     };
   };
-  converters.phone = function() {
-    return function convPhone(val) {
-      val = trim(val);
-      if (!val) {
-        return null;
-      }
-
-      var matches = phoneRegx.exec(val);
-      if (matches) {
-        return matches[1] + matches[2] + matches[3];
-      } else {
-        return new Error('Invalid phone number. Expected format: (123) 123-1234');
-      }
-    };
+  converters.phone = function(allowStar) {
+    return (allowStar) ? phoneWithStar : convPhone;
   };
   converters.ccard = function() {
     return function convCCard(val) {
@@ -300,6 +289,32 @@ define('src/u-kov/string-converters', [
     } else {
       return new Error('Invalid Social Security Number. Expected format: 123-12-1234');
     }
+  }
+
+  function convPhone(val) {
+    val = trim(val);
+    if (!val) {
+      return null;
+    }
+
+    var matches = phoneRegx.exec(val);
+    if (matches) {
+      return matches[1] + matches[2] + matches[3];
+    } else {
+      return new Error('Invalid phone number. Expected format: (123) 123-1234');
+    }
+  }
+
+  function phoneWithStar(val) {
+    val = trim(val);
+    if (!val) {
+      return null;
+    }
+
+    if (/\*+/.test(val)) {
+      return val.replace(removeNonStarAndDigitsRegx, '');
+    }
+    return convPhone(val);
   }
 
   return converters;

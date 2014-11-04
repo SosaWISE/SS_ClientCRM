@@ -14,7 +14,7 @@ define('mock/dataservices/user.mock', [
 
     UserDataservice.prototype.auth = function(data, cb) {
       setTimeout(function() {
-        var resp = mockery.fromTemplate({
+        var resp = {
           Code: 0,
           Message: '',
           Value: {
@@ -37,7 +37,7 @@ define('mock/dataservices/user.mock', [
               "hr_user_edit"
             ],
           },
-        });
+        };
         cb(null, resp);
       }, settings.timeout);
     };
