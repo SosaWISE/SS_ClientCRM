@@ -3,6 +3,7 @@
   'ko',
   'src/core/utils',
   // include other handlers
+  'src/core/ko.bindingHandlers.dropimg',
   'src/core/ko.bindingHandlers.formatters',
   'src/core/ko.bindingHandlers.mover',
   'src/core/ko.bindingHandlers.notice',
@@ -130,6 +131,20 @@
       jquery(element).css({
         "background-image": url ? ("url(" + url + ")") : "",
       });
+    },
+  };
+  // img
+  //---------------------------
+  ko.bindingHandlers.img = {
+    update: function(element, valueAccessor) {
+      var url = unwrap(valueAccessor());
+      if (url) {
+        element.onerror = function() {
+          element.onerror = null; // incase nophoto doesn't exist
+          element.src = '/stuff/img/nophoto.jpg';
+        };
+        element.src = url;
+      }
     },
   };
 

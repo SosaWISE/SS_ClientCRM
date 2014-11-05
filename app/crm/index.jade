@@ -4,7 +4,8 @@ html
     title Nexsense
     meta(http-equiv='X-UA-Compatible', content='IE=Edge,chrome=1')
     meta(http-equiv='content-type', content='text/html; charset=utf-8')
-    link(rel="stylesheet", type='text/css', media='screen', href="/index.css")
+    link(rel="stylesheet", type='text/css', media='screen', href="index.css")
+    link(rel="stylesheet", type='text/css', media='screen', href="/stuff/css/font-awesome.min.css")
     link(rel="shortcut icon",href="/stuff/img/favicon.ico",type="image/x-icon")
     //- include contents of index.js
     script
@@ -16,7 +17,8 @@ html
         |Loading...
         span(id="loadingSeconds")
 
-    div(id="main",data-bind="attr:{'class':os}")
+    //- dropimg: prevent browser from redirecting to dropped file if the drop zone was missed
+    div(id="main",data-bind="attr:{'class':os},dropimg:function(){}")
 
       div(style="display:none;", id="login-container", data-bind="with:login")
         div(data-bind="template:viewTmpl", id="login-panel")
@@ -64,7 +66,7 @@ html
       include ../scheduling/_all.jade
       include ../survey/_all.jade
       include ../swing/_all.jade
-      //- include ../viz/_all.jade
+      include ../viz/_all.jade
 
     //- testing
     script parent.browser && parent.browser.init(window);

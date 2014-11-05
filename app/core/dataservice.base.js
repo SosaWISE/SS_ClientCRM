@@ -61,6 +61,14 @@ define('src/core/dataservice.base', [
     // if (!queryObj.SessionId) {
     //   queryObj.SessionId = _sessionId;
     // }
+    var contentType = 'application/json';
+    if (data) {
+      if (data instanceof FormData) {
+        contentType = false;
+      } else if (!utils.isStr(data)) {
+        data = jsonhelpers.stringify(data);
+      }
+    }
 
     var context = {
       request: {
@@ -78,9 +86,9 @@ define('src/core/dataservice.base', [
       // Delete  - DELETE
       // Replace - PUT
       httpVerb: httpVerb,
-      data: (data && !utils.isStr(data)) ? jsonhelpers.stringify(data) : data,
+      data: data,
 
-      contentType: 'application/json',
+      contentType: contentType,
       dataType: 'json',
 
       callback: callback,
@@ -108,8 +116,8 @@ define('src/core/dataservice.base', [
 
       timeout: _this.timeout,
 
-      contentType: context.contentType || 'application/json',
-      dataType: context.dataType || 'json',
+      contentType: context.contentType,
+      dataType: context.dataType,
 
       crossDomain: true,
       /** This needs to be enabled once we are in production.

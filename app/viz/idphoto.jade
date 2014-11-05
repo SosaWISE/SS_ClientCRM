@@ -1,0 +1,14 @@
+div(class="viz-idphoto",data-bind="dropimg:setImage")
+  //- h2(class="title",data-bind="text:title")
+
+  div(class="controls")
+    ul(class="actions")
+      li
+        a(class="btn fa fa-rotate-left fa-2x",tabindex="0",title="Rotate Left",data-bind="cmd:cmdRotateLeft")
+      li
+        a(class="btn fa fa-rotate-right fa-2x",tabindex="0",title="Rotate Right",data-bind="cmd:cmdRotateRight")
+
+  div(class="vizual",data-bind="pixi:pixi")
+
+  div(style="margin-top:10px;")
+    a(class="btn-bg",tabindex="0",data-bind="cmd:cmdSave") Save Image
