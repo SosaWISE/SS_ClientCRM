@@ -115,7 +115,7 @@ define('src/core/layers.vm', [
         // check if the layer vm can be closed
         if (vm && (msg = vm.closeMsg())) {
           notify.warn(msg, null, 7);
-          return;
+          return false;
         }
 
         if (index > -1) {
@@ -123,6 +123,9 @@ define('src/core/layers.vm', [
         }
         if (prevCtx) {
           prevCtx.dispose();
+        }
+        if (vm && utils.isFunc(vm.dispose)) {
+          vm.dispose();
         }
         if (utils.isFunc(onClose)) {
           results = utils.isFunc(vm.getResults) ? vm.getResults() : [];
@@ -143,6 +146,7 @@ define('src/core/layers.vm', [
             layersVm.focus();
           }
         }
+        return true;
       },
     };
     layer.width = ko.computed(function() {

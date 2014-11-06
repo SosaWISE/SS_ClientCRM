@@ -145,7 +145,10 @@ define('src/viz/idphoto.vm', [
         if (resp.Value) {
           _this.layerResult = resp.Value;
           _this.setImage(null); // force clean up
-          closeLayer(_this);
+          if (closeLayer(_this) && currPhoto) {
+            currPhoto.texture.destroy(true); // destroy it and remove it from the cache
+
+          }
         } else {
           notify.warn('Bad response value: ' + resp.Value, null, 10);
         }
@@ -162,32 +165,38 @@ define('src/viz/idphoto.vm', [
 
     function onImageLoaded() {
       canSave(currPhoto.texture.baseTexture.hasLoaded);
+      //
+      fitToBounds(group, boxWidth, boxHeight, true);
+      //
+      rotateSprite(currPhoto, 0);
     }
     _this.setImage = function(imgUrl, crossOrigin) {
       canSave(false);
-      if (currPhoto) {
-        currPhoto.texture.baseTexture.off('loaded', onImageLoaded);
-        currPhoto.texture.destroy(true); // destroy it and remove it from the cache
-        group.removeChild(currPhoto);
-        currPhoto = null;
-      }
+      _this.disposePhoto();
       if (imgUrl) {
-        currPhoto = new PIXI.Sprite.fromImage(imgUrl, crossOrigin || false);
+        currPhoto = new PIXI.Sprite.fromImage(imgUrl, crossOrigin || 'use-credentials');
+        //
+        currPhoto.anchor.x = 0.5;
+        currPhoto.anchor.y = 0.5;
+        // add it to group
+        group.addChild(currPhoto);
+        group.setChildIndex(currPhoto, 0);
+        //
         if (currPhoto.texture.baseTexture.hasLoaded) {
           onImageLoaded();
         } else {
           currPhoto.texture.baseTexture.once('loaded', onImageLoaded);
         }
-        //
-        currPhoto.anchor.x = 0.5;
-        currPhoto.anchor.y = 0.5;
-        //
-        rotateSprite(currPhoto, 0);
-        // add it to group
-        group.addChild(currPhoto);
-        group.setChildIndex(currPhoto, 0);
-        //
-        fitToBounds(group, boxWidth, boxHeight, true);
+      }
+    };
+    _this.disposePhoto = function() {
+      if (currPhoto) {
+        currPhoto.texture.baseTexture.off('loaded', onImageLoaded);
+        currPhoto.texture.destroy(true); // destroy it and remove it from the cache
+        if (group) {
+          group.removeChild(currPhoto);
+        }
+        currPhoto = null;
       }
     };
 
@@ -245,7 +254,7 @@ define('src/viz/idphoto.vm', [
 
   function closeLayer(_this) {
     if (_this.layer) {
-      _this.layer.close();
+      return _this.layer.close();
     }
   }
   IdPhotoViewModel.prototype.getResults = function() {
@@ -259,6 +268,10 @@ define('src/viz/idphoto.vm', [
       msg = 'Please wait for save to finish.';
     }
     return msg;
+  };
+  IdPhotoViewModel.prototype.dispose = function() {
+    var _this = this;
+    _this.disposePhoto();
   };
 
   function rotateSprite(sprite, radians) {

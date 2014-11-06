@@ -14891,7 +14891,12 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
         var image = new Image();//document.createElement('img');
         if (crossorigin)
         {
+            //ACLS: https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes
+            if (crossorigin === 'use-credentials') { //ACLS: credentials weren't being passed since '' is the same as 'anonymous'
+                image.crossOrigin = crossorigin;
+            } else {
             image.crossOrigin = '';
+            }
         }
 
         image.src = imageUrl;
