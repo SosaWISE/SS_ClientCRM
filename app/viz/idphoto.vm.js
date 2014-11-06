@@ -163,7 +163,11 @@ define('src/viz/idphoto.vm', [
       return !busy && canSave();
     });
 
+    //
     function onImageLoaded() {
+      if (_this._disposed) {
+        return;
+      }
       canSave(currPhoto.texture.baseTexture.hasLoaded);
       //
       fitToBounds(group, boxWidth, boxHeight, true);
@@ -206,8 +210,10 @@ define('src/viz/idphoto.vm', [
     var boxWidth = 600;
     var boxHeight = 600;
     var stage = new PIXI.Stage(0x444444, true);
-    var renderer = PIXI.autoDetectRenderer(boxWidth, boxHeight, null, false, true);
-    // var renderer = new PIXI.CanvasRenderer(boxWidth, boxHeight);
+    var renderer = new PIXI.CanvasRenderer(boxWidth, boxHeight);
+    // PIXI.autoDetectRenderer (which in chrome returns PIXI.WebGLRenderer) has issues
+    //  when opening and closing this dialog quickly.
+    // var renderer = PIXI.autoDetectRenderer(boxWidth, boxHeight, null, false, true);
 
     _this.pixi = {
       view: renderer.view,
@@ -271,6 +277,7 @@ define('src/viz/idphoto.vm', [
   };
   IdPhotoViewModel.prototype.dispose = function() {
     var _this = this;
+    _this._disposed = true;
     _this.disposePhoto();
   };
 
