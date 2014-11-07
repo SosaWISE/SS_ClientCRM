@@ -1,0 +1,26 @@
+div(class="item-data")
+  ul(class="actions")
+    li(data-bind="if:data.TeamID()>0")
+      a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
+
+  div(class="content-wrap")
+    div(class="col")
+
+      div(class="section")
+        span(class="title") General Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Team Name
+              input(type="text",placeholder="",data-bind="ukov:data.Description,phonevalue:data.Description,valueUpdate:'keyup'")
+            li
+              span(class="label") Office
+              div(data-bind="cvm:data.OfficeCvm")
+            li
+              span(class="label") Team Role
+              div(data-bind="cvm:data.RoleLocationCvm")
+
+
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'white'")

@@ -202,7 +202,8 @@ body.users {
   }
 
 
-  .hr-user {
+  .hr-user,
+  .hr-team {
     @navWidth: 250px;
 
     > .dock-content {
@@ -291,7 +292,7 @@ body.users {
       }
     }
 
-    .user-data {
+    .item-data {
       > ul.actions {
         margin-right: 40px;
         text-align: right;
@@ -382,6 +383,12 @@ body.users {
     .spinner-wrap {
       // match .slickgrid margins
       top:10px;right:10px;bottom:10px;left:10px;
+    }
+
+    &.teams {
+      ul.edit-form > li {
+        width: 24.5%; // 100/4 - 0.5
+      }
     }
   }
 }

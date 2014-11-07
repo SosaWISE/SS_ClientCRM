@@ -33,6 +33,9 @@ define('src/hr/hr-cache', [
         case 'phoneCellCarriers':
           ensureType(name, 'PhoneCellCarrierID', cb);
           break;
+        case 'roleLocations':
+          ensureType(name, 'RoleLocationID', cb);
+          break;
         case 'schools':
           ensureType(name, 'SchoolID', cb);
           break;
@@ -41,6 +44,9 @@ define('src/hr/hr-cache', [
           break;
         case 'teams':
           ensureType(name, 'TeamID', cb);
+          break;
+        case 'teamLocations':
+          ensureType(name, 'TeamLocationID', cb);
           break;
         case 'userEmployeeTypes':
           ensureType(name, 'UserEmployeeTypeID', cb);

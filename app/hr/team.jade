@@ -1,0 +1,32 @@
+div(class="hr-item hr-team load-err", data-bind="if:loadErr,toggle:{'may-reload':mayReload}")
+  div(class="col")
+    div Failed to load team
+    //- ul(class="actions")
+      li
+        a(class="btn small",tabindex="0",data-bind="hasfocus:true,cmd:clickReload") Retry
+      li
+        a(class="btn small",tabindex="0",data-bind="cmd:close") Close
+
+div(data-bind="if:!loadErr()&&!loading()")
+
+  div(class="dock hr-team",data-bind="toggle:{'l-show':showNav,'r-show':showRight,'b-show':showBottom,'may-reload':mayReload}")
+
+    div(class="dock-content",data-bind="if:activeChild()")
+      div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}")
+
+    //- div(class="dock-left")
+    //-   div(class="btn-dock", data-bind="click:function(){showNav(!showNav())},toggle:{'closed':!showNav()}")
+    //-     div(class="close")
+    //-     div(class="open")
+    //- div(class="dock-right")
+    //-   div(class="btn-dock", data-bind="click:function(){showRight(!showRight())},toggle:{'closed':!showRight()}")
+    //-     div(class="close")
+    //-     div(class="open")
+    //-   div Right
+    //- div(class="dock-bottom")
+    //-   div(class="btn-dock", data-bind="click:function(){showBottom(!showBottom())},toggle:{'closed':!showBottom()}")
+    //-     div(class="close")
+    //-     div(class="open")
+    //-   div Bottom
+
+div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
