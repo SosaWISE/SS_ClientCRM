@@ -9,12 +9,10 @@ define('src/core/router', [
 ) {
   "use strict";
 
-  function no_op() {}
-
   function Router() {
     var _this = this;
     _this._inited = false;
-    _this.getUser = no_op;
+    _this.getUser = utils.noop;
     _this.routeMap = {};
     _this.routes = [];
     _this.anonRoutes = [];
@@ -67,6 +65,16 @@ define('src/core/router', [
   };
   Router.prototype.addAnonRoute = function(controller, routeName, routePath, defaultRouteData) {
     addRoute(this, this.anonRoutes, controller, routeName, routePath, defaultRouteData);
+  };
+
+  Router.prototype.endSession = function() {
+    var _this = this;
+    // clear the hash so on login the user is taken to the default page
+    _this.setPath('', false);
+    // prevent hash from being changed again
+    _this.setPath = utils.noop;
+    // reload page
+    window.location.reload();
   };
 
   Router.prototype.setPath = function(path, allowHistory) {
@@ -125,7 +133,7 @@ define('src/core/router', [
     // set path before the route is activated
     _this.setPath(path, allowHistory);
     // activate the route
-    _this.currRouteCtx = route.activate(path, extraData, function onActivated(pathTaken) {
+    _this.currRouteCtx = route.activate(path, extraData, function(pathTaken) {
       if (pathTaken !== path) {
         // set pathTaken in address bar
         _this.setPath(pathTaken, false);

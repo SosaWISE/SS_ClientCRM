@@ -136,8 +136,7 @@ define('src/core/app.vm', [
           notify.error(err, 10);
         } else {
           _this.user(null);
-          // reload page
-          window.location.reload();
+          _this.router.endSession();
         }
         cb();
       });
