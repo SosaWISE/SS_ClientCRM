@@ -8,7 +8,7 @@ define('src/survey/survey.vm', [
   'src/survey/qpossibleanswermap.new.vm',
   'src/survey/qmtokenmap.new.vm',
   'src/survey/question.vm',
-  'src/survey/question.new.vm',
+  'src/survey/question.editor.vm',
   'src/survey/surveytranslation.vm',
   'src/survey/surveytranslation.new.vm',
   'src/dataservice',
@@ -26,7 +26,7 @@ define('src/survey/survey.vm', [
   NewQPossibleAnswerMapViewModel,
   NewQMTokenMapViewModel,
   QuestionViewModel,
-  NewQuestionViewModel,
+  QuestionEditorViewModel,
   SurveyTranslationViewModel,
   NewSurveyTranslationViewModel,
   dataservice,
@@ -219,9 +219,10 @@ define('src/survey/survey.vm', [
   function newQuestion(surveyVM, parentVm) {
     var vm, parent = (parentVm === surveyVM) ? null : parentVm;
     if (parent && parent.noAddSubQuestion()) {
+      notify.info('Add a possible answer first', null, 3);
       return;
     }
-    vm = new NewQuestionViewModel({
+    vm = new QuestionEditorViewModel({
       surveyVM: surveyVM,
       surveyTypeVM: surveyVM.surveyTypeVM,
       tokensVM: surveyVM.tokensVM,

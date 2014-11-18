@@ -1,4 +1,4 @@
-div(data-bind="spinner:cmdAdd.busy,spinner-rgb:'white'")
+div(data-bind="spinner:cmdSave.busy,spinner-rgb:'white'")
 
 h2(class="title")
   span(data-bind="text:nextName")
@@ -31,4 +31,4 @@ ul(class="actions")
   li
     a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
   li
-    a(class="btn",tabindex="0",data-bind="cmd:cmdAdd") Save Question
+    a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save Question

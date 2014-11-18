@@ -1,4 +1,19 @@
 #surveys-panel {
+  .fa.btn {
+    padding: 4px 6px;
+  }
+  td.title {
+    > ul.actions {
+      margin-left: auto;
+      margin-right: auto;
+      width: 27px;
+      // text-align: left !important;
+      li {
+        padding: 0px 2px 2px 0px !important;
+      }
+    }
+  }
+
 
   .survey-types {
     > ul {
@@ -125,7 +140,15 @@
     }
 
     .qm {
-      font-size: 1.2em;
+      &:not(.disabled) {
+        cursor: pointer;
+        &:hover {
+          background-color: rgba(0,0,0,0.1);
+        }
+      }
+      > span.name {
+        font-size: 1.2em;
+      }
     }
   }
   table.takequestion {
