@@ -6,7 +6,7 @@ div(id="loginform")
   //- Our logindummy iframe where the form submits to
   iframe(src="/logindummy.html", name="logindummy", style="display: none")
   form(action="/logindummy.html", method="post", target="logindummy")
-    input(type="text", data-bind="value:username", name="email", class="email", placeholder="E-mail")
+    input(type="text", data-bind="value:username", name="email", class="email", placeholder="Username")
     input(type="password", data-bind="value:password", name="password", class="password", placeholder="Password")
     //- cmdNoDisabledAttr: browser won't save login info if the submit button is disabled
     input(type="submit", data-bind="cmd:cmdLogin,cmdNoDisabledAttr:true", class="btn-purple", value="Login")
