@@ -228,7 +228,7 @@ define('src/survey/survey.vm', [
       tokensVM: surveyVM.tokensVM,
       parent: parent,
       nextName: parentVm.nextName(),
-      groupOrder: parentVm.nextGroupOrder(),
+      groupOrder: parentVm.nextGroupOrder(true),
     });
     surveyVM.layersVm.show(vm, function(model) {
       if (!model) {
