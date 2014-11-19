@@ -97,12 +97,15 @@
       background-color: @disabledColor;
       color: darken(@disabledColor, 20%);
     }
+    &.keepactive.active {
+      background-color: shade(@disabledColor, 15%);
+    }
 
     &:not(.disabled):hover {
       background-color: tint(@bg-color, 20%);
     }
     &:not(.disabled):active,
-    &:not(.disabled).active {
+    &:not(.disabled).active{
       background-color: shade(@bg-color, 15%);
     }
     &:not(.disabled):focus {
@@ -199,7 +202,8 @@
       text-align: right;
     }
     .edit {
-      &:hover {
+      display: block;
+      &:not(.disabled):hover {
         background-color: rgba(0,0,0,0.1);
       }
     }

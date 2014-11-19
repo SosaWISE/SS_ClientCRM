@@ -27,7 +27,7 @@ table(class="question")
           a(class="btn small add-btn",data-bind="cmd:topVm.cmdAddPossibleAnswer") Possible Answer
         <!-- ko foreach:possibleAnswerMaps -->
         li
-          a(class="btn small",
+          a(class="btn small keepactive",
             data-bind="cmd:cmdEdit,active:expands,css:{'fails':fails}")
             span(data-bind="text:possibleAnswer.AnswerText")
         <!-- /ko -->
@@ -57,5 +57,5 @@ table(class="question")
         ul(class="sv")
           li
             a(class="btn add-btn",
-              data-bind="cmd:topVm.cmdAddQuestion,cssDisabled:noAddSubQuestion,attr:{title:noAddSubQuestion()?'add a possible answer first':'add sub question'}")
+              data-bind="cmd:topVm.cmdAddQuestion,cssDisabled:!canAddSubQuestion(),attr:{title:canAddSubQuestion()?'add sub question':'add a possible answer first'}")
               span(data-bind="text:nextName")

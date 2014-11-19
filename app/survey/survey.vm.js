@@ -49,7 +49,6 @@ define('src/survey/survey.vm', [
     _this.translations = ko.observableArray();
     _this.isCurrent = ko.observable(_this.model.IsCurrent);
     _this.isReadonly = ko.observable(_this.model.IsReadonly);
-    _this.isReadonly(false); //@TODO: remove
 
     _this.layersVm = new LayersViewModel({
       controller: _this,
@@ -119,9 +118,9 @@ define('src/survey/survey.vm', [
 
     _this.cmdPublish = ko.command(function(cb) {
       var msg = '';
-      // if (!_this.isReadonly()) { //@TODO: uncomment
-      //   msg += 'This survey will become the current survey, but it will no longer be editable. ';
-      // }
+      if (!_this.isReadonly()) {
+        msg += 'This survey will become the current survey, but it will no longer be editable. ';
+      }
       msg += 'Are you sure you want to publish this survey?';
       notify.confirm('Publish?', msg, function(result) {
         if (result === 'yes') {
@@ -218,7 +217,7 @@ define('src/survey/survey.vm', [
 
   function newQuestion(surveyVM, parentVm) {
     var vm, parent = (parentVm === surveyVM) ? null : parentVm;
-    if (parent && parent.noAddSubQuestion()) {
+    if (parent && !parent.canAddSubQuestion()) {
       notify.info('Add a possible answer first', null, 3);
       return;
     }
@@ -252,7 +251,7 @@ define('src/survey/survey.vm', [
       });
       // mark as current
       _this.isCurrent(true);
-      // _this.isReadonly(true); //@TODO: uncomment
+      _this.isReadonly(true);
     }, notify.error));
   }
 

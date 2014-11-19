@@ -30,8 +30,8 @@ define('src/survey/question.vm', [
 
     // computed observables
     _this.translations = ko.computed(_this.computeTranslations, _this);
-    _this.noAddSubQuestion = ko.computed(function() {
-      return !_this.possibleAnswerMaps().length;
+    _this.canAddSubQuestion = ko.computed(function() {
+      return !_this.topVm.isReadonly() && !!_this.possibleAnswerMaps().length;
     });
 
     // observables
@@ -92,12 +92,12 @@ define('src/survey/question.vm', [
       parent.updateChildNames();
     }, notify.error));
   }
-  //
+
   function canMoveUp(_this) {
     var siblings = _this.parent().questions();
     return siblings.length > 1 && siblings[0] !== _this;
   }
-  //
+
   function canMoveDown(_this) {
     var siblings = _this.parent().questions();
     return siblings.length > 1 && siblings[siblings.length - 1] !== _this;
