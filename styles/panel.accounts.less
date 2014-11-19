@@ -72,6 +72,7 @@
 
 
   .img-wrap {
+    position: relative;
     // width: 100px;
     // height: 100px;
     float: left;
@@ -82,6 +83,18 @@
       // width: 100px;
       // height: 100px;
       background-repeat: no-repeat;
+    }
+
+    .edit {
+      display: none;
+    }
+    &:hover {
+      .edit {
+        display: block;
+        position: absolute;
+        left: 4px;
+        top: 50%;
+      }
     }
   }
 }

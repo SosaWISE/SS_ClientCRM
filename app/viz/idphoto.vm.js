@@ -99,6 +99,9 @@ define('src/viz/idphoto.vm', [
   function IdPhotoViewModel(options) {
     var _this = this;
     IdPhotoViewModel.super_.call(_this, options);
+    BaseViewModel.ensureProps(_this, [
+      'userid',
+    ]);
 
     _this.title = 'Id Photo';
 
@@ -132,13 +135,12 @@ define('src/viz/idphoto.vm', [
       var fd = new FormData();
       fd.append('file', canvasHelper.toBlob(renderer.view, quality), quality + 'photo.jpg');
 
-      var id = '1111';
-      // uploadFormData('//' + config.serviceDomain + '/humanresourcesrv/users/' + id + '/upload', fd, function(err, resp) {
+      // uploadFormData('//' + config.serviceDomain + '/humanresourcesrv/users/' + _this.userid + '/upload', fd, function(err, resp) {
       //   resp = resp;
       //   cb();
       // });
       dataservice.humanresourcesrv.users.save({
-        id: id,
+        id: _this.userid,
         link: 'upload',
         data: fd,
       }, null, utils.safeCallback(cb, function(err, resp) {
@@ -410,7 +412,7 @@ define('src/viz/idphoto.vm', [
       var h = (half / 2) * hRatio;
       g.drawEllipse(half, half * 0.85, h * 0.75, h);
     }
-    //
+
     var half = width / 2;
     var g = new PIXI.Graphics();
     g.position.x = half;
@@ -451,9 +453,10 @@ define('src/viz/idphoto.vm', [
     }
 
     // detect available wheel event
-    support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
-    document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
-    "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
+    // 1. Modern browsers support "wheel"
+    // 2. Webkit and IE support at least "mousewheel"
+    // 3. let's assume that remaining browsers are older Firefox
+    support = "onwheel" in document.createElement("div") ? "wheel" : document.onmousewheel !== undefined ? "mousewheel" : "DOMMouseScroll";
 
     function _addWheelListener(elem, eventName, callback, useCapture) {
       elem[_addEventListener](prefix + eventName, support === "wheel" ? callback : function(originalEvent) {

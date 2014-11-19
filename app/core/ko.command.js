@@ -39,7 +39,7 @@
         if (utils.isFunc(cb)) {
           cb.apply(null, ko.utils.makeArray(arguments));
         }
-      }, this); // pass view model as second argument
+      }, this, ko.utils.makeArray(arguments)); // pass view model as second argument and arguments as the third
     };
 
     if (canExecute) {

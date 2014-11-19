@@ -381,8 +381,24 @@ define('src/hr/usereditor.vm', [
       return !busy && !_this.data.isClean();
     });
     _this.cmdImage = ko.command(function(cb) {
+      _this.dropImage.execute(_this.data.imgUrl.peek());
+      cb();
+    }, function(busy) {
+      return !busy && !_this.dropImage.busy();
+    });
+    _this.dropImage = ko.command(function(cb, _, args) {
+      var imgUrl = args[0],
+        userid = _this.data.UserID.peek();
+      if (!imgUrl || userid < 1) {
+        cb();
+        if (userid < 1) {
+          notify.info('Save the user first', null, 5);
+        }
+        return;
+      }
       var vm = new IdPhotoViewModel({
-        imgUrl: _this.data.imgUrl.peek(),
+        userid: userid,
+        imgUrl: args[0],
       });
       _this.layersVm.show(vm, function(reloadImg) {
         if (reloadImg) {
