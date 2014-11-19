@@ -37,6 +37,7 @@ define('src/survey/qpossibleanswermap.new.vm', [
     NewQPossibleAnswerMapViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, ['questionVM', 'possibleAnswersVM']);
 
+    _this.item = _this.item || null;
     _this.data = ukov.wrap(_this.item || {
       QuestionId: _this.questionVM.model.QuestionID,
       PossibleAnswerId: null,
@@ -61,6 +62,8 @@ define('src/survey/qpossibleanswermap.new.vm', [
     // events
     //
     _this.clickCancel = function() {
+      _this.layerResult = null;
+      _this.isDeleted = false;
       closeLayer(_this);
     };
     _this.cmdSave = ko.command(function(cb) {
@@ -79,6 +82,32 @@ define('src/survey/qpossibleanswermap.new.vm', [
         _this.layerResult = resp.Value;
         closeLayer(_this);
       }, notify.error));
+    }, function(busy) {
+      return !busy && !_this.cmdDelete.busy();
+    });
+    _this.cmdDelete = ko.command(function(cb) {
+      notify.confirm('Delete?', 'Are you sure you want to delete this answer?', function(result) {
+        if (result !== 'yes') {
+          cb();
+          return;
+        }
+        var model = _this.data.getValue();
+        dataservice.survey.questionPossibleAnswerMaps.del(
+          model.QuestionId + '/' + model.PossibleAnswerId, null,
+          utils.safeCallback(cb, function(err, resp) {
+            if (resp.Message && resp.Message !== 'Success') {
+              notify.error(resp, 3);
+            }
+            //
+            _this.layerResult = resp.Value || true;
+            _this.isDeleted = true;
+            closeLayer(_this);
+          }, function(err) {
+            notify.error(err);
+          }));
+      });
+    }, function(busy) {
+      return !busy && !_this.cmdSave.busy();
     });
   }
   utils.inherits(NewQPossibleAnswerMapViewModel, BaseViewModel);
@@ -93,13 +122,15 @@ define('src/survey/qpossibleanswermap.new.vm', [
   }
   NewQPossibleAnswerMapViewModel.prototype.getResults = function() {
     var _this = this;
-    return [_this.layerResult];
+    return [_this.layerResult, _this.isDeleted];
   };
   NewQPossibleAnswerMapViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
       msg;
     if (_this.cmdSave.busy() && !_this.layerResult) {
       msg = 'Please wait for save to finish.';
+    } else if (_this.cmdDelete.busy() && !_this.layerResult) {
+      msg = 'Please wait for delete to finish.';
     }
     return msg;
   };

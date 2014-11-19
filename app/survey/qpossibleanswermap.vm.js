@@ -33,8 +33,12 @@ define('src/survey/qpossibleanswermap.vm', [
         item: utils.clone(_this.model),
         questionVM: _this.questionVM,
         possibleAnswersVM: _this.possibleAnswersVM,
-      }), function(model) {
+      }), function(model, deleted) {
         if (!model) {
+          return;
+        }
+        if (deleted) {
+          _this.questionVM.possibleAnswerMaps.remove(_this);
           return;
         }
         _this.model = model;
