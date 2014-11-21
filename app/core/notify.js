@@ -29,6 +29,7 @@ define('src/core/notify', [
     //
     _this.init = _this.init.bind(_this);
     _this.error = _this.error.bind(_this);
+    _this.iferror = _this.iferror.bind(_this);
     _this.warn = _this.warn.bind(_this);
     _this.info = _this.info.bind(_this);
     _this.alert = _this.alert.bind(_this);
@@ -57,6 +58,13 @@ define('src/core/notify', [
     if (err) {
       notify(_this, (err.Code === 0 ? 'info' : 'error'), err.Url, err.Code,
         _this.errorCodeMap[err.Code] || 'Error (code not recognized)', err.Message, delay, options);
+    }
+  };
+  Notifier.prototype.iferror = function(err) {
+    var _this = this;
+    if (err) {
+      _this.error(err);
+      return true;
     }
   };
   // for displaying validation warnings

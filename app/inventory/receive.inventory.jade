@@ -1,14 +1,14 @@
 table(class="fh-wrap")
   tr
     td(class="fh-header relative")
-      ul(class="edit-form")        
+      ul(class="edit-form")
         li(style="margin: 10px;")
           div(class="header_left")
             ul(class="header_ul" style="color: white;")
               li
                 span(class="label") Enter PO#
               li
-                input(type="text" placeholder="" data-bind="value:data.PurchaseOrderID,valueUpdate:'keyup',select:focusFirst, event: { keyup: resetPage}")
+                input(type="text" placeholder="" data-bind="ukov:data.GPPO,value:data.GPPO,valueUpdate:'keyup',select:focusFirst, event: { keyup: resetPage}")
               li
                 button(type="button" class="btn-inventory"  data-bind="cmd:cmdSearch") Submit
           div(class="header_right")
@@ -16,14 +16,14 @@ table(class="fh-wrap")
               li
                 label Packing Slip #
               li
-                input(type="text" data-bind="ukov:data.PackingSlipNumber,value:data.PackingSlipNumber,valueUpdate:'keyup'")                
+                input(type="text" data-bind="ukov:data.PackingSlipNumber,value:data.PackingSlipNumber,valueUpdate:'keyup'")
           div(class="header_center")
             ul(class="header_ul" style="color: white;")
               li
                 span(class="label") Or Select PO#
               li
                 span(class="label") Vendor
-                div(data-bind="cvm:data.vendorTypeCvm")            
+                div(data-bind="cvm:data.vendorTypeCvm")
               li
                 span(class="label") PO# List
                 div(data-bind="cvm:data.purchaseOrderListCvm")

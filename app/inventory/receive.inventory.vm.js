@@ -1,4 +1,5 @@
 define('src/inventory/receive.inventory.vm', [
+  'src/core/strings',
   'src/account/default/address.validate.vm',
   'src/core/combo.vm',
   'src/core/notify',
@@ -16,6 +17,7 @@ define('src/inventory/receive.inventory.vm', [
   'src/core/layers.vm',
   'src/ukov',
 ], function(
+  strings,
   AddressValidateViewModel,
   ComboViewModel,
   notify,
@@ -36,179 +38,170 @@ define('src/inventory/receive.inventory.vm', [
   "use strict";
 
 
-  var schema;
+  var schema,
+    nullStrConverter = ukov.converters.nullString();
 
   schema = {
     _model: true,
-    PurchaseOrderID: {
-      //converter: ukov.converters.number(0),
+    // PurchaseOrderID: {
+    GPPO: {
+      converter: nullStrConverter,
       validators: [
-        ukov.validators.isRequired('PurchaseOrder ID is required')
+        ukov.validators.isRequired('Please enter a PO#')
       ]
     },
     PackingSlipNumber: {
-      //converter: ukov.converters.number(0),
-      converter: ukov.converters.string(),
+      converter: nullStrConverter,
       validators: [
-        ukov.validators.isRequired('PackingSlipNumber ID is required')
+        ukov.validators.isRequired('Please enter a Packing Slip #')
       ]
     },
-    PackingSlipID: {},
-    VendorType: {},
-    PurchaseOrderList: {},
-    PackingSlipNumberList: {},
   };
 
 
   function ReceiveInventoryViewModel(options) {
     var _this = this;
-
     ReceiveInventoryViewModel.super_.call(_this, options);
-
-    //Set the first focus on PO# field
-    _this.focusFirst = ko.observable(false);
-
-    _this.data = ukov.wrap(_this.item || {
-      PurchaseOrderID: null,
-      PackingSlipNumber: null,
-      PackingSlipID: null,
-      PackingSlipNumberList: null
-    }, schema);
 
     //This a layer for enter barcode screen pop up
     _this.layersVm = new LayersViewModel({
       controller: _this,
     });
+    _this.focusFirst = ko.observable(false);
+    _this.data = ukov.wrap(_this.item || {}, schema);
 
     //This is the dropdown vendor type
     _this.data.vendorTypeCvm = new ComboViewModel({
-      selectedValue: _this.data.VendorType,
       nullable: true,
       fields: {
         value: 'VendorID',
         text: 'VendorName',
       },
     });
-
     //This is the dropdown PO# list
     _this.data.purchaseOrderListCvm = new ComboViewModel({
-      selectedValue: _this.data.PurchaseOrderList,
       nullable: true,
       fields: {
         value: 'GPPONumber',
         text: 'GPPONumber',
       },
-
     });
-
     //This is the dropdown Packing Slip# list
     _this.data.packingSlipListCvm = new ComboViewModel({
-      selectedValue: _this.data.PackingSlipNumberList,
       nullable: true,
       fields: {
         value: 'PackingSlipNumber',
         text: 'PackingSlipNumber',
       },
+    });
+    //Populate PO list when there's a change of vendor
+    _this.data.vendorTypeCvm.selectedValue.subscribe(function(vendorType, cb) {
+      if (vendorType) {
+        dataservice.inventoryenginesrv.PurchaseOrder.read({
+          id: vendorType,
+          link: 20,
+        }, null, utils.safeCallback(cb, function(err, resp) {
+          // only set if it hasn't changed again
+          if (_this.data.vendorTypeCvm.selectedValue.peek() === vendorType) {
+            _this.data.purchaseOrderListCvm.setList(resp.Value);
+          }
+        }, notify.error));
+      }
+    });
+    //Populate PO field when there's a change of vendor
+    _this.data.purchaseOrderListCvm.selectedValue.subscribe(function(gppo) {
+      if (gppo) {
+        var previousPO = _this.data.GPPO();
 
+        //clear packing slip# if PO# has changed
+        if (strings.trim(previousPO) !== strings.trim(gppo)) {
+          _this.data.PackingSlipNumber(null);
+        }
+
+        _this.data.GPPO(gppo);
+        search(_this);
+
+        //populate packing slip# list
+        load_packingSlipNumberList(_this.data.packingSlipListCvm, gppo);
+      }
+    });
+    //Populate packing slip# field when user selected a packing slip# from dropdown
+    _this.data.packingSlipListCvm.selectedValue.subscribe(function(packingSlipNumber) {
+      if (packingSlipNumber) {
+        _this.data.PackingSlipNumber(packingSlipNumber);
+      }
     });
 
 
     //Display Inventory Grid
     _this.inventoryListGvm = new InventoryGridViewModel({
-
       //This block executes when any of the submit buttons on "Enter Barcode" column is clicked
-      enterBarcode: function(part, cb) {
-
+      enterBarcode: function(part) {
         //parameters for packingslipitems
         var param = {
-          PackingSlipId: _this.data.PackingSlipID(),
+          PackingSlipId: _this.packingSlipId,
           ItemId: part.ItemId,
           Quantity: part.Quantity
         };
 
         //If Enter Qty Received greater than Remain, show error message
         if (part.WithBarcodeCount > part.WithoutBarcodeCount) {
-          notify.warn('\'Enter Qty Received\' should not be greater than \'Remain\'', null, 3);
-          cb();
+          notify.warn("'Enter Qty Received' should not be greater than 'Remain'", null, 5);
+          return;
         }
-
-
         //Do not launch the Enter Barcode window if the Packing Slip # is blank
         if (!_this.data.PackingSlipNumber()) {
-          notify.warn('Please enter Packing Slip #', null, 3);
-          cb();
+          notify.warn('Please enter Packing Slip #', null, 5);
+          return;
+        }
+        //If Enter Qty Received greater than zero, proceed to entering barcode screen
+        if (parseInt(part.WithBarcodeCount, 10) < 1) {
+          notify.warn('Please input quantity received.', null, 5);
+          return;
         }
 
-        //If Enter Qty Received greater than zero, proceed to entering barcode screen
-        if (parseInt(part.WithBarcodeCount, 10) > 0) {
+        //Add to packing slip items
+        addPackingSlipItems(param, function(err /*, resp*/ ) {
+          if (err) {
+            utils.error(err);
+          }
+        });
 
-          //Add to packing slip items
-          addPackingSlipItems(param, cb);
-
-          //Go to Enter Barcodes screen
-          _this.layersVm.show(new EnterBarcodeViewModel({
-            title: 'Enter Barcodes',
-            poNumber: part.PurchaseOrderId,
-            packingSlipID: _this.data.PackingSlipNumber,
-            count: part.WithBarcodeCount,
-            enteredBarcode: 0,
-            purchaseOrderItemID: part.PurchaseOrderItemID,
-          }), function onClose(result, cb) {
-            if (!result) {
-
-              //Once done adding barcode, refresh grid with latest data - still need to simplify
-              var updatedList = _this.inventoryListGvm.list();
-
-              dataservice.inventoryenginesrv.PurchaseOrderItems.read({
-                id: updatedList[0].PurchaseOrderId
-              }, null, utils.safeCallback(cb, function(err, resp) {
-                if (resp.Code === 0) {
-
-                  //Empty grid before inserting new data
-                  _this.inventoryListGvm.list([]);
-
-                  //Update inventoryListGvm grid
-                  for (var x = 0; x < resp.Value.length; x++) {
-                    _this.inventoryListGvm.list.push(resp.Value[x]);
-                  }
-
-                }
-
-              }));
-
-
-              return;
+        //Go to Enter Barcodes screen
+        _this.layersVm.show(new EnterBarcodeViewModel({
+          title: 'Enter Barcodes',
+          poNumber: part.PurchaseOrderId,
+          packingSlipID: _this.data.PackingSlipNumber,
+          count: part.WithBarcodeCount,
+          enteredBarcode: 0,
+          purchaseOrderItemID: part.PurchaseOrderItemID,
+        }), function(result) {
+          console.log('asdfasffasfdsdf', result);
+          // if (!result) { // result is always undefined so this is always true??
+          loadPurchaseOrderItems(_this, part.PurchaseOrderId, function(err /*, resp*/ ) {
+            if (err) {
+              utils.error(err);
             }
           });
-
-        } else {
-          notify.warn('Please input quantity received.', null, 3);
-        }
-
+          // }
+        });
       },
-
     });
 
-    //Clear fields and grid when there's a change on PO#
-    _this.resetPage = function() {
-
-      //clear packing slip#
-      _this.data.PackingSlipNumber(null);
-
-      //clear grid
-      _this.inventoryListGvm.list([]);
-
-    };
-
-
+    //
     //events
     //
     //Search PO by PurchaseOrderID
-    _this.cmdSearch = ko.command(function(cb, vm) {
-      _this.search(vm, cb);
-      cb();
+    _this.cmdSearch = ko.command(function(cb) {
+      search(_this, cb);
     });
-
+    //Clear fields and grid when there's a change on PO#
+    _this.resetPage = function() {
+      //clear packing slip#
+      _this.data.PackingSlipNumber(null);
+      //clear grid
+      _this.inventoryListGvm.list([]);
+    };
 
     _this.active.subscribe(function(active) {
       if (active) {
@@ -218,59 +211,7 @@ define('src/inventory/receive.inventory.vm', [
         }, 100);
       }
     });
-
-    //Populate PO list when there's a change of vendor
-    _this.data.VendorType.subscribe(function(VendorType, cb) {
-      if (VendorType) {
-
-        dataservice.inventoryenginesrv.PurchaseOrder.read({
-          id: VendorType,
-          link: 20,
-        }, null, utils.safeCallback(cb, function(err, resp) {
-          if (resp.Code === 0) {
-
-            _this.data.purchaseOrderListCvm.setList(resp.Value);
-
-          } else {
-            notify.warn('No records found.', null, 3);
-          }
-        }));
-
-      }
-    });
-
-    //Populate PO field when there's a change of vendor
-    _this.data.PurchaseOrderList.subscribe(function(purchaseOrderNumber, cb) {
-      if (purchaseOrderNumber) {
-
-        var previousPO = _this.data.PurchaseOrderID();
-
-        //clear packing slip# if PO# has changed
-        if (previousPO !== null && previousPO.trim() !== purchaseOrderNumber.trim()) {
-          _this.data.PackingSlipNumber(null);
-        }
-
-        _this.data.PurchaseOrderID(purchaseOrderNumber);
-
-        _this.search(_this);
-
-        //populate packing slip# list
-        load_packingSlipNumberList(_this, purchaseOrderNumber, cb);
-
-      }
-
-    });
-
-    //Populate packing slip# field when user selected a packing slip# from dropdown
-    _this.data.PackingSlipNumberList.subscribe(function(packingSlipNumber) {
-      if (packingSlipNumber) {
-        _this.data.PackingSlipNumber(packingSlipNumber);
-      }
-    });
-
-
   }
-
   utils.inherits(ReceiveInventoryViewModel, ControllerViewModel);
   ReceiveInventoryViewModel.prototype.viewTmpl = 'tmpl-inventory-receive';
 
@@ -279,181 +220,96 @@ define('src/inventory/receive.inventory.vm', [
   //
 
   ReceiveInventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-
-    this.inventoryListGvm.list([]);
-
     var _this = this;
-    join = join;
+
+    _this.inventoryListGvm.list([]);
 
     //load vendors
     load_vendorList(_this.data.vendorTypeCvm, join.add());
-
   };
 
-  ReceiveInventoryViewModel.prototype.onActivate = function(routeData) {
+  function search(_this, cb) {
+    if (!utils.isFunc(cb)) {
+      cb = utils.noop;
+    }
 
-    routeData.action = 'receive';
-  };
+    var gppo = _this.data.GPPO;
+    if (!gppo.isValid()) {
+      notify.warn(gppo.errMsg(), null, 5);
+      cb();
+      return;
+    }
 
-  ReceiveInventoryViewModel.prototype.search = function(vm) {
-
-    var iePurchaseOrder = vm.data.getValue(),
-
-      //add joiner since we need to call cb when all api calls have returned
-      join = joiner();
-
-    //Getting PurchaseOrderID api call
+    var join = joiner();
+    //Getting GPPO api call
     dataservice.inventoryenginesrv.PurchaseOrder.read({
-      id: iePurchaseOrder.PurchaseOrderID.trim(),
+      id: gppo.getValue(),
       link: 'gppo'
     }, null, utils.safeCallback(join.add(), function(err, resp) {
+      var purchaseOrder = resp.Value;
 
-      if (resp.Code === 0) {
-        var param,
-          purchaseOrder = resp.Value;
+      //function that calls packing slip api
+      loadPackingSlipInfo({
+        PurchaseOrderId: purchaseOrder.PurchaseOrderID,
+        PackingSlipNumber: _this.data.PackingSlipNumber()
+      }, _this, join.add());
 
-        purchaseOrder = jsonhelpers.parse(jsonhelpers.stringify(purchaseOrder));
+      //Populate grid with PurchaseOrderItems
+      loadPurchaseOrderItems(_this, purchaseOrder.PurchaseOrderID, join.add());
+    }, utils.noop));
 
-        param = {
-          PurchaseOrderId: purchaseOrder.PurchaseOrderID,
-          PackingSlipNumber: vm.data.PackingSlipNumber()
-        };
-
-        //function that calls packing slip api
-        loadPackingSlipInfo(param, vm, join.add());
-
-        //Populate grid with PurchaseOrderItems
-        loadPurchaseOrderItems(vm, purchaseOrder.PurchaseOrderID, join.add());
-
-      } else {
-        notify.warn('PO# not found', null, 3);
+    // wait until all api calls have returned
+    join.when(function(err) {
+      if (err) {
+        notify.error(err);
       }
-    }));
+      cb();
+    });
+  }
 
-    //since we are using joiner. invoked cb only once
-    //cb();
-
-  };
-
-
-  function loadPurchaseOrderItems(vm, poid, cb) {
-    //var iePurchaseOrder = vm.data.getValue();
+  function loadPurchaseOrderItems(_this, poid, cb) {
+    //Empty grid before inserting new data
+    _this.inventoryListGvm.list([]);
     //Purchange Order Items
     dataservice.inventoryenginesrv.PurchaseOrderItems.read({
       id: poid
-    }, null, utils.safeCallback(cb, function(err, resp) {
-      if (resp.Code === 0) {
-
-        //Empty grid before inserting new data
-        vm.inventoryListGvm.list([]);
-
-        if (resp.Value.length > 0) {
-
-          //Update inventoryListGvm grid
-          for (var x = 0; x < resp.Value.length; x++) {
-
-            //console.log(JSON.stringify(resp.Value[x]));
-
-            vm.inventoryListGvm.list.push(resp.Value[x]);
-          }
-
-        } else {
-          notify.warn('No records found.', null, 3);
-        }
-
-      } else {
-        notify.warn('PurchaseOrderID not found', null, 3);
-      }
-    }));
+    }, _this.inventoryListGvm.list, cb);
   }
 
-
-  function loadPackingSlipInfo(param, vm, cb) {
-
-    console.log("Packing slip params:" + JSON.stringify(param));
-
-    dataservice.inventoryenginesrv.PackingSlip.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
-
-      if (resp.Code === 0) {}
-
-      console.log("PackingSlip:" + JSON.stringify(resp.Value));
-
-      //vm.data.PackingSlipNumber.setValue(resp.Value.PackingSlipNumber);
-      vm.data.PackingSlipID(resp.Value.PackingSlipID);
-
-    }, function(err) {
-      notify.error(err);
-    }));
-
+  function loadPackingSlipInfo(param, _this, cb) {
+    dataservice.inventoryenginesrv.PackingSlip.save({
+      data: param,
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      //_this.data.PackingSlipNumber.setValue(resp.Value.PackingSlipNumber);
+      _this.packingSlipId = resp.Value.PackingSlipID;
+    }, utils.noop));
   }
 
   function addPackingSlipItems(param, cb) {
-
-    dataservice.inventoryenginesrv.PackingSlipItem.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
-
-      if (resp.Code === 0) {
-        console.log("Add Packing Slip:" + JSON.stringify(resp.Value));
-      }
-
-    }, function(err) {
-      notify.error(err);
-    }));
+    dataservice.inventoryenginesrv.PackingSlipItem.save({
+      data: param,
+    }, null, cb);
   }
 
   //load vendors
   function load_vendorList(cvm, cb) {
-
-    dataservice.inventoryenginesrv.VendorList.read({}, null, utils.safeCallback(cb, function(err, resp) {
-
-      if (resp.Code === 0) {
-
-        console.log("VendorList:" + JSON.stringify(resp.Value));
-
-        //set vendor list
-        cvm.setList(resp.Value);
-
-      } else {
-        notify.warn('No records found.', null, 3);
-      }
-    }));
-
+    cvm.setList([]);
+    dataservice.inventoryenginesrv.VendorList.read({}, cvm.setList, cb);
   }
 
   //load packing slip# list
-  function load_packingSlipNumberList(_this, PackingSlipId, cb) {
-
-    var x,
-      tList = [];
-
+  function load_packingSlipNumberList(cvm, packingSlipId) {
+    cvm.setList([]);
     dataservice.inventoryenginesrv.PackingSlip.read({
-      id: PackingSlipId,
+      id: packingSlipId,
       link: 'GPPON'
-    }, null, utils.safeCallback(cb, function(err, resp) {
-
-      console.log("PackingSlip list:" + JSON.stringify(resp.Value));
-
-      if (resp.Value.length > 0) {
-
-        for (x = 0; x < resp.Value.length; x++) {
-
-          if (resp.Value[x].PackingSlipNumber) {
-            tList.push({
-              PackingSlipNumber: resp.Value[x].PackingSlipNumber
-            });
-          }
-
-        }
-
-        _this.data.packingSlipListCvm.setList(tList);
-
-      } else {
-        notify.warn('No records found.', null, 3);
-      }
-    }));
-
+    }, function(val) {
+      // filter out those without a number???
+      cvm.setList(val.filter(function(item) {
+        return item.PackingSlipNumber;
+      }));
+    }, notify.iferror);
   }
-
-
 
   return ReceiveInventoryViewModel;
 });

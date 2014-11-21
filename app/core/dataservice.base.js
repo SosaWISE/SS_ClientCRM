@@ -205,31 +205,31 @@ define('src/core/dataservice.base', [
     // set request url
     responseData.Url = context.requestUrl;
 
-    if (utils.isFunc(context.callback)) {
-      // try to update session id
-      DataserviceBase.sessionID(responseData.SessionId);
+    // try to update session id
+    DataserviceBase.sessionID(responseData.SessionId);
 
-      var err;
-      // check if there was an error
-      if (responseData.Code === 0) {
-        // try to set setter value,
-        if (utils.isFunc(context.setter)) {
-          try {
-            context.setter(responseData.Value);
-          } catch (ex) {
-            console.error(ex);
-            err = {
-              Code: 990004,
-              Message: ex.stack,
-              Value: null,
-            };
-          }
+    var err;
+    // check if there was an error
+    if (responseData.Code === 0) {
+      // try to set setter value,
+      if (utils.isFunc(context.setter)) {
+        try {
+          context.setter(responseData.Value);
+        } catch (ex) {
+          console.error(ex);
+          err = {
+            Code: 990004,
+            Message: ex.stack,
+            Value: null,
+          };
         }
-      } else {
-        err = responseData;
-        // // prepend requestUrl
-        // err.Message = context.requestUrl + '\n' + (err.Message || '');
       }
+    } else {
+      err = responseData;
+      // // prepend requestUrl
+      // err.Message = context.requestUrl + '\n' + (err.Message || '');
+    }
+    if (utils.isFunc(context.callback)) {
       // call callback function
       context.callback(err, responseData, context);
     }
