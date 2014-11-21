@@ -91,11 +91,12 @@ define('src/scheduling/reschedule.ticket.editor.vm', [
       closeLayer(_this);
     };
 
-    _this.cmdUserAccount = ko.command(function() {
+    _this.cmdUserAccount = ko.command(function(cb) {
       _this.goTo({
         route: 'accounts',
         masterid: _this.ticket.CustomerMasterFileId,
       });
+      cb();
     }, function(busy) {
       return !busy;
     });
