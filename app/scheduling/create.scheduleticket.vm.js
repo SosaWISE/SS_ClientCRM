@@ -39,12 +39,8 @@ define('src/scheduling/create.scheduleticket.vm', [
 
   function ScheduleTicketViewModel(options) {
     var _this = this;
-
     ScheduleTicketViewModel.super_.call(_this, options);
-
     var ticket = _this.ticket;
-    console.log('options' + options);
-    //alert(JSON.stringify(ticket));
 
     //show TicketID if ticket has data
     if (ticket) {
@@ -66,9 +62,7 @@ define('src/scheduling/create.scheduleticket.vm', [
         ScheduleAppointmentDate: null,
         ScheduleTravelTime: null
       }, schema);
-
     } else {
-
       _this.data = ukov.wrap({
         AccountId: null,
         ScheduleTicketID: null,
@@ -78,7 +72,6 @@ define('src/scheduling/create.scheduleticket.vm', [
         ScheduleAppointmentDate: null,
         ScheduleTravelTime: null
       }, schema);
-
     }
     //Ticket type dropdown
     _this.data.ScheduleTicketTypeCvm = new ComboViewModel({
@@ -97,11 +90,10 @@ define('src/scheduling/create.scheduleticket.vm', [
     //
 
     _this.cmdSaveScheduleTicket = ko.command(function(cb) {
-
       var TicketId = _this.data.ScheduleTicketID(),
         convAccountId;
 
-      //@TODO      
+      //@TODO
 
       //doing manual number conversion for now
       convAccountId = Number(_this.data.AccountId());
@@ -112,36 +104,26 @@ define('src/scheduling/create.scheduleticket.vm', [
         return;
       }
 
-
       //account id validation
       dataservice.monitoringstationsrv.accounts.read({
         id: _this.data.AccountId(),
         link: 'Validate',
       }, null, utils.safeCallback(cb, function(err, resp) {
-
         if (resp.Code === 0 && resp.Value) {
-
-          console.log("Account Validate:" + JSON.stringify(resp.Value));
-
           if (!TicketId) {
             createServiceTicket(_this, cb);
           } else {
             setScheduleTicket(_this, cb);
           }
-
         } else {
           notify.warn('Account ID is invalid.', null, 3);
         }
-
       }, notify.error, false));
-
     });
 
     _this.clickClose = function() {
       closeLayer(_this);
     };
-
-
   }
 
   utils.inherits(ScheduleTicketViewModel, BaseViewModel);
@@ -150,26 +132,16 @@ define('src/scheduling/create.scheduleticket.vm', [
   ScheduleTicketViewModel.prototype.height = 'auto';
 
   ScheduleTicketViewModel.prototype.onActivate = function( /*routeData, extraData, join*/ ) {
-
     var _this = this,
       join = joiner();
-
     //load ticket type list
     load_ticketTypeList(_this.data.ScheduleTicketTypeCvm, join.add());
-
   };
-
   ScheduleTicketViewModel.prototype.onLoad = function(routeData, extraData, join) {
-
     var _this = this;
-
     //load ticket type list
     load_ticketTypeList(_this.data.ScheduleTicketTypeCvm, join.add());
-
   };
-
-
-
 
   function closeLayer(_this) {
     _this.layerResult = _this.ticket;
@@ -183,26 +155,18 @@ define('src/scheduling/create.scheduleticket.vm', [
   };
 
   function load_ticketTypeList(cvm, cb) {
-
     dataservice.scheduleenginesrv.TicketTypeList.read({}, null, utils.safeCallback(cb, function(err, resp) {
-
       if (resp.Code === 0) {
-
-        console.log("TicketTypeList:" + JSON.stringify(resp.Value));
-
         //Set result to Location combo list
         cvm.setList(resp.Value);
-
       } else {
         notify.warn('No records found.', null, 3);
       }
     }));
-
   }
 
   //create ticket
   function createServiceTicket(_this, cb) {
-
     var param = {
       AccountId: _this.data.AccountId(),
       MonitoringStationNo: null, //temp
@@ -219,42 +183,28 @@ define('src/scheduling/create.scheduleticket.vm', [
       BlockID: _this.blockId,
     };
 
-    console.log(JSON.stringify("Create Ticket Parameters:" + JSON.stringify(param)));
-
     dataservice.scheduleenginesrv.SeTicket.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
-
       if (resp.Code === 0) {
-
-        console.log("Create Ticket:" + JSON.stringify(resp.Value));
-
         //get TicketID
         _this.data.ScheduleTicketID(resp.Value.TicketID);
-
         //do scheduling stuff
         setScheduleTicket(_this, cb);
-
       } else {
         notify.error(err);
       }
     }));
-
   }
 
   //do scheduling stuff
   function setScheduleTicket(_this, cb) {
-
     //check if ticket already scheduled on a block
     dataservice.scheduleenginesrv.SeScheduleTicket.read({
       id: _this.data.ScheduleTicketID(),
       link: 'TID'
     }, null, utils.safeCallback(cb, function(err, resp) {
-
-      console.log("Check ticket if does exist:" + JSON.stringify(resp.Value));
-
       if (resp.Code === 0 && resp.Value) {
         notify.warn('TicketID:' + _this.data.ScheduleTicketID() + ' was already assigned on a block.', null, 3);
       } else {
-
         var param = {
           'BlockId': _this.blockId,
           'Notes': _this.data.ScheduleTicketNotes(),
@@ -263,17 +213,9 @@ define('src/scheduling/create.scheduleticket.vm', [
           'TravelTime': _this.data.ScheduleTravelTime(),
           'TicketId': _this.data.ScheduleTicketID()
         };
-
-        console.log("Data to save:" + JSON.stringify(param));
-
         dataservice.scheduleenginesrv.SeScheduleTicket.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
-
           if (resp.Code === 0) {
-
-            console.log("SeScheduleTicket:" + JSON.stringify(resp.Value));
-
             //clear fields
-
             _this.data.AccountId(null);
             _this.data.ScheduleTicketID(null);
             _this.data.ScheduleTicketAppointment(null);
@@ -294,17 +236,12 @@ define('src/scheduling/create.scheduleticket.vm', [
             }
 
             closeLayer(_this);
-
           } else {
             notify.error(err);
           }
         }));
-
       }
-
     }));
-
-
   }
 
   return ScheduleTicketViewModel;

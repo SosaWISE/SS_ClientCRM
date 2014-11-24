@@ -20,13 +20,26 @@ define('src/account/default/masteraccount.vm', [
   "use strict";
 
   var agingList = [
-    'Current',
-    '1 to 30',
-    '31 to 60',
-    '61 to 90',
-    '91 to 120',
-    '> 120',
-  ];
+      'Current',
+      '1 to 30',
+      '31 to 60',
+      '61 to 90',
+      '91 to 120',
+      '> 120',
+    ],
+    customerTypePrecedence = {
+      PRI: 1,
+      LEAD: 1,
+      SEC: 2,
+      BILL: 3,
+      SHIP: 4,
+    };
+
+  function sortByCustomerTypeId(a, b) {
+    var aP = customerTypePrecedence[a.CustomerTypeId] || 9,
+      bP = customerTypePrecedence[b.CustomerTypeId] || 9;
+    return aP - bP;
+  }
 
   function MasterAccountViewModel(options) {
     var _this = this;
@@ -38,7 +51,7 @@ define('src/account/default/masteraccount.vm', [
     _this.hideNotes = ko.observable(config.accounts.hideNotes);
     _this.hideNav = ko.observable(config.accounts.hideNav);
 
-    _this.customerData = ko.observable();
+    _this.customers = ko.observableArray();
 
     _this.accounts = ko.observableArray();
     _this.paymentHistory = ko.observableArray();
@@ -89,29 +102,37 @@ define('src/account/default/masteraccount.vm', [
   MasterAccountViewModel.prototype.viewTmpl = 'tmpl-acct-default-masteraccount';
 
   MasterAccountViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this,
-      cb = join.add();
+    var _this = this;
 
-    load_customerInfoCard(_this.customerData, _this.id, function(err) {
-      if (err) {
-        cb(err);
+    call_hasCustomer(_this.id, utils.safeCallback(join.add(), function(err, resp) {
+      var hasCustomer = resp.Value;
+      if (!hasCustomer) {
+        // close this tab
+        _this.closeMsg = utils.noop; // allows closing
+        _this.close();
+        // then redirect to lead
+        _this.goTo({
+          route: 'leads',
+          masterid: _this.id,
+        });
+        notify.info('Redirected to lead', null, 2);
+        // we're done here
         return;
       }
 
-      _this.notesVm.loader.reset(); //incase of reload
-      _this.notesVm.load(routeData, extraData, function(err) {
-        if (err) {
-          cb(err);
-          return;
-        }
+      load_customers(_this.id, utils.safeCallback(join.add(), function(err, resp) {
+        var data = resp.Value;
+        data.sort(sortByCustomerTypeId);
+        _this.customers(data);
 
-        load_billingInfoSummary(_this, _this.id, _this.accounts, join.add());
-        load_billingHistory(_this, _this.id, join.add());
-        load_aging(_this, _this.id, _this.agings, join.add());
-
-        cb();
-      });
-    });
+        _this.notesVm.loader.reset(); //incase of reload
+        _this.notesVm.load(routeData, extraData, utils.safeCallback(join.add(), function() {
+          load_billingInfoSummary(_this, _this.id, _this.accounts, join.add());
+          load_billingHistory(_this, _this.id, join.add());
+          load_aging(_this, _this.id, _this.agings, join.add());
+        }, utils.noop));
+      }, utils.noop));
+    }, utils.noop));
 
     join.when(function(err) {
       if (err) {
@@ -135,10 +156,18 @@ define('src/account/default/masteraccount.vm', [
     return msg;
   };
 
-  function load_customerInfoCard(customerData, masterId, cb) {
-    dataservice.accountingengine.customerCardInfos.read({
-      id: masterId
-    }, customerData, cb);
+  function call_hasCustomer(masterId, cb) {
+    dataservice.qualify.customerMasterFiles.read({
+      id: masterId,
+      link: 'hasCustomer',
+    }, null, cb);
+  }
+
+  function load_customers(masterId, cb) {
+    dataservice.qualify.customerMasterFiles.read({
+      id: masterId,
+      link: 'customers',
+    }, null, cb);
   }
 
   function load_billingInfoSummary(pcontroller, masterId, accounts, cb) {
@@ -154,7 +183,7 @@ define('src/account/default/masteraccount.vm', [
       } else {
         accounts([]);
       }
-    }, utils.no_op));
+    }, utils.noop));
   }
 
   function load_billingHistory(pcontroller, masterId, cb) {
@@ -190,7 +219,7 @@ define('src/account/default/masteraccount.vm', [
       } else {
         agings([]);
       }
-    }, utils.no_op));
+    }, utils.noop));
   }
 
   function createAccount(pcontroller, id, title, rmr, units) {

@@ -14,7 +14,7 @@ define('mock/dataservices/user.mock', [
 
     UserDataservice.prototype.auth = function(data, cb) {
       setTimeout(function() {
-        var resp = mockery.fromTemplate({
+        var resp = {
           Code: 0,
           Message: '',
           Value: {
@@ -30,13 +30,14 @@ define('mock/dataservices/user.mock', [
             UserEmployeeTypeName: "Corporate",
             SecurityLevel: 9,
             Apps: [
-              "hr_man"
+              "sse_cms_cors",
+              "hr_man",
             ],
             Actions: [
               "hr_user_edit"
             ],
           },
-        });
+        };
         cb(null, resp);
       }, settings.timeout);
     };

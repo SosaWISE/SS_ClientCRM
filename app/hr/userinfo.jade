@@ -1,4 +1,4 @@
-div(class="user-data")
+div(class="item-data")
   ul(class="actions")
     li
       a(class="btn",tabindex="0",data-bind="cmd:clickEdit") Edit
@@ -70,9 +70,9 @@ div(class="user-data")
             li
               span(class="label") Provider
               div(class="text",data-bind="text:data.PhoneCellCarrierCvm.selectedText()")
-            //- li
+            li
               span(class="label") Home Phone
-              div(class="text",data-bind="text:data.PhoneHome")
+              div(class="text",data-bind="phonetext:data.PhoneHome")
 
 
       div(class="section")

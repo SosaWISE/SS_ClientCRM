@@ -1,4 +1,4 @@
-define('src/survey/question.new.vm', [
+define('src/survey/question.editor.vm', [
   'src/survey/questionschemas',
   'src/ukov',
   'src/dataservice',
@@ -57,24 +57,25 @@ define('src/survey/question.new.vm', [
     },
   };
 
-  function NewQuestionViewModel(options) {
+  function QuestionEditorViewModel(options) {
     var _this = this;
-    NewQuestionViewModel.super_.call(_this, options);
+    QuestionEditorViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, ['surveyVM', 'surveyTypeVM', 'tokensVM']);
 
-    _this.data = ukov.wrap({
+    _this.item = _this.item || {
       // QuestionID: 0,
       SurveyId: _this.surveyVM.model.SurveyID,
       QuestionMeaningId: null,
       ParentId: (_this.parent) ? _this.parent.model.QuestionID : null,
       GroupOrder: _this.groupOrder,
       MapToTokenId: null,
-      ConditionJson: {
-        TokenId: null,
-        Comparison: null,
-        Value: '',
-      },
-    }, schema);
+    };
+    _this.item.ConditionJson = _this.item.ConditionJson || {
+      TokenId: null,
+      Comparison: null,
+      Value: '',
+    };
+    _this.data = ukov.wrap(_this.item, schema);
 
     _this.data.QuestionMeaningCvm = new ComboViewModel({
       selectedValue: _this.data.QuestionMeaningId,
@@ -82,14 +83,16 @@ define('src/survey/question.new.vm', [
         value: 'QuestionMeaningID',
         text: 'Name'
       },
-      list: createComboList(_this.surveyVM, _this.surveyTypeVM.questionMeanings()),
+      list: createComboList(_this.surveyVM, _this.surveyTypeVM.questionMeanings(), _this.data.QuestionMeaningId.peek()),
     });
-    _this.data.QuestionMeaningCvm.actions([ //
-      {
-        text: 'Add New Meaning',
-        onClick: _this.showAddNewMeaning.bind(_this),
-      }
-    ]);
+    if (!_this.item.QuestionID) {
+      _this.data.QuestionMeaningCvm.actions([ //
+        {
+          text: 'Add New Meaning',
+          onClick: _this.showAddNewMeaning.bind(_this),
+        }
+      ]);
+    }
 
     _this.data.ConditionJson.TokenCvm = new ComboViewModel({
       selectedValue: _this.data.ConditionJson.TokenId,
@@ -109,9 +112,13 @@ define('src/survey/question.new.vm', [
     _this.data.ConditionJson.Use.subscribe(function(use) {
       _this.data.ConditionJson.ignore(!use, true);
     });
-    // _this.data.ConditionJson.Use(false);
+    if (_this.item.QuestionID && !_this.item.ConditionJson.TokenId) {
+      // don't use if editing and the editing item didn't have it checked
+      _this.data.ConditionJson.Use(false);
+    }
 
     _this.data.MapToTokenCvm = new ComboViewModel({
+      nullable: true,
       selectedValue: _this.data.MapToTokenId,
       fields: {
         value: 'TokenID',
@@ -129,7 +136,7 @@ define('src/survey/question.new.vm', [
     _this.clickCancel = function() {
       closeLayer(_this);
     };
-    _this.cmdAdd = ko.command(function(cb) {
+    _this.cmdSave = ko.command(function(cb) {
       if (!_this.data.isValid()) {
         notify.warn(_this.data.errMsg(), null, 10);
         return cb();
@@ -148,30 +155,30 @@ define('src/survey/question.new.vm', [
       });
     });
   }
-  utils.inherits(NewQuestionViewModel, BaseViewModel);
-  NewQuestionViewModel.prototype.viewTmpl = 'tmpl-question_new';
-  NewQuestionViewModel.prototype.width = 500;
-  NewQuestionViewModel.prototype.height = 'auto';
+  utils.inherits(QuestionEditorViewModel, BaseViewModel);
+  QuestionEditorViewModel.prototype.viewTmpl = 'tmpl-question_editor';
+  QuestionEditorViewModel.prototype.width = 500;
+  QuestionEditorViewModel.prototype.height = 'auto';
 
   function closeLayer(_this) {
     if (_this.layer) {
       _this.layer.close();
     }
   }
-  NewQuestionViewModel.prototype.getResults = function() {
+  QuestionEditorViewModel.prototype.getResults = function() {
     var _this = this;
     return [_this.layerResult];
   };
-  NewQuestionViewModel.prototype.closeMsg = function() { // overrides base
+  QuestionEditorViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
       msg;
-    if (_this.cmdAdd.busy() && !_this.layerResult) {
-      msg = 'Please wait for add to finish.';
+    if (_this.cmdSave.busy() && !_this.layerResult) {
+      msg = 'Please wait for save to finish.';
     }
     return msg;
   };
 
-  NewQuestionViewModel.prototype.showAddNewMeaning = function(filterText) {
+  QuestionEditorViewModel.prototype.showAddNewMeaning = function(filterText) {
     var _this = this,
       vm = new NewQuestionMeaningViewModel({
         surveyTypeVM: _this.surveyTypeVM,
@@ -187,7 +194,7 @@ define('src/survey/question.new.vm', [
     });
   };
 
-  NewQuestionViewModel.prototype.comparisonOptions = [ //
+  QuestionEditorViewModel.prototype.comparisonOptions = [ //
     {
       text: 'Equal (==)',
       value: '==',
@@ -215,9 +222,19 @@ define('src/survey/question.new.vm', [
     },
   ];
 
-  function createComboList(surveyVM, allQuestionMeanings) {
+  function createComboList(surveyVM, allQuestionMeanings, thisQuestionMeaningId) {
     var map = {},
       result = [];
+
+    if (thisQuestionMeaningId) {
+      allQuestionMeanings.some(function(vm) {
+        if (vm.model.QuestionMeaningID === thisQuestionMeaningId) {
+          result.push(vm.model);
+          return true;
+        }
+      });
+      return result;
+    }
 
     // ** Build a map of existing questions
     (function addToMap(questions) {
@@ -230,14 +247,12 @@ define('src/survey/question.new.vm', [
 
     // ** loop through each question and only add the ones that do not exists.
     allQuestionMeanings.forEach(function(vm) {
-      // don't add used tokens
-      if (map[vm.model.QuestionMeaningID]) {
-        return;
+      if (!map[vm.model.QuestionMeaningID]) {
+        result.push(vm.model);
       }
-      result.push(vm.model);
     });
     return result;
   }
 
-  return NewQuestionViewModel;
+  return QuestionEditorViewModel;
 });

@@ -79,8 +79,12 @@ define('src/core/utils', [
 
     // actually sets if null or undefined...
     setIfNull: function(val, propName, defaultValue) {
-      if (val[propName] == null) {
-        val[propName] = defaultValue;
+      if (utils.isObject(propName)) {
+        for (var name in propName) {
+          ifNull(val, name, propName[name]);
+        }
+      } else {
+        ifNull(val, propName, defaultValue);
       }
     },
 
@@ -99,6 +103,12 @@ define('src/core/utils', [
 
   };
   utils.no_op = utils.noop; // only for backwards compatibiltiy
+
+  function ifNull(val, propName, defaultValue) {
+    if (val[propName] == null) {
+      val[propName] = defaultValue;
+    }
+  }
 
   return utils;
 });

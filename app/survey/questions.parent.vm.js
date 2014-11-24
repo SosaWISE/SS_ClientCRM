@@ -48,8 +48,9 @@ define('src/survey/questions.parent.vm', [
   QuestionsParentViewModel.prototype.computeNextName = function() {
     return getName(this, this.nextGroupOrder());
   };
-  QuestionsParentViewModel.prototype.nextGroupOrder = function() {
-    return this.questions.peek().length + 1;
+  QuestionsParentViewModel.prototype.nextGroupOrder = function(peek) {
+    var questions = peek ? this.questions.peek() : this.questions();
+    return questions.length + 1;
   };
 
 

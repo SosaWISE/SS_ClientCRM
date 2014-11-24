@@ -3,37 +3,38 @@ table(class="question")
   tr
     td(class="title")
       h2(data-bind="text:name")
+      ul(class="actions")
+        li
+          a(class="btn fa fa-arrow-up",tabindex="0",title="Move up",data-bind="cmd:cmdUp")
+        li
+          a(class="btn fa fa-arrow-down",tabindex="0",title="Move down",data-bind="cmd:cmdDown")
+
     td(class="content")
       <!-- ko with:questionMeaningVM -->
-      span(class="qm",data-bind="text:model.Name")
-      div
-        span(style="color:black;") Map Answer To Token:
-        |&nbsp;
-        span(data-bind="text:$parent.mapToTokenName")
-      div
-        span(style="color:black;") Condition:
-        |&nbsp;
-        span(data-bind="text:$parent.conditionText")
+      div(class="qm",data-bind="cmd:$parent.cmdEdit")
+        span(class="name",data-bind="text:model.Name")
+        div
+          span(style="color:black;") Map Answer To Token:
+          |&nbsp;
+          span(data-bind="text:$parent.mapToTokenName")
+        div
+          span(style="color:black;") Condition:
+          |&nbsp;
+          span(data-bind="text:$parent.conditionText")
       <!-- /ko -->
       ul(class="sv tlist cf")
         li
-          a(class="btn small add-btn",data-bind="cmd:topVm.cmdAddPossibleAnswer")
-        li
-          span(style="color:black;") Possible Answers:
-          |&nbsp;
+          a(class="btn small add-btn",data-bind="cmd:topVm.cmdAddPossibleAnswer") Possible Answer
         <!-- ko foreach:possibleAnswerMaps -->
         li
-          a(class="btn small",
+          a(class="btn small keepactive",
             data-bind="cmd:cmdEdit,active:expands,css:{'fails':fails}")
             span(data-bind="text:possibleAnswer.AnswerText")
         <!-- /ko -->
       <!-- ko with:questionMeaningVM -->
       ul(class="sv tlist cf")
         li
-          a(class="btn small add-btn",data-bind="cmd:$parent.topVm.cmdAddToken")
-        li
-          span(style="color:black;") Tokens:
-          |&nbsp;
+          a(class="btn small add-btn",data-bind="cmd:$parent.topVm.cmdAddToken") Token
         <!-- ko foreach:tokenMaps -->
         li
           span(data-bind="text:'{'+$index()+'}'+token.Token")
@@ -56,5 +57,5 @@ table(class="question")
         ul(class="sv")
           li
             a(class="btn add-btn",
-              data-bind="cmd:topVm.cmdAddQuestion,cssDisabled:noAddSubQuestion,attr:{title:noAddSubQuestion()?'add a possible answer first':'add sub question'}")
+              data-bind="cmd:topVm.cmdAddQuestion,cssDisabled:!canAddSubQuestion(),attr:{title:canAddSubQuestion()?'add sub question':'add a possible answer first'}")
               span(data-bind="text:nextName")

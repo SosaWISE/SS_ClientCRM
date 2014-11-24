@@ -59,8 +59,7 @@ module.exports = function(grunt) {
           }, {
             src: [
               'logindummy.html',
-              'stuff/fonts/**/*',
-              'stuff/img/**/*',
+              'stuff/**/*',
               // specs
               'tparty/jasmine/**/*',
               'app/depends/depends.js',
@@ -72,6 +71,9 @@ module.exports = function(grunt) {
           }, {
             src: 'depends-production.debug.conf.js',
             dest: '<%= www %>/depends.debug.conf.js',
+          }, {
+            src: 'tparty/pixi.dev.js',
+            dest: '<%= www %>/pixi.debug.js',
           },
         ],
       },
@@ -123,7 +125,7 @@ module.exports = function(grunt) {
           'app/ukov.js',
           'app/dataservices/*.js', 'app/dataservice.js',
           'app/home/*.js',
-          'app/hr/*.js',
+          'app/hr/*.js', 'app/viz/*.js',
           'app/inventory/*.js',
           'app/login/*.js',
           'app/scheduling/*.js',
@@ -170,6 +172,7 @@ module.exports = function(grunt) {
           '<%= www %>/survey.js': ['<%= www %>/survey.debug.js'],
           '<%= www %>/core.js': ['<%= www %>/core.debug.js'],
           '<%= www %>/slick.js': ['<%= www %>/slick.debug.js'],
+          '<%= www %>/pixi.js': ['<%= www %>/pixi.debug.js'],
           '<%= www %>/ukov.js': ['<%= www %>/ukov.debug.js'],
           '<%= www %>/mock.js': ['<%= www %>/mock.debug.js'],
 
@@ -179,6 +182,11 @@ module.exports = function(grunt) {
       }
     },
     jade: {
+      index: {
+        files: {
+          '<%= www %>/index.html': 'index.jade',
+        },
+      },
       prod: {
         options: {
           data: {
@@ -188,7 +196,7 @@ module.exports = function(grunt) {
           },
         },
         files: {
-          '<%= www %>/index.html': 'index.jade',
+          '<%= www %>/crm/index.html': 'crm/index.jade',
           '<%= www %>/spec/index.html': 'spec/index.jade',
         },
       },
@@ -200,7 +208,7 @@ module.exports = function(grunt) {
           },
         },
         files: {
-          '<%= www %>/index.debug.html': 'index.jade',
+          '<%= www %>/crm/index.debug.html': 'crm/index.jade',
           '<%= www %>/spec/index.debug.html': 'spec/index.jade',
         },
       },
@@ -211,7 +219,7 @@ module.exports = function(grunt) {
           },
         },
         files: {
-          'index.html': 'index.jade',
+          'crm/index.html': 'crm/index.jade',
           'spec/index.html': 'spec/index.jade',
         },
       },
@@ -222,7 +230,7 @@ module.exports = function(grunt) {
           cleancss: true,
         },
         files: {
-          '<%= www %>/index.css': 'index.less',
+          '<%= www %>/crm/index.css': 'crm/index.less',
         },
       },
       dev: {
@@ -230,7 +238,7 @@ module.exports = function(grunt) {
           cleancss: false,
         },
         files: {
-          'index.css': 'index.less',
+          'crm/index.css': 'crm/index.less',
         },
       },
     },
@@ -270,6 +278,7 @@ module.exports = function(grunt) {
     'copy:prod',
     'concat',
     'uglify',
+    'jade:index',
     'jade:prod',
     'jade:prod_debug',
     'less:prod',
@@ -281,6 +290,7 @@ module.exports = function(grunt) {
   grunt.registerTask('jsformat', [
     'jsbeautifier:format',
   ]);
+
 
 
   grunt.registerTask('precommit', [

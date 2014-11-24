@@ -61,6 +61,14 @@ define('src/core/dataservice.base', [
     // if (!queryObj.SessionId) {
     //   queryObj.SessionId = _sessionId;
     // }
+    var contentType = 'application/json';
+    if (data) {
+      if (data instanceof FormData) {
+        contentType = false;
+      } else if (!utils.isStr(data)) {
+        data = jsonhelpers.stringify(data);
+      }
+    }
 
     var context = {
       request: {
@@ -78,9 +86,9 @@ define('src/core/dataservice.base', [
       // Delete  - DELETE
       // Replace - PUT
       httpVerb: httpVerb,
-      data: (data && !utils.isStr(data)) ? jsonhelpers.stringify(data) : data,
+      data: data,
 
-      contentType: 'application/json',
+      contentType: contentType,
       dataType: 'json',
 
       callback: callback,
@@ -108,8 +116,8 @@ define('src/core/dataservice.base', [
 
       timeout: _this.timeout,
 
-      contentType: context.contentType || 'application/json',
-      dataType: context.dataType || 'json',
+      contentType: context.contentType,
+      dataType: context.dataType,
 
       crossDomain: true,
       /** This needs to be enabled once we are in production.
@@ -197,31 +205,31 @@ define('src/core/dataservice.base', [
     // set request url
     responseData.Url = context.requestUrl;
 
-    if (utils.isFunc(context.callback)) {
-      // try to update session id
-      DataserviceBase.sessionID(responseData.SessionId);
+    // try to update session id
+    DataserviceBase.sessionID(responseData.SessionId);
 
-      var err;
-      // check if there was an error
-      if (responseData.Code === 0) {
-        // try to set setter value,
-        if (utils.isFunc(context.setter)) {
-          try {
-            context.setter(responseData.Value);
-          } catch (ex) {
-            console.error(ex);
-            err = {
-              Code: 990004,
-              Message: ex.stack,
-              Value: null,
-            };
-          }
+    var err;
+    // check if there was an error
+    if (responseData.Code === 0) {
+      // try to set setter value,
+      if (utils.isFunc(context.setter)) {
+        try {
+          context.setter(responseData.Value);
+        } catch (ex) {
+          console.error(ex);
+          err = {
+            Code: 990004,
+            Message: ex.stack,
+            Value: null,
+          };
         }
-      } else {
-        err = responseData;
-        // // prepend requestUrl
-        // err.Message = context.requestUrl + '\n' + (err.Message || '');
       }
+    } else {
+      err = responseData;
+      // // prepend requestUrl
+      // err.Message = context.requestUrl + '\n' + (err.Message || '');
+    }
+    if (utils.isFunc(context.callback)) {
       // call callback function
       context.callback(err, responseData, context);
     }

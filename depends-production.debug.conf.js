@@ -12,5 +12,6 @@ window.require = {
     '/spec.js': 'spec',
     // specui: '/specui.debug.js',
     '/slick.debug.js': ['src/slick', 'slick'],
+    '/pixi.debug.js': ['pixi'],
   },
 };

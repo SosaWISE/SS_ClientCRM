@@ -263,10 +263,10 @@ define('src/account/default/search.vm', [
     } else if (!_this.data.isValid()) {
       notify.warn(_this.data.errMsg(), null, 7);
       cb();
-    } else if (_this.data.isClean() && _this.data.PageNumber() === page) {
-      // only search if something has changed
-      notify.warn('Search criteria hasn\'t changed. No search made.', null, 3);
-      cb();
+      // } else if (_this.data.isClean() && _this.data.PageNumber() === page) {
+      //   // only search if something has changed
+      //   notify.warn('Search criteria hasn\'t changed. No search made.', null, 3);
+      //   cb();
     } else {
       model = _this.data.getValue();
       // set page here instead of on `data` so that the pager isn't updated until the search is done

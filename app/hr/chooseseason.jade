@@ -1,0 +1,11 @@
+h2(class="title") Choose Season
+ul(class="edit-form")
+  li
+    span(class="label") Season
+    div(data-bind="cvm:data.SeasonCvm")
+
+ul(class="actions")
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+  li
+    a(class="btn",tabindex="0",data-bind="cmd:clickAdd") Ok

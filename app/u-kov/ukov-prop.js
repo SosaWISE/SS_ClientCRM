@@ -156,13 +156,27 @@ define('src/u-kov/ukov-prop', [
     return _this._ignore;
   };
   fn.update = function() {};
-  fn.validate = function() {
-    var _this = this;
+  fn.validate = function(skipDependents) {
+    var _this = this,
+      dependents;
     if (_this._ignore) {
       // mark as valid
       _this.errMsg(null);
-    } else if (!_this.validateGroup()) {
-      _this.validateSingle();
+    } else {
+      if (!skipDependents) {
+        // re-validate each dependent
+        dependents = _this.doc.dependents;
+        if (dependents && Array.isArray(dependents)) {
+          dependents.forEach(function(key) {
+            var prop = _this.ukovModel[key];
+            prop.validate(true); // pass true to prevent infinite recursion
+          });
+        }
+      }
+
+      if (!_this.validateGroup()) {
+        _this.validateSingle();
+      }
     }
   };
   fn.validateSingle = function() {

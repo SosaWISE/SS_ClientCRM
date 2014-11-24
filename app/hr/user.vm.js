@@ -42,6 +42,7 @@ define('src/hr/user.vm', [
     _this.showBottom = ko.observable(false);
 
     _this.defaultChild = _this.editorVm = new UserEditorViewModel({
+      userid: _this.id,
       pcontroller: _this,
       id: 'info',
       layersVm: _this.layersVm,
@@ -50,7 +51,7 @@ define('src/hr/user.vm', [
 
     _this.title = ko.computed(function() {
       var data = _this.editorVm.data;
-      return strings.format('{0} ({1}, U{2})', data.FullName(), data.GPEmployeeID(), data.UserID() || _this.id);
+      return strings.format('{0} ({1}, U{2})', data.FullName(), data.GPEmployeeID(), data.UserID());
     });
 
     //

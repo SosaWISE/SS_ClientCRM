@@ -35,15 +35,15 @@ div(class="hr-search")
             li
               span(class="label") SSN
               input(type="text", placeholder="",
-                data-bind="ukov:data.Ssn,value:data.Ssn,valueUpdate:'keyup',enter:cmdSearch")
+                data-bind="ukov:data.Ssn,ssnvalue:data.Ssn,valueUpdate:'keyup',enter:cmdSearch")
             li
               span(class="label") Cell Phone
               input(type="text", placeholder="",
-                data-bind="ukov:data.PhoneCell,phonevalue:data.PhoneCell,valueUpdate:'keyup',enter:cmdSearch")
+                data-bind="ukov:data.CellPhone,phonevalue:data.CellPhone,valueUpdate:'keyup',enter:cmdSearch")
             li
               span(class="label") Home Phone
               input(type="text", placeholder="",
-                data-bind="ukov:data.PhoneHome,phonevalue:data.PhoneHome,valueUpdate:'keyup',enter:cmdSearch")
+                data-bind="ukov:data.HomePhone,phonevalue:data.HomePhone,valueUpdate:'keyup',enter:cmdSearch")
             li
               span(class="label") Season
               div(data-bind="cvm:data.SeasonCvm")

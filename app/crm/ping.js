@@ -7,7 +7,9 @@ define('src/crm/ping', [
 ) {
   "use strict";
 
-  var run, timeoutId;
+  var run, timeoutId,
+    maxAttempts = 3,
+    nErrs = 0;
 
   function ping(url) {
     // we've stopped
@@ -23,11 +25,16 @@ define('src/crm/ping', [
       dataservice.base.read({
         link: url,
       }, null, function(err) {
-        if (err) {
-          console.warn('stilling pinging, but user appears to be logged out...', err);
+        timeoutId = 0;
+        nErrs = (err) ? (nErrs + 1) : 0;
+        if (nErrs < maxAttempts) { // stop after N failed attempts
+          if (nErrs !== 0) {
+            console.warn('still pinging, but user appears to be logged out...', err);
+          }
+          ping(url);
+        } else {
+          console.warn('stop pinging, user appears to be logged out.');
         }
-        timeoutId = null;
-        ping(url);
       });
     }, config.pingInterval);
     return true;
@@ -41,7 +48,7 @@ define('src/crm/ping', [
     stop: function() {
       run = false;
       clearTimeout(timeoutId);
-      timeoutId = null;
+      timeoutId = 0;
     },
   };
 });

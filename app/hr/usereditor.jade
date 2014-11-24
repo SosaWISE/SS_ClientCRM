@@ -1,4 +1,4 @@
-div(class="user-data")
+div(class="item-data")
   ul(class="actions")
     li(data-bind="if:data.UserID()>0")
       a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
@@ -73,7 +73,7 @@ div(class="user-data")
             li
               span(class="label") Provider
               div(data-bind="cvm:data.PhoneCellCarrierCvm")
-            //- li
+            li
               span(class="label") Home Phone
               input(type="text",placeholder="",data-bind="ukov:data.PhoneHome,phonevalue:data.PhoneHome,valueUpdate:'keyup'")
 

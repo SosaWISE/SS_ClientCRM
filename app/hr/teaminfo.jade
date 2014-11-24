@@ -1,0 +1,22 @@
+div(class="item-data")
+  ul(class="actions")
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:clickEdit") Edit
+
+  div(class="content-wrap")
+    div(class="col")
+      div(class="section")
+        span(class="title") General Info
+        div(class="contents")
+          ul(class="edit-form")
+            li
+              span(class="label") Team Name
+              div(class="text",data-bind="text:data.Description")
+            li
+              span(class="label") Office
+              div(class="text",data-bind="text:data.OfficeCvm.selectedText()")
+            li
+              span(class="label") Team Role
+              div(class="text",data-bind="text:data.RoleLocationCvm.selectedText()")
+
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'white'")

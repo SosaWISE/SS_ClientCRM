@@ -5,8 +5,6 @@ define('src/scheduling/technician.ticket.info.vm', [
   'src/core/base.vm',
   'src/scheduling/technician.ticket.info.gvm',
   'src/scheduling/technician.ticket.complete.note.vm',
-  'src/core/layers.vm',
-  'src/core/joiner',
   'ko',
   'src/ukov',
 ], function(
@@ -16,15 +14,12 @@ define('src/scheduling/technician.ticket.info.vm', [
   BaseViewModel,
   TechnicianTicketInfoGridViewModel,
   TechTicketCompleteNoteViewModel,
-  LayersViewModel,
-  joiner,
   ko,
   ukov
 ) {
   "use strict";
 
   var schema;
-
   schema = {
     _model: true,
     custName: {},
@@ -35,13 +30,12 @@ define('src/scheduling/technician.ticket.info.vm', [
     ConfirmationNo: {},
   };
 
-
   function TechTicketInfoViewModel(options) {
-    var _this = this,
-      join = joiner(),
-      obj;
-
+    var _this = this;
     TechTicketInfoViewModel.super_.call(_this, options);
+    BaseViewModel.ensureProps(_this, [
+      'layersVm',
+    ]);
 
     //Set title
     _this.title = _this.title || 'Technician Ticket Info';
@@ -55,11 +49,7 @@ define('src/scheduling/technician.ticket.info.vm', [
       ConfirmationNo: null,
     }, schema);
 
-    _this.layersVm = _this.layersVm || new LayersViewModel({
-      controller: _this,
-    });
-
-    obj = _this.rowObj;
+    var obj = _this.rowObj;
 
     //populate fields name, address and phone
     _this.data.custName(obj.CustomerFullName);
@@ -80,120 +70,72 @@ define('src/scheduling/technician.ticket.info.vm', [
     //general note
     _this.data.TechTicketNotes(obj.Notes);
 
-    load_technicianTicketEquipments(_this, join.add());
-
-    _this.technicianTicketInfoGvm = new TechnicianTicketInfoGridViewModel({
-
-    });
+    _this.technicianTicketInfoGvm = new TechnicianTicketInfoGridViewModel({});
 
     //
     // events
     //
 
     _this.cmdEnRoute = ko.command(function(cb) {
-      //@TODO 
+      //@TODO
       // this method will set IsTechEnRoute(ITER) status to true
-      // and send email to customer regarding the ticket status (enroute) 
+      // and send email to customer regarding the ticket status (enroute)
 
       dataservice.scheduleenginesrv.SeTicket.save({
         id: _this.TicketId,
         link: 'ITER'
-      }, null, utils.safeCallback(cb, function(err, resp) {
-
-        console.log("TechEnRoute:" + JSON.stringify(resp));
-
-        if (resp && resp.Value && !err) {
-          notify.info("En-Route notification was sent successfully.", null, 3);
-        }
-
-      }, function(err) {
-        notify.error(err);
-      }));
-
+      }, null, utils.safeCallback(cb, function( /*err, resp*/ ) {
+        notify.info("En-Route notification was sent successfully.", null, 3);
+      }, notify.error));
     });
 
     _this.cmdDelay = ko.command(function(cb) {
-      //@TODO 
-      // this method will set IsTechDelayed(ITD) status to true      
+      //@TODO
+      // this method will set IsTechDelayed(ITD) status to true
 
       dataservice.scheduleenginesrv.SeTicket.save({
         id: _this.TicketId,
         link: 'ITD'
-      }, null, utils.safeCallback(cb, function(err, resp) {
-
-        console.log("TechDelayed:" + JSON.stringify(resp));
-
-        if (resp && resp.Value && !err) {
-          notify.info("Delay notification was sent successfully.", null, 3);
-        }
-
-      }, function(err) {
-        notify.error(err);
-      }));
-
+      }, null, utils.safeCallback(cb, function( /*err, resp*/ ) {
+        notify.info("Delay notification was sent successfully.", null, 3);
+      }, notify.error));
     });
 
     _this.cmdComplete = ko.command(function(cb) {
-      //@TODO 
-      // this method will set IsTechCompleted(ITC) status to true      
+      //@TODO
+      // this method will set IsTechCompleted(ITC) status to true
 
       //show confirmation note screen
-      _this.layersVm.show(new TechTicketCompleteNoteViewModel({
-
-      }), function onClose(result) {
-        if (result) {
-
-          if (!result.ClosingNote) {
-            cb();
-            return;
-          }
-
-          _this.data.ClosingNote(result.ClosingNote);
-          _this.data.ConfirmationNo(result.ConfirmationNo);
-
-          var ticketData = {
-            TicketID: _this.TicketId,
-            ClosingNote: _this.data.ClosingNote(),
-            ConfirmationNo: _this.data.ConfirmationNo(),
-          };
-
-          console.log("ticketData:" + JSON.stringify(ticketData));
-
-          //save completed ticket information
-          dataservice.scheduleenginesrv.SeTicket.save({
-            id: _this.TicketId,
-            link: 'ITC',
-            data: ticketData,
-          }, null, utils.safeCallback(cb, function(err, resp) {
-
-            console.log("Ticket Completed:" + JSON.stringify(resp));
-
-            if (resp && resp.Value && !err) {
-              notify.info("Ticket Completed.", null, 3);
-
-              closeLayer(_this);
-            }
-
-          }, function(err) {
-            notify.error(err);
-          }));
-
-        } else {
+      _this.layersVm.show(new TechTicketCompleteNoteViewModel({}), function onClose(result) {
+        if (!result || !result.ClosingNote) {
           cb();
           return;
         }
 
+        _this.data.ClosingNote(result.ClosingNote);
+        _this.data.ConfirmationNo(result.ConfirmationNo);
+
+        var ticketData = {
+          TicketID: _this.TicketId,
+          ClosingNote: _this.data.ClosingNote(),
+          ConfirmationNo: _this.data.ConfirmationNo(),
+        };
+
+        //save completed ticket information
+        dataservice.scheduleenginesrv.SeTicket.save({
+          id: _this.TicketId,
+          link: 'ITC',
+          data: ticketData,
+        }, null, utils.safeCallback(cb, function( /*err, resp*/ ) {
+          notify.info("Ticket Completed.", null, 3);
+          closeLayer(_this);
+        }, notify.error));
       });
-
     });
-
-
     _this.clickClose = function() {
       _this.layerResult = null;
       closeLayer(_this);
     };
-
-
   }
 
   utils.inherits(TechTicketInfoViewModel, BaseViewModel);
@@ -201,13 +143,10 @@ define('src/scheduling/technician.ticket.info.vm', [
   TechTicketInfoViewModel.prototype.width = "70%";
   TechTicketInfoViewModel.prototype.height = 'auto';
 
-
-
-  TechTicketInfoViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) {
-
+  TechTicketInfoViewModel.prototype.onLoad = function(routeData, extraData, join) {
+    var _this = this;
+    load_technicianTicketEquipments(_this, _this.technicianTicketInfoGvm, join.add());
   };
-
-  TechTicketInfoViewModel.prototype.onActivate = function( /*routeData*/ ) {};
 
   function closeLayer(_this) {
     if (_this.layer) {
@@ -219,30 +158,13 @@ define('src/scheduling/technician.ticket.info.vm', [
     return [_this.layerResult];
   };
 
-  function load_technicianTicketEquipments(_this, cb) {
-
+  function load_technicianTicketEquipments(_this, gvm, cb) {
+    //set list to empty
+    gvm.list([]);
     dataservice.msaccountsetupsrv.accounts.read({
-      id: _this.AccountId, //for real      
+      id: _this.AccountId, //for real
       link: 'Equipment'
-    }, null, utils.safeCallback(cb, function(err, resp) {
-
-      if (resp.Code === 0) {
-
-        console.log("TechTicketEquipments:" + JSON.stringify(resp.Value));
-
-        //set list to empty
-        _this.technicianTicketInfoGvm.list([]);
-
-        //populate ticket equipment list
-        for (var x = 0; x < resp.Value.length; x++) {
-          _this.technicianTicketInfoGvm.list.push(resp.Value[x]);
-        }
-
-      } else {
-        notify.error(err);
-      }
-    }));
-
+    }, gvm.list, cb);
   }
 
   return TechTicketInfoViewModel;

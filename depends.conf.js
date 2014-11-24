@@ -17,6 +17,7 @@ window.require = {
     markdown: '/tparty/markdown',
     slick: '/app/slick/slick-dev',
     fullcalendar: '/tparty/fullcalendar',
+    pixi: '/tparty/pixi.dev',
   },
 
   // defines global names(exports). does NOT load/require them

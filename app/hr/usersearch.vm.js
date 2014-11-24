@@ -12,7 +12,7 @@ define('src/hr/usersearch.vm', [
   hrcache,
   ComboViewModel,
   dataservice,
-  SearchGridViewModel,
+  UserSearchGridViewModel,
   ukov,
   notify,
   utils,
@@ -21,7 +21,9 @@ define('src/hr/usersearch.vm', [
 ) {
   "use strict";
   var schema,
-    nullStrConverter = ukov.converters.nullString();
+    nullStrConverter = ukov.converters.nullString(),
+    ssnConverter = ukov.converters.ssn(),
+    phoneConverter = ukov.converters.phone(true);
 
   schema = {
     _model: true,
@@ -48,13 +50,13 @@ define('src/hr/usersearch.vm', [
       converter: nullStrConverter,
     },
     Ssn: {
-      converter: nullStrConverter,
+      converter: ssnConverter,
     },
-    PhoneCell: {
-      converter: ukov.converters.phone(),
+    CellPhone: {
+      converter: phoneConverter,
     },
-    PhoneHome: {
-      converter: ukov.converters.phone(),
+    HomePhone: {
+      converter: phoneConverter,
     },
     SeasonID: {},
     UserEmployeeTypeId: {},
@@ -99,7 +101,7 @@ define('src/hr/usersearch.vm', [
       },
     });
 
-    _this.gvm = new SearchGridViewModel({
+    _this.gvm = new UserSearchGridViewModel({
       open: _this.open || function(item) {
         _this.goTo({
           route: 'hr',
@@ -161,8 +163,8 @@ define('src/hr/usersearch.vm', [
       UserID: null,
       RecruitID: null,
       Ssn: null,
-      PhoneCell: null,
-      PhoneHome: null,
+      CellPhone: null,
+      HomePhone: null,
       SeasonID: null,
       UserEmployeeTypeId: null,
     };
@@ -175,10 +177,10 @@ define('src/hr/usersearch.vm', [
     if (!_this.data.isValid()) {
       notify.warn(_this.data.errMsg(), null, 7);
       cb();
-    } else if (_this.data.isClean()) {
-      // only search if something has changed
-      notify.warn('Search criteria hasn\'t changed. No search made.', null, 3);
-      cb();
+      // } else if (_this.data.isClean()) {
+      //   // only search if something has changed
+      //   notify.warn('Search criteria hasn\'t changed. No search made.', null, 3);
+      //   cb();
     } else {
       model = _this.data.getValue();
       // clear grid

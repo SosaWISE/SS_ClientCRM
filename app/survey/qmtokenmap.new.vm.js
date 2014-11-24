@@ -53,7 +53,7 @@ define('src/survey/qmtokenmap.new.vm', [
   }
   utils.inherits(NewQMTokenMapViewModel, BaseViewModel);
   NewQMTokenMapViewModel.prototype.viewTmpl = 'tmpl-qmtokenmap_new';
-  NewQMTokenMapViewModel.prototype.width = 300;
+  NewQMTokenMapViewModel.prototype.width = 450;
   NewQMTokenMapViewModel.prototype.height = 'auto';
 
   function closeLayer(_this) {

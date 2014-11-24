@@ -14,18 +14,35 @@ define('mock/dataservices/session.mock', [
 
     SessionDataservice.prototype.start = function(appToken, cb) {
       setTimeout(function() {
-        var resp = mockery.fromTemplate({
+        var resp = {
           Code: 0,
           Message: '',
           Value: {
-            // // logged in
-            // AuthUser: {
-            //   boh: '???',
-            // },
-            // logged out
-            AuthUser: null,
+            // logged in
+            AuthUser: {
+              UserID: 0,
+              DealerId: 5000,
+              Ssid: null,
+              SessionID: 0,
+              Username: "DevUser",
+              Firstname: "Master",
+              Lastname: "Account",
+              GPEmployeeID: "MSTR001",
+              UserEmployeeTypeID: "CORP",
+              UserEmployeeTypeName: "Corporate",
+              SecurityLevel: 9,
+              Apps: [
+                "sse_cms_cors",
+                "hr_man",
+              ],
+              Actions: [
+                "hr_user_edit"
+              ],
+            },
+            // // logged out
+            // AuthUser: null,
           },
-        });
+        };
         cb(null, resp);
       }, settings.timeout);
     };

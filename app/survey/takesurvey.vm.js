@@ -500,7 +500,7 @@ define('src/survey/takesurvey.vm', [
           }
         })) {
           return cb({ // Code: ???,
-            Message: 'locale not found',
+            Message: 'locale not found: ' + locale,
           }, resp);
         }
       }

@@ -1,0 +1,32 @@
+.scheduling {
+  @scheduling-bg: @site-maroon;
+  body& {
+    .mixin-body-color(@scheduling-bg);
+    .mixin-content-active(@scheduling-bg);
+  }
+
+  .btn {
+    background-color: tint(@scheduling-bg, 10%);
+
+    @disabledColor: #e8e8e8;
+    &.disabled {
+      border-color: darken(@disabledColor, 40%);
+      background-color: @disabledColor;
+      color: darken(@disabledColor, 20%);
+    }
+    &.keepactive.active {
+      background-color: shade(@disabledColor, 15%);
+    }
+
+    &:not(.disabled):hover {
+      background-color: tint(@scheduling-bg, 20%);
+    }
+    &:not(.disabled):active,
+    &:not(.disabled).active{
+      background-color: shade(@scheduling-bg, 15%);
+    }
+    &:not(.disabled):focus {
+      background-color: shade(@scheduling-bg, 15%);
+    }
+  }
+}

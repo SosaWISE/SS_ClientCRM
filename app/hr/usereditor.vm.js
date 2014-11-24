@@ -1,4 +1,6 @@
 define('src/hr/usereditor.vm', [
+  'src/viz/idphoto.vm',
+  'src/config',
   'src/hr/hr-cache',
   'src/hr/usersearch.vm',
   'src/core/combo.vm',
@@ -10,6 +12,8 @@ define('src/hr/usereditor.vm', [
   'src/core/controller.vm',
   'ko'
 ], function(
+  IdPhotoViewModel,
+  config,
   hrcache,
   UserSearchViewModel,
   ComboViewModel,
@@ -235,7 +239,9 @@ define('src/hr/usereditor.vm', [
     // ]);
 
     _this.focusFirst = ko.observable(false);
-    _this.data = ukov.wrap({}, schema);
+    _this.data = ukov.wrap({
+      UserID: _this.userid || 0,
+    }, schema);
     _this.data.ShirtSizeCvm = new ComboViewModel({
       selectedValue: _this.data.ShirtSize,
       nullable: true,
@@ -302,6 +308,14 @@ define('src/hr/usereditor.vm', [
       return calcFullName(_this.data.PreferredName(), _this.data.FirstName(), _this.data.LastName());
     });
 
+    _this.data.imgUrl = ko.observable();
+    //
+    function updateImgUrl() {
+      _this.data.imgUrl(strings.format('//{0}/humanresourcesrv/users/{1}/photo?_={2}',
+        config.serviceDomain, _this.data.UserID.peek() || 0, Math.random()));
+    }
+    _this.data.UserID.subscribe(updateImgUrl);
+
     _this.recruitedBy = ko.observable(defaultRecruitedBy);
     _this.data.RecruitedByID.subscribe(function(userid) {
       if (!userid) {
@@ -365,6 +379,33 @@ define('src/hr/usereditor.vm', [
       saveUser(_this, cb);
     }, function(busy) {
       return !busy && !_this.data.isClean();
+    });
+    _this.cmdImage = ko.command(function(cb) {
+      _this.dropImage.execute(_this.data.imgUrl.peek());
+      cb();
+    }, function(busy) {
+      return !busy && !_this.dropImage.busy();
+    });
+    _this.dropImage = ko.command(function(cb, _, args) {
+      var imgUrl = args[0],
+        userid = _this.data.UserID.peek();
+      if (!imgUrl || userid < 1) {
+        cb();
+        if (userid < 1) {
+          notify.info('Save the user first', null, 5);
+        }
+        return;
+      }
+      var vm = new IdPhotoViewModel({
+        userid: userid,
+        imgUrl: args[0],
+      });
+      _this.layersVm.show(vm, function(reloadImg) {
+        if (reloadImg) {
+          updateImgUrl();
+        }
+        cb();
+      });
     });
 
     //
