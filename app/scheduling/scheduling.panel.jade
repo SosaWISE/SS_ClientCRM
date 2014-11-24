@@ -1,3 +1,4 @@
+div(class="layers",data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
 div(class="scheduling", data-bind="if:loaded")
   table(class="fh-wrap")
     tr
@@ -11,3 +12,4 @@ div(class="scheduling", data-bind="if:loaded")
           <!-- ko if:active -->
           div(class="tab", data-bind="template:viewTmpl,active:active")
           <!-- /ko -->
+

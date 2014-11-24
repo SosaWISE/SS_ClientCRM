@@ -6,7 +6,7 @@ define('src/account/security/service.ticket.vm', [
   'src/core/router',
   'src/core/controller.vm',
   'src/account/security/service.ticket.gvm',
-  'src/account/security/ticket.editor.vm',
+  'src/scheduling/ticket.editor.vm',
   'src/core/layers.vm',
   'src/core/joiner',
   'src/slick/slickgrid.vm',
@@ -88,8 +88,7 @@ define('src/account/security/service.ticket.vm', [
 
       _this.layersVm.show(new TicketEditorViewModel({
         pcontroller: _this,
-        title: 'Create New Service Ticket',
-        accountId: _this.AccountId
+        accountId: _this.AccountId,
       }), function onClose() {
         load_tickets({
           id: _this.AccountId,

@@ -1,15 +1,15 @@
 table(class="fh-wrap")
   tr
     td(class="fh-header relative")
-      ul(class="edit-form")        
+      ul(class="edit-form")
         li(style="margin: 10px;")
           div(class="header_left")
             ul(class="header_ul" style="color: white;")
               li
                 span(class="label") Status
-                div(data-bind="cvm:data.ticketStatusCvm")              
+                div(data-bind="cvm:data.ticketStatusCvm")
           //-div(class="header_right")
-            //-ul(class="header_ul")              
+            //-ul(class="header_ul")
               //-li
                 //-button(type="button" class="btn-bg" style="text-transform:none;" data-bind="cmd:cmdNewTicket") New Service Ticket
   tr
@@ -17,4 +17,3 @@ table(class="fh-wrap")
       div(class="fh-contents")
         div(class="grid-wrap")
           div(class="slickgrid", style="background:white;margin:10px;color:black;", data-bind="slickgrid:serviceTicketGvm")
-          div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

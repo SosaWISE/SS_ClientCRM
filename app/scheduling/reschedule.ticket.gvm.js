@@ -12,7 +12,6 @@ define('src/scheduling/reschedule.ticket.gvm', [
   "use strict";
 
   function ReScheduleTicketGridViewModel(options) {
-
     var _this = this;
     ReScheduleTicketGridViewModel.super_.call(_this, {
       gridOptions: {
@@ -20,71 +19,66 @@ define('src/scheduling/reschedule.ticket.gvm', [
         forceFitColumns: true,
         rowHeight: 27,
       },
-
       plugins: [
         new RowEvent({
           eventName: 'onDblClick',
           fn: function(ticket) {
-
             options.edit(ticket, function(model, deleted) {
-              if (!model) { // nothing changed                
+              if (!model) { // nothing changed
                 return;
               }
-              if (deleted) { // remove deleted item                
+              if (deleted) { // remove deleted item
                 _this.list.remove(ticket);
-              } else { // update in place                
+              } else { // update in place
                 _this.list.replace(ticket, model);
               }
             });
           },
         }),
       ],
-
-      columns: [{
-        id: 'TicketID',
-        name: 'TicketID',
-        field: 'TicketID',
-      }, {
-        id: 'MonitoringStationNo',
-        name: 'Moni Ticket#',
-        field: 'MonitoringStationNo',
-      }, {
-        id: 'TicketTypeName',
-        name: 'Service Ticket Type',
-        field: 'TicketTypeName',
-      }, {
-        id: 'StatusCodeId',
-        name: 'Status',
-        field: 'StatusCode',
-
-      }, {
-        id: 'MoniConfirmation',
-        name: 'Moni Confirmation',
-        field: 'MoniConfirmation',
-      }, {
-        id: 'TechConfirmation',
-        name: 'Tech Confirmation',
-        field: 'TechConfirmation',
-        formatter: SlickGridViewModel.formatters.datetime,
-      }, {
-        id: 'TechnicianId',
-        name: 'Tech',
-        field: 'TechnicianId',
-      }, {
-        id: 'AgentConfirmation',
-        name: 'Agent Confirmation',
-        field: 'AgentConfirmation',
-      }, {
-        id: 'ExpirationDate',
-        name: 'Expiration Date',
-        field: 'ExpirationDate',
-        formatter: SlickGridViewModel.formatters.datetime,
-      }, ],
-
+      columns: [ //
+        {
+          id: 'TicketID',
+          name: 'TicketID',
+          field: 'TicketID',
+        }, {
+          id: 'MonitoringStationNo',
+          name: 'Moni Ticket#',
+          field: 'MonitoringStationNo',
+        }, {
+          id: 'TicketTypeName',
+          name: 'Service Ticket Type',
+          field: 'TicketTypeName',
+        }, {
+          id: 'StatusCodeId',
+          name: 'Status',
+          field: 'StatusCode',
+        }, {
+          id: 'MoniConfirmation',
+          name: 'Moni Confirmation',
+          field: 'MoniConfirmation',
+        }, {
+          id: 'TechConfirmation',
+          name: 'Tech Confirmation',
+          field: 'TechConfirmation',
+          formatter: SlickGridViewModel.formatters.datetime,
+        }, {
+          id: 'TechnicianId',
+          name: 'Tech',
+          field: 'TechnicianId',
+        }, {
+          id: 'AgentConfirmation',
+          name: 'Agent Confirmation',
+          field: 'AgentConfirmation',
+        }, {
+          id: 'ExpirationDate',
+          name: 'Expiration Date',
+          field: 'ExpirationDate',
+          formatter: SlickGridViewModel.formatters.datetime,
+        },
+      ],
     });
-
   }
-
   utils.inherits(ReScheduleTicketGridViewModel, SlickGridViewModel);
 
   return ReScheduleTicketGridViewModel;

@@ -5,6 +5,7 @@ define('src/scheduling/scheduling.panel.vm', [
   'src/scheduling/technician.ticket.vm',
   'src/scheduling/reschedule.ticket.vm',
   'ko',
+  'src/core/layers.vm',
   'src/core/helpers',
   'src/core/strings',
   'src/core/notify',
@@ -17,6 +18,7 @@ define('src/scheduling/scheduling.panel.vm', [
   TechTicketsViewModel,
   ReScheduleTicketViewModel,
   ko,
+  LayersViewModel,
   helpers,
   strings,
   notify,
@@ -33,6 +35,10 @@ define('src/scheduling/scheduling.panel.vm', [
     _this.title = 'Scheduling';
     _this.list = _this.childs;
 
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
+    });
+
     //
     //events
     //
@@ -46,59 +52,46 @@ define('src/scheduling/scheduling.panel.vm', [
   // members
   //
 
-  SchedulingViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+  SchedulingViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // overrides base
     var _this = this;
-
-    //Original script
-    /*  _this.list([
-      new ServiceTicketViewModel({
-        routeName: 'scheduling',
-        pcontroller: _this,
-        id: 'serviceticket',
-        title: 'Service Ticket'
-      }),
-      new ScheduleViewModel({
-        routeName: 'scheduling',
-        pcontroller: _this,
-        id: 'schedule',
-        title: 'Schedule'
-      }),
-  */
 
     _this.list([
       new ServiceTicketViewModel({
         routeName: 'scheduling',
         pcontroller: _this,
         id: 'serviceticket',
-        title: 'Service Ticket'
+        title: 'Service Ticket',
+        layersVm: _this.layersVm,
       }),
       new ScheduleViewModel({
         routeName: 'scheduling',
         pcontroller: _this,
         id: 'schedule',
-        title: 'Schedule'
+        title: 'Schedule',
+        layersVm: _this.layersVm,
       }),
       new TechAvailabilityViewModel({
         routeName: 'scheduling',
         pcontroller: _this,
         id: 'technicianavailability',
-        title: 'Technician Availability'
+        title: 'Technician Availability',
+        layersVm: _this.layersVm,
       }),
       new TechTicketsViewModel({
         routeName: 'scheduling',
         pcontroller: _this,
         id: 'techniciantickets',
-        title: 'Technician Tickets'
+        title: 'Technician Tickets',
+        layersVm: _this.layersVm,
       }),
       new ReScheduleTicketViewModel({
         routeName: 'scheduling',
         pcontroller: _this,
         id: 'recheduletickets',
-        title: 'Reschedule Tickets'
+        title: 'Reschedule Tickets',
+        layersVm: _this.layersVm,
       }),
-
     ]);
-    join.add()();
   };
 
   return SchedulingViewModel;

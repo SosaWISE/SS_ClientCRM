@@ -2,30 +2,30 @@ div(class="ticket-editor")
   div(data-bind="spinner:loading,spinner-rgb:'white'")
 ul(class="edit-form")
   li
-  span(class="label") Account ID 
-  input(type="text" data-bind="ukov:data.AccountId, value:data.AccountId,valueUpdate:'keyup'")
-  //-li
-  //-span(class="label") Monitronics Ticket# 
-  //-input(type="text" data-bind="ukov:data.MonitoringStationNo, value:data.MonitoringStationNo,valueUpdate:'keyup'")
-  //-li
-  //-span(class="label") Not Applicable
-  //-input(type="checkbox" style="margin-left: 0px;")
-  //-hr
+    span(class="label") Account ID
+    input(type="text" data-bind="ukov:data.AccountId, value:data.AccountId,valueUpdate:'keyup'")
   li
-  div(style="height: 5px;")
-  span(class="label") Ticket Type
-  div(data-bind="cvm:data.ticketTypeCvm")
+    span(class="label") Ticket Type
+    div(data-bind="cvm:data.ticketTypeCvm")
   li
-  span(class="label") General Note 
-  textarea(rows="5" data-bind="ukov:data.Notes, value:data.Notes,valueUpdate:'keyup'")
+    span(class="label") General Note
+    textarea(rows="5" data-bind="ukov:data.Notes, value:data.Notes,valueUpdate:'keyup'")
   li
-  span(class="label")  Monitoring Station Ticket#
-  input(type="text" data-bind="ukov:data.MonitoringStationNo, value:data.MonitoringStationNo,valueUpdate:'keyup'")    
-  div
+    span(class="label")  Monitoring Station Ticket#
+    input(type="text" data-bind="ukov:data.MonitoringStationNo, value:data.MonitoringStationNo,valueUpdate:'keyup'")
+    div
       ul(class="actions")
         li
           a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+        <!-- ko if:showUserAccount -->
+        li
+          a(class="btn",tabindex="0",data-bind="cmd:cmdUserAccount") User Account
+        <!-- /ko -->
+        <!-- ko if:showSave -->
         li
           a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
+        <!-- /ko -->
+        <!-- ko if:showSaveAndSchedule -->
         li
-          a(class="btn",tabindex="0",data-bind="cmd:cmdSchedule") Save and Schedule 	
+          a(class="btn",tabindex="0",data-bind="cmd:cmdSchedule") Save and Schedule
+        <!-- /ko -->

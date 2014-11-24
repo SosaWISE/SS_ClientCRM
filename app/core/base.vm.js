@@ -52,6 +52,22 @@ define('src/core/base.vm', [
     return vm.viewTmpl;
   };
 
+  BaseViewModel.prototype.initFocusFirst = function() {
+    var _this = this;
+    if (_this.focusFirst) {
+      // do nothing duplicate calls
+      return;
+    }
+    _this.focusFirst = ko.observable(true);
+    _this.active.subscribe(function(active) {
+      if (active) {
+        // this timeout makes it possible to focus the input field
+        setTimeout(function() {
+          _this.focusFirst(true);
+        }, 100);
+      }
+    });
+  };
   BaseViewModel.prototype.mixinLoad = function() {
     var _this = this;
     _this.load = load;

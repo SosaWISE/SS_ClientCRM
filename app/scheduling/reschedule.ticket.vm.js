@@ -6,7 +6,7 @@ define('src/scheduling/reschedule.ticket.vm', [
   'src/core/router',
   'src/core/controller.vm',
   'src/scheduling/reschedule.ticket.gvm',
-  'src/scheduling/reschedule.ticket.editor.vm',
+  'src/scheduling/ticket.editor.vm',
   'src/core/layers.vm',
   'src/core/joiner',
   'src/slick/slickgrid.vm',
@@ -21,7 +21,7 @@ define('src/scheduling/reschedule.ticket.vm', [
   Router,
   ControllerViewModel,
   ReScheduleTicketGridViewModel,
-  ReScheduleTicketEditorViewModel,
+  TicketEditorViewModel,
   LayersViewModel,
   joiner,
   SlickGridViewModel,
@@ -32,44 +32,32 @@ define('src/scheduling/reschedule.ticket.vm', [
   "use strict";
 
   var schema;
-
   schema = {
     _model: true,
     TicketStatus: {},
   };
 
-
   function ReScheduleTicketViewModel(options) {
     var _this = this;
-
     ReScheduleTicketViewModel.super_.call(_this, options);
-
-
-    _this.layersVm = _this.layersVm || new LayersViewModel({
-      controller: _this,
-    });
+    ControllerViewModel.ensureProps(_this, [
+      'layersVm',
+    ]);
 
     _this.data = ukov.wrap(_this.item || {
       TicketStatus: null,
     }, schema);
 
     //Ticket history grid
-    _this.reScheduleTicketGvm = new ReScheduleTicketGridViewModel({
+    _this.gvm = new ReScheduleTicketGridViewModel({
       edit: function(ticket, cb) {
-        showTicketEditor(_this, utils.clone(ticket), cb);
+        showTicketEditor(_this, ticket, cb);
       }
     });
 
-
-    //This a layer for creating new ticket
-    _this.layersVm = new LayersViewModel({
-      controller: _this,
-    });
-
-
+    //
     //events
     //
-
   }
 
   utils.inherits(ReScheduleTicketViewModel, ControllerViewModel);
@@ -79,53 +67,33 @@ define('src/scheduling/reschedule.ticket.vm', [
   // members
   //
 
-  ReScheduleTicketViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-    //var _this = this;
-    join = join;
-
-    //Initialize empty grid
-    this.reScheduleTicketGvm.list([]);
-
-
-  };
-
-  ReScheduleTicketViewModel.prototype.onActivate = function(cb) { // override me
+  ReScheduleTicketViewModel.prototype.onActivate = function( /*routeCtx*/ ) { // override me
     var _this = this;
-
-    //load all tickets created - no filtering yet that includes un-completed ticket that have passed 4 hours
-    load_tickets({
-      id: 4,
-    }, _this.reScheduleTicketGvm, cb);
-
+    // refresh the tickets everytime this tab is activated...???
+    refreshTickets(_this);
   };
+
+  function refreshTickets(_this) {
+    //load all tickets created - no filtering yet that includes un-completed ticket that have passed 4 hours
+    load_tickets(4, _this.gvm);
+  }
 
   function showTicketEditor(_this, ticket, cb) {
-    var vm = new ReScheduleTicketEditorViewModel({
+    var vm = new TicketEditorViewModel({
       pcontroller: _this,
       title: "Reschedule Ticket",
-      ticket: ticket
+      ticket: utils.clone(ticket),
+      showUserAccount: true,
+      showSave: false,
     });
     _this.layersVm.show(vm, cb);
   }
 
-  function load_tickets(param, cvm, cb) {
-
-    dataservice.scheduleenginesrv.SeTicketReScheduleList.read(param, null, utils.safeCallback(cb, function(err, resp) {
-
-      if (resp.Code === 0) {
-
-        console.log("Re-schedule Tickets:" + JSON.stringify(resp.Value));
-
-        //empty the list before adding some data
-        cvm.list([]);
-
-        //Update inventoryListGvm grid
-        for (var x = 0; x < resp.Value.length; x++) {
-          cvm.list.push(resp.Value[x]);
-        }
-
-      }
-    }));
+  function load_tickets(hours, cvm, cb) {
+    cvm.list([]);
+    dataservice.scheduleenginesrv.SeTicketReScheduleList.read({
+      id: hours,
+    }, cvm.list, cb);
   }
 
   return ReScheduleTicketViewModel;

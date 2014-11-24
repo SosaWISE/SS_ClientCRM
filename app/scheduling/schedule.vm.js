@@ -12,7 +12,6 @@ define('src/scheduling/schedule.vm', [
   'src/scheduling/scheduleblock.edit.vm',
   'src/scheduling/scheduleblock.viewticket.vm',
   'src/scheduling/scheduleblock.unscheduleticket.vm',
-  'src/core/layers.vm',
   'src/core/joiner',
   'moment',
   'ko',
@@ -32,7 +31,6 @@ define('src/scheduling/schedule.vm', [
   EditScheduleBlockViewModel,
   ScheduleBlockTicketsViewModel,
   UnScheduleTicketViewModel,
-  LayersViewModel,
   joiner,
   moment,
   ko,
@@ -53,13 +51,10 @@ define('src/scheduling/schedule.vm', [
 
   function ScheduleViewModel(options) {
     var _this = this;
-
     ScheduleViewModel.super_.call(_this, options);
-
-    //This a layer for creating new ticket (Pop-up)
-    _this.layersVm = new LayersViewModel({
-      controller: _this,
-    });
+    ControllerViewModel.ensureProps(_this, [
+      'layersVm',
+    ]);
 
     // now scheduling info
     _this.IsNowScheduling = ko.observable(true);
@@ -68,13 +63,13 @@ define('src/scheduling/schedule.vm', [
     _this.AccountName = ko.observable();
     _this.AccountAddress = ko.observable();
 
-    //blocks date and time    
+    //blocks date and time
     _this.ScheduleEndTime = ko.observable();
     _this.ScheduleAvailableSlot = ko.observable();
 
+    //
     //events
     //
-
   }
 
   utils.inherits(ScheduleViewModel, ControllerViewModel);
@@ -126,7 +121,7 @@ define('src/scheduling/schedule.vm', [
       _this.IsNowScheduling(false);
     }
 
-    //load block list    
+    //load block list
     load_scheduleBlockList(_this, join.add());
 
     /** Fullcalendar plugin **/
@@ -143,8 +138,8 @@ define('src/scheduling/schedule.vm', [
       slotMinutes: 15,
       selectHelper: true,
       aspectRatio: 2.1,
-      hiddenDays: [0], //hide sunday   
-      minTime: 8, //start at 8am      
+      hiddenDays: [0], //hide sunday
+      minTime: 8, //start at 8am
       eventClick: function(calEvent /*, jsEvent, view*/ ) {
 
         //prevent adding tickets if no zipcode specified on the block
@@ -247,7 +242,7 @@ define('src/scheduling/schedule.vm', [
           element.find('.fc-event-inner').addClass('fc-event-green-border');
         }
 
-        //checking for manager override color here        
+        //checking for manager override color here
 
         //blocks orange/red color coding
 
@@ -274,7 +269,7 @@ define('src/scheduling/schedule.vm', [
         element.find('.fc-event-inner').attr("title", "Click here to schedule ticket in this block");
         element.find('.fc-event-title').append('<br/>' + event.someInfo);
 
-        //enable editing of blocks          
+        //enable editing of blocks
         element.find('.fc-event-time').append('<button style="float: right !important; z-index: 999999 !important;" id="btnEdit' + event.id + '">Edit</button>');
         // element.find('.fc-event-time').append('<button style="float: right !important; z-index: 999999 !important;" id="btnView' + event.id + '">View Tickets</button>');
         $("#btnEdit" + event.id).click(function(e) {
@@ -306,14 +301,14 @@ define('src/scheduling/schedule.vm', [
         //   e.stopPropagation();
         // });
 
-        // determine which block ticket is clicked                    
+        // determine which block ticket is clicked
         $("#ticketListGrid" + event.id).on("click", " tr", function(ev) {
 
           ev.stopImmediatePropagation();
 
           var isExecuted = false;
 
-          //check to see if tr clicked is inside the ticketlistGrid              
+          //check to see if tr clicked is inside the ticketlistGrid
           if ($(this).closest('table').attr('id') === ('ticketListGrid' + event.id)) {
 
             //to be sure pop-up only called once
@@ -391,9 +386,9 @@ define('src/scheduling/schedule.vm', [
 
   function load_scheduleBlockList(_this, cb) {
 
-    var current = new Date(), // get current date    
+    var current = new Date(), // get current date
       weekstart = current.getDate() - current.getDay() + 1,
-      weekend = weekstart + 5, // end day 5 for saturday 
+      weekend = weekstart + 5, // end day 5 for saturday
       start = new Date(current.setDate(weekstart)),
       end = new Date(current.setDate(weekend)),
       param,
@@ -511,7 +506,7 @@ define('src/scheduling/schedule.vm', [
           //list of blocks from server
           result.push(data);
 
-        } //end for loop        
+        } //end for loop
 
         //console.log("Final Source:" + JSON.stringify(result));
 
@@ -560,7 +555,7 @@ define('src/scheduling/schedule.vm', [
       end = moment(start).format('MM/DD/YYYY') + " " + moment(end).format('HH') + ":" + moment(end).format('mm');
     }
 
-    // - get moments of start and end time    
+    // - get moments of start and end time
     startDuration = moment(start);
     endDuration = moment(end);
 
@@ -601,7 +596,7 @@ define('src/scheduling/schedule.vm', [
     //set the final endtime of block
     _this.ScheduleEndTime(moment(startDuration.add("hour", hourDiff)).format("MM/DD/YYYY HH:mm"));
 
-    //set the number of slots for a block, if slot not empty - use what is in the box    
+    //set the number of slots for a block, if slot not empty - use what is in the box
     if (!_this.ScheduleAvailableSlot()) {
       _this.ScheduleAvailableSlot(hourDiff);
     }

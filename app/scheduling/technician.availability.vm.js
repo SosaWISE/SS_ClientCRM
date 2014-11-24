@@ -8,7 +8,6 @@ define('src/scheduling/technician.availability.vm', [
   'src/core/utils',
   'src/core/controller.vm',
   'src/scheduling/technician.signup.vm',
-  'src/core/layers.vm',
   'src/core/joiner',
   'moment',
   'ko',
@@ -22,7 +21,6 @@ define('src/scheduling/technician.availability.vm', [
   utils,
   ControllerViewModel,
   TechSignUpViewModel,
-  LayersViewModel,
   joiner,
   moment,
   ko
@@ -39,14 +37,10 @@ define('src/scheduling/technician.availability.vm', [
 
   function TechnicianViewModel(options) {
     var _this = this;
-
     TechnicianViewModel.super_.call(_this, options);
-
-
-    //This a layer for creating new ticket (Pop-up)
-    _this.layersVm = new LayersViewModel({
-      controller: _this,
-    });
+    ControllerViewModel.ensureProps(_this, [
+      'layersVm',
+    ]);
 
     _this.AvailableEndTime = ko.observable();
     _this.ScheduleAvailableSlot = ko.observable();
@@ -62,14 +56,13 @@ define('src/scheduling/technician.availability.vm', [
   // members
   //
 
-  TechnicianViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // override me    
+  TechnicianViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // override me
     var join = joiner(),
       _this = this;
     load_technician(_this, join.add());
   };
 
-  TechnicianViewModel.prototype.onActivate = function( /*routeData*/ ) { // override me  
-
+  TechnicianViewModel.prototype.onActivate = function( /*routeData*/ ) { // override me
     var _this = this,
       isTech = false, //temp
       isBlockOwned = false, //temp
@@ -77,7 +70,7 @@ define('src/scheduling/technician.availability.vm', [
 
     //load_technician(join.add());
 
-    //load technician availability list    
+    //load technician availability list
     load_technicianAvailabilityList(join.add());
 
     /** Fullcalendar plugin **/
@@ -95,8 +88,8 @@ define('src/scheduling/technician.availability.vm', [
       slotMinutes: 15,
       selectHelper: true,
       aspectRatio: 2.1,
-      hiddenDays: [0], //hide sunday 
-      minTime: 8, //start at 8am     
+      hiddenDays: [0], //hide sunday
+      minTime: 8, //start at 8am
       eventClick: function(event /*, jsEvent, view*/ ) {
         console.log(_this.RuTechnician);
         isBlockOwned = false;
@@ -127,7 +120,6 @@ define('src/scheduling/technician.availability.vm', [
           notify.warn("That availability block does not belong to you.", null, 3);
           return;
         }
-
       },
 
       eventResize: function(event /*, dayDelta, minuteDelta, revertFunc*/ ) {
@@ -144,7 +136,6 @@ define('src/scheduling/technician.availability.vm', [
           notify.warn("That availability block does not belong to you.", null, 3);
           return;
         }
-
       },
 
       dayClick: function( /*date , allDay, jsEvent, view*/ ) {
@@ -153,7 +144,6 @@ define('src/scheduling/technician.availability.vm', [
 
       //select: function(start, end /*, jsEvent, view*/ ) {
       select: function(start, end /*, jsEvent, view*/ ) {
-
         //isTech = (_this.RuTechnician != null) ? true : false; //for real
         isTech = true; // for now - Allow non technicians to schedule availability
 
@@ -184,7 +174,6 @@ define('src/scheduling/technician.availability.vm', [
           notify.warn("You are a not a technician and you cannot add availability", null, 3);
           return;
         }
-
       },
 
       viewRender: function( /*view, element*/ ) {},
@@ -219,14 +208,9 @@ define('src/scheduling/technician.availability.vm', [
           });
 
           e.stopPropagation();
-
         });
-
       },
-
-
     });
-
   };
 
   function UpdateEvent(_this, event, join) {
@@ -272,7 +256,7 @@ define('src/scheduling/technician.availability.vm', [
           // };
 
           //to avoid reload
-          //$('#techCalendar').fullCalendar('updateEvent', modifiedEvent);          
+          //$('#techCalendar').fullCalendar('updateEvent', modifiedEvent);
 
           // changed back to reloading all events: the size of the block won't update unless reloading them all
           load_technicianAvailabilityList();
@@ -298,8 +282,8 @@ define('src/scheduling/technician.availability.vm', [
   //   };
 
   //   dataservice.scheduleenginesrv.SeScheduleBlock.save({
-  //       id: EventID, 
-  //       data: scheduleBlock, 
+  //       id: EventID,
+  //       data: scheduleBlock,
   //       link:'SE',
   //     }, null, utils.safeCallback(null, function(err, resp) {
 
@@ -309,7 +293,7 @@ define('src/scheduling/technician.availability.vm', [
   //         //$('#techCalendar').fullCalendar('addEventSource', result);
   //         load_technicianAvailabilityList();
   //       }
-  //     }, 
+  //     },
   //     notify.error, false)
   //   );
 
@@ -321,9 +305,9 @@ define('src/scheduling/technician.availability.vm', [
 
     //@TODO retrieve and display the list of technician availability
 
-    var current = new Date(), // get current date    
+    var current = new Date(), // get current date
       weekstart = current.getDate() - current.getDay() + 1,
-      weekend = weekstart + 5, // end day 5 for saturday 
+      weekend = weekstart + 5, // end day 5 for saturday
       start = new Date(current.setDate(weekstart)),
       end = new Date(current.setDate(weekend)),
       param,
