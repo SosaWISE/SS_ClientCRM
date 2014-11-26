@@ -66,20 +66,14 @@ define('src/scheduling/service.ticket.vm', [
       _this.layersVm.show(new TicketEditorViewModel({
         pcontroller: _this,
         title: 'Create New Service Ticket'
-      }), function onClose() {
-        load_tickets({}, _this.serviceTicketGvm, cb);
+      }), function() {
+        reloadTickets(_this, cb);
       });
       cb();
     });
 
-    _this.data.TicketStatus.subscribe(function(statusId, cb) {
-      // 0 - All
-      if (statusId || statusId === 0) {
-        load_tickets({
-          id: statusId,
-          link: 'TSCID'
-        }, _this.serviceTicketGvm, cb);
-      }
+    _this.data.ticketStatusCvm.selectedValue.subscribe(function() {
+      reloadTickets(_this);
     });
   }
 
@@ -98,16 +92,21 @@ define('src/scheduling/service.ticket.vm', [
     load_ticketStatusList(_this.data.ticketStatusCvm, join.add());
   };
 
-  ServiceTicketViewModel.prototype.onActivate = function(cb) { // override me
+  ServiceTicketViewModel.prototype.onActivate = function() { // override me
     var _this = this;
     //set default to All and load all tickets
     _this.data.TicketStatus(0);
-    //load all tickets created
-    load_tickets({
-      id: 0,
-      link: 'TSCID'
-    }, _this.serviceTicketGvm, cb);
+    //load tickets
+    reloadTickets(_this);
   };
+
+  function reloadTickets(_this, cb) {
+    var statusId = _this.data.TicketStatus.peek();
+    if (statusId == null) {
+      return;
+    }
+    load_tickets(statusId, 'TSCID', _this.serviceTicketGvm, cb);
+  }
 
   function showTicketEditor(_this, ticket, cb) {
     var vm = new TicketEditorViewModel({
@@ -119,46 +118,22 @@ define('src/scheduling/service.ticket.vm', [
   }
 
   function load_ticketStatusList(cvm, cb) {
-    dataservice.scheduleenginesrv.TicketStatusCodeList.read({}, null, utils.safeCallback(cb, function(err, resp) {
-      if (resp.Code === 0) {
-        //clear dropdown first before inserting
-        cvm.setList([]);
-        console.log("TicketStatusCodeList:" + JSON.stringify(resp.Value));
-        if (resp.Value.length > 0) {
-          var data = [{
-              StatusCodeID: 0,
-              StatusCode: 'All'
-            }],
-            x;
-          for (x = 0; x < resp.Value.length; x++) {
-            data.push({
-              StatusCodeID: resp.Value[x].StatusCodeID,
-              StatusCode: resp.Value[x].StatusCode
-            });
-          }
-
-          //Set result to Location combo list
-          cvm.setList(data);
-        }
-      } else {
-        notify.warn('No records found.', null, 3);
-      }
-    }));
+    cvm.setList([]);
+    dataservice.scheduleenginesrv.TicketStatusCodeList.read({}, function(val) {
+      val.unshift({
+        StatusCodeID: 0,
+        StatusCode: 'All'
+      });
+      cvm.setList(val);
+    }, cb);
   }
 
-  function load_tickets(param, cvm, cb) {
-    dataservice.scheduleenginesrv.SeTicketList.read(param, null, utils.safeCallback(cb, function(err, resp) {
-      if (resp.Code === 0) {
-        //empty the list before adding some data
-        cvm.list([]);
-        //Update inventoryListGvm grid
-        for (var x = 0; x < resp.Value.length; x++) {
-          cvm.list.push(resp.Value[x]);
-        }
-      } else {
-        //notify.warn('No records found.', null, 3);
-      }
-    }));
+  function load_tickets(id, link, cvm, cb) {
+    cvm.list([]);
+    dataservice.scheduleenginesrv.SeTicketList.read({
+      id: id,
+      link: link,
+    }, cvm.list, utils.safeCallback(cb, utils.noop, notify.error));
   }
 
   return ServiceTicketViewModel;

@@ -1,13 +1,29 @@
 .viz-idphoto {
+  position:relative;
+
   .btn {
     padding: 4px 6px;
   }
 
+  .help {
+    position:absolute;
+    width: ~"calc(100% - 40px)";
+    text-align:center;
+  }
+
   .controls {
+    position:relative;
+
     > ul.actions {
       text-align: left !important;
       li {
         padding: 0px 2px 2px 0px !important;
+      }
+
+      &.right {
+        position:absolute;
+        right:0px;
+        top:10px;
       }
     }
   }

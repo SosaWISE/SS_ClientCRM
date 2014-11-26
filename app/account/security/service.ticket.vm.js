@@ -137,26 +137,15 @@ define('src/account/security/service.ticket.vm', [
     //load status list
     load_ticketStatusList(_this.data.ticketStatusCvm, join.add());
 
-    //load all tickets created
-    //load_tickets({}, _this.serviceTicketGvm, join.add());
-    load_tickets({
-        id: _this.AccountId,
-        link: 'ACCID'
-      },
-      _this.serviceTicketGvm, join.add()
-    );
-
+    // //load tickets created
+    // load_tickets(_this.AccountId, _this.serviceTicketGvm, join.add());
   };
 
-  ServiceTicketViewModel.prototype.onActivate = function(cb) { // override me
+  ServiceTicketViewModel.prototype.onActivate = function() { // override me
     var _this = this;
 
     //load all tickets created
-    load_tickets({
-      id: _this.AccountId,
-      link: 'ACCID'
-    }, _this.serviceTicketGvm, cb);
-
+    load_tickets(_this.AccountId, _this.serviceTicketGvm, utils.safeCallback(null, utils.noop, notify.error));
   };
 
   function showTicketEditor(_this, ticket, cb) {
@@ -169,45 +158,16 @@ define('src/account/security/service.ticket.vm', [
   }
 
   function load_ticketStatusList(cvm, cb) {
-
-    dataservice.scheduleenginesrv.TicketStatusCodeList.read({}, null, utils.safeCallback(cb, function(err, resp) {
-
-      if (resp.Code === 0) {
-
-        //console.log("TicketStatusCodeList:" + JSON.stringify(resp.Value));
-
-        if (resp.Value.length > 0) {
-          //Set result to Location combo list
-          cvm.setList(resp.Value);
-        }
-
-      } else {
-        notify.warn('No records found.', null, 3);
-      }
-    }));
-
+    cvm.setList([]);
+    dataservice.scheduleenginesrv.TicketStatusCodeList.read({}, cvm.setList, cb);
   }
 
-  function load_tickets(param, cvm, cb) {
-
-    dataservice.scheduleenginesrv.SeTicketList.read(param, null, utils.safeCallback(cb, function(err, resp) {
-
-      if (resp.Code === 0) {
-
-        console.log("Tickets:" + JSON.stringify(resp.Value));
-
-        //empty the list before adding some data
-        cvm.list([]);
-
-        //Update inventoryListGvm grid
-        for (var x = 0; x < resp.Value.length; x++) {
-          cvm.list.push(resp.Value[x]);
-        }
-
-      } else {
-        notify.warn('No records found.', null, 3);
-      }
-    }));
+  function load_tickets(id, gvm, cb) {
+    gvm.list([]);
+    dataservice.scheduleenginesrv.SeTicketList.read({
+      id: id,
+      link: 'ACCID',
+    }, gvm.list, cb);
   }
 
   return ServiceTicketViewModel;

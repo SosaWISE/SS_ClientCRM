@@ -95,8 +95,6 @@ define('src/scheduling/schedule.vm', [
       Ticket: routeData.extraData.ticket
     }, schema);
 
-    console.log(_this.data.getValue());
-
     if (_this.data.getValue().Ticket) {
 
       _this.IsNowScheduling(true);
@@ -412,13 +410,9 @@ define('src/scheduling/schedule.vm', [
       'DateTo': $.fullCalendar.formatDate(end, 'MM/dd/yyyy')
     };
 
-    //console.log("Date range:" + JSON.stringify(param));
-
     dataservice.scheduleenginesrv.SeScheduleBlockList.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
-
-        console.log("SeScheduleBlockList:" + JSON.stringify(resp.Value));
 
         _this.ScheduleBlockList = resp.Value;
 
@@ -459,17 +453,12 @@ define('src/scheduling/schedule.vm', [
           //get the remaining slots of the block
           blockRemainingSlot = ((slotAvailable - numTickets) <= 0 ? 0 : (slotAvailable - numTickets));
 
-          console.log("Calculating total weight on block:" + resp.Value[x].BlockID);
-
           //get the total weight of all tikets for each block
           if (resp.Value[x].TicketList.length > 0) {
             for (z = 0; z < resp.Value[x].TicketList.length; z++) {
-              console.log("Weight:" + resp.Value[x].TicketList[z].Weight);
               totalWeight += resp.Value[x].TicketList[z].Weight;
             }
           }
-
-          console.log("totalWeight:" + totalWeight);
 
           if (totalWeight > blockRemainingSlot) {
             tempIsWeightGreaterThanAvailableSlot = true;
@@ -508,16 +497,12 @@ define('src/scheduling/schedule.vm', [
 
         } //end for loop
 
-        //console.log("Final Source:" + JSON.stringify(result));
-
         $('#calendar').fullCalendar('removeEvents');
 
         $('#calendar').fullCalendar('addEventSource', result);
 
         //another loop to append ticket list on blocks
         for (x = 0; x < resp.Value.length; x++) {
-
-          console.log("Tickets to append:" + JSON.stringify(resp.Value[x].TicketList));
           curTicket = resp.Value[x].TicketList;
 
           //hide grid if no tickets available to show
@@ -616,11 +601,9 @@ define('src/scheduling/schedule.vm', [
         var distance = scheduleBlockList[x].Distance.toFixed(2);
         if (distance < smallestDistance && distance !== 0 && scheduleBlockList[x].NoOfTickets > 0 && scheduleBlockList[x].CurrentTicketId !== null) {
           smallestDistance = distance;
-          console.log('current smallest' + endDateTime);
         }
       }
     }
-    console.log('****************************smallestDistance: ' + smallestDistance);
     return smallestDistance;
   }
 

@@ -91,7 +91,6 @@ define('src/scheduling/technician.availability.vm', [
       hiddenDays: [0], //hide sunday
       minTime: 8, //start at 8am
       eventClick: function(event /*, jsEvent, view*/ ) {
-        console.log(_this.RuTechnician);
         isBlockOwned = false;
         if (_this.RuTechnician != null) {
           isBlockOwned = (_this.RuTechnician.TechnicianId === event.technicianId) ? true : false;
@@ -106,7 +105,6 @@ define('src/scheduling/technician.availability.vm', [
       },
 
       eventDrop: function(event /*, dayDelta, minuteDelta, allDay, revertFunc*/ ) {
-        console.log(_this.RuTechnician);
         isBlockOwned = false;
         if (_this.RuTechnician != null) {
           isBlockOwned = (_this.RuTechnician.TechnicianId === event.technicianId) ? true : false;
@@ -123,7 +121,6 @@ define('src/scheduling/technician.availability.vm', [
       },
 
       eventResize: function(event /*, dayDelta, minuteDelta, revertFunc*/ ) {
-        console.log(_this.RuTechnician);
         isBlockOwned = false;
         if (_this.RuTechnician != null) {
           isBlockOwned = (_this.RuTechnician.TechnicianId === event.technicianId) ? true : false;
@@ -329,9 +326,6 @@ define('src/scheduling/technician.availability.vm', [
 
       if (resp.Code === 0) {
 
-        console.log("SeScheduleBlockList:" + JSON.stringify(resp.Value));
-
-
         for (x = 0; x < resp.Value.length; x++) {
 
           //Own blocks - lightblue, otherwise white
@@ -344,7 +338,6 @@ define('src/scheduling/technician.availability.vm', [
 
           tColor = (IsOwned) ? 'lightblue' : 'white';
           tName = resp.Value[x].TechnicianName;
-          console.log(tName);
           //objects to display on technician availability grid
           data = {
             id: resp.Value[x].BlockID,
@@ -376,7 +369,6 @@ define('src/scheduling/technician.availability.vm', [
   }
 
   function load_technician(_this, cb) {
-    console.log('load_technician called');
     dataservice.humanresourcesrv.RuTechnician.read({
       id: app.user.peek().GPEmployeeID,
       link: 'TID'
@@ -384,7 +376,6 @@ define('src/scheduling/technician.availability.vm', [
 
       if (resp.Code === 0) {
         _this.RuTechnician = resp.Value;
-        console.log(resp.Value);
       } else {
         _this.RuTechnician(null);
       }
