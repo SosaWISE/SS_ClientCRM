@@ -728,8 +728,8 @@
 
     function getFilteredAndPagedItems(items) {
       if (filter) {
-        var batchFilter = options.inlineFilters ? compiledFilter : uncompiledFilter;
-        var batchFilterWithCaching = options.inlineFilters ? compiledFilterWithCaching : uncompiledFilterWithCaching;
+        var batchFilter = options.inlineFilters ? compiledFilter : self.uncompiledFilter; //ACLS: made uncompiledFilter settable
+        var batchFilterWithCaching = options.inlineFilters ? compiledFilterWithCaching : self.uncompiledFilterWithCaching; //ACLS: made uncompiledFilterWithCaching settable
 
         if (refreshHints.isFilterNarrowing) {
           filteredItems = batchFilter(filteredItems, filterArgs);
@@ -982,6 +982,8 @@
       "getItems": getItems,
       "setItems": setItems,
       "setFilter": setFilter,
+      "uncompiledFilter": uncompiledFilter, //ACLS: made uncompiledFilter settable
+      "uncompiledFilterWithCaching": uncompiledFilterWithCaching, //ACLS: made uncompiledFilterWithCaching settable
       "sort": sort,
       "fastSort": fastSort,
       "reSort": reSort,
