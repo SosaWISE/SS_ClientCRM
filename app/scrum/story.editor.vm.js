@@ -43,7 +43,7 @@ define('src/scrum/story.editor.vm', [
       ],
     },
     PersonId: {},
-    ProjectOrder: {
+    SortOrder: {
       converter: ukov.converters.number(0),
     },
 
@@ -62,7 +62,7 @@ define('src/scrum/story.editor.vm', [
       Description: '',
       Points: null,
       PersonId: null,
-      ProjectOrder: null,
+      SortOrder: null,
       IsDeleted: false,
       Version: 1,
     };

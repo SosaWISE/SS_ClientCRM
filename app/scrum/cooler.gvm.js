@@ -33,7 +33,7 @@ define('src/scrum/cooler.gvm', [
         return b.ID - a.ID; // descending
       },
       taker: function(item) {
-        return (item.Points == null || item.ProjectOrder == null);
+        return (item.Points == null || item.SortOrder == null);
       },
       accepter: function(item, parent, prev, next) {
         return next !== next; //@TODO:
@@ -41,7 +41,7 @@ define('src/scrum/cooler.gvm', [
       inserter: function(item, parent, prev, next, cb) {
         item = utils.clone(item);
         // item.Points = null;
-        item.ProjectOrder = null;
+        item.SortOrder = null;
         // save item
         var editor = openVm.makeEditor(item);
         editor.save(function(err, resp) {

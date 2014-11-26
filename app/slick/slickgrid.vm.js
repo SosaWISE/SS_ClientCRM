@@ -183,6 +183,9 @@ define('src/slick/slickgrid.vm', [
       if (_this._prevSelectedRows) {
         _this.setSelectedRows(_this._prevSelectedRows);
       }
+
+      // incase explicitInitialization is set to true
+      _this.grid.init();
     }, 9);
   };
   SlickGridViewModel.prototype.unBound = function(element) {

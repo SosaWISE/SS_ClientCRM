@@ -160,7 +160,7 @@ define('mock/scrum/scrumservice.mock', [
         Name: data.Name,
         Description: data.Description,
         Points: data.Points,
-        ProjectOrder: data.ProjectOrder,
+        SortOrder: data.SortOrder,
         IsDeleted: data.IsDeleted,
         Version: data.Version ? data.Version + 1 : 1,
       });
@@ -175,7 +175,7 @@ define('mock/scrum/scrumservice.mock', [
         TaskStepId: data.TaskStepId,
         Name: data.Name,
         PersonId: data.PersonId,
-        Hours: data.Hours,
+        Points: data.Points,
         SortOrder: data.SortOrder,
         IsDeleted: data.IsDeleted,
         Version: data.Version ? data.Version + 1 : 1,
@@ -185,13 +185,15 @@ define('mock/scrum/scrumservice.mock', [
     function createOrUpdate(list, idName, idTemplate, newValue) {
       var id = newValue[idName],
         index;
+
+      function byId(item, i) {
+        if (item[idName] === id) {
+          index = i;
+          return true;
+        }
+      }
       if (id > 0) {
-        if (!list.some(function(item, i) {
-          if (item[idName] === id) {
-            index = i;
-            return true;
-          }
-        })) {
+        if (!list.some(byId)) {
           throw new Error('invalid id. id not in list.');
         }
 
@@ -294,10 +296,10 @@ define('mock/scrum/scrumservice.mock', [
         ProjectId: 1,
         StoryTypeId: '@REF_INC(storytypes)',
         PersonId: null,
-        Name: '@TEXT(20,30)',
+        Name: 'Story @FK(storys)',
         Description: '@TEXT(50,80)',
         Points: '@STORY_POINTS',
-        ProjectOrder: '@INC(ProjectOrder,-10)', // '@NUMBER(-1000000,-10)',
+        SortOrder: '@INC(SortOrder,-10)', // '@NUMBER(-1000000,-10)',
         IsDeleted: false,
         Version: 1,
       },
@@ -310,26 +312,26 @@ define('mock/scrum/scrumservice.mock', [
         ProjectId: 1,
         StoryTypeId: '@REF_INC(storytypes)',
         PersonId: '@REF_INC(persons)',
-        Name: '@TEXT(20,30)',
+        Name: 'Story @FK(storys)',
         Description: '@TEXT(50,80)',
         Points: '@STORY_POINTS',
-        ProjectOrder: '@INC(ProjectOrder)', // '@NUMBER(10,1000000)',
+        SortOrder: '@INC(SortOrder2,1)', // '@NUMBER(10,1000000)',
         IsDeleted: false,
         Version: 1,
       },
     ],
   }).list).concat(mockery.fromTemplate({
     // cooler storys
-    'list|100-100': [ //
+    'list|20-20': [ //
       {
         ID: '@INC(storys)',
         ProjectId: 1,
         StoryTypeId: '@REF_INC(storytypes)',
         PersonId: null,
-        Name: '@TEXT(20,30)',
+        Name: 'Story @FK(storys)',
         Description: '@TEXT(50,80)',
         Points: null,
-        ProjectOrder: null,
+        SortOrder: null,
         IsDeleted: false,
         Version: 1,
       },
@@ -352,8 +354,8 @@ define('mock/scrum/scrumservice.mock', [
         StoryId: '@REF_INC(storys)',
         TaskStepId: '@REF_INC(tasksteps)',
         PersonId: '@REF_INC(persons)',
-        Name: '@TEXT(15,20)',
-        Hours: '@NUMBER(1,4)',
+        Name: 'Task @FK(tasks)',
+        Points: '@NUMBER(1,4)',
         SortOrder: '@NUMBER(0,100000)',
         IsDeleted: false,
         Version: 1,

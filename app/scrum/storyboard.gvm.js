@@ -31,10 +31,10 @@ define('src/scrum/storyboard.gvm', [
       onRowCountChanged: new Slick.Event(),
       onRowsChanged: new Slick.Event(),
       comparer: function(a, b) {
-        return b.ProjectOrder - a.ProjectOrder; // descending
+        return b.SortOrder - a.SortOrder; // descending
       },
       taker: function(item) {
-        return (item.Points != null && item.ProjectOrder != null) && item.ProjectOrder >= 0;
+        return (item.Points != null && item.SortOrder != null) && item.SortOrder >= 0;
       },
       accepter: function(item, parent, prev, next) {
         return next === next; //@TODO:
@@ -44,7 +44,7 @@ define('src/scrum/storyboard.gvm', [
         // if (parent) {
         //   item.ParentID = parent.ID;
         // }
-        item.ProjectOrder = rsort.getIntSort(prev ? prev.ProjectOrder : null, next ? next.ProjectOrder : null);
+        item.SortOrder = rsort.getIntSort(prev ? prev.SortOrder : null, next ? next.SortOrder : null);
         if (!tree.takes(item)) {
           // edit item but with more save restrictions
           openVm.editItem(item, cb, {

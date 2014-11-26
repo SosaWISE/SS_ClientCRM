@@ -38,9 +38,9 @@ define('src/slick/dragdrop', [
       return {
         type: 'before',
         row: reg.beforeRow,
-        parentRow: Math.max(0, reg.beforeRow - 3),
-        cell: 1,
-        indent: 10,
+        // parentRow: Math.max(0, reg.beforeRow - 3),
+        // cell: 1,
+        // indent: 10,
       };
     };
     _this.onDrop = function(reg, args) {
@@ -53,7 +53,7 @@ define('src/slick/dragdrop', [
         toData = reg.toGrid.getData();
       switch (dropData.type) {
         case 'before':
-          toData.insertSibling(fromData.getItem(args.rows[0]), toData.getItem(dropData.row));
+          options.insertSibling(fromData.getItem(args.rows[0]), toData.getItem(dropData.row));
           break;
           // case 'child':
           //   toData.insertChild(fromData.getItem(args.rows[0]), toData.getItem(dropData.row));

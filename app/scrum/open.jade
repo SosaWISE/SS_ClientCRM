@@ -1,14 +1,33 @@
+//- div(class="cooler")
+//-   div(class="grid-wrap")
+//-     div(class="slickgrid",style="margin:10px",data-bind="slickgrid:coolerVm.gvm")
+//-
+//- div(class="storys")
+//-   div(class="current")
+//-     div(class="grid-wrap")
+//-       div(class="slickgrid",style="margin:10px",data-bind="slickgrid:storyBoardVm.gvm")
+//-   div(class="backlog")
+//-     div(class="grid-wrap")
+//-       div(class="slickgrid",style="margin:10px",data-bind="slickgrid:backlogVm.gvm")
+//-
+//- div(class="filter")
+//-   div(class="people-wrap")
+//-     div(class="people")
+//-       | Bob
+
 div(class="cooler")
-  div(class="grid-wrap")
-    div(class="slickgrid",style="margin:10px",data-bind="slickgrid:coolerGvm")
+  div(class="grid-wrap",data-bind="with:coolerVm")
+    input(type="text",placeholder="",
+      data-bind="ukov:filters.Name,value:filters.Name,valueUpdate:'keyup'")
+    div(class="slickgrid",style="margin:10px;top:20px;",data-bind="slickgrid:gvm")
 
 div(class="storys")
   div(class="current")
     div(class="grid-wrap")
-      div(class="slickgrid",style="margin:10px",data-bind="slickgrid:storyBoardGvm")
+      div(class="slickgrid",style="margin:10px",data-bind="slickgrid:storyBoardVm.gvm")
   div(class="backlog")
     div(class="grid-wrap")
-      div(class="slickgrid",style="margin:10px",data-bind="slickgrid:backlogGvm")
+      div(class="slickgrid",style="margin:10px",data-bind="slickgrid:backlogVm.gvm")
 
 div(class="filter")
   div(class="people-wrap")
