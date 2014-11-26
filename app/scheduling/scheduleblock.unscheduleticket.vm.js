@@ -82,7 +82,7 @@ define('src/scheduling/scheduleblock.unscheduleticket.vm', [
   UnScheduleTicketViewModel.prototype.width = 400;
   UnScheduleTicketViewModel.prototype.height = 'auto';
 
-  UnScheduleTicketViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // override me     
+  UnScheduleTicketViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // override me
   };
 
   UnScheduleTicketViewModel.prototype.onActivate = function() {
@@ -110,8 +110,6 @@ define('src/scheduling/scheduleblock.unscheduleticket.vm', [
     dataservice.scheduleenginesrv.SeTicket.read(param, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
-
-        console.log("Schedule Ticket Info:" + JSON.stringify(resp.Value));
 
         //populate fields
         _this.data.TicketAccountName(resp.Value.CustomerFullName);

@@ -99,8 +99,6 @@ define('src/scheduling/create.scheduleblock.vm', [
       var block,
         param;
 
-      console.log(_this.blockTime);
-
       //check am/pm
       block = (parseInt(_this.blockTime, 10) < 12) ? 'AM' : 'PM';
 
@@ -126,25 +124,19 @@ define('src/scheduling/create.scheduleblock.vm', [
           'TechnicianId': _this.data.TechnicianId(),
         };
 
-        console.log("Data to save:" + JSON.stringify(param));
-
         dataservice.scheduleenginesrv.SeZipCode.read({
           id: _this.data.ScheduleZip(),
           link: 'ZC'
         }, null, utils.safeCallback(cb, function(err, resp) {
 
           if (resp.Code === 0) {
-            console.log("Checking Zipcode result:" + JSON.stringify(resp.Value));
-
-            //@TODO Save block      
+            //@TODO Save block
             dataservice.scheduleenginesrv.SeScheduleBlock.save({
               id: _this.BlockID,
               data: param
             }, null, utils.safeCallback(cb, function(err, resp) {
 
               if (resp.Code === 0) {
-                console.log("SeScheduleBlock:" + JSON.stringify(resp.Value));
-
                 //close popup
                 closeLayer(_this);
 
@@ -208,8 +200,6 @@ define('src/scheduling/create.scheduleblock.vm', [
 
       if (resp.Code === 0) {
 
-        console.log("RuTechnicianList:" + JSON.stringify(resp.Value));
-
         //Set result to Location combo list
         cvm.setList(resp.Value);
 
@@ -237,7 +227,7 @@ define('src/scheduling/create.scheduleblock.vm', [
       end = moment(start).format('MM/DD/YYYY') + " " + moment(end).format('HH') + ":" + moment(end).format('mm');
     }
 
-    // - get moments of start and end time    
+    // - get moments of start and end time
     startDuration = moment(start);
     endDuration = moment(end);
 
@@ -278,7 +268,7 @@ define('src/scheduling/create.scheduleblock.vm', [
     //set the final endtime of block
     _this.data.ScheduleEndTime(moment(startDuration.add("hour", hourDiff)).format("MM/DD/YYYY HH:mm"));
 
-    //set the number of slots for a block, if slot not empty - use what is in the box    
+    //set the number of slots for a block, if slot not empty - use what is in the box
     if (!_this.data.ScheduleAvailableSlot()) {
       _this.data.ScheduleAvailableSlot(hourDiff);
     }

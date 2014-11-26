@@ -26,19 +26,14 @@ define('src/scheduling/service.ticket.gvm', [
         new RowEvent({
           eventName: 'onDblClick',
           fn: function(ticket) {
-            //console.log("Ticked double clicked: ", ticket);
             options.edit(ticket, function(model, deleted) {
               if (!model) { // nothing changed
-                //   console.log("not model"+model);
-                //    console.log("nothing changed");
                 return;
               }
               if (deleted) { // remove deleted item
-                //   console.log("deleted ticket");
                 _this.list.remove(ticket);
 
               } else { // update in place
-                //  console.log("replaced");
                 _this.list.replace(ticket, model);
               }
             });

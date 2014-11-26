@@ -108,8 +108,6 @@ define('src/scheduling/scheduleblock.edit.vm', [
         }, null, utils.safeCallback(cb, function(err, resp) {
 
           if (resp.Code === 0) {
-            console.log("Checking Zipcode result:" + JSON.stringify(resp.Value));
-
             updateBlockInfo(_this, cb);
           } else {
             notify.warn("Invalid Zip Code.", null, 3);
@@ -159,8 +157,6 @@ define('src/scheduling/scheduleblock.edit.vm', [
 
       if (resp.Code === 0) {
 
-        console.log("RuTechnicianList:" + JSON.stringify(resp.Value));
-
         //Set result to Location combo list
         cvm.setList(resp.Value);
 
@@ -185,17 +181,13 @@ define('src/scheduling/scheduleblock.edit.vm', [
 
     };
 
-    console.log("Data to save:" + JSON.stringify(param));
-
-    //@TODO Save block info    
+    //@TODO Save block info
     dataservice.scheduleenginesrv.SeScheduleBlock.save({
       id: _this.blockInfo.BlockID,
       data: param
     }, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
-        console.log("Update schedule block:" + JSON.stringify(resp.Value));
-
         //close popup
         closeLayer(_this);
 
@@ -221,7 +213,7 @@ define('src/scheduling/scheduleblock.edit.vm', [
       end = moment(start).format('MM/DD/YYYY') + " " + moment(end).format('HH') + ":" + moment(end).format('mm');
     }
 
-    // - get moments of start and end time    
+    // - get moments of start and end time
     startDuration = moment(start);
     endDuration = moment(end);
 

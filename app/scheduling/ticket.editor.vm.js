@@ -1,12 +1,12 @@
-define('src/scheduling/ticket.editor.vm', [
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/combo.vm',
-  'ko',
-  'src/ukov',
-  'src/dataservice',
-  'src/core/joiner',
-  'src/core/controller.vm',
+define("src/scheduling/ticket.editor.vm", [
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/combo.vm",
+  "ko",
+  "src/ukov",
+  "src/dataservice",
+  "src/core/joiner",
+  "src/core/controller.vm",
 ], function(
   notify,
   utils,
@@ -17,10 +17,10 @@ define('src/scheduling/ticket.editor.vm', [
   joiner,
   ControllerViewModel
 ) {
-  'use strict';
+  "use strict";
 
-  var schema;
-  schema = {
+  var nullStrConverter = ukov.converters.nullString();
+  var schema = {
     _model: true,
     TicketID: {},
     AccountId: {
@@ -38,15 +38,21 @@ define('src/scheduling/ticket.editor.vm', [
     ExpirationDate: {},
     Notes: {},
   };
+  var schemaNote = {
+    converter: nullStrConverter,
+    // validators: [
+    //   ukov.validators.isRequired("Please enter a note"),
+    // ],
+  };
 
   function TicketEditorViewModel(options) {
     var _this = this;
     TicketEditorViewModel.super_.call(_this, options);
     // ControllerViewModel.ensureProps(_this, [
-    //   'layersVm',
+    //   "layersVm",
     // ]);
     utils.setIfNull(_this, {
-      title: 'Create New Service Ticket',
+      title: "Create New Service Ticket",
       showUserAccount: false,
       showSave: true,
       showSaveAndSchedule: true,
@@ -57,16 +63,29 @@ define('src/scheduling/ticket.editor.vm', [
     _this.ticket = _this.ticket || {
       AccountId: _this.accountId,
     };
+
+    _this.note = ukov.wrap("", schemaNote);
     _this.data = ukov.wrap(_this.ticket, schema);
     _this.data.TicketTypeId(_this.ticket.TicketTypeId);
 
     _this.data.ticketTypeCvm = new ComboViewModel({
       selectedValue: _this.data.TicketTypeId,
       fields: {
-        value: 'TicketTypeID',
-        text: 'TicketTypeName',
+        value: "TicketTypeID",
+        text: "TicketTypeName",
       },
     });
+
+    // the general note should be in a Read Only format
+    //  - 4 - Tech Confirmed
+    //  - 5 - Completed
+    //  - 7 - Waiting Change Form/SIF
+    var statusCodeId = _this.data.StatusCodeId.peek();
+    _this.showNotesInput = (
+      statusCodeId !== 4 &&
+      statusCodeId !== 5 &&
+      statusCodeId !== 7
+    );
 
     //
     // events
@@ -78,10 +97,10 @@ define('src/scheduling/ticket.editor.vm', [
     if (_this.showUserAccount) {
       _this.cmdUserAccount = ko.command(function(cb) {
         _this.goTo({
-          route: 'accounts',
+          route: "accounts",
           masterid: _this.ticket.CustomerMasterFileId,
           id: _this.ticket.AccountId,
-          tab: 'scheduleservice',
+          tab: "scheduleservice",
         });
         cb();
       }, function(busy) {
@@ -104,8 +123,8 @@ define('src/scheduling/ticket.editor.vm', [
           var data = resp.Value;
           _this.goTo({
             pcontroller: _this,
-            route: 'scheduling',
-            id: 'schedule',
+            route: "scheduling",
+            id: "schedule",
             ticketid: data.TicketID,
           }, {
             ticket: data
@@ -117,16 +136,16 @@ define('src/scheduling/ticket.editor.vm', [
         //  - 5 - Completed
         //  - 6 - Pending Contractor
         //  - 7 - Waiting Change Form/SIF
-        var statusCodeId = _this.data.StatusCodeId();
+        // var statusCodeId = _this.data.StatusCodeId(); // StatusCodeId should not change???
         return !busy && (!_this.cmdSave || !_this.cmdSave.busy()) &&
           (statusCodeId < 4 || 7 < statusCodeId);
       });
     }
   }
   utils.inherits(TicketEditorViewModel, ControllerViewModel);
-  TicketEditorViewModel.prototype.viewTmpl = 'tmpl-ticket-editor';
+  TicketEditorViewModel.prototype.viewTmpl = "tmpl-ticket-editor";
   TicketEditorViewModel.prototype.width = 450;
-  TicketEditorViewModel.prototype.height = 'auto';
+  TicketEditorViewModel.prototype.height = "auto";
 
   TicketEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
@@ -151,7 +170,7 @@ define('src/scheduling/ticket.editor.vm', [
         (_this.cmdSave && _this.cmdSave.busy()) ||
         (_this.cmdSchedule && _this.cmdSchedule.busy())
       )) {
-      msg = 'Please wait for save to finish.';
+      msg = "Please wait for save to finish.";
     }
     return msg;
   };
@@ -173,6 +192,16 @@ define('src/scheduling/ticket.editor.vm', [
     }
 
     var model = _this.data.getValue();
+    if (_this.showNotesInput) {
+      var note = _this.note.getValue();
+      if (note) {
+        if (model.Notes) {
+          model.Notes += '\n' + note;
+        } else {
+          model.Notes = note;
+        }
+      }
+    }
     dataservice.scheduleenginesrv.SeTicket.save({
       id: model.TicketID, // if no value create, else update
       data: model,

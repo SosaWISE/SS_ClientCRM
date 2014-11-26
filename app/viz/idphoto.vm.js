@@ -44,6 +44,17 @@ define('src/viz/idphoto.vm', [
     },
   };
 
+  ko.bindingHandlers.video = {
+    init: function(element, valueAccessor) {
+      var videoData = ko.unwrap(valueAccessor());
+      element.onerror = videoData.onerror;
+      element.onloadedmetadata = videoData.onloadedmetadata;
+      element.src = videoData.src;
+      //
+      videoData.video = element;
+    },
+  };
+
   var canvasHelper = {
     toBlob: function(canvas, quality) {
       // take apart data URL
@@ -105,6 +116,8 @@ define('src/viz/idphoto.vm', [
 
     _this.title = 'Id Photo';
 
+    _this.videoData = ko.observable(null);
+
     //
     // events
     //
@@ -164,6 +177,23 @@ define('src/viz/idphoto.vm', [
     }, function(busy) {
       return !busy && canSave();
     });
+    _this.cmdStartCamera = ko.command(function(cb) {
+      startCamera(_this, cb);
+    }, function(busy) {
+      return !busy && !_this.videoData();
+    });
+    _this.cmdStopCamera = ko.command(function(cb) {
+      _this.videoData.peek().stream.stop();
+      _this.videoData(null);
+      cb();
+    }, function(busy) {
+      return !busy && _this.videoData();
+    });
+    // _this.cmdTakePicture = ko.command(function(cb) {
+    //   takePicture(cb);
+    // }, function(busy) {
+    //   return !busy && _this.videoData();
+    // });
 
     //
     function onImageLoaded() {
@@ -211,8 +241,10 @@ define('src/viz/idphoto.vm', [
     //
     var boxWidth = 600;
     var boxHeight = 600;
-    var stage = new PIXI.Stage(0x444444, true);
-    var renderer = new PIXI.CanvasRenderer(boxWidth, boxHeight);
+    var stage = new PIXI.Stage();
+    var renderer = new PIXI.CanvasRenderer(boxWidth, boxHeight, {
+      transparent: true,
+    });
     // PIXI.autoDetectRenderer (which in chrome returns PIXI.WebGLRenderer) has issues
     //  when opening and closing this dialog quickly.
     // var renderer = PIXI.autoDetectRenderer(boxWidth, boxHeight, null, false, true);
@@ -282,6 +314,57 @@ define('src/viz/idphoto.vm', [
     _this._disposed = true;
     _this.disposePhoto();
   };
+
+  // function takePicture(ctx, canvas, video) {
+  //   //document.createElement('canvas');
+  //   ctx.drawImage(video, 0, 0);
+  //   return canvas.toDataURL('image/webp');
+  // }
+  navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+  window.URL = window.URL || window.webkitURL;
+
+  function startCamera(_this, cb) {
+    if (!navigator.getUserMedia) {
+      notify.warn('Sorry. `navigator.getUserMedia()` is not available.', null, 5);
+      return;
+    }
+    // if (_this.videoData.peek()) {
+    //   cb();
+    //   return;
+    // }
+
+    navigator.getUserMedia({
+      video: true
+    }, function(stream) {
+      cb();
+
+      var video = {};
+
+      stream.onended = function( /*e*/ ) {
+        if (video.video) {
+          video.video.pause();
+        }
+      };
+
+      video.stream = stream;
+      video.src = window.URL.createObjectURL(stream);
+      video.onerror = function( /*e*/ ) {
+        video.stream.stop();
+        _this.videoData(null);
+      };
+      // video.onloadedmetadata = function( /*e*/ ) {
+      //   notify.info('onloadedmetadata', null, 5);
+      // };
+      _this.videoData(video);
+    }, function(e) {
+      cb();
+      if (e.name === "PermissionDeniedError") {
+        notify.warn('User denied access to use camera.', null, 5);
+      } else {
+        notify.warn('No camera available.', null, 5);
+      }
+    });
+  }
 
   function rotateSprite(sprite, radians) {
     //@REVIEW: make this rotate around the center of the screen
@@ -432,7 +515,6 @@ define('src/viz/idphoto.vm', [
     //
     return g;
   }
-
 
   /**
    * This module unifies handling of mouse whee event accross different browsers

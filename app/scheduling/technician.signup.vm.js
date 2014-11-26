@@ -54,7 +54,7 @@ define('src/scheduling/technician.signup.vm', [
       ScheduleAvailableSlot: null,
     }, schema);
 
-    //Set values    
+    //Set values
     _this.data.AvailableStartTime(_this.stime);
     _this.data.AvailableEndTime(_this.etime);
     _this.data.ScheduleAvailableSlot(_this.slot);
@@ -77,8 +77,6 @@ define('src/scheduling/technician.signup.vm', [
     //
 
     _this.cmdSaveAvailability = ko.command(function(cb) {
-
-      console.log("@TODO save signup schedule block...");
 
       block = (parseInt(_this.blockTime, 10) < 12) ? 'AM' : 'PM';
 
@@ -105,8 +103,6 @@ define('src/scheduling/technician.signup.vm', [
         dataservice.scheduleenginesrv.SeScheduleBlock.post(null, param, null, utils.safeCallback(cb, function(err, resp) {
 
           if (resp.Code === 0) {
-
-            console.log("New availability schedule saved:" + JSON.stringify(resp.Value));
 
             //notify.info("New schedule saved.", null, 3);
 
@@ -161,8 +157,6 @@ define('src/scheduling/technician.signup.vm', [
 
       if (resp.Code === 0) {
 
-        console.log("RuTechnicianList:" + JSON.stringify(resp.Value));
-
         //Set result to Location combo list
         cvm.setList(resp.Value);
 
@@ -189,7 +183,7 @@ define('src/scheduling/technician.signup.vm', [
       end = moment(start).format('MM/DD/YYYY') + " " + moment(end).format('HH') + ":" + moment(end).format('mm');
     }
 
-    // - get moments of start and end time    
+    // - get moments of start and end time
     startDuration = moment(start);
     endDuration = moment(end);
 

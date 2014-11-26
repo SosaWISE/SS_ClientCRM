@@ -37,8 +37,8 @@ define('src/scheduling/scheduleblock.viewticket.vm', [
     //Set title
     _this.title = _this.title || 'Schedule Block View Tickets';
 
-    // _this.data = ukov.wrap(_this.item || {      
-    // }, schema);    
+    // _this.data = ukov.wrap(_this.item || {
+    // }, schema);
 
     _this.scheduleBlockViewTicketGvm = new ScheduleBlockViewTicketGridViewModel({
 
@@ -115,8 +115,6 @@ define('src/scheduling/scheduleblock.viewticket.vm', [
     dataservice.scheduleenginesrv.SeTicketList.read(param, null, utils.safeCallback(cb, function(err, resp) {
 
       if (resp.Code === 0) {
-        console.log(JSON.stringify(resp.Value));
-
         //populate grid
         _this.scheduleBlockViewTicketGvm.list(resp.Value);
       }
