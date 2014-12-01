@@ -100,8 +100,8 @@ define("src/scrum/storys.vm", [
           id: "Row",
           name: "Row",
           width: 40,
-          formatter: function(row) {
-            return row + 1;
+          formatter: function(row, cell, value, columnDef, item) {
+            return dv.getIdxById(item._metadata.sid) + 1;
           },
         }, {
           id: "sid",
