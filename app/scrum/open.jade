@@ -17,9 +17,10 @@
 
 div(class="cooler")
   div(class="grid-wrap",data-bind="with:coolerVm")
-    input(type="text",placeholder="",
+    //- input(type="text",placeholder="",
       data-bind="ukov:filters.Name,value:filters.Name,valueUpdate:'keyup'")
-    div(class="slickgrid",style="margin:10px;top:20px;",data-bind="slickgrid:gvm")
+    //- div(class="slickgrid",style="margin:10px;top:20px;",data-bind="slickgrid:gvm")
+    div(class="slickgrid",style="margin:10px",data-bind="slickgrid:gvm")
 
 div(class="storys")
   div(class="current")

@@ -34,22 +34,27 @@ define("src/scrum/storys.vm", [
     var _this = this;
     StorysViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
-      "dragHub",
-      "editItem",
-      "saveItem",
+      "pcontroller",
       "accepts",
       "takes",
       "rsort",
+    ]);
+    ControllerViewModel.ensureProps(_this.pcontroller, [
+      "dragHub",
+      "layersVm",
+      "storyUpdated",
+      "taskUpdated",
     ]);
 
     _this.filters = ukov.wrap({
       Name: "",
     }, filtersSchema);
 
-    initDataView(_this);
-    var dv = _this.dv;
     _this.indentOffset = _this.indentOffset || 0;
     var indentOffset = _this.indentOffset;
+
+    initDataView(_this);
+    var dv = _this.dv;
 
     _this.gvm = new SlickGridViewModel({
       gridOptions: {
@@ -68,7 +73,7 @@ define("src/scrum/storys.vm", [
           vm: _this,
           // canDropItem: _this.canDropItem.bind(_this),
           // dropItem: _this.dropItem.bind(_this),
-          dragHub: _this.dragHub,
+          dragHub: _this.pcontroller.dragHub,
         }),
         new RowEvent({
           eventName: "onDblClick",
@@ -87,7 +92,7 @@ define("src/scrum/storys.vm", [
             } else {
               item._metadata.collapsed = false;
             }
-            dv.updateItem(item.sid, item);
+            dv.updateItem(item._metadata.sid, item);
           },
         }),
         new HeaderFilter({
@@ -106,15 +111,19 @@ define("src/scrum/storys.vm", [
         }, {
           id: "sid",
           name: "ID",
-          field: "sid",
           width: 50,
           behavior: "move",
           // resizable: false,
+          formatter: function(row, cell, value, columnDef, item) {
+            return item._metadata.sid;
+          },
         }, {
           id: "psid",
           name: "PID",
-          field: "psid",
           width: 50,
+          formatter: function(row, cell, value, columnDef, item) {
+            return item._metadata.psid;
+          },
         }, {
           id: "Name",
           name: "Name",
@@ -124,7 +133,7 @@ define("src/scrum/storys.vm", [
           formatter: function(row, cell, value, columnDef, item) {
             value = value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             var spacer = "<span style='display:inline-block;height:1px;width:" + (15 * (item._metadata.indent + indentOffset)) + "px'></span>";
-            var idx = dv.getIdxById(item.sid);
+            var idx = dv.getIdxById(item._metadata.sid);
             var nextItem = dv.getItemByIdx(idx + 1);
             if (nextItem && nextItem._metadata.indent > item._metadata.indent) {
               if (item._metadata.collapsed) {
@@ -168,6 +177,59 @@ define("src/scrum/storys.vm", [
     return _this.map[sid];
   };
 
+  StorysViewModel.prototype.editItem = function(item, cb, editorOptions) {
+    var _this = this,
+      vm = _this.makeEditor(item, editorOptions);
+    _this.pcontroller.layersVm.show(vm, createSaveHandler(_this, item, cb));
+  };
+  StorysViewModel.prototype.saveItem = function(item, cb, editorOptions) {
+    var _this = this,
+      vm = _this.makeEditor(item, editorOptions);
+    vm.save(createSaveHandler(_this, item, cb));
+  };
+
+  function createSaveHandler(_this, item, cb) {
+    return function(result) {
+      if (result) {
+        result.sid = item._metadata.sid;
+        result._metadata = item._metadata;
+        switch (result._metadata.type) {
+          case "s":
+            _this.pcontroller.storyUpdated(result, true);
+            break;
+          case "t":
+            _this.pcontroller.taskUpdated(result, true);
+            break;
+          default:
+            throw new Error("invalid item type: " + result._metadata.type);
+        }
+      }
+      cb();
+    };
+  }
+  StorysViewModel.prototype.makeEditor = function(item, editorOptions /*, parentId*/ ) {
+    var vm,
+      type = item._metadata.type;
+    editorOptions = editorOptions || {};
+    editorOptions.item = utils.clone(item);
+    switch (type) {
+      case "s":
+        vm = new StoryEditorViewModel(editorOptions);
+        break;
+      case "t":
+        throw new Error("TaskEditorViewModel not implemented");
+        // vm = new TaskEditorViewModel({
+        //   storyId: parentId,
+        //   item: item,
+        //   taskSteps: _this.taskSteps,
+        // });
+        // break;
+      default:
+        throw new Error("invalid edit item type: " + type);
+    }
+    return vm;
+  };
+
   StorysViewModel.prototype.beginUpdate = function() {
     var _this = this;
     _this._updating = true;
@@ -183,22 +245,7 @@ define("src/scrum/storys.vm", [
   };
   StorysViewModel.prototype.updateItem = function(item, select) {
     var _this = this;
-    var sid = item.sid;
-
-    // item._metadata = item._metadata || {
-    //   collapsed: false,
-    //   indent: 0,
-    // };
-
-    // ///////////////TESTING///////////////
-    // if (item.ID % 2 === 0) {
-    //   item.psid = "us" + (item.ID - 1);
-    //   item._metadata.indent = 1;
-    // } else if (item.ID % 3 === 0) {
-    //   item.psid = "us" + (item.ID - 1);
-    //   item._metadata.indent = 2;
-    // }
-    // ///////////////TESTING///////////////
+    var sid = item._metadata.sid;
 
     // update or add the item
     _this.map[sid] = item;
@@ -210,17 +257,20 @@ define("src/scrum/storys.vm", [
       dv.addItem(item);
     }
 
+    //
+    if (_this._updating) {
+      return;
+    }
+
+    // ensure the correct order
+    //@REVIEW: this could be removed if we inserted in the correct order...
+    dv.reSort();
+    //
     if (select) {
       var idx = dv.getIdxById(sid);
       var gvm = _this.gvm;
       gvm.setSelectedRows([idx]);
       gvm.scrollRowIntoView(idx);
-    }
-
-    if (!_this._updating) {
-      // ensure the correct order
-      //@REVIEW: this could be removed if we inserted in the correct order...
-      dv.reSort();
     }
   };
   StorysViewModel.prototype.removeItem = function(item) {
@@ -228,7 +278,7 @@ define("src/scrum/storys.vm", [
     var results = [item];
     var dv = _this.dv;
 
-    var idx = dv.getIdxById(item.sid);
+    var idx = dv.getIdxById(item._metadata.sid);
     if (idx == null) {
       return [];
     }
@@ -243,8 +293,8 @@ define("src/scrum/storys.vm", [
 
     // remove item and all sub-items
     results.forEach(function(item) {
-      delete _this.map[item.sid];
-      _this.dv.deleteItem(item.sid);
+      delete _this.map[item._metadata.sid];
+      _this.dv.deleteItem(item._metadata.sid);
     });
 
     // deselect rows
@@ -269,11 +319,8 @@ define("src/scrum/storys.vm", [
     var nextItem = dv.getItem(beforeRow);
     var prevItem = dv.getItem(beforeRow - 1);
 
-    if (!item.sid) {
-      throw new Error('item no sid');
-    }
-    if (nextItem && !nextItem.sid) {
-      throw new Error('nextItem no sid');
+    if (!_this.accepts(item)) {
+      return null;
     }
 
     if (item === nextItem || item === prevItem) {
@@ -294,26 +341,16 @@ define("src/scrum/storys.vm", [
         )) {
         return null;
       }
-
-      pIdx = dv.getRowById(prevItem ? prevItem.psid : (nextItem ? nextItem.psid : null));
+      pIdx = dv.getRowById(prevItem ? prevItem._metadata.psid : (nextItem ? nextItem._metadata.psid : null));
     } else {
-      pIdx = dv.getRowById(nextItem ? nextItem.psid : (prevItem ? prevItem.psid : null));
+      pIdx = dv.getRowById(nextItem ? nextItem._metadata.psid : (prevItem ? prevItem._metadata.psid : null));
     }
-
-    var parent;
-    if (pIdx != null) {
-      // pIdx += 1;
-      parent = pIdx ? dv.getItem(pIdx) : null;
-    }
+    //
     return {
       type: 'before',
       row: beforeRow,
       parentRow: pIdx,
       item: item,
-      // parent: parent,
-      // prev: (parent !== prevItem) ? prevItem : null,
-      // next: (parent !== nextItem) ? nextItem : null,
-
       cell: 3, // column
       indent: 15 * (item._metadata.indent + indentOffset), // indent pixels
     };
@@ -322,45 +359,36 @@ define("src/scrum/storys.vm", [
     if (!utils.isFunc(cb)) {
       cb = utils.noop;
     }
-
-    //@TODO: all - change SortOrder
-    //@TODO: story - edit story if this vm doesn't `take` the story
-    //@TODO: story - change psid/ProjectId to match new parent project
-    //@TODO: task - change psid/StoryId to match new parent story
-
     var _this = this;
-    var dv = _this.dv;
-
     var item = utils.clone(dropData.item);
-    var row, currItem;
-    var prevSortOrder;
-    row = dropData.row - 1;
-    while (row > -1) {
-      currItem = dv.getItem(row);
-      if (currItem._metadata.indent === item._metadata.indent) {
-        prevSortOrder = currItem.SortOrder;
+    var ctx = getDropContext(_this, dropData);
+
+    // change SortOrder
+    item.SortOrder = _this.rsort.getIntSort(
+      (ctx.prev ? ctx.prev.SortOrder : null), (ctx.next ? ctx.next.SortOrder : null)
+    );
+
+    // set psid/ParentId
+    var psid = null;
+    var parentId = null;
+    if (ctx.parent) {
+      psid = ctx.parent.sid;
+      parentId = ctx.parent.ID;
+    }
+    item._metadata.psid = psid;
+    // item.ParentId = parentId;
+    switch (item._metadata.type) {
+      case "s":
+        item.GroupId = parentId;
         break;
-      }
-      if (currItem._metadata.indent < item._metadata.indent) {
-        // found the parent. this should probably never happen...
-        prevSortOrder = null;
+      case "t":
+        item.StoryId = parentId;
         break;
-      }
-      row--;
-    }
-    var nextSortOrder = null;
-    currItem = dv.getItem(dropData.row);
-    if (currItem._metadata.indent === item._metadata.indent) {
-      nextSortOrder = currItem.SortOrder;
+      default:
+        throw new Error("invalid type:" + item._metadata.type);
     }
 
-    item.SortOrder = _this.rsort.getIntSort(prevSortOrder, nextSortOrder);
-
-    //@TODO: set psid/ParentId
-    if (dropData.parent) {
-
-    }
-
+    // edit item if this vm doesn't `take` it
     if (!_this.takes(item)) {
       // edit item but with more save restrictions
       _this.editItem(item, cb, {
@@ -373,42 +401,6 @@ define("src/scrum/storys.vm", [
         strictValidation: true,
       });
     }
-
-    // var items = fromDv.vm.removeItem(dropData.item);
-    // items.forEach(function(item) {
-    //   _this.updateItem(item, false);
-    // });
-    //
-    // return;
-
-    // var _this = this;
-    // var dv = _this.dv;
-    // var idxNext = nextItem ? dv.getIdxById(nextItem.sid) : dv.getLength();
-    //
-    // function getSortOrderAt(i) {
-    //   var item = dv.getItemByIdx(i);
-    //   return item ? item.SortOrder : null;
-    // }
-    //
-    // item = utils.clone(item);
-    // // if (parent) {
-    // //   item.ParentID = parent.ID;
-    // // }
-    // item.SortOrder = _this.rsort.getIntSort(getSortOrderAt(idxNext - 1), getSortOrderAt(idxNext));
-    // if (!_this.takes(item)) {
-    //   // edit item but with more save restrictions
-    //   _this.pcontroller.editItem(item, cb, {
-    //     requirePoints: true,
-    //   });
-    // } else {
-    //   // save item
-    //   _this.pcontroller.makeEditor(item).save(function(err, resp) {
-    //     if (!err) {
-    //       _this.pcontroller.storyUpdated(resp.Value);
-    //     }
-    //     cb();
-    //   });
-    // }
   };
 
   var _top = {
@@ -420,7 +412,7 @@ define("src/scrum/storys.vm", [
       indent: 0,
     },
   };
-  //
+
   function initDataView(_this) {
     var dv = new Slick.Data.DataView();
     dv.vm = _this; // store pointer to this vm
@@ -442,7 +434,7 @@ define("src/scrum/storys.vm", [
 
     function myFilter(item) {
       // filter by sid
-      if (!sidRegx.test(item.sid)) {
+      if (!sidRegx.test(item._metadata.sid)) {
         return false;
       }
       // filter by name
@@ -450,12 +442,12 @@ define("src/scrum/storys.vm", [
         return false;
       }
       // exclude childs of collapsed items
-      var parent = map[item.psid];
+      var parent = map[item._metadata.psid];
       while (parent) {
         if (parent._metadata.collapsed) {
           return false;
         }
-        parent = map[parent.psid];
+        parent = map[parent._metadata.psid];
       }
       //
       return true;
@@ -552,18 +544,18 @@ define("src/scrum/storys.vm", [
         var bi = b._metadata.indent;
         // go up until we're at the same indent level
         while (a._metadata.indent < b._metadata.indent) {
-          b = map[b.psid] || _top; // go up to parent
+          b = map[b._metadata.psid] || _top; // go up to parent
         }
         while (b._metadata.indent < a._metadata.indent) {
-          a = map[a.psid] || _top; // go up to parent
+          a = map[a._metadata.psid] || _top; // go up to parent
         }
         //
         if (a._metadata.indent === b._metadata.indent) {
           // same level
-          if (a.psid !== b.psid) {
+          if (a._metadata.psid !== b._metadata.psid) {
             // same parent
-            a = map[a.psid] || _top; // go up to parent
-            b = map[b.psid] || _top; // go up to parent
+            a = map[a._metadata.psid] || _top; // go up to parent
+            b = map[b._metadata.psid] || _top; // go up to parent
           }
           // sort by SortOrder or ID
           if (b.SortOrder && a.SortOrder) {
@@ -590,6 +582,36 @@ define("src/scrum/storys.vm", [
     dv.sort(myComparer, preventReverse);
     //
     dv.endUpdate();
+  }
+
+  function getDropContext(_this, dropData) {
+    var dv = _this.dv;
+    var row = dropData.row - 1;
+    var itemIndent = dropData.item._metadata.indent;
+    var currItem, prevItem, nextItem, parentItem;
+    while (row > -1) {
+      currItem = dv.getItem(row);
+      if (currItem._metadata.indent === itemIndent) {
+        prevItem = currItem;
+        break;
+      }
+      if (currItem._metadata.indent < itemIndent) {
+        // found the parent. this should probably never happen...
+        prevItem = null;
+        break;
+      }
+      row--;
+    }
+    currItem = dv.getItem(dropData.row);
+    if (currItem._metadata.indent === itemIndent) {
+      nextItem = currItem;
+    }
+
+    return {
+      prev: prevItem,
+      next: nextItem,
+      parent: parentItem,
+    };
   }
 
   return StorysViewModel;

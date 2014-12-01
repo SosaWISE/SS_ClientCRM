@@ -37,13 +37,9 @@ define("src/scrum/open2.vm", [
       "tasks",
     ]);
 
-    _this.dragHub = new DragHub({
-      cancelEditOnDrag: true,
-    });
-
     _this.coolerVm = createStorysVm(_this, {
-      accepts: function(item, parent, prev, next) {
-        return next !== next; //@TODO:
+      accepts: function( /*item*/ ) {
+        return false; //@TODO:
       },
       takes: function(item) {
         return (item.Points == null || item.SortOrder == null);
@@ -54,8 +50,8 @@ define("src/scrum/open2.vm", [
       }),
     });
     _this.backlogVm = createStorysVm(_this, {
-      accepts: function(item, parent, prev, next) {
-        return next === next; //@TODO:
+      accepts: function( /*item*/ ) {
+        return true; //@TODO:
       },
       takes: function(item) {
         return (item.Points != null && item.SortOrder != null) && item.SortOrder < 0;
@@ -67,8 +63,8 @@ define("src/scrum/open2.vm", [
       }),
     });
     _this.storyBoardVm = createStorysVm(_this, {
-      accepts: function(item, parent, prev, next) {
-        return next === next; //@TODO:
+      accepts: function( /*item*/ ) {
+        return true; //@TODO:
       },
       takes: function(item) {
         return (item.Points != null && item.SortOrder != null) && item.SortOrder >= 0;
@@ -106,135 +102,91 @@ define("src/scrum/open2.vm", [
   utils.inherits(Open2ViewModel, ControllerViewModel);
   Open2ViewModel.prototype.viewTmpl = "tmpl-scrum_open";
 
-  Open2ViewModel.prototype.onLoad = function(routeData, extraData, join) {
-    join.add()();
-  };
+  // Open2ViewModel.prototype.onLoad = function(routeData, extraData, join) {
+  //   join.add()();
+  // };
 
   Open2ViewModel.prototype.storyUpdated = function(story, select) {
-    var _this = this,
-      curr, dest;
+    var _this = this;
     ensureItemMetadata(story, "s");
 
-    curr = getCurrentVm(_this.vms, story.sid);
-    dest = getStoryVm(_this.vms, story);
+    var currVm = getCurrentVm(_this.vms, story._metadata.sid);
+    var destVm = getStoryVm(_this.vms, story);
 
-    if (curr && curr !== dest) {
-      // remove story and tasks if changing
-      var items = curr.removeItem(story);
+    if (currVm && currVm !== destVm) {
+      // remove story and tasks if changing vm
+      var items = currVm.removeItem(story);
       // add story and tasks that were removed above
+      destVm.beginUpdate();
       items.forEach(function(item) {
-        dest.updateItem(item, false);
+        destVm.updateItem(item, false);
       });
+      if (select) {
+        destVm.updateItem(story, select);
+      }
+      destVm.endUpdate();
     } else {
-      // update tree
-      dest.updateItem(story, select);
+      // update
+      destVm.updateItem(story, select);
     }
   };
   Open2ViewModel.prototype.taskUpdated = function(task, select) {
     var _this = this;
     ensureItemMetadata(task, "t");
     // get vm by parent sid
-    var vm = getCurrentVm(_this.vms, task.psid);
+    var currVm = getCurrentVm(_this.vms, task._metadata.psid);
 
     // update tree
-    vm.updateItem(task, select);
+    currVm.updateItem(task, select);
   };
 
-  function ensureItemMetadata(item, type) {
+  function ensureItemMetadata(item, type, currVm) {
     if (item._metadata) {
       return;
     }
+    var metadata, sid = type + item.ID;
 
-    var metadata = {
-      sid: type + item.ID,
-      psid: null,
-      type: type,
-      collapsed: false,
-      indent: 0,
-    };
+    if (currVm && currVm.getItem(sid)) {
+      metadata = currVm.getItem(sid)._metadata;
+    } else {
+      metadata = {
+        sid: sid,
+        psid: null,
+        type: type,
+        collapsed: false,
+        indent: 0,
+      };
+    }
 
     switch (type) {
       case "s":
         metadata.indent = 1;
-        metadata.psid = null;
+        // metadata.psid = null;
         break;
       case "t":
         metadata.indent = 2;
         metadata.psid = "s" + item.StoryId;
         break;
+      default:
+        throw new Error("invalid type:" + item._metadata.type);
     }
 
     item._metadata = metadata;
-    item.sid = metadata.sid;
-    item.psid = metadata.psid;
+    item.sid = metadata.sid; // needed for DataView
   }
-
-  Open2ViewModel.prototype.editItem = function(item, cb, editorOptions) {
-    var _this = this,
-      vm = _this.makeEditor(item, editorOptions);
-    _this.layersVm.show(vm, createSaveHandler(_this, item._metadata.type, cb));
-  };
-  Open2ViewModel.prototype.saveItem = function(item, cb, editorOptions) {
-    var _this = this,
-      vm = _this.makeEditor(item, editorOptions);
-    vm.save(createSaveHandler(_this, item._metadata.type, cb));
-  };
-
-  function createSaveHandler(_this, type, cb) {
-    return function(result) {
-      if (result) {
-        switch (type) {
-          case "s":
-            _this.storyUpdated(result, true);
-            break;
-          case "t":
-            _this.taskUpdated(result, true);
-            break;
-          default:
-            throw new Error("invalid item type: " + type);
-        }
-      }
-      cb();
-    };
-  }
-  Open2ViewModel.prototype.makeEditor = function(item, editorOptions /*, parentId*/ ) {
-    var vm,
-      type = item._metadata.type;
-    editorOptions = editorOptions || {};
-    editorOptions.item = utils.clone(item);
-    switch (type) {
-      case "s":
-        vm = new StoryEditorViewModel(editorOptions);
-        break;
-      case "t":
-        throw new Error("TaskEditorViewModel not implemented");
-        // vm = new TaskEditorViewModel({
-        //   storyId: parentId,
-        //   item: item,
-        //   taskSteps: _this.taskSteps,
-        // });
-        // break;
-      default:
-        throw new Error("invalid edit item type: " + type);
-    }
-    return vm;
-  };
 
   function createStorysVm(_this, options) {
+    // ensure dragHub
+    _this.dragHub = _this.dragHub || new DragHub({
+      cancelEditOnDrag: true,
+    });
+    //
     return new StorysViewModel({
       pcontroller: _this,
-      dragHub: _this.dragHub,
-      editItem: _this.editItem.bind(_this),
-      saveItem: _this.saveItem.bind(_this),
-
       indentOffset: utils.ifNull(options.indentOffset, -1), // default to -1
       accepts: options.accepts,
       takes: options.takes,
       rsort: options.rsort,
-      // edit: _this.editItem.bind(_this),
-      // dragHub: new DragHub({
-      //   cancelEditOnDrag: true,
-      // }),
     });
   }
 
