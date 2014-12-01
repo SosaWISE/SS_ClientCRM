@@ -36,7 +36,7 @@ define('src/scrum/story.editor.vm', [
       validators: [
         //
         function(val, model) {
-          if (val == null && model.requirePoints) {
+          if (val == null && model.strictValidation) {
             return 'Points is required';
           }
         },
@@ -66,7 +66,7 @@ define('src/scrum/story.editor.vm', [
       IsDeleted: false,
       Version: 1,
     };
-    _this.item.requirePoints = _this.requirePoints || (_this.item.Points != null);
+    _this.item.strictValidation = _this.strictValidation || (_this.item.Points != null);
 
     _this.title = (_this.item.sid ? _this.item.sid.toUpperCase() : 'New Story');
     _this.data = ukov.wrap(_this.item, schema);

@@ -37,14 +37,11 @@ define("src/scrum/open2.vm", [
       "tasks",
     ]);
 
-    var gridOptions = {
-      edit: _this.editItem.bind(_this),
-      dragHub: new DragHub({
-        cancelEditOnDrag: true,
-      }),
-    };
+    _this.dragHub = new DragHub({
+      cancelEditOnDrag: true,
+    });
 
-    _this.coolerVm = createStorysVm(_this, gridOptions, {
+    _this.coolerVm = createStorysVm(_this, {
       accepts: function(item, parent, prev, next) {
         return next !== next; //@TODO:
       },
@@ -56,7 +53,7 @@ define("src/scrum/open2.vm", [
         increment: 5,
       }),
     });
-    _this.backlogVm = createStorysVm(_this, gridOptions, {
+    _this.backlogVm = createStorysVm(_this, {
       accepts: function(item, parent, prev, next) {
         return next === next; //@TODO:
       },
@@ -69,7 +66,7 @@ define("src/scrum/open2.vm", [
         max: -1,
       }),
     });
-    _this.storyBoardVm = createStorysVm(_this, gridOptions, {
+    _this.storyBoardVm = createStorysVm(_this, {
       accepts: function(item, parent, prev, next) {
         return next === next; //@TODO:
       },
@@ -116,38 +113,26 @@ define("src/scrum/open2.vm", [
   Open2ViewModel.prototype.storyUpdated = function(story, select) {
     var _this = this,
       curr, dest;
-    if (!story._metadata) {
-      // prep
-      story.sid = "s" + story.ID;
-      story.psid = null;
-      story._metadata = {
-        collapsed: false,
-        indent: 1,
-      };
-    }
+    ensureItemMetadata(story, "s");
+
     curr = getCurrentVm(_this.vms, story.sid);
     dest = getStoryVm(_this.vms, story);
 
     if (curr && curr !== dest) {
-      // remove if changing
-      curr.removeItem(story);
-      //@TODO: remove sub-tasks
+      // remove story and tasks if changing
+      var items = curr.removeItem(story);
+      // add story and tasks that were removed above
+      items.forEach(function(item) {
+        dest.updateItem(item, false);
+      });
+    } else {
+      // update tree
+      dest.updateItem(story, select);
     }
-    // update tree
-    dest.updateItem(story, select);
-    //@TODO: add sub-tasks that were removed above
   };
   Open2ViewModel.prototype.taskUpdated = function(task, select) {
     var _this = this;
-    if (!task._metadata) {
-      // prep
-      task.sid = "t" + task.ID;
-      task.psid = "s" + task.StoryId;
-      task._metadata = {
-        collapsed: false,
-        indent: 2,
-      };
-    }
+    ensureItemMetadata(task, "t");
     // get vm by parent sid
     var vm = getCurrentVm(_this.vms, task.psid);
 
@@ -155,17 +140,54 @@ define("src/scrum/open2.vm", [
     vm.updateItem(task, select);
   };
 
+  function ensureItemMetadata(item, type) {
+    if (item._metadata) {
+      return;
+    }
+
+    var metadata = {
+      sid: type + item.ID,
+      psid: null,
+      type: type,
+      collapsed: false,
+      indent: 0,
+    };
+
+    switch (type) {
+      case "s":
+        metadata.indent = 1;
+        metadata.psid = null;
+        break;
+      case "t":
+        metadata.indent = 2;
+        metadata.psid = "s" + item.StoryId;
+        break;
+    }
+
+    item._metadata = metadata;
+    item.sid = metadata.sid;
+    item.psid = metadata.psid;
+  }
+
   Open2ViewModel.prototype.editItem = function(item, cb, editorOptions) {
     var _this = this,
-      vm = _this.makeEditor(item, editorOptions),
-      type = "story"; //@TODO: get type from item
-    _this.layersVm.show(vm, function(result) {
+      vm = _this.makeEditor(item, editorOptions);
+    _this.layersVm.show(vm, createSaveHandler(_this, item._metadata.type, cb));
+  };
+  Open2ViewModel.prototype.saveItem = function(item, cb, editorOptions) {
+    var _this = this,
+      vm = _this.makeEditor(item, editorOptions);
+    vm.save(createSaveHandler(_this, item._metadata.type, cb));
+  };
+
+  function createSaveHandler(_this, type, cb) {
+    return function(result) {
       if (result) {
         switch (type) {
-          case "story":
+          case "s":
             _this.storyUpdated(result, true);
             break;
-          case "task":
+          case "t":
             _this.taskUpdated(result, true);
             break;
           default:
@@ -173,34 +195,37 @@ define("src/scrum/open2.vm", [
         }
       }
       cb();
-    });
-  };
+    };
+  }
   Open2ViewModel.prototype.makeEditor = function(item, editorOptions /*, parentId*/ ) {
     var vm,
-      type = "story"; //@TODO: get type from item
+      type = item._metadata.type;
     editorOptions = editorOptions || {};
     editorOptions.item = utils.clone(item);
     switch (type) {
-      case "story":
+      case "s":
         vm = new StoryEditorViewModel(editorOptions);
         break;
-        // case "task":
-        //   vm = new TaskEditorViewModel({
-        //     storyId: parentId,
-        //     item: item,
-        //     taskSteps: _this.taskSteps,
-        //   });
-        //   break;
+      case "t":
+        throw new Error("TaskEditorViewModel not implemented");
+        // vm = new TaskEditorViewModel({
+        //   storyId: parentId,
+        //   item: item,
+        //   taskSteps: _this.taskSteps,
+        // });
+        // break;
       default:
-        throw new Error("invalid item type: " + type);
+        throw new Error("invalid edit item type: " + type);
     }
     return vm;
   };
 
-  function createStorysVm(_this, gridOptions, options) {
+  function createStorysVm(_this, options) {
     return new StorysViewModel({
       pcontroller: _this,
-      gridOptions: gridOptions,
+      dragHub: _this.dragHub,
+      editItem: _this.editItem.bind(_this),
+      saveItem: _this.saveItem.bind(_this),
 
       indentOffset: utils.ifNull(options.indentOffset, -1), // default to -1
       accepts: options.accepts,

@@ -7,6 +7,8 @@ define('src/slick/draghub', [
 ) {
   'use strict';
 
+  var _topOffScreen = 10;
+
   function DragHub(options) {
     var _dragging = false,
       _this = this,
@@ -79,10 +81,13 @@ define('src/slick/draghub', [
           }
         });
       }
-      // cancel drag if one grid has an editor lock
-      if (_registrants.some(function(reg) {
+
+      function hasActiveEditorLock(reg) {
         return reg.toGrid.getEditorLock().isActive();
-      })) {
+      }
+
+      // cancel drag if one grid has an editor lock
+      if (_registrants.some(hasActiveEditorLock)) {
         return false;
       }
       // cancel drag if the selected column isn't draggable
@@ -137,6 +142,8 @@ define('src/slick/draghub', [
         console.warn('handleDrag, no registrant');
         // hide guides
         dd.guides.forEach(offScreen);
+        // clear drop data
+        dd._prevDropData = null;
         return;
       }
 
@@ -157,6 +164,8 @@ define('src/slick/draghub', [
         console.info('no drop data');
         // hide guides
         dd.guides.forEach(offScreen);
+        // clear drop data
+        dd._prevDropData = null;
         return;
       }
       // validate drop data
@@ -165,7 +174,7 @@ define('src/slick/draghub', [
       }
       // set defaults
       if (!dropData.parentRow && dropData.parentRow !== 0) {
-        dropData.parentRow = dropData.row;
+        dropData.parentRow = dropData.row - 1;
       }
       dropData.cell = dropData.cell || 0;
       dropData.indent = dropData.indent || 0;
@@ -224,7 +233,7 @@ define('src/slick/draghub', [
   }
 
   function offScreen(el) {
-    el.css("top", -1000);
+    el.css("top", _topOffScreen);
   }
 
   function dropDataAreEqual(pdd, dropData) {
@@ -309,13 +318,12 @@ define('src/slick/draghub', [
       },
       guides = [pre, vrt, sub];
     switch (dropData.type) {
-      default: throw new Error('invalid drop type: ' + dropData.type);
       // case 'child':
       //   break;
       // case 'after':
       //   break;
       case 'before':
-        pre.top = calcTop(dropData.parentRow, false);
+        pre.top = calcTop(dropData.parentRow + 1, false);
         sub.top = calcTop(dropData.row, false);
 
         pre.left = canvasOffset.left;
@@ -342,6 +350,8 @@ define('src/slick/draghub', [
         break;
         // case 'on':
         //   break;
+      default:
+        throw new Error('invalid drop type: ' + dropData.type);
     }
 
     // keep in bounds
@@ -370,14 +380,14 @@ define('src/slick/draghub', [
         boxes[index] = toBox(rect);
       } else {
         // hide box
-        box.top = -1000;
-        box.left = -1000;
+        box.top = _topOffScreen;
+        box.left = _topOffScreen;
         box.width = 0;
         box.height = 0;
       }
     });
   }
-  //
+
   function toRect(box) {
     return {
       x1: box.left,
@@ -386,7 +396,7 @@ define('src/slick/draghub', [
       y2: box.top + box.height,
     };
   }
-  //
+
   function toBox(rect) {
     return {
       left: rect.x1,
@@ -395,7 +405,7 @@ define('src/slick/draghub', [
       height: rect.y2 - rect.y1,
     };
   }
-  //
+
   function rectsIntersect(rectA, rectB) {
     return (
       // A's left edge is to the left of B's right edge

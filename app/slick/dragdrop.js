@@ -23,8 +23,8 @@ define('src/slick/dragdrop', [
 
     // handle drag/drop
     _this.onDragInit = function(e, reg) {
-      var fromData = reg.fromGrid.getData(),
-        item = fromData.getItem(reg.gridCell.row);
+      var fromDataView = reg.fromGrid.getData(),
+        item = fromDataView.getItem(reg.gridCell.row);
       if (true || item.canMove) {
         // prevent the grid from cancelling drag'n'drop by default
         e.stopImmediatePropagation();
@@ -32,28 +32,22 @@ define('src/slick/dragdrop', [
     };
 
     _this.canDrop = function(reg, args) {
-      args = args;
-
-      //@TODO: actually calculate dropData
-      return {
-        type: 'before',
-        row: reg.beforeRow,
-        // parentRow: Math.max(0, reg.beforeRow - 3),
-        // cell: 1,
-        // indent: 10,
-      };
+      var fromDataView = reg.fromGrid.getData();
+      var dropData = options.vm.canDropItem(fromDataView, args.rows[0], reg.beforeRow);
+      // console.log('DropData', dropData);
+      return dropData;
     };
     _this.onDrop = function(reg, args) {
       var dropData = _this.canDrop(reg, args);
       if (!dropData) {
-        throw new Error('cannot drop');
+        // throw new Error('cannot drop');
+        return;
       }
 
-      var fromData = reg.fromGrid.getData(),
-        toData = reg.toGrid.getData();
+      var fromData = reg.fromGrid.getData();
       switch (dropData.type) {
         case 'before':
-          options.insertSibling(fromData.getItem(args.rows[0]), toData.getItem(dropData.row));
+          options.vm.dropItem(fromData, dropData);
           break;
           // case 'child':
           //   toData.insertChild(fromData.getItem(args.rows[0]), toData.getItem(dropData.row));
@@ -64,7 +58,7 @@ define('src/slick/dragdrop', [
     // _this.onMoveRowsTest = function(reg, args) {
     //   var fromData = reg.fromGrid.getData(),
     //     toData = reg.toGrid.getData();
-    //   return toData.insertSiblingTest(fromData.getItem(args.rows[0]), toData.getItem(args.insertBefore));
+    //   return toData.canInsertSibling(fromData.getItem(args.rows[0]), toData.getItem(args.insertBefore));
     // };
     // _this.onMoveRows = function(reg, args) {
     //   var fromData = reg.fromGrid.getData(),

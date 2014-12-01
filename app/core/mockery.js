@@ -24,10 +24,11 @@ define('src/core/mockery', [
       max = (max) ? parseInt(max, 10) : 100;
       return randomFromRange(cache, min * 100, max * 100, 100, 10000) / 100;
     },
-    INC: function(cache, key, idSeed) {
+    INC: function(cache, key, idSeed, inc) {
       var val, obj = incMap[key];
       if (obj) {
-        val = ++obj.val;
+        obj.val += obj.inc;
+        val = obj.val;
       } else {
         if (idSeed) {
           idSeed = parseInt(idSeed, 10);
@@ -36,6 +37,7 @@ define('src/core/mockery', [
         incMap[key] = {
           val: val,
           idSeed: val,
+          inc: parseInt(inc, 10) || 1,
         };
       }
       return val;
@@ -155,7 +157,6 @@ define('src/core/mockery', [
 
     var func;
     switch (typeof(template)) {
-      default: return template;
       case 'string':
         func = fromStringTemplate;
         break;
@@ -166,6 +167,8 @@ define('src/core/mockery', [
           func = fromObjectTemplate;
         }
         break;
+      default:
+        return template;
     }
     return func(template, cache, range);
   }
@@ -335,6 +338,7 @@ define('src/core/mockery', [
   function padLeft(txt, letter, minLength) {
     return pad(true, txt, letter, minLength);
   }
+
   // function padRight(txt, letter, minLength) {
   //   return pad(false, txt, letter, minLength);
   // }
@@ -418,13 +422,15 @@ define('src/core/mockery', [
   mockery.createOrUpdate = function(list, idName, idTemplate, newValue) {
     var id = newValue[idName],
       index;
+
+    function idsMatch(item, i) {
+      if (item[idName] === id) {
+        index = i;
+        return true;
+      }
+    }
     if (id > 0) {
-      if (!list.some(function(item, i) {
-        if (item[idName] === id) {
-          index = i;
-          return true;
-        }
-      })) {
+      if (!list.some(idsMatch)) {
         throw new Error('invalid id. id not in list.');
       }
 
