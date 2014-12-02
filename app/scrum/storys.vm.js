@@ -1,5 +1,5 @@
 define("src/scrum/storys.vm", [
-  'src/slick/dragdrop',
+  "src/slick/dragdrop",
   "src/slick/headerfilter",
   "src/slick/rowevent",
   "src/slick/slickgrid.vm",
@@ -330,15 +330,45 @@ define("src/scrum/storys.vm", [
 
     // items must be the same level of indentation
     if ((nextItem && item._metadata.indent !== nextItem._metadata.indent) ||
-      (!nextItem && item._metadata.indent !== indentZero) // last and top
+      (!nextItem && item._metadata.indent !== indentZero) // item is not last and top
     ) {
       // else the item must come before an item with a greater indent
       // and the item must come after an item of the same level of indentation
       if ((item._metadata.indent !== (nextItem._metadata.indent + 1)) ||
         (
           (prevItem && prevItem._metadata.indent !== item._metadata.indent) ||
-          (!prevItem && item._metadata.indent !== indentZero) // first and top
+          (!prevItem && item._metadata.indent !== indentZero) // item is not first and top
         )) {
+        // //
+        // if (!prevItem && !nextItem) {
+        //   return null;
+        // } else if (nextItem) {
+        //   // find parent of next item with same indent
+        //   var parent = _this.map[nextItem._metadata.psid];
+        //   while (parent && parent._metadata.indent > item._metadata.indent) {
+        //     parent = _this.map[parent._metadata.psid];
+        //   }
+        //   if (!parent) {
+        //     console.warn("nextItem parent not found");
+        //     return null;
+        //   }
+        //   var sibling;
+        //   var itemIndent = item._metadata.indent;
+        //   var row = dv.getRowById(parent.sid) + 1;
+        //   while (row < dv.getLength()) {
+        //     sibling = dv.getItem(row);
+        //     if (sibling._metadata.indent === itemIndent) {
+        //       prevItem = null;
+        //       nextItem = sibling;
+        //       break;
+        //     }
+        //     row++;
+        //   }
+        // } else { // if (prevItem) {
+        //   return null;
+        // }
+        // // console.log("nextItem.sid", nextItem.sid);
+        // // console.log("prevItem.sid", prevItem.sid);
         return null;
       }
       pIdx = dv.getRowById(prevItem ? prevItem._metadata.psid : (nextItem ? nextItem._metadata.psid : null));
@@ -347,7 +377,7 @@ define("src/scrum/storys.vm", [
     }
     //
     return {
-      type: 'before',
+      type: "before",
       row: beforeRow,
       parentRow: pIdx,
       item: item,
@@ -404,7 +434,7 @@ define("src/scrum/storys.vm", [
   };
 
   var _top = {
-    sid: '0',
+    sid: "0",
     ID: 0,
     SortOrder: 1,
     _metadata: {
