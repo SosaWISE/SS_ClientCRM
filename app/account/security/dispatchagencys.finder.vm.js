@@ -105,21 +105,25 @@ define('src/account/security/dispatchagencys.finder.vm', [
       _this.data.markClean(model, true);
 
       _this.gvm.list([]);
-      //setTimeout(dataservice.monitoringstationsrv.dispatchAgencies.read()):
-      setTimeout(function() {
-        _this.maxLength = _this.maxLength || 5;
-        while (_this.gvm.list().length < _this.maxLength) {
-          _this.gvm.list.push({
-            DispatchAgencyID: _this.gvm.list().length + 1,
-            DispatchAgencyTypeName: model.CityName + ': DispatchAgencyTypeName',
-            AgencyNo: 'AgencyNo',
-            AgencyName: 'AgencyName',
-            DispatchPhone: 'DispatchPhone',
-          });
-        }
-        _this.maxLength--;
-        cb();
-      }, 2000);
+      dataservice.monitoringstationsrv.dispatchAgencies.read({
+        link:'dispatchAgencies',
+        query: model,
+      }, _this.gvm.list, utils.safeCallback(cb, notify.iferror));
+
+      // setTimeout(function() {
+      //   _this.maxLength = _this.maxLength || 5;
+      //   while (_this.gvm.list().length < _this.maxLength) {
+      //     _this.gvm.list.push({
+      //       DispatchAgencyID: _this.gvm.list().length + 1,
+      //       DispatchAgencyTypeName: model.CityName + ': DispatchAgencyTypeName',
+      //       AgencyNo: 'AgencyNo',
+      //       AgencyName: 'AgencyName',
+      //       DispatchPhone: 'DispatchPhone',
+      //     });
+      //   }
+      //   _this.maxLength--;
+      //   cb();
+      // }, 2000);
       //@TODO: get correct api path and response format
       // dataservice.boh.boh.read({
       //   query: model,
