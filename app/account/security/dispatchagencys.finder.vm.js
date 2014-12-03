@@ -105,6 +105,7 @@ define('src/account/security/dispatchagencys.finder.vm', [
       _this.data.markClean(model, true);
 
       _this.gvm.list([]);
+      //setTimeout(dataservice.monitoringstationsrv.dispatchAgencies.read()):
       setTimeout(function() {
         _this.maxLength = _this.maxLength || 5;
         while (_this.gvm.list().length < _this.maxLength) {
@@ -131,6 +132,7 @@ define('src/account/security/dispatchagencys.finder.vm', [
     }, function(busy) {
       return !busy && !_this.cmdSelect.busy();
     });
+
     _this.cmdSelect = ko.command(function(cb) {
       if (!_this.selectedAgency) {
         notify.warn('Please select a dispatch agency', null, 7);
