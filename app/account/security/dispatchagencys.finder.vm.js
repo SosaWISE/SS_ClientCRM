@@ -198,7 +198,7 @@ define('src/account/security/dispatchagencys.finder.vm', [
     dataservice.monitoringstationsrv.premiseAddress.read({
       id: _this.accountId,
       link: 'AccountId',
-    }, null, utils.safeCallback(function(resp) {
+    }, null, utils.safeCallback(function(err, resp) {
       var premAddress = resp.Value,
         data = {
           CityName: premAddress.City,
