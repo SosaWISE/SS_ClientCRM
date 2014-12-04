@@ -7,7 +7,7 @@ div(class="dispatchagencys-finder")
         input(type="text",data-bind="ukov:data.CityName,value:data.CityName,valueUpdate:'keyup',enter:cmdFind,select:focusFirst")
       li
         span(class="label") State
-        input(type="text",data-bind="ukov:data.StateAB,value:data.StateAB,valueUpdate:'keyup',enter:cmdFind")
+        div(data-bind="cvm:data.StateCvm,enter:cmdFind")
       li
         span(class="label") Zip Code
         input(type="text",data-bind="ukov:data.ZipCode,value:data.ZipCode,valueUpdate:'keyup',enter:cmdFind")

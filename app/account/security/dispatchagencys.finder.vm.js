@@ -1,4 +1,6 @@
 define('src/account/security/dispatchagencys.finder.vm', [
+  'src/account/default/address.validate.vm',
+  'src/core/combo.vm',
   'src/dataservice',
   'ko',
   'src/slick/rowevent',
@@ -8,6 +10,8 @@ define('src/account/security/dispatchagencys.finder.vm', [
   'src/core/base.vm',
   'src/core/utils',
 ], function(
+  AddressValidateViewModel,
+  ComboViewModel,
   dataservice,
   ko,
   RowEvent,
@@ -45,6 +49,7 @@ define('src/account/security/dispatchagencys.finder.vm', [
     var _this = this;
     DispatchAgencysFinderViewModel.super_.call(_this, options);
 
+    _this.mixinLoad();
     _this.focusFirst = ko.observable();
 
     _this.data = ukov.wrap({
@@ -52,6 +57,12 @@ define('src/account/security/dispatchagencys.finder.vm', [
       StateAB: '',
       ZipCode: '',
     }, schema);
+
+    _this.data.StateCvm = new ComboViewModel({
+      selectedValue: _this.data.StateAB,
+      list: AddressValidateViewModel.prototype.stateOptions, //@TODO: load states from server
+      nullable: true,
+    });
 
     _this.gvm = new SlickGridViewModel({
       gridOptions: {
@@ -180,6 +191,11 @@ define('src/account/security/dispatchagencys.finder.vm', [
   DispatchAgencysFinderViewModel.prototype.viewTmpl = 'tmpl-security-dispatchagencys_finder';
   DispatchAgencysFinderViewModel.prototype.width = 600;
   DispatchAgencysFinderViewModel.prototype.height = 'auto';
+  DispatchAgencysFinderViewModel.prototype.onLoad = function(){
+    var _this = this;
+
+      //BOB dataservice.monitoringstationsrv
+  };
 
   function closeLayer(_this) {
     if (_this.layer) {

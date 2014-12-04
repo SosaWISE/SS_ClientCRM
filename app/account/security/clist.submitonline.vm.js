@@ -122,6 +122,7 @@ define('src/account/security/clist.submitonline.vm', [
     agency = utils.clone(agency);
     _this.layersVm.show(new DispatchAgencyEditorViewModel({
       item: agency,
+      accountId: _this.accountId
     }), cb);
   }
 
