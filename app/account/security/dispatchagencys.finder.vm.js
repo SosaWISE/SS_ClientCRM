@@ -52,6 +52,7 @@ define('src/account/security/dispatchagencys.finder.vm', [
     _this.mixinLoad();
     _this.focusFirst = ko.observable();
 
+    _this.accountId = options.accountId;
     _this.data = ukov.wrap({
       CityName: '',
       StateAB: '',
@@ -191,10 +192,23 @@ define('src/account/security/dispatchagencys.finder.vm', [
   DispatchAgencysFinderViewModel.prototype.viewTmpl = 'tmpl-security-dispatchagencys_finder';
   DispatchAgencysFinderViewModel.prototype.width = 600;
   DispatchAgencysFinderViewModel.prototype.height = 'auto';
-  DispatchAgencysFinderViewModel.prototype.onLoad = function(){
+  DispatchAgencysFinderViewModel.prototype.onLoad = function() {
     var _this = this;
 
-      //BOB dataservice.monitoringstationsrv
+    dataservice.monitoringstationsrv.premiseAddress.read({
+      id: _this.accountId,
+      link: 'AccountId',
+    }, null, utils.safeCallback(function(resp) {
+      var premAddress = resp.Value,
+        data = {
+          CityName: premAddress.City,
+          StateAB: premAddress.StateId,
+          ZipCode: premAddress.PostalCode,
+        };
+      _this.data.setValue(data);
+      _this.data.markClean(data, true);
+
+    }, notify.iferror));
   };
 
   function closeLayer(_this) {

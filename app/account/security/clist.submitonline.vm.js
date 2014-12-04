@@ -37,7 +37,9 @@ define('src/account/security/clist.submitonline.vm', [
     // events
     //
     _this.cmdFind = ko.command(function(cb) {
-      _this.layersVm.show(new DispatchAgencysFinderViewModel(), function(result) {
+      _this.layersVm.show(new DispatchAgencysFinderViewModel({
+        accountId: options.pcontroller.pcontroller.id,
+      }), function(result) {
         if (result) {
           alert(result);
         }

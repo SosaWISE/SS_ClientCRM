@@ -16,6 +16,7 @@ define('src/dataservices/monitoringstationsrv', [
       'accounts',
       'msAccountSalesInformations',
       'dispatchAgencies',
+      'premiseAddress',
     ].forEach(function(collectionName) {
       result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
     });
