@@ -67,7 +67,7 @@ define('src/account/security/dispatchagencys.finder.vm', [
 
     _this.gvm = new SlickGridViewModel({
       gridOptions: {
-        multiSelect: false,
+        multiSelect: true,
         enableColumnReorder: false,
         forceFitColumns: true,
         rowHeight: 27,
