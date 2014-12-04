@@ -29,6 +29,11 @@ define('src/account/security/dispatchagencys.finder.vm', [
         ukov.validators.isRequired('City name is required'),
       ],
     },
+    StateAB: {
+      validators: [
+        ukov.validators.isRequired('State is required'),
+      ],
+    },
     ZipCode: {
       validators: [
         ukov.validators.isRequired('Zip code is required'),
@@ -44,6 +49,7 @@ define('src/account/security/dispatchagencys.finder.vm', [
 
     _this.data = ukov.wrap({
       CityName: '',
+      StateAB: '',
       ZipCode: '',
     }, schema);
 
@@ -73,19 +79,19 @@ define('src/account/security/dispatchagencys.finder.vm', [
         }, {
           id: 'AgencyType',
           name: 'Agency Type',
-          field: 'DispatchAgencyTypeName',
+          field: 'DispatchAgencyType',
         }, {
           id: 'AgencyNo',
           name: 'Agency #',
-          field: 'AgencyNo',
+          field: 'MsAgencyNumber',
         }, {
           id: 'AgencyName',
           name: 'Agency Name',
-          field: 'AgencyName',
+          field: 'DispatchAgencyName',
         }, {
           id: 'DispatchPhone',
           name: 'Dispatch Phone',
-          field: 'DispatchPhone',
+          field: 'Phone1',
         },
       ],
       onSelectedRowsChanged: function(rows) {
@@ -106,7 +112,7 @@ define('src/account/security/dispatchagencys.finder.vm', [
 
       _this.gvm.list([]);
       dataservice.monitoringstationsrv.dispatchAgencies.read({
-        link:'dispatchAgencies',
+        // link:'dispatchAgencies',
         query: model,
       }, _this.gvm.list, utils.safeCallback(cb, notify.iferror));
 
