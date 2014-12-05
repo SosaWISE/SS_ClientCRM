@@ -77,7 +77,10 @@ define('src/account/security/dispatchagencys.finder.vm', [
           eventName: 'onDblClick',
           fn: function(item) {
             console.log(item);
-            _this.selectedAgency = item;
+            if (_this.selectedAgencies == null) {
+              _this.selectedAgencies = [];
+            }
+            _this.selectedAgencies.push(item);
             _this.cmdSelect.execute();
           },
         }),
@@ -107,7 +110,7 @@ define('src/account/security/dispatchagencys.finder.vm', [
         },
       ],
       onSelectedRowsChanged: function(rows) {
-        _this.selectedAgency = rows[0];
+        _this.selectedAgencies = rows;
       },
     });
 
@@ -156,7 +159,7 @@ define('src/account/security/dispatchagencys.finder.vm', [
     });
 
     _this.cmdSelect = ko.command(function(cb) {
-      if (!_this.selectedAgency) {
+      if (!_this.selectedAgencies) {
         notify.warn('Please select a dispatch agency', null, 7);
         cb();
         return;
