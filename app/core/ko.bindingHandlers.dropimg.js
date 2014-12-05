@@ -19,10 +19,15 @@ define('src/core/ko.bindingHandlers.dropimg', [
 
       element.addEventListener("dragover", function(e) {
         e.preventDefault();
-      }, true);
+      });
       element.addEventListener("drop", function(e) {
-        e.preventDefault();
         var src = e.dataTransfer.files[0];
+        if (!src) {
+          // src is undefined when selected text is dropped
+          return;
+        }
+
+        e.preventDefault();
         //  Prevent any non-image file type from being read.
         if (!src.type.match(/image.*/)) {
           notify.warn('The dropped file is not an image: ' + src.type, null, 7);
@@ -36,7 +41,7 @@ define('src/core/ko.bindingHandlers.dropimg', [
           fn(e.target.result);
         };
         reader.readAsDataURL(src);
-      }, true);
+      });
     },
   };
 });
