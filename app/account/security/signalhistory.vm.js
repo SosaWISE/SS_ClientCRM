@@ -270,11 +270,7 @@ define('src/account/security/signalhistory.vm', [
         // days: days,
         days: 8,
       },
-    }, null, utils.safeCallback(cb, function(err, resp) {
-      gvm.list(resp.Value);
-    }, function(err) {
-      notify.error(err);
-    }));
+    }, gvm.list, utils.safeCallback(cb, notify.iferror));
   }
 
   function refreshMissing(signalHistoryList, equipmentList, setMissingSignals, setMissingZones) {

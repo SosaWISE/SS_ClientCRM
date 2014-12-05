@@ -107,12 +107,12 @@
   // width: 100%;
   cursor: pointer;
 
-  // @disabledColor: #e8e8e8;
   &.disabled {
-    // border-color: darken(@disabledColor, 40%);
-    // background-color: @disabledColor;
-    // color: darken(@disabledColor, 20%);
     cursor: default;
+    &.active {
+      // background-color: shade(@bg-color, 15%);
+      .box-shadow(inset 0px 0px 8px rgba(0,0,0,0.5));
+    }
   }
 
   &:not(.disabled):hover {
@@ -132,6 +132,29 @@
   &.small {
     font-size: 0.9em;
     padding: 3px 10px;
+  }
+}
+.make-color-btn(@bgcolor) {
+  background-color: tint(@bgcolor, 10%);
+
+  &.disabled {
+    background-color: tint(@bgcolor, 40%);
+    .opacity(0.7);
+    &.active {
+      background-color: @bgcolor;
+    }
+  }
+  &:not(.disabled) {
+    &:focus {
+      background-color: shade(@bgcolor, 15%);
+    }
+    &:hover {
+      background-color: lighten(@bgcolor, 10%);
+    }
+    &:active,
+    &.active {
+      background-color: shade(@bgcolor, 15%);
+    }
   }
 }
 

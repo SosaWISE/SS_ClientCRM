@@ -1,15 +1,15 @@
-define('src/core/strings', [
-  'moment',
-  'src/core/numbers',
-  'src/core/arrays',
-  'src/core/utils',
+define("src/core/strings", [
+  "moment",
+  "src/core/numbers",
+  "src/core/arrays",
+  "src/core/utils",
 ], function(
   moment,
   numbers,
   arrays,
   utils
 ) {
-  'use strict';
+  "use strict";
 
   var strings = {},
     formatRegex = /\{([0-9]+)(?::([0-9A-Z$]+))?\}/gi, // {0} or {0:decoratorName}
@@ -17,7 +17,7 @@ define('src/core/strings', [
     ssnRegx = /^(\d{3})[-]?(\d{2})[-]?(\d{4})$/,
     usdFormatter;
 
-  // e.g.: strings.format('{0} {1}', 'bob', 'bobbins') === 'bob bobbins'
+  // e.g.: strings.format("{0} {1}", "bob", "bobbins") === "bob bobbins"
   strings.format = function(format /*, ...args*/ ) {
     // over 1 million iterations
     // (~2460ms) time without either (one-based indexes)
@@ -26,7 +26,7 @@ define('src/core/strings', [
     //           -with larger integers, say the number 2000, this method gets slower (~3070ms, still faster than slice.call),
     //            but the integers should be at most double digits
     //           -actually, with larger numbers this one is the fastest. i think manually making an array is slower
-    //            only because of a failed lookup for the key '2000', but in reality there shouldn't that many args
+    //            only because of a failed lookup for the key "2000", but in reality there shouldn't that many args
     // (~2590ms) manually making arguments into an array adds about 5% to the total time (slice.call(arguments, 1)) (zero-based)
     //           -with more arguments, this would also get slower, but, again, there shouldn't be very many args
 
@@ -35,8 +35,8 @@ define('src/core/strings', [
   };
   strings.aformat = function(format, argsArray, missingParamFormat) {
     var decorators = strings.decorators;
-    format = format || '';
-    missingParamFormat = missingParamFormat || '';
+    format = format || "";
+    missingParamFormat = missingParamFormat || "";
     return format.replace(formatRegex, function(item, paramIndex, formatName) {
       formatName = formatName;
       var val = argsArray[paramIndex];
@@ -56,16 +56,16 @@ define('src/core/strings', [
     currency: function(val) {
       if (!usdFormatter) {
         if (window.Intl) {
-          usdFormatter = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
+          usdFormatter = new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
             minimumFractionDigits: 2,
           });
         } else {
           //@TODO: replace this fake usdFormatter
           usdFormatter = {
             format: function(v) {
-              return '$' + v;
+              return "$" + v;
             },
           };
         }
@@ -73,7 +73,7 @@ define('src/core/strings', [
       return usdFormatter.format(val);
     },
     likecurrency: function(val) {
-      return strings.formatters.currency(val).replace('$', '');
+      return strings.formatters.currency(val).replace("$", "");
     },
     date: function(dt, isLocal) {
       // UTC by default ???
@@ -82,21 +82,21 @@ define('src/core/strings', [
       } else {
         dt = moment.utc(dt);
       }
-      return dt.format('MM/DD/YYYY');
+      return dt.format("MM/DD/YYYY");
     },
     datetime: function(dt, isUtc) {
       // Local by default ???
       //@REVEIW: the web server should always return UTC dates, so i don't know about this default...
       //to allow display of nullable dates
-      if (dt === null || dt === '') {
-        return '';
+      if (dt === null || dt === "") {
+        return "";
       }
       if (isUtc) {
         dt = moment.utc(dt);
       } else {
         dt = moment(dt);
       }
-      return dt.format('MM/DD/YYYY hh:mm a');
+      return dt.format("MM/DD/YYYY hh:mm a");
     },
     phone: function(val, outputFormat) {
       if (!val) {
@@ -104,7 +104,7 @@ define('src/core/strings', [
       }
       var matches = phoneRegx.exec(val);
       if (matches) {
-        return strings.format(outputFormat || '({0}) {1}-{2}', matches[1], matches[2], matches[3]);
+        return strings.format(outputFormat || "({0}) {1}-{2}", matches[1], matches[2], matches[3]);
       } else {
         return val;
       }
@@ -115,7 +115,7 @@ define('src/core/strings', [
       }
       var matches = ssnRegx.exec(val);
       if (matches) {
-        return strings.format('{0}-{1}-{2}', matches[1], matches[2], matches[3]);
+        return strings.format("{0}-{1}-{2}", matches[1], matches[2], matches[3]);
       } else {
         return val;
       }
@@ -126,7 +126,7 @@ define('src/core/strings', [
       }
       var matches = ssnRegx.exec(val);
       if (matches) {
-        return 'XXX-XX-' + matches[3];
+        return "XXX-XX-" + matches[3];
       } else {
         return val;
       }
@@ -144,8 +144,8 @@ define('src/core/strings', [
       return strings.formatters.datetime(val);
     },
     space: function(val) {
-      val = (val || '') + ''; // make sure it's not null, undefined, or something other than a string
-      return val.split('').join('&nbsp;');
+      val = (val || "") + ""; // make sure it's not null, undefined, or something other than a string
+      return val.split("").join("&nbsp;");
     },
     phone: function(val) {
       return strings.formatters.phone(val);
@@ -166,8 +166,8 @@ define('src/core/strings', [
 
   strings.trim = function(text) {
     if (text) {
-      text = (text + '').replace(/^\s+|\s+$/g, '');
-    } else if (text !== '') {
+      text = (text + "").replace(/^\s+|\s+$/g, "");
+    } else if (text !== "") {
       text = null;
     }
     return text;
@@ -190,7 +190,7 @@ define('src/core/strings', [
 
   // from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
   strings.escapeRegExp = function(string) {
-    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
+    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
   };
   // escapeRegExp: function(text) {
   //   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -203,9 +203,9 @@ define('src/core/strings', [
 
   function pad(isLeft, txt, letter, minLength) {
     if (!txt && txt !== 0) {
-      txt = '';
+      txt = "";
     }
-    txt += '';
+    txt += "";
     if (isLeft) {
       while (txt.length < minLength) {
         txt = letter + txt;
@@ -226,8 +226,8 @@ define('src/core/strings', [
 
 
   function strWithTest(str, val, atStart) {
-    str = (str == null) ? '' : ('' + str);
-    val = (val == null) ? '' : ('' + val);
+    str = (str == null) ? "" : ("" + str);
+    val = (val == null) ? "" : ("" + val);
     return str.length >= val.length &&
       (atStart ? str.slice(0, val.length) : str.slice(str.length - val.length)) === val;
   }
@@ -251,7 +251,7 @@ define('src/core/strings', [
     while (0 < i--) {
       ray[i] = passwordChars[Math.round(Math.random() * rayLength)];
     }
-    return ray.join('');
+    return ray.join("");
   };
 
   return strings;
