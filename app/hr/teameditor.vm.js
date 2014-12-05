@@ -205,7 +205,7 @@ define('src/hr/teameditor.vm', [
         _this.data.markClean(data, true);
         // end editing
         _this.editing(false);
-      }, notify.error));
+      }, notify.iferror));
     }
   }
 

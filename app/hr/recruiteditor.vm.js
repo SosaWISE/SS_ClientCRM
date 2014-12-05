@@ -325,7 +325,7 @@ define('src/hr/recruiteditor.vm', [
           data.FullName = calcFullName(data.PreferredName, data.FirstName, data.LastName);
           _this.buddy(data);
         }
-      }, notify.error));
+      }, notify.iferror));
     });
 
     _this.editing = ko.observable(false);
@@ -499,7 +499,7 @@ define('src/hr/recruiteditor.vm', [
           // end editing
           _this.editing(false);
         }
-      }, notify.error));
+      }, notify.iferror));
     }
   }
 

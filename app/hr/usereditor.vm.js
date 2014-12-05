@@ -337,7 +337,7 @@ define('src/hr/usereditor.vm', [
           data.FullName = calcFullName(data.PreferredName, data.FirstName, data.LastName);
           _this.recruitedBy(data);
         }
-      }, notify.error));
+      }, notify.iferror));
     });
 
     //
@@ -503,7 +503,7 @@ define('src/hr/usereditor.vm', [
         _this.data.markClean(data, true);
         // end editing
         _this.editing(false);
-      }, notify.error));
+      }, notify.iferror));
     }
   }
 

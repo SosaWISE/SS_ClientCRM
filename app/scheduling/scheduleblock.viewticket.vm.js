@@ -119,7 +119,7 @@ define('src/scheduling/scheduleblock.viewticket.vm', [
         _this.scheduleBlockViewTicketGvm.list(resp.Value);
       }
 
-    }, notify.error, false));
+    }, notify.iferror));
 
   }
 

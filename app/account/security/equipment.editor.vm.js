@@ -190,11 +190,6 @@ define('src/account/security/equipment.editor.vm', [
 
 
     switch (_this.addBy) {
-      default:
-      case 'part':
-        _this.title = 'Part #';
-        _this.searchKey = ukov.wrap('', searchPartNumSchema);
-        break;
       case 'barcode':
         _this.title = 'Barcode';
         _this.searchKey = ukov.wrap('', searchBarcodeSchema);
@@ -211,6 +206,11 @@ define('src/account/security/equipment.editor.vm', [
             text: 'ShortName',
           },
         });
+        break;
+      default:
+      case 'part':
+        _this.title = 'Part #';
+        _this.searchKey = ukov.wrap('', searchPartNumSchema);
         break;
     }
     subscribeEquipment(_this);
@@ -243,7 +243,7 @@ define('src/account/security/equipment.editor.vm', [
         _this.layerResult = data;
         _this.isDeleted = false;
         closeLayer(_this);
-      }, notify.error, false));
+      }, notify.iferror));
     }, function(busy) {
       return !busy && !_this.cmdSearch.busy() && !_this.cmdDelete.busy();
     });
@@ -260,7 +260,7 @@ define('src/account/security/equipment.editor.vm', [
           _this.layerResult = true;
           _this.isDeleted = true;
           closeLayer(_this);
-        }, notify.error, false));
+        }, notify.iferror));
       });
     }, function(busy) {
       return !busy && !_this.cmdSearch.busy() && !_this.cmdSave.busy() && (_this.item.AccountEquipmentID > 0);
@@ -461,12 +461,6 @@ define('src/account/security/equipment.editor.vm', [
     });
 
     switch (_this.addBy) {
-      default:
-      case 'part':
-        link = 'ByPartNumber';
-        barcodeId = null;
-        isExisting = false;
-        break;
       case 'barcode':
         link = 'ByBarcode';
         barcodeId = searchKey;
@@ -476,6 +470,12 @@ define('src/account/security/equipment.editor.vm', [
         link = ''; // by equipment id
         barcodeId = null;
         isExisting = true;
+        break;
+      default:
+      case 'part':
+        link = 'ByPartNumber';
+        barcodeId = null;
+        isExisting = false;
         break;
     }
 

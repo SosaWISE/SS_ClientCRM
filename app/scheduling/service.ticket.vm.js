@@ -69,11 +69,10 @@ define('src/scheduling/service.ticket.vm', [
       }), function() {
         reloadTickets(_this, cb);
       });
-      cb();
     });
 
     _this.data.ticketStatusCvm.selectedValue.subscribe(function() {
-      reloadTickets(_this);
+      reloadTickets(_this, notify.iferror);
     });
   }
 
@@ -97,7 +96,7 @@ define('src/scheduling/service.ticket.vm', [
     //set default to All and load all tickets
     _this.data.TicketStatus(0);
     //load tickets
-    reloadTickets(_this);
+    reloadTickets(_this, notify.iferror);
   };
 
   function reloadTickets(_this, cb) {
@@ -133,7 +132,7 @@ define('src/scheduling/service.ticket.vm', [
     dataservice.scheduleenginesrv.SeTicketList.read({
       id: id,
       link: link,
-    }, cvm.list, utils.safeCallback(cb, utils.noop, notify.error));
+    }, cvm.list, cb);
   }
 
   return ServiceTicketViewModel;

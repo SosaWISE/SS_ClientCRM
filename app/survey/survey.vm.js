@@ -252,7 +252,7 @@ define('src/survey/survey.vm', [
       // mark as current
       _this.isCurrent(true);
       _this.isReadonly(true);
-    }, notify.error));
+    }, notify.iferror));
   }
 
   return SurveyViewModel;

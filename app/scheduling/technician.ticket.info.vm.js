@@ -86,7 +86,7 @@ define('src/scheduling/technician.ticket.info.vm', [
         link: 'ITER'
       }, null, utils.safeCallback(cb, function( /*err, resp*/ ) {
         notify.info("En-Route notification was sent successfully.", null, 3);
-      }, notify.error));
+      }, notify.iferror));
     });
 
     _this.cmdDelay = ko.command(function(cb) {
@@ -98,7 +98,7 @@ define('src/scheduling/technician.ticket.info.vm', [
         link: 'ITD'
       }, null, utils.safeCallback(cb, function( /*err, resp*/ ) {
         notify.info("Delay notification was sent successfully.", null, 3);
-      }, notify.error));
+      }, notify.iferror));
     });
 
     _this.cmdComplete = ko.command(function(cb) {
@@ -129,7 +129,7 @@ define('src/scheduling/technician.ticket.info.vm', [
         }, null, utils.safeCallback(cb, function( /*err, resp*/ ) {
           notify.info("Ticket Completed.", null, 3);
           closeLayer(_this);
-        }, notify.error));
+        }, notify.iferror));
       });
     });
     _this.clickClose = function() {

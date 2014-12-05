@@ -54,7 +54,7 @@ define('src/survey/qpossibleanswermap.vm', [
       // }, null, utils.safeCallback(cb, function(err, resp) {
       //   _this.model = resp.Value;
       //   _this.expands(_this.model.Expands);
-      // }, notify.error));
+      // }, notify.iferror));
     }, function(busy) {
       return !busy && !_this.topVm.isReadonly();
     });

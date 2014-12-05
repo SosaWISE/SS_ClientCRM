@@ -211,7 +211,7 @@ define("src/scheduling/ticket.editor.vm", [
 
       _this.layerResult = data;
       closeLayer(_this);
-    }, notify.error, false));
+    }, notify.iferror));
   }
 
   return TicketEditorViewModel;

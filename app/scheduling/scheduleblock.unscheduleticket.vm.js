@@ -120,7 +120,7 @@ define('src/scheduling/scheduleblock.unscheduleticket.vm', [
 
       }
 
-    }, notify.error, false));
+    }, notify.iferror));
 
   }
 
