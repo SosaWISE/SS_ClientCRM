@@ -237,9 +237,9 @@ define('src/account/default/address.validate.vm', [
       return !busy && !_this.data.isClean();
     });
     _this.cmdManual = ko.command(function(cb) {
-      // _this.setManualOverride(true);
+      _this.setManualOverride(true);
       /////TESTING//////////////////////
-      _this.setManualOverride(!_this.override());
+      //_this.setManualOverride(!_this.override());
       /////TESTING//////////////////////
       cb();
     }, function(busy) {
