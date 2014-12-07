@@ -1,11 +1,11 @@
-define('src/account/default/address.validate.vm', [
-  'src/core/combo.vm',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
-  'ko',
-  'src/ukov',
-  'src/dataservice'
+define("src/account/default/address.validate.vm", [
+  "src/core/combo.vm",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/base.vm",
+  "ko",
+  "src/ukov",
+  "src/dataservice"
 ], function(
   ComboViewModel,
   notify,
@@ -25,41 +25,51 @@ define('src/account/default/address.validate.vm', [
     max1 = ukov.validators.maxLength(1),
     strConverter = ukov.converters.string(),
     nullStrConverter = ukov.converters.nullString();
+  var neverIgnoreMap = {
+    // AddressID: true,
+    DealerId: true,
+    SeasonId: true,
+    SalesRepId: true,
+    TeamLocationId: true,
+    PhoneNumber: true,
+    PostalCode: true,
+    Address: true,
+    Address2: true,
+  };
+  var advNoIgnoreMap = {
+    City: true,
+    State: true,
+  };
 
   schema = {
     _model: true,
 
     AddressID: {},
-
     DealerId: {},
-
     SeasonId: {},
-
     SalesRepId: {},
-
     TeamLocationId: {},
-
     PhoneNumber: {
       converter: ukov.converters.phone(),
       validators: [
-        ukov.validators.isRequired('Premise phone is required'),
+        ukov.validators.isRequired("Premise phone is required"),
       ],
     },
     PostalCode: {
       converter: strConverter,
       validators: [
-        ukov.validators.isRequired('Zip code is required'),
+        ukov.validators.isRequired("Zip code is required"),
         ukov.validators.isZipCode(),
       ],
     },
-    StreetAddress: {
+    Address: {
       converter: strConverter,
       validators: [
-        ukov.validators.isRequired('Street address is required'),
+        ukov.validators.isRequired("Street address is required"),
         max50,
       ],
     },
-    StreetAddress2: {
+    Address2: {
       converter: nullStrConverter,
       validators: [max50],
     },
@@ -68,42 +78,42 @@ define('src/account/default/address.validate.vm', [
     City: {
       converter: strConverter,
       validators: [
-        ukov.validators.isRequired('City is required'),
+        ukov.validators.isRequired("City is required"),
         max50,
       ],
     },
     County: {
       converter: strConverter,
       validators: [
-        ukov.validators.isRequired('County is required'),
+        ukov.validators.isRequired("County is required"),
         max50,
       ],
     },
-    // State: {},
-    StateId: {
+    State: {
       validators: [
-        ukov.validators.isRequired('State is required'),
+        ukov.validators.isRequired("State is required"),
         max4,
       ],
     },
+    // TimeZone: {},
     TimeZoneId: {
       converter: ukov.converters.number(0),
       validators: [
-        ukov.validators.isRequired('Time zone is required'),
+        ukov.validators.isRequired("Time zone is required"),
         ukov.validators.isInt(),
       ],
     },
     StreetNumber: { //House #
       converter: strConverter,
       validators: [
-        ukov.validators.isRequired('House # is required'),
+        ukov.validators.isRequired("House # is required"),
         max40
       ],
     },
     StreetName: {
       converter: strConverter,
       validators: [
-        ukov.validators.isRequired('Street name is required'),
+        ukov.validators.isRequired("Street name is required"),
         max50,
       ],
     },
@@ -135,6 +145,31 @@ define('src/account/default/address.validate.vm', [
       converter: nullStrConverter,
       validators: [max1],
     },
+
+    PlusFour: {},
+    IsActive: {},
+    Latitude: {},
+    Longitude: {},
+    DPV: {},
+
+    CreatedOn: {},
+    CreatedBy: {},
+    ModifiedOn: {},
+    ModifiedBy: {},
+
+    ValidationVendorId: {},
+    AddressValidationStateId: {},
+    CountryId: {},
+    AddressTypeId: {},
+    CountyCode: {},
+    Urbanization: {},
+    UrbanizationCode: {},
+    PostalCodeFull: {},
+    DeliveryPoint: {},
+    CrossStreet: {},
+    CongressionalDistric: {},
+    DPVFootnote: {},
+    IsDeleted: {},
   };
 
 
@@ -147,17 +182,20 @@ define('src/account/default/address.validate.vm', [
     //   _this.item.Validated = false;
     // }
 
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.focusOk = ko.observable(false);
     _this.result = ko.observable(_this.item);
-    _this.override = ko.observable(false);
 
     _this.data = ukov.wrap(_this.item || {
       DealerId: 5000, // ?????
+      ValidationVendorId: "NOVENDOR",
+      AddressValidationStateId: "MAN",
+      AddressTypeId: "N",
+      CountryId: "USA",
     }, schema);
 
     _this.data.StateCvm = new ComboViewModel({
-      selectedValue: _this.data.StateId,
+      selectedValue: _this.data.State,
       list: _this.stateOptions,
       nullable: true,
     });
@@ -183,19 +221,36 @@ define('src/account/default/address.validate.vm', [
     });
 
     _this.width = ko.observable(0);
-    _this.height = ko.observable('auto');
-    _this.setManualOverride(!!_this.item);
+    _this.height = ko.observable("auto");
+    _this.mode = ko.observable();
+    _this.modeCvm = new ComboViewModel({
+      selectedValue: _this.mode,
+      list: [ //
+        {
+          text: "Validated Address",
+          value: "V",
+        }, {
+          text: "Advanced Validated Address",
+          value: "A",
+        }, {
+          text: "Manual Address",
+          value: "M",
+        },
+      ],
+    });
+    _this.mode.subscribe(_this.modeChanged.bind(_this));
+    _this.mode(_this.item ? "M" : "V");
 
     _this.data.SeasonId(_this.repModel.Seasons[0].SeasonID);
     _this.data.SalesRepId(_this.repModel.CompanyID);
     _this.data.TeamLocationId(_this.repModel.TeamLocationId);
 
-    // /////TESTING//////////////////////
-    // _this.data.PostalCode('12345');
-    // _this.data.StreetAddress('adsf');
-    // _this.data.PhoneNumber('1234567890');
-    // _this.data.PhoneNumber(_this.data.model.PhoneNumber);
-    // /////TESTING//////////////////////
+    /////TESTING//////////////////////
+    _this.data.PostalCode("12345");
+    _this.data.Address("adsf");
+    _this.data.PhoneNumber("1234567890");
+    _this.data.PhoneNumber(_this.data.model.PhoneNumber);
+    /////TESTING//////////////////////
 
     //
     // events
@@ -204,52 +259,51 @@ define('src/account/default/address.validate.vm', [
       _this.layerResult = _this.result.peek();
       closeLayer(_this);
     };
-    _this.cmdValidate = ko.command(function(cb) {
+    _this.tcmdValidate = ko.command(function(cb) {
       _this.data.validate();
       _this.data.update();
       if (!_this.data.isValid()) {
         notify.warn(_this.data.errMsg(), null, 7);
         return cb();
       }
-
       var model = _this.data.getValue();
-      model.AddressId = model.AddressID; // copy id to match API inputs
-      dataservice.qualify.addressValidation.post(null, model, null, utils.safeCallback(cb, function(err, resp) {
-        if (resp && resp.Value) {
-          //@TODO: handle !data.Validated
-          var data = resp.Value;
-          _this.data.setValue(data);
-          _this.data.markClean(data, true);
-          _this.result(data);
-          // store now since we want to use this even if escape key is pressed...
-          _this.layerResult = _this.result.peek();
-          //
-          _this.focusOk(true);
-        }
-      }, function(err) {
-        _this.setManualOverride(true);
-        _this.layerResult = _this.result.peek();
-        //
-        _this.focusOk(true);
-        notify.error(err);
-      }));
+      if (_this.mode.peek() !== "M") {
+        // validate
+        validateAddress(_this, model, cb);
+      } else if (_this.item) {
+        // update existing address
+        saveAddress(_this, model, cb);
+      } else {
+        // save new address
+        var msg = "Do really you want to bypass address validation and save a manually entered address?";
+        notify.confirm("Bypass address validation?", msg, function(result) {
+          if (result !== "yes") {
+            return cb();
+          }
+          saveAddress(_this, model, cb);
+        });
+      }
     }, function(busy) {
-      return !busy && !_this.data.isClean();
-    });
-    _this.cmdManual = ko.command(function(cb) {
-      _this.setManualOverride(true);
-      /////TESTING//////////////////////
-      //_this.setManualOverride(!_this.override());
-      /////TESTING//////////////////////
-      cb();
-    }, function(busy) {
-      return !busy && _this.result() && !_this.result().Validated;
+      var result = _this.result();
+      return !busy && (!result || !result.DPV);
+    }, {
+      toggle: {
+        isDown: ko.computed(function() {
+          return _this.mode() === "M";
+        }),
+        down: {
+          text: "Save Manual Address",
+        },
+        up: {
+          text: "Validate Address",
+        },
+      }
     });
 
-    _this.loading = _this.cmdValidate.busy;
+    _this.loading = _this.tcmdValidate.busy;
   }
   utils.inherits(AddressValidateViewModel, BaseViewModel);
-  AddressValidateViewModel.prototype.viewTmpl = 'tmpl-acct-default-address_validate';
+  AddressValidateViewModel.prototype.viewTmpl = "tmpl-acct-default-address_validate";
 
   function closeLayer(_this) {
     if (_this.layer) {
@@ -260,417 +314,437 @@ define('src/account/default/address.validate.vm', [
     var _this = this;
     return [_this.layerResult];
   };
-
-  AddressValidateViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
-    var _this = this;
-
-    // this timeout makes it possible to focus the input
-    setTimeout(function() {
-      _this.focusFirst(true);
-    }, 100);
+  AddressValidateViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.tcmdValidate.busy() && !_this.layerResult) {
+      msg = "Please wait for address validation to finish.";
+    }
+    return msg;
   };
 
-  AddressValidateViewModel.prototype.setManualOverride = function(override) {
+  AddressValidateViewModel.prototype.modeChanged = function(mode) {
     var _this = this,
       addrData = _this.data,
-      ignore = !override;
-
-    _this.override(override);
+      ignore = mode !== "M";
 
     // size
-    if (override) {
+    if (mode === "M") {
       _this.width(570);
     } else {
       _this.width(300);
     }
 
+    // ignore/un-ignore fields
+    Object.keys(addrData.doc).forEach(function(key) {
+      if (neverIgnoreMap[key] || (mode === "A" && advNoIgnoreMap[key])) {
+        addrData[key].ignore(false);
+        return;
+      }
+      addrData[key].ignore(ignore);
+    });
 
-    // ignore fields
-    addrData.City.ignore(ignore);
-    addrData.County.ignore(ignore);
-    // addrData.State.ignore(ignore);
-    addrData.StateId.ignore(ignore);
-    addrData.TimeZoneId.ignore(ignore);
-    addrData.StreetNumber.ignore(ignore);
-    addrData.StreetName.ignore(ignore);
-    addrData.PreDirectional.ignore(ignore);
-    addrData.PostDirectional.ignore(ignore);
-    addrData.StreetType.ignore(ignore);
-    addrData.Extension.ignore(ignore);
-    addrData.ExtensionNumber.ignore(ignore);
-    addrData.CarrierRoute.ignore(ignore);
-    addrData.DPVResponse.ignore(ignore);
     // update model
     addrData.update(false, true);
   };
+
+  function saveAddress(_this, model, cb) {
+    dataservice.qualify.address.post(null, model, function(data) {
+      _this.data.setValue(data);
+      _this.data.markClean(data, true);
+      //
+      _this.result(data);
+      // store now since we want to use this even if escape key is pressed...
+      _this.layerResult = _this.result.peek();
+      //
+      _this.focusOk(true);
+    }, cb);
+  }
+
+  function validateAddress(_this, model, cb) {
+    dataservice.qualify.addressValidation.post(null, model, function(data) {
+      if (data.DPV) { // address validation succeeded
+        _this.data.setValue(data);
+        _this.data.markClean(data, true);
+        //
+        _this.result(data);
+        // store now since we want to use this even if escape key is pressed...
+        _this.layerResult = _this.result.peek();
+        //
+        _this.focusOk(true);
+      } else {
+        notify.warn("Failed to validate address", null, 7);
+      }
+    }, cb);
+  }
 
 
 
   //@TODO: load options from server
   AddressValidateViewModel.prototype.stateOptions = [ //
     {
-      value: 'AK',
-      text: 'Alaska'
+      value: "AK",
+      text: "Alaska"
     }, {
-      value: 'AL',
-      text: 'Alabama'
+      value: "AL",
+      text: "Alabama"
     }, {
-      value: 'AR',
-      text: 'Arkansas'
+      value: "AR",
+      text: "Arkansas"
     }, {
-      value: 'AS',
-      text: 'American Samoa'
+      value: "AS",
+      text: "American Samoa"
     }, {
-      value: 'AZ',
-      text: 'Arizona'
+      value: "AZ",
+      text: "Arizona"
     }, {
-      value: 'CA',
-      text: 'California'
+      value: "CA",
+      text: "California"
     }, {
-      value: 'CO',
-      text: 'Colorado'
+      value: "CO",
+      text: "Colorado"
     }, {
-      value: 'CT',
-      text: 'Connecticut'
+      value: "CT",
+      text: "Connecticut"
     }, {
-      value: 'DC',
-      text: 'District of Columbia'
+      value: "DC",
+      text: "District of Columbia"
     }, {
-      value: 'DE',
-      text: 'Delaware'
+      value: "DE",
+      text: "Delaware"
     }, {
-      value: 'FL',
-      text: 'Florida'
+      value: "FL",
+      text: "Florida"
     }, {
-      value: 'FM',
-      text: 'Federated States of Micronesia'
+      value: "FM",
+      text: "Federated States of Micronesia"
     }, {
-      value: 'GA',
-      text: 'Georgia'
+      value: "GA",
+      text: "Georgia"
     }, {
-      value: 'GU',
-      text: 'Guam'
+      value: "GU",
+      text: "Guam"
     }, {
-      value: 'HI',
-      text: 'Hawaii'
+      value: "HI",
+      text: "Hawaii"
     }, {
-      value: 'IA',
-      text: 'Iowa'
+      value: "IA",
+      text: "Iowa"
     }, {
-      value: 'ID',
-      text: 'Idaho'
+      value: "ID",
+      text: "Idaho"
     }, {
-      value: 'IL',
-      text: 'Illinois'
+      value: "IL",
+      text: "Illinois"
     }, {
-      value: 'IN',
-      text: 'Indiana'
+      value: "IN",
+      text: "Indiana"
     }, {
-      value: 'KS',
-      text: 'Kansas'
+      value: "KS",
+      text: "Kansas"
     }, {
-      value: 'KY',
-      text: 'Kentucky'
+      value: "KY",
+      text: "Kentucky"
     }, {
-      value: 'LA',
-      text: 'Louisiana'
+      value: "LA",
+      text: "Louisiana"
     }, {
-      value: 'MA',
-      text: 'Massachusetts'
+      value: "MA",
+      text: "Massachusetts"
     }, {
-      value: 'MD',
-      text: 'Maryland'
+      value: "MD",
+      text: "Maryland"
     }, {
-      value: 'ME',
-      text: 'Maine'
+      value: "ME",
+      text: "Maine"
     }, {
-      value: 'MH',
-      text: 'Marshall Islands'
+      value: "MH",
+      text: "Marshall Islands"
     }, {
-      value: 'MI',
-      text: 'Michigan'
+      value: "MI",
+      text: "Michigan"
     }, {
-      value: 'MN',
-      text: 'Minnesota'
+      value: "MN",
+      text: "Minnesota"
     }, {
-      value: 'MO',
-      text: 'Missouri'
+      value: "MO",
+      text: "Missouri"
     }, {
-      value: 'MP',
-      text: 'Northern Mariana Islands'
+      value: "MP",
+      text: "Northern Mariana Islands"
     }, {
-      value: 'MS',
-      text: 'Mississippi'
+      value: "MS",
+      text: "Mississippi"
     }, {
-      value: 'MT',
-      text: 'Montana'
+      value: "MT",
+      text: "Montana"
     }, {
-      value: 'NC',
-      text: 'North Carolina'
+      value: "NC",
+      text: "North Carolina"
     }, {
-      value: 'ND',
-      text: 'North Dakota'
+      value: "ND",
+      text: "North Dakota"
     }, {
-      value: 'NE',
-      text: 'Nebraska'
+      value: "NE",
+      text: "Nebraska"
     }, {
-      value: 'NH',
-      text: 'New Hampshire'
+      value: "NH",
+      text: "New Hampshire"
     }, {
-      value: 'NJ',
-      text: 'New Jersey'
+      value: "NJ",
+      text: "New Jersey"
     }, {
-      value: 'NM',
-      text: 'New Mexico'
+      value: "NM",
+      text: "New Mexico"
     }, {
-      value: 'NV',
-      text: 'Nevada'
+      value: "NV",
+      text: "Nevada"
     }, {
-      value: 'NY',
-      text: 'New York'
+      value: "NY",
+      text: "New York"
     }, {
-      value: 'OH',
-      text: 'Ohio'
+      value: "OH",
+      text: "Ohio"
     }, {
-      value: 'OK',
-      text: 'Oklahoma'
+      value: "OK",
+      text: "Oklahoma"
     }, {
-      value: 'OR',
-      text: 'Oregon'
+      value: "OR",
+      text: "Oregon"
     }, {
-      value: 'PA',
-      text: 'Pennsylvania'
+      value: "PA",
+      text: "Pennsylvania"
     }, {
-      value: 'PR',
-      text: 'Puerto Rico'
+      value: "PR",
+      text: "Puerto Rico"
     }, {
-      value: 'PW',
-      text: 'Palau'
+      value: "PW",
+      text: "Palau"
     }, {
-      value: 'RI',
-      text: 'Rhode Island'
+      value: "RI",
+      text: "Rhode Island"
     }, {
-      value: 'SC',
-      text: 'South Carolina'
+      value: "SC",
+      text: "South Carolina"
     }, {
-      value: 'SD',
-      text: 'South Dakota'
+      value: "SD",
+      text: "South Dakota"
     }, {
-      value: 'TN',
-      text: 'Tennessee'
+      value: "TN",
+      text: "Tennessee"
     }, {
-      value: 'TX',
-      text: 'Texas'
+      value: "TX",
+      text: "Texas"
     }, {
-      value: 'UT',
-      text: 'Utah'
+      value: "UT",
+      text: "Utah"
     }, {
-      value: 'VA',
-      text: 'Virginia'
+      value: "VA",
+      text: "Virginia"
     }, {
-      value: 'VI',
-      text: 'Virgin Islands'
+      value: "VI",
+      text: "Virgin Islands"
     }, {
-      value: 'VT',
-      text: 'Vermont'
+      value: "VT",
+      text: "Vermont"
     }, {
-      value: 'WA',
-      text: 'Washington'
+      value: "WA",
+      text: "Washington"
     }, {
-      value: 'WI',
-      text: 'Wisconsin'
+      value: "WI",
+      text: "Wisconsin"
     }, {
-      value: 'WV',
-      text: 'West Virginia'
+      value: "WV",
+      text: "West Virginia"
     }, {
-      value: 'WY',
-      text: 'Wyoming'
+      value: "WY",
+      text: "Wyoming"
     },
   ];
   AddressValidateViewModel.prototype.timeZoneOptions = [ //
     {
       value: 2,
-      text: 'Atlantic Standard Time'
+      text: "Atlantic Standard Time"
     }, {
       value: 4,
-      text: 'Eastern Standard Time'
+      text: "Eastern Standard Time"
     }, {
       value: 6,
-      text: 'Central Standard Time'
+      text: "Central Standard Time"
     }, {
       value: 8,
-      text: 'Mountain Standard Time'
+      text: "Mountain Standard Time"
     }, {
       value: 10,
-      text: 'Pacific Standard Time'
+      text: "Pacific Standard Time"
     }, {
       value: 12,
-      text: 'Alaska Standard Time'
+      text: "Alaska Standard Time"
     }, {
       value: 14,
-      text: 'Hawaii-Aleutian Standard Time'
+      text: "Hawaii-Aleutian Standard Time"
     },
   ];
   AddressValidateViewModel.prototype.addressDirectionalTypeOptions = [ //
     {
-      value: 'N',
-      text: 'N - North North'
+      value: "N",
+      text: "N - North North"
     }, {
-      value: 'E',
-      text: 'E - East  East'
+      value: "E",
+      text: "E - East  East"
     }, {
-      value: 'S',
-      text: 'S - South South'
+      value: "S",
+      text: "S - South South"
     }, {
       value: "W",
-      text: 'W - West  West'
+      text: "W - West  West"
     }, {
-      value: 'NE',
-      text: 'NE - North East North East'
+      value: "NE",
+      text: "NE - North East North East"
     }, {
-      value: 'SE',
-      text: 'SE - South East South East'
+      value: "SE",
+      text: "SE - South East South East"
     }, {
-      value: 'NW',
-      text: 'NW - North West North West'
+      value: "NW",
+      text: "NW - North West North West"
     }, {
-      value: 'SW',
-      text: 'SW - South West South West'
+      value: "SW",
+      text: "SW - South West South West"
     },
   ];
   AddressValidateViewModel.prototype.streetTypeOptions = [ //
     {
-      value: 'AL',
-      text: 'AL - ALLEY'
+      value: "AL",
+      text: "AL - ALLEY"
     }, {
-      value: 'AV',
-      text: 'AV - AVENUE'
+      value: "AV",
+      text: "AV - AVENUE"
     }, {
-      value: 'BV',
-      text: 'BV - BOULEVARD'
+      value: "BV",
+      text: "BV - BOULEVARD"
     }, {
-      value: 'BD',
-      text: 'BD - BUILDING'
+      value: "BD",
+      text: "BD - BUILDING"
     }, {
-      value: 'CN',
-      text: 'CN - CENTER'
+      value: "CN",
+      text: "CN - CENTER"
     }, {
-      value: 'CI',
-      text: 'CI - CIRCLE'
+      value: "CI",
+      text: "CI - CIRCLE"
     }, {
-      value: 'CT',
-      text: 'CT - COURT'
+      value: "CT",
+      text: "CT - COURT"
     }, {
-      value: 'CS',
-      text: 'CS - CRESCENT'
+      value: "CS",
+      text: "CS - CRESCENT"
     }, {
-      value: 'DA',
-      text: 'DA - DALE'
+      value: "DA",
+      text: "DA - DALE"
     }, {
-      value: 'DR',
-      text: 'DR - DRIVE'
+      value: "DR",
+      text: "DR - DRIVE"
     }, {
-      value: 'EX',
-      text: 'EX - EXPRESSWAY'
+      value: "EX",
+      text: "EX - EXPRESSWAY"
     }, {
-      value: 'FY',
-      text: 'FY - FREEWAY'
+      value: "FY",
+      text: "FY - FREEWAY"
     }, {
-      value: 'GA',
-      text: 'GA - GARDEN'
+      value: "GA",
+      text: "GA - GARDEN"
     }, {
-      value: 'GR',
-      text: 'GR - GROVE'
+      value: "GR",
+      text: "GR - GROVE"
     }, {
-      value: 'HT',
-      text: 'HT - HEIGHTS'
+      value: "HT",
+      text: "HT - HEIGHTS"
     }, {
-      value: 'HY',
-      text: 'HY - HIGHWAY'
+      value: "HY",
+      text: "HY - HIGHWAY"
     }, {
-      value: 'HI',
-      text: 'HI - HILL'
+      value: "HI",
+      text: "HI - HILL"
     }, {
-      value: 'KN',
-      text: 'KN - KNOLL'
+      value: "KN",
+      text: "KN - KNOLL"
     }, {
-      value: 'LN',
-      text: 'LN - LANE'
+      value: "LN",
+      text: "LN - LANE"
     }, {
-      value: 'LP',
-      text: 'LP - LOOP'
+      value: "LP",
+      text: "LP - LOOP"
     }, {
-      value: 'MA',
-      text: 'MA - MALL'
+      value: "MA",
+      text: "MA - MALL"
     }, {
-      value: 'OV',
-      text: 'OV - OVAL'
+      value: "OV",
+      text: "OV - OVAL"
     }, {
-      value: 'PK',
-      text: 'PK - PARK'
+      value: "PK",
+      text: "PK - PARK"
     }, {
-      value: 'PY',
-      text: 'PY - PARKWAY'
+      value: "PY",
+      text: "PY - PARKWAY"
     }, {
-      value: 'PA',
-      text: 'PA - PATH'
+      value: "PA",
+      text: "PA - PATH"
     }, {
-      value: 'PI',
-      text: 'PI - PIKE'
+      value: "PI",
+      text: "PI - PIKE"
     }, {
-      value: 'PL',
-      text: 'PL - PLACE'
+      value: "PL",
+      text: "PL - PLACE"
     }, {
-      value: 'PZ',
-      text: 'PZ - PLAZA'
+      value: "PZ",
+      text: "PZ - PLAZA"
     }, {
-      value: 'PT',
-      text: 'PT - POINT'
+      value: "PT",
+      text: "PT - POINT"
     }, {
-      value: 'RD',
-      text: 'RD - ROAD'
+      value: "RD",
+      text: "RD - ROAD"
     }, {
-      value: 'RT',
-      text: 'RT - ROUTE'
+      value: "RT",
+      text: "RT - ROUTE"
     }, {
-      value: 'RO',
-      text: 'RO - ROW'
+      value: "RO",
+      text: "RO - ROW"
     }, {
-      value: 'RN',
-      text: 'RN - RUN'
+      value: "RN",
+      text: "RN - RUN"
     }, {
-      value: 'RR',
-      text: 'RR - RURALROUTE'
+      value: "RR",
+      text: "RR - RURALROUTE"
     }, {
-      value: 'SQ',
-      text: 'SQ - SQUARE'
+      value: "SQ",
+      text: "SQ - SQUARE"
     }, {
-      value: 'ST',
-      text: 'ST - STREET'
+      value: "ST",
+      text: "ST - STREET"
     }, {
-      value: 'TC',
-      text: 'TC - TERRACE'
+      value: "TC",
+      text: "TC - TERRACE"
     }, {
-      value: 'TY',
-      text: 'TY - THRUWAY'
+      value: "TY",
+      text: "TY - THRUWAY"
     }, {
-      value: 'TR',
-      text: 'TR - TRAIL'
+      value: "TR",
+      text: "TR - TRAIL"
     }, {
-      value: 'TP',
-      text: 'TP - TURNPIKE'
+      value: "TP",
+      text: "TP - TURNPIKE"
     }, {
-      value: 'VI',
-      text: 'VI - VIADUCT'
+      value: "VI",
+      text: "VI - VIADUCT"
     }, {
       value: 42,
-      text: 'VW- VIEW'
+      text: "VW- VIEW"
     }, {
-      value: 'WK',
-      text: 'WK - WALK'
+      value: "WK",
+      text: "WK - WALK"
     }, {
-      value: 'WY',
-      text: 'WY - WAY'
+      value: "WY",
+      text: "WY - WAY"
     },
   ];
 

@@ -221,9 +221,11 @@
       // toggle class
       var el = jquery(element);
       if (isDown) {
-        el.addClass("active");
+        el.removeClass(toggle.up.cls);
+        el.addClass(toggle.down.cls);
       } else {
-        el.removeClass("active");
+        el.removeClass(toggle.down.cls);
+        el.addClass(toggle.up.cls);
       }
 
       // call base

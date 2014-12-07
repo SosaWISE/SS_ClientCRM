@@ -1,11 +1,46 @@
 define("src/core/notify", [
+  "jquery",
   // "src/core/strings",
   "ko",
 ], function(
+  jquery,
   // strings,
   ko
 ) {
   "use strict";
+
+  ko.bindingHandlers.notice = {
+    init: function(element, valueAccessor) {
+      var value = valueAccessor(),
+        el = jquery(element),
+        sub;
+
+      sub = value.seconds.subscribe(function(seconds) {
+        if (0 < seconds && seconds <= 3 && !el.hasClass("fade")) {
+          if (seconds <= 1) {
+            el.addClass("fast");
+          }
+          el.addClass("fade");
+        }
+      });
+      // dispose of subscription when removed
+      ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+        sub.dispose();
+      });
+
+      el.mouseover(function() {
+        if (value.pause()) {
+          el.removeClass("fade");
+        }
+      });
+      el.mouseout(function() {
+        value.resume();
+      });
+      el.click(function() {
+        value.stop();
+      });
+    }
+  };
 
   //
   // Notifier
@@ -78,19 +113,6 @@ define("src/core/notify", [
     notify(this, "info", null, null, title, message, delay, options);
   };
 
-  Notifier.prototype.notify = function(type, title, message, delay, actionsObj, usePre) {
-    var _this = this;
-    if (type === "error" || type === "warn" || type === "info") {
-      alert("deprecated: use notify." + type + "(...) instead of notify.notify(...)");
-    } else {
-      alert("invalid notify type `" + type + "`");
-    }
-    notify(_this, type, null, null, title, message, delay, {
-      actions: actionsObj,
-      noPre: !usePre,
-    });
-  };
-
   var titleMap = {
     "error": "Error",
     "warn": "Warn",
@@ -103,6 +125,10 @@ define("src/core/notify", [
       dismissed = false,
       intervalId, n;
 
+    // default to 10 second delay
+    if (delay == null) {
+      delay = 10;
+    }
     delay = (delay > 0) ? Math.max(1.5, delay) : 0;
     if (delay === 3) {
       // delay of 3 doesn't work correctly. it hides before sliding.
@@ -191,6 +217,11 @@ define("src/core/notify", [
           clearInterval(intervalId);
         }
       }, s < 1 ? (s * 1000) : 1000);
+    };
+    n.stop = function() {
+      if (n.pause()) {
+        n.seconds(0);
+      }
     };
 
     // try to start the timeout

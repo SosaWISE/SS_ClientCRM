@@ -121,6 +121,7 @@ define("src/account/security/clist.systemtest.vm", [
       toggle: {
         isDown: ko.observable(false),
         down: {
+          cls: "active",
           text: "In Service",
           title: "Click to put `Out of Service`",
         },

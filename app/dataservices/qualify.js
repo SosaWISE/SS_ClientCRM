@@ -14,6 +14,7 @@ define('src/dataservices/qualify', [
     [
       'salesrep',
       'technician',
+      'address',
       'addressValidation',
       'runCredit',
       'qualifyCustomerInfos',
