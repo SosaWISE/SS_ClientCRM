@@ -254,25 +254,26 @@
   ko.bindingHandlers.clickSelect = {
     init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
       function makeValueAccessor(elem) {
-          return function() {
-            // return events object
-            return {
-              click: function() {
-                var range;
-                if (document.selection) {
-                  range = document.body.createTextRange();
-                  range.moveToElementText(elem);
-                  range.select();
-                } else if (window.getSelection) {
-                  range = document.createRange();
-                  range.selectNode(elem);
-                  window.getSelection().addRange(range);
-                }
-              },
-            };
+        return function() {
+          // return events object
+          return {
+            click: function() {
+              var range;
+              if (document.selection) {
+                range = document.body.createTextRange();
+                range.moveToElementText(elem);
+                range.select();
+              } else if (window.getSelection) {
+                range = document.createRange();
+                range.selectNode(elem);
+                window.getSelection().addRange(range);
+              }
+            },
           };
-        }
-        // bind to events
+        };
+      }
+
+      // bind to events
       ko.bindingHandlers.event.init.call(this, element, makeValueAccessor(element), allBindingsAccessor, viewModel, bindingContext);
     },
     // update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
