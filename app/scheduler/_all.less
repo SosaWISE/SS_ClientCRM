@@ -1,0 +1,59 @@
+.scheduler {
+  @scheduler-bg: @site-maroon;
+  body& {
+    .mixin-body-color(@scheduler-bg);
+    .mixin-content-active(@scheduler-bg);
+  }
+
+  .btn {
+    .make-color-btn(@scheduler-bg);
+  }
+
+  .scheduleweek {
+    .week-tbl {
+      position: relative;
+      background-color: #ffffff;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+
+      .rows {
+        width: 100%;
+        height: 100%;
+
+        .row {
+          position: absolute;
+          width: 100%;
+          border-top: dotted 1px #ddd;
+          border-bottom: dotted 1px #ddd;
+
+          &.beginsHour {
+            border-top: solid 1px #ddd;
+          }
+        }
+      }
+      .columns {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 50px;
+        .column {
+          display: inline-block;
+          height: 100%;
+          border-left: solid 1px #ddd;
+          text-align: center;
+        }
+      }
+    }
+  }
+}
+
+.ticket-editor {
+  .notes {
+    white-space: pre-wrap;
+    max-height: 200px;
+    overflow: auto;
+    display: block;
+  }
+}

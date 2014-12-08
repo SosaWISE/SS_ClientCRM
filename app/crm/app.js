@@ -117,6 +117,21 @@ define('src/crm/app', [
         ],
       }, {
         appid: 'sse_cms_cors',
+        path: 'src/scheduler/scheduler.panel.vm',
+        options: {
+          id: 'scheduler',
+          title: 'Scheduler',
+          ico: '&#128101;',
+        },
+        routes: [ //
+          {
+            precedence: 1,
+            name: 'scheduler',
+            path: ':id/:ticketid',
+          },
+        ],
+      }, {
+        appid: 'sse_cms_cors',
         path: 'src/scheduling/scheduling.panel.vm',
         options: {
           id: 'scheduling',
