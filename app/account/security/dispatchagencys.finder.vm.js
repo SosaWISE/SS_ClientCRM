@@ -127,7 +127,6 @@ define('src/account/security/dispatchagencys.finder.vm', [
 
       _this.gvm.list([]);
       dataservice.monitoringstationsrv.dispatchAgencies.read({
-        // link:'dispatchAgencies',
         query: model,
       }, _this.gvm.list, utils.safeCallback(cb, notify.iferror));
 
