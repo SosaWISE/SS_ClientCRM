@@ -128,6 +128,7 @@ module.exports = function(grunt) {
           'app/hr/*.js', 'app/viz/*.js',
           'app/inventory/*.js',
           'app/login/*.js',
+          'app/scheduler/*.js',
           'app/scheduling/*.js',
           'app/swing/*.js',
           // exclude specs
