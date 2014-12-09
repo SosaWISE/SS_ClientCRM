@@ -1,4 +1,6 @@
 define('src/account/security/dispatchagencys.finder.vm', [
+  'src/account/default/address.validate.vm',
+  'src/core/combo.vm',
   'src/dataservice',
   'ko',
   'src/slick/rowevent',
@@ -8,6 +10,8 @@ define('src/account/security/dispatchagencys.finder.vm', [
   'src/core/base.vm',
   'src/core/utils',
 ], function(
+  AddressValidateViewModel,
+  ComboViewModel,
   dataservice,
   ko,
   RowEvent,
@@ -29,6 +33,11 @@ define('src/account/security/dispatchagencys.finder.vm', [
         ukov.validators.isRequired('City name is required'),
       ],
     },
+    StateAB: {
+      validators: [
+        ukov.validators.isRequired('State is required'),
+      ],
+    },
     ZipCode: {
       validators: [
         ukov.validators.isRequired('Zip code is required'),
@@ -40,16 +49,25 @@ define('src/account/security/dispatchagencys.finder.vm', [
     var _this = this;
     DispatchAgencysFinderViewModel.super_.call(_this, options);
 
+    _this.mixinLoad();
     _this.focusFirst = ko.observable();
 
+    _this.accountId = options.accountId;
     _this.data = ukov.wrap({
       CityName: '',
+      StateAB: '',
       ZipCode: '',
     }, schema);
 
+    _this.data.StateCvm = new ComboViewModel({
+      selectedValue: _this.data.StateAB,
+      list: AddressValidateViewModel.prototype.stateOptions, //@TODO: load states from server
+      nullable: true,
+    });
+
     _this.gvm = new SlickGridViewModel({
       gridOptions: {
-        multiSelect: false,
+        multiSelect: true,
         enableColumnReorder: false,
         forceFitColumns: true,
         rowHeight: 27,
@@ -59,7 +77,10 @@ define('src/account/security/dispatchagencys.finder.vm', [
           eventName: 'onDblClick',
           fn: function(item) {
             console.log(item);
-            _this.selectedAgency = item;
+            if (_this.selectedAgencies == null) {
+              _this.selectedAgencies = [];
+            }
+            _this.selectedAgencies.push(item);
             _this.cmdSelect.execute();
           },
         }),
@@ -73,23 +94,23 @@ define('src/account/security/dispatchagencys.finder.vm', [
         }, {
           id: 'AgencyType',
           name: 'Agency Type',
-          field: 'DispatchAgencyTypeName',
+          field: 'DispatchAgencyType',
         }, {
           id: 'AgencyNo',
           name: 'Agency #',
-          field: 'AgencyNo',
+          field: 'MsAgencyNumber',
         }, {
           id: 'AgencyName',
           name: 'Agency Name',
-          field: 'AgencyName',
+          field: 'DispatchAgencyName',
         }, {
           id: 'DispatchPhone',
           name: 'Dispatch Phone',
-          field: 'DispatchPhone',
+          field: 'Phone1',
         },
       ],
       onSelectedRowsChanged: function(rows) {
-        _this.selectedAgency = rows[0];
+        _this.selectedAgencies = rows;
       },
     });
 
@@ -105,20 +126,25 @@ define('src/account/security/dispatchagencys.finder.vm', [
       _this.data.markClean(model, true);
 
       _this.gvm.list([]);
-      setTimeout(function() {
-        _this.maxLength = _this.maxLength || 5;
-        while (_this.gvm.list().length < _this.maxLength) {
-          _this.gvm.list.push({
-            DispatchAgencyID: _this.gvm.list().length + 1,
-            DispatchAgencyTypeName: model.CityName + ': DispatchAgencyTypeName',
-            AgencyNo: 'AgencyNo',
-            AgencyName: 'AgencyName',
-            DispatchPhone: 'DispatchPhone',
-          });
-        }
-        _this.maxLength--;
-        cb();
-      }, 2000);
+      dataservice.monitoringstationsrv.dispatchAgencies.read({
+        // link:'dispatchAgencies',
+        query: model,
+      }, _this.gvm.list, utils.safeCallback(cb, notify.iferror));
+
+      // setTimeout(function() {
+      //   _this.maxLength = _this.maxLength || 5;
+      //   while (_this.gvm.list().length < _this.maxLength) {
+      //     _this.gvm.list.push({
+      //       DispatchAgencyID: _this.gvm.list().length + 1,
+      //       DispatchAgencyTypeName: model.CityName + ': DispatchAgencyTypeName',
+      //       AgencyNo: 'AgencyNo',
+      //       AgencyName: 'AgencyName',
+      //       DispatchPhone: 'DispatchPhone',
+      //     });
+      //   }
+      //   _this.maxLength--;
+      //   cb();
+      // }, 2000);
       //@TODO: get correct api path and response format
       // dataservice.boh.boh.read({
       //   query: model,
@@ -131,8 +157,9 @@ define('src/account/security/dispatchagencys.finder.vm', [
     }, function(busy) {
       return !busy && !_this.cmdSelect.busy();
     });
+
     _this.cmdSelect = ko.command(function(cb) {
-      if (!_this.selectedAgency) {
+      if (!_this.selectedAgencies) {
         notify.warn('Please select a dispatch agency', null, 7);
         cb();
         return;
@@ -168,6 +195,24 @@ define('src/account/security/dispatchagencys.finder.vm', [
   DispatchAgencysFinderViewModel.prototype.viewTmpl = 'tmpl-security-dispatchagencys_finder';
   DispatchAgencysFinderViewModel.prototype.width = 600;
   DispatchAgencysFinderViewModel.prototype.height = 'auto';
+  DispatchAgencysFinderViewModel.prototype.onLoad = function() {
+    var _this = this;
+
+    dataservice.monitoringstationsrv.premiseAddress.read({
+      id: _this.accountId,
+      link: 'AccountId',
+    }, null, utils.safeCallback(function(err, resp) {
+      var premAddress = resp.Value,
+        data = {
+          CityName: premAddress.City,
+          StateAB: premAddress.StateId,
+          ZipCode: premAddress.PostalCode,
+        };
+      _this.data.setValue(data);
+      _this.data.markClean(data, true);
+
+    }, notify.iferror));
+  };
 
   function closeLayer(_this) {
     if (_this.layer) {

@@ -258,7 +258,7 @@ define('src/account/security/clist.qualify.vm', [
         if (resp.Message && resp.Message !== 'Success') {
           notify.error(resp, 3);
         }
-      }, notify.error));
+      }, notify.iferror));
     }, function(busy) {
       return !busy && vm.creditResult();
     });

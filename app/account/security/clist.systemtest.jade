@@ -1,24 +1,43 @@
 div(class="acct-item acct-systemtest",data-bind="toggle:{'may-reload':mayReload}")
-  table(class="fh-wrap")
-    tr
-      td(class="fh-header")
-        a(class="btn",tabindex="0",data-bind="cmd:cmdComplete") Signal/Two-Way Check Complete
+  div(class="two-way",style="margin-bottom: 10px;")
+    h2 Two-Way Check
+    ul(class="actions")
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdInitTwoWay") Initiate Two-Way Test
+      li
+        a(class="btn",data-bind="tcmd:tcmdServiceState")
+    div(data-bind="if:twoWayTestData()&&!twoWayTestData().ConfirmedOn")
+      span Started On:&nbsp;
+      span(data-bind="datetimetext:twoWayTestData().TwoWayTestStartedOn")
+      br
+      ul(class="edit-form")
+        li
+          span Confirmation:&nbsp;
+          input(type="text",style="width:200px;margin-right:5px;"
+            data-bind="ukov:confirmedBy,value:confirmedBy,valueUpdate:'keyup'")
+          a(class="btn",tabindex="0",data-bind="cmd:cmdSaveConfirmation") Save
+    div(data-bind="if:twoWayTestData()&&twoWayTestData().ConfirmedOn")
+      <!-- ko with:twoWayTestData -->
+      span Started On:&nbsp;
+      span(data-bind="datetimetext:TwoWayTestStartedOn")
+      br
+      span Confirmed On:&nbsp;
+      span(data-bind="datetimetext:ConfirmedOn")
+      br
+      span Confirmation:&nbsp;
+      span(data-bind="text:ConfirmedBy")
+      <!-- /ko -->
 
-        div(class="col")
-          div(class="section",style="cursor:pointer",data-bind="cmd:cmdInitTwoWay")
-            //- ,toggle:{empty:!systemData()}")
-            span(class="title") Two-Way Check
-            div(class="contents",data-bind="")
-              ul(class="display-form")
-                li
-                  a(class="btn",tabindex="0",data-bind="cmd:cmdInitTwoWay") Initiate Two-Way
-                li
-                  span(class="label") Two-Way Confirmation #:
-                  //- span(class="value",data-bind="text:panelType")
+  div(class="active-tests")
+    h2 Active Tests
+    ul(class="actions")
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdRefreshGrid") Refresh Grid
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdClearAllTests") Clear All Tests
+    div(class="grid-wrap rv",style="height: 100px; position: relative;")
+      div(class="slickgrid",data-bind="slickgrid:gvm")
 
-    tr
-      td(class="fh-body")
-        div(class="fh-contents")
-          div(data-bind="template:{name:signalHistoryVm.viewTmpl,data:signalHistoryVm}")
+  div(data-bind="template:{name:signalHistoryVm.viewTmpl,data:signalHistoryVm}")
 
   div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")

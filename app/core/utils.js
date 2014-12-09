@@ -20,7 +20,7 @@ define('src/core/utils', [
       });
     },
 
-    safeCallback: function(cb, successFn, errorFn, allArgsOnErr) {
+    safeCallback: function(cb, successFn, errorFn) {
       if (!utils.isFunc(cb)) {
         cb = utils.noop;
       }
@@ -34,11 +34,7 @@ define('src/core/utils', [
       return function(err, resp, ctx) {
         try {
           if (err && errorFn) {
-            if (allArgsOnErr) {
-              errorFn(err, resp, ctx);
-            } else {
-              errorFn(err);
-            }
+            errorFn(err, resp, ctx);
           } else {
             successFn(err, resp, ctx);
           }

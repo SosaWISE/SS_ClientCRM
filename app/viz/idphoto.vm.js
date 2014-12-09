@@ -167,7 +167,7 @@ define('src/viz/idphoto.vm', [
         } else {
           notify.warn('Bad response value: ' + resp.Value, null, 10);
         }
-      }, notify.error));
+      }, notify.iferror));
 
       // var win = window.open();
       // win.document.write("<img src='" + data + "'/>");

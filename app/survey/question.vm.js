@@ -90,7 +90,7 @@ define('src/survey/question.vm', [
       _this.groupOrder(data.SibGroupOrder);
       //
       parent.updateChildNames();
-    }, notify.error));
+    }, notify.iferror));
   }
 
   function canMoveUp(_this) {

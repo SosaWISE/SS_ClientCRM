@@ -145,7 +145,7 @@ define('src/account/security/service.ticket.vm', [
     var _this = this;
 
     //load all tickets created
-    load_tickets(_this.AccountId, _this.serviceTicketGvm, utils.safeCallback(null, utils.noop, notify.error));
+    load_tickets(_this.AccountId, _this.serviceTicketGvm, notify.iferror);
   };
 
   function showTicketEditor(_this, ticket, cb) {

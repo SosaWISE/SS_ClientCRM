@@ -27,7 +27,7 @@ table(class="question")
           a(class="btn small add-btn",data-bind="cmd:topVm.cmdAddPossibleAnswer") Possible Answer
         <!-- ko foreach:possibleAnswerMaps -->
         li
-          a(class="btn small keepactive",
+          a(class="btn small",
             data-bind="cmd:cmdEdit,active:expands,css:{'fails':fails}")
             span(data-bind="text:possibleAnswer.AnswerText")
         <!-- /ko -->

@@ -34,7 +34,7 @@ define('src/account/security/clist.industrynums.vm', [
           if (genErr) {
             notify.error(genErr);
           }
-        }, notify.error));
+        }, notify.iferror));
       });
     });
   }

@@ -81,7 +81,7 @@ define('src/survey/qpossibleanswermap.new.vm', [
         }
         _this.layerResult = resp.Value;
         closeLayer(_this);
-      }, notify.error));
+      }, notify.iferror));
     }, function(busy) {
       return !busy && !_this.cmdDelete.busy();
     });

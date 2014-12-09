@@ -105,7 +105,7 @@ define('src/inventory/receive.inventory.vm', [
           if (_this.data.vendorTypeCvm.selectedValue.peek() === vendorType) {
             _this.data.purchaseOrderListCvm.setList(resp.Value);
           }
-        }, notify.error));
+        }, notify.iferror));
       }
     });
     //Populate PO field when there's a change of vendor

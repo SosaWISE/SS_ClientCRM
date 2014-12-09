@@ -118,7 +118,7 @@ define('src/scheduling/create.scheduleticket.vm', [
         } else {
           notify.warn('Account ID is invalid.', null, 3);
         }
-      }, notify.error, false));
+      }, notify.iferror));
     });
 
     _this.clickClose = function() {

@@ -88,29 +88,7 @@
   }
 
   .btn {
-    @bg-color: @site-green;
-    background-color: tint(@bg-color, 10%);
-
-    @disabledColor: #e8e8e8;
-    &.disabled {
-      border-color: darken(@disabledColor, 40%);
-      background-color: @disabledColor;
-      color: darken(@disabledColor, 20%);
-    }
-    &.keepactive.active {
-      background-color: shade(@disabledColor, 15%);
-    }
-
-    &:not(.disabled):hover {
-      background-color: tint(@bg-color, 20%);
-    }
-    &:not(.disabled):active,
-    &:not(.disabled).active{
-      background-color: shade(@bg-color, 15%);
-    }
-    &:not(.disabled):focus {
-      background-color: shade(@bg-color, 15%);
-    }
+    .make-color-btn(@site-green);
   }
 }
 

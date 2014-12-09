@@ -181,24 +181,7 @@ body.users {
   }
 
   .btn {
-    @bg-color: @hr-bg;
-    background-color: tint(@bg-color, 10%);
-
-    &:not(.disabled):hover {
-      background-color: tint(@bg-color, 20%);
-    }
-    &:not(.disabled):active,
-    &:not(.disabled).active {
-      background-color: shade(@bg-color, 15%);
-    }
-    &:not(.disabled):focus {
-      background-color: shade(@bg-color, 15%);
-    }
-
-    &.disabled {
-      background-color: lighten(@bg-color, 10%);
-      .opacity(0.6);
-    }
+    .make-color-btn(@hr-bg);
   }
 
 

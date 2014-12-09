@@ -1,14 +1,13 @@
-﻿define('src/core/ko.bindingHandlers.all', [
-  'jquery',
-  'ko',
-  'src/core/utils',
+﻿define("src/core/ko.bindingHandlers.all", [
+  "jquery",
+  "ko",
+  "src/core/utils",
   // include other handlers
-  'src/core/ko.bindingHandlers.dropimg',
-  'src/core/ko.bindingHandlers.formatters',
-  'src/core/ko.bindingHandlers.mover',
-  'src/core/ko.bindingHandlers.notice',
-  'src/core/ko.bindingHandlers.value',
-  'src/core/ko.bindingHandlers.spinner',
+  "src/core/ko.bindingHandlers.dropimg",
+  "src/core/ko.bindingHandlers.formatters",
+  "src/core/ko.bindingHandlers.mover",
+  "src/core/ko.bindingHandlers.value",
+  "src/core/ko.bindingHandlers.spinner",
 ], function(
   jquery,
   ko,
@@ -40,10 +39,10 @@
       },
     };
   }
-  createToggleClassHandler('active');
-  createToggleClassHandler('editing');
-  createToggleClassHandler('busy');
-  createToggleClassHandler('cssDisabled', 'disabled');
+  createToggleClassHandler("active");
+  createToggleClassHandler("editing");
+  createToggleClassHandler("busy");
+  createToggleClassHandler("cssDisabled", "disabled");
   ko.bindingHandlers.toggle = {
     update: function(element, valueAccessor) {
       var obj = valueAccessor(),
@@ -87,8 +86,8 @@
       },
     };
   }
-  createKeyHandler('escape', 27); // <ESC>
-  createKeyHandler('enter', 13, true);
+  createKeyHandler("escape", 27); // <ESC>
+  createKeyHandler("enter", 13, true);
 
   // clickMenu
   //---------------------------
@@ -143,12 +142,12 @@
   ko.bindingHandlers.swapLoginFields = {
     init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
       element = jquery(element);
-      var loginformEl = document.getElementById('loginform');
+      var loginformEl = document.getElementById("loginform");
       // replace placeholders with the actual fields from hidden form
-      element.find('.ph-loginform').replaceWith(loginformEl);
+      element.find(".ph-loginform").replaceWith(loginformEl);
       // set current browser values on viewModel
-      viewModel.username(element.find('.email').val());
-      viewModel.password(element.find('.password').val());
+      viewModel.username(element.find(".email").val());
+      viewModel.password(element.find(".password").val());
     },
   };
 
@@ -187,7 +186,7 @@
       if (url) {
         element.onerror = function() {
           element.onerror = null; // incase nophoto doesn't exist
-          element.src = '/stuff/img/nophoto.jpg';
+          element.src = "/stuff/img/nophoto.jpg";
         };
         element.src = url;
       }
@@ -207,12 +206,12 @@
       },
     };
   }
-  createSizeHandler('width');
-  createSizeHandler('height');
+  createSizeHandler("width");
+  createSizeHandler("height");
 
   function ensurePx(val, defaultVal) {
     if (val) {
-      if (typeof(val) === 'number') {
+      if (typeof(val) === "number") {
         val = val + "px";
       }
     } else {
@@ -227,8 +226,8 @@
     update: function(element, valueAccessor) {
       var position = ko.utils.unwrapObservable(valueAccessor()) || {};
       jquery(element).css({
-        top: ensurePx(position.top, '0px'),
-        left: ensurePx(position.left, '0px'),
+        top: ensurePx(position.top, "0px"),
+        left: ensurePx(position.left, "0px"),
       });
     },
   };
@@ -319,6 +318,7 @@
           };
         };
       }
+
       // bind to events
       ko.bindingHandlers.event.init.call(this, element, makeValueAccessor(element), allBindingsAccessor, viewModel, bindingContext);
     },
