@@ -1,4 +1,5 @@
 define("src/scrum/storys.vm", [
+  "src/slick/draghub",
   "src/slick/dragdrop",
   "src/slick/headerfilter",
   "src/slick/rowevent",
@@ -11,6 +12,7 @@ define("src/scrum/storys.vm", [
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
+  DragHub,
   DragDrop,
   HeaderFilter,
   RowEvent,
@@ -30,21 +32,30 @@ define("src/scrum/storys.vm", [
     Name: {},
   };
 
+  var _indentPixels = 15;
+
   function StorysViewModel(options) {
     var _this = this;
     StorysViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
-      "pcontroller",
+      // "pcontroller",
       "accepts",
       "takes",
       "rsort",
     ]);
-    ControllerViewModel.ensureProps(_this.pcontroller, [
-      "dragHub",
-      "layersVm",
-      "storyUpdated",
-      "taskUpdated",
-    ]);
+    if (_this.pcontroller) {
+      ControllerViewModel.ensureProps(_this.pcontroller, [
+        // "dragHub",
+        "layersVm",
+        "storyUpdated",
+        "taskUpdated",
+      ]);
+    }
+
+    // ensure dragHub is set
+    var dragHub = ((_this.pcontroller) ? _this.pcontroller.dragHub : null) || new DragHub({
+      cancelEditOnDrag: true,
+    });
 
     _this.filters = ukov.wrap({
       Name: "",
@@ -71,9 +82,7 @@ define("src/scrum/storys.vm", [
       plugins: [ //
         new DragDrop({
           vm: _this,
-          // canDropItem: _this.canDropItem.bind(_this),
-          // dropItem: _this.dropItem.bind(_this),
-          dragHub: _this.pcontroller.dragHub,
+          dragHub: dragHub,
         }),
         new RowEvent({
           eventName: "onDblClick",
@@ -102,6 +111,7 @@ define("src/scrum/storys.vm", [
       ],
       columns: [ //
         {
+          behavior: "move",
           id: "Row",
           name: "Row",
           width: 40,
@@ -109,15 +119,16 @@ define("src/scrum/storys.vm", [
             return dv.getIdxById(item._metadata.sid) + 1;
           },
         }, {
+          behavior: "move",
           id: "sid",
           name: "ID",
           width: 50,
-          behavior: "move",
           // resizable: false,
           formatter: function(row, cell, value, columnDef, item) {
             return item._metadata.sid;
           },
         }, {
+          behavior: "move",
           id: "psid",
           name: "PID",
           width: 50,
@@ -125,14 +136,15 @@ define("src/scrum/storys.vm", [
             return item._metadata.psid;
           },
         }, {
+          behavior: "move",
+          // behavior: "dropChild",
           id: "Name",
           name: "Name",
           field: "Name",
           width: 500,
-          behavior: "dropChild",
           formatter: function(row, cell, value, columnDef, item) {
             value = value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            var spacer = "<span style='display:inline-block;height:1px;width:" + (15 * (item._metadata.indent + indentOffset)) + "px'></span>";
+            var spacer = "<span style='display:inline-block;height:1px;width:" + (_indentPixels * (item._metadata.indent + indentOffset)) + "px'></span>";
             var idx = dv.getIdxById(item._metadata.sid);
             var nextItem = dv.getItemByIdx(idx + 1);
             if (nextItem && nextItem._metadata.indent > item._metadata.indent) {
@@ -147,10 +159,25 @@ define("src/scrum/storys.vm", [
           },
         }, {
           id: "Points",
-          name: "Points",
+          name: "Estimate",
           field: "Points",
           width: 70,
           minWidth: 50,
+          formatter: function(row, cell, value, columnDef, item) {
+            var postfix;
+            switch (item._metadata.type) {
+              case "s":
+                postfix = " pts";
+                break;
+              case "t":
+                postfix = " hrs";
+                break;
+              default:
+                postfix = "";
+                break;
+            }
+            return value + postfix;
+          },
         }, {
           id: "SortOrder",
           name: "SortOrder",
@@ -304,6 +331,30 @@ define("src/scrum/storys.vm", [
     return results;
   };
 
+  function findItem(dv, inc, matchIndent, item) {
+    // inc determines the direction
+    // if inc is positive this finds the next item
+    // if inc is negative this finds the prev item
+    if (item) {
+      var currIdx = dv.getIdxById(item.sid);
+      while (item) {
+        var currIndent = item._metadata.indent;
+        if (currIndent === matchIndent) {
+          // found a sibling
+          break;
+        }
+        if (currIndent < matchIndent) {
+          // there is no sibling
+          item = null;
+          break;
+        }
+        item = dv.getItemByIdx(currIdx);
+        //
+        currIdx += inc;
+      }
+    }
+    return item;
+  }
 
   StorysViewModel.prototype.canDropItem = function(fromDv, itemRow, beforeRow) {
     if (!(fromDv.vm instanceof StorysViewModel)) {
@@ -312,77 +363,51 @@ define("src/scrum/storys.vm", [
 
     var _this = this;
     var dv = _this.dv;
-    var pIdx;
+    // var pIdx;
     var indentOffset = _this.indentOffset;
     var indentZero = (0 - indentOffset);
     var item = fromDv.getItem(itemRow);
-    var nextItem = dv.getItem(beforeRow);
-    var prevItem = dv.getItem(beforeRow - 1);
+    var itemIndent = item._metadata.indent;
 
-    if (!_this.accepts(item)) {
-      return null;
+    // find nextItem
+    var nextItem = findItem(dv, 1, itemIndent, dv.getItem(beforeRow));
+    // find prevItem
+    var prevItem = findItem(dv, -1, itemIndent, dv.getItem(beforeRow - 1));
+    // find parentItem
+    var parentItem;
+    if (indentZero <= itemIndent - 1) {
+      // item is not top level
+      parentItem = findItem(dv, -1, itemIndent - 1, dv.getItem(beforeRow - 1));
     }
 
-    if (item === nextItem || item === prevItem) {
-      // don't move to the same position
-      return null;
-    }
-
-    // items must be the same level of indentation
-    if ((nextItem && item._metadata.indent !== nextItem._metadata.indent) ||
-      (!nextItem && item._metadata.indent !== indentZero) // item is not last and top
-    ) {
-      // else the item must come before an item with a greater indent
-      // and the item must come after an item of the same level of indentation
-      if ((item._metadata.indent !== (nextItem._metadata.indent + 1)) ||
-        (
-          (prevItem && prevItem._metadata.indent !== item._metadata.indent) ||
-          (!prevItem && item._metadata.indent !== indentZero) // item is not first and top
-        )) {
-        // //
-        // if (!prevItem && !nextItem) {
-        //   return null;
-        // } else if (nextItem) {
-        //   // find parent of next item with same indent
-        //   var parent = _this.map[nextItem._metadata.psid];
-        //   while (parent && parent._metadata.indent > item._metadata.indent) {
-        //     parent = _this.map[parent._metadata.psid];
-        //   }
-        //   if (!parent) {
-        //     console.warn("nextItem parent not found");
-        //     return null;
-        //   }
-        //   var sibling;
-        //   var itemIndent = item._metadata.indent;
-        //   var row = dv.getRowById(parent.sid) + 1;
-        //   while (row < dv.getLength()) {
-        //     sibling = dv.getItem(row);
-        //     if (sibling._metadata.indent === itemIndent) {
-        //       prevItem = null;
-        //       nextItem = sibling;
-        //       break;
-        //     }
-        //     row++;
-        //   }
-        // } else { // if (prevItem) {
-        //   return null;
-        // }
-        // // console.log("nextItem.sid", nextItem.sid);
-        // // console.log("prevItem.sid", prevItem.sid);
+    var parentRow = parentItem ? dv.getRowById(parentItem.sid) : null;
+    var row;
+    if (nextItem) {
+      row = dv.getRowById(nextItem.sid);
+    } else if (prevItem) {
+      row = dv.getRowById(prevItem.sid) + 1;
+    } else if (parentItem) {
+      row = parentRow + 1;
+    } else {
+      row = null;
+      //
+      if (!parentItem && (itemIndent !== indentZero)) {
+        // no prev, next, or parent items
+        // and this item is not a top level item
         return null;
       }
-      pIdx = dv.getRowById(prevItem ? prevItem._metadata.psid : (nextItem ? nextItem._metadata.psid : null));
-    } else {
-      pIdx = dv.getRowById(nextItem ? nextItem._metadata.psid : (prevItem ? prevItem._metadata.psid : null));
     }
     //
     return {
       type: "before",
-      row: beforeRow,
-      parentRow: pIdx,
+      row: row,
+      parentRow: parentRow,
       item: item,
+      parentItem: parentItem || null,
+      nextItem: nextItem || null,
+      prevItem: prevItem || null,
       cell: 3, // column
-      indent: 15 * (item._metadata.indent + indentOffset), // indent pixels
+      indent: _indentPixels * (item._metadata.indent + indentOffset), // indent pixels
     };
   };
   StorysViewModel.prototype.dropItem = function(fromDv, dropData, cb) {
@@ -391,25 +416,24 @@ define("src/scrum/storys.vm", [
     }
     var _this = this;
     var item = utils.clone(dropData.item);
-    var ctx = getDropContext(_this, dropData);
 
     // change SortOrder
     item.SortOrder = _this.rsort.getIntSort(
-      (ctx.prev ? ctx.prev.SortOrder : null), (ctx.next ? ctx.next.SortOrder : null)
+      (dropData.prevItem ? dropData.prevItem.SortOrder : null), (dropData.nextItem ? dropData.nextItem.SortOrder : null)
     );
 
     // set psid/ParentId
     var psid = null;
     var parentId = null;
-    if (ctx.parent) {
-      psid = ctx.parent.sid;
-      parentId = ctx.parent.ID;
+    if (dropData.parentItem) {
+      psid = dropData.parentItem.sid;
+      parentId = dropData.parentItem.ID;
     }
     item._metadata.psid = psid;
     // item.ParentId = parentId;
     switch (item._metadata.type) {
       case "s":
-        item.GroupId = parentId;
+        item.FeatureId = parentId;
         break;
       case "t":
         item.StoryId = parentId;
@@ -608,41 +632,64 @@ define("src/scrum/storys.vm", [
       }
       return result;
     }
-    var preventReverse = true;
+    var preventReverse = true; // ??ascending??
     dv.sort(myComparer, preventReverse);
     //
     dv.endUpdate();
   }
 
-  function getDropContext(_this, dropData) {
-    var dv = _this.dv;
-    var row = dropData.row - 1;
-    var itemIndent = dropData.item._metadata.indent;
-    var currItem, prevItem, nextItem, parentItem;
-    while (row > -1) {
-      currItem = dv.getItem(row);
-      if (currItem._metadata.indent === itemIndent) {
-        prevItem = currItem;
-        break;
-      }
-      if (currItem._metadata.indent < itemIndent) {
-        // found the parent. this should probably never happen...
-        prevItem = null;
-        break;
-      }
-      row--;
+  function ensureItemMetadata(item, type, currVm) {
+    if (item._metadata) {
+      return;
     }
-    currItem = dv.getItem(dropData.row);
-    if (currItem._metadata.indent === itemIndent) {
-      nextItem = currItem;
+    var metadata, sid = type + item.ID;
+
+    if (currVm && currVm.getItem(sid)) {
+      metadata = currVm.getItem(sid)._metadata;
+    } else {
+      metadata = {
+        sid: sid,
+        psid: null,
+        type: type,
+        collapsed: false,
+        indent: 0,
+      };
     }
 
-    return {
-      prev: prevItem,
-      next: nextItem,
-      parent: parentItem,
-    };
+    switch (type) {
+      case "f":
+        metadata.indent = 0;
+        // metadata.psid = null;
+        break;
+      case "s":
+        metadata.indent = 1;
+        if (item.FeatureId) {
+          metadata.psid = "f" + item.FeatureId;
+        }
+        break;
+      case "t":
+        metadata.indent = 2;
+        metadata.psid = "s" + item.StoryId;
+        break;
+      default:
+        throw new Error("invalid type:" + item._metadata.type);
+    }
+
+    item._metadata = metadata;
+    item.sid = metadata.sid; // needed for DataView
   }
+  StorysViewModel.ensureItemMetadata = ensureItemMetadata;
+
+  function create(pcontroller, options) {
+    return new StorysViewModel({
+      pcontroller: pcontroller,
+      indentOffset: utils.ifNull(options.indentOffset, -1), // default to -1
+      accepts: options.accepts,
+      takes: options.takes,
+      rsort: options.rsort,
+    });
+  }
+  StorysViewModel.create = create;
 
   return StorysViewModel;
 });

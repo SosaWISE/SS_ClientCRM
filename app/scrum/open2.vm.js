@@ -1,5 +1,5 @@
 define("src/scrum/open2.vm", [
-  'src/core/relativesort',
+  "src/core/relativesort",
   "src/scrum/storys.vm",
   "slick",
   "src/slick/draghub",
@@ -37,7 +37,12 @@ define("src/scrum/open2.vm", [
       "tasks",
     ]);
 
-    _this.coolerVm = createStorysVm(_this, {
+    // set dragHub
+    _this.pcontroller.dragHub = new DragHub({
+      cancelEditOnDrag: true,
+    });
+
+    _this.coolerVm = StorysViewModel.create(_this, {
       accepts: function( /*item*/ ) {
         return false; //@TODO:
       },
@@ -49,7 +54,7 @@ define("src/scrum/open2.vm", [
         increment: 5,
       }),
     });
-    _this.backlogVm = createStorysVm(_this, {
+    _this.backlogVm = StorysViewModel.create(_this, {
       accepts: function( /*item*/ ) {
         return true; //@TODO:
       },
@@ -62,7 +67,7 @@ define("src/scrum/open2.vm", [
         max: -1,
       }),
     });
-    _this.storyBoardVm = createStorysVm(_this, {
+    _this.storyBoardVm = StorysViewModel.create(_this, {
       accepts: function( /*item*/ ) {
         return true; //@TODO:
       },
@@ -108,7 +113,7 @@ define("src/scrum/open2.vm", [
 
   Open2ViewModel.prototype.storyUpdated = function(story, select) {
     var _this = this;
-    ensureItemMetadata(story, "s");
+    StorysViewModel.ensureItemMetadata(story, "s");
 
     var currVm = getCurrentVm(_this.vms, story._metadata.sid);
     var destVm = getStoryVm(_this.vms, story);
@@ -132,63 +137,13 @@ define("src/scrum/open2.vm", [
   };
   Open2ViewModel.prototype.taskUpdated = function(task, select) {
     var _this = this;
-    ensureItemMetadata(task, "t");
+    StorysViewModel.ensureItemMetadata(task, "t");
     // get vm by parent sid
     var currVm = getCurrentVm(_this.vms, task._metadata.psid);
 
     // update tree
     currVm.updateItem(task, select);
   };
-
-  function ensureItemMetadata(item, type, currVm) {
-    if (item._metadata) {
-      return;
-    }
-    var metadata, sid = type + item.ID;
-
-    if (currVm && currVm.getItem(sid)) {
-      metadata = currVm.getItem(sid)._metadata;
-    } else {
-      metadata = {
-        sid: sid,
-        psid: null,
-        type: type,
-        collapsed: false,
-        indent: 0,
-      };
-    }
-
-    switch (type) {
-      case "s":
-        metadata.indent = 1;
-        // metadata.psid = null;
-        break;
-      case "t":
-        metadata.indent = 2;
-        metadata.psid = "s" + item.StoryId;
-        break;
-      default:
-        throw new Error("invalid type:" + item._metadata.type);
-    }
-
-    item._metadata = metadata;
-    item.sid = metadata.sid; // needed for DataView
-  }
-
-  function createStorysVm(_this, options) {
-    // ensure dragHub
-    _this.dragHub = _this.dragHub || new DragHub({
-      cancelEditOnDrag: true,
-    });
-    //
-    return new StorysViewModel({
-      pcontroller: _this,
-      indentOffset: utils.ifNull(options.indentOffset, -1), // default to -1
-      accepts: options.accepts,
-      takes: options.takes,
-      rsort: options.rsort,
-    });
-  }
 
   function getCurrentVm(vms, sid) {
     var result;

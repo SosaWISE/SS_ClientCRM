@@ -1,13 +1,13 @@
-define('src/slick/draghub', [
-  'slick',
-  'jquery',
+define("src/slick/draghub", [
+  "slick",
+  "jquery",
 ], function(
   Slick,
   $
 ) {
-  'use strict';
+  "use strict";
 
-  var _topOffScreen = 10;
+  var _topOffScreen = -1000;
 
   function DragHub(options) {
     var _dragging = false,
@@ -51,7 +51,7 @@ define('src/slick/draghub', [
     function handleDragInit(e, dd) {
       var reg = findRegistrant(_registrants, e, dd);
       if (!reg) {
-        console.warn('handleDragInit, no registrant');
+        console.warn("handleDragInit, no registrant");
         return;
       }
       if (reg.owner.onDragInit) {
@@ -67,7 +67,7 @@ define('src/slick/draghub', [
       var reg = findRegistrant(_registrants, e, dd),
         toGrid, gridCell, rowHeight, selectedRows;
       if (!reg) {
-        console.warn('handleDragStart, no registrant');
+        console.warn("handleDragStart, no registrant");
         return;
       }
       toGrid = reg.toGrid;
@@ -114,7 +114,7 @@ define('src/slick/draghub', [
 
       //
       dd.guides = new Array(3); // [pre, vrt, sub]
-      $('body')
+      $("body")
         .append(dd.guides[0] = $("<div class='slick-reorder-guide'/>"))
         .append(dd.guides[1] = $("<div class='slick-reorder-guide'/>"))
         .append(dd.guides[2] = $("<div class='slick-reorder-guide'/>"))
@@ -134,12 +134,12 @@ define('src/slick/draghub', [
       e.stopImmediatePropagation();
       // set proxy position to mouse position
       dd.selectionProxy.css("top", e.pageY - (dd.grid.getOptions().rowHeight / 2));
-      dd.selectionProxy.css("left", e.pageX - 15);
+      dd.selectionProxy.css("left", e.pageX + 2); // move the proxy to the right of where the mouse is.
 
       var reg = findRegistrant(_registrants, e, dd),
         dropData, toGrid, guides;
       if (!reg) {
-        console.warn('handleDrag, no registrant');
+        console.warn("handleDrag, no registrant");
         // hide guides
         dd.guides.forEach(offScreen);
         // clear drop data
@@ -153,7 +153,7 @@ define('src/slick/draghub', [
       //    "type": "child", (child|after|before|on)
       //    "row": 2,
       //    // optional
-      //    "parentRow": 1, // defaults to 'row'
+      //    "parentRow": 1, // defaults to "row"
       //    "cell": 0, // defaults to 0
       //    "indent": 10, (pixels to indent from cell start) // defaults to 0
       // } (info needed to draw drop guides)
@@ -161,7 +161,7 @@ define('src/slick/draghub', [
         rows: dd.selectedRows,
       });
       if (!dropData) {
-        console.info('no drop data');
+        console.info("no drop data");
         // hide guides
         dd.guides.forEach(offScreen);
         // clear drop data
@@ -170,7 +170,7 @@ define('src/slick/draghub', [
       }
       // validate drop data
       if (!dropData.type || (!dropData.row && dropData.row !== 0)) {
-        throw new Error('invalid drop data');
+        throw new Error("invalid drop data");
       }
       // set defaults
       if (!dropData.parentRow && dropData.parentRow !== 0) {
@@ -215,7 +215,7 @@ define('src/slick/draghub', [
 
       var reg = findRegistrant(_registrants, e, dd);
       if (!reg) {
-        console.warn('handleDragEnd, no registrant');
+        console.warn("handleDragEnd, no registrant");
         return;
       }
       reg.owner.onDrop(reg, {
@@ -249,20 +249,20 @@ define('src/slick/draghub', [
     var canvas, result, offset, $el;
     // get element under the selectionProxy and guide
     if (dd.selectionProxy) {
-      dd.selectionProxy.hide();
+      // dd.selectionProxy.hide(); // no need to hide since it is no long under the mouse, it is to the right of the mouse.
       dd.guides.forEach(function(guide) {
         guide.hide();
       });
     }
     e.target = document.elementFromPoint(e.pageX, e.pageY);
     if (dd.selectionProxy) {
-      dd.selectionProxy.show();
+      // dd.selectionProxy.show();
       dd.guides.forEach(function(guide) {
         guide.show();
       });
     }
     // find first parent with .grid-canvas class
-    canvas = $(e.target).closest('.grid-canvas')[0];
+    canvas = $(e.target).closest(".grid-canvas")[0];
 
     // get registrant by canvas
     _registrants.some(function(reg) {
@@ -279,7 +279,7 @@ define('src/slick/draghub', [
         $el = $el.parent();
         reg.viewPort = offset = $el.offset();
         offset.width = $el.width();
-        offset.height = $el.height();
+        offset.height = $el.height() + 2; // add to height in order to show guides at bottom of grid
 
         // set result
         result = reg;
@@ -318,11 +318,11 @@ define('src/slick/draghub', [
       },
       guides = [pre, vrt, sub];
     switch (dropData.type) {
-      // case 'child':
+      // case "child":
       //   break;
-      // case 'after':
+      // case "after":
       //   break;
-      case 'before':
+      case "before":
         pre.top = calcTop(dropData.parentRow + 1, false);
         sub.top = calcTop(dropData.row, false);
 
@@ -348,10 +348,10 @@ define('src/slick/draghub', [
         vrt.width = 2;
         sub.height = 2;
         break;
-        // case 'on':
+        // case "on":
         //   break;
       default:
-        throw new Error('invalid drop type: ' + dropData.type);
+        throw new Error("invalid drop type: " + dropData.type);
     }
 
     // keep in bounds

@@ -1,30 +1,30 @@
 /* global describe,it,expect */
-define('src/slick/draghub.spec', [
-  'ko',
-  'src/slick/draghub',
+define("src/slick/draghub.spec", [
+  "ko",
+  "src/slick/draghub",
 ], function(
   ko,
   DragHub
 ) {
   "use strict";
 
-  describe('DragHub', function() {
-    it('should have a `calcGuides` function', function() {
-      expect(typeof DragHub.calcGuides).toBe('function');
+  describe("DragHub", function() {
+    it("should have a `calcGuides` function", function() {
+      expect(typeof DragHub.calcGuides).toBe("function");
     });
-    it('should have a `fitAllToBounds` function', function() {
-      expect(typeof DragHub.fitAllToBounds).toBe('function');
+    it("should have a `fitAllToBounds` function", function() {
+      expect(typeof DragHub.fitAllToBounds).toBe("function");
     });
 
-    describe('calcGuides', function() {
-      it('should return an array of 3 rectangles', function() {
+    describe("calcGuides", function() {
+      it("should return an array of 3 rectangles", function() {
         // mouse coords {
         //   pageX: 154,
         //   pageY: 101,
         // }
         var data = DragHub.calcGuides({
-          type: 'before',
-          parentRow: 3,
+          type: "before",
+          parentRow: 2,
           row: 8,
           cell: 1,
           indent: 10,
@@ -64,8 +64,8 @@ define('src/slick/draghub.spec', [
         expect(data[2].height).toBe(2);
       });
     });
-    describe('fitAllToBounds', function() {
-      it('should make all rectangles fit inside bounding rectangle', function() {
+    describe("fitAllToBounds", function() {
+      it("should make all rectangles fit inside bounding rectangle", function() {
         var data = [ //
           // pre
           {
