@@ -486,15 +486,20 @@ define("src/scrum/storys.vm", [
     var sidRegx = toRegx();
     var nameRegx = toRegx();
 
-    function myFilter(item) {
+    function myFilter(item, args, outparams) {
       // filter by sid
       if (!sidRegx.test(item._metadata.sid)) {
+        outparams.matches = false;
         return false;
       }
       // filter by name
       if (!nameRegx.test(item.Name)) {
+        outparams.matches = false;
         return false;
       }
+      // even if the parent is collapsed we still want to know if the item matched
+      outparams.matches = true;
+
       // exclude childs of collapsed items
       var parent = map[item._metadata.psid];
       while (parent) {
@@ -563,32 +568,32 @@ define("src/scrum/storys.vm", [
     //@REVIEW: update uncompiledFilter and uncompiledFilterWithCaching to inline the filter???
     dv.uncompiledFilter = function(items, args) {
       var retval = [],
-        idx = 0;
-      for (var i = 0, ii = items.length; i < ii; i++) {
-        if (myFilter(items[i], args)) {
-          retval[idx++] = items[i];
-        }
-      }
-      return retval;
-    };
-    dv.uncompiledFilterWithCaching = function(items, args, cache) {
-      var retval = [],
         idx = 0,
-        item;
-      for (var i = 0, ii = items.length; i < ii; i++) {
+        showMap = {},
+        outparams = {
+          matches: false,
+        },
+        item, i = items.length;
+      // loop backwards so that childs are evaluated before parents
+      while (i--) {
         item = items[i];
-        if (cache[i]) {
+        if (showMap[item.sid] || myFilter(item, args, outparams)) {
           retval[idx++] = item;
-        } else if (myFilter(item, args)) {
-          retval[idx++] = item;
-          cache[i] = true;
+          // add parent to show map to show parent even when it doesn't match the filter
+          showMap[item._metadata.psid] = true;
+        } else if (outparams.matches) {
+          // show parent even when it or its parent(recursive) is collapsed
+          showMap[item._metadata.psid] = true;
         }
       }
+      // put in correct order
+      retval.reverse();
       return retval;
     };
+    dv.uncompiledFilterWithCaching = dv.uncompiledFilter;
     //
     dv.setItems([], "sid");
-    dv.setFilter(myFilter);
+    dv.setFilter(true); //@NOTE: this should be the filter function but we're overridding uncompiledFilter. it needs a truthy value since getFilteredAndPagedItems uses it in an if statement
 
     // sorting order
     function myComparer(a, b) {
