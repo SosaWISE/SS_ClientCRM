@@ -331,35 +331,48 @@ define("src/scrum/storys.vm", [
     return results;
   };
 
-  function findItem(dv, inc, matchIndent, item) {
-    // inc determines the direction
-    // if inc is positive this finds the next item
-    // if inc is negative this finds the prev item
-    if (item) {
-      var currIdx = dv.getIdxById(item.sid);
-      while (item) {
-        var currIndent = item._metadata.indent;
-        if (currIndent === matchIndent) {
-          // found a sibling
-          break;
-        }
-        if (currIndent < matchIndent) {
-          // there is no sibling
-          item = null;
-          break;
-        }
-        item = dv.getItemByIdx(currIdx);
-        //
-        currIdx += inc;
-      }
+  function findByNum(dv, funcName, direction, matchIndent, num) {
+    // direction determines the direction
+    // if direction is positive this finds the next item
+    // if direction is negative this finds the prev item
+    var item = dv[funcName](num);
+    if (!item) {
+      return null;
     }
-    return item;
+    while (item) {
+      var currIndent = item._metadata.indent;
+      if (currIndent === matchIndent) {
+        // found a sibling
+        return num;
+      }
+      if (currIndent < matchIndent) {
+        // found a parent so there is no sibling
+        return null;
+      }
+      num += direction;
+      item = dv[funcName](num);
+    }
+    return null;
+  }
+
+  function findIndex(dv, direction, matchIndent, idx) {
+    return findByNum(dv, "getItemByIdx", direction, matchIndent, idx);
+  }
+
+  function findRow(dv, direction, matchIndent, row) {
+    return findByNum(dv, "getItem", direction, matchIndent, row);
   }
 
   StorysViewModel.prototype.canDropItem = function(fromDv, itemRow, beforeRow) {
     if (!(fromDv.vm instanceof StorysViewModel)) {
       return null;
     }
+
+    //
+    // @NOTE: index vs row
+    //  - indexes are for all items in the grid and are not always visible
+    //  - rows are visible in the grid
+    //
 
     var _this = this;
     var dv = _this.dv;
@@ -368,35 +381,92 @@ define("src/scrum/storys.vm", [
     var indentZero = (0 - indentOffset);
     var item = fromDv.getItem(itemRow);
     var itemIndent = item._metadata.indent;
+    var afterRow = beforeRow - 1;
 
-    // find nextItem
-    var nextItem = findItem(dv, 1, itemIndent, dv.getItem(beforeRow));
-    // find prevItem
-    var prevItem = findItem(dv, -1, itemIndent, dv.getItem(beforeRow - 1));
-    // find parentItem
-    var parentItem;
-    if (indentZero <= itemIndent - 1) {
-      // item is not top level
-      parentItem = findItem(dv, -1, itemIndent - 1, dv.getItem(beforeRow - 1));
+    // find a parentRow
+    var parentRow = findRow(dv, -1, itemIndent - 1, afterRow);
+    if (parentRow == null && itemIndent !== indentZero) {
+      // item needs a parent, but no parent was found
+      return null;
+    }
+    var parentItem = dv.getItem(parentRow);
+
+    // get temp index
+    var tmpIdx;
+    var tmpItem = dv.getItem(beforeRow);
+    if (tmpItem) {
+      // get index of temp item
+      tmpIdx = dv.getIdxById(tmpItem.sid);
+    } else {
+      tmpItem = dv.getItem(afterRow);
+      if (tmpItem) {
+        // get index of temp item
+        tmpIdx = dv.getIdxById(tmpItem.sid) + 1;
+      }
+    }
+    if (parentItem) {
+      // find the parent's following sibling
+      var parentSiblingIdx = findIndex(dv, 1, itemIndent - 1, dv.getIdxById(parentItem.sid) + 1);
+      // ensure tmpIdx is not greater than parent's sibling
+      if (parentSiblingIdx != null && parentSiblingIdx < tmpIdx) {
+        tmpIdx = parentSiblingIdx;
+        tmpItem = dv.getItemByIdx(tmpIdx);
+      }
     }
 
-    var parentRow = parentItem ? dv.getRowById(parentItem.sid) : null;
+    // get prev and next indexes based on temp index
+    var prevIdx, nextIdx;
+    if (tmpItem) {
+      // find the next index with a matching indent
+      nextIdx = findIndex(dv, 1, itemIndent, tmpIdx);
+      if (nextIdx != null) {
+        prevIdx = findIndex(dv, -1, itemIndent, nextIdx - 1);
+      } else {
+        prevIdx = findIndex(dv, -1, itemIndent, tmpIdx - 1);
+      }
+    } else {
+      prevIdx = null;
+      nextIdx = null;
+    }
+    // get items
+    var prevItem = dv.getItemByIdx(prevIdx) || null;
+    var nextItem = dv.getItemByIdx(nextIdx) || null;
+    if (item === prevItem || item === nextItem) {
+      // not changing positions
+      return null;
+    }
+
+    // translate index to row
     var row;
     if (nextItem) {
       row = dv.getRowById(nextItem.sid);
+      if (row == null) {
+        // find next visible row
+        row = findRow(dv, 1, itemIndent, beforeRow);
+        if (row == null) {
+          row = dv.getLength();
+        }
+      }
     } else if (prevItem) {
-      row = dv.getRowById(prevItem.sid) + 1;
+      row = dv.getRowById(prevItem.sid);
+      if (row != null) {
+        row += 1;
+      } else {
+        // find next visible row
+        row = findRow(dv, 1, itemIndent, afterRow);
+        if (row != null) {
+          row += 1;
+        } else {
+          row = dv.getLength();
+        }
+      }
     } else if (parentItem) {
       row = parentRow + 1;
     } else {
-      row = null;
-      //
-      if (!parentItem && (itemIndent !== indentZero)) {
-        // no prev, next, or parent items
-        // and this item is not a top level item
-        return null;
-      }
+      // row = null;
+      return null;
     }
+
     //
     return {
       type: "before",
