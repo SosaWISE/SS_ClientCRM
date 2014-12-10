@@ -23,6 +23,12 @@ div(class="acct-emcontacteditor")
           data-bind="ukov:data.Postfix,value:data.Postfix,valueUpdate:'keyup'")
     ul(class="edit-form limit-width right-side")
       li
+        span(class="label") Contact Type
+        div(data-bind="cvm:data.ContactTypeCvm")
+      li
+        span(class="label") Authority
+        div(data-bind="cvm:data.AuthorityCvm")
+      li
         span(class="label") Relationship
         div(data-bind="cvm:data.RelationshipCvm")
       li
