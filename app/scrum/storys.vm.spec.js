@@ -16,7 +16,7 @@ define("src/scrum/storys.vm.spec", [
 
 
     function addF(vm, name, sortOrder) {
-      addItem(vm, "f", {
+      addItem(vm, "F", {
         ID: ++featureCount,
         Name: name,
         SortOrder: sortOrder,
@@ -36,8 +36,8 @@ define("src/scrum/storys.vm.spec", [
 
     function addS(vm, pName, name, sortOrder) {
       var parent = pName ? findItemByName(vm, pName) : null;
-      addItem(vm, "s", {
-        FeatureId: (parent) ? parent.ID : null,
+      addItem(vm, "S", {
+        ParentId: (parent) ? parent.ID : null,
         ID: ++storyCount,
         Name: name,
         SortOrder: sortOrder,
@@ -46,8 +46,8 @@ define("src/scrum/storys.vm.spec", [
 
     function addT(vm, pName, name, sortOrder) {
       var parent = findItemByName(vm, pName);
-      addItem(vm, "t", {
-        StoryId: parent.ID,
+      addItem(vm, "T", {
+        ParentId: parent.ID,
         ID: ++taskCount,
         Name: name,
         SortOrder: sortOrder,

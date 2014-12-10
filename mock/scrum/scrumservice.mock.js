@@ -1,6 +1,6 @@
-define('mock/scrum/scrumservice.mock', [
-  'src/dataservice',
-  'src/core/mockery',
+define("mock/scrum/scrumservice.mock", [
+  "src/dataservice",
+  "src/core/mockery",
 ], function(
   dataservice,
   mockery
@@ -20,19 +20,19 @@ define('mock/scrum/scrumservice.mock', [
       if (false && !value) {
         err = {
           Code: 12345,
-          Message: 'No value',
+          Message: "No value",
           Value: null,
         };
       } else {
         result = {
           Code: 0,
-          Message: 'Success',
+          Message: "Success",
           Value: value,
         };
       }
 
       setTimeout(function() {
-        if (!err && result && typeof(setter) === 'function') {
+        if (!err && result && typeof(setter) === "function") {
           setter(result.Value);
         }
         cb(err, result);
@@ -74,13 +74,13 @@ define('mock/scrum/scrumservice.mock', [
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(projects, 'ID', id);
+          result = findSingleOrAll(projects, "ID", id);
           break;
-        case 'sprints':
-          result = filterListBy(sprints, 'ProjectId', id);
+        case "sprints":
+          result = filterListBy(sprints, "ProjectId", id);
           break;
-        case 'storys':
-          result = filterListBy(storys, 'ProjectId', id);
+        case "storys":
+          result = filterListBy(storys, "ProjectId", id);
           break;
       }
       send(result, setter, cb);
@@ -89,27 +89,18 @@ define('mock/scrum/scrumservice.mock', [
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(sprints, 'ID', id);
+          result = findSingleOrAll(sprints, "ID", id);
           break;
-        case 'storys':
-          if (id === 'null') {
+        case "storys":
+          if (id === "null") {
             id = null;
           }
-          result = filterListBy(storys, 'SprintId', id);
+          result = filterListBy(storys, "SprintId", id);
           // include Tasks on result
           result = clone(result);
           result.forEach(function(story) {
-            story.Tasks = filterListBy(tasks, 'StoryId', story.ID);
+            story.Tasks = filterListBy(tasks, "ParentId", story.ID);
           });
-          break;
-      }
-      send(result, setter, cb);
-    };
-    dataservice.scrum.storytypes.read = function(params, setter, cb) {
-      var result;
-      switch (params.link || null) {
-        case null:
-          result = storytypes;
           break;
       }
       send(result, setter, cb);
@@ -118,13 +109,13 @@ define('mock/scrum/scrumservice.mock', [
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = findSingleOrAll(storys, 'ID', id);
+          result = findSingleOrAll(storys, "ID", id);
           break;
       }
       // include Tasks on result
       result = clone(result);
       result.forEach(function(story) {
-        story.Tasks = filterListBy(tasks, 'StoryId', story.ID);
+        story.Tasks = filterListBy(tasks, "ParentId", story.ID);
       });
       send(result, setter, cb);
     };
@@ -153,9 +144,10 @@ define('mock/scrum/scrumservice.mock', [
 
 
     dataservice.scrum.storys.save = function(data, setter, cb) {
-      var result = createOrUpdate(storys, 'ID', '@INC(storys)', {
+      var result = mockery.createOrUpdate(storys, "ID", "@INC(storys)", {
         ID: data.ID,
-        StoryTypeId: data.StoryTypeId,
+        ParentId: data.ParentId,
+        ProjectId: data.ProjectId,
         PersonId: data.PersonId,
         Name: data.Name,
         Description: data.Description,
@@ -163,80 +155,50 @@ define('mock/scrum/scrumservice.mock', [
         SortOrder: data.SortOrder,
         IsDeleted: data.IsDeleted,
         Version: data.Version ? data.Version + 1 : 1,
+        ModifiedBy: data.ModifiedBy,
+        ModifiedOn: mockery.fromTemplate("@NOW"),
       });
       // // include Tasks on result
-      // result.Tasks = filterListBy(tasks, 'StoryId', result.ID);
+      // result.Tasks = filterListBy(tasks, "ParentId", result.ID);
       send(result, setter, cb);
     };
     dataservice.scrum.tasks.save = function(data, setter, cb) {
-      send(createOrUpdate(tasks, 'ID', '@INC(tasks)', {
+      send(mockery.createOrUpdate(tasks, "ID", "@INC(tasks)", {
         ID: data.ID,
-        StoryId: data.StoryId,
-        TaskStepId: data.TaskStepId,
+        ParentId: data.ParentId,
+        StepId: data.StepId,
         Name: data.Name,
         PersonId: data.PersonId,
         Points: data.Points,
         SortOrder: data.SortOrder,
         IsDeleted: data.IsDeleted,
         Version: data.Version ? data.Version + 1 : 1,
+        ModifiedBy: data.ModifiedBy,
+        ModifiedOn: mockery.fromTemplate("@NOW"),
       }), setter, cb);
     };
-
-    function createOrUpdate(list, idName, idTemplate, newValue) {
-      var id = newValue[idName],
-        index;
-
-      function byId(item, i) {
-        if (item[idName] === id) {
-          index = i;
-          return true;
-        }
-      }
-      if (id > 0) {
-        if (!list.some(byId)) {
-          throw new Error('invalid id. id not in list.');
-        }
-
-        // replace old value with new value
-        list.splice(index, 1, newValue);
-      } else {
-        newValue[idName] = mockery.fromTemplate(idTemplate);
-        // add new value
-        list.push(newValue);
-      }
-      return newValue;
-    }
   }
 
   (function() {
-    mockery.addModulusValueFunc('SPRINT_STARTON', [
+    mockery.addModulusValueFunc("SPRINT_STARTON", [
       new Date(2013, 1, 3),
       new Date(2013, 1, 17),
       new Date(2013, 1, 31),
     ]);
-    mockery.addModulusValueFunc('SPRINT_ENDON', [
+    mockery.addModulusValueFunc("SPRINT_ENDON", [
       new Date(2013, 1, 16),
       new Date(2013, 1, 30),
       new Date(2013, 2, 13),
     ]);
-    mockery.addModulusValueFunc('EPIC_PNAME', [
-      'Web client',
-      'Web server',
-    ]);
-    mockery.addModulusValueFunc('EPIC_CNAME', [
-      'Panel',
-      'Actions',
-      'Tests',
-    ]);
-    mockery.addModulusValueFunc('STORY_TYPE', [
-      'Story',
-      'Defect',
+    mockery.addModulusValueFunc("FEATURE_TYPE", [
+      "Wanted",
+      "Unwanted",
     ]);
     mockery.fn.STORY_POINTS = [0.5, 1, 2, 3, 5, 8, 13];
-    mockery.addModulusValueFunc('TASKSTEP_NAME', [
-      'Defined',
-      'In-Progress',
-      'Complete',
+    mockery.addModulusValueFunc("TASKSTEP_NAME", [
+      "Pending",
+      "In-Progress",
+      "Complete",
     ]);
   })();
 
@@ -244,121 +206,120 @@ define('mock/scrum/scrumservice.mock', [
   var persons,
     projects,
     sprints,
-    storytypes,
     storys,
     tasksteps,
     tasks;
 
   persons = mockery.fromTemplate({
-    'list|3-3': [ //
+    "list|3-3": [ //
       {
-        ID: '@INC(persons)',
-        FirstName: '@NAME',
-        LastName: '@LASTNAME',
-        Email: '@EMAIL',
+        ID: "@INC(persons)",
+        FirstName: "@NAME",
+        LastName: "@LASTNAME",
+        Email: "@EMAIL",
       },
     ],
   }).list;
 
   projects = mockery.fromTemplate({
-    'list|3-3': [ //
+    "list|3-3": [ //
       {
-        ID: '@INC(projects)',
-        Name: 'Project-@INC(projects)',
+        ID: "@INC(projects)",
+        Name: "Project-@INC(projects)",
       },
     ],
   }).list;
 
   sprints = mockery.fromTemplate({
-    'list|3-3': [ //
+    "list|3-3": [ //
       {
-        ID: '@INC(sprints)',
+        ID: "@INC(sprints)",
         ProjectId: 1,
-        StartOn: '@SPRINT_STARTON',
-        EndOn: '@SPRINT_ENDON',
+        StartOn: "@SPRINT_STARTON",
+        EndOn: "@SPRINT_ENDON",
       },
     ],
   }).list;
 
-  storytypes = mockery.fromTemplate({
-    'list|2-2': [ //
-      {
-        ID: '@INC(storytypes)',
-        Name: '@STORY_TYPE',
-      },
-    ],
-  }).list;
   storys = mockery.fromTemplate({
     // backlog storys
-    'list|10-10': [ //
+    "list|10-10": [ //
       {
-        ID: '@INC(storys)',
+        ID: "@INC(storys)",
+        ParentId: null,
         ProjectId: 1,
-        StoryTypeId: '@REF_INC(storytypes)',
         PersonId: null,
-        Name: 'Story @FK(storys)',
-        Description: '@TEXT(50,80)',
-        Points: '@STORY_POINTS',
-        SortOrder: '@INC(SortOrder,-1000)', // '@NUMBER(-1000000,-10)',
+        Name: "Story @FK(storys)",
+        Description: "@TEXT(50,80)",
+        Points: "@STORY_POINTS",
+        SortOrder: "@INC(SortOrder,-1000)", // "@NUMBER(-1000000,-10)",
         IsDeleted: false,
         Version: 1,
+        ModifiedOn: "@DATETIME(-10,1)", // between 10 days in the past and yesterday
+        ModifiedBy: "BOBB001",
       },
     ],
   }).list.concat(mockery.fromTemplate({
     // storyboard storys
-    'list|10-10': [ //
+    "list|10-10": [ //
       {
-        ID: '@INC(storys)',
+        ID: "@INC(storys)",
+        ParentId: null,
         ProjectId: 1,
-        StoryTypeId: '@REF_INC(storytypes)',
-        PersonId: '@REF_INC(persons)',
-        Name: 'Story @FK(storys)',
-        Description: '@TEXT(50,80)',
-        Points: '@STORY_POINTS',
-        SortOrder: '@INC(SortOrder2,1000,10)', // '@NUMBER(10,1000000)',
+        PersonId: "@REF_INC(persons)",
+        Name: "Story @FK(storys)",
+        Description: "@TEXT(50,80)",
+        Points: "@STORY_POINTS",
+        SortOrder: "@INC(SortOrder2,1000,10)", // "@NUMBER(10,1000000)",
         IsDeleted: false,
         Version: 1,
+        ModifiedOn: "@DATETIME(-10,1)", // between 10 days in the past and yesterday
+        ModifiedBy: "BOBB001",
       },
     ],
   }).list).concat(mockery.fromTemplate({
     // cooler storys
-    'list|20-20': [ //
+    "list|20-20": [ //
       {
-        ID: '@INC(storys)',
+        ID: "@INC(storys)",
+        ParentId: null,
         ProjectId: 1,
-        StoryTypeId: '@REF_INC(storytypes)',
         PersonId: null,
-        Name: 'Story @FK(storys)',
-        Description: '@TEXT(50,80)',
+        Name: "Story @FK(storys)",
+        Description: "@TEXT(50,80)",
         Points: null,
         SortOrder: null,
         IsDeleted: false,
         Version: 1,
+        ModifiedOn: "@DATETIME(-10,1)", // between 10 days in the past and yesterday
+        ModifiedBy: "BOBB001",
       },
     ],
   }).list);
 
   tasksteps = mockery.fromTemplate({
-    'list|3-3': [ //
+    "list|3-3": [ //
       {
-        ID: '@INC(tasksteps)',
-        Name: '@TASKSTEP_NAME',
+        ID: "@INC(tasksteps)",
+        Name: "@TASKSTEP_NAME",
       },
     ],
   }).list;
 
   tasks = mockery.fromTemplate({
-    'list|40-40': [ //
+    "list|40-40": [ //
       {
-        ID: '@INC(tasks)',
-        StoryId: '@REF_INC(storys)',
-        TaskStepId: '@REF_INC(tasksteps)',
-        PersonId: '@REF_INC(persons)',
-        Name: 'Task @FK(tasks)',
-        Points: '@NUMBER(1,4)',
-        SortOrder: '@NUMBER(0,100000)',
+        ID: "@INC(tasks)",
+        ParentId: "@REF_INC(storys)",
+        StepId: "@REF_INC(tasksteps)",
+        PersonId: "@REF_INC(persons)",
+        Name: "Task @FK(tasks)",
+        Points: "@NUMBER(1,4)",
+        SortOrder: "@NUMBER(0,100000)",
         IsDeleted: false,
         Version: 1,
+        ModifiedOn: "@DATETIME(-10,1)", // between 10 days in the past and yesterday
+        ModifiedBy: "BOBB001",
       },
     ],
   }).list;

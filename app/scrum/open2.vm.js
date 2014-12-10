@@ -31,6 +31,7 @@ define("src/scrum/open2.vm", [
     });
 
     _this.coolerVm = StorysViewModel.create(_this, {
+      showState: false,
       accepts: function( /*item*/ ) {
         return false; //@TODO:
       },
@@ -43,6 +44,7 @@ define("src/scrum/open2.vm", [
       }),
     });
     _this.backlogVm = StorysViewModel.create(_this, {
+      showState: false,
       accepts: function( /*item*/ ) {
         return true; //@TODO:
       },
@@ -56,6 +58,7 @@ define("src/scrum/open2.vm", [
       }),
     });
     _this.storyBoardVm = StorysViewModel.create(_this, {
+      showState: true,
       accepts: function( /*item*/ ) {
         return true; //@TODO:
       },
@@ -73,35 +76,41 @@ define("src/scrum/open2.vm", [
     //
     // events
     //
-
-    //
-    // init
-    //
-    _this.vms.forEach(function(vm) {
-      vm.beginUpdate();
-    });
-    //
-    _this.storys.forEach(function(story) {
-      _this.storyUpdated(story);
-    });
-    _this.tasks.forEach(function(task) {
-      _this.taskUpdated(task);
-    });
-    //
-    _this.vms.forEach(function(vm) {
-      vm.endUpdate();
-    });
   }
   utils.inherits(Open2ViewModel, ControllerViewModel);
   Open2ViewModel.prototype.viewTmpl = "tmpl-scrum_open";
 
-  // Open2ViewModel.prototype.onLoad = function(routeData, extraData, join) {
-  //   join.add()();
-  // };
+  Open2ViewModel.prototype.onLoad = function(routeData, extraData, join) {
+    var _this = this;
+    _this.vms.forEach(function(vm) {
+      vm.loader.reset(); // incase of reload
+      vm.load(routeData, extraData, join.add());
+    });
+
+    join.when(function() {
+      //
+      // init
+      //
+      _this.vms.forEach(function(vm) {
+        vm.beginUpdate();
+      });
+      //
+      _this.storys.forEach(function(story) {
+        _this.storyUpdated(story);
+      });
+      _this.tasks.forEach(function(task) {
+        _this.taskUpdated(task);
+      });
+      //
+      _this.vms.forEach(function(vm) {
+        vm.endUpdate();
+      });
+    });
+  };
 
   Open2ViewModel.prototype.storyUpdated = function(story, select) {
     var _this = this;
-    StorysViewModel.ensureItemMetadata(story, "s");
+    StorysViewModel.ensureItemMetadata(story, "S");
 
     var currVm = getCurrentVm(_this.vms, story._metadata.sid);
     var destVm = getStoryVm(_this.vms, story);
@@ -125,7 +134,7 @@ define("src/scrum/open2.vm", [
   };
   Open2ViewModel.prototype.taskUpdated = function(task, select) {
     var _this = this;
-    StorysViewModel.ensureItemMetadata(task, "t");
+    StorysViewModel.ensureItemMetadata(task, "T");
     // get vm by parent sid
     var currVm = getCurrentVm(_this.vms, task._metadata.psid);
 

@@ -1,9 +1,9 @@
-define('src/scrum/project.vm', [
-  'src/scrum/open2.vm',
-  'src/dataservice',
-  'ko',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/scrum/project.vm", [
+  "src/scrum/open2.vm",
+  "src/dataservice",
+  "ko",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   Open2ViewModel,
   dataservice,
@@ -17,8 +17,8 @@ define('src/scrum/project.vm', [
     var _this = this;
     ProjectViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
-      'layersVm',
-      'id',
+      "layersVm",
+      "id",
     ]);
 
     //
@@ -26,7 +26,7 @@ define('src/scrum/project.vm', [
     //
   }
   utils.inherits(ProjectViewModel, ControllerViewModel);
-  ProjectViewModel.prototype.viewTmpl = 'tmpl-scrum_project';
+  ProjectViewModel.prototype.viewTmpl = "tmpl-scrum_project";
 
   ProjectViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this,
@@ -58,7 +58,7 @@ define('src/scrum/project.vm', [
         _this.childs([
           new Open2ViewModel({
             pcontroller: _this,
-            title: 'Open',
+            title: "Open",
             layersVm: _this.layersVm,
             sprint: sprint,
             storys: sprintStorys.concat(storys),
@@ -75,21 +75,21 @@ define('src/scrum/project.vm', [
   function load_currentSprint(_this, setter, cb) {
     dataservice.scrum.projects.read({
       id: _this.id,
-      link: 'currentSprint'
+      link: "currentSprint"
     }, setter, cb);
   }
 
   function load_storys(_this, setter, cb) { // with sub data (tasks, images, etc.)
     dataservice.scrum.projects.read({
       id: _this.id,
-      link: 'storys', // /full',
+      link: "storys", // /full",
     }, setter, cb);
   }
 
   function load_sprintStorys(sprint, setter, cb) { // with sub data (tasks, images, etc.)
     dataservice.scrum.sprints.read({
       id: sprint.id,
-      link: 'storys', // /full',
+      link: "storys", // /full",
     }, setter, cb);
   }
 

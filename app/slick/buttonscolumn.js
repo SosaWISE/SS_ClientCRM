@@ -1,38 +1,52 @@
-define('src/slick/buttonscolumn', [
-  'slick',
-  'jquery',
+define("src/slick/buttonscolumn", [
+  "slick",
+  "jquery",
 ], function(
   Slick,
   jquery
 ) {
-  'use strict';
+  "use strict";
 
   var count = 0,
     btnDefaults = {
-      cssClass: 'btn small',
+      cssClass: "btn small",
       fn: function() {
-        console.warn('fn function not set');
+        console.warn("fn function not set");
       }
     };
 
+  function createFormatter(_options) {
+    return function(row, cell, value, columnDef, dataContext) {
+      if (dataContext) {
+        var result = "";
+        _options.buttons.forEach(function(btn) {
+          result += "<a class=\"" + btn.cssClass + "\">" + btn.text + "</a>";
+        });
+        return result;
+      }
+      return null;
+    };
+  }
+
   function ButtonsColumn(options) {
     if (!options.buttons) {
-      throw new Error('define `buttons` in options');
+      throw new Error("define `buttons` in options");
     }
     // buttons: [{
-    //   'text': 'Text to display',
-    //   'fn': function(rowItem, evt) {...,
+    //   "text": "Text to display",
+    //   "fn": function(rowItem, evt) {...,
     // }]
 
     var _self = this,
       _grid,
       _handler = new Slick.EventHandler(),
       _options = jquery.extend(true, {}, {
-        id: '_buttons_' + (++count),
-        name: '',
-        cssClass: '',
-        toolTip: '',
+        id: "_buttons_" + (++count),
+        name: "",
+        cssClass: "",
+        toolTip: "",
         width: options.buttons.length * 60,
+        formatter: null,
       }, options);
 
     _options.buttons.forEach(function(btn, index) {
@@ -40,31 +54,31 @@ define('src/slick/buttonscolumn', [
     });
 
     jquery.extend(_self, {
-      'destroy': function() {
+      "destroy": function() {
         _handler.unsubscribeAll();
       },
-      'init': function(grid) {
+      "init": function(grid) {
         _grid = grid;
         _handler.subscribe(_grid.onClick, handleClick);
       },
-      'getColumnDefinition': function() {
+      "getColumnDefinition": function() {
         return {
           id: _options.id,
           name: _options.name,
-          // field: 'btn',
+          // field: "btn",
           toolTip: _options.toolTip,
           width: _options.width,
           // resizable: false,
           sortable: false,
           cssClass: _options.cssClass,
-          formatter: buttonsFormatter
+          formatter: _options.formatter || createFormatter(_options),
         };
       },
     });
 
     function handleClick(e, args) {
       // clicking on a row anchor
-      if (_grid.getColumns()[args.cell].id === _options.id && jquery(e.target).is('a')) {
+      if (_grid.getColumns()[args.cell].id === _options.id && jquery(e.target).is("a")) {
         // if editing, try to commit
         if (_grid.getEditorLock().isActive() && !_grid.getEditorLock().commitCurrentEdit()) {
           e.preventDefault();
@@ -75,27 +89,14 @@ define('src/slick/buttonscolumn', [
         // find index of anchor tag
         var index = jquery(e.target).index();
         // get button using index and call button function
-        //added try catch to trap undefined "fn". This happens when a cell of a row is in editing mode and button is clicked. 
-        try {
-          _options.buttons[index].fn(args.grid.getDataItem(args.row), e);
+        var btn = _options.buttons[index];
+        if (btn) {
+          btn.fn(args.grid.getDataItem(args.row), e);
 
           e.stopPropagation();
           e.stopImmediatePropagation();
-        } catch (ex) {
-
         }
       }
-    }
-
-    function buttonsFormatter(row, cell, value, columnDef, dataContext) {
-      if (dataContext) {
-        var result = '';
-        _options.buttons.forEach(function(btn) {
-          result += '<a class="' + btn.cssClass + '">' + btn.text + '</a>';
-        });
-        return result;
-      }
-      return null;
     }
   }
 

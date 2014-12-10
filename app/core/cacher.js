@@ -79,14 +79,16 @@ define('src/core/cacher', [
     getList: function(name) {
       var result = cache[name];
       if (!result) {
-        throw new Error(name + ' not in cache');
+        return null;
+        // throw new Error(name + ' not in cache');
       }
       return result.list;
     },
     getMap: function(name) {
       var result = cache[name];
       if (!result) {
-        throw new Error(name + ' not in cache');
+        return null;
+        // throw new Error(name + ' not in cache');
       }
       return result.map;
     },

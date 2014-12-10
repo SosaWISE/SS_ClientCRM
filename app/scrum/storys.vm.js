@@ -1,26 +1,32 @@
 define("src/scrum/storys.vm", [
+  "src/slick/buttonscolumn",
   "src/slick/draghub",
   "src/slick/dragdrop",
   "src/slick/headerfilter",
   "src/slick/rowevent",
   "src/slick/slickgrid.vm",
   "slick",
+  "src/scrum/scrum-cache",
   "src/scrum/story.editor.vm",
   "src/ukov",
   "ko",
+  "src/core/notify",
   "src/core/strings",
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
+  ButtonsColumn,
   DragHub,
   DragDrop,
   HeaderFilter,
   RowEvent,
   SlickGridViewModel,
   Slick,
+  scrumcache,
   StoryEditorViewModel,
   ukov,
   ko,
+  notify,
   strings,
   utils,
   ControllerViewModel
@@ -33,6 +39,33 @@ define("src/scrum/storys.vm", [
   };
 
   var _indentPixels = 15;
+
+  var taskstepActionsMap = {
+    1: { // Pending
+      next: {
+        stepid: 2,
+        text: "Work on",
+      },
+      fail: null,
+    },
+    2: { // In-Progress
+      next: {
+        stepid: 3,
+        text: "Done",
+      },
+      fail: null,
+    },
+    3: { // Complete
+      next: {
+        stepid: 2,
+        text: "Restart",
+      },
+      fail: {
+        stepid: 1,
+        text: "Failed",
+      },
+    },
+  };
 
   function StorysViewModel(options) {
     var _this = this;
@@ -62,10 +95,8 @@ define("src/scrum/storys.vm", [
     }, filtersSchema);
 
     _this.indentOffset = _this.indentOffset || 0;
-    var indentOffset = _this.indentOffset;
 
     initDataView(_this);
-    var dv = _this.dv;
 
     _this.gvm = new SlickGridViewModel({
       gridOptions: {
@@ -101,7 +132,7 @@ define("src/scrum/storys.vm", [
             } else {
               item._metadata.collapsed = false;
             }
-            dv.updateItem(item._metadata.sid, item);
+            _this.dv.updateItem(item._metadata.sid, item);
           },
         }),
         new HeaderFilter({
@@ -109,83 +140,7 @@ define("src/scrum/storys.vm", [
           updateFieldFilter: _this.updateFieldFilter.bind(_this),
         }),
       ],
-      columns: [ //
-        {
-          behavior: "move",
-          id: "Row",
-          name: "Row",
-          width: 40,
-          formatter: function(row, cell, value, columnDef, item) {
-            return dv.getIdxById(item._metadata.sid) + 1;
-          },
-        }, {
-          behavior: "move",
-          id: "sid",
-          name: "ID",
-          width: 50,
-          // resizable: false,
-          formatter: function(row, cell, value, columnDef, item) {
-            return item._metadata.sid;
-          },
-        }, {
-          behavior: "move",
-          id: "psid",
-          name: "PID",
-          width: 50,
-          formatter: function(row, cell, value, columnDef, item) {
-            return item._metadata.psid;
-          },
-        }, {
-          behavior: "move",
-          // behavior: "dropChild",
-          id: "Name",
-          name: "Name",
-          field: "Name",
-          width: 500,
-          formatter: function(row, cell, value, columnDef, item) {
-            value = value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            var spacer = "<span style='display:inline-block;height:1px;width:" + (_indentPixels * (item._metadata.indent + indentOffset)) + "px'></span>";
-            var idx = dv.getIdxById(item._metadata.sid);
-            var nextItem = dv.getItemByIdx(idx + 1);
-            if (nextItem && nextItem._metadata.indent > item._metadata.indent) {
-              if (item._metadata.collapsed) {
-                return spacer + " <span class='toggle fa fa-caret-right'></span>&nbsp;" + value;
-              } else {
-                return spacer + " <span class='toggle fa fa-caret-down'></span>&nbsp;" + value;
-              }
-            } else {
-              return spacer + " <span class='toggle'></span>&nbsp;" + value;
-            }
-          },
-        }, {
-          id: "Points",
-          name: "Estimate",
-          field: "Points",
-          width: 70,
-          minWidth: 50,
-          formatter: function(row, cell, value, columnDef, item) {
-            var postfix;
-            switch (item._metadata.type) {
-              case "s":
-                postfix = " pts";
-                break;
-              case "t":
-                postfix = " hrs";
-                break;
-              default:
-                postfix = "";
-                break;
-            }
-            return value + postfix;
-          },
-        }, {
-          id: "SortOrder",
-          name: "SortOrder",
-          field: "SortOrder",
-          width: 70,
-          minWidth: 50,
-        },
-      ],
+      columns: getColumns(_this, _this.indentOffset, _this.showState),
     });
 
     //
@@ -195,8 +150,148 @@ define("src/scrum/storys.vm", [
   utils.inherits(StorysViewModel, ControllerViewModel);
   StorysViewModel.prototype.viewTmpl = "tmpl-scrum_open";
 
+  function getColumns(_this, indentOffset, showState) {
+    var dv = _this.dv;
+    var columns = [ //
+      {
+        behavior: "move",
+        id: "Row",
+        name: "Row",
+        width: 40,
+        formatter: function(row, cell, value, columnDef, item) {
+          return dv.getIdxById(item._metadata.sid) + 1;
+        },
+      }, {
+        behavior: "move",
+        id: "sid",
+        name: "ID",
+        width: 50,
+        // resizable: false,
+        formatter: function(row, cell, value, columnDef, item) {
+          return item._metadata.sid;
+        },
+      },
+      // {
+      //   behavior: "move",
+      //   id: "psid",
+      //   name: "PID",
+      //   width: 50,
+      //   formatter: function(row, cell, value, columnDef, item) {
+      //     return item._metadata.psid;
+      //   },
+      // },
+      {
+        behavior: "move",
+        // behavior: "dropChild",
+        id: "Name",
+        name: "Name",
+        field: "Name",
+        width: 500,
+        formatter: function(row, cell, value, columnDef, item) {
+          value = value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+          var spacer = "<span style=\"display:inline-block;height:1px;width:" + (_indentPixels * (item._metadata.indent + indentOffset)) + "px\"></span>";
+          var idx = dv.getIdxById(item._metadata.sid);
+          var nextItem = dv.getItemByIdx(idx + 1);
+          if (nextItem && nextItem._metadata.indent > item._metadata.indent) {
+            if (item._metadata.collapsed) {
+              return spacer + " <span class=\"toggle fa fa-caret-right\"></span>&nbsp;" + value;
+            } else {
+              return spacer + " <span class=\"toggle fa fa-caret-down\"></span>&nbsp;" + value;
+            }
+          } else {
+            return spacer + " <span class=\"toggle\"></span>&nbsp;" + value;
+          }
+        },
+      }, {
+        id: "Points",
+        name: "Estimate",
+        field: "Points",
+        width: 70,
+        minWidth: 50,
+        formatter: function(row, cell, value, columnDef, item) {
+          var postfix;
+          switch (item._metadata.type) {
+            case "S":
+              postfix = " pts";
+              break;
+            case "T":
+              postfix = " hrs";
+              break;
+            default:
+              postfix = "";
+              break;
+          }
+          return (value == null ? "?" : value) + postfix;
+        },
+      },
+    ];
+
+    if (showState) {
+      var taskstepsMap;
+      // var btnFormat = "<a class=\"{0}\">{1}</a>";
+      columns.push(new ButtonsColumn({
+        id: "stateActions",
+        name: "State",
+        buttons: [ //
+          {
+            fn: function(item) {
+              var action = taskstepActionsMap[item.StepId].next;
+              notify.info("clicked [" + action.text + "] - change to " + taskstepsMap[action.stepid].Name);
+            },
+          }, {
+            fn: function(item) {
+              var action = taskstepActionsMap[item.StepId].fail;
+              notify.info("clicked [" + action.text + "] - change to " + taskstepsMap[action.stepid].Name);
+            },
+          }
+        ],
+        width: 400,
+        formatter: function(row, cell, value, columnDef, item) {
+          if (item._metadata.type !== "T") {
+            return "";
+          }
+          taskstepActionsMap = taskstepActionsMap;
+
+          if (!taskstepsMap) {
+            taskstepsMap = scrumcache.getMap("tasksteps");
+            if (!taskstepsMap) {
+              return "loading...";
+            }
+          }
+          if (item) {
+            var step = taskstepsMap[item.StepId];
+            var result = step.Name + "&nbsp;&nbsp;";
+
+            var action = taskstepActionsMap[item.StepId];
+            result += getBtnAnchor(action.next);
+            result += getBtnAnchor(action.fail);
+            return result;
+          }
+          return null;
+        },
+      }));
+    }
+
+    columns.push({
+      id: "SortOrder",
+      name: "SortOrder",
+      field: "SortOrder",
+      width: 70,
+      minWidth: 50,
+    });
+
+    return columns;
+  }
+
+  function getBtnAnchor(action) {
+    if (!action) {
+      return "<a></a>";
+    }
+    return strings.format("<a>[{0}]</a>&nbsp;&nbsp;", action.text);
+  }
+
   StorysViewModel.prototype.onLoad = function(routeData, extraData, join) {
-    join.add()();
+    scrumcache.ensure("tasksteps", join.add());
   };
 
   StorysViewModel.prototype.getItem = function(sid) {
@@ -221,10 +316,10 @@ define("src/scrum/storys.vm", [
         result.sid = item._metadata.sid;
         result._metadata = item._metadata;
         switch (result._metadata.type) {
-          case "s":
+          case "S":
             _this.pcontroller.storyUpdated(result, true);
             break;
-          case "t":
+          case "T":
             _this.pcontroller.taskUpdated(result, true);
             break;
           default:
@@ -240,13 +335,13 @@ define("src/scrum/storys.vm", [
     editorOptions = editorOptions || {};
     editorOptions.item = utils.clone(item);
     switch (type) {
-      case "s":
+      case "S":
         vm = new StoryEditorViewModel(editorOptions);
         break;
-      case "t":
+      case "T":
         throw new Error("TaskEditorViewModel not implemented");
         // vm = new TaskEditorViewModel({
-        //   storyId: parentId,
+        //   ParentId: parentId,
         //   item: item,
         //   taskSteps: _this.taskSteps,
         // });
@@ -476,7 +571,7 @@ define("src/scrum/storys.vm", [
       parentItem: parentItem || null,
       nextItem: nextItem || null,
       prevItem: prevItem || null,
-      cell: 3, // column
+      cell: 2, // column
       indent: _indentPixels * (item._metadata.indent + indentOffset), // indent pixels
     };
   };
@@ -502,11 +597,11 @@ define("src/scrum/storys.vm", [
     item._metadata.psid = psid;
     // item.ParentId = parentId;
     switch (item._metadata.type) {
-      case "s":
-        item.FeatureId = parentId;
+      case "S":
+        item.ParentId = parentId;
         break;
-      case "t":
-        item.StoryId = parentId;
+      case "T":
+        item.ParentId = parentId;
         break;
       default:
         throw new Error("invalid type:" + item._metadata.type);
@@ -732,19 +827,19 @@ define("src/scrum/storys.vm", [
     }
 
     switch (type) {
-      case "f":
+      case "F":
         metadata.indent = 0;
         // metadata.psid = null;
         break;
-      case "s":
+      case "S":
         metadata.indent = 1;
-        if (item.FeatureId) {
-          metadata.psid = "f" + item.FeatureId;
+        if (item.ParentId) {
+          metadata.psid = "F" + item.ParentId;
         }
         break;
-      case "t":
+      case "T":
         metadata.indent = 2;
-        metadata.psid = "s" + item.StoryId;
+        metadata.psid = "S" + item.ParentId;
         break;
       default:
         throw new Error("invalid type:" + item._metadata.type);
@@ -762,6 +857,7 @@ define("src/scrum/storys.vm", [
       accepts: options.accepts,
       takes: options.takes,
       rsort: options.rsort,
+      showState: options.showState,
     });
   }
   StorysViewModel.create = create;
