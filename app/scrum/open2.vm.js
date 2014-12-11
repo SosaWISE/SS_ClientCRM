@@ -87,7 +87,10 @@ define("src/scrum/open2.vm", [
       vm.load(routeData, extraData, join.add());
     });
 
-    join.when(function() {
+    join.when(function(err) {
+      if (err) {
+        return;
+      }
       //
       // init
       //

@@ -220,6 +220,13 @@ define('src/slick/slickgrid.vm', [
     }
   };
 
+  SlickGridViewModel.prototype.getSelectedRows = function() {
+    var _this = this;
+    if (_this.grid) {
+      return _this.grid.getSelectedRows();
+    }
+    return [];
+  };
   SlickGridViewModel.prototype.setSelectedRows = function(rows) {
     var _this = this;
     if (_this.grid) {

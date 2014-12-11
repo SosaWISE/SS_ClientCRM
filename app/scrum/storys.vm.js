@@ -7,6 +7,7 @@ define("src/scrum/storys.vm", [
   "src/slick/slickgrid.vm",
   "slick",
   "src/scrum/scrum-cache",
+  "src/scrum/task.editor.vm",
   "src/scrum/story.editor.vm",
   "src/ukov",
   "ko",
@@ -23,6 +24,7 @@ define("src/scrum/storys.vm", [
   SlickGridViewModel,
   Slick,
   scrumcache,
+  TaskEditorViewModel,
   StoryEditorViewModel,
   ukov,
   ko,
@@ -99,6 +101,7 @@ define("src/scrum/storys.vm", [
     initDataView(_this);
 
     _this.gvm = new SlickGridViewModel({
+      // noSelection: true,
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
@@ -127,12 +130,16 @@ define("src/scrum/storys.vm", [
           eventName: "onClick",
           hasClass: "toggle",
           fn: function(item) {
-            if (!item._metadata.collapsed) {
-              item._metadata.collapsed = true;
-            } else {
-              item._metadata.collapsed = false;
-            }
+            // get selected item
+            var selectedItem = _this.dv.getItem(_this.gvm.getSelectedRows()[0]);
+            _this.gvm.setSelectedRows([]);
+            // toggle collapsed
+            item._metadata.collapsed = !item._metadata.collapsed;
             _this.dv.updateItem(item._metadata.sid, item);
+            // set selected item
+            if (selectedItem) {
+              _this.gvm.setSelectedRows([_this.dv.getRowById(selectedItem.sid)]);
+            }
           },
         }),
         new HeaderFilter({
@@ -339,13 +346,9 @@ define("src/scrum/storys.vm", [
         vm = new StoryEditorViewModel(editorOptions);
         break;
       case "T":
-        throw new Error("TaskEditorViewModel not implemented");
-        // vm = new TaskEditorViewModel({
-        //   ParentId: parentId,
-        //   item: item,
-        //   taskSteps: _this.taskSteps,
-        // });
-        // break;
+        // throw new Error("TaskEditorViewModel not implemented");
+        vm = new TaskEditorViewModel(editorOptions);
+        break;
       default:
         throw new Error("invalid edit item type: " + type);
     }
@@ -806,6 +809,37 @@ define("src/scrum/storys.vm", [
     dv.sort(myComparer, preventReverse);
     //
     dv.endUpdate();
+
+    dv.getItemMetadata = function(row) {
+      var item = this.getItem(row);
+      var classes = [];
+
+      if (item) {
+        // if (item.rowClass) {
+        //   classes.push(item.rowClass);
+        // }
+
+        var type = item._metadata.type;
+        switch (type) {
+          case "F":
+            break;
+          case "S":
+            classes.push("story");
+            break;
+          case "T":
+            // classes.push("task");
+            if (item.StepId === 1) { // Pending
+              classes.push("stale");
+            } else if (item.StepId === 2) { // In Progress
+              classes.push("inprogress");
+            }
+            break;
+        }
+      }
+      return {
+        cssClasses: classes.join(" "),
+      };
+    };
   }
 
   function ensureItemMetadata(item, type, currVm) {

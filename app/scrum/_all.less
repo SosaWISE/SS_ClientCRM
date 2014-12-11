@@ -31,11 +31,34 @@ body.sockets {
     }
   }
 
-  .slickgrid {
+  .slickgrid .slick-row {
     .toggle {
       height: 9px;
       width: 9px;
       display: inline-block;
+    }
+
+    .slick-cell {
+      background-color: rgb(255, 255, 255);
+    }
+
+    &.story .slick-cell {
+      background-color: rgb(207, 207, 207);
+    }
+
+    &.inprogress .slick-cell {
+      background-color: rgb(118, 255, 115);
+    }
+    &.blocked .slick-cell {
+      background-color: red;
+    }
+    &.stale .slick-cell {
+      background-color: rgb(255, 255, 129);
+    }
+
+    .slick-cell.selected {
+      background-color: @scrumbg;
+      color: rgb(255, 255, 255);
     }
   }
 
@@ -44,7 +67,7 @@ body.sockets {
       background-color: @scrumbg;
     }
 
-    @cooler-width: 40%;
+    @cooler-width: 30%;
     @filter-width: 0px;
 
     .cooler {
