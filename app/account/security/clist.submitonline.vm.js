@@ -100,19 +100,28 @@ define('src/account/security/clist.submitonline.vm', [
     _this.gvm.list([]);
 
     //@TODO: actually load data
-    setTimeout(function() {
-      while (_this.gvm.list().length < 3) {
-        _this.gvm.list.push({
-          DaAssignmentId: _this.gvm.list().length + 1,
-          DispatchAgencyTypeName: 'DispatchAgencyTypeName',
-          CsNo: 'CsNo',
-          AgencyName: 'AgencyName',
-          DispatchPhone: 'DispatchPhone',
-          MonitoringStationVerfied: 'MonitoringStationVerfied',
-        });
-      }
+    dataservice.monitoringstationsrv.msAccounts.read({
+      id: _this.accountId,
+      link: 'DispatchAgencyAssignments',
+    }, null, utils.safeCallback(function(err, resp){
+      console.log("Here is the response", resp);
+      _this.gvm.list(resp.Value);
       cb();
-    }, 1000);
+    }, notify.iferror));
+
+    // setTimeout(function() {
+    //   while (_this.gvm.list().length < 3) {
+    //     _this.gvm.list.push({
+    //       DaAssignmentId: _this.gvm.list().length + 1,
+    //       DispatchAgencyTypeName: 'DispatchAgencyTypeName',
+    //       CsNo: 'CsNo',
+    //       AgencyName: 'AgencyName',
+    //       DispatchPhone: 'DispatchPhone',
+    //       MonitoringStationVerfied: 'MonitoringStationVerfied',
+    //     });
+    //   }
+    //   cb();
+    // }, 1000);
     // dataservice.boh.boh.read({}, null, utils.safeCallback(cb, function(err, resp) {
     //   _this.gvm.list(resp.Value);
     // }, function(err) {

@@ -195,6 +195,16 @@ define('src/account/security/emcontacteditor.vm', [
     };
     _this.data = ukov.wrap(utils.clone(_this.item), schema);
 
+    _this.data.ContactTypeCvm = new ComboViewModel({
+      selectedValue: _this.data.RelationshipId,
+      list: _this.relationshipTypes,
+      fields: _this.relationshipTypeFields,
+    });
+    _this.data.AuthorityCvm = new ComboViewModel({
+      selectedValue: _this.data.RelationshipId,
+      list: _this.relationshipTypes,
+      fields: _this.relationshipTypeFields,
+    });
     _this.data.RelationshipCvm = new ComboViewModel({
       selectedValue: _this.data.RelationshipId,
       list: _this.relationshipTypes,
