@@ -15,8 +15,6 @@
 ) {
   "use strict";
 
-  var unwrap = ko.utils.unwrapObservable;
-
 
   // toggle classes
   //---------------------------
@@ -25,7 +23,7 @@
     cls = cls || name;
     ko.bindingHandlers[name] = {
       update: function(element, valueAccessor) {
-        var hasVal = unwrap(valueAccessor()),
+        var hasVal = ko.unwrap(valueAccessor()),
           el = jquery(element);
         if (hasVal) {
           // setTimeout(function() { // needed for browser transitions????
@@ -48,7 +46,7 @@
       var obj = valueAccessor(),
         el = jquery(element);
       Object.keys(obj).forEach(function(cls) {
-        var hasVal = unwrap(obj[cls]);
+        var hasVal = ko.unwrap(obj[cls]);
         if (hasVal) {
           // setTimeout(function() { // needed for browser transitions
           el.addClass(cls);
@@ -110,7 +108,7 @@
   //---------------------------
   ko.bindingHandlers.setClass = {
     update: function(element, valueAccessor) {
-      var cls = unwrap(valueAccessor()),
+      var cls = ko.unwrap(valueAccessor()),
         el = jquery(element);
       if (valueAccessor._prevCls) {
         el.removeClass(valueAccessor._prevCls);
@@ -126,7 +124,7 @@
   //---------------------------
   ko.bindingHandlers.bgimg = {
     update: function(element, valueAccessor) {
-      var url = unwrap(valueAccessor());
+      var url = ko.unwrap(valueAccessor());
       jquery(element).css({
         "background-image": url ? ("url(" + url + ")") : "",
       });
@@ -136,7 +134,7 @@
   //---------------------------
   ko.bindingHandlers.img = {
     update: function(element, valueAccessor) {
-      var url = unwrap(valueAccessor());
+      var url = ko.unwrap(valueAccessor());
       if (url) {
         element.onerror = function() {
           element.onerror = null; // incase nophoto doesn't exist
@@ -154,7 +152,7 @@
   function createSizeHandler(name) {
     ko.bindingHandlers[name] = {
       update: function(element, valueAccessor) {
-        var size = ko.utils.unwrapObservable(valueAccessor());
+        var size = ko.unwrap(valueAccessor());
         size = ensurePx(size, "");
         jquery(element).css(name, size);
       },
@@ -178,7 +176,7 @@
   //---------------------------
   ko.bindingHandlers.position = {
     update: function(element, valueAccessor) {
-      var position = ko.utils.unwrapObservable(valueAccessor()) || {};
+      var position = ko.unwrap(valueAccessor()) || {};
       jquery(element).css({
         top: ensurePx(position.top, "0px"),
         left: ensurePx(position.left, "0px"),
@@ -192,7 +190,7 @@
   // //---------------------------
   // ko.bindingHandlers.fillheight = {
   //   update: function(element, valueAccessor) {
-  //     valueAccessor = unwrap(valueAccessor());
+  //     valueAccessor = ko.unwrap(valueAccessor());
   //     // http://stackoverflow.com/questions/90178/make-a-div-fill-the-remaining-screen-space
   //     // Element Height = Viewport height - element.offset.top - desired bottom margin
   //     // jquery(element).height(element.offsetParent.offsetHeight - element.offsetTop);
@@ -207,7 +205,7 @@
   //---------------------------
   ko.bindingHandlers.scrollTop = {
     update: function(element, valueAccessor) {
-      if (unwrap(valueAccessor())) {
+      if (ko.unwrap(valueAccessor())) {
         element.scrollIntoView();
       }
     },
@@ -217,7 +215,7 @@
   //---------------------------
   ko.bindingHandlers.scrollMiddle = {
     update: function(element, valueAccessor, allBindingsAccessor) {
-      if (unwrap(valueAccessor())) {
+      if (ko.unwrap(valueAccessor())) {
         var top, parent, up = allBindingsAccessor().up || 1;
         parent = element;
         while (up > 0 && parent.parentNode) {

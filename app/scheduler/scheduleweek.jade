@@ -1,21 +1,26 @@
-div(class="scheduleweek")
-  div(class="week-tbl header")
-    div(class="columns",data-bind="foreach:columns")
-      div(class="column",data-bind="width:$parent.columnWidth,text:tech.name")
-  div(class="week-tbl")
-    div(class="rows",data-bind="foreach:rows,height:totalHeight")
-      div(class="row",
-        data-bind="position:position,height:height,toggle:{beginsHour:beginsHour}")
-        span(class="hour",data-bind="text:$parent.getTime(index)")
+div(class="dock l3-160",data-bind="toggle:{'r-show':editorVm}")
 
-    div(class="columns",data-bind="foreach:columns,height:totalHeight")
-      div(class="column",data-bind="swcol:$data,width:$parent.columnWidth")
-        <!-- ko foreach:gones -->
-        div(class="gone",data-bind="position:position,height:height")
-        <!-- /ko -->
-        <!-- ko foreach:appts -->
-        dl(class="appt",data-bind="position:position,height:height")
-          dt Appt #1
-          dd Descriptions of Appt #1 goes here. Descriptions of Appt #1 goes here. Descriptions of Appt #1 goes here.
-          div(class="resizer")
-        <!-- /ko -->
+  div(class="scheduleweek dock-content")
+    div(class="week-tbl header")
+      div(class="columns",data-bind="foreach:columns")
+        div(class="column",data-bind="width:$parent.columnWidth,text:tech.name")
+    div(class="week-tbl body")
+      div(class="rows",data-bind="foreach:halfHourRows,height:totalHeight")
+        div(class="row",
+          data-bind="position:position,height:height,toggle:{beginsHour:beginsHour}")
+          span(class="hour",data-bind="text:$parent.getTime(index)")
+
+      div(class="columns",data-bind="wk:true,foreach:columns,height:totalHeight")
+        div(class="column",data-bind="swcol:$data,width:$parent.columnWidth")
+          <!-- ko foreach:gones -->
+          div(class="gone",data-bind="position:position,height:height")
+          <!-- /ko -->
+          <!-- ko foreach:appts -->
+          dl(class="appt",data-bind="position:position,height:height,active:selected")
+            dt(data-bind="text:timespan")
+            dd Descriptions of appointment goes here. Descriptions of appointment goes here. Descriptions of appointment goes here.
+            div(class="resizer") =
+          <!-- /ko -->
+
+  div(class="dock-right",data-bind="with:editorVm")
+    div(data-bind="template:viewTmpl",style="margin:10px")

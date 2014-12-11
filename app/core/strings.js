@@ -85,10 +85,10 @@ define("src/core/strings", [
       return dt.format("MM/DD/YYYY");
     },
     datetime: function(dt, isUtc) {
-      // Local by default ???
-      //@REVEIW: the web server should always return UTC dates, so i don't know about this default...
+      // display Local by default
+      // the web server should always return UTC dates, but we want to display in Local
       //to allow display of nullable dates
-      if (dt === null || dt === "") {
+      if (dt == null || dt === "") {
         return "";
       }
       if (isUtc) {
@@ -97,6 +97,20 @@ define("src/core/strings", [
         dt = moment(dt);
       }
       return dt.format("MM/DD/YYYY hh:mm a");
+    },
+    time: function(dt, isUtc) {
+      // display Local by default
+      // the web server should always return UTC dates, but we want to display in Local
+      //to allow display of nullable dates
+      if (dt == null || dt === "") {
+        return "";
+      }
+      if (isUtc) {
+        dt = moment.utc(dt);
+      } else {
+        dt = moment(dt);
+      }
+      return dt.format("h:mm a");
     },
     phone: function(val, outputFormat) {
       if (!val) {
@@ -142,6 +156,9 @@ define("src/core/strings", [
     },
     dt: function(val) {
       return strings.formatters.datetime(val);
+    },
+    t: function(val) {
+      return strings.formatters.time(val);
     },
     space: function(val) {
       val = (val || "") + ""; // make sure it's not null, undefined, or something other than a string

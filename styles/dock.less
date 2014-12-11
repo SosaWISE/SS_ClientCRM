@@ -108,6 +108,26 @@
       }
     }
   }
+  //
+  //
+  //
+  &.r3-160 {
+    @dockWidth: 160px;
+
+    > .dock-right {
+      right: -@dockWidth;
+      width: @dockWidth;
+    }
+    &.r-show {
+      > .dock-right {
+        right: 0px;
+      }
+      > .dock-content,
+      > .dock-bottom {
+        right: @dockWidth;
+      }
+    }
+  }
 
 
   //

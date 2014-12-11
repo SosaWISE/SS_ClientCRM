@@ -1,0 +1,35 @@
+div(class="ticket-editor")
+  //- div(data-bind="spinner:loading,spinner-rgb:'white'")
+  ul(class="edit-form")
+    li
+      label Start Time
+      input(type="text" data-bind="ukov:data.StartTime,timevalue:data.StartTime,valueUpdate:'keyup'")
+    li
+      label End Time
+      input(type="text" data-bind="ukov:data.EndTime,timevalue:data.EndTime,valueUpdate:'keyup'")
+    //- li
+    //-   span(class="label") Account ID
+    //-   input(type="text" data-bind="ukov:data.AccountId,value:data.AccountId,valueUpdate:'keyup'")
+    //- li
+    //-   span(class="label") Ticket Type
+    //-   div(data-bind="cvm:data.ticketTypeCvm")
+    //- li
+    //-   span(class="label") General Notes
+    //-   span(class="notes",data-bind="text:data.Notes")
+    //-   <!-- ko if:showNotesInput -->
+    //-   textarea(rows="5" data-bind="ukov:note,value:note,valueUpdate:'keyup'")
+    //-   <!-- /ko -->
+    //- li
+    //-   span(class="label") Monitoring Station Ticket#
+    //-   input(type="text" data-bind="ukov:data.MonitoringStationNo,value:data.MonitoringStationNo,valueUpdate:'keyup'")
+  div(class="actions")
+    //- <!-- ko if:showSaveAndSchedule -->
+    //- a(class="btn-bg",tabindex="0",data-bind="cmd:cmdSchedule") Save and Schedule
+    //- <!-- /ko -->
+    //- <!-- ko if:showSave -->
+    //- a(class="btn-bg",tabindex="0",data-bind="cmd:cmdSave") Save
+    //- <!-- /ko -->
+    //- <!-- ko if:showUserAccount -->
+    //- a(class="btn-bg",tabindex="0",data-bind="cmd:cmdUserAccount") User Account
+    //- <!-- /ko -->
+    a(class="btn-bg",tabindex="0",data-bind="cmd:clickCancel") Cancel

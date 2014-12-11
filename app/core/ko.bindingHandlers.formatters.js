@@ -95,6 +95,22 @@ define('src/core/ko.bindingHandlers.formatters', [
   ko.bindingHandlers.datetimetext = createFormatter('text', makeFormattedDatetimeValueAccessor);
 
 
+  //
+  // Time bindings
+  //
+  function makeFormattedTimeValueAccessor(valueAccessor) {
+    return function() {
+      var val = ko.unwrap(valueAccessor());
+      if (val instanceof Date) {
+        val = strings.formatters.time(val);
+      }
+      return val;
+    };
+  }
+  ko.bindingHandlers.timevalue = createFormatter('value', makeFormattedTimeValueAccessor);
+  ko.bindingHandlers.timetext = createFormatter('text', makeFormattedTimeValueAccessor);
+
+
 
   //
   // Phone bindings
