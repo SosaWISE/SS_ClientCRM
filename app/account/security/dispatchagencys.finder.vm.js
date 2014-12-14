@@ -130,29 +130,6 @@ define('src/account/security/dispatchagencys.finder.vm', [
         query: model,
       }, _this.gvm.list, utils.safeCallback(cb, notify.iferror));
 
-      // setTimeout(function() {
-      //   _this.maxLength = _this.maxLength || 5;
-      //   while (_this.gvm.list().length < _this.maxLength) {
-      //     _this.gvm.list.push({
-      //       DispatchAgencyID: _this.gvm.list().length + 1,
-      //       DispatchAgencyTypeName: model.CityName + ': DispatchAgencyTypeName',
-      //       AgencyNo: 'AgencyNo',
-      //       AgencyName: 'AgencyName',
-      //       DispatchPhone: 'DispatchPhone',
-      //     });
-      //   }
-      //   _this.maxLength--;
-      //   cb();
-      // }, 2000);
-      //@TODO: get correct api path and response format
-      // dataservice.boh.boh.read({
-      //   query: model,
-      // }, null, utils.safeCallback(null, function(err, resp) {
-      //   cb();
-      //   _this.gvm.list(resp.Value);
-      // }, function(err) {
-      //   notify.error(err);
-      // }));
     }, function(busy) {
       return !busy && !_this.cmdSelect.busy();
     });
@@ -163,19 +140,22 @@ define('src/account/security/dispatchagencys.finder.vm', [
         cb();
         return;
       }
-      alert('currently i do nothing...');
-      setTimeout(function() {
-        _this.layerResult = null;
-        closeLayer(_this);
-        cb();
-      }, 5000);
-      //@TODO: get correct api path and response format
-      // dataservice.boh.boh.save({}, null, utils.safeCallback(cb, function(err, resp) {
-      //   _this.layerResult = resp.Value;
+      // alert('currently i do nothing...');
+      // setTimeout(function() {
+      //   _this.layerResult = null;
       //   closeLayer(_this);
-      // }, function(err) {
-      //   notify.error(err);
-      // }));
+      //   cb();
+      // }, 5000);
+      // @TODO: get correct api path and response format
+      dataservice.monitoringstationsrv.accountDispatchAgencyAssignments.save({
+        id: _this.accountId,
+        data: _this.selectedAgencies,
+      }, null, utils.safeCallback(cb, function(err, resp) {
+        _this.layerResult = resp.Value;
+        closeLayer(_this);
+      }, function(err) {
+        notify.error(err);
+      }));
     }, function(busy) {
       return !busy && _this.gvm.list().length;
     });
