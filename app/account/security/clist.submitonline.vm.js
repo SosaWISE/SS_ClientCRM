@@ -103,7 +103,7 @@ define('src/account/security/clist.submitonline.vm', [
     dataservice.monitoringstationsrv.msAccounts.read({
       id: _this.accountId,
       link: 'DispatchAgencyAssignments',
-    }, null, utils.safeCallback(function(err, resp){
+    }, null, utils.safeCallback(function(err, resp) {
       console.log("Here is the response", resp);
       _this.gvm.list(resp.Value);
       cb();
