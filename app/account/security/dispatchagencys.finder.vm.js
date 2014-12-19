@@ -140,13 +140,6 @@ define('src/account/security/dispatchagencys.finder.vm', [
         cb();
         return;
       }
-      // alert('currently i do nothing...');
-      // setTimeout(function() {
-      //   _this.layerResult = null;
-      //   closeLayer(_this);
-      //   cb();
-      // }, 5000);
-      // @TODO: get correct api path and response format
       dataservice.monitoringstationsrv.accountDispatchAgencyAssignments.save({
         id: _this.accountId,
         data: _this.selectedAgencies,
@@ -209,6 +202,10 @@ define('src/account/security/dispatchagencys.finder.vm', [
       msg = 'Please wait for the agency to be selected.';
     }
     return msg;
+  };
+  DispatchAgencysFinderViewModel.prototype.editDispatchAgency = function(daItem, cb) {
+    var _this = this;
+    _this.layersVm.show();
   };
 
   return DispatchAgencysFinderViewModel;

@@ -43,7 +43,7 @@ define('src/account/security/dispatchagencys.gvm', [
         {
           id: 'ID',
           name: 'ID',
-          field: 'DaAssignmentId',
+          field: 'DispatchAgencyAssignmentID',
         }, {
           id: 'AgencyType',
           name: 'Agency Type',
@@ -55,15 +55,15 @@ define('src/account/security/dispatchagencys.gvm', [
         }, {
           id: 'AgencyName',
           name: 'Agency Name',
-          field: 'AgencyName',
+          field: 'DispatchAgencyName',
         }, {
           id: 'DispatchPhone',
           name: 'Dispatch Phone',
-          field: 'DispatchPhone',
+          field: 'Phone1',
         }, {
           id: 'StationVerfied',
           name: 'Station Verfied',
-          field: 'MonitoringStationVerfied',
+          field: 'IsVerified',
         },
       ],
     });
