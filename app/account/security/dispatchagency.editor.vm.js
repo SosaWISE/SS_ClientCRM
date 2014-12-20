@@ -109,21 +109,22 @@ define('src/account/security/dispatchagency.editor.vm', [
       return !busy && !_this.cmdDelete.busy();
     });
     _this.cmdDelete = ko.command(function(cb) {
-      alert('currently i delete nothing...');
-      setTimeout(function() {
-        _this.layerResult = 1; //@HACK: to tell grid the edit occurred
-        _this.isDeleted = true;
-        closeLayer(_this);
-        cb();
-      }, 5000);
-      //@TODO: get correct api path and response format
-      // dataservice.boh.boh.del(_this.data.model.___ID, null, utils.safeCallback(cb, function(err, resp) {
-      //   _this.layerResult =resp.Value || 1;
+      // alert('currently i delete nothing...');
+      // setTimeout(function() {
+      //   _this.layerResult = 1; //@HACK: to tell grid the edit occurred
       //   _this.isDeleted = true;
       //   closeLayer(_this);
-      // }, function(err) {
-      //   notify.error(err);
-      // }));
+      //   cb();
+      // }, 5000);
+
+      //@TODO: get correct api path and response format
+      dataservice.monitoringstationsrv.accountDispatchAgencyAssignments.del(_this.data.model.DispatchAgencyAssignmentID, null, utils.safeCallback(cb, function(err, resp) {
+        _this.layerResult = resp.Value || 1;
+        _this.isDeleted = true;
+        closeLayer(_this);
+      }, function(err) {
+        notify.error(err);
+      }));
     }, function(busy) {
       return !busy && _this.item && !_this.cmdSave.busy();
     });
