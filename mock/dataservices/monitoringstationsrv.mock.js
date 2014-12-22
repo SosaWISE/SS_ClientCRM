@@ -55,9 +55,9 @@ define("mock/dataservices/monitoringstationsrv.mock", [
           result = mockery.fromTemplate({
             "list|3-5": [ //
               {
-                DispatchAgencyAssignmentID: "DispatchAgencyAssignmentID",
+                DispatchAgencyAssignmentID: "@INC(dispatchAgencyAssignments)",
                 DispatchAgencyId: "DispatchAgencyId",
-                DispatchAgencyTypeId: "DispatchAgencyTypeId",
+                DispatchAgencyTypeId: "@FK(dispatchAgencyTypes)",
                 DispatchAgencyTypeName: "DispatchAgencyTypeName",
                 AccountId: "AccountId",
                 IndustryAccountID: "IndustryAccountID",
@@ -73,6 +73,55 @@ define("mock/dataservices/monitoringstationsrv.mock", [
               },
             ],
           }).list;
+          break;
+        case "details":
+          break;
+        default:
+          throw new Error("invalid link: " + params.link);
+      }
+      send(0, result, setter, cb);
+    };
+    dataservice.monitoringstationsrv.accounts.read = function(params, setter, cb) {
+      var result;
+      switch (params.link || null) {
+        case "details":
+          result = mockery.fromTemplate({
+            AccountID: "AccountID",
+            MonitoringStationOsId: "MonitoringStationOsId",
+            IndustryAccountId: "IndustryAccountId",
+            IndustryAccount2Id: "IndustryAccount2Id",
+            SystemTypeId: "SystemTypeId",
+            CellularTypeId: "CellularTypeId",
+            PanelTypeId: "PanelTypeId",
+            DslSeizureId: "DslSeizureId",
+            PanelItemId: "PanelItemId",
+            CellPackageItemId: "CellPackageItemId",
+            ContractId: "ContractId",
+            TechId: "TechId",
+            TechFullName: "TechFullName",
+            SalesRepId: "SalesRepId",
+            SalesRepFullName: "SalesRepFullName",
+            AccountPassword: "AccountPassword",
+            Csid: "Csid",
+            Csid2: "Csid2",
+            ReceiverLineId: "ReceiverLineId",
+            ReceiverLine2Id: "ReceiverLine2Id",
+            SystemTypeName: "SystemTypeName",
+            CellularTypeName: "CellularTypeName",
+            PanelTypeName: "PanelTypeName",
+            DslSeizure: "DslSeizure",
+          });
+          break;
+        default:
+          throw new Error("invalid link: " + params.link);
+      }
+      send(0, result, setter, cb);
+    };
+    dataservice.monitoringstationsrv.dispatchAgencyTypes.read = function(params, setter, cb) {
+      var result;
+      switch (params.link || null) {
+        case null:
+          result = dispatchAgencyTypes;
           break;
         default:
           throw new Error("invalid link: " + params.link);
@@ -108,8 +157,19 @@ define("mock/dataservices/monitoringstationsrv.mock", [
     // ]);
   })();
 
-  // // data used in mock function
-  // var asdf;
+  // data used in mock function
+  var dispatchAgencyTypes;
+
+  dispatchAgencyTypes = mockery.fromTemplate({
+    "list|3-5": [ //
+      {
+        DispatchAgencyTypeID: "@INC(dispatchAgencyTypes)",
+        MonitoringStationsOSId: "MonitoringStationsOSId",
+        DispatchAgencyType: "DispatchAgencyType @INC(dispatchAgencyTypes)",
+        MsAgencyTypeNo: "MsAgencyTypeNo",
+      },
+    ],
+  }).list;
 
   return mock;
 });

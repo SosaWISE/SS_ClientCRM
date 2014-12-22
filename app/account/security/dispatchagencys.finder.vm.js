@@ -1,14 +1,14 @@
-define('src/account/security/dispatchagencys.finder.vm', [
-  'src/account/default/address.validate.vm',
-  'src/core/combo.vm',
-  'src/dataservice',
-  'ko',
-  'src/slick/rowevent',
-  'src/slick/slickgrid.vm',
-  'src/ukov',
-  'src/core/notify',
-  'src/core/base.vm',
-  'src/core/utils',
+define("src/account/security/dispatchagencys.finder.vm", [
+  "src/account/default/address.validate.vm",
+  "src/core/combo.vm",
+  "src/dataservice",
+  "ko",
+  "src/slick/rowevent",
+  "src/slick/slickgrid.vm",
+  "src/ukov",
+  "src/core/notify",
+  "src/core/base.vm",
+  "src/core/utils",
 ], function(
   AddressValidateViewModel,
   ComboViewModel,
@@ -30,17 +30,17 @@ define('src/account/security/dispatchagencys.finder.vm', [
 
     CityName: {
       validators: [
-        ukov.validators.isRequired('City name is required'),
+        ukov.validators.isRequired("City name is required"),
       ],
     },
     StateAB: {
       validators: [
-        ukov.validators.isRequired('State is required'),
+        ukov.validators.isRequired("State is required"),
       ],
     },
     ZipCode: {
       validators: [
-        ukov.validators.isRequired('Zip code is required'),
+        ukov.validators.isRequired("Zip code is required"),
       ],
     },
   };
@@ -50,13 +50,13 @@ define('src/account/security/dispatchagencys.finder.vm', [
     DispatchAgencysFinderViewModel.super_.call(_this, options);
 
     _this.mixinLoad();
-    _this.focusFirst = ko.observable();
+    _this.initFocusFirst();
 
     _this.accountId = options.accountId;
     _this.data = ukov.wrap({
-      CityName: '',
-      StateAB: '',
-      ZipCode: '',
+      CityName: "",
+      StateAB: "",
+      ZipCode: "",
     }, schema);
 
     _this.data.StateCvm = new ComboViewModel({
@@ -74,7 +74,7 @@ define('src/account/security/dispatchagencys.finder.vm', [
       },
       plugins: [
         new RowEvent({
-          eventName: 'onDblClick',
+          eventName: "onDblClick",
           fn: function(item) {
             console.log(item);
             if (_this.selectedAgencies == null) {
@@ -87,26 +87,26 @@ define('src/account/security/dispatchagencys.finder.vm', [
       ],
       columns: [ //
         {
-          id: 'ID',
-          name: 'ID',
-          field: 'DispatchAgencyID',
+          id: "ID",
+          name: "ID",
+          field: "DispatchAgencyID",
           width: 30,
         }, {
-          id: 'AgencyType',
-          name: 'Agency Type',
-          field: 'DispatchAgencyType',
+          id: "AgencyType",
+          name: "Agency Type",
+          field: "DispatchAgencyType",
         }, {
-          id: 'AgencyNo',
-          name: 'Agency #',
-          field: 'MsAgencyNumber',
+          id: "AgencyNo",
+          name: "Agency #",
+          field: "MsAgencyNumber",
         }, {
-          id: 'AgencyName',
-          name: 'Agency Name',
-          field: 'DispatchAgencyName',
+          id: "AgencyName",
+          name: "Agency Name",
+          field: "DispatchAgencyName",
         }, {
-          id: 'DispatchPhone',
-          name: 'Dispatch Phone',
-          field: 'Phone1',
+          id: "DispatchPhone",
+          name: "Dispatch Phone",
+          field: "Phone1",
         },
       ],
       onSelectedRowsChanged: function(rows) {
@@ -135,13 +135,14 @@ define('src/account/security/dispatchagencys.finder.vm', [
     });
 
     _this.cmdSelect = ko.command(function(cb) {
-      if (!_this.selectedAgencies) {
-        notify.warn('Please select a dispatch agency', null, 7);
+      if (!_this.selectedAgencies || !_this.selectedAgencies.length) {
+        notify.warn("Please select a dispatch agency", null, 7);
         cb();
         return;
       }
-      dataservice.monitoringstationsrv.accountDispatchAgencyAssignments.save({
+      dataservice.monitoringstationsrv.msAccounts.save({
         id: _this.accountId,
+        link: 'DispatchAgencyAssignments',
         data: _this.selectedAgencies,
       }, null, utils.safeCallback(cb, function(err, resp) {
         _this.layerResult = resp.Value;
@@ -152,27 +153,17 @@ define('src/account/security/dispatchagencys.finder.vm', [
     }, function(busy) {
       return !busy && _this.gvm.list().length;
     });
-
-    //
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the rep id
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
-    });
   }
   utils.inherits(DispatchAgencysFinderViewModel, BaseViewModel);
-  DispatchAgencysFinderViewModel.prototype.viewTmpl = 'tmpl-security-dispatchagencys_finder';
+  DispatchAgencysFinderViewModel.prototype.viewTmpl = "tmpl-security-dispatchagencys_finder";
   DispatchAgencysFinderViewModel.prototype.width = 600;
-  DispatchAgencysFinderViewModel.prototype.height = 'auto';
+  DispatchAgencysFinderViewModel.prototype.height = "auto";
   DispatchAgencysFinderViewModel.prototype.onLoad = function() {
     var _this = this;
 
     dataservice.monitoringstationsrv.premiseAddress.read({
       id: _this.accountId,
-      link: 'AccountId',
+      link: "AccountId",
     }, null, utils.safeCallback(function(err, resp) {
       var premAddress = resp.Value,
         data = {
@@ -199,13 +190,9 @@ define('src/account/security/dispatchagencys.finder.vm', [
     var _this = this,
       msg;
     if (_this.cmdSelect.busy() && !_this.layerResult) {
-      msg = 'Please wait for the agency to be selected.';
+      msg = "Please wait for the agency to be selected.";
     }
     return msg;
-  };
-  DispatchAgencysFinderViewModel.prototype.editDispatchAgency = function(daItem, cb) {
-    var _this = this;
-    _this.layersVm.show();
   };
 
   return DispatchAgencysFinderViewModel;

@@ -1,17 +1,17 @@
-define('src/account/security/equipment.editor.vm', [
-  'src/app',
-  'src/config',
-  'src/core/querystring',
-  'src/account/security/securityhelper',
-  'src/dataservice',
-  'src/core/joiner',
-  'src/core/strings',
-  'src/core/combo.vm',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
-  'ko',
-  'src/ukov',
+define("src/account/security/equipment.editor.vm", [
+  "src/app",
+  "src/config",
+  "src/core/querystring",
+  "src/account/security/securityhelper",
+  "src/dataservice",
+  "src/core/joiner",
+  "src/core/strings",
+  "src/core/combo.vm",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/base.vm",
+  "ko",
+  "src/ukov",
 ], function(
   app,
   config,
@@ -37,13 +37,13 @@ define('src/account/security/equipment.editor.vm', [
   searchBarcodeSchema = {
     converter: strConverter,
     validators: [
-      ukov.validators.isRequired('Please enter a barcode'),
+      ukov.validators.isRequired("Please enter a barcode"),
     ],
   };
   searchPartNumSchema = {
     converter: ukov.converters.toUpper(),
     validators: [
-      ukov.validators.isRequired('Please enter a part #'),
+      ukov.validators.isRequired("Please enter a part #"),
     ],
   };
 
@@ -78,7 +78,7 @@ define('src/account/security/equipment.editor.vm', [
     AccountZoneAssignmentID: {}, //long
     AccountZoneTypeId: { //string
       validators: [
-        ukov.validators.isRequired('Please enter a Zone Type'),
+        ukov.validators.isRequired("Please enter a Zone Type"),
       ],
     },
     AccountEventId: {}, //int?
@@ -101,15 +101,15 @@ define('src/account/security/equipment.editor.vm', [
     EquipmentEditorViewModel.super_.call(_this, options);
     _this.mixinLoad();
     BaseViewModel.ensureProps(_this, [
-      // 'customerId',
-      'accountId',
-      'monitoringStationOsId',
-      'cache',
-      'addBy',
-      'nextZone',
+      // "customerId",
+      "accountId",
+      "monitoringStationOsId",
+      "cache",
+      "addBy",
+      "nextZone",
     ]);
     BaseViewModel.ensureProps(_this.cache, [
-      'reps',
+      "reps",
     ]);
 
     _this.item = _this.item || {
@@ -143,32 +143,32 @@ define('src/account/security/equipment.editor.vm', [
       selectedValue: _this.data.GPEmployeeId,
       nullable: true,
       fields: {
-        value: 'CompanyID',
-        text: 'FullName',
+        value: "CompanyID",
+        text: "FullName",
       },
     });
     _this.data.EquipmentLocationCvm = new ComboViewModel({
       selectedValue: _this.data.EquipmentLocationId,
       nullable: true,
       fields: {
-        value: 'EquipmentLocationID',
-        text: 'EquipmentLocationDesc',
+        value: "EquipmentLocationID",
+        text: "EquipmentLocationDesc",
       },
     });
     _this.data.ZoneTypeCvm = new ComboViewModel({
       selectedValue: _this.data.AccountZoneTypeId,
       fields: {
-        value: 'AccountZoneTypeId',
-        text: 'AccountZoneType',
+        value: "AccountZoneTypeId",
+        text: "AccountZoneType",
       },
     });
     _this.data.AccountEventCvm = new ComboViewModel({
       selectedValue: _this.data.AccountEventId,
       fields: {
-        value: 'AccountEventID',
-        // text: 'Description',
+        value: "AccountEventID",
+        // text: "Description",
         text: function(item) {
-          return strings.format('{0} ({1})', item.Description, item.AccountEventID);
+          return strings.format("{0} ({1})", item.Description, item.AccountEventID);
         },
       },
     });
@@ -190,27 +190,27 @@ define('src/account/security/equipment.editor.vm', [
 
 
     switch (_this.addBy) {
-      case 'barcode':
-        _this.title = 'Barcode';
-        _this.searchKey = ukov.wrap('', searchBarcodeSchema);
+      case "barcode":
+        _this.title = "Barcode";
+        _this.searchKey = ukov.wrap("", searchBarcodeSchema);
         break;
-      case 'existing':
-        _this.title = 'Add Third Party Equipment';
-        _this.viewTmpl = 'tmpl-security-existing_equipment_editor';
+      case "existing":
+        _this.title = "Add Third Party Equipment";
+        _this.viewTmpl = "tmpl-security-existing_equipment_editor";
         _this.width = 290;
 
         _this.data.EquipmentCvm = new ComboViewModel({
           selectedValue: _this.data.EquipmentId,
           fields: {
-            value: 'EquipmentID',
-            text: 'ShortName',
+            value: "EquipmentID",
+            text: "ShortName",
           },
         });
         break;
       default:
-      case 'part':
-        _this.title = 'Part #';
-        _this.searchKey = ukov.wrap('', searchPartNumSchema);
+      case "part":
+        _this.title = "Part #";
+        _this.searchKey = ukov.wrap("", searchPartNumSchema);
         break;
     }
     subscribeEquipment(_this);
@@ -248,14 +248,14 @@ define('src/account/security/equipment.editor.vm', [
       return !busy && !_this.cmdSearch.busy() && !_this.cmdDelete.busy();
     });
     _this.cmdDelete = ko.command(function(cb) {
-      notify.confirm('Delete?', 'Are you sure you want to delete this equipment item?', function(result) {
-        if (result !== 'yes') {
+      notify.confirm("Delete?", "Are you sure you want to delete this equipment item?", function(result) {
+        if (result !== "yes") {
           cb();
           return;
         }
         dataservice.msaccountsetupsrv.equipments.del(_this.item.AccountEquipmentID, null, utils.safeCallback(cb, function(err, resp) {
           if (!resp.Value) {
-            console.log('item already deleted or item does not exist');
+            console.log("item already deleted or item does not exist");
           }
           _this.layerResult = true;
           _this.isDeleted = true;
@@ -267,9 +267,9 @@ define('src/account/security/equipment.editor.vm', [
     });
   }
   utils.inherits(EquipmentEditorViewModel, BaseViewModel);
-  EquipmentEditorViewModel.prototype.viewTmpl = 'tmpl-security-equipment_editor';
+  EquipmentEditorViewModel.prototype.viewTmpl = "tmpl-security-equipment_editor";
   EquipmentEditorViewModel.prototype.width = 550;
-  EquipmentEditorViewModel.prototype.height = 'auto';
+  EquipmentEditorViewModel.prototype.height = "auto";
 
   function closeLayer(_this) {
     if (_this.layer) {
@@ -284,9 +284,9 @@ define('src/account/security/equipment.editor.vm', [
     var _this = this,
       msg;
     if (_this.cmdSave.busy() && !_this.layerResult) {
-      msg = 'Please wait for save to finish.';
+      msg = "Please wait for save to finish.";
     } else if (_this.cmdDelete.busy() && !_this.layerResult) {
-      msg = 'Please wait for delete to finish.';
+      msg = "Please wait for delete to finish.";
     }
     return msg;
   };
@@ -325,37 +325,37 @@ define('src/account/security/equipment.editor.vm', [
 
   EquipmentEditorViewModel.prototype.isUpgradeOptions = [ //
     {
-      value: 'CUST',
-      text: 'Customer',
+      value: "CUST",
+      text: "Customer",
     }, {
-      value: 'SALESREP',
-      text: 'Sales Rep',
+      value: "SALESREP",
+      text: "Sales Rep",
     }, {
-      value: 'TECH',
-      text: 'Technician',
+      value: "TECH",
+      text: "Technician",
     },
   ];
 
   function load_equipmentAccountZoneTypes(equipmentId, setter, cb) {
     dataservice.msaccountsetupsrv.equipments.read({
       id: equipmentId,
-      link: 'equipmentAccountZoneTypes',
+      link: "equipmentAccountZoneTypes",
     }, setter, cb);
   }
 
   function load_equipmentAccountZoneTypeEvents(_this, equipmentId, equipmentAccountZoneTypeId, monitoringStationOSId, setter, cb) {
-    readAccountSetupSrv(_this, 'equipments', equipmentId, 'equipmentAccountZoneTypeEvents', {
-      'equipmentAccountZoneTypeId': equipmentAccountZoneTypeId,
-      'monitoringStationOSId': monitoringStationOSId,
+    readAccountSetupSrv(_this, "equipments", equipmentId, "equipmentAccountZoneTypeEvents", {
+      "equipmentAccountZoneTypeId": equipmentAccountZoneTypeId,
+      "monitoringStationOSId": monitoringStationOSId,
     }, setter, cb);
   }
 
   function load_equipmentLocation(_this, cvm, monitoringStationOsId, cb) {
-    readAccountSetupSrv(_this, 'monitoringStationOS', monitoringStationOsId, 'equipmentLocations', {}, cvm.setList, cb);
+    readAccountSetupSrv(_this, "monitoringStationOS", monitoringStationOsId, "equipmentLocations", {}, cvm.setList, cb);
   }
 
   function load_existingEquipmentList(_this, setter, cb) {
-    readAccountSetupSrv(_this, 'monitoringStationOS', null, 'equipmentExistingList', {}, setter, cb);
+    readAccountSetupSrv(_this, "monitoringStationOS", null, "equipmentExistingList", {}, setter, cb);
   }
 
   function readAccountSetupSrv(_this, collectionName, id, link, query, setter, cb) {
@@ -433,10 +433,10 @@ define('src/account/security/equipment.editor.vm', [
     dataservice.qualify.salesrep.read({
       id: companyId,
     }, function(rep) {
-      // don't add duplicates
+      // don"t add duplicates
       if (!hasRep(rep.CompanyID)) {
         // normalize data
-        rep.FullName = strings.format('{0} - {1}', rep.CompanyID, strings.joinTrimmed(' ', rep.FirstName, rep.LastName));
+        rep.FullName = strings.format("{0} - {1}", rep.CompanyID, strings.joinTrimmed(" ", rep.FirstName, rep.LastName));
         // add
         cache.reps.push(rep);
       }
@@ -461,19 +461,19 @@ define('src/account/security/equipment.editor.vm', [
     });
 
     switch (_this.addBy) {
-      case 'barcode':
-        link = 'ByBarcode';
+      case "barcode":
+        link = "ByBarcode";
         barcodeId = searchKey;
         isExisting = false;
         break;
-      case 'existing':
-        link = ''; // by equipment id
+      case "existing":
+        link = ""; // by equipment id
         barcodeId = null;
         isExisting = true;
         break;
       default:
-      case 'part':
-        link = 'ByPartNumber';
+      case "part":
+        link = "ByPartNumber";
         barcodeId = null;
         isExisting = false;
         break;
@@ -514,7 +514,7 @@ define('src/account/security/equipment.editor.vm', [
           // Zone: _this.nextZone,
           IsExisting: isExisting,
           // defaults
-          AccountEquipmentUpgradeTypeId: 'CUST',
+          AccountEquipmentUpgradeTypeId: "CUST",
         });
         if (markClean) {
           _this.data.markClean({}, true);
