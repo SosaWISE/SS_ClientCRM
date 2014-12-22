@@ -1,11 +1,11 @@
 define("src/scheduler/scheduler.panel.vm", [
-  "src/scheduler/scheduleweek.vm",
+  "src/scheduler/scheduleday.vm",
   "src/core/layers.vm",
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
-  ScheduleWeekViewModel,
+  ScheduleDayViewModel,
   LayersViewModel,
   notify,
   utils,
@@ -41,7 +41,7 @@ define("src/scheduler/scheduler.panel.vm", [
     var _this = this;
 
     _this.list([
-      new ScheduleWeekViewModel({
+      new ScheduleDayViewModel({
         pcontroller: _this,
         id: "schedule",
         title: "Schedule",

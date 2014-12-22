@@ -1,15 +1,15 @@
 /* global describe, it, expect, beforeEach */
-define("src/scheduler/scheduleweek.vm.spec", [
-  "src/scheduler/scheduleweek.vm"
+define("src/scheduler/scheduleday.vm.spec", [
+  "src/scheduler/scheduleday.vm"
 ], function(
-  ScheduleWeekViewModel
+  ScheduleDayViewModel
 ) {
   "use strict";
 
-  describe("scheduleweek.vm", function() {
+  describe("scheduleday.vm", function() {
     // var vm;
     beforeEach(function() {
-      // vm = new ScheduleWeekViewModel({
+      // vm = new ScheduleDayViewModel({
       //   layersVm: true, //@HACK:
       //   startHour: 6,
       //   endHour: 24,
@@ -17,7 +17,7 @@ define("src/scheduler/scheduleweek.vm.spec", [
     });
 
     it("should NOT have a static `timeToRow` function", function() {
-      expect(ScheduleWeekViewModel.timeToRow).toBeUndefined();
+      expect(ScheduleDayViewModel.timeToRow).toBeUndefined();
     });
   });
 });

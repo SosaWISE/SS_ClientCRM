@@ -128,3 +128,76 @@
     }
   }
 }
+
+.month-title {
+  .user-select(none);
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+}
+.month {
+  .user-select(none);
+
+  // height: 200px;
+  width: 100%;
+  // border: 1px solid white;
+  padding: 5px;
+  background-color: rgba(0, 0, 0, 0.2);
+
+  .controls {
+    height: 25px;
+
+    .mnth,
+    .year {
+      .txt {
+        display: inline-block;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 25px;
+      }
+    }
+
+    .mnth {
+      float: left;
+      .txt {
+        min-width: 70px;
+      }
+    }
+    .year {
+      float: right;
+      .txt {
+        min-width: 35px;
+      }
+    }
+  }
+
+  ol.days {
+
+    li.weekDay,
+    li.day {
+      display: inline-block;
+      width: ~"calc(100% / 7)";
+      height: 20px;
+      text-align: center;
+    }
+
+    li.weekDay {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    li.day {
+      cursor: pointer;
+
+      &.selected,
+      &:hover {
+        .box-shadow(inset 0 0 1px 1px #FFF);
+      }
+      &.today {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+      &.outOfMonth {
+        color: #999;
+      }
+    }
+  }
+}

@@ -108,6 +108,23 @@
       }
     }
   }
+  &.l3-250 {
+    @dockWidth: 250px;
+
+    > .dock-left {
+      left: -@dockWidth;
+      width: @dockWidth;
+    }
+    &.l-show {
+      > .dock-left {
+        left: 0px;
+      }
+      > .dock-content,
+      > .dock-bottom {
+        left: @dockWidth;
+      }
+    }
+  }
   //
   //
   //

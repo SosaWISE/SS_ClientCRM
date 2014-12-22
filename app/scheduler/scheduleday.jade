@@ -1,6 +1,7 @@
-div(class="dock l3-160",data-bind="toggle:{'r-show':editorVm}")
+div(class="dock l3-250 l-show",data-bind="")
 
   div(class="scheduleweek dock-content")
+    div(data-bind="spinner:busy,spinner-rgb:'black'")
     div(class="week-tbl header")
       div(class="columns",data-bind="foreach:columns")
         div(class="column",data-bind="width:$parent.columnWidth,text:tech.name")
@@ -10,7 +11,7 @@ div(class="dock l3-160",data-bind="toggle:{'r-show':editorVm}")
           data-bind="position:position,height:height,toggle:{beginsHour:beginsHour}")
           span(class="hour",data-bind="text:$parent.getTime(index)")
 
-      div(class="columns",data-bind="wk:true,foreach:columns,height:totalHeight")
+      div(class="columns",data-bind="day:true,foreach:columns,height:totalHeight")
         div(class="column",data-bind="swcol:$data,width:$parent.columnWidth")
           <!-- ko foreach:gones -->
           div(class="gone",data-bind="position:position,height:height")
@@ -22,5 +23,8 @@ div(class="dock l3-160",data-bind="toggle:{'r-show':editorVm}")
             div(class="resizer") =
           <!-- /ko -->
 
-  div(class="dock-right",data-bind="with:editorVm")
-    div(data-bind="template:viewTmpl",style="margin:10px")
+  div(class="dock-left")
+    div(data-bind="template:{name:monthVm.viewTmpl,data:monthVm}",style="margin:0px 10px 10px 10px;")
+    <!-- ko if:editorVm() -->
+    div(data-bind="template:{name:editorVm().viewTmpl,data:editorVm()}",style="margin:10px")
+    <!-- /ko -->

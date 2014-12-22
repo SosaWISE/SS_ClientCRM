@@ -1,4 +1,5 @@
-define("src/scheduler/scheduleweek.vm", [
+define("src/scheduler/scheduleday.vm", [
+  "src/scheduler/month.vm",
   "src/scheduler/appt.vm",
   "jquery",
   "ko",
@@ -6,6 +7,7 @@ define("src/scheduler/scheduleweek.vm", [
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
+  MonthViewModel,
   ApptViewModel,
   jquery,
   ko,
@@ -22,15 +24,15 @@ define("src/scheduler/scheduleweek.vm", [
   //
   // ui bindings
   //
-  ko.bindingHandlers.wk = {
+  ko.bindingHandlers.day = {
     init: function(el, valueAccessor, allBindingsAccessor, viewModel) {
-      viewModel = viewModel;
       var currApptVm = null;
       var dragInfo = null;
       var $scrollEl = jquery(el).parent();
 
       function deselect() {
         currApptVm.selected(false);
+        currApptVm.data.reset();
         viewModel.editorVm(currApptVm = null);
       }
 
@@ -123,44 +125,12 @@ define("src/scheduler/scheduleweek.vm", [
   };
 
 
-  // techs on selected day
-  var dayTechs = [ //
-    {
-      name: "Hank",
-      gones: [ //
-        {
-          StartTime: null,
-          EndTime: new Date(2000, 1, 1, 6, 45, 0, 0),
-        }, {
-          StartTime: new Date(2000, 1, 1, 17, 0, 0, 0),
-          EndTime: null,
-        },
-      ],
-      appts: [ //
-        {
-          StartTime: new Date(2000, 1, 1, 6, 45, 0, 0),
-          EndTime: new Date(2000, 1, 1, 7, 30, 0, 0),
-        }, {
-          StartTime: new Date(2000, 1, 1, 8, 45, 0, 0),
-          EndTime: new Date(2000, 1, 1, 9, 30, 0, 0),
-        },
-      ],
-    }, {
-      name: "Frank",
-      gones: [ //
-        {
-          StartTime: null,
-          EndTime: new Date(2000, 1, 1, 8, 0, 0, 0),
-        },
-      ],
-    },
-  ];
   //
   //
   //
-  function ScheduleWeekViewModel(options) {
+  function ScheduleDayViewModel(options) {
     var _this = this;
-    ScheduleWeekViewModel.super_.call(_this, options);
+    ScheduleDayViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
       "layersVm",
     ]);
@@ -171,6 +141,7 @@ define("src/scheduler/scheduleweek.vm", [
 
     _this.halfHourRows = ko.observableArray([]);
     _this.columns = ko.observableArray([]);
+    _this.busy = ko.observable(false);
 
     var i, length, row;
     // number of half hours
@@ -188,23 +159,8 @@ define("src/scheduler/scheduleweek.vm", [
     }
     _this.totalHeight = _this.halfHourRows.peek().length * halfHourRowHeight;
 
-    _this.columns(dayTechs.map(function(tech) {
-      return {
-        tech: tech,
-        gones: !tech.gones ? [] : tech.gones.map(function(item) {
-          return ApptViewModel.toCalendarItem(false, item, _this.startHour, _this.endHour);
-        }),
-        appts: !tech.appts ? [] : tech.appts.map(function(item) {
-          return ApptViewModel.toCalendarItem(true, item, _this.startHour, _this.endHour);
-          // return new ApptViewModel({
-          //   item: item,
-          //   parent: _this,
-          // });
-        }),
-      };
-    }));
     _this.columnWidth = ko.computed(function() {
-      var length = _this.columns().length;
+      var length = _this.columns().length || 1;
       return (100 / length) + "%";
     });
 
@@ -223,22 +179,91 @@ define("src/scheduler/scheduleweek.vm", [
 
     _this.editorVm = ko.observable();
 
+    _this.monthVm = new MonthViewModel();
+    _this.monthVm.selectedDate.subscribe(_this.selectedDateChanged, _this);
+    _this.monthVm.selectDate(new Date(2014, 11, 21));
+
     //
     //events
     //
   }
 
-  utils.inherits(ScheduleWeekViewModel, ControllerViewModel);
-  ScheduleWeekViewModel.prototype.viewTmpl = "tmpl-scheduler-scheduleweek";
+  utils.inherits(ScheduleDayViewModel, ControllerViewModel);
+  ScheduleDayViewModel.prototype.viewTmpl = "tmpl-scheduler-scheduleday";
 
   //
   // members
   //
 
-  ScheduleWeekViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
+  ScheduleDayViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
     //var _this = this;
     join = join;
   };
 
-  return ScheduleWeekViewModel;
+  ScheduleDayViewModel.prototype.selectedDateChanged = function(selectedDate) {
+    var _this = this;
+
+    // clear
+    _this.columns([]);
+
+    _this.busy(true);
+    setTimeout(function() {
+      _this.busy(false);
+      if (selectedDate.getFullYear() !== 2014 || selectedDate.getMonth() !== 11 || selectedDate.getDate() !== 21) {
+        return;
+      }
+
+      _this.columns(dayTechs.map(function(tech) {
+        return {
+          tech: tech,
+          gones: !tech.gones ? [] : tech.gones.map(function(item) {
+            return ApptViewModel.toCalendarItem(false, item, _this.startHour, _this.endHour);
+          }),
+          appts: !tech.appts ? [] : tech.appts.map(function(item) {
+            return ApptViewModel.toCalendarItem(true, item, _this.startHour, _this.endHour);
+            // return new ApptViewModel({
+            //   item: item,
+            //   parent: _this,
+            // });
+          }),
+        };
+      }));
+    }, 500);
+  };
+  // techs on selected day
+  var dayTechs = [ //
+    {
+      name: "Hank",
+      gones: [ //
+        {
+          StartTime: null,
+          EndTime: new Date(2014, 11, 21, 6, 45, 0, 0),
+        }, {
+          StartTime: new Date(2014, 11, 21, 17, 0, 0, 0),
+          EndTime: null,
+        },
+      ],
+      appts: [ //
+        {
+          ID: 1,
+          StartTime: new Date(2014, 11, 21, 6, 45, 0, 0),
+          EndTime: new Date(2014, 11, 21, 7, 30, 0, 0),
+        }, {
+          ID: 2,
+          StartTime: new Date(2014, 11, 21, 8, 45, 0, 0),
+          EndTime: new Date(2014, 11, 21, 9, 30, 0, 0),
+        },
+      ],
+    }, {
+      name: "Frank",
+      gones: [ //
+        {
+          StartTime: null,
+          EndTime: new Date(2014, 11, 21, 8, 0, 0, 0),
+        },
+      ],
+    },
+  ];
+
+  return ScheduleDayViewModel;
 });
