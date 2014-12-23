@@ -151,7 +151,7 @@ define('src/crm/app', [
         options: {
           id: 'sockets',
           title: 'Sockets',
-          ico: '&#128101;',
+          icoClass: 'ico fa fa-3x fa-tasks',
         },
         routes: [ //
           {
