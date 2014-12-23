@@ -21,7 +21,7 @@ define('src/crm/app', [
         routePart: routePart,
         id: 'login',
         title: 'Secure Login',
-        ico: null,
+        icoClass: null,
       });
     },
     addAnonRoutes: function(router, loginVm) {
@@ -39,7 +39,7 @@ define('src/crm/app', [
         options: {
           id: 'home',
           title: 'Home',
-          ico: '&#8962;',
+          icoClass: 'ico fa fa-3x fa-home',
         },
         routes: [ //
           {
@@ -54,7 +54,7 @@ define('src/crm/app', [
         options: {
           id: 'accounts',
           title: 'Accounts',
-          ico: '&#128101;',
+          icoClass: 'ico fa fa-3x fa-shield',
         },
         routes: [ //
           {
@@ -73,7 +73,7 @@ define('src/crm/app', [
         options: {
           id: 'surveys',
           title: 'Surveys',
-          ico: '&#128101;',
+          icoClass: 'ico fa fa-3x fa-align-left rotate180',
         },
         routes: [ //
           {
@@ -91,7 +91,7 @@ define('src/crm/app', [
         options: {
           id: 'swing',
           title: 'Swing',
-          ico: '&#128101;',
+          icoClass: 'ico fa fa-3x fa-exchange',
         },
         routes: [ //
           {
@@ -106,7 +106,7 @@ define('src/crm/app', [
         options: {
           id: 'inventory',
           title: 'Inventory',
-          ico: '&#128101;',
+          icoClass: 'ico fa fa-3x fa-barcode',
         },
         routes: [ //
           {
@@ -136,7 +136,7 @@ define('src/crm/app', [
         options: {
           id: 'scheduling',
           title: 'Scheduling',
-          ico: '&#128101;',
+          icoClass: 'ico fa fa-3x fa-calendar',
         },
         routes: [ //
           {
@@ -151,7 +151,7 @@ define('src/crm/app', [
         options: {
           id: 'hr',
           title: 'HR',
-          ico: '&#128101;',
+          icoClass: 'ico fa fa-3x fa-users',
         },
         routes: [ //
           {

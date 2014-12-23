@@ -36,7 +36,7 @@ html
             a(data-bind="css:id,cmd:$parent.clickPanel")
               div(data-bind="visible:active")
                 div(class="indicator")
-              span(class="ico", data-bind="html:ico")
+              span(data-bind="attr:{class:icoClass}")
               span(class="txt", data-bind="text:title")
           <!-- /ko -->
           a(class="logout",data-bind="cmd:cmdLogout")
