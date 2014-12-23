@@ -17,13 +17,25 @@ define("src/scheduler/appt.vm", [
 
   var rowHeight = 7; //
 
-  // var nullStrConverter = ukov.converters.nullString();
+  function getStartDate(model) {
+    return model._startDate;
+  }
   var schema = {
     _model: true,
     TicketID: {},
 
-    StartTime: {},
-    EndTime: {},
+    StartTime: {
+      converter: ukov.converters.time(getStartDate),
+      validators: [
+        ukov.validators.isRequired("Start Time is required"),
+      ],
+    },
+    EndTime: {
+      converter: ukov.converters.time(getStartDate),
+      validators: [
+        ukov.validators.isRequired("Start Time is required"),
+      ],
+    },
 
     AccountId: {
       converter: ukov.converters.number(0),
@@ -54,13 +66,28 @@ define("src/scheduler/appt.vm", [
       "EndTime",
     ]);
 
-    _this.item = _this.item || {};
+    var startDate = new Date(_this.item.StartTime.valueOf());
+    _this.item._startDate = startDate;
+    _this.startDateText = strings.format("{0:d}", startDate);
+
+    function setupDate(dt) {
+      // ensure date has the same date as start tIme
+      dt.setFullYear(startDate.getFullYear());
+      dt.setMonth(startDate.getMonth());
+      dt.setDate(startDate.getDate());
+      // remove seconds and milliseconds
+      dt.setSeconds(0);
+    }
+    setupDate(_this.item.StartTime);
+    setupDate(_this.item.EndTime);
+
     _this.data = ukov.wrap(_this.item, schema);
 
     _this.position = ko.computed({
       deferEvaluation: true,
       read: function() {
-        var row = timeToRow(_this.startHour, _this.data.StartTime());
+        _this.data.StartTime(); // subscribe
+        var row = timeToRow(_this.startHour, _this.data.model.StartTime);
         return {
           top: row * rowHeight,
           left: "0px",
@@ -70,13 +97,9 @@ define("src/scheduler/appt.vm", [
         // convert from screen position to time
         var row = Math.floor(position.top / rowHeight);
         var timeTicks = rowToTicks(_this.startHour, row);
-        //
-        var startTime = _this.data.StartTime.peek();
-        var endTime = _this.data.EndTime.peek();
-        // ensure end tIme has the same date as start tIme
-        endTime.setFullYear(startTime.getFullYear());
-        endTime.setMonth(startTime.getMonth());
-        endTime.setDate(startTime.getDate());
+        // clone date values that will be changed
+        var startTime = new Date(_this.data.model.StartTime.valueOf());
+        var endTime = new Date(_this.data.model.EndTime.valueOf());
         // find delta between StartTime and EndTime
         var delta = endTime.valueOf() - startTime.valueOf();
 
@@ -90,21 +113,19 @@ define("src/scheduler/appt.vm", [
     _this.height = ko.computed({
       deferEvaluation: true,
       read: function() {
-        var row = timeToRow(_this.startHour, _this.data.StartTime());
-        var nRows = timeToRow(_this.startHour, _this.data.EndTime(), _this.endHour) - row;
+        _this.data.StartTime(); // subscribe
+        _this.data.EndTime(); // subscribe
+        var row = timeToRow(_this.startHour, _this.data.model.StartTime);
+        var nRows = timeToRow(_this.startHour, _this.data.model.EndTime, _this.endHour) - row;
         return Math.max(5, nRows * rowHeight);
       },
       write: function(height) {
         var nRows = height / rowHeight;
-        var row = timeToRow(_this.startHour, _this.data.StartTime.peek());
+        var startTime = _this.data.model.StartTime;
+        var row = timeToRow(_this.startHour, startTime);
         var timeTicks = rowToTicks(_this.startHour, nRows + row);
-        //
-        var startTime = _this.data.StartTime.peek();
-        var endTime = _this.data.EndTime.peek();
-        // ensure end tIme has the same date as start tIme
-        endTime.setFullYear(startTime.getFullYear());
-        endTime.setMonth(startTime.getMonth());
-        endTime.setDate(startTime.getDate());
+        // clone date values that will be changed
+        var endTime = new Date(_this.data.model.EndTime.valueOf());
 
         endTime.setHours(0, 0, 0, 0); // remove time from date
         endTime = new Date(endTime.valueOf() + timeTicks);
@@ -114,9 +135,12 @@ define("src/scheduler/appt.vm", [
 
     _this.timespan = ko.computed(function() {
       var data = _this.data;
-      var formatTime = strings.formatters.time;
-      return formatTime(data.StartTime()) + " - " + formatTime(data.EndTime());
+      var model = data.model;
+      data.StartTime(); // subscribe
+      data.EndTime(); // subscribe
+      return strings.format("{0:t} - {1:t}", model.StartTime, model.EndTime);
     });
+
 
     _this.selected = ko.observable(false);
 
@@ -125,6 +149,9 @@ define("src/scheduler/appt.vm", [
     //events
     //
     _this.clickCancel = function() {
+      // reset data
+      _this.data.reset();
+      //
       _this.layerResult = null;
       closeLayer(_this);
     };
@@ -161,7 +188,7 @@ define("src/scheduler/appt.vm", [
 
   function timeToRow(startHour, dt, endHour) {
     var hours, minutes = 0;
-    if (dt) {
+    if (utils.isDate(dt)) {
       hours = dt.getHours();
       minutes = dt.getMinutes();
     } else {

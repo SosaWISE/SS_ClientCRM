@@ -1,10 +1,12 @@
 define("src/scheduler/scheduler.panel.vm", [
+  "src/scheduler/tech.vm",
   "src/scheduler/scheduleday.vm",
   "src/core/layers.vm",
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
+  TechViewModel,
   ScheduleDayViewModel,
   LayersViewModel,
   notify,
@@ -45,6 +47,12 @@ define("src/scheduler/scheduler.panel.vm", [
         pcontroller: _this,
         id: "schedule",
         title: "Schedule",
+        layersVm: _this.layersVm,
+      }),
+      new TechViewModel({
+        pcontroller: _this,
+        id: "tech",
+        title: "Tech",
         layersVm: _this.layersVm,
       }),
     ]);

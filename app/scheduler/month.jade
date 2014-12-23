@@ -16,6 +16,6 @@ div(class="month")
     <!-- /ko -->
     <!-- ko foreach:days -->
     li(class="day",data-bind="cmd:$parent.clickDate,toggle:{selected:selected,outOfMonth:!inMonth(),today:today}")
-      span(class="num",data-bind="text:date")
+      span(class="num",data-bind="text:date,fadein:date")
     <!-- /ko -->
 

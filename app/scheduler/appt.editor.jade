@@ -2,14 +2,17 @@ div(class="ticket-editor")
   //- div(data-bind="spinner:loading,spinner-rgb:'white'")
   ul(class="edit-form")
     li
-      label Start Time
-      input(type="text" data-bind="ukov:data.StartTime,timevalue:data.StartTime,valueUpdate:'keyup'")
+      span(class="label") Date
+      span(class="value",data-bind="text:startDateText")
     li
-      label End Time
-      input(type="text" data-bind="ukov:data.EndTime,timevalue:data.EndTime,valueUpdate:'keyup'")
+      span(class="label") Start Time
+      input(type="text",data-bind="ukov:data.StartTime,timevalue:data.StartTime,valueUpdate:'keyup'")
+    li
+      span(class="label") End Time
+      input(type="text",data-bind="ukov:data.EndTime,timevalue:data.EndTime,valueUpdate:'keyup'")
     //- li
     //-   span(class="label") Account ID
-    //-   input(type="text" data-bind="ukov:data.AccountId,value:data.AccountId,valueUpdate:'keyup'")
+    //-   input(type="text",data-bind="ukov:data.AccountId,value:data.AccountId,valueUpdate:'keyup'")
     //- li
     //-   span(class="label") Ticket Type
     //-   div(data-bind="cvm:data.ticketTypeCvm")
@@ -17,11 +20,11 @@ div(class="ticket-editor")
     //-   span(class="label") General Notes
     //-   span(class="notes",data-bind="text:data.Notes")
     //-   <!-- ko if:showNotesInput -->
-    //-   textarea(rows="5" data-bind="ukov:note,value:note,valueUpdate:'keyup'")
+    //-   textarea(rows="5",data-bind="ukov:note,value:note,valueUpdate:'keyup'")
     //-   <!-- /ko -->
     //- li
     //-   span(class="label") Monitoring Station Ticket#
-    //-   input(type="text" data-bind="ukov:data.MonitoringStationNo,value:data.MonitoringStationNo,valueUpdate:'keyup'")
+    //-   input(type="text",data-bind="ukov:data.MonitoringStationNo,value:data.MonitoringStationNo,valueUpdate:'keyup'")
   div(class="actions")
     //- <!-- ko if:showSaveAndSchedule -->
     //- a(class="btn-bg",tabindex="0",data-bind="cmd:cmdSchedule") Save and Schedule

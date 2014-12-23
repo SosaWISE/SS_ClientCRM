@@ -24,7 +24,9 @@ div(class="dock l3-250 l-show",data-bind="")
           <!-- /ko -->
 
   div(class="dock-left")
-    div(data-bind="template:{name:monthVm.viewTmpl,data:monthVm}",style="margin:0px 10px 10px 10px;")
-    <!-- ko if:editorVm() -->
+    <!-- ko if:editorVm -->
     div(data-bind="template:{name:editorVm().viewTmpl,data:editorVm()}",style="margin:10px")
+    <!-- /ko -->
+    <!-- ko if:!editorVm() -->
+    div(data-bind="template:{name:monthVm.viewTmpl,data:monthVm}",style="margin:0px 10px 10px 10px;")
     <!-- /ko -->
