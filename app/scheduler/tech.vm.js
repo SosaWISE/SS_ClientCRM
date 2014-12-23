@@ -75,7 +75,7 @@ define("src/scheduler/tech.vm", [
 
     });
 
-    _this.abilitys = ko.observableArray();
+    _this.skills = ko.observableArray();
 
     var i = 7;
     var d = moment();
@@ -102,7 +102,7 @@ define("src/scheduler/tech.vm", [
     _this.toggleWeekDay = function(vm) {
       vm.checked(!vm.checked());
     };
-    _this.toggleAbility = function(vm) {
+    _this.toggleSkill = function(vm) {
       vm.checked(!vm.checked());
     };
   }
@@ -118,27 +118,27 @@ define("src/scheduler/tech.vm", [
     var _this = this;
     var cb = join.add();
 
-    var allAbilitys = [];
+    var allSkills = [];
     for (var i = 0; i < 10; i++) {
-      allAbilitys.push({
+      allSkills.push({
         ID: i + 1,
-        Name: "Ability " + (i + 1),
+        Name: "Skill " + (i + 1),
       });
     }
 
-    var techAbilitys = [ //
+    var techSkills = [ //
       {
         TechId: 1,
-        AbilityId: 1,
+        SkillId: 1,
       }, {
         TechId: 1,
-        AbilityId: 3,
+        SkillId: 3,
       }, {
         TechId: 1,
-        AbilityId: 5,
+        SkillId: 5,
       }, {
         TechId: 1,
-        AbilityId: 8,
+        SkillId: 8,
       },
     ];
 
@@ -151,19 +151,19 @@ define("src/scheduler/tech.vm", [
         return;
       }
 
-      var techAbilitysMap = {};
-      techAbilitys.forEach(function(item) {
-        techAbilitysMap[item.AbilityId] = true;
+      var techSkillsMap = {};
+      techSkills.forEach(function(item) {
+        techSkillsMap[item.SkillId] = true;
       });
 
-      var v = allAbilitys.map(function(item) {
+      var v = allSkills.map(function(item) {
         return {
-          AbilityId: item.ID,
+          SkillId: item.ID,
           Name: item.Name,
-          checked: ko.observable(techAbilitysMap[item.ID]),
+          checked: ko.observable(techSkillsMap[item.ID]),
         };
       });
-      _this.abilitys(v);
+      _this.skills(v);
     });
   };
 

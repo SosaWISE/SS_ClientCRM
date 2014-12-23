@@ -20,18 +20,23 @@ define("src/scheduler/appt.vm", [
   function getStartDate(model) {
     return model._startDate;
   }
+
+  function removeSeconds(dt) {
+    dt.setSeconds(0, 0);
+    return dt;
+  }
   var schema = {
     _model: true,
     TicketID: {},
 
     StartTime: {
-      converter: ukov.converters.time(getStartDate),
+      converter: ukov.converters.time(getStartDate, removeSeconds),
       validators: [
         ukov.validators.isRequired("Start Time is required"),
       ],
     },
     EndTime: {
-      converter: ukov.converters.time(getStartDate),
+      converter: ukov.converters.time(getStartDate, removeSeconds),
       validators: [
         ukov.validators.isRequired("Start Time is required"),
       ],

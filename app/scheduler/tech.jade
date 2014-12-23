@@ -15,9 +15,9 @@ div(class="dock l3-250",data-bind="")
           input(type="text",placeholder="End Time",
             data-bind="ukov:EndTime,timevalue:EndTime,valueUpdate:'keyup',enable:checked")
 
-    div(class="abilitys")
-      ol(data-bind="foreach:abilitys")
-        li(class="ability")
-          div(class="checkbox",data-bind="cmd:$parent.toggleAbility")
+    div(class="skills")
+      ol(data-bind="foreach:skills")
+        li(class="skill")
+          div(class="checkbox",data-bind="cmd:$parent.toggleSkill")
             a(class="btn small",data-bind="active:checked")
             span(data-bind="text:Name")
