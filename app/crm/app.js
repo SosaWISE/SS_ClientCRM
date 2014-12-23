@@ -121,7 +121,7 @@ define('src/crm/app', [
         options: {
           id: 'scheduler',
           title: 'Scheduler',
-          ico: '&#128101;',
+          icoClass: 'ico fa fa-3x fa-calendar',
         },
         routes: [ //
           {
