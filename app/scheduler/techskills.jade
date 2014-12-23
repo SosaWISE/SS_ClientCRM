@@ -1,0 +1,6 @@
+div(class="tech-skills")
+  ol(data-bind="foreach:skills")
+    li(class="skill")
+      div(class="checkbox")
+        a(class="btn small disabled",data-bind="active:checked")
+        span(style="cursor:default",data-bind="text:Name")

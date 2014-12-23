@@ -1,0 +1,12 @@
+div(class="tech-schedule",data-bind="foreach:weekDays")
+  ul(class="edit-form")
+    li(class="label")
+      div(class="checkbox",data-bind="cmd:$parent.toggleWeekDay")
+        a(class="btn small",data-bind="active:checked")
+        span(data-bind="text:day")
+    li
+      input(type="text",placeholder="Start Time",
+        data-bind="ukov:StartTime,timevalue:StartTime,valueUpdate:'keyup',enable:checked")
+    li
+      input(type="text",placeholder="End Time",
+        data-bind="ukov:EndTime,timevalue:EndTime,valueUpdate:'keyup',enable:checked")

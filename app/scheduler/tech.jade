@@ -1,23 +1,15 @@
 div(class="dock l3-250",data-bind="")
-
   div(class="tech dock-content")
-
-    div(class="schedule",data-bind="foreach:weekDays")
-      ul(class="edit-form")
-        li(class="label")
-          div(class="checkbox",data-bind="cmd:$parent.toggleWeekDay")
-            a(class="btn small",data-bind="active:checked")
-            span(data-bind="text:day")
-        li
-          input(type="text",placeholder="Start Time",
-            data-bind="ukov:StartTime,timevalue:StartTime,valueUpdate:'keyup',enable:checked")
-        li
-          input(type="text",placeholder="End Time",
-            data-bind="ukov:EndTime,timevalue:EndTime,valueUpdate:'keyup',enable:checked")
-
-    div(class="skills")
-      ol(data-bind="foreach:skills")
-        li(class="skill")
-          div(class="checkbox",data-bind="cmd:$parent.toggleSkill")
-            a(class="btn small",data-bind="active:checked")
-            span(data-bind="text:Name")
+    <!-- ko if:scheduleVm -->
+    div(data-bind="template:{name:scheduleVm().viewTmpl+'_editor',data:scheduleVm()}")
+    <!-- /ko -->
+    <!-- ko if:skillsVm -->
+    div(data-bind="template:{name:skillsVm().viewTmpl+'_editor',data:skillsVm()}")
+    <!-- /ko -->
+    <!-- ko if:scheduleVm -->
+    div(data-bind="template:{name:scheduleVm().viewTmpl,data:scheduleVm()}",
+      style="color:#b03060;")
+    <!-- /ko -->
+    <!-- ko if:skillsVm -->
+    div(data-bind="template:{name:skillsVm().viewTmpl,data:skillsVm()}")
+    <!-- /ko -->

@@ -1,0 +1,6 @@
+div(class="tech-skills")
+  ol(data-bind="foreach:skills")
+    li(class="skill")
+      div(class="checkbox",data-bind="cmd:$parent.toggleSkill")
+        a(class="btn small",data-bind="active:checked")
+        span(data-bind="text:Name")

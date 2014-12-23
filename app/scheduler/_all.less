@@ -133,24 +133,48 @@
     &.dock-content {
       overflow: hidden;
     }
+  }
+}
 
-    .schedule {
-      margin: 10px;
+.tech-schedule {
+  margin: 10px;
 
-      ul.edit-form > li {
-        display: inline-block;
-        width: 120px;
-        margin-right: 5px;
+  ul.edit-form {
+    white-space: nowrap;
+
+    > li {
+      display: inline-block;
+      width: 120px !important;
+      margin-right: 5px;
+
+      &:not(.label) span {
+        display: block;
+        padding: 8px 0px 3px 0px;
       }
     }
+  }
+}
+.tech-skills {
+  margin: 10px;
 
-    .skills {
-      margin: 10px;
+  ol li.skill {
+    display: inline-block;
+    @skillWidth: 150px;
+    width: @skillWidth;
 
-      ol li.skill {
-        display: inline-block;
-        width: 150px;
-      }
+    a {
+      position: relative;
+    }
+
+    span {
+      width: @skillWidth - 35px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      display: inline-block;
+
+      line-height: 22px;
+      vertical-align: middle;
     }
   }
 }

@@ -1,7 +1,7 @@
-define('src/hr/hr-cache', [
-  'src/dataservice',
-  'ko',
-  'src/core/cacher',
+define("src/hr/hr-cache", [
+  "src/dataservice",
+  "ko",
+  "src/core/cacher",
 ], function(
   dataservice,
   ko,
@@ -9,7 +9,7 @@ define('src/hr/hr-cache', [
 ) {
   "use strict";
 
-  var prefix = 'hr-',
+  var prefix = "hr-",
     hrcache, hardcodedCache;
 
   hrcache = {
@@ -27,35 +27,38 @@ define('src/hr/hr-cache', [
         return;
       }
       switch (name) {
-        case 'payscales':
-          ensureType(name, 'PayscaleID', cb);
+        case "payscales":
+          ensureType(name, "PayscaleID", cb);
           break;
-        case 'phoneCellCarriers':
-          ensureType(name, 'PhoneCellCarrierID', cb);
+        case "phoneCellCarriers":
+          ensureType(name, "PhoneCellCarrierID", cb);
           break;
-        case 'roleLocations':
-          ensureType(name, 'RoleLocationID', cb);
+        case "roleLocations":
+          ensureType(name, "RoleLocationID", cb);
           break;
-        case 'schools':
-          ensureType(name, 'SchoolID', cb);
+        case "schools":
+          ensureType(name, "SchoolID", cb);
           break;
-        case 'seasons':
-          ensureType(name, 'SeasonID', cb);
+        case "seasons":
+          ensureType(name, "SeasonID", cb);
           break;
-        case 'teams':
-          ensureType(name, 'TeamID', cb);
+        case "skills":
+          ensureType(name, "ID", cb);
           break;
-        case 'teamLocations':
-          ensureType(name, 'TeamLocationID', cb);
+        case "teams":
+          ensureType(name, "TeamID", cb);
           break;
-        case 'userEmployeeTypes':
-          ensureType(name, 'UserEmployeeTypeID', cb);
+        case "teamLocations":
+          ensureType(name, "TeamLocationID", cb);
           break;
-        case 'userTypes':
-          ensureType(name, 'UserTypeID', cb);
+        case "userEmployeeTypes":
+          ensureType(name, "UserEmployeeTypeID", cb);
+          break;
+        case "userTypes":
+          ensureType(name, "UserTypeID", cb);
           break;
         default:
-          throw new Error(name + ' not implemented');
+          throw new Error(name + " not implemented");
       }
     },
   };
@@ -70,93 +73,93 @@ define('src/hr/hr-cache', [
     shirtSizes: ko.observableArray([ //
       {
         ID: 1,
-        Txt: 'XXS'
+        Txt: "XXS"
       }, {
         ID: 2,
-        Txt: 'XS'
+        Txt: "XS"
       }, {
         ID: 3,
-        Txt: 'S'
+        Txt: "S"
       }, {
         ID: 4,
-        Txt: 'M'
+        Txt: "M"
       }, {
         ID: 5,
-        Txt: 'L'
+        Txt: "L"
       }, {
         ID: 6,
-        Txt: 'XL'
+        Txt: "XL"
       }, {
         ID: 7,
-        Txt: 'XXL'
+        Txt: "XXL"
       }, {
         ID: 8,
-        Txt: 'XXXL'
+        Txt: "XXXL"
       },
     ]),
     hatSizes: ko.observableArray([ //
       {
         ID: 1,
-        Txt: 'S'
+        Txt: "S"
       }, {
         ID: 2,
-        Txt: 'M'
+        Txt: "M"
       }, {
         ID: 3,
-        Txt: 'L'
+        Txt: "L"
       },
     ]),
     sexs: ko.observableArray([ //
       {
         ID: 1,
-        Txt: 'Male'
+        Txt: "Male"
       }, {
         ID: 2,
-        Txt: 'Female'
+        Txt: "Female"
       },
     ]),
     maritalStatuses: ko.observableArray([ //
       {
         ID: false,
-        Txt: 'Single'
+        Txt: "Single"
       }, {
         ID: true,
-        Txt: 'Married'
+        Txt: "Married"
       },
     ]),
 
     docStatuses: ko.observableArray([ //
       {
         ID: 1,
-        Txt: 'Not Received',
+        Txt: "Not Received",
       }, {
         ID: 2,
-        Txt: 'Incomplete',
+        Txt: "Incomplete",
       }, {
         ID: 3,
-        Txt: 'Complete',
+        Txt: "Complete",
       },
     ]),
     countrys: ko.observableArray([ //
       // {
-      //   ID: 'CAN',
-      //   Txt: 'Canada',
+      //   ID: "CAN",
+      //   Txt: "Canada",
       // },
       {
-        ID: 'USA',
-        Txt: 'United States of America',
+        ID: "USA",
+        Txt: "United States of America",
       },
     ]),
     recruitCohabbitTypes: ko.observableArray([ //
       {
         ID: 1,
-        Txt: 'Single',
+        Txt: "Single",
       }, {
         ID: 2,
-        Txt: 'Cohabbit',
+        Txt: "Cohabbit",
       }, {
         ID: 3,
-        Txt: 'Off Site',
+        Txt: "Off Site",
       },
     ]),
   };

@@ -120,7 +120,7 @@ define('src/crm/app', [
         path: 'src/scheduler/scheduler.panel.vm',
         options: {
           id: 'scheduler',
-          title: 'Scheduler',
+          title: 'Schedule',
           icoClass: 'ico fa fa-3x fa-calendar',
         },
         routes: [ //

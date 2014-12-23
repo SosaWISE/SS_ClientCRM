@@ -22,6 +22,7 @@ define('src/dataservices/humanresourcesrv', [
       'roleLocations',
       'schools',
       'seasons',
+      'skills',
       'teams',
       'teamLocations',
       'userEmployeeTypes',

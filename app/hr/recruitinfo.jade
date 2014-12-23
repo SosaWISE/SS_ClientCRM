@@ -44,6 +44,16 @@ div(class="item-data")
               div(class="text",data-bind="text:data.SchoolCvm.selectedText()")
 
       div(class="section")
+        span(class="title") Skill Level &amp; Competancy
+        div(class="contents",data-bind="with:skillsVm")
+          div(data-bind="template:viewTmpl")
+
+      div(class="section")
+        span(class="title") Schedule
+        div(class="contents",data-bind="with:scheduleVm")
+          div(data-bind="template:viewTmpl")
+
+      div(class="section")
         span(class="title") Documentation
         div(class="contents")
           ul(class="edit-form")

@@ -1,16 +1,20 @@
-define('src/hr/recruiteditor.vm', [
-  'src/hr/hr-cache',
-  'src/account/default/address.validate.vm',
-  'src/hr/usersearch.vm',
-  'src/core/combo.vm',
-  'src/dataservice',
-  'src/ukov',
-  'src/core/strings',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
-  'ko'
+define("src/hr/recruiteditor.vm", [
+  "src/scheduler/techschedule.vm",
+  "src/scheduler/techskills.vm",
+  "src/hr/hr-cache",
+  "src/account/default/address.validate.vm",
+  "src/hr/usersearch.vm",
+  "src/core/combo.vm",
+  "src/dataservice",
+  "src/ukov",
+  "src/core/strings",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
+  "ko"
 ], function(
+  TechScheduleViewModel,
+  TechSkillsViewModel,
   hrcache,
   AddressValidateViewModel,
   UserSearchViewModel,
@@ -41,7 +45,7 @@ define('src/hr/recruiteditor.vm', [
     // intConverter = ukov.converters.number(0),
     defaultBuddy = {
       UserID: 0,
-      FullName: '',
+      FullName: "",
     };
 
   schema = {
@@ -57,7 +61,7 @@ define('src/hr/recruiteditor.vm', [
     //
     UserTypeId: { //             [smallint]                 REQUIRED       ((1))
       validators: [
-        ukov.validators.isRequired('Role is required'),
+        ukov.validators.isRequired("Role is required"),
       ],
     },
     ReportsToID: {}, //          [int]
@@ -82,7 +86,7 @@ define('src/hr/recruiteditor.vm', [
     //
     DriversLicenseStatusID: {
       validators: [
-        ukov.validators.isRequired('DL Status is required'),
+        ukov.validators.isRequired("DL Status is required"),
       ],
     },
     DriversLicenseNotes: {
@@ -91,7 +95,7 @@ define('src/hr/recruiteditor.vm', [
     },
     I9StatusID: {
       validators: [
-        ukov.validators.isRequired('I9 Status is required'),
+        ukov.validators.isRequired("I9 Status is required"),
       ],
     },
     I9Notes: {
@@ -100,7 +104,7 @@ define('src/hr/recruiteditor.vm', [
     },
     W9StatusID: {
       validators: [
-        ukov.validators.isRequired('W9 Status is required'),
+        ukov.validators.isRequired("W9 Status is required"),
       ],
     },
     W9Notes: {
@@ -109,7 +113,7 @@ define('src/hr/recruiteditor.vm', [
     },
     W4StatusID: {
       validators: [
-        ukov.validators.isRequired('W4 Status is required'),
+        ukov.validators.isRequired("W4 Status is required"),
       ],
     },
     W4Notes: {
@@ -205,8 +209,8 @@ define('src/hr/recruiteditor.vm', [
     var _this = this;
     RecruitEditorViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
-      'layersVm',
-      'seasons',
+      "layersVm",
+      "seasons",
     ]);
 
     _this.focusFirst = ko.observable(false);
@@ -220,8 +224,8 @@ define('src/hr/recruiteditor.vm', [
     _this.data.UserTypeCvm = new ComboViewModel({
       selectedValue: _this.data.UserTypeId,
       fields: {
-        value: 'UserTypeID',
-        text: 'Description',
+        value: "UserTypeID",
+        text: "Description",
       },
     });
     _this.data.ReportsToCvm = new ComboViewModel({
@@ -232,8 +236,8 @@ define('src/hr/recruiteditor.vm', [
       selectedValue: _this.data.TeamID,
       nullable: true,
       fields: {
-        value: 'TeamID',
-        text: 'Description',
+        value: "TeamID",
+        text: "Description",
       },
     });
     _this.data.PayScaleCvm = new ComboViewModel({
@@ -251,29 +255,29 @@ define('src/hr/recruiteditor.vm', [
     _this.data.DriversLicenseStatusCvm = new ComboViewModel({
       selectedValue: _this.data.DriversLicenseStatusID,
       fields: {
-        value: 'ID',
-        text: 'Txt',
+        value: "ID",
+        text: "Txt",
       },
     });
     _this.data.I9StatusCvm = new ComboViewModel({
       selectedValue: _this.data.I9StatusID,
       fields: {
-        value: 'ID',
-        text: 'Txt',
+        value: "ID",
+        text: "Txt",
       },
     });
     _this.data.W9StatusCvm = new ComboViewModel({
       selectedValue: _this.data.W9StatusID,
       fields: {
-        value: 'ID',
-        text: 'Txt',
+        value: "ID",
+        text: "Txt",
       },
     });
     _this.data.W4StatusCvm = new ComboViewModel({
       selectedValue: _this.data.W4StatusID,
       fields: {
-        value: 'ID',
-        text: 'Txt',
+        value: "ID",
+        text: "Txt",
       },
     });
     _this.data.CountryCvm = new ComboViewModel({
@@ -286,7 +290,7 @@ define('src/hr/recruiteditor.vm', [
       nullable: true,
       fields: {
         text: function(item) {
-          return strings.format('{0} - {1}', item.value, item.text);
+          return strings.format("{0} - {1}", item.value, item.text);
         },
       },
     });
@@ -294,14 +298,14 @@ define('src/hr/recruiteditor.vm', [
       selectedValue: _this.data.RecruitCohabbitTypeId,
       nullable: true,
       fields: {
-        value: 'ID',
-        text: 'Txt',
+        value: "ID",
+        text: "Txt",
       },
     });
 
-    _this.seasonName = ko.observable('unknown season');
+    _this.seasonName = ko.observable("unknown season");
     _this.title = ko.computed(function() {
-      return (!_this.isOld() ? '(NEW) ' : '') + _this.seasonName();
+      return (!_this.isOld() ? "(NEW) " : "") + _this.seasonName();
     });
 
     _this.buddy = ko.observable(defaultBuddy);
@@ -319,7 +323,7 @@ define('src/hr/recruiteditor.vm', [
       dataservice.humanresourcesrv.users.read({
         id: userid,
       }, null, utils.safeCallback(null, function(err, resp) {
-        // only set if the userid hasn't changed
+        // only set if the userid has not changed
         if (_this.data.ShackingUpId.peek() === userid) {
           var data = resp.Value;
           data.FullName = calcFullName(data.PreferredName, data.FirstName, data.LastName);
@@ -331,9 +335,9 @@ define('src/hr/recruiteditor.vm', [
     _this.editing = ko.observable(false);
     _this.viewTmpl = ko.computed(function() {
       if (_this.editing()) {
-        return 'tmpl-hr-recruiteditor';
+        return "tmpl-hr-recruiteditor";
       } else {
-        return 'tmpl-hr-recruitinfo';
+        return "tmpl-hr-recruitinfo";
       }
     });
     _this.isDirty = ko.computed({
@@ -344,19 +348,23 @@ define('src/hr/recruiteditor.vm', [
     });
 
     //
+    _this.scheduleVm = ko.observable();
+    _this.skillsVm = ko.observable();
+
+    //
     // events
     //
     function resetData(result) {
-      if (result === 'yes') {
+      if (result === "yes") {
         _this.editing(false);
         _this.data.reset(true);
       }
     }
     _this.clickCancel = function() {
       if (!_this.isDirty()) {
-        resetData('yes');
+        resetData("yes");
       } else {
-        notify.confirm('Reset changes?', 'There are unsaved changes. Click yes to undo these changes.', resetData);
+        notify.confirm("Reset changes?", "There are unsaved changes. Click yes to undo these changes.", resetData);
       }
     };
     _this.clickEdit = function() {
@@ -400,36 +408,72 @@ define('src/hr/recruiteditor.vm', [
   RecruitEditorViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
-    hrcache.ensure('payscales', join.add());
-    hrcache.ensure('schools', join.add());
-    hrcache.ensure('teams', join.add());
-    hrcache.ensure('userTypes', join.add());
-    // hrcache.ensure('owners', join.add());
+    hrcache.ensure("payscales", join.add());
+    hrcache.ensure("schools", join.add());
+    hrcache.ensure("teams", join.add());
+    hrcache.ensure("userTypes", join.add());
+    // hrcache.ensure("owners", join.add());
 
-    hrcache.ensure('docStatuses', join.add());
-    hrcache.ensure('countrys', join.add());
-    hrcache.ensure('recruitCohabbitTypes', join.add());
+    hrcache.ensure("docStatuses", join.add());
+    hrcache.ensure("countrys", join.add());
+    hrcache.ensure("recruitCohabbitTypes", join.add());
+
+    hrcache.ensure("skills", join.add());
 
     join.when(function(err) {
       if (err) {
         return;
       }
-      _this.data.PayScaleCvm.setList(hrcache.getList('payscales').peek());
-      _this.data.SchoolCvm.setList(hrcache.getList('schools').peek());
-      _this.data.TeamCvm.setList(hrcache.getList('teams').peek());
-      _this.data.UserTypeCvm.setList(hrcache.getList('userTypes').peek());
-      // _this.data.OwnerApprovalCvm.setList(hrcache.getList('owners').peek());
+      _this.data.PayScaleCvm.setList(hrcache.getList("payscales").peek());
+      _this.data.SchoolCvm.setList(hrcache.getList("schools").peek());
+      _this.data.TeamCvm.setList(hrcache.getList("teams").peek());
+      _this.data.UserTypeCvm.setList(hrcache.getList("userTypes").peek());
+      // _this.data.OwnerApprovalCvm.setList(hrcache.getList("owners").peek());
 
-      _this.data.DriversLicenseStatusCvm.setList(hrcache.getList('docStatuses').peek());
-      _this.data.I9StatusCvm.setList(hrcache.getList('docStatuses').peek());
-      _this.data.W9StatusCvm.setList(hrcache.getList('docStatuses').peek());
-      _this.data.W4StatusCvm.setList(hrcache.getList('docStatuses').peek());
-      // _this.data.CountryCvm.setList(hrcache.getList('countrys').peek());
-      _this.data.RecruitCohabbitTypeCvm.setList(hrcache.getList('recruitCohabbitTypes').peek());
+      _this.data.DriversLicenseStatusCvm.setList(hrcache.getList("docStatuses").peek());
+      _this.data.I9StatusCvm.setList(hrcache.getList("docStatuses").peek());
+      _this.data.W9StatusCvm.setList(hrcache.getList("docStatuses").peek());
+      _this.data.W4StatusCvm.setList(hrcache.getList("docStatuses").peek());
+      // _this.data.CountryCvm.setList(hrcache.getList("countrys").peek());
+      _this.data.RecruitCohabbitTypeCvm.setList(hrcache.getList("recruitCohabbitTypes").peek());
 
       // SeasonID, UserTypeID - reportsTos, teams
-      // _this.data.ReportsToCvm.setList(hrcache.getList('ReportsTo').peek());
-      // _this.data.TeamCvm.setList(hrcache.getList('teams').peek());
+      // _this.data.ReportsToCvm.setList(hrcache.getList("ReportsTo").peek());
+      // _this.data.TeamCvm.setList(hrcache.getList("teams").peek());
+
+      _this.scheduleVm(new TechScheduleViewModel({
+        techDays: [ //
+          {
+            DayId: 0,
+          }, {
+            DayId: 1,
+            StartTime: new Date(1970, 0, 1, 6),
+            EndTime: new Date(1970, 0, 1, 17),
+          }, {
+            DayId: 2,
+            StartTime: new Date(1970, 0, 1, 6),
+            EndTime: new Date(1970, 0, 1, 17),
+          }, {
+            DayId: 3,
+            StartTime: new Date(1970, 0, 1, 6),
+            EndTime: new Date(1970, 0, 1, 17),
+          }, {
+            DayId: 4,
+            StartTime: new Date(1970, 0, 1, 6),
+            EndTime: new Date(1970, 0, 1, 17),
+          }, {
+            DayId: 5,
+            StartTime: new Date(1970, 0, 1, 6),
+            EndTime: new Date(1970, 0, 1, 17),
+          }, {
+            DayId: 6,
+          },
+        ],
+      }));
+      _this.skillsVm(new TechSkillsViewModel({
+        allSkills: hrcache.getList("skills").peek(),
+        techSkills: _this._item.Skills,
+      }));
     });
   };
   RecruitEditorViewModel.prototype.setItem = function(item) {
@@ -443,7 +487,7 @@ define('src/hr/recruiteditor.vm', [
     });
     _this.data.SeasonID(item.SeasonID);
     _this.data.RecruitID(item.RecruitID);
-    // set item once we're loaded
+    // set item once we have loaded
     _this._item = item;
     _this.loader.onLoad(function() {
       _this._item = null;
@@ -460,9 +504,9 @@ define('src/hr/recruiteditor.vm', [
     var _this = this,
       msg;
     if (_this.cmdSave.busy()) {
-      msg = 'Please wait for save to finish.';
+      msg = "Please wait for save to finish.";
     } else if (_this.isDirty.peek() && _this.data.RecruitID.peek() > 0) {
-      msg = 'There are unsaved changes for ' + _this.title.peek() + '. Please cancel the edit before closing.';
+      msg = "There are unsaved changes for " + _this.title.peek() + ". Please cancel the edit before closing.";
     }
     return msg;
   };
@@ -473,7 +517,7 @@ define('src/hr/recruiteditor.vm', [
   };
 
   function calcFullName(pname, fname, lname) {
-    return strings.joinTrimmed(' ', pname || fname, lname);
+    return strings.joinTrimmed(" ", pname || fname, lname);
   }
 
   function saveRecruit(_this, cb) {
