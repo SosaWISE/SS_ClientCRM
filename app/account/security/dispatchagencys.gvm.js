@@ -1,8 +1,8 @@
-define('src/account/security/dispatchagencys.gvm', [
-  'ko',
-  'src/slick/rowevent',
-  'src/slick/slickgrid.vm',
-  'src/core/utils',
+define("src/account/security/dispatchagencys.gvm", [
+  "ko",
+  "src/slick/rowevent",
+  "src/slick/slickgrid.vm",
+  "src/core/utils",
 ], function(
   ko,
   RowEvent,
@@ -24,7 +24,7 @@ define('src/account/security/dispatchagencys.gvm', [
       list: list,
       plugins: [
         new RowEvent({
-          eventName: 'onDblClick',
+          eventName: "onDblClick",
           fn: function(item) {
             options.edit(item, function(model, deleted) {
               if (!model) { // nothing changed
@@ -41,29 +41,33 @@ define('src/account/security/dispatchagencys.gvm', [
       ],
       columns: [ //
         {
-          id: 'ID',
-          name: 'ID',
-          field: 'DaAssignmentId',
+          id: "ID",
+          name: "ID",
+          field: "DispatchAgencyAssignmentID",
         }, {
-          id: 'AgencyType',
-          name: 'Agency Type',
-          field: 'DispatchAgencyTypeName',
+          id: "AgencyType",
+          name: "Agency Type",
+          field: "DispatchAgencyTypeName",
         }, {
-          id: 'CSNumber',
-          name: 'CS #',
-          field: 'CsNo',
+          id: "CSNumber",
+          name: "CS #",
+          field: "CsNo",
         }, {
-          id: 'AgencyName',
-          name: 'Agency Name',
-          field: 'AgencyName',
+          id: "AgencyName",
+          name: "Agency Name",
+          field: "DispatchAgencyName",
         }, {
-          id: 'DispatchPhone',
-          name: 'Dispatch Phone',
-          field: 'DispatchPhone',
+          id: "DispatchPhone",
+          name: "Dispatch Phone",
+          field: "Phone1",
         }, {
-          id: 'StationVerfied',
-          name: 'Station Verfied',
-          field: 'MonitoringStationVerfied',
+          id: "PermitNumber",
+          name: "Permit Number",
+          field: "PermitNumber",
+        }, {
+          id: "StationVerfied",
+          name: "Station Verfied",
+          field: "IsVerified",
         },
       ],
     });

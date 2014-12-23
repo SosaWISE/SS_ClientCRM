@@ -1,6 +1,6 @@
-define('src/dataservices/monitoringstationsrv', [
-  'src/core/dataservice.base',
-  'src/config'
+define("src/dataservices/monitoringstationsrv", [
+  "src/core/dataservice.base",
+  "src/config"
 ], function(
   DataserviceBase,
   config
@@ -8,15 +8,17 @@ define('src/dataservices/monitoringstationsrv', [
   "use strict";
 
   return function() {
-    var serviceDomain = config.serviceDomain + '/monitoringStationSrv',
+    var serviceDomain = config.serviceDomain + "/monitoringStationSrv",
       result = {};
 
     [
-      'msAccounts',
-      'accounts',
-      'msAccountSalesInformations',
-      'dispatchAgencies',
-      'premiseAddress',
+      "msAccounts",
+      "accounts",
+      "msAccountSalesInformations",
+      "dispatchAgencies",
+      "accountDispatchAgencyAssignments",
+      "premiseAddress",
+      "dispatchAgencyTypes",
     ].forEach(function(collectionName) {
       result[collectionName] = new DataserviceBase(collectionName, serviceDomain);
     });

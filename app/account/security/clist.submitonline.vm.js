@@ -1,12 +1,12 @@
-define('src/account/security/clist.submitonline.vm', [
-  'src/account/security/dispatchagencys.finder.vm',
-  'src/account/security/dispatchagency.editor.vm',
-  'src/account/security/dispatchagencys.gvm',
-  'src/dataservice',
-  'ko',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/account/security/clist.submitonline.vm", [
+  "src/account/security/dispatchagencys.finder.vm",
+  "src/account/security/dispatchagency.editor.vm",
+  "src/account/security/dispatchagencys.gvm",
+  "src/dataservice",
+  "ko",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   DispatchAgencysFinderViewModel,
   DispatchAgencyEditorViewModel,
@@ -22,12 +22,14 @@ define('src/account/security/clist.submitonline.vm', [
   function CListSubmitOnlineViewModel(options) {
     var _this = this;
     CListSubmitOnlineViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['layersVm']);
+    ControllerViewModel.ensureProps(_this, [
+      "layersVm",
+    ]);
 
     _this.mayReload = ko.observable(false);
     _this.gvm = new DispatchAgencysGridViewModel({
       edit: function(agency, cb) {
-        showDispatchAgencyEditor(_this, agency, cb);
+        showDispatchAgencyEditor(_this, utils.clone(agency), cb);
       },
     });
 
@@ -38,7 +40,7 @@ define('src/account/security/clist.submitonline.vm', [
     //
     _this.cmdFind = ko.command(function(cb) {
       _this.layersVm.show(new DispatchAgencysFinderViewModel({
-        accountId: options.pcontroller.pcontroller.id,
+        accountId: _this.accountId,
       }), function(result) {
         if (result) {
           alert(result);
@@ -64,76 +66,68 @@ define('src/account/security/clist.submitonline.vm', [
         data: {
           AccountId: _this.accountId,
         },
-      }, null, utils.safeCallback(cb, function(err, resp) {
-        console.log(resp);
-        //@TODO: do stuff after submit online, but what???
-
-        if (resp && resp.Value) {
-          if (resp.Value.WasSuccessfull) {
-            notify.info('Successfully submitted online!', null, 7);
-            resp.Value.Msg = 'Submission Succeeded!';
+      }, function(val) {
+        if (val) {
+          if (val.WasSuccessfull) {
+            notify.info("Successfully submitted online!", null, 7);
+            val.Msg = "Submission Succeeded!";
           } else {
-            notify.warn('Failed to submit account online.', null, 7);
-            resp.Value.Msg = 'Submission Failed...';
+            notify.warn("Failed to submit account online.", null, 7);
+            val.Msg = "Submission Failed...";
           }
-          _this.submissionData(resp.Value);
+          _this.submissionData(val);
         }
-      }, function(err) {
-        notify.error(err);
-      }));
+      }, cb);
     });
   }
   utils.inherits(CListSubmitOnlineViewModel, ControllerViewModel);
-  CListSubmitOnlineViewModel.prototype.viewTmpl = 'tmpl-security-clist_submitonline';
+  CListSubmitOnlineViewModel.prototype.viewTmpl = "tmpl-security-clist_submitonline";
 
   CListSubmitOnlineViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
     _this.accountId = routeData.id;
 
-    load_dispatchAgencys(_this, join.add());
-    //@TODO: load account status
-    //@TODO: load dispatch agency types
+    load_dispatchAgencys(_this.accountId, _this.gvm, join.add());
+    load_accountDetails(_this.accountId, function(val) {
+      var msOsId = (val || {}).MonitoringStationOsId || 'AG_ALARMSYS'; //@HACK: for null value
+      load_dispatchAgencyTypes(msOsId, function(val) {
+        _this.dispatchAgencyTypes = val;
+      }, join.add());
+    }, join.add());
   };
 
-  function load_dispatchAgencys(_this, cb) {
-    _this.gvm.list([]);
-
-    //@TODO: actually load data
+  function load_dispatchAgencys(accountId, gvm, cb) {
+    gvm.list([]);
     dataservice.monitoringstationsrv.msAccounts.read({
-      id: _this.accountId,
-      link: 'DispatchAgencyAssignments',
-    }, null, utils.safeCallback(function(err, resp){
-      console.log("Here is the response", resp);
-      _this.gvm.list(resp.Value);
-      cb();
-    }, notify.iferror));
+      id: accountId,
+      link: "DispatchAgencyAssignments",
+    }, gvm.list, cb);
+  }
 
-    // setTimeout(function() {
-    //   while (_this.gvm.list().length < 3) {
-    //     _this.gvm.list.push({
-    //       DaAssignmentId: _this.gvm.list().length + 1,
-    //       DispatchAgencyTypeName: 'DispatchAgencyTypeName',
-    //       CsNo: 'CsNo',
-    //       AgencyName: 'AgencyName',
-    //       DispatchPhone: 'DispatchPhone',
-    //       MonitoringStationVerfied: 'MonitoringStationVerfied',
-    //     });
-    //   }
-    //   cb();
-    // }, 1000);
-    // dataservice.boh.boh.read({}, null, utils.safeCallback(cb, function(err, resp) {
-    //   _this.gvm.list(resp.Value);
-    // }, function(err) {
-    //   notify.error(err);
-    // }));
+  function load_accountDetails(accountId, setter, cb) {
+    dataservice.monitoringstationsrv.accounts.read({
+      id: accountId,
+      link: 'details'
+    }, setter, cb);
+  }
+
+  function load_dispatchAgencyTypes(msOsId, setter, cb) {
+    dataservice.monitoringstationsrv.dispatchAgencyTypes.read({
+      id: msOsId,
+    }, setter, cb);
   }
 
   function showDispatchAgencyEditor(_this, agency, cb) {
     agency = utils.clone(agency);
     _this.layersVm.show(new DispatchAgencyEditorViewModel({
       item: agency,
-      accountId: _this.accountId
+      accountId: _this.accountId,
+      dispatchAgencyTypes: _this.dispatchAgencyTypes,
+      dispatchAgencyTypeFields: {
+        value: "DispatchAgencyTypeID",
+        text: "DispatchAgencyType",
+      },
     }), cb);
   }
 

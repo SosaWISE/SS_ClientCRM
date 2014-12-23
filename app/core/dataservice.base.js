@@ -43,8 +43,12 @@ define('src/core/dataservice.base', [
   // DataserviceBase.prototype.update = function(id, data, setter, callback) {
   //   this.ajax('PATCH', id, null, null, data, setter, callback);
   // };
-  DataserviceBase.prototype.del = DataserviceBase.prototype.delete = function(id, setter, callback) {
-    this.ajax('DELETE', id, null, null, null, setter, callback);
+  DataserviceBase.prototype.del = DataserviceBase.prototype.delete = function(params, setter, callback) {
+    if (utils.isObject(params)) {
+      this.ajax('DELETE', params.id, params.link, params.query, params.data, setter, callback);
+    } else {
+      this.ajax('DELETE', params, null, null, null, setter, callback);
+    }
   };
   // DataserviceBase.prototype.replace = function(id, data, setter, callback) {
   //   this.ajax('PUT', id, null, null, data, setter, callback);

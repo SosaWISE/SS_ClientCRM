@@ -1,14 +1,14 @@
-define('src/account/security/equipment.vm', [
-  'src/account/security/securityhelper',
-  'ko',
-  'src/dataservice',
-  'src/account/security/equipment.editor.vm',
-  'src/account/security/equipment.gvm',
-  'src/core/strings',
-  'src/core/layers.vm',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/account/security/equipment.vm", [
+  "src/account/security/securityhelper",
+  "ko",
+  "src/dataservice",
+  "src/account/security/equipment.editor.vm",
+  "src/account/security/equipment.gvm",
+  "src/core/strings",
+  "src/core/layers.vm",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   securityhelper,
   ko,
@@ -26,7 +26,7 @@ define('src/account/security/equipment.vm', [
   function EquipmentViewModel(options) {
     var _this = this;
     EquipmentViewModel.super_.call(_this, options);
-    // ControllerViewModel.ensureProps(_this, ['layersVm']);
+    // ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
     _this.layersVm = _this.layersVm || new LayersViewModel({
       controller: _this,
@@ -36,7 +36,7 @@ define('src/account/security/equipment.vm', [
     _this.gvm = new EquipmentGridViewModel({
       edit: function(eqItem, cb) {
         //showDispatchAgencyEditor(_this, agency, cb);
-        showEquipmentEditor(_this, '', utils.clone(eqItem), cb);
+        showEquipmentEditor(_this, "", utils.clone(eqItem), cb);
       },
     });
 
@@ -55,23 +55,23 @@ define('src/account/security/equipment.vm', [
       };
     }
     _this.cmdAddByPart = ko.command(function(cb) {
-      showEquipmentEditor(_this, 'part', null, createReloadGvmCb(cb));
+      showEquipmentEditor(_this, "part", null, createReloadGvmCb(cb));
     }, function(busy) {
       return !busy && !_this.cmdAddByBarcode.busy() && !_this.cmdAddExistingEquipment.busy();
     });
     _this.cmdAddByBarcode = ko.command(function(cb) {
-      showEquipmentEditor(_this, 'barcode', null, createReloadGvmCb(cb));
+      showEquipmentEditor(_this, "barcode", null, createReloadGvmCb(cb));
     }, function(busy) {
       return !busy && !_this.cmdAddByPart.busy() && !_this.cmdAddExistingEquipment.busy();
     });
     _this.cmdAddExistingEquipment = ko.command(function(cb) {
-      showEquipmentEditor(_this, 'existing', null, createReloadGvmCb(cb));
+      showEquipmentEditor(_this, "existing", null, createReloadGvmCb(cb));
     }, function(busy) {
       return !busy && !_this.cmdAddByPart.busy() && !_this.cmdAddByBarcode.busy();
     });
   }
   utils.inherits(EquipmentViewModel, ControllerViewModel);
-  EquipmentViewModel.prototype.viewTmpl = 'tmpl-security-equipment';
+  EquipmentViewModel.prototype.viewTmpl = "tmpl-security-equipment";
 
   EquipmentViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
@@ -90,14 +90,14 @@ define('src/account/security/equipment.vm', [
         _this.cache.reps = [ //
           {
             CompanyID: val.SalesRepId,
-            FullName: strings.format('{0} - {1}', val.SalesRepId, val.SalesRepFullName),
+            FullName: strings.format("{0} - {1}", val.SalesRepId, val.SalesRepFullName),
           }, {
             CompanyID: val.TechId,
-            FullName: strings.format('{0} - {1}', val.TechId, val.TechFullName),
+            FullName: strings.format("{0} - {1}", val.TechId, val.TechFullName),
           },
         ];
       }
-      _this.accountDetails.MonitoringStationOsId = _this.accountDetails.MonitoringStationOsId || 'AG_ALARMSYS'; //@HACK: for null value
+      _this.accountDetails.MonitoringStationOsId = _this.accountDetails.MonitoringStationOsId || "AG_ALARMSYS"; //@HACK: for null value
     }, join.add());
     load_equipment(_this.gvm, _this.accountId, join.add());
   };
@@ -105,7 +105,7 @@ define('src/account/security/equipment.vm', [
   function load_accountDetails(accountId, setter, cb) {
     dataservice.monitoringstationsrv.accounts.read({
       id: accountId,
-      link: 'details'
+      link: "details"
     }, setter, cb);
   }
 
@@ -113,7 +113,7 @@ define('src/account/security/equipment.vm', [
     gvm.list([]);
     dataservice.msaccountsetupsrv.accounts.read({
       id: accountId,
-      link: 'equipment',
+      link: "equipment",
     }, null, utils.safeCallback(cb, function(err, resp) {
       gvm.list(resp.Value);
     }, utils.no_op));

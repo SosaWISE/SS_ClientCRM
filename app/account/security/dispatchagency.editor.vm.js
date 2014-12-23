@@ -1,11 +1,11 @@
-define('src/account/security/dispatchagency.editor.vm', [
-  'src/core/combo.vm',
-  'src/dataservice',
-  'ko',
-  'src/ukov',
-  'src/core/notify',
-  'src/core/base.vm',
-  'src/core/utils',
+define("src/account/security/dispatchagency.editor.vm", [
+  "src/core/combo.vm",
+  "src/dataservice",
+  "ko",
+  "src/ukov",
+  "src/core/notify",
+  "src/core/base.vm",
+  "src/core/utils",
 ], function(
   ComboViewModel,
   dataservice,
@@ -22,38 +22,38 @@ define('src/account/security/dispatchagency.editor.vm', [
 
   schema = {
     _model: true,
-    DaAssignmentId: {},
-    AgencyName: {
+    DispatchAgencyAssignmentID: {},
+    DispatchAgencyName: {
       validators: [
-        ukov.validators.isRequired('Agency name is required'),
+        ukov.validators.isRequired("Agency name is required"),
       ],
     },
-    DispatchPhone: {
+    Phone1: {
       converter: ukov.converters.phone(),
       validators: [
-        ukov.validators.isRequired('Phone number is required'),
+        ukov.validators.isRequired("Phone number is required"),
       ],
     },
-    DispatchAgencyType: {
+    DispatchAgencyTypeId: {
       validators: [
-        ukov.validators.isRequired('Agency type is required'),
+        ukov.validators.isRequired("Agency type is required"),
       ],
     },
     PermitNumber: {
       validators: [
-        ukov.validators.isRequired('Permit number is required'),
+        ukov.validators.isRequired("Permit number is required"),
       ],
     },
     PermitEffectiveDate: {
       converter: dateConverter,
       validators: [
-        ukov.validators.isRequired('Effective date is required'),
+        ukov.validators.isRequired("Effective date is required"),
       ],
     },
     PermitExpireDate: {
       converter: dateConverter,
       validators: [
-        ukov.validators.isRequired('Expiration date is required'),
+        ukov.validators.isRequired("Expiration date is required"),
       ],
     },
   };
@@ -61,22 +61,25 @@ define('src/account/security/dispatchagency.editor.vm', [
   function DispatchAgencyEditorViewModel(options) {
     var _this = this;
     DispatchAgencyEditorViewModel.super_.call(_this, options);
+    BaseViewModel.ensureProps(_this, [
+      "dispatchAgencyTypes",
+      "dispatchAgencyTypeFields",
+    ]);
 
-    _this.focusFirst = ko.observable();
+    _this.initFocusFirst();
 
     _this.data = ukov.wrap(_this.item || {
-      AgencyName: '',
-      DispatchPhone: '',
-      DispatchAgencyType: null,
-      PermitNumber: '',
-      PermitEffectiveDate: '',
-      PermitExpireDate: '',
+      DispatchAgencyName: "",
+      Phone1: "",
+      DispatchAgencyTypeId: null,
+      PermitNumber: "",
+      PermitEffectiveDate: "",
+      PermitExpireDate: "",
     }, schema);
     _this.data.DispatchAgencyTypeCvm = new ComboViewModel({
-      selectedValue: _this.data.DispatchAgencyType,
+      selectedValue: _this.data.DispatchAgencyTypeId,
       list: _this.dispatchAgencyTypes,
       fields: _this.dispatchAgencyTypeFields,
-      // nullable: true,
     });
 
     //
@@ -89,62 +92,39 @@ define('src/account/security/dispatchagency.editor.vm', [
         return;
       }
       var model = _this.data.getValue();
-      _this.data.markClean(model, true);
-      alert('currently i save nothing...');
-      setTimeout(function() {
-        _this.layerResult = model;
+      dataservice.monitoringstationsrv.accountDispatchAgencyAssignments.save({
+        // id: _this.data.model.DispatchAgencyAssignmentID,
+        data: model,
+      }, function(val) {
+        _this.data.markClean(model, true);
+        //
+        _this.layerResult = val;
         _this.isDeleted = false;
         closeLayer(_this);
-        cb();
-      }, 5000);
-      //@TODO: get correct api path and response format
-      // dataservice.boh.boh.save({}, null, utils.safeCallback(cb, function(err, resp) {
-      //   _this.layerResult = resp.Value;
-      //   _this.isDeleted = false;
-      //   closeLayer(_this);
-      // }, function(err) {
-      //   notify.error(err);
-      // }));
+      }, cb);
     }, function(busy) {
       return !busy && !_this.cmdDelete.busy();
     });
     _this.cmdDelete = ko.command(function(cb) {
-      alert('currently i delete nothing...');
-      setTimeout(function() {
-        _this.layerResult = 1; //@HACK: to tell grid the edit occurred
+      dataservice.monitoringstationsrv.accountDispatchAgencyAssignments.del({
+        id: _this.data.model.DispatchAgencyAssignmentID,
+      }, function(val) {
+        //
+        _this.layerResult = val || 1;
         _this.isDeleted = true;
         closeLayer(_this);
-        cb();
-      }, 5000);
-      //@TODO: get correct api path and response format
-      // dataservice.boh.boh.del(_this.data.model.___ID, null, utils.safeCallback(cb, function(err, resp) {
-      //   _this.layerResult =resp.Value || 1;
-      //   _this.isDeleted = true;
-      //   closeLayer(_this);
-      // }, function(err) {
-      //   notify.error(err);
-      // }));
+      }, cb);
     }, function(busy) {
       return !busy && _this.item && !_this.cmdSave.busy();
     });
     _this.busy = ko.computed(function() {
       return _this.cmdSave.busy() || _this.cmdDelete.busy();
     });
-
-    //
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the rep id
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
-    });
   }
   utils.inherits(DispatchAgencyEditorViewModel, BaseViewModel);
-  DispatchAgencyEditorViewModel.prototype.viewTmpl = 'tmpl-security-dispatchagency_editor';
+  DispatchAgencyEditorViewModel.prototype.viewTmpl = "tmpl-security-dispatchagency_editor";
   DispatchAgencyEditorViewModel.prototype.width = 600;
-  DispatchAgencyEditorViewModel.prototype.height = 'auto';
+  DispatchAgencyEditorViewModel.prototype.height = "auto";
 
   function closeLayer(_this) {
     if (_this.layer) {
@@ -159,9 +139,9 @@ define('src/account/security/dispatchagency.editor.vm', [
     var _this = this,
       msg;
     if (_this.cmdSave.busy() && !_this.layerResult) {
-      msg = 'Please wait for save to finish.';
+      msg = "Please wait for save to finish.";
     } else if (_this.cmdDelete.busy() && !_this.layerResult) {
-      msg = 'Please wait for delete to finish.';
+      msg = "Please wait for delete to finish.";
     }
     return msg;
   };

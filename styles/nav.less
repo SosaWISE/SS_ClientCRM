@@ -42,11 +42,14 @@ nav.primary {
 
     .ico {
       display: block;
-      width: 60px;
       text-align: center;
-      font-family: 'entypo';
-      font-size: 30px;
-      line-height: 1.3em;
+
+      &.rotate90 {
+        .rotation(90deg);
+      }
+      &.rotate180 {
+        .rotation(180deg);
+      }
     }
     .txt {
       display: block;
