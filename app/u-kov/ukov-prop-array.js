@@ -70,8 +70,8 @@ define('src/u-kov/ukov-prop-array', [
     throw new Error('override me in ukov.js');
   };
   fn.update = function(preventParentUpdate, drillDown) {
-    var errMsg, isClean = this.cleanLength === this().length;
-    this().forEach(function(item) {
+    var errMsg, isClean = this.cleanLength === this.peek().length;
+    this.peek().forEach(function(item) {
       if (drillDown) {
         item.update(true, drillDown);
       }
@@ -97,7 +97,7 @@ define('src/u-kov/ukov-prop-array', [
     }
   };
   fn.validate = function() {
-    this().forEach(function(item) {
+    this.peek().forEach(function(item) {
       item.validate();
     });
   };
@@ -110,7 +110,7 @@ define('src/u-kov/ukov-prop-array', [
         delete _this._ignore;
       }
       // set ignore on items
-      _this().forEach(function(item) {
+      this.peek().forEach(function(item) {
         item.ignore(ignoreVal, false);
       });
       // update self
@@ -126,30 +126,44 @@ define('src/u-kov/ukov-prop-array', [
       }
       this.cleanLength = cleanArray.length;
     } else {
-      this.cleanLength = this().length;
+      this.cleanLength = this.peek().length;
     }
-    this().forEach(function(item, index) {
-      var cleanVal = hasCleanArray ? cleanArray[index] : undefined;
-      if (cleanVal !== undefined) {
-        item.markClean(cleanVal);
+    this.peek().forEach(function(item, index) {
+      if (hasCleanArray) {
+        var cleanVal = cleanArray[index];
+        if (cleanVal !== undefined) {
+          item.markClean(cleanVal);
+        }
+      } else {
+        item.markClean();
       }
     });
 
     this.update(!allowParentUpdate);
   };
-  fn.setValue = function() {
-    throw new Error('not implemented');
+  fn.setValue = function(model) {
+    var _this = this;
+    _this.model = model;
+    var propItemArray = model.map(function(item, index) {
+      return _this.createChild(index);
+    });
+    _this(propItemArray);
+    _this.update(true);
   };
 
   fn.getValue = function() {
     var result = [];
-    this().forEach(function(item) {
+    this.peek().forEach(function(item) {
       result.push(item.getValue());
     }, this);
     return result;
   };
-  fn.reset = function() {
-    // currently does nothing since we lack the data
+  fn.reset = function(allowParentUpdate) {
+    //@NOTE: this does not work when items have been removed/added
+    this.peek().forEach(function(item) {
+      item.reset();
+    });
+    this.update(!allowParentUpdate);
   };
 
   return {

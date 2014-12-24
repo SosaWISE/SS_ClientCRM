@@ -66,13 +66,30 @@ define("mock/dataservices/hr.mock", [
           result = mockery.fromTemplate({
             "list|1-5": [getRecruitTemplate(data)]
           }).list;
-          result.forEach(function(recruit) {
-            recruit.Skills = getSkills();
-          });
+          // result.forEach(function(recruit) {
+          //   recruit.Skills = getSkills();
+          // });
           break;
-          // case "skills":
-          //   result = getSkills();
-          //   break;
+      }
+      send(0, result, setter, cb);
+    };
+    dataservice.humanresourcesrv.recruits.read = function(params, setter, cb) {
+      var result, id = params.id,
+        data = {
+          RecruitID: id,
+        };
+      switch (params.link || null) {
+        case null:
+          if (id) {
+            result = mockery.fromTemplate(getRecruitTemplate(data));
+          }
+          break;
+        case "weekSchedule":
+          result = getWeekSchedule();
+          break;
+        case "skills":
+          result = getSkills();
+          break;
       }
       send(0, result, setter, cb);
     };
@@ -82,7 +99,13 @@ define("mock/dataservices/hr.mock", [
       switch (params.link || null) {
         case null:
           result = mockery.fromTemplate(getRecruitTemplate(data));
-          result.Skills = data.Skills || getSkills();
+          // result.Skills = data.Skills || getSkills();
+          break;
+        case "weekSchedule":
+          result = data || getWeekSchedule();
+          break;
+        case "skills":
+          result = data || getSkills();
           break;
       }
       send(0, result, setter, cb);
@@ -226,6 +249,18 @@ define("mock/dataservices/hr.mock", [
       ModifiedBy: data.ModifiedBy || "SYSTEM",
       ModifiedOn: data.ModifiedOn || "@DATETIME(-5,-1)",
     };
+  }
+
+  function getWeekSchedule() {
+    return mockery.fromTemplate({
+      "list|3-7": [ //
+        {
+          DayId: "@NUMBER(0,7)",
+          StartTime: new Date(1970, 0, 1, 6),
+          EndTime: new Date(1970, 0, 1, 17),
+        },
+      ],
+    }).list;
   }
 
   function getSkills() {

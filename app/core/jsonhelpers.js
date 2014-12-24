@@ -7,7 +7,7 @@ define('src/core/jsonhelpers', [
 
   var jsonhelpers,
     // starts with `Date` or ends with `On`
-    isDateFieldRegx = /(On$|^Date|Date$|DateTime$|DOB)/,
+    isDateFieldRegx = /(On$|^Date|Date$|Time$|DOB)/,
     // ends with `JSON`
     isJSONStringRegx = /Json$/,
     // copied from RegexBuddy - XML Schema: dateTime (eg: "2010-02-08T23:32:04.187Z")

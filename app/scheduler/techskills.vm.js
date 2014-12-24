@@ -1,13 +1,26 @@
 define("src/scheduler/techskills.vm", [
-  "ko",
+  "src/ukov",
   "src/core/utils",
   "src/core/base.vm",
 ], function(
-  ko,
+  ukov,
   utils,
   BaseViewModel
 ) {
   "use strict";
+
+  var schema = [ //
+    {
+      _model: true,
+      SkillId: {},
+      OtherText: {
+        converter: ukov.converters.nullString(),
+      },
+
+      checked: {},
+      Name: {},
+    },
+  ];
 
   //
   //
@@ -23,18 +36,9 @@ define("src/scheduler/techskills.vm", [
 
     });
 
-    var techSkillsMap = {};
-    _this.techSkills.forEach(function(item) {
-      techSkillsMap[item.SkillId] = true;
-    });
-
-    _this.skills = _this.allSkills.map(function(item) {
-      return {
-        SkillId: item.ID,
-        Name: item.Name,
-        checked: ko.observable(techSkillsMap[item.ID]),
-      };
-    });
+    var skills = fromData(_this.allSkills, _this.techSkills);
+    _this.data = ukov.wrap(skills, schema);
+    _this.skills = _this.data;
 
     //
     //events
@@ -47,9 +51,46 @@ define("src/scheduler/techskills.vm", [
   utils.inherits(TechSkillsViewModel, BaseViewModel);
   TechSkillsViewModel.prototype.viewTmpl = "tmpl-scheduler-techskills";
 
-  //
-  // members
-  //
+  TechSkillsViewModel.prototype.getData = function() {
+    var _this = this;
+    return toData(_this.data.getValue());
+  };
+  TechSkillsViewModel.prototype.setData = function(data) {
+    var _this = this;
+    var skills = fromData(_this.allSkills, data);
+    _this.data.setValue(skills);
+    _this.data.markClean();
+  };
+
+  function fromData(allSkills, techSkills) {
+    var techSkillsMap = {};
+    techSkills.forEach(function(item) {
+      techSkillsMap[item.SkillId] = true;
+    });
+
+    return allSkills.map(function(item) {
+      return {
+        SkillId: item.ID,
+        OtherText: item.OtherText || null,
+        checked: techSkillsMap[item.ID] || false,
+        Name: item.Name,
+      };
+    });
+  }
+
+  function toData(model) {
+    var results = [];
+    model.forEach(function(item) {
+      if (!item.checked) {
+        return;
+      }
+      results.push({
+        SkillId: item.SkillId,
+        OtherText: item.OtherText,
+      });
+    });
+    return results;
+  }
 
   return TechSkillsViewModel;
 });

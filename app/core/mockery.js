@@ -155,17 +155,21 @@ define('src/core/mockery', [
 
     var func;
     switch (typeof(template)) {
-      default: return template;
       case 'string':
         func = fromStringTemplate;
         break;
       case 'object':
-        if (Array.isArray(template)) {
+        if (utils.isDate(template)) {
+          // just return a copy of the date
+          return new Date(template.valueOf());
+        } else if (Array.isArray(template)) {
           func = fromArrayTemplate;
         } else {
           func = fromObjectTemplate;
         }
         break;
+      default:
+        return template;
     }
     return func(template, cache, range);
   }
@@ -335,6 +339,7 @@ define('src/core/mockery', [
   function padLeft(txt, letter, minLength) {
     return pad(true, txt, letter, minLength);
   }
+
   // function padRight(txt, letter, minLength) {
   //   return pad(false, txt, letter, minLength);
   // }
@@ -418,13 +423,15 @@ define('src/core/mockery', [
   mockery.createOrUpdate = function(list, idName, idTemplate, newValue) {
     var id = newValue[idName],
       index;
+
+    function findById(item, i) {
+      if (item[idName] === id) {
+        index = i;
+        return true;
+      }
+    }
     if (id > 0) {
-      if (!list.some(function(item, i) {
-        if (item[idName] === id) {
-          index = i;
-          return true;
-        }
-      })) {
+      if (!list.some(findById)) {
         throw new Error('invalid id. id not in list.');
       }
 

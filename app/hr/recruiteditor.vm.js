@@ -7,6 +7,7 @@ define("src/hr/recruiteditor.vm", [
   "src/core/combo.vm",
   "src/dataservice",
   "src/ukov",
+  "src/core/joiner",
   "src/core/strings",
   "src/core/notify",
   "src/core/utils",
@@ -21,6 +22,7 @@ define("src/hr/recruiteditor.vm", [
   ComboViewModel,
   dataservice,
   ukov,
+  joiner,
   strings,
   notify,
   utils,
@@ -204,6 +206,11 @@ define("src/hr/recruiteditor.vm", [
     ModifiedOn: {},
   };
 
+  var hardCodedFields = {
+    value: "ID",
+    text: "Txt",
+  };
+
   // ctor
   function RecruitEditorViewModel(options) {
     var _this = this;
@@ -213,7 +220,7 @@ define("src/hr/recruiteditor.vm", [
       "seasons",
     ]);
 
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.data = ukov.wrap({
       RecruitID: _this.id,
       DriversLicenseStatusID: 1,
@@ -254,35 +261,24 @@ define("src/hr/recruiteditor.vm", [
     });
     _this.data.DriversLicenseStatusCvm = new ComboViewModel({
       selectedValue: _this.data.DriversLicenseStatusID,
-      fields: {
-        value: "ID",
-        text: "Txt",
-      },
+      fields: hardCodedFields,
     });
     _this.data.I9StatusCvm = new ComboViewModel({
       selectedValue: _this.data.I9StatusID,
-      fields: {
-        value: "ID",
-        text: "Txt",
-      },
+      fields: hardCodedFields,
     });
     _this.data.W9StatusCvm = new ComboViewModel({
       selectedValue: _this.data.W9StatusID,
-      fields: {
-        value: "ID",
-        text: "Txt",
-      },
+      fields: hardCodedFields,
     });
     _this.data.W4StatusCvm = new ComboViewModel({
       selectedValue: _this.data.W4StatusID,
-      fields: {
-        value: "ID",
-        text: "Txt",
-      },
+      fields: hardCodedFields,
     });
     _this.data.CountryCvm = new ComboViewModel({
       selectedValue: _this.data.CountryId,
       nullable: true,
+      fields: hardCodedFields,
     });
     _this.data.StateCvm = new ComboViewModel({
       selectedValue: _this.data.StateId,
@@ -297,10 +293,7 @@ define("src/hr/recruiteditor.vm", [
     _this.data.RecruitCohabbitTypeCvm = new ComboViewModel({
       selectedValue: _this.data.RecruitCohabbitTypeId,
       nullable: true,
-      fields: {
-        value: "ID",
-        text: "Txt",
-      },
+      fields: hardCodedFields,
     });
 
     _this.seasonName = ko.observable("unknown season");
@@ -332,6 +325,9 @@ define("src/hr/recruiteditor.vm", [
       }, notify.iferror));
     });
 
+    _this.scheduleVm = ko.observable();
+    _this.skillsVm = ko.observable();
+
     _this.editing = ko.observable(false);
     _this.viewTmpl = ko.computed(function() {
       if (_this.editing()) {
@@ -340,31 +336,35 @@ define("src/hr/recruiteditor.vm", [
         return "tmpl-hr-recruitinfo";
       }
     });
+
     _this.isDirty = ko.computed({
       deferEvaluation: true,
       read: function() {
-        return _this.editing() && !_this.data.isClean();
+        var scheduleVm = _this.scheduleVm();
+        var skillsVm = _this.skillsVm();
+        return _this.editing() && (!_this.data.isClean() ||
+          (scheduleVm && !scheduleVm.data.isClean()) ||
+          (skillsVm && !skillsVm.data.isClean())
+        );
       },
     });
 
     //
-    _this.scheduleVm = ko.observable();
-    _this.skillsVm = ko.observable();
-
-    //
     // events
     //
-    function resetData(result) {
-      if (result === "yes") {
-        _this.editing(false);
-        _this.data.reset(true);
-      }
-    }
     _this.clickCancel = function() {
-      if (!_this.isDirty()) {
-        resetData("yes");
+      if (_this.isDirty()) {
+        notify.confirm("Reset changes?", "There are unsaved changes. Click yes to undo these changes.", function(result) {
+          if (result !== "yes") {
+            return;
+          }
+          _this.editing(false);
+          _this.data.reset(true);
+          _this.scheduleVm.peek().data.reset(true);
+          _this.skillsVm.peek().data.reset(true);
+        });
       } else {
-        notify.confirm("Reset changes?", "There are unsaved changes. Click yes to undo these changes.", resetData);
+        _this.editing(false);
       }
     };
     _this.clickEdit = function() {
@@ -384,21 +384,12 @@ define("src/hr/recruiteditor.vm", [
       _this.layersVm.show(vm);
     };
     _this.cmdSave = ko.command(function(cb) {
-      saveRecruit(_this, cb);
+      saveAllData(_this, cb);
     }, function(busy) {
-      return !busy && !_this.data.isClean();
+      return !busy && _this.isDirty();
     });
 
     //
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the rep id
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
-    });
-
     if (!_this.isOld()) {
       _this.clickEdit();
     }
@@ -420,6 +411,16 @@ define("src/hr/recruiteditor.vm", [
 
     hrcache.ensure("skills", join.add());
 
+    var techSkills;
+    loadRecruitData(_this._item.RecruitID, "skills", function(val) {
+      techSkills = val || [];
+    }, join.add());
+
+    var techDays;
+    loadRecruitData(_this._item.RecruitID, "weekSchedule", function(val) {
+      techDays = val || [];
+    }, join.add());
+
     join.when(function(err) {
       if (err) {
         return;
@@ -434,45 +435,19 @@ define("src/hr/recruiteditor.vm", [
       _this.data.I9StatusCvm.setList(hrcache.getList("docStatuses").peek());
       _this.data.W9StatusCvm.setList(hrcache.getList("docStatuses").peek());
       _this.data.W4StatusCvm.setList(hrcache.getList("docStatuses").peek());
-      // _this.data.CountryCvm.setList(hrcache.getList("countrys").peek());
+      _this.data.CountryCvm.setList(hrcache.getList("countrys").peek());
       _this.data.RecruitCohabbitTypeCvm.setList(hrcache.getList("recruitCohabbitTypes").peek());
 
       // SeasonID, UserTypeID - reportsTos, teams
       // _this.data.ReportsToCvm.setList(hrcache.getList("ReportsTo").peek());
       // _this.data.TeamCvm.setList(hrcache.getList("teams").peek());
 
-      _this.scheduleVm(new TechScheduleViewModel({
-        techDays: [ //
-          {
-            DayId: 0,
-          }, {
-            DayId: 1,
-            StartTime: new Date(1970, 0, 1, 6),
-            EndTime: new Date(1970, 0, 1, 17),
-          }, {
-            DayId: 2,
-            StartTime: new Date(1970, 0, 1, 6),
-            EndTime: new Date(1970, 0, 1, 17),
-          }, {
-            DayId: 3,
-            StartTime: new Date(1970, 0, 1, 6),
-            EndTime: new Date(1970, 0, 1, 17),
-          }, {
-            DayId: 4,
-            StartTime: new Date(1970, 0, 1, 6),
-            EndTime: new Date(1970, 0, 1, 17),
-          }, {
-            DayId: 5,
-            StartTime: new Date(1970, 0, 1, 6),
-            EndTime: new Date(1970, 0, 1, 17),
-          }, {
-            DayId: 6,
-          },
-        ],
-      }));
       _this.skillsVm(new TechSkillsViewModel({
         allSkills: hrcache.getList("skills").peek(),
-        techSkills: _this._item.Skills,
+        techSkills: techSkills,
+      }));
+      _this.scheduleVm(new TechScheduleViewModel({
+        techDays: techDays,
       }));
     });
   };
@@ -520,31 +495,74 @@ define("src/hr/recruiteditor.vm", [
     return strings.joinTrimmed(" ", pname || fname, lname);
   }
 
-  function saveRecruit(_this, cb) {
-    if (!_this.data.isValid()) {
-      notify.warn(_this.data.errMsg(), null, 7);
-      cb();
-    } else {
-      var model = _this.data.getValue();
-      dataservice.humanresourcesrv.recruits.save({
-        data: model,
-      }, null, utils.safeCallback(cb, function(err, resp) {
-        var data = resp.Value;
-        if (data) {
-          if (_this.id !== data.RecruitID) {
-            // was a new recruit
-            _this.id = data.RecruitID;
-            // redirect
-            _this.goTo(_this.getRouteData());
-          }
+  function saveAllData(_this, cb) {
+    var scheduleVm = _this.scheduleVm.peek();
+    var skillsVm = _this.skillsVm.peek();
 
-          _this.data.setValue(data);
-          _this.data.markClean(data, true);
-          // end editing
-          _this.editing(false);
-        }
-      }, notify.iferror));
+    var isValid = _this.data.isValid() && scheduleVm.data.isValid() && skillsVm.data.isValid();
+    if (!isValid) {
+      var errMsg = _this.data.errMsg() || scheduleVm.data.errMsg() || skillsVm.data.errMsg();
+      notify.warn(errMsg, null, 7);
+      cb();
+      return;
     }
+    var join = joiner();
+
+    saveRecruit(_this, utils.safeCallback(join.add(), function() {
+      saveRecruitData(_this.id, "weekSchedule", scheduleVm, join.add());
+      saveRecruitData(_this.id, "skills", skillsVm, join.add());
+    }, utils.noop));
+
+    join.when(function(err) {
+      if (!err) {
+        // end editing
+        _this.editing(false);
+      }
+      cb();
+    });
+  }
+
+  function saveRecruit(_this, cb) {
+    if (_this.data.isClean()) {
+      // only save if dirty
+      return cb();
+    }
+
+    var model = _this.data.getValue();
+    dataservice.humanresourcesrv.recruits.save({
+      data: model,
+    }, function(data) {
+      if (_this.id !== data.RecruitID) {
+        // was a new recruit
+        _this.id = data.RecruitID;
+        // redirect
+        _this.goTo(_this.getRouteData());
+      }
+
+      _this.data.setValue(data);
+      _this.data.markClean(data, true);
+    }, cb);
+  }
+
+  function loadRecruitData(id, link, setter, cb) {
+    if (id <= 0) {
+      setter();
+      cb();
+    }
+    dataservice.humanresourcesrv.recruits.read({
+      id: id,
+      link: link,
+    }, setter, cb);
+  }
+
+  function saveRecruitData(id, link, vm, cb) {
+    dataservice.humanresourcesrv.recruits.save({
+      id: id,
+      link: link,
+      data: vm.getData(),
+    }, function(val) {
+      vm.setData(val);
+    }, cb);
   }
 
   return RecruitEditorViewModel;

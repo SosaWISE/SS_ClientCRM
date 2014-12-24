@@ -1,13 +1,11 @@
 define("src/scheduler/techschedule.vm", [
   "moment",
-  "ko",
   "src/ukov",
   "src/core/notify",
   "src/core/utils",
   "src/core/base.vm",
 ], function(
   moment,
-  ko,
   ukov,
   notify,
   utils,
@@ -18,7 +16,7 @@ define("src/scheduler/techschedule.vm", [
   function getStartDate() {
     return _startDate;
   }
-  var _startDate = new Date(0);
+  var _startDate = new Date(1970, 0);
 
   function removeSeconds(dt) {
     dt.setSeconds(0, 0);
@@ -41,6 +39,7 @@ define("src/scheduler/techschedule.vm", [
       _model: true,
       day: {},
       checked: {},
+      DayId: {},
       StartTime: {
         converter: ukov.converters.time(getStartDate, removeSeconds),
         validators: [
@@ -71,32 +70,18 @@ define("src/scheduler/techschedule.vm", [
 
     });
 
-    var techDaysMap = {};
-    _this.techDays.forEach(function(item) {
-      techDaysMap[item.DayId] = item;
-    });
+    _this.data = ukov.wrap(fromData(_this.techDays), schema);
+    _this.weekDays = _this.data;
 
-    var i = 7;
-    var d = moment();
-    var weekDays = new Array(i);
-    while (i--) {
-      var techDay = techDaysMap[i] || {};
-      weekDays[i] = {
-        day: d.weekday(i).format("dddd"),
-        checked: true, //!!techDay.StartTime,
-        StartTime: techDay.StartTime || null,
-        EndTime: techDay.EndTime || null,
-      };
-    }
-    _this.weekDays = ukov.wrap(weekDays, schema);
-    _this.weekDays.peek().forEach(function(day) {
+    _this.data.peek().forEach(function(day) {
       day.checked.subscribe(function(checked) {
         // this.ignore(!checked);
         this.StartTime.ignore(!checked);
         this.EndTime.ignore(!checked);
       }, day);
-      day.checked(!!day.model.StartTime);
     });
+    setChecked(_this);
+    _this.data.markClean();
 
     //
     //events
@@ -108,6 +93,60 @@ define("src/scheduler/techschedule.vm", [
 
   utils.inherits(TechScheduleViewModel, BaseViewModel);
   TechScheduleViewModel.prototype.viewTmpl = "tmpl-scheduler-techschedule";
+
+  TechScheduleViewModel.prototype.getData = function() {
+    var _this = this;
+    return toData(_this.data.getValue());
+  };
+  TechScheduleViewModel.prototype.setData = function(data) {
+    var _this = this;
+    _this.data.setValue(fromData(data));
+    setChecked(_this);
+    _this.data.markClean();
+  };
+
+  function fromData(techDays) {
+    var techDaysMap = {};
+    techDays.forEach(function(item) {
+      techDaysMap[item.DayId] = item;
+    });
+
+    var i = 7;
+    var d = moment();
+    var weekDays = new Array(i);
+    while (i--) {
+      var item = techDaysMap[i] || {};
+      weekDays[i] = {
+        day: d.weekday(i).format("dddd"),
+        checked: true, //!!item.StartTime,
+        DayId: i,
+        StartTime: item.StartTime || null,
+        EndTime: item.EndTime || null,
+      };
+    }
+    return weekDays;
+  }
+
+  function toData(model) {
+    var results = [];
+    model.forEach(function(item) {
+      if (!item.checked) {
+        return;
+      }
+      results.push({
+        DayId: item.DayId,
+        StartTime: item.StartTime || null,
+        EndTime: item.EndTime || null,
+      });
+    });
+    return results;
+  }
+
+  function setChecked(_this) {
+    _this.data.peek().forEach(function(day) {
+      day.checked(!!day.model.StartTime);
+    });
+  }
 
   return TechScheduleViewModel;
 });
