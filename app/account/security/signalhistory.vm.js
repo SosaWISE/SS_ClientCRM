@@ -267,8 +267,7 @@ define('src/account/security/signalhistory.vm', [
       id: id,
       link: 'signalhistory',
       query: {
-        // days: days,
-        days: 8,
+        days: days,
       },
     }, gvm.list, utils.safeCallback(cb, notify.iferror));
   }
