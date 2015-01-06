@@ -23,6 +23,7 @@ define("src/account/security/dispatchagency.editor.vm", [
   schema = {
     _model: true,
     DispatchAgencyAssignmentID: {},
+    AccountId: {},
     DispatchAgencyName: {
       validators: [
         ukov.validators.isRequired("Agency name is required"),
@@ -40,21 +41,21 @@ define("src/account/security/dispatchagency.editor.vm", [
       ],
     },
     PermitNumber: {
-      validators: [
-        ukov.validators.isRequired("Permit number is required"),
-      ],
+      // validators: [
+      //   ukov.validators.isRequired("Permit number is required"),
+      // ],
     },
     PermitEffectiveDate: {
       converter: dateConverter,
-      validators: [
-        ukov.validators.isRequired("Effective date is required"),
-      ],
+      // validators: [
+      //   ukov.validators.isRequired("Effective date is required"),
+      // ],
     },
     PermitExpireDate: {
       converter: dateConverter,
-      validators: [
-        ukov.validators.isRequired("Expiration date is required"),
-      ],
+      // validators: [
+      //   ukov.validators.isRequired("Expiration date is required"),
+      // ],
     },
   };
 
@@ -69,6 +70,7 @@ define("src/account/security/dispatchagency.editor.vm", [
     _this.initFocusFirst();
 
     _this.data = ukov.wrap(_this.item || {
+      AccountId: options.accountId,
       DispatchAgencyName: "",
       Phone1: "",
       DispatchAgencyTypeId: null,
@@ -125,6 +127,11 @@ define("src/account/security/dispatchagency.editor.vm", [
   DispatchAgencyEditorViewModel.prototype.viewTmpl = "tmpl-security-dispatchagency_editor";
   DispatchAgencyEditorViewModel.prototype.width = 600;
   DispatchAgencyEditorViewModel.prototype.height = "auto";
+  DispatchAgencyEditorViewModel.prototype.onLoad = function() {
+    var _this = this;
+
+    console.log(_this);
+  };
 
   function closeLayer(_this) {
     if (_this.layer) {
