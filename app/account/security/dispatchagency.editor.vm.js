@@ -57,16 +57,21 @@ define("src/account/security/dispatchagency.editor.vm", [
       //   ukov.validators.isRequired("Expiration date is required"),
       // ],
     },
+    CityName: {},
+    StateAB: {},
+    ZipCode: {},
   };
 
   function DispatchAgencyEditorViewModel(options) {
     var _this = this;
     DispatchAgencyEditorViewModel.super_.call(_this, options);
+
     BaseViewModel.ensureProps(_this, [
       "dispatchAgencyTypes",
       "dispatchAgencyTypeFields",
     ]);
 
+    _this.mixinLoad();
     _this.initFocusFirst();
 
     _this.data = ukov.wrap(_this.item || {
@@ -77,6 +82,9 @@ define("src/account/security/dispatchagency.editor.vm", [
       PermitNumber: "",
       PermitEffectiveDate: "",
       PermitExpireDate: "",
+      CityName: "",
+      StateAB: "",
+      ZipCode: "",
     }, schema);
     _this.data.DispatchAgencyTypeCvm = new ComboViewModel({
       selectedValue: _this.data.DispatchAgencyTypeId,
@@ -130,7 +138,20 @@ define("src/account/security/dispatchagency.editor.vm", [
   DispatchAgencyEditorViewModel.prototype.onLoad = function() {
     var _this = this;
 
-    console.log(_this);
+    dataservice.monitoringstationsrv.premiseAddress.read({
+      id: _this.accountId,
+      link: "AccountId",
+    }, null, utils.safeCallback(function(err, resp) {
+      var premAddress = resp.Value,
+        data = {
+          CityName: premAddress.City,
+          StateAB: premAddress.StateId,
+          ZipCode: premAddress.PostalCode,
+        };
+      _this.data.setValue(data);
+      _this.data.markClean(data, true);
+
+    }, notify.iferror));
   };
 
   function closeLayer(_this) {
