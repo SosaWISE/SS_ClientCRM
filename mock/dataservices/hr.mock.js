@@ -14,7 +14,7 @@ define("mock/dataservices/hr.mock", [
       mockery.send(code, value, setter, cb, timeout || settings.timeout);
     }
 
-    dataservice.humanresourcesrv.phoneCellCarriers.read = function(params, setter, cb) {
+    dataservice.hr.phoneCellCarriers.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -23,7 +23,7 @@ define("mock/dataservices/hr.mock", [
       }
       send(0, result, setter, cb);
     };
-    dataservice.humanresourcesrv.userEmployeeTypes.read = function(params, setter, cb) {
+    dataservice.hr.userEmployeeTypes.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -32,7 +32,7 @@ define("mock/dataservices/hr.mock", [
       }
       send(0, result, setter, cb);
     };
-    dataservice.humanresourcesrv.seasons.read = function(params, setter, cb) {
+    dataservice.hr.seasons.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -41,7 +41,7 @@ define("mock/dataservices/hr.mock", [
       }
       send(0, result, setter, cb);
     };
-    dataservice.humanresourcesrv.skills.read = function(params, setter, cb) {
+    dataservice.hr.skills.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -51,7 +51,7 @@ define("mock/dataservices/hr.mock", [
       send(0, result, setter, cb);
     };
 
-    dataservice.humanresourcesrv.users.read = function(params, setter, cb) {
+    dataservice.hr.users.read = function(params, setter, cb) {
       var result, id = params.id,
         data = {
           UserID: id,
@@ -73,7 +73,7 @@ define("mock/dataservices/hr.mock", [
       }
       send(0, result, setter, cb);
     };
-    dataservice.humanresourcesrv.recruits.read = function(params, setter, cb) {
+    dataservice.hr.recruits.read = function(params, setter, cb) {
       var result, id = params.id,
         data = {
           RecruitID: id,
@@ -94,7 +94,7 @@ define("mock/dataservices/hr.mock", [
       send(0, result, setter, cb);
     };
 
-    dataservice.humanresourcesrv.recruits.save = function(params, setter, cb) {
+    dataservice.hr.recruits.save = function(params, setter, cb) {
       var result, data = params.data;
       switch (params.link || null) {
         case null:
@@ -110,7 +110,7 @@ define("mock/dataservices/hr.mock", [
       }
       send(0, result, setter, cb);
     };
-    dataservice.humanresourcesrv.users.save = function(params, setter, cb) {
+    dataservice.hr.users.save = function(params, setter, cb) {
       var result, data = params.data;
       switch (params.link || null) {
         case null:

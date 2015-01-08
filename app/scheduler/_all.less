@@ -1,14 +1,46 @@
+@scheduler-bg: @site-maroon;
+
 .ticket-editor {
+  position: relative;
+  height: ~"calc(100% - 40px)";
+  width: 100%;
+
   .notes {
     white-space: pre-wrap;
-    max-height: 200px;
+    max-height: 110px;
     overflow: auto;
     display: block;
+  }
+  .dock {
+    // bottom: 40px;
+    .dock-left {
+      .box-shadow(none);
+    }
+    .dock-content {
+      color: inherit;
+      margin-left: 10px;
+    }
+  }
+}
+
+.account-service-tickets {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+
+  .grid-wrap {
+    .slickgrid {
+      top: 35px;
+      right: 10px;
+      bottom: 10px;
+      left: 10px;
+    }
   }
 }
 
 .scheduler {
-  @scheduler-bg: @site-maroon;
   body& {
     .mixin-body-color(@scheduler-bg);
     .mixin-content-active(@scheduler-bg);
@@ -18,120 +50,135 @@
     .make-color-btn(@scheduler-bg);
   }
 
-  .scheduleweek {
-    @hourWidth: 50px;
-    background-color: #ffffff;
-    &.dock-content {
-      overflow: hidden;
+  .techs {
+    padding: 10px;
+    .tech-cvm {
+      max-width: 500px;
     }
 
-    .week-tbl {
-      position: relative;
-      &.header {
-        width: ~"calc(100% - 16px);"; //@REVIEW: scrollbar width????
-        height: 20px;
+    .tech {
+      color: #ffffff;
+      &.dock-content {
         overflow: hidden;
-        text-align: center;
-      }
-      &.body {
-        width: 100%;
-        height: ~"calc(100% - 20px);";
-        overflow-y: scroll;
-      }
-
-      .rows {
-        width: 100%;
-        height: 100%;
-        .user-select(none);
-
-        .row {
-          position: absolute;
-          width: 100%;
-          border-top: dotted 1px #ddd;
-          border-bottom: dotted 1px #ddd;
-
-          &.beginsHour {
-            border-top: solid 1px #ddd;
-          }
-
-          .hour {
-            display: block;
-            width: @hourWidth - 5;
-            text-align: right;
-          }
-        }
-      }
-      .columns {
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        bottom: 0px;
-        left: @hourWidth;
-
-        .column {
-          display: inline-block;
-          position: relative;
-          height: 100%;
-          border-left: solid 1px #ddd;
-
-          .gone,
-          .appt {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            overflow: hidden;
-          }
-
-          .gone {
-            right: 0px;
-            // background-color: rgba(0, 0, 0, 0.5);
-            // background-color: #ddd;
-            background-color: rgba(70, 70, 70, 0.7);
-          }
-          dl.appt {
-            cursor: pointer;
-            right: 1px;
-            background-color: tint(@scheduler-bg, 60%);
-            .border-radius(3px);
-            padding: 2px;
-
-            > * {
-              text-overflow: ellipsis;
-            }
-
-            .resizer {
-              display: none;
-
-              position: absolute;
-              left: 0px;
-              right: 0px;
-              bottom: 0px;
-              text-align: center;
-              color: black;
-              cursor: ns-resize;
-              height: 8px;
-              line-height: 8px;
-            }
-            &.active {
-              .box-shadow(inset 0 0 5px 0px rgba(0,0,0,0.7));
-              .resizer {
-                display: block;
-              }
-            }
-
-            &.dragging {
-              z-index: 10;
-            }
-          }
-        }
       }
     }
   }
+}
 
-  .tech {
-    background-color: #ffffff;
-    &.dock-content {
+
+.schedule {
+  @hourWidth: 50px;
+  background-color: #ffffff;
+  &.dock-content {
+    overflow: hidden;
+  }
+
+  .week-tbl {
+    position: relative;
+    &.header {
+      width: ~"calc(100% - 16px);"; //@REVIEW: scrollbar width????
+      height: 20px;
       overflow: hidden;
+      text-align: center;
+    }
+    &.body {
+      width: 100%;
+      height: ~"calc(100% - 20px);";
+      overflow-y: scroll;
+    }
+
+    .rows {
+      width: 100%;
+      height: 100%;
+      .user-select(none);
+
+      .row {
+        position: absolute;
+        width: 100%;
+        border-top: dotted 1px #ddd;
+        border-bottom: dotted 1px #ddd;
+
+        &.beginsHour {
+          border-top: solid 1px #ddd;
+        }
+
+        .hour {
+          display: block;
+          width: @hourWidth - 5;
+          text-align: right;
+        }
+      }
+    }
+    .columns {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      bottom: 0px;
+      left: @hourWidth;
+
+      .column {
+        display: inline-block;
+        position: relative;
+        height: 100%;
+        border-left: solid 1px #ddd;
+
+        .gone,
+        .appt {
+          position: absolute;
+          top: 0px;
+          left: 0px;
+          overflow: hidden;
+        }
+
+        .gone {
+          right: 0px;
+          // background-color: rgba(0, 0, 0, 0.5);
+          // background-color: #ddd;
+          background-color: rgba(70, 70, 70, 0.7);
+
+          > * {
+            display: none;
+          }
+        }
+        dl.appt {
+          background-color: tint(@scheduler-bg, 80%);
+          &.editable {
+            cursor: pointer;
+            background-color: tint(@scheduler-bg, 50%);
+          }
+          right: 1px;
+          .border-radius(3px);
+          padding: 2px;
+
+          > * {
+            text-overflow: ellipsis;
+          }
+
+          .resizer {
+            display: none;
+
+            position: absolute;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+            text-align: center;
+            color: black;
+            cursor: ns-resize;
+            height: 8px;
+            line-height: 8px;
+          }
+          &.active {
+            .box-shadow(inset 0 0 5px 0px rgba(0,0,0,0.7));
+            .resizer {
+              display: block;
+            }
+          }
+
+          &.dragging {
+            z-index: 10;
+          }
+        }
+      }
     }
   }
 }
@@ -159,7 +206,7 @@
 
   ol li.skill {
     display: inline-block;
-    @skillWidth: 150px;
+    @skillWidth: 200px;
     width: @skillWidth;
 
     a {

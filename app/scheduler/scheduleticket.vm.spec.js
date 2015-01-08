@@ -1,12 +1,12 @@
 /* global describe, it, expect, beforeEach */
-define("src/scheduler/scheduleday.vm.spec", [
-  "src/scheduler/scheduleday.vm"
+define("src/scheduler/scheduleticket.vm.spec", [
+  "src/scheduler/scheduleticket.vm"
 ], function(
   ScheduleDayViewModel
 ) {
   "use strict";
 
-  describe("scheduleday.vm", function() {
+  describe("scheduleticket.vm", function() {
     // var vm;
     beforeEach(function() {
       // vm = new ScheduleDayViewModel({

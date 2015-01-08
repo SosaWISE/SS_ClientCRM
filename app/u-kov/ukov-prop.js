@@ -19,6 +19,17 @@ define('src/u-kov/ukov-prop', [
   function areEqual(a, b) {
     if (a instanceof Date && b instanceof Date) {
       return a.valueOf() === b.valueOf();
+    } else if (Array.isArray(a) && Array.isArray(b)) {
+      if (a.length !== b.length) {
+        return false;
+      }
+      var i = a.length;
+      while (i--) {
+        if (!areEqual(a[i], b[i])) {
+          return false;
+        }
+      }
+      return true;
     }
     return a === b;
   }

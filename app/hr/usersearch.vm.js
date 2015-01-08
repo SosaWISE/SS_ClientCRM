@@ -186,7 +186,7 @@ define('src/hr/usersearch.vm', [
       // clear grid
       _this.gvm.list([]);
       // do search
-      dataservice.humanresourcesrv.users.save({
+      dataservice.hr.users.save({
         data: model,
         link: 'search',
       }, null, utils.safeCallback(cb, function(err, resp) {

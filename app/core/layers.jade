@@ -2,7 +2,7 @@ div(data-bind="preventFocusUnderLayer:1")
   <!-- ko foreach:showLayers -->
   div(class="layer-table")
     div(class="layer-cell")
-      div(class="layer", data-bind="width:width,height:height,css:{autoflow:vm().autoflow}")
+      div(class="layer", data-bind="width:width,height:height,css:{autoflow:vm().autoflow,nowhite:vm().nowhite}")
         //- div(class="header")
         //-   div(class="handle drag",data-bind="mover:2")
         a(class="close",data-bind="click:close")

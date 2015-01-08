@@ -37,9 +37,9 @@ define('src/slick/slickgrid.vm', [
     SlickGridViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, ['columns']);
     // columns: [{
-    //	 id: 'col1',
-    //	 name: 'Column Title',
-    //	 field: 'Column1',
+    //   id: 'col1',
+    //   name: 'Column Title',
+    //   field: 'Column1',
     // }]
 
     _this.plugins = _this.plugins || [];
@@ -55,10 +55,31 @@ define('src/slick/slickgrid.vm', [
     });
 
     _this.gridOptions = _this.gridOptions || {};
-    if (!_this.list || !ko.isObservable(_this.list)) {
+    if (_this.dataView) {
+      // Make the grid respond to DataView change events.
+      _this.dataView.onRowCountChanged.subscribe(function( /*e, args*/ ) {
+        var grid = _this.grid;
+        if (grid) {
+          grid.updateRowCount();
+          grid.render();
+        }
+      });
+      _this.dataView.onRowsChanged.subscribe(function(e, args) {
+        var grid = _this.grid;
+        if (grid) {
+          if (args.rows.length === 0) {
+            //@HACK: when rows is empty rerender entire grid
+            grid.invalidateAllRows();
+          } else {
+            grid.invalidateRows(args.rows);
+          }
+          grid.render();
+        }
+      });
+    } else if (!_this.list || !ko.isObservable(_this.list)) {
       _this.list = ko.observableArray(_this.list);
     }
-    _this.updateGrid = function() {
+    _this.updateGrid = function() { // ensure correct scope
       var grid = _this.grid;
       if (grid) {
         // update grid layout
@@ -66,19 +87,21 @@ define('src/slick/slickgrid.vm', [
         grid.render();
       }
     };
-    _this.list.subscribe(function(list) {
-      var grid = _this.grid;
-      if (grid) {
-        grid.setData(list, _this.scrollToTop); // false - don't scroll to top
-        _this.updateGrid();
-        if (_this.handleSelectedRowsChanged) {
-          _this.handleSelectedRowsChanged(null, {
-            grid: grid,
-            rows: grid.getSelectedRows(),
-          });
+    if (_this.list) {
+      _this.list.subscribe(function(list) {
+        var grid = _this.grid;
+        if (grid) {
+          grid.setData(list, _this.scrollToTop); // false - don't scroll to top
+          _this.updateGrid();
+          if (_this.handleSelectedRowsChanged) {
+            _this.handleSelectedRowsChanged(null, {
+              grid: grid,
+              rows: grid.getSelectedRows(),
+            });
+          }
         }
-      }
-    });
+      });
+    }
 
     if (_this.onSelectedRowsChanged) {
       _this.handleSelectedRowsChanged = function(e, data) {
@@ -124,6 +147,7 @@ define('src/slick/slickgrid.vm', [
   }
   utils.inherits(SlickGridViewModel, BaseViewModel);
   SlickGridViewModel.ensureProps = BaseViewModel.ensureProps;
+  SlickGridViewModel.prototype.dataView = null;
 
   SlickGridViewModel.prototype.onBound = function(element) {
     // create a new grid everytime this view model is bound/rebound
@@ -135,7 +159,7 @@ define('src/slick/slickgrid.vm', [
     _this.bindTimeout = setTimeout(function() {
       _this.bindTimeout = null;
 
-      _this.grid = new Slick.Grid(element, _this.list(), _this.columns, _this.gridOptions);
+      _this.grid = new Slick.Grid(element, _this.dataView || _this.list(), _this.columns, _this.gridOptions);
       if (!_this.noSelection) {
         var selectionModel = new Slick.RowSelectionModel({
           // selectActiveRow: false
@@ -159,6 +183,9 @@ define('src/slick/slickgrid.vm', [
       if (_this._prevSelectedRows) {
         _this.setSelectedRows(_this._prevSelectedRows);
       }
+
+      // incase explicitInitialization is set to true
+      _this.grid.init();
     }, 9);
   };
   SlickGridViewModel.prototype.unBound = function(element) {
@@ -184,10 +211,32 @@ define('src/slick/slickgrid.vm', [
     }
   };
 
+  SlickGridViewModel.prototype.getData = function() {
+    var _this = this;
+    if (_this.grid) {
+      return _this.grid.getData();
+    } else {
+      return _this.dataView || _this.list.peek();
+    }
+  };
+
+  SlickGridViewModel.prototype.getSelectedRows = function() {
+    var _this = this;
+    if (_this.grid) {
+      return _this.grid.getSelectedRows();
+    }
+    return [];
+  };
   SlickGridViewModel.prototype.setSelectedRows = function(rows) {
     var _this = this;
     if (_this.grid) {
       _this.grid.setSelectedRows(rows);
+    }
+  };
+  SlickGridViewModel.prototype.scrollRowIntoView = function(row, doPaging) {
+    var _this = this;
+    if (_this.grid) {
+      _this.grid.scrollRowIntoView(row, doPaging);
     }
   };
   SlickGridViewModel.prototype.resetActiveCell = function() {

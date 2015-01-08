@@ -116,7 +116,7 @@ define('src/hr/team.vm', [
   }
 
   function load_team(teamid, setter, cb) {
-    dataservice.humanresourcesrv.teams.read({
+    dataservice.hr.teams.read({
       id: teamid,
     }, setter, cb);
   }

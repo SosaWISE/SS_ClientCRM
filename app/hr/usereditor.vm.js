@@ -311,7 +311,7 @@ define('src/hr/usereditor.vm', [
     _this.data.imgUrl = ko.observable();
     //
     function updateImgUrl() {
-      _this.data.imgUrl(strings.format('//{0}/humanresourcesrv/users/{1}/photo?_={2}',
+      _this.data.imgUrl(strings.format('//{0}/hr/users/{1}/photo?_={2}',
         config.serviceDomain, _this.data.UserID.peek() || 0, Math.random()));
     }
     _this.data.UserID.subscribe(updateImgUrl);
@@ -328,7 +328,7 @@ define('src/hr/usereditor.vm', [
       }
       // clear out
       _this.recruitedBy(defaultRecruitedBy);
-      dataservice.humanresourcesrv.users.read({
+      dataservice.hr.users.read({
         id: userid,
       }, null, utils.safeCallback(null, function(err, resp) {
         // only set if the userid hasn't changed
@@ -484,7 +484,7 @@ define('src/hr/usereditor.vm', [
       cb();
     } else {
       var model = _this.data.getValue();
-      dataservice.humanresourcesrv.users.save({
+      dataservice.hr.users.save({
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
         var data = resp.Value,

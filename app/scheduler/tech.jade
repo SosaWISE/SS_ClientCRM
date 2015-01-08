@@ -1,15 +1,10 @@
-div(class="dock l3-250",data-bind="")
-  div(class="tech dock-content")
-    <!-- ko if:scheduleVm -->
-    div(data-bind="template:{name:scheduleVm().viewTmpl+'_editor',data:scheduleVm()}")
-    <!-- /ko -->
-    <!-- ko if:skillsVm -->
-    div(data-bind="template:{name:skillsVm().viewTmpl+'_editor',data:skillsVm()}")
-    <!-- /ko -->
-    <!-- ko if:scheduleVm -->
-    div(data-bind="template:{name:scheduleVm().viewTmpl,data:scheduleVm()}",
-      style="color:#b03060;")
-    <!-- /ko -->
-    <!-- ko if:skillsVm -->
-    div(data-bind="template:{name:skillsVm().viewTmpl,data:skillsVm()}")
-    <!-- /ko -->
+div(class="section",data-bind="with:scheduleVm")
+  //- span(class="title") Schedule
+  h2(class="title") Schedule
+  div(class="contents")
+    div(data-bind="template:{name:viewTmpl}")
+div(class="section",data-bind="with:skillsVm")
+  //- span(class="title") Skill Level &amp; Competancy
+  h2(class="title") Skill Level &amp; Competancy
+  div(class="contents")
+    div(data-bind="template:{name:viewTmpl}")

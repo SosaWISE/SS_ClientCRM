@@ -51,10 +51,10 @@ define("src/scheduler/month.vm", [
       };
     }
     i = 7;
-    _this.weekDays = new Array(i);
+    _this.weekdays = new Array(i);
     var d = moment();
     while (i--) {
-      _this.weekDays[i] = {
+      _this.weekdays[i] = {
         day: d.weekday(i).format("ddd"),
       };
     }
@@ -138,7 +138,7 @@ define("src/scheduler/month.vm", [
 
   function setMonthDays(days, selectedDate, todaysDate) {
     var dt = moment(selectedDate),
-      year = dt.year(),
+      // year = dt.year(),
       month = dt.month(),
       date;
     // var selected = moment(selectedDate);
@@ -152,7 +152,7 @@ define("src/scheduler/month.vm", [
 
       day.date(date);
       day.inMonth(dt.month() === month);
-      day.today(now.year() === year && now.month() === month && now.date() === date);
+      day.today(now.year() === dt.year() && now.month() === dt.month() && now.date() === date);
 
       dt.add("days", 1);
     });

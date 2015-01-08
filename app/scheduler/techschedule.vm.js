@@ -1,11 +1,15 @@
 define("src/scheduler/techschedule.vm", [
   "moment",
+  "src/dataservice",
+  "ko",
   "src/ukov",
   "src/core/notify",
   "src/core/utils",
   "src/core/base.vm",
 ], function(
   moment,
+  dataservice,
+  ko,
   ukov,
   notify,
   utils,
@@ -39,7 +43,8 @@ define("src/scheduler/techschedule.vm", [
       _model: true,
       day: {},
       checked: {},
-      DayId: {},
+      Version: {},
+      WeekDay: {},
       StartTime: {
         converter: ukov.converters.time(getStartDate, removeSeconds),
         validators: [
@@ -64,24 +69,43 @@ define("src/scheduler/techschedule.vm", [
     var _this = this;
     TechScheduleViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
-      "techDays",
+      "editing",
     ]);
-    utils.setIfNull(_this, {
+    _this.mixinLoad();
 
-    });
-
-    _this.data = ukov.wrap(fromData(_this.techDays), schema);
-    _this.weekDays = _this.data;
+    var i = 7;
+    var d = moment();
+    var weekdays = new Array(i);
+    while (i--) {
+      weekdays[i] = {
+        day: d.weekday(i).format("dddd"),
+        checked: true,
+        WeekDay: i,
+        StartTime: null,
+        EndTime: null,
+      };
+    }
+    _this.data = ukov.wrap(weekdays, schema);
+    _this.weekdays = _this.data;
 
     _this.data.peek().forEach(function(day) {
       day.checked.subscribe(function(checked) {
         // this.ignore(!checked);
         this.StartTime.ignore(!checked);
         this.EndTime.ignore(!checked);
+        this.update();
       }, day);
     });
     setChecked(_this);
     _this.data.markClean();
+
+    _this.viewTmpl = ko.computed(function() {
+      if (_this.editing()) {
+        return "tmpl-scheduler-techschedule_editor";
+      } else {
+        return "tmpl-scheduler-techschedule";
+      }
+    });
 
     //
     //events
@@ -94,38 +118,65 @@ define("src/scheduler/techschedule.vm", [
   utils.inherits(TechScheduleViewModel, BaseViewModel);
   TechScheduleViewModel.prototype.viewTmpl = "tmpl-scheduler-techschedule";
 
+  TechScheduleViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
+    var _this = this;
+
+    _this.techid = routeData.techid;
+
+    if (!_this.techid) {
+      return;
+    }
+    dataservice.ticketsrv.techs.read({
+      id: _this.techid,
+      link: "weekdays",
+    }, function(weekdays) {
+      _this.setData(weekdays);
+    }, join.add());
+  };
+
   TechScheduleViewModel.prototype.getData = function() {
     var _this = this;
     return toData(_this.data.getValue());
   };
   TechScheduleViewModel.prototype.setData = function(data) {
     var _this = this;
-    _this.data.setValue(fromData(data));
+    // create lookup
+    var techDaysMap = {};
+    data.forEach(function(item) {
+      techDaysMap[item.WeekDay] = item;
+    });
+    // set values
+    _this.data().forEach(function(item) {
+      var weekday = item.model.WeekDay;
+      var techDay = techDaysMap[weekday];
+      if (techDay) {
+        techDay.checked = true;
+      } else {
+        techDay = {
+          checked: false,
+          WeekDay: weekday,
+          StartTime: null,
+          EndTime: null,
+        };
+      }
+      item.setValue(techDay);
+    });
+    //
     setChecked(_this);
+    //
     _this.data.markClean();
   };
-
-  function fromData(techDays) {
-    var techDaysMap = {};
-    techDays.forEach(function(item) {
-      techDaysMap[item.DayId] = item;
-    });
-
-    var i = 7;
-    var d = moment();
-    var weekDays = new Array(i);
-    while (i--) {
-      var item = techDaysMap[i] || {};
-      weekDays[i] = {
-        day: d.weekday(i).format("dddd"),
-        checked: true, //!!item.StartTime,
-        DayId: i,
-        StartTime: item.StartTime || null,
-        EndTime: item.EndTime || null,
-      };
-    }
-    return weekDays;
-  }
+  TechScheduleViewModel.prototype.saveData = function(cb) {
+    var _this = this;
+    var data = _this.getData();
+    dataservice.ticketsrv.techs.save({
+      id: _this.techid || 0,
+      link: "weekdays",
+      data: data,
+    }, function(val) {
+      _this.setData(val);
+    }, cb);
+  };
 
   function toData(model) {
     var results = [];
@@ -134,7 +185,8 @@ define("src/scheduler/techschedule.vm", [
         return;
       }
       results.push({
-        DayId: item.DayId,
+        Version: item.Version,
+        WeekDay: item.WeekDay,
         StartTime: item.StartTime || null,
         EndTime: item.EndTime || null,
       });

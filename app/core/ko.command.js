@@ -42,22 +42,31 @@
       }
       _cmd.busy(true);
       var called = false;
-      return execute.call(this, function(err) {
-        if (called) {
-          return;
-        }
+      try {
+        return execute.call(this, function(err) {
+          if (called) {
+            return;
+          }
+          called = true;
+
+          // show error if there is one
+          if (err && err.Code != null) {
+            notify.error(err);
+          }
+
+          _cmd.busy(false);
+          if (utils.isFunc(cb)) {
+            cb.apply(null, ko.utils.makeArray(arguments));
+          }
+        }, this, ko.utils.makeArray(arguments)); // pass view model as second argument and arguments as the third
+      } catch (ex) {
         called = true;
-
-        // show error if there is one
-        if (err && err.Code != null) {
-          notify.error(err);
-        }
-
         _cmd.busy(false);
         if (utils.isFunc(cb)) {
-          cb.apply(null, ko.utils.makeArray(arguments));
+          cb();
         }
-      }, this, ko.utils.makeArray(arguments)); // pass view model as second argument and arguments as the third
+        throw ex;
+      }
     };
 
     if (canExecute) {

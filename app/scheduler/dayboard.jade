@@ -1,0 +1,3 @@
+div(class="rows",data-bind="foreach:halfHourRows,height:totalHeight")
+  div(class="row",data-bind="position:position,height:height,toggle:{beginsHour:beginsHour}")
+    span(class="hour",data-bind="text:$parent.getTime(index)")

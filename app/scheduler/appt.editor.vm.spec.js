@@ -1,19 +1,19 @@
 /* global describe, it, expect, beforeEach */
-define("src/scheduler/appt.vm.spec", [
-  "src/scheduler/appt.vm"
+define("src/scheduler/appt.editor.vm.spec", [
+  "src/scheduler/appt.editor.vm"
 ], function(
-  ApptViewModel
+  ApptEditorViewModel
 ) {
   "use strict";
 
   describe("appt.vm", function() {
-    var timeToRow = ApptViewModel.timeToRow;
-    var rowToTicks = ApptViewModel.rowToTicks;
+    var timeToRow = ApptEditorViewModel.timeToRow;
+    var rowToTicks = ApptEditorViewModel.rowToTicks;
     var startHour;
     // var vm;
     beforeEach(function() {
       startHour = 6;
-      // vm = new ApptViewModel({
+      // vm = new ApptEditorViewModel({
       //   item: {},
       //   startHour: 6,
       //   endHour: 24,

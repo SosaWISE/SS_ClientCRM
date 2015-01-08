@@ -1,8 +1,14 @@
 define("src/scheduler/techskills.vm", [
+  "src/scheduler/scheduler-cache",
+  "src/dataservice",
+  "ko",
   "src/ukov",
   "src/core/utils",
   "src/core/base.vm",
 ], function(
+  schedulercache,
+  dataservice,
+  ko,
   ukov,
   utils,
   BaseViewModel
@@ -13,7 +19,7 @@ define("src/scheduler/techskills.vm", [
     {
       _model: true,
       SkillId: {},
-      OtherText: {
+      Other: {
         converter: ukov.converters.nullString(),
       },
 
@@ -29,16 +35,29 @@ define("src/scheduler/techskills.vm", [
     var _this = this;
     TechSkillsViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
+      "editing",
       "allSkills",
-      "techSkills",
     ]);
-    utils.setIfNull(_this, {
+    _this.mixinLoad();
 
+    var skills = _this.allSkills.map(function(item) {
+      return {
+        checked: false,
+        SkillId: item.ID,
+        Name: item.Name,
+        Other: null,
+      };
     });
-
-    var skills = fromData(_this.allSkills, _this.techSkills);
     _this.data = ukov.wrap(skills, schema);
     _this.skills = _this.data;
+
+    _this.viewTmpl = ko.computed(function() {
+      if (_this.editing()) {
+        return "tmpl-scheduler-techskills_editor";
+      } else {
+        return "tmpl-scheduler-techskills";
+      }
+    });
 
     //
     //events
@@ -49,7 +68,23 @@ define("src/scheduler/techskills.vm", [
   }
 
   utils.inherits(TechSkillsViewModel, BaseViewModel);
-  TechSkillsViewModel.prototype.viewTmpl = "tmpl-scheduler-techskills";
+  // TechSkillsViewModel.prototype.viewTmpl = "tmpl-scheduler-techskills";
+
+  TechSkillsViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
+    var _this = this;
+
+    _this.techid = routeData.techid;
+
+    if (!_this.techid) {
+      return;
+    }
+    dataservice.ticketsrv.techs.read({
+      id: _this.techid,
+      link: "skills",
+    }, function(skills) {
+      _this.setData(skills);
+    }, join.add());
+  };
 
   TechSkillsViewModel.prototype.getData = function() {
     var _this = this;
@@ -57,26 +92,40 @@ define("src/scheduler/techskills.vm", [
   };
   TechSkillsViewModel.prototype.setData = function(data) {
     var _this = this;
-    var skills = fromData(_this.allSkills, data);
-    _this.data.setValue(skills);
+    // create lookup
+    var skillsMap = {};
+    data.forEach(function(item) {
+      skillsMap[item.SkillId] = item;
+    });
+    // set values
+    _this.data().forEach(function(item) {
+      var skillId = item.model.SkillId;
+      var skill = skillsMap[skillId];
+      if (skill) {
+        skill.checked = true;
+      } else {
+        skill = {
+          checked: false,
+          SkillId: skillId,
+          Other: null,
+        };
+      }
+      item.setValue(skill);
+    });
+    //
     _this.data.markClean();
   };
-
-  function fromData(allSkills, techSkills) {
-    var techSkillsMap = {};
-    techSkills.forEach(function(item) {
-      techSkillsMap[item.SkillId] = true;
-    });
-
-    return allSkills.map(function(item) {
-      return {
-        SkillId: item.ID,
-        OtherText: item.OtherText || null,
-        checked: techSkillsMap[item.ID] || false,
-        Name: item.Name,
-      };
-    });
-  }
+  TechSkillsViewModel.prototype.saveData = function(cb) {
+    var _this = this;
+    var data = _this.getData();
+    dataservice.ticketsrv.techs.save({
+      id: _this.techid || 0,
+      link: "skills",
+      data: data,
+    }, function(val) {
+      _this.setData(val);
+    }, cb);
+  };
 
   function toData(model) {
     var results = [];
@@ -86,7 +135,7 @@ define("src/scheduler/techskills.vm", [
       }
       results.push({
         SkillId: item.SkillId,
-        OtherText: item.OtherText,
+        Other: item.Other,
       });
     });
     return results;

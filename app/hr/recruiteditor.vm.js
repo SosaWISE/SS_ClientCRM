@@ -313,7 +313,7 @@ define("src/hr/recruiteditor.vm", [
       }
       // clear out
       _this.buddy(defaultBuddy);
-      dataservice.humanresourcesrv.users.read({
+      dataservice.hr.users.read({
         id: userid,
       }, null, utils.safeCallback(null, function(err, resp) {
         // only set if the userid has not changed
@@ -529,7 +529,7 @@ define("src/hr/recruiteditor.vm", [
     }
 
     var model = _this.data.getValue();
-    dataservice.humanresourcesrv.recruits.save({
+    dataservice.hr.recruits.save({
       data: model,
     }, function(data) {
       if (_this.id !== data.RecruitID) {
@@ -549,14 +549,14 @@ define("src/hr/recruiteditor.vm", [
       setter();
       cb();
     }
-    dataservice.humanresourcesrv.recruits.read({
+    dataservice.hr.recruits.read({
       id: id,
       link: link,
     }, setter, cb);
   }
 
   function saveRecruitData(id, link, vm, cb) {
-    dataservice.humanresourcesrv.recruits.save({
+    dataservice.hr.recruits.save({
       id: id,
       link: link,
       data: vm.getData(),

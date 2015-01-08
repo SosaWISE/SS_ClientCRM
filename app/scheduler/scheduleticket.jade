@@ -1,0 +1,11 @@
+div(class="dock l3-250 l-show",data-bind="")
+  div(class="dock-content")
+    div(data-bind="template:'tmpl-scheduler-schedule'")
+
+  div(class="dock-left")
+    <!-- ko if:board.selectedVm -->
+    div(data-bind="template:{name:board.selectedVm().viewTmpl,data:board.selectedVm()}",style="margin:10px")
+    <!-- /ko -->
+    <!-- ko if:!board.selectedVm() -->
+    div(data-bind="template:{name:monthVm.viewTmpl,data:monthVm}",style="margin:0px 10px 10px 10px;")
+    <!-- /ko -->

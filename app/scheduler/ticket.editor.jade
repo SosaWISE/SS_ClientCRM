@@ -1,0 +1,46 @@
+div(class="ticket-editor")
+  div(data-bind="spinner:busy,spinner-rgb:'white'")
+
+  div(class="dock l3-350 l-show",data-bind="")
+    div(class="dock-left")
+      ul(class="edit-form")
+        //- li
+        //-   span(class="label") Account ID
+        //-   input(type="text" data-bind="ukov:data.AccountId,value:data.AccountId,valueUpdate:'keyup'")
+        li
+          span(class="label") Service Type
+          div(data-bind="cvm:data.serviceTypeCvm")
+        li
+          span(class="label") Ticket pertains to
+          div(class="max-w160",data-bind="msvm:skillsMsvm")
+        li
+          span(class="label") General Notes
+          span(class="notes",data-bind="text:data.Notes")
+          <!-- ko if:showNotesInput -->
+          textarea(rows="5" data-bind="ukov:note,value:note,valueUpdate:'keyup'")
+          <!-- /ko -->
+        li
+          span(class="label") Monitoring Station Ticket#
+          input(type="text" data-bind="ukov:data.MSTicketNum,value:data.MSTicketNum,valueUpdate:'keyup'")
+      ul(class="actions")
+        li
+          a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+        li
+          a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save Ticket
+        <!-- ko if:!scheduleVm() -->
+        li
+          a(class="btn",tabindex="0",data-bind="cmd:cmdSchedule") Save &amp; Schedule
+        <!-- /ko -->
+      <!-- ko with:scheduleVm -->
+      div(class="line-top",data-bind="")
+        <!-- ko if:!board.selectedVm() -->
+        div(data-bind="template:{name:monthVm.viewTmpl,data:monthVm}")
+        <!-- /ko -->
+        <!-- ko if:board.selectedVm -->
+        div(data-bind="template:{name:board.selectedVm().viewTmpl,data:board.selectedVm()}")
+        <!-- /ko -->
+      <!-- /ko -->
+
+    <!-- ko with:scheduleVm -->
+    div(class="dock-content",data-bind="template:'tmpl-scheduler-schedule'")
+    <!-- /ko -->

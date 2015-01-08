@@ -12,6 +12,7 @@ define('slick', [
   'src/slick/tparty/slick.grid',
   'src/slick/tparty/slick.rowselectionmodel',
   'src/slick/tparty/slick.editors',
+  'src/slick/tparty/slick.dataview',
   // these aren't in the gruntfile and they don't seeem to be referenced anywhere
   // 'src/slick/tparty/slick.cellrangedecorator',
   // 'src/slick/tparty/slick.cellrangeselector',

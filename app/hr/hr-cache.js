@@ -42,9 +42,6 @@ define("src/hr/hr-cache", [
         case "seasons":
           ensureType(name, "SeasonID", cb);
           break;
-        case "skills":
-          ensureType(name, "ID", cb);
-          break;
         case "teams":
           ensureType(name, "TeamID", cb);
           break;
@@ -65,7 +62,7 @@ define("src/hr/hr-cache", [
 
   function ensureType(type, idName, cb) {
     cacher.ensure(cb, prefix + type, idName, function(cb) {
-      dataservice.humanresourcesrv[type].read({}, null, cb);
+      dataservice.hr[type].read({}, null, cb);
     });
   }
 

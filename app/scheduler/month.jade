@@ -10,7 +10,7 @@ div(class="month")
       span(class="txt",data-bind="text:yearText")
       span(class="btn small fa fa-caret-right",data-bind="cmd:clickYearDown")
   ol(class="days")
-    <!-- ko foreach:weekDays -->
+    <!-- ko foreach:weekdays -->
     li(class="weekDay",data-bind="")
       span(class="",data-bind="text:day")
     <!-- /ko -->
@@ -18,4 +18,3 @@ div(class="month")
     li(class="day",data-bind="cmd:$parent.clickDate,toggle:{selected:selected,outOfMonth:!inMonth(),today:today}")
       span(class="num",data-bind="text:date,fadein:date")
     <!-- /ko -->
-
