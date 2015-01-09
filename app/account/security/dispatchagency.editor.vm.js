@@ -23,6 +23,7 @@ define("src/account/security/dispatchagency.editor.vm", [
   schema = {
     _model: true,
     DispatchAgencyAssignmentID: {},
+    AccountId: {},
     DispatchAgencyName: {
       validators: [
         ukov.validators.isRequired("Agency name is required"),
@@ -40,41 +41,50 @@ define("src/account/security/dispatchagency.editor.vm", [
       ],
     },
     PermitNumber: {
-      validators: [
-        ukov.validators.isRequired("Permit number is required"),
-      ],
+      // validators: [
+      //   ukov.validators.isRequired("Permit number is required"),
+      // ],
     },
     PermitEffectiveDate: {
       converter: dateConverter,
-      validators: [
-        ukov.validators.isRequired("Effective date is required"),
-      ],
+      // validators: [
+      //   ukov.validators.isRequired("Effective date is required"),
+      // ],
     },
     PermitExpireDate: {
       converter: dateConverter,
-      validators: [
-        ukov.validators.isRequired("Expiration date is required"),
-      ],
+      // validators: [
+      //   ukov.validators.isRequired("Expiration date is required"),
+      // ],
     },
+    CityName: {},
+    StateAB: {},
+    ZipCode: {},
   };
 
   function DispatchAgencyEditorViewModel(options) {
     var _this = this;
     DispatchAgencyEditorViewModel.super_.call(_this, options);
+
     BaseViewModel.ensureProps(_this, [
       "dispatchAgencyTypes",
       "dispatchAgencyTypeFields",
     ]);
 
+    _this.mixinLoad();
     _this.initFocusFirst();
 
     _this.data = ukov.wrap(_this.item || {
+      AccountId: options.accountId,
       DispatchAgencyName: "",
       Phone1: "",
       DispatchAgencyTypeId: null,
       PermitNumber: "",
       PermitEffectiveDate: "",
       PermitExpireDate: "",
+      CityName: "",
+      StateAB: "",
+      ZipCode: "",
     }, schema);
     _this.data.DispatchAgencyTypeCvm = new ComboViewModel({
       selectedValue: _this.data.DispatchAgencyTypeId,
@@ -101,7 +111,16 @@ define("src/account/security/dispatchagency.editor.vm", [
         _this.layerResult = val;
         _this.isDeleted = false;
         closeLayer(_this);
-      }, cb);
+      }, function(err) {
+        if (err) {
+          if (err.Code === 90300) {
+            notify.error(err, 0);
+          } else {
+            notify.error(err);
+          }
+        }
+        cb();
+      });
     }, function(busy) {
       return !busy && !_this.cmdDelete.busy();
     });
@@ -125,6 +144,24 @@ define("src/account/security/dispatchagency.editor.vm", [
   DispatchAgencyEditorViewModel.prototype.viewTmpl = "tmpl-security-dispatchagency_editor";
   DispatchAgencyEditorViewModel.prototype.width = 600;
   DispatchAgencyEditorViewModel.prototype.height = "auto";
+  DispatchAgencyEditorViewModel.prototype.onLoad = function() {
+    var _this = this;
+
+    dataservice.monitoringstationsrv.premiseAddress.read({
+      id: _this.accountId,
+      link: "AccountId",
+    }, null, utils.safeCallback(function(err, resp) {
+      var premAddress = resp.Value,
+        data = {
+          CityName: premAddress.City,
+          StateAB: premAddress.StateId,
+          ZipCode: premAddress.PostalCode,
+        };
+      _this.data.setValue(data);
+      _this.data.markClean(data, true);
+
+    }, notify.iferror));
+  };
 
   function closeLayer(_this) {
     if (_this.layer) {
