@@ -111,7 +111,16 @@ define("src/account/security/dispatchagency.editor.vm", [
         _this.layerResult = val;
         _this.isDeleted = false;
         closeLayer(_this);
-      }, cb);
+      }, function(err) {
+        if (err) {
+          if (err.Code === 90300) {
+            notify.error(err, 0);
+          } else {
+            notify.error(err);
+          }
+        }
+        cb();
+      });
     }, function(busy) {
       return !busy && !_this.cmdDelete.busy();
     });

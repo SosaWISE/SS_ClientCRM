@@ -43,7 +43,9 @@ define("src/account/security/clist.submitonline.vm", [
         accountId: _this.accountId,
       }), function(result) {
         if (result) {
-          alert(result);
+          load_dispatchAgencys(_this.accountId, _this.gvm, function() {
+            cb(null);
+          });
         }
         cb();
       });
