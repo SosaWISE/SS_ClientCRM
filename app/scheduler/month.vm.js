@@ -60,23 +60,53 @@ define("src/scheduler/month.vm", [
     }
 
 
-    _this.nowText = ko.observable();
-    _this.selectedDate = ko.observable(new Date(0));
-    _this.monthText = ko.computed(function() {
-      return moment(_this.selectedDate()).format("MMMM");
+    var internalSelectedDate = ko.observable(new Date(0));
+    _this.selectedDate = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        return internalSelectedDate();
+      },
+      write: function(selectedDate) {
+        var currDate = internalSelectedDate.peek();
+        var date = selectedDate.getDate();
+        selectedDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), date);
+
+        if (currDate.getFullYear() !== selectedDate.getFullYear() ||
+          currDate.getMonth() !== selectedDate.getMonth()) {
+          // set new month
+          setMonthDays(_this.days, selectedDate);
+        }
+        // select the selected day
+        _this.days.forEach(function(day) {
+          day.selected(day.inMonth.peek() && day.date.peek() === date);
+        });
+        // set new selected date
+        internalSelectedDate(selectedDate);
+      }
     });
-    _this.yearText = ko.computed(function() {
-      return moment(_this.selectedDate()).format("YYYY");
+    _this.monthName = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        return moment(_this.selectedDate()).format("MMMM");
+      },
+    });
+    _this.year = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        return _this.selectedDate().getFullYear();
+      },
+    });
+    _this.dateText = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        // return strings.format("{0:d}", _this.selectedDate());
+        return moment(_this.selectedDate()).format("LL");
+      },
     });
 
     //
     //events
     //
-    _this.clickNow = function() {
-      var now = new Date();
-      _this.selectDate(now);
-      _this.nowText(moment(now).format("LL"));
-    };
     _this.clickYearDown = function() {
       changeYear(_this, false);
     };
@@ -101,7 +131,7 @@ define("src/scheduler/month.vm", [
     };
 
     // start with today selected
-    _this.clickNow();
+    _this.selectedDate(new Date());
   }
 
   utils.inherits(MonthViewModel, ControllerViewModel);
@@ -111,30 +141,19 @@ define("src/scheduler/month.vm", [
   // members
   //
 
-  MonthViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
-    //var _this = this;
-    join = join;
-  };
-
-
-  MonthViewModel.prototype.selectDate = function(selectedDate) {
+  MonthViewModel.prototype.isDateSelected = function(dt) {
     var _this = this;
-    var currDate = _this.selectedDate.peek();
-    var date = selectedDate.getDate();
-    selectedDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), date);
-
-    if (currDate.getFullYear() !== selectedDate.getFullYear() ||
-      currDate.getMonth() !== selectedDate.getMonth()) {
-      // set new month
-      setMonthDays(_this.days, selectedDate);
-    }
-    // select the selected day
-    _this.days.forEach(function(day) {
-      day.selected(day.inMonth.peek() && day.date.peek() === date);
-    });
-    // set new selected date
-    _this.selectedDate(selectedDate);
+    var selectedDate = _this.selectedDate.peek();
+    return selectedDate.getFullYear() === dt.getFullYear() &&
+      selectedDate.getMonth() === dt.getMonth() &&
+      selectedDate.getDate() === dt.getDate();
   };
+
+  //
+  // MonthViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
+  //   //var _this = this;
+  //   join = join;
+  // };
 
   function setMonthDays(days, selectedDate, todaysDate) {
     var dt = moment(selectedDate),
@@ -152,7 +171,11 @@ define("src/scheduler/month.vm", [
 
       day.date(date);
       day.inMonth(dt.month() === month);
-      day.today(now.year() === dt.year() && now.month() === dt.month() && now.date() === date);
+      day.today(
+        now.year() === dt.year() &&
+        now.month() === dt.month() &&
+        now.date() === date
+      );
 
       dt.add("days", 1);
     });
@@ -160,7 +183,7 @@ define("src/scheduler/month.vm", [
 
   function changeYear(_this, prev) {
     var dt = _this.selectedDate.peek();
-    _this.selectDate(new Date(
+    _this.selectedDate(new Date(
       dt.getFullYear() + (prev ? -1 : 1),
       dt.getMonth(),
       dt.getDate()
@@ -178,16 +201,24 @@ define("src/scheduler/month.vm", [
       month = 0;
       year++;
     }
-    _this.selectDate(new Date(
+    date = date || dt.getDate();
+    dt = new Date(
       year,
       month,
       date || dt.getDate()
-    ));
+    );
+    // ensure date doesn't overflow month
+    if (date !== dt.getDate()) {
+      // e.g.: going from Jan 31 to Feb 31 should be Feb 28 instead of Mar 3
+      dt.setDate(0);
+    }
+    //
+    _this.selectedDate(dt);
   }
 
   function changeDate(_this, date) {
     var dt = _this.selectedDate.peek();
-    _this.selectDate(new Date(
+    _this.selectedDate(new Date(
       dt.getFullYear(),
       dt.getMonth(),
       date

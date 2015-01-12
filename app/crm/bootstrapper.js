@@ -90,7 +90,7 @@ define('src/crm/bootstrapper', [
       Code: -2,
       Message: msg,
       Url: url,
-    });
+    }, 0);
   };
 
   var deps = [];

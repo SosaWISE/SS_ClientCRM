@@ -28,7 +28,24 @@ define("src/scheduler/dayboard", [
       rowHeight: 7,
     });
     // used in dayboard binding
-    _this.selectedVm = ko.observable();
+    var internalVm = ko.observable();
+    _this.selectedVm = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        return internalVm();
+      },
+      write: function(vm) {
+        var currVm = internalVm.peek();
+        if (currVm) {
+          currVm.selected(false);
+        }
+        if (vm) {
+          vm.selected(true);
+        }
+        internalVm(vm);
+      }
+    });
+
 
     // number of half hours
     _this.halfHourRowHeight = _this.rowHeight * 6;
@@ -60,12 +77,26 @@ define("src/scheduler/dayboard", [
       }
       return hour + v;
     };
+
+    //
+    _this.columns = ko.observableArray([]);
+    _this.columnWidth = ko.computed(function() {
+      var length = _this.columns().length || 1;
+      length = Math.max(length, 2); // minimum of 2 wide
+      return (100 / length) + "%";
+    });
+
+    //
+    _this.busy = ko.observable(false);
   }
   DayBoard.prototype.viewTmpl = "tmpl-scheduler-dayboard";
 
   //
   // members
   //
+  DayBoard.prototype.getChildTemplate = function(vm) {
+    return vm.viewTmpl;
+  };
 
   DayBoard.prototype.rowToTicks = function(row) {
     var _this = this;
@@ -92,21 +123,13 @@ define("src/scheduler/dayboard", [
   DayBoard.prototype.topToTime = function(dt, top) {
     var _this = this;
     var row = Math.floor(top / _this.rowHeight);
-    var timeTicks = _this.rowToTicks(row);
-    // clone date
-    dt = new Date(dt.valueOf());
-    dt.setHours(0, 0, 0, 0); // remove time from date
-    return new Date(dt.valueOf() + timeTicks);
+    return addDateAndRow(_this, dt, row);
   };
   DayBoard.prototype.heightToTime = function(startDt, dt, height) {
     var _this = this;
     var nRows = height / _this.rowHeight;
     var row = _this.timeToRow(startDt);
-    var timeTicks = _this.rowToTicks(nRows + row);
-    // clone date
-    dt = new Date(dt.valueOf());
-    dt.setHours(0, 0, 0, 0); // remove time from date
-    return new Date(dt.valueOf() + timeTicks);
+    return addDateAndRow(_this, dt, nRows + row);
   };
   DayBoard.prototype.timeToHeight = function(startDt, endDt) {
     var _this = this;
@@ -114,6 +137,14 @@ define("src/scheduler/dayboard", [
     var nRows = _this.timeToRow(endDt, _this.endHour) - row;
     return Math.max(5, nRows * _this.rowHeight);
   };
+
+  function addDateAndRow(_this, dt, row) {
+    var timeTicks = _this.rowToTicks(row);
+    // clone date
+    dt = new Date(dt.valueOf());
+    dt.setHours(0, 0, 0, 0); // remove time from date
+    return new Date(dt.valueOf() + timeTicks);
+  }
 
   //
   //
@@ -125,14 +156,15 @@ define("src/scheduler/dayboard", [
   ko.bindingHandlers.dayboard = {
     init: function(el, valueAccessor) {
       var dayboardVm = ko.unwrap(valueAccessor());
-      var currVm = dayboardVm.selectedVm.peek();
       var dragInfo = null;
       var $scrollEl = jquery(el).parent();
 
-      function deselect() {
-        currVm.selected(false);
-        currVm.data.reset();
-        dayboardVm.selectedVm(currVm = null);
+      function deselectCurrent() {
+        var vm = dayboardVm.selectedVm.peek();
+        if (vm) {
+          vm.data.reset();
+          dayboardVm.selectedVm(null);
+        }
       }
 
       function initDragInfo($target, vm, moveEl, evt) {
@@ -172,6 +204,7 @@ define("src/scheduler/dayboard", [
         var moveEl = ($target.hasClass("editable") ? $target : $target.parent("dl.editable"))[0];
         var vm = moveEl ? ko.dataFor(moveEl) : null;
 
+        var currVm = dayboardVm.selectedVm.peek();
         if (currVm) {
           if (!vm) {
             return;
@@ -185,8 +218,8 @@ define("src/scheduler/dayboard", [
             notify.warn("Appointment has unsaved changes", "Save or cancel the currently selected appointment.", 5);
             return;
           } else {
-            // nothing to save so deselect the current and select the new
-            deselect();
+            // nothing to save so deselectCurrent the current and select the new
+            deselectCurrent();
           }
         } else if (!vm) {
           if (!dayboardVm.onAdd) {
@@ -202,23 +235,20 @@ define("src/scheduler/dayboard", [
           vm = dayboardVm.onAdd(evt.clientY - $scrollEl.offset().top + $scrollEl.scrollTop(), columnVm);
         }
 
-        //
-        vm.selected(true);
-        currVm = vm;
         // override clickCancel
-        (function() {
-          var prevClick = currVm.clickCancel;
-          currVm.clickCancel = function() {
-            currVm.clickCancel = prevClick;
+        (function(vm) {
+          var prevClick = vm.clickCancel;
+          vm.clickCancel = function() {
+            vm.clickCancel = prevClick;
 
-            if (utils.isFunc(currVm.onCancel)) {
-              currVm.onCancel();
+            if (utils.isFunc(vm.onCancel)) {
+              vm.onCancel();
             }
             // reset data
-            currVm.data.reset();
+            vm.data.reset();
           };
-        })();
-        dayboardVm.selectedVm(currVm);
+        })(vm);
+        dayboardVm.selectedVm(vm);
 
         //for now only allow dragging after the item has been selected
         // initDragInfo($target, vm, moveEl, evt);

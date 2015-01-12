@@ -43,18 +43,18 @@ define("src/scheduler/scheduler.panel.vm", [
     var _this = this;
 
     _this.list([
-      new ScheduleTicketViewModel({
-        pcontroller: _this,
-        id: "schedule",
-        title: "Schedule",
-        layersVm: _this.layersVm,
-        ticket: {}, /////
-      }),
       new TechsViewModel({
         pcontroller: _this,
         id: "techs",
         title: "Techs",
         layersVm: _this.layersVm,
+      }),
+      new ScheduleTicketViewModel({
+        pcontroller: _this,
+        id: "schedule",
+        title: "Schedule",
+        layersVm: _this.layersVm,
+        ticketVm: {}, /////
       }),
     ]);
   };

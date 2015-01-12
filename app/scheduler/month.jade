@@ -1,20 +1,17 @@
-div(class="month-title",data-bind="text:nowText,cmd:clickNow")
+div(class="month-title",data-bind="text:dateText")
 div(class="month")
   div(class="controls")
     div(class="mnth")
       span(class="btn small fa fa-caret-left",data-bind="cmd:clickMonthUp")
-      span(class="txt",data-bind="text:monthText")
+      span(class="txt",data-bind="text:monthName")
       span(class="btn small fa fa-caret-right",data-bind="cmd:clickMonthDown")
     div(class="year")
       span(class="btn small fa fa-caret-left",data-bind="cmd:clickYearUp")
-      span(class="txt",data-bind="text:yearText")
+      span(class="txt",data-bind="text:year")
       span(class="btn small fa fa-caret-right",data-bind="cmd:clickYearDown")
-  ol(class="days")
-    <!-- ko foreach:weekdays -->
+  ol(class="days",data-bind="foreach:weekdays")
     li(class="weekDay",data-bind="")
       span(class="",data-bind="text:day")
-    <!-- /ko -->
-    <!-- ko foreach:days -->
+  ol(class="days",data-bind="foreach:days")
     li(class="day",data-bind="cmd:$parent.clickDate,toggle:{selected:selected,outOfMonth:!inMonth(),today:today}")
       span(class="num",data-bind="text:date,fadein:date")
-    <!-- /ko -->

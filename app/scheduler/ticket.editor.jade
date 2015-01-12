@@ -22,25 +22,37 @@ div(class="ticket-editor")
         li
           span(class="label") Monitoring Station Ticket#
           input(type="text" data-bind="ukov:data.MSTicketNum,value:data.MSTicketNum,valueUpdate:'keyup'")
+      <!-- ko if:showAppt -->
+      ul(class="edit-form line-top")
+        //- li
+        //-   span(class="label") Date
+        //-   span(class="value",data-bind="text:startDateText")
+        li
+          <!-- ko if:data.AppointmentId -->
+          span(class="label") Appointment Date
+          span(class="value",data-bind="text:scheduleVm.monthVm.dateText")
+          <!-- /ko -->
+          <!-- ko if:!data.AppointmentId() -->
+          div(data-bind="template:{name:scheduleVm.monthVm.viewTmpl,data:scheduleVm.monthVm}")
+          <!-- /ko -->
+        li
+          span(class="label") Start Time
+          input(type="text",data-bind="ukov:data.StartOn,timevalue:data.StartOn,valueUpdate:'keyup'")
+        li
+          span(class="label") End Time
+          input(type="text",data-bind="ukov:data.EndOn,timevalue:data.EndOn,valueUpdate:'keyup'")
+      <!-- /ko -->
       ul(class="actions")
         li
           a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
         li
-          a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save Ticket
-        <!-- ko if:!scheduleVm() -->
+          a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
+      <!-- ko if:!showAppt() -->
+      ul(class="actions")
         li
-          a(class="btn",tabindex="0",data-bind="cmd:cmdSchedule") Save &amp; Schedule
-        <!-- /ko -->
-      <!-- ko with:scheduleVm -->
-      div(class="line-top",data-bind="")
-        <!-- ko if:!board.selectedVm() -->
-        div(data-bind="template:{name:monthVm.viewTmpl,data:monthVm}")
-        <!-- /ko -->
-        <!-- ko if:board.selectedVm -->
-        div(data-bind="template:{name:board.selectedVm().viewTmpl,data:board.selectedVm()}")
-        <!-- /ko -->
+          a(class="btn",tabindex="0",data-bind="cmd:cmdSchedule") Show Schedule
       <!-- /ko -->
 
-    <!-- ko with:scheduleVm -->
-    div(class="dock-content",data-bind="template:'tmpl-scheduler-schedule'")
+    <!-- ko if:showAppt -->
+    div(class="dock-content",data-bind="template:{name:'tmpl-scheduler-schedule',data:scheduleVm}")
     <!-- /ko -->

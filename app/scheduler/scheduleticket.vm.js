@@ -2,7 +2,7 @@ define("src/scheduler/scheduleticket.vm", [
   "moment",
   "src/dataservice",
   "src/scheduler/month.vm",
-  "src/scheduler/appt.editor.vm",
+  "src/scheduler/calitem",
   "src/scheduler/dayboard",
   "jquery",
   "ko",
@@ -14,7 +14,7 @@ define("src/scheduler/scheduleticket.vm", [
   moment,
   dataservice,
   MonthViewModel,
-  ApptEditorViewModel,
+  CalItem,
   DayBoard,
   jquery,
   ko,
@@ -33,50 +33,45 @@ define("src/scheduler/scheduleticket.vm", [
     ScheduleTicketViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
       // "layersVm",
-      "ticket",
+      "ticketVm",
     ]);
 
-    _this.board = new DayBoard({
-      onAdd: function(top, columnVm) {
+    _this.hasAppt = _this.ticketVm.data.model.AppointmentId > 0;
+
+    _this.board = new DayBoard();
+    if (!_this.hasAppt) {
+      _this.board.onAdd = function(top, columnVm) {
         var startOn = _this.board.topToTime(_this.monthVm.selectedDate.peek(), top);
         var endOn = moment(startOn).add("hour", 1).toDate();
 
-        var apptVm = ApptEditorViewModel.toCalendarItem({
-          // ID: null,
-          // AppointmentId: null,
-          // Version: 0,
-          ServiceTicketId: _this.ticket.ID,
-          TechId: columnVm.tech.ID,
-          StartOn: startOn,
-          EndOn: endOn,
-        }, _this.board, "appt", true);
+        _this.ticketVm.data.StartOn(startOn);
+        _this.ticketVm.data.EndOn(endOn);
+        _this.ticketVm.data.TechId(columnVm.ID);
 
-        apptVm.onCancel = function() {
-          if (apptVm.data.model.AppointmentId) {
-            return;
-          }
-          // remove from list
-          var index = columnVm.items.indexOf(apptVm);
-          columnVm.items.splice(index, 1);
-        };
+        var calItem = CalItem.create(_this.board, _this.ticketVm.data);
+
+        // calItem.onCancel = function() {
+        //   if (calItem.data.model.AppointmentId) {
+        //     return;
+        //   }
+        //   // remove from list
+        //   var index = columnVm.items.indexOf(calItem);
+        //   if (index < 0) {
+        //     return;
+        //   }
+        //   columnVm.items.splice(index, 1);
+        // };
 
         // add to list
-        columnVm.items.push(apptVm);
+        columnVm.items.push(calItem);
 
-        return apptVm;
-      },
-    });
-    _this.columns = ko.observableArray([]);
-    _this.busy = ko.observable(false);
+        return calItem;
+      };
 
-    _this.columnWidth = ko.computed(function() {
-      var length = _this.columns().length || 1;
-      return (100 / length) + "%";
-    });
-
-    _this.dayTechs = ko.observableArray();
-
+    }
     _this.monthVm = new MonthViewModel();
+    // _this.dayTechs = ko.observableArray();
+
 
     //
     //events
@@ -92,33 +87,54 @@ define("src/scheduler/scheduleticket.vm", [
 
   ScheduleTicketViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
     var _this = this;
+    var afterLoaded;
 
-    //@REVIEW: need more sophisticated tech query
-    dataservice.ticketsrv.techs.read({}, function(val) {
-      _this.techs = val.filter(function(tech) {
-        // only techs with an id (it needs to exist in TS_ tables)
-        return tech.ID;
-      });
+    if (_this.hasAppt) {
+      // load tech for appointment
 
-      // get weekdays for each tech
-      _this.techs.forEach(function(tech) {
-        dataservice.ticketsrv.techs.read({
-          id: tech.ID,
-          link: "weekdays",
-        }, function(weekdays) {
-          // convert weekdays to gones
-          tech.weekGones = convertWeekDaysToWeekGones(weekdays);
-        }, join.add());
-      });
-    }, join.add());
+      // get ticket
+      var ticket = _this.ticketVm.data.model;
 
+      // load service ticket tech
+      dataservice.ticketsrv.techs.read({
+        id: ticket.TechId,
+      }, function(tech) {
+        _this.techs = [tech];
+        loadTechWeekDays(tech, join.add());
+      }, join.add());
 
-    join.when(function(err) {
-      if (!err) {
+      afterLoaded = function() {
+        _this.monthVm.selectedDate(ticket.StartOn);
+        selectedDateChanged.call(_this, ticket.StartOn);
+      };
+    } else {
+      // load all techs
+
+      //@REVIEW: need more sophisticated tech query
+      dataservice.ticketsrv.techs.read({}, function(val) {
+        _this.techs = val.filter(function(tech) {
+          // only techs with an id (it needs to exist in TS_ tables)
+          return tech.ID;
+        });
+
+        // get weekdays for each tech
+        _this.techs.forEach(function(tech) {
+          loadTechWeekDays(tech, join.add());
+        });
+      }, join.add());
+
+      afterLoaded = function() {
         _this.monthVm.selectedDate.subscribe(selectedDateChanged, _this);
+        // fire event
+        selectedDateChanged.call(_this, _this.monthVm.selectedDate.peek());
+      };
+    }
 
-        // set the selected date to now
-        _this.monthVm.selectDate(new Date());
+    _this.board.busy(true);
+    join.when(function(err) {
+      _this.board.busy(false);
+      if (!err) {
+        afterLoaded();
       }
     });
   };
@@ -127,7 +143,7 @@ define("src/scheduler/scheduleticket.vm", [
     /* jshint validthis:true */
     var _this = this;
     // clear
-    _this.columns([]);
+    _this.board.columns([]);
 
     var join = joiner();
     var day = selectedDate.getDay();
@@ -146,27 +162,40 @@ define("src/scheduler/scheduleticket.vm", [
       }
       return working;
     });
-    _this.dayTechs(dayTechs);
+    // _this.dayTechs(dayTechs);
 
-    _this.busy(true);
+    _this.board.busy(true);
     join.when(function(err) {
-      _this.busy(false);
+      _this.board.busy(false);
       if (err) {
         return notify.error(err);
       }
 
-      _this.columns(dayTechs.map(function(tech) {
+      if (!_this.monthVm.isDateSelected(selectedDate)) {
+        // abort if the date has since changed
+        return;
+      }
+
+      _this.board.columns(dayTechs.map(function(tech) {
         var items = [];
         items = items.concat(tech.weekGones[day].map(function(item) {
-          return ApptEditorViewModel.toCalendarItem(item, _this.board, "gone");
+          return CalItem.create(_this.board, item);
         }));
         items = items.concat(techDayApptsMap[tech.ID].map(function(item) {
-          return ApptEditorViewModel.toCalendarItem(
-            item, _this.board, "appt", item.ID === _this.apptID);
+          var vm;
+          if (item.AppointmentId === _this.ticketVm.data.model.AppointmentId) {
+            vm = CalItem.create(_this.board, _this.ticketVm.data);
+            _this.board.selectedVm(vm);
+          } else {
+            vm = CalItem.create(_this.board, item);
+          }
+          return vm;
         }));
 
         return {
-          tech: tech,
+          ID: tech.ID,
+          Name: tech.FullName,
+          // tech: tech,
           items: ko.observableArray(items),
         };
       }));
@@ -210,6 +239,16 @@ define("src/scheduler/scheduleticket.vm", [
         date: moment(selectedDate).format("MM/DD/YYYY"),
       },
     }, setter, cb);
+  }
+
+  function loadTechWeekDays(tech, cb) {
+    dataservice.ticketsrv.techs.read({
+      id: tech.ID,
+      link: "weekdays",
+    }, function(weekdays) {
+      // convert weekdays to gones
+      tech.weekGones = convertWeekDaysToWeekGones(weekdays);
+    }, cb);
   }
 
 

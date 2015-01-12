@@ -26,6 +26,15 @@ define("src/scheduler/ticket.editor.vm", [
   "use strict";
 
   var nullStrConverter = ukov.converters.nullString();
+  var timeConverter = ukov.converters.time(
+    function getStartDate(model) {
+      return model._startDate;
+    },
+    function removeSeconds(dt) {
+      dt.setSeconds(0, 0);
+      return dt;
+    }
+  );
   var schema = {
     _model: true,
     ID: {},
@@ -61,7 +70,30 @@ define("src/scheduler/ticket.editor.vm", [
     // AgentConfirmation: {},
     // ExpirationDate: {},
     // // Notes: {},
+
+    AppointmentId: {},
+    TechId: {
+      validators: [
+        ukov.validators.isRequired("TechId is required"),
+      ],
+    },
+    StartOn: {
+      converter: timeConverter,
+      validators: [
+        ukov.validators.isRequired("Start Time is required"),
+      ],
+    },
+    EndOn: {
+      converter: timeConverter,
+      validators: [
+        ukov.validators.isRequired("End Time is required"),
+      ],
+    },
+    TravelTime: {},
+    TechEnRouteOn: {},
   };
+  var apptFields = ["TechId", "StartOn", "EndOn"];
+
   var schemaNote = {
     converter: nullStrConverter,
     // validators: [
@@ -143,7 +175,7 @@ define("src/scheduler/ticket.editor.vm", [
         if (err) {
           return;
         }
-        if (resp) {
+        if (resp && resp.Value) {
           _this.layerResult = resp.Value;
           closeLayer(_this);
         }
@@ -151,19 +183,19 @@ define("src/scheduler/ticket.editor.vm", [
     }, function(busy) {
       return !busy && (!_this.cmdSchedule || !_this.cmdSchedule.busy());
     });
-    _this.busy = _this.cmdSave.busy;
 
     _this.cmdSchedule = ko.command(function(cb) {
-      saveTicketData(_this, utils.safeCallback(cb, function(err, resp) {
-        if (err) {
-          return;
-        }
-        if (resp) {
-          _this.layerResult = resp.Value;
-
-          tryCreateScheduleVm(resp.Value);
-        }
-      }, utils.noop));
+      _this.showAppt(!_this.showAppt.peek());
+      cb();
+      // saveTicketData(_this, utils.safeCallback(cb, function(err, resp) {
+      //   if (err) {
+      //     return;
+      //   }
+      //   if (resp) {
+      //     _this.layerResult = resp.Value;
+      //
+      //   }
+      // }, utils.noop));
     }, function(busy) {
       // tickets with these status codes can not be scheduled:
       //  - 4 - Tech Confirmed
@@ -174,26 +206,37 @@ define("src/scheduler/ticket.editor.vm", [
         (statusCodeId < 4 || 7 < statusCodeId);
     });
 
-    _this.scheduleVm = ko.observable();
-    _this.width = ko.observable(390);
-    _this.height = ko.observable(450);
 
-    function tryCreateScheduleVm(ticket) {
-      if (!ticket || !ticket.ID || _this.scheduleVm.peek()) {
-        return;
+    _this.busy = ko.computed(function() {
+      return _this.loading() || _this.cmdSave.busy();
+    });
+
+
+    _this.scheduleVm = new ScheduleTicketViewModel({
+      // layersVm: _this.layersVm,
+      ticketVm: _this,
+      // appt: ticket.AppointmentId ? ticket : null,
+    });
+
+    _this.showAppt = ko.observable();
+    _this.width = ko.observable();
+    _this.height = ko.observable();
+
+    _this.showAppt.subscribe(function(show) {
+      var ignore = !show;
+      apptFields.forEach(function(field) {
+        _this.data[field].ignore(ignore);
+      });
+      _this.data.update(false, true);
+      if (show) {
+        _this.width("calc(100% - 20px)");
+        _this.height("calc(100% - 20px)");
+      } else {
+        _this.width(390);
+        _this.height(450);
       }
-
-      _this.scheduleVm(new ScheduleTicketViewModel({
-        // layersVm: _this.layersVm,
-        ticket: ticket,
-        // appt: ticket.AppointmentId ? ticket : null,
-      }));
-
-      _this.width("calc(100% - 20px)");
-      _this.height("calc(100% - 20px)");
-    }
-
-    tryCreateScheduleVm(_this.item);
+    });
+    _this.showAppt(!!_this.item.AppointmentId);
   }
   utils.inherits(TicketEditorViewModel, BaseViewModel);
   TicketEditorViewModel.prototype.viewTmpl = "tmpl-scheduler-ticket-editor";
@@ -213,17 +256,7 @@ define("src/scheduler/ticket.editor.vm", [
       _this.skillsMsvm.selectedValues.markClean([], true);
     }
 
-    //load ticket type list
-    var scheduleVm = _this.scheduleVm.peek();
-    if (scheduleVm) {
-      scheduleVm.load(routeData, extraData, join.add());
-    }
-
-    // join.when(function(err) {
-    //   if (err) {
-    //     return;
-    //   }
-    // });
+    _this.scheduleVm.load(routeData, extraData, join.add());
   };
 
   function closeLayer(_this) {
@@ -263,8 +296,8 @@ define("src/scheduler/ticket.editor.vm", [
       saveTicketSkills(_this, _this.data.model.ID, join.add());
     }, utils.noop));
 
-    join.when(function(err) {
-      cb(err);
+    join.when(function(err, resps) {
+      cb(err, resps[0]);
     });
   }
 
@@ -286,8 +319,13 @@ define("src/scheduler/ticket.editor.vm", [
     var model = _this.data.getValue();
     if (_this.data.isClean() && model.ID) {
       // nothing to save
-      return cb();
+      return cb(null, {
+        Code: 0,
+        Value: _this.data.model,
+      });
     }
+
+    model.TravelTime = 0; //@TODO: implement TravelTime
 
     dataservice.ticketsrv.serviceTickets.save({
       id: model.ID, // if no value create, else update

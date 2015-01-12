@@ -19,6 +19,13 @@ define('src/core/utils', [
         },
       });
     },
+    ensureProps: function(obj, propNames) {
+      propNames.forEach(function(name) {
+        if (obj[name] == null) {
+          throw new Error('missing ' + name);
+        }
+      });
+    },
 
     safeCallback: function(cb, successFn, errorFn) {
       if (!utils.isFunc(cb)) {

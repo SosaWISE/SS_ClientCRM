@@ -1,4 +1,6 @@
-div(class="schedule")
+div(data-bind="template:{name:board.viewTmpl,data:board}")
+
+//- div(class="schedule")
   div(data-bind="spinner:busy,spinner-rgb:'black'")
   div(class="week-tbl header")
     div(class="columns",data-bind="foreach:columns")
