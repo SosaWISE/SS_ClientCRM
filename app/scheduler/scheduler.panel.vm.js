@@ -49,13 +49,13 @@ define("src/scheduler/scheduler.panel.vm", [
         title: "Techs",
         layersVm: _this.layersVm,
       }),
-      new ScheduleTicketViewModel({
-        pcontroller: _this,
-        id: "schedule",
-        title: "Schedule",
-        layersVm: _this.layersVm,
-        ticketVm: {}, /////
-      }),
+      // new ScheduleTicketViewModel({
+      //   pcontroller: _this,
+      //   id: "schedule",
+      //   title: "Schedule",
+      //   layersVm: _this.layersVm,
+      //   ticketVm: {}, /////
+      // }),
     ]);
   };
 
