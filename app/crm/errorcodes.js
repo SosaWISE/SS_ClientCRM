@@ -15,6 +15,8 @@ define('src/crm/errorcodes', [], function() {
     '70140': 'Argument Validation Failed',
     '70150': 'Invalid Equipment Move',
 
+    '80200': 'Signal History not Found',
+
     '90300': 'Monitronics Dispatch Agency Not Found in Their System',
 
     '990000': 'Connection Refused',
