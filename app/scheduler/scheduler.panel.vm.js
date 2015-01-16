@@ -1,13 +1,13 @@
 define("src/scheduler/scheduler.panel.vm", [
   "src/scheduler/techs.vm",
-  "src/scheduler/scheduleticket.vm",
+  "src/scheduler/service.tickets.vm",
   "src/core/layers.vm",
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
   TechsViewModel,
-  ScheduleTicketViewModel,
+  ServiceTicketsViewModel,
   LayersViewModel,
   notify,
   utils,
@@ -43,19 +43,18 @@ define("src/scheduler/scheduler.panel.vm", [
     var _this = this;
 
     _this.list([
+      new ServiceTicketsViewModel({
+        pcontroller: _this,
+        id: "servicetickets",
+        title: "Service Tickets",
+        layersVm: _this.layersVm,
+      }),
       new TechsViewModel({
         pcontroller: _this,
         id: "techs",
         title: "Techs",
         layersVm: _this.layersVm,
       }),
-      // new ScheduleTicketViewModel({
-      //   pcontroller: _this,
-      //   id: "schedule",
-      //   title: "Schedule",
-      //   layersVm: _this.layersVm,
-      //   ticketVm: {}, /////
-      // }),
     ]);
   };
 

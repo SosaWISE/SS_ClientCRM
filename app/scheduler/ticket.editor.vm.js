@@ -124,7 +124,6 @@ define("src/scheduler/ticket.editor.vm", [
     var _this = this;
     TicketEditorViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
-      "layersVm",
       "item",
       "serviceTypes",
       "skills",
@@ -232,7 +231,6 @@ define("src/scheduler/ticket.editor.vm", [
 
 
     _this.scheduleVm = new ScheduleTicketViewModel({
-      // layersVm: _this.layersVm,
       ticketVm: _this,
       // appt: ticket.AppointmentId ? ticket : null,
     });

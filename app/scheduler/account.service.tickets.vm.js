@@ -2,7 +2,6 @@ define("src/scheduler/account.service.tickets.vm", [
   "slick",
   "src/scheduler/scheduler-helper",
   "src/scheduler/scheduler-cache",
-  "src/scheduler/account.service.tickets.gvm",
   "src/scheduler/ticket.editor.vm",
   "src/dataservice",
   "src/ukov",
@@ -11,12 +10,11 @@ define("src/scheduler/account.service.tickets.vm", [
   "src/core/strings",
   "src/core/notify",
   "src/core/utils",
-  "src/core/controller.vm",
+  "src/scheduler/service.tickets.vm",
 ], function(
   Slick,
   schedulerhelper,
   schedulercache,
-  AccountServiceTicketsGridViewModel,
   TicketEditorViewModel,
   dataservice,
   ukov,
@@ -25,7 +23,7 @@ define("src/scheduler/account.service.tickets.vm", [
   strings,
   notify,
   utils,
-  ControllerViewModel
+  ServiceTicketsViewModel
 ) {
   "use strict";
 
@@ -46,30 +44,13 @@ define("src/scheduler/account.service.tickets.vm", [
 
   function AccountServiceTicketsViewModel(options) {
     var _this = this;
-    AccountServiceTicketsViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, [
-      // "layersVm",
-    ]);
-
     _this.layersVm = new LayersViewModel({
       controller: _this,
     });
-
-    _this.gvm = new AccountServiceTicketsGridViewModel({
-      edit: function(ticket, cb) {
-        _this.layersVm.show(new TicketEditorViewModel({
-          layersVm: _this.layersVm,
-          item: utils.clone(ticket),
-          serviceTypes: schedulercache.getList("serviceTypes").peek(),
-          skills: schedulercache.getList("skills").peek(),
-        }), function(model, deleted) {
-          if (model) {
-            schedulerhelper.ensureTypeNames(model);
-          }
-          cb(model, deleted);
-        });
-      },
-    });
+    AccountServiceTicketsViewModel.super_.call(_this, options);
+    // ControllerViewModel.ensureProps(_this, [
+    //   "layersVm",
+    // ]);
 
     //
     // events
@@ -105,13 +86,9 @@ define("src/scheduler/account.service.tickets.vm", [
     }, function(busy) {
       return !busy && !_this.cmdRefreshGrid.busy();
     });
-
-    _this.cmdRefreshGrid = ko.command(function(cb) {
-      load_accountServiceTickets(_this.accountId, _this.gvm, cb);
-    });
   }
-  utils.inherits(AccountServiceTicketsViewModel, ControllerViewModel);
-  AccountServiceTicketsViewModel.prototype.viewTmpl = "tmpl-scheduler-account-service-tickets";
+  utils.inherits(AccountServiceTicketsViewModel, ServiceTicketsViewModel);
+  AccountServiceTicketsViewModel.prototype.viewTmpl = "tmpl-scheduler-account_service_tickets";
 
   AccountServiceTicketsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
@@ -119,24 +96,18 @@ define("src/scheduler/account.service.tickets.vm", [
     _this.cmfid = routeData.masterid;
     _this.accountId = routeData.id;
 
-    var typesJoin = join.create();
-    schedulercache.ensure("serviceTypes", typesJoin.add());
-    schedulercache.ensure("skills", typesJoin.add());
-    schedulercache.ensure("statusCodes", typesJoin.add());
-
     load_customers(_this.cmfid, function(data) {
       data.sort(sortByCustomerTypeId);
       _this.customer = data[0];
     }, join.add());
 
-    var cb = join.add();
-    typesJoin.when(function(err) {
-      if (err) {
-        cb(err);
-      } else {
-        _this.cmdRefreshGrid.execute(cb);
-      }
-    });
+    // call base
+    AccountServiceTicketsViewModel.super_.prototype.onLoad.call(_this, routeData, extraData, join);
+  };
+
+  AccountServiceTicketsViewModel.prototype.loadServiceTickets = function(setter, cb) { // overrides base
+    var _this = this;
+    load_accountServiceTickets(_this.accountId, setter, cb);
   };
 
   function load_customers(masterId, setter, cb) {
@@ -146,18 +117,11 @@ define("src/scheduler/account.service.tickets.vm", [
     }, setter, cb);
   }
 
-  function load_accountServiceTickets(accountId, gvm, cb) {
-    gvm.setItems([]);
+  function load_accountServiceTickets(accountId, setter, cb) {
     dataservice.monitoringstationsrv.msAccounts.read({
       id: accountId,
       link: "serviceTickets",
-    }, function(items) {
-      items.forEach(function(item) {
-        schedulerhelper.ensureTypeNames(item);
-      });
-      //
-      gvm.setItems(items);
-    }, cb);
+    }, setter, cb);
   }
 
   return AccountServiceTicketsViewModel;

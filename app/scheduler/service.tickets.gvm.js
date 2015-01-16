@@ -1,4 +1,4 @@
-define("src/scheduler/account.service.tickets.gvm", [
+define("src/scheduler/service.tickets.gvm", [
   "slick",
   "src/slick/slickgrid.vm",
   "src/slick/headerfilter",
@@ -17,7 +17,7 @@ define("src/scheduler/account.service.tickets.gvm", [
 ) {
   "use strict";
 
-  function AccountServiceTicketsGridViewModel(options) {
+  function ServiceTicketsGridViewModel(options) {
     var _this = this;
     var filterFields = [
       "ID",
@@ -27,7 +27,7 @@ define("src/scheduler/account.service.tickets.gvm", [
       "TechGPEmployeeID",
     ];
     initDataView(_this, filterFields);
-    AccountServiceTicketsGridViewModel.super_.call(_this, {
+    ServiceTicketsGridViewModel.super_.call(_this, {
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
@@ -111,16 +111,16 @@ define("src/scheduler/account.service.tickets.gvm", [
       ],
     });
   }
-  utils.inherits(AccountServiceTicketsGridViewModel, SlickGridViewModel);
+  utils.inherits(ServiceTicketsGridViewModel, SlickGridViewModel);
 
-  AccountServiceTicketsGridViewModel.prototype.setItems = function(items) {
+  ServiceTicketsGridViewModel.prototype.setItems = function(items) {
     var dv = this.dv;
     dv.beginUpdate();
     dv.setItems(items);
     dv.reSort();
     dv.endUpdate();
   };
-  AccountServiceTicketsGridViewModel.prototype.insertItem = function(item) {
+  ServiceTicketsGridViewModel.prototype.insertItem = function(item) {
     var dv = this.dv;
     dv.insertItem(item.ID, item);
   };
@@ -224,5 +224,5 @@ define("src/scheduler/account.service.tickets.gvm", [
     dv.endUpdate();
   }
 
-  return AccountServiceTicketsGridViewModel;
+  return ServiceTicketsGridViewModel;
 });
