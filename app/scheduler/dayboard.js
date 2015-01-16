@@ -201,7 +201,7 @@ define("src/scheduler/dayboard", [
         }
 
         //
-        var moveEl = ($target.hasClass("editable") ? $target : $target.parent("dl.editable"))[0];
+        var moveEl = ($target.hasClass("editable") ? $target : $target.parents(".calitem.editable"))[0];
         var vm = moveEl ? ko.dataFor(moveEl) : null;
 
         var currVm = dayboardVm.selectedVm.peek();
@@ -226,7 +226,7 @@ define("src/scheduler/dayboard", [
             return;
           }
 
-          var colEl = ($target.hasClass("column") ? $target : $target.parent("dl.editable"))[0];
+          var colEl = $target.hasClass("column") ? $target[0] : null;
           var columnVm = colEl ? ko.dataFor(colEl) : null;
           if (!columnVm) {
             return;

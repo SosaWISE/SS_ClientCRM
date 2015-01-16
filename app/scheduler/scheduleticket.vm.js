@@ -1,6 +1,7 @@
 define("src/scheduler/scheduleticket.vm", [
   "moment",
   "src/dataservice",
+  "src/scheduler/scheduler-helper",
   "src/scheduler/month.vm",
   "src/scheduler/calitem",
   "src/scheduler/dayboard",
@@ -13,6 +14,7 @@ define("src/scheduler/scheduleticket.vm", [
 ], function(
   moment,
   dataservice,
+  schedulerhelper,
   MonthViewModel,
   CalItem,
   DayBoard,
@@ -187,6 +189,7 @@ define("src/scheduler/scheduleticket.vm", [
             vm = CalItem.create(_this.board, _this.ticketVm.data);
             _this.board.selectedVm(vm);
           } else {
+            schedulerhelper.ensureTypeNames(item);
             vm = CalItem.create(_this.board, item);
           }
           return vm;

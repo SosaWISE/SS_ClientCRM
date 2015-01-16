@@ -129,6 +129,12 @@ define("src/scheduler/month.vm", [
         changeDate(_this, date);
       }
     };
+    _this.clickPrevDay = function() {
+      changeDay(_this, true);
+    };
+    _this.clickNextDay = function() {
+      changeDay(_this, false);
+    };
 
     // start with today selected
     _this.selectedDate(new Date());
@@ -223,6 +229,12 @@ define("src/scheduler/month.vm", [
       dt.getMonth(),
       date
     ));
+  }
+
+  function changeDay(_this, prev) {
+    var dt = new Date(_this.selectedDate.peek().valueOf());
+    dt.setDate(dt.getDate() + (prev ? -1 : 1));
+    _this.selectedDate(dt);
   }
 
   return MonthViewModel;

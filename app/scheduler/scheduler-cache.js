@@ -1,10 +1,8 @@
 define("src/scheduler/scheduler-cache", [
   "src/dataservice",
-  "ko",
   "src/core/cacher",
 ], function(
   dataservice,
-  ko,
   cacher
 ) {
   "use strict";

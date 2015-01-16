@@ -87,6 +87,9 @@ define("src/scheduler/calitem", [
       return calcTimespan(getStartOn(), getEndOn());
     });
 
+    _this.getCustomerName = function(data) {
+      return strings.joinTrimmed(' ', data.Salutation, data.FirstName, data.MiddleName, data.LastName, data.Suffix);
+    };
 
     //
     //events
@@ -130,7 +133,9 @@ define("src/scheduler/calitem", [
       height: board.timeToHeight(startOn, endOn),
       viewTmpl: (id > 0) ? "tmpl-scheduler-calitem" : "tmpl-scheduler-calitem_gone",
       //
-      data: data,
+      data: {
+        model: data,
+      },
       selected: false,
       editable: false,
       timespan: calcTimespan(startOn, endOn),

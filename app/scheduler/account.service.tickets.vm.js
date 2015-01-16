@@ -1,6 +1,6 @@
 define("src/scheduler/account.service.tickets.vm", [
   "slick",
-  "src/scheduler/scheduleticket.vm",
+  "src/scheduler/scheduler-helper",
   "src/scheduler/scheduler-cache",
   "src/scheduler/account.service.tickets.gvm",
   "src/scheduler/ticket.editor.vm",
@@ -14,7 +14,7 @@ define("src/scheduler/account.service.tickets.vm", [
   "src/core/controller.vm",
 ], function(
   Slick,
-  ScheduleTicketViewModel,
+  schedulerhelper,
   schedulercache,
   AccountServiceTicketsGridViewModel,
   TicketEditorViewModel,
@@ -28,6 +28,21 @@ define("src/scheduler/account.service.tickets.vm", [
   ControllerViewModel
 ) {
   "use strict";
+
+  var customerTypePrecedence = {
+    PRI: 1,
+    LEAD: 1,
+    SEC: 2,
+    BILL: 3,
+    SHIP: 4,
+  };
+
+  function sortByCustomerTypeId(a, b) {
+    var aP = customerTypePrecedence[a.CustomerTypeId] || 9,
+      bP = customerTypePrecedence[b.CustomerTypeId] || 9;
+    return aP - bP;
+  }
+
 
   function AccountServiceTicketsViewModel(options) {
     var _this = this;
@@ -49,7 +64,7 @@ define("src/scheduler/account.service.tickets.vm", [
           skills: schedulercache.getList("skills").peek(),
         }), function(model, deleted) {
           if (model) {
-            ensureTypeNames(model);
+            schedulerhelper.ensureTypeNames(model);
           }
           cb(model, deleted);
         });
@@ -62,20 +77,28 @@ define("src/scheduler/account.service.tickets.vm", [
     _this.cmdAddServiceTicket = ko.command(function(cb) {
       _this.layersVm.show(new TicketEditorViewModel({
         layersVm: _this.layersVm,
-        item: {
+        item: schedulerhelper.ensureTypeNames({
+          ID: 0,
+          //
           AccountId: _this.accountId,
           CustomerMasterFileId: _this.cmfid,
           StatusCodeId: 1,
-        },
+          //
+          FirstName: _this.customer.FirstName,
+          MiddleName: _this.customer.MiddleName,
+          LastName: _this.customer.LastName,
+          StreetAddress: _this.customer.StreetAddress,
+          StreetAddress2: _this.customer.StreetAddress2,
+          City: _this.customer.City,
+          StateId: _this.customer.StateId,
+          PostalCode: _this.customer.PostalCode,
+        }),
         serviceTypes: schedulercache.getList("serviceTypes").peek(),
         skills: schedulercache.getList("skills").peek(),
-      }), function(model, deleted, schedule) {
+      }), function(model) {
         if (model) {
-          ensureTypeNames(model);
+          schedulerhelper.ensureTypeNames(model);
           _this.gvm.insertItem(model);
-          if (schedule) {
-            scheduleTicket();
-          }
         }
         cb();
       });
@@ -101,6 +124,11 @@ define("src/scheduler/account.service.tickets.vm", [
     schedulercache.ensure("skills", typesJoin.add());
     schedulercache.ensure("statusCodes", typesJoin.add());
 
+    load_customers(_this.cmfid, function(data) {
+      data.sort(sortByCustomerTypeId);
+      _this.customer = data[0];
+    }, join.add());
+
     var cb = join.add();
     typesJoin.when(function(err) {
       if (err) {
@@ -111,41 +139,25 @@ define("src/scheduler/account.service.tickets.vm", [
     });
   };
 
+  function load_customers(masterId, setter, cb) {
+    dataservice.qualify.customerMasterFiles.read({
+      id: masterId,
+      link: "customers",
+    }, setter, cb);
+  }
+
   function load_accountServiceTickets(accountId, gvm, cb) {
     gvm.setItems([]);
     dataservice.monitoringstationsrv.msAccounts.read({
       id: accountId,
       link: "serviceTickets",
     }, function(items) {
-      items.forEach(ensureTypeNames);
+      items.forEach(function(item) {
+        schedulerhelper.ensureTypeNames(item);
+      });
       //
       gvm.setItems(items);
     }, cb);
-  }
-
-  function ensureTypeNames(item) {
-    var statusCodesMap = schedulercache.getMap("statusCodes");
-    var serviceTypesMap = schedulercache.getMap("serviceTypes");
-
-    var mapItem;
-    //
-    mapItem = statusCodesMap[item.StatusCodeId];
-    item.StatusCode = mapItem ? mapItem.Name : item.StatusCodeId;
-    //
-    mapItem = serviceTypesMap[item.ServiceTypeId];
-    item.ServiceType = mapItem ? mapItem.Name : item.ServiceTypeId;
-  }
-
-  function scheduleTicket(_this, ticket, cb) {
-    _this.layersVm.show(new ScheduleTicketViewModel({
-      pcontroller: _this,
-      id: "schedule",
-      title: "Schedule",
-      layersVm: _this.layersVm,
-
-      startHour: 5,
-      endHour: 24,
-    }), cb);
   }
 
   return AccountServiceTicketsViewModel;

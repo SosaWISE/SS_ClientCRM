@@ -1,12 +1,26 @@
 div(class="ticket-editor")
   div(data-bind="spinner:busy,spinner-rgb:'white'")
 
-  div(class="dock l3-350 l-show",data-bind="")
+  div(class="dock l3-350 l-show")
     div(class="dock-left")
+      div(class="cust-info",data-bind="with:data.model")
+        div(class="id")
+          span Ticket #
+          span(data-bind="text:$parent.data.ID")
+        div(class="id")
+          span CMFID:
+          |&nbsp;
+          span(data-bind="text:CustomerMasterFileId")
+        div(class="name",data-bind="formatCustomerName:$data")
+        div(class="address",data-bind="text:StreetAddress")
+        div(class="address",data-bind="text:StreetAddress2")
+        div(class="address")
+          span(data-bind="text:City")
+          |,&nbsp;
+          span(data-bind="text:StateId")
+          |&nbsp;
+          span(data-bind="text:PostalCode")
       ul(class="edit-form")
-        //- li
-        //-   span(class="label") Account ID
-        //-   input(type="text" data-bind="ukov:data.AccountId,value:data.AccountId,valueUpdate:'keyup'")
         li
           span(class="label") Service Type
           div(data-bind="cvm:data.serviceTypeCvm")
@@ -24,9 +38,6 @@ div(class="ticket-editor")
           input(type="text" data-bind="ukov:data.MSTicketNum,value:data.MSTicketNum,valueUpdate:'keyup'")
       <!-- ko if:showAppt -->
       ul(class="edit-form line-top")
-        //- li
-        //-   span(class="label") Date
-        //-   span(class="value",data-bind="text:startDateText")
         li
           <!-- ko if:data.AppointmentId -->
           span(class="label") Appointment Date

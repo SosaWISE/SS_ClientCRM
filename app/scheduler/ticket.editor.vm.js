@@ -8,6 +8,7 @@ define("src/scheduler/ticket.editor.vm", [
   "ko",
   "src/ukov",
   "src/dataservice",
+  "src/core/strings",
   "src/core/joiner",
   "src/core/base.vm",
 ], function(
@@ -20,10 +21,28 @@ define("src/scheduler/ticket.editor.vm", [
   ko,
   ukov,
   dataservice,
+  strings,
   joiner,
   BaseViewModel
 ) {
   "use strict";
+
+  ko.bindingHandlers.formatCustomerName = {
+    init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+
+      // pass through to `text` binding
+      ko.bindingHandlers.text.init(element, valueAccessor, allBindings, viewModel, bindingContext);
+    },
+    update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      function newValueAccessor() {
+        var data = ko.unwrap(valueAccessor());
+        return strings.joinTrimmed(" ", data.Salutation, data.FirstName, data.MiddleName, data.LastName, data.Suffix);
+      }
+
+      // call `text` binding
+      ko.bindingHandlers.text.update(element, newValueAccessor, allBindings, viewModel, bindingContext);
+    },
+  };
 
   var nullStrConverter = ukov.converters.nullString();
   var timeConverter = ukov.converters.time(
@@ -233,7 +252,7 @@ define("src/scheduler/ticket.editor.vm", [
         _this.height("calc(100% - 20px)");
       } else {
         _this.width(390);
-        _this.height(450);
+        _this.height(500);
       }
     });
     _this.showAppt(!!_this.item.AppointmentId);
@@ -266,7 +285,7 @@ define("src/scheduler/ticket.editor.vm", [
   }
   TicketEditorViewModel.prototype.getResults = function() {
     var _this = this;
-    return [_this.layerResult];
+    return [_this.layerResult, false];
   };
   TicketEditorViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
@@ -307,7 +326,7 @@ define("src/scheduler/ticket.editor.vm", [
       if (note) {
         var currNotes = _this.data.Notes.peek();
         if (currNotes) {
-          currNotes += '\n' + note;
+          currNotes += "\n" + note;
         } else {
           currNotes = note;
         }
