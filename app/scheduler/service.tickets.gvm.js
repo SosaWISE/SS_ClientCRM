@@ -211,7 +211,7 @@ define("src/scheduler/service.tickets.gvm", [
       }
       // default, sort by ID
       if (result === 0) {
-        result = a.ID - a.ID;
+        result = a.ID - b.ID;
       }
       return result;
     }
