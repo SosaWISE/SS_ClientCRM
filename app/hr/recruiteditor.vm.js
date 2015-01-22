@@ -1,6 +1,4 @@
 define("src/hr/recruiteditor.vm", [
-  "src/scheduler/techschedule.vm",
-  "src/scheduler/techskills.vm",
   "src/hr/hr-cache",
   "src/account/default/address.validate.vm",
   "src/hr/usersearch.vm",
@@ -14,8 +12,6 @@ define("src/hr/recruiteditor.vm", [
   "src/core/controller.vm",
   "ko"
 ], function(
-  TechScheduleViewModel,
-  TechSkillsViewModel,
   hrcache,
   AddressValidateViewModel,
   UserSearchViewModel,
@@ -409,17 +405,15 @@ define("src/hr/recruiteditor.vm", [
     hrcache.ensure("countrys", join.add());
     hrcache.ensure("recruitCohabbitTypes", join.add());
 
-    hrcache.ensure("skills", join.add());
-
-    var techSkills;
-    loadRecruitData(_this._item.RecruitID, "skills", function(val) {
-      techSkills = val || [];
-    }, join.add());
-
-    var techDays;
-    loadRecruitData(_this._item.RecruitID, "weekSchedule", function(val) {
-      techDays = val || [];
-    }, join.add());
+    // hrcache.ensure("skills", join.add());
+    // var techSkills;
+    // loadRecruitData(_this._item.RecruitID, "skills", function(val) {
+    //   techSkills = val || [];
+    // }, join.add());
+    // var techDays;
+    // loadRecruitData(_this._item.RecruitID, "weekSchedule", function(val) {
+    //   techDays = val || [];
+    // }, join.add());
 
     join.when(function(err) {
       if (err) {
@@ -442,13 +436,13 @@ define("src/hr/recruiteditor.vm", [
       // _this.data.ReportsToCvm.setList(hrcache.getList("ReportsTo").peek());
       // _this.data.TeamCvm.setList(hrcache.getList("teams").peek());
 
-      _this.skillsVm(new TechSkillsViewModel({
-        allSkills: hrcache.getList("skills").peek(),
-        techSkills: techSkills,
-      }));
-      _this.scheduleVm(new TechScheduleViewModel({
-        techDays: techDays,
-      }));
+      // _this.skillsVm(new TechSkillsViewModel({
+      //   allSkills: hrcache.getList("skills").peek(),
+      //   techSkills: techSkills,
+      // }));
+      // _this.scheduleVm(new TechScheduleViewModel({
+      //   techDays: techDays,
+      // }));
     });
   };
   RecruitEditorViewModel.prototype.setItem = function(item) {
@@ -544,16 +538,16 @@ define("src/hr/recruiteditor.vm", [
     }, cb);
   }
 
-  function loadRecruitData(id, link, setter, cb) {
-    if (id <= 0) {
-      setter();
-      cb();
-    }
-    dataservice.hr.recruits.read({
-      id: id,
-      link: link,
-    }, setter, cb);
-  }
+  // function loadRecruitData(id, link, setter, cb) {
+  //   if (id <= 0) {
+  //     setter();
+  //     cb();
+  //   }
+  //   dataservice.hr.recruits.read({
+  //     id: id,
+  //     link: link,
+  //   }, setter, cb);
+  // }
 
   function saveRecruitData(id, link, vm, cb) {
     dataservice.hr.recruits.save({
