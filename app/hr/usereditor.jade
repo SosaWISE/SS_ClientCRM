@@ -35,9 +35,9 @@ div(class="item-data")
               div(data-bind="cvm:data.UserEmployeeTypeCvm")
             li(class="full")
               span(class="label") Name
-              input(class="name",type="text",placeholder="",data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup'")
-              input(class="mname",type="text",placeholder="",data-bind="ukov:data.MiddleName,value:data.MiddleName,valueUpdate:'keyup'")
-              input(class="name",type="text",placeholder="",data-bind="ukov:data.LastName,value:data.LastName,valueUpdate:'keyup'")
+              input(class="name",type="text",placeholder="First",data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup'")
+              input(class="mname",type="text",placeholder="Middle",data-bind="ukov:data.MiddleName,value:data.MiddleName,valueUpdate:'keyup'")
+              input(class="name",type="text",placeholder="Last",data-bind="ukov:data.LastName,value:data.LastName,valueUpdate:'keyup'")
             li
               span(class="label") Preferred Name
               input(type="text",placeholder="",data-bind="ukov:data.PreferredName,value:data.PreferredName,valueUpdate:'keyup'")
