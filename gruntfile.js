@@ -110,6 +110,17 @@ module.exports = function(grunt) {
         ],
         dest: '<%= www %>/slick.debug.js',
       },
+      wamp_pkg: {
+        src: [
+          // third party libs
+          'app/wamp/tparty/autobahn.js',
+          // actual package
+          'app/wamp/*.js',
+          // except
+          '!app/wamp/*.spec.js',
+        ],
+        dest: '<%= www %>/wamp.debug.js',
+      },
       ukov_pkg: {
         src: ['app/u-kov/**/*.js', '!app/u-kov/**/*.spec.js', ],
         dest: '<%= www %>/ukov.debug.js',
@@ -174,6 +185,7 @@ module.exports = function(grunt) {
           '<%= www %>/survey.js': ['<%= www %>/survey.debug.js'],
           '<%= www %>/core.js': ['<%= www %>/core.debug.js'],
           '<%= www %>/slick.js': ['<%= www %>/slick.debug.js'],
+          '<%= www %>/wamp.js': ['<%= www %>/wamp.debug.js'],
           '<%= www %>/pixi.js': ['<%= www %>/pixi.debug.js'],
           '<%= www %>/ukov.js': ['<%= www %>/ukov.debug.js'],
           '<%= www %>/mock.js': ['<%= www %>/mock.debug.js'],

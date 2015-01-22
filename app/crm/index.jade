@@ -68,6 +68,7 @@ html
       include ../survey/_all.jade
       include ../swing/_all.jade
       include ../viz/_all.jade
+      include ../wamp/_all.jade
 
     //- testing
     script parent.browser && parent.browser.init(window);
@@ -84,4 +85,4 @@ html
     else
       script(src="/depends.conf.js")
       script(src="/app/depends/depends.js")
-    script require('src/crm/bootstrapper');
+    script require('src/crm/bootstrapper', function() { console.log('app bootstrapped!'); });

@@ -12,6 +12,7 @@ window.require = {
     '/spec.js': 'spec',
     // specui: '/specui.js',
     '/slick.js': ['src/slick', 'slick'],
+    '/wamp.js': ['src/wamp', 'autobahn'],
     '/pixi.js': ['pixi'],
   },
 };

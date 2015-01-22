@@ -18,6 +18,7 @@ window.require = {
     slick: '/app/slick/slick-dev',
     fullcalendar: '/tparty/fullcalendar',
     pixi: '/tparty/pixi.dev',
+    autobahn: '/app/wamp/tparty/autobahn',
   },
 
   // defines global names(exports). does NOT load/require them

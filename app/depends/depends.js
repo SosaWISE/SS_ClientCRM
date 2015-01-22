@@ -5,8 +5,9 @@
     dependantsMap = {},
     pendingDefineMap = {},
     jsonpCount = 0,
+    anonCount = 0,
     config = window.require || {},
-    pkgs, requireCalled;
+    pkgs, asyncRequireCalled;
   // ensure certain properties exist
   config.paths = config.paths || {
     // default app namespacing
@@ -41,6 +42,18 @@
   // }, 1100);
 
   function define(name, deps, value) {
+    if (typeof(name) !== 'string') {
+      value = deps;
+      deps = name;
+      name = '__anon' + (++anonCount) + '__';
+      if (!Array.isArray(deps)) {
+        value = deps;
+        deps = [];
+      } else {
+        throw new Error('anonymous modules w/ dependencies are not supported');
+      }
+    }
+
     var mod, pending, valueType = typeof(value);
 
     if (valueType === 'undefined') {
@@ -70,13 +83,13 @@
     /* jshint onevar:false */
     var pkg = findPackage(name);
     if (pkg) {
-      if (!pkg.loaded && requireCalled) {
+      if (!pkg.loaded && asyncRequireCalled) {
         // only warn if `require` has been called since modules can be defined before loading scripts
         console.warn('UNEXPECTED package module defined:', name);
       } else {
         // console.log('package module defined:', name);
       }
-    } else if (!pending && requireCalled) {
+    } else if (!pending && asyncRequireCalled) {
       // only warn if `require` has been called since modules can be defined before loading scripts
       console.warn('UNEXPECTED module defined:', name);
     } else {
@@ -97,16 +110,26 @@
 
 
   function require(deps, cb) {
-    requireCalled = true;
+    if (typeof(cb) !== 'function') {
+      // synchronous
+      var name = deps;
+      if (typeof(name) !== 'string') {
+        throw new Error('synchronous `require` expects a module name');
+      }
+      if (!definedMap.hasOwnProperty(name)) {
+        throw new Error('unknown module: ' + name);
+      }
+      return definedMap[name];
+    }
+    // async
+    asyncRequireCalled = true;
 
     var notArray = !Array.isArray(deps);
     if (notArray) {
       deps = [deps];
     }
     deps = requireDeps(null, deps, function(deps) {
-      if (typeof(cb) === 'function') {
-        cb.apply(window, deps);
-      }
+      cb.apply(window, deps);
     });
     if (notArray) {
       deps = deps[0];
@@ -196,9 +219,10 @@
           return false;
         }
         // every package part should match path parts
-        if (aliasParts.every(function(part, index) {
+        function hasPart(part, index) {
           return part === parts[index];
-        })) {
+        }
+        if (aliasParts.every(hasPart)) {
           result = pkg;
           return true;
         }
@@ -364,9 +388,7 @@
   //
   window.require = require;
   window.define = define;
-  define.amd = {
-    jQuery: true,
-  };
+  define.amd = true;
   // for debugging purposes
   require.pendingDefineMap = pendingDefineMap;
 })();

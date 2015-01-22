@@ -1,0 +1,15 @@
+div(class="chat-wrap",data-bind="css:{'show':show}")
+  div(class="toggle-btn", data-bind="click:clickToggle,css:{'closed':!show()}")
+    div(class="close")
+    div(class="open")
+  div(class="chats",data-bind="keepbottom:allMsgs")
+    ul(data-bind="foreach:allMsgs")
+      li(class="chat")
+        span(class="name")
+          span(data-bind="text:name,css:{'typing':typing}")
+          span(data-bind="if:name") :&nbsp;
+        span(class="text",data-bind="text:text")
+  div(class="msg")
+    textarea(data-bind="ukov:msg,value:msg,valueUpdate:'input',select:focus")
+    //- a(class="btn small send",tabindex="0",data-bind="cmd:cmdSend") Send
+    a(class="btn small send",tabindex="0",data-bind="cmd:clickSend") Send
