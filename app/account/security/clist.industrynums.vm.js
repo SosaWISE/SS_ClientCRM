@@ -101,7 +101,7 @@ define('src/account/security/clist.industrynums.vm', [
     dataservice.monitoringstationsrv.msAccounts.read({
       id: _this.accountId,
       link: 'IndustryAccountWithReceiverLines',
-    }, gvm, cb);
+    }, gvm.list, cb);
   }
 
   return CListIndustryViewModel;
