@@ -2,7 +2,7 @@
 
 .ticket-editor {
   position: relative;
-  height: ~"calc(100% - 40px)";
+  height: 100%;
   width: 100%;
 
   .notes {
@@ -19,6 +19,7 @@
     .dock-content {
       color: inherit;
       margin-left: 10px;
+      overflow: hidden;
     }
   }
 
@@ -82,9 +83,7 @@
 .board {
   @hourWidth: 50px;
   background-color: #ffffff;
-  &.dock-content {
-    overflow: hidden;
-  }
+  height: 100%;
 
   .grid {
     position: relative;
