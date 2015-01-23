@@ -250,7 +250,7 @@ define("src/scheduler/ticket.editor.vm", [
         _this.height("calc(100% - 20px)");
       } else {
         _this.width(390);
-        _this.height(500);
+        _this.height(650);
       }
     });
     _this.showAppt(!!_this.item.AppointmentId);
