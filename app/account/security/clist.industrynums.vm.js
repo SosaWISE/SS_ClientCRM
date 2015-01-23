@@ -1,12 +1,14 @@
 define('src/account/security/clist.industrynums.vm', [
   'src/dataservice',
   'ko',
+  'src/slick/slickgrid.vm',
   'src/core/notify',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
   dataservice,
   ko,
+  SlickGridViewModel,
   notify,
   utils,
   ControllerViewModel
@@ -19,6 +21,41 @@ define('src/account/security/clist.industrynums.vm', [
 
     _this.mayReload = ko.observable(false);
     _this.industryAccounts = ko.observableArray();
+    _this.industryAccountGvm = new SlickGridViewModel({
+      gridOptions: {
+        multiSelect: false,
+        enableColumnReorder: false,
+        forceFitColumns: true,
+        rowHeight: 27,
+      },
+      columns: [ //
+        {
+          id: 'IndustryAccount',
+          name: 'CSID',
+          field: 'IndustryAccount',
+        }, {
+          id: 'ReceiverNumber',
+          name: 'Receiver',
+          field: 'ReceiverNumber',
+        }, {
+          id: 'OSDescription',
+          name: 'CS OS',
+          field: 'OSDescription',
+        }, {
+          id: 'MonitoringStationName',
+          name: 'Central Station',
+          field: 'MonitoringStationName',
+        }, {
+          id: 'PrimaryCSID',
+          name: 'Is Primary',
+          field: 'PrimaryCSID',
+        }, {
+          id: 'SecondaryCSID',
+          name: 'Is Secondary',
+          field: 'SecondaryCSID',
+        },
+      ],
+    });
 
     //
     // events
@@ -45,6 +82,7 @@ define('src/account/security/clist.industrynums.vm', [
     var _this = this;
     _this.accountId = routeData.id;
     load_industryAccounts(_this, join.add());
+    load_industryAccounts2(_this, _this.industryAccountGvm, join.add());
   };
 
   function load_industryAccounts(_this, cb) {
@@ -57,6 +95,13 @@ define('src/account/security/clist.industrynums.vm', [
         _this.industryAccounts(resp.Value);
       }
     }));
+  }
+
+  function load_industryAccounts2(_this, gvm, cb) {
+    dataservice.monitoringstationsrv.msAccounts.read({
+      id: _this.accountId,
+      link: 'IndustryAccountWithReceiverLines',
+    }, gvm.list, cb);
   }
 
   return CListIndustryViewModel;
