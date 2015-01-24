@@ -1,7 +1,5 @@
 div(class="acct-item acct-industrynums",data-bind="toggle:{'may-reload':mayReload}")
   h2(class="title") Industry #'s
-  div(class="grid-wrap rv")
-    div(class="slickgrid",data-bind="slickgrid:industryAccountGvm")
   //- div(data-bind="foreach:industryAccounts")
   //-   ul(style="padding-bottom:5px;")
   //-     li
@@ -17,5 +15,12 @@ div(class="acct-item acct-industrynums",data-bind="toggle:{'may-reload':mayReloa
   ul(class="actions left cf")
     li
       a(class="btn",tabindex="0",data-bind="cmd:cmdGenerate") Generate Industry Account
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:cmdAssignPri") Assign Primary
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:cmdAssignSec") Assign Secondary
+
+  div(class="grid-wrap rv")
+    div(class="slickgrid",data-bind="slickgrid:industryAccountGvm")
 
   div(data-bind="spinner:active()&&(!loaded()||cmdGenerate.busy()),spinner-rgb:'black'")

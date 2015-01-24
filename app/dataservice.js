@@ -91,6 +91,7 @@ define("src/dataservice", [
 
     monitoringstationsrv: createService("monitoringStationSrv", [
       "msAccounts",
+      "msIndustryAccounts",
       "accounts",
       "msAccountSalesInformations",
       "dispatchAgencies",
