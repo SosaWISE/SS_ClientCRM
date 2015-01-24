@@ -143,9 +143,9 @@ define('src/account/security/clist.industrynums.vm', [
     dataservice.monitoringstationsrv.msAccounts.read({
       id: _this.accountId,
       link: 'IndustryAccountWithReceiverLines',
-    }, gvm.list, utils.safeCallback(cb, function(err){
-      if (!err){
-        _this.gvm.setSelectedRows([]);
+    }, gvm.list, utils.safeCallback(cb, function(err) {
+      if (!err) {
+        gvm.setSelectedRows([]);
       }
     }));
   }
