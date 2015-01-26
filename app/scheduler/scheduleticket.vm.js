@@ -3,6 +3,7 @@ define("src/scheduler/scheduleticket.vm", [
   "src/dataservice",
   "src/scheduler/scheduler-helper",
   "src/scheduler/month.vm",
+  "src/scheduler/calcol",
   "src/scheduler/calitem",
   "src/scheduler/dayboard",
   "jquery",
@@ -16,6 +17,7 @@ define("src/scheduler/scheduleticket.vm", [
   dataservice,
   schedulerhelper,
   MonthViewModel,
+  CalCol,
   CalItem,
   DayBoard,
   jquery,
@@ -65,7 +67,7 @@ define("src/scheduler/scheduleticket.vm", [
         // };
 
         // add to list
-        columnVm.items.push(calItem);
+        _this.board.items.push(calItem);
 
         return calItem;
       };
@@ -169,18 +171,21 @@ define("src/scheduler/scheduleticket.vm", [
     _this.board.busy(true);
     join.when(function(err) {
       _this.board.busy(false);
-      if (err) {
-        return notify.error(err);
-      }
-
-      if (!_this.monthVm.isDateSelected(selectedDate)) {
+      if (notify.iferror(err) || !_this.monthVm.isDateSelected(selectedDate)) {
         // abort if the date has since changed
         return;
       }
 
-      _this.board.columns(dayTechs.map(function(tech) {
-        var items = [];
+
+      var columns = dayTechs.map(function(tech, index) {
+        return CalCol.create(_this.board, index, tech.ID, tech.FullName);
+      });
+      _this.board.columns(columns);
+
+      var items = [];
+      dayTechs.forEach(function(tech) {
         items = items.concat(tech.weekGones[day].map(function(item) {
+          item.ColumnID = tech.ID;
           return CalItem.create(_this.board, item);
         }));
         items = items.concat(techDayApptsMap[tech.ID].map(function(item) {
@@ -190,18 +195,14 @@ define("src/scheduler/scheduleticket.vm", [
             _this.board.selectedVm(vm);
           } else {
             schedulerhelper.ensureTypeNames(item);
+            item.ColumnID = item.TechId;
+            // item.ColumnID = tech.ID;
             vm = CalItem.create(_this.board, item);
           }
           return vm;
         }));
-
-        return {
-          ID: tech.ID,
-          Name: tech.FullName,
-          // tech: tech,
-          items: ko.observableArray(items),
-        };
-      }));
+      });
+      _this.board.items(items);
     });
   }
 

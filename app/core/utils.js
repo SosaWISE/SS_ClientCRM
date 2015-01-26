@@ -19,7 +19,7 @@ define('src/core/utils', [
         },
       });
     },
-    ensureProps: function(obj, propNames) {
+    assertProps: function(obj, propNames) {
       propNames.forEach(function(name) {
         if (obj[name] == null) {
           throw new Error('missing ' + name);
@@ -93,6 +93,7 @@ define('src/core/utils', [
 
   };
   utils.no_op = utils.noop; // only for backwards compatibiltiy
+  utils.ensureProps = utils.assertProps; // backwards compatibiltiy
 
   function ifNull(val, propName, defaultValue) {
     if (val[propName] == null) {

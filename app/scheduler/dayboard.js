@@ -1,12 +1,10 @@
 define("src/scheduler/dayboard", [
-  "src/scheduler/appt.editor.vm",
   "jquery",
   "ko",
   "src/core/notify",
   "src/core/utils",
   "src/core/base.vm",
 ], function(
-  ApptEditorViewModel,
   jquery,
   ko,
   notify,
@@ -79,11 +77,10 @@ define("src/scheduler/dayboard", [
     };
 
     //
+    _this.items = ko.observableArray([]);
     _this.columns = ko.observableArray([]);
     _this.columnWidth = ko.computed(function() {
-      var length = _this.columns().length || 1;
-      length = Math.max(length, 2); // minimum of 2 wide
-      return (100 / length) + "%";
+      return calcColumnWidthPercent(_this) + "%";
     });
 
     //
@@ -138,6 +135,17 @@ define("src/scheduler/dayboard", [
     return Math.max(5, nRows * _this.rowHeight);
   };
 
+  DayBoard.prototype.getColLeftPercent = function(colID) {
+    var _this = this;
+    var index = 0;
+    _this.columns.peek().some(function(c, i) {
+      if (c.ID === colID) {
+        index = i;
+      }
+    });
+    return (calcColumnWidthPercent(_this) * index) + "%";
+  };
+
   function addDateAndRow(_this, dt, row) {
     var timeTicks = _this.rowToTicks(row);
     // clone date
@@ -145,6 +153,12 @@ define("src/scheduler/dayboard", [
     dt.setHours(0, 0, 0, 0); // remove time from date
     return new Date(dt.valueOf() + timeTicks);
   }
+
+  function calcColumnWidthPercent(_this) {
+    var ncolumns = Math.max(_this.columns().length, 2); // minimum of 2 wide
+    return 100 / ncolumns;
+  }
+
 
   //
   //
@@ -170,14 +184,19 @@ define("src/scheduler/dayboard", [
       function initDragInfo($target, vm, moveEl, evt) {
         moveEl = jquery(moveEl);
 
+        var moveElOffset = moveEl.offset();
+
         moveEl.addClass("dragging");
         dragInfo = {
           moveEl: moveEl,
           vm: vm,
           resize: $target.hasClass("resizer"),
-          startTop: vm.position.peek().top,
+          startPosition: vm.position.peek(),
           startHeight: vm.height.peek(),
-          startY: evt.clientY - (parseInt(moveEl.css("top"), 10) || 0) - $scrollEl.scrollTop(),
+          // startY: evt.clientY - (parseInt(moveEl.css("top"), 10) || 0) - $scrollEl.scrollTop(),
+          startY: evt.clientY - moveElOffset.top - $scrollEl.scrollTop(),
+          // startX: evt.clientX - (parseInt(moveEl.css("left"), 10) || 0) - $scrollEl.scrollLeft(),
+          startX: evt.clientX - moveElOffset.left - $scrollEl.scrollLeft(),
         };
       }
 
@@ -258,17 +277,19 @@ define("src/scheduler/dayboard", [
         if (!dragInfo) {
           return;
         }
-        var top = evt.clientY - dragInfo.startY - $scrollEl.scrollTop();
-        top = Math.max(top, 0);
+        var top = Math.max(evt.clientY - dragInfo.startY - $scrollEl.scrollTop(), 0);
+        var left = Math.max(evt.clientX - dragInfo.startX - $scrollEl.scrollLeft(), 0);
 
         if (dragInfo.resize) {
-          dragInfo.vm.height(dragInfo.startHeight + (top - dragInfo.startTop));
+          dragInfo.vm.height(dragInfo.startHeight + (top - dragInfo.startPosition.top));
         } else {
           // top = Math.min(top, dayboardVm.totalHeight - dragInfo.startHeight); // - dayboardVm.rowHeight);
           top = Math.min(top, dayboardVm.totalHeight - dragInfo.startHeight - dayboardVm.rowHeight);
           // indirectly set position
           dragInfo.vm.position({
             top: top,
+            left: left,
+            ColumnID: 0,
           });
         }
       });

@@ -140,6 +140,7 @@ define("src/scheduler/ticket.editor.vm", [
 
     _this.note = ukov.wrap("", schemaNote);
     _this.data = ukov.wrap(_this.item, schema);
+    _this.data.ColumnID = _this.data.TechId; // ColumnID is needed for CalItem
 
     _this.data.serviceTypeCvm = new ComboViewModel({
       selectedValue: _this.data.ServiceTypeId,

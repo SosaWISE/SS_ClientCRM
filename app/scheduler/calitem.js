@@ -22,6 +22,7 @@ define("src/scheduler/calitem", [
     utils.ensureProps(_this.data, [
       "StartOn",
       "EndOn",
+      "ColumnID",
     ]);
     propCheck("StartOn", _this.data.StartOn);
     propCheck("EndOn", _this.data.EndOn);
@@ -49,23 +50,32 @@ define("src/scheduler/calitem", [
       deferEvaluation: true,
       read: function() {
         _this.data.StartOn(); // subscribe
+        var colID = _this.data.ColumnID(); // subscribe
         var row = _this.board.timeToRow(getStartOn());
         return {
           top: row * _this.board.rowHeight,
-          left: "0px",
+          left: _this.board.getColLeftPercent(colID),
+          // ColumnID is set as part of `position` because `left` is a
+          // percentage of the container and not a pixel value, which
+          // makes it impossible to calculate the ColumnID from the
+          // value `left` like we do with `StartOn` and `top`
+          ColumnID: colID,
         };
       },
       write: function(position) {
+        // y calculations
         var startOn = getStartOn();
         var endOn = getEndOn();
         // find delta between StartOn and EndOn
         var delta = endOn.valueOf() - startOn.valueOf();
-
         // convert from screen position to time
         startOn = _this.board.topToTime(startOn, position.top);
         _this.data.StartOn(startOn);
         endOn = new Date(startOn.valueOf() + delta);
         _this.data.EndOn(endOn);
+
+        // x calculations
+        _this.data.ColumnID(position.ColumnID);
       },
     });
     _this.height = ko.computed({
@@ -125,10 +135,12 @@ define("src/scheduler/calitem", [
     }
 
     return {
+      board: board,
       ID: id,
       position: {
         top: board.timeToRow(startOn) * board.rowHeight,
-        left: "0px",
+        left: board.getColLeftPercent(data.ColumnID),
+        // left: "0px",
       },
       height: board.timeToHeight(startOn, endOn),
       viewTmpl: (id > 0) ? "tmpl-scheduler-calitem" : "tmpl-scheduler-calitem_gone",

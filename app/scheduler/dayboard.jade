@@ -2,10 +2,14 @@ div(class="board")
   div(data-bind="spinner:busy,spinner-rgb:'black'")
   div(class="grid header")
     div(class="columns",data-bind="foreach:columns")
-      div(class="column",data-bind="width:$parent.columnWidth,text:Name")
-  div(class="grid body")
+      div(class="column",data-bind="position:position,width:board.columnWidth,text:Title")
+  div(class="grid body",data-bind="dayboard:$data")
     div(class="rows",data-bind="foreach:halfHourRows,height:totalHeight")
       div(class="row",data-bind="position:position,height:height,toggle:{beginsHour:beginsHour}")
         span(class="hour",data-bind="text:$parent.getTime(index)")
-    div(class="columns",data-bind="dayboard:$data,foreach:columns,height:totalHeight")
-      div(class="column",data-bind="width:$parent.columnWidth,template:{foreach:items,name:$parent.getChildTemplate}")
+    div(class="columns",data-bind="height:totalHeight")
+      <!-- ko foreach:columns -->
+      div(class="column",data-bind="position:position,width:board.columnWidth")
+      <!-- /ko -->
+      <!-- ko template:{foreach:items,name:getChildTemplate} -->
+      <!-- /ko -->
