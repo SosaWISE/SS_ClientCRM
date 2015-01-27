@@ -95,13 +95,14 @@ define("src/scheduler/scheduleticket.vm", [
 
   ScheduleTicketViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
     var _this = this;
-    var afterLoaded;
 
     if (_this.hasAppt()) {
       // load tech for appointment
 
       // get ticket
       var ticket = _this.ticketVm.data.model;
+      // set selectedDate now, but notify when loaded
+      _this.monthVm.selectedDate(ticket.StartOn);
 
       // load service ticket tech
       dataservice.ticketsrv.techs.read({
@@ -110,11 +111,6 @@ define("src/scheduler/scheduleticket.vm", [
         _this.techs = [tech];
         loadTechWeekDays(tech, join.add());
       }, join.add());
-
-      afterLoaded = function() {
-        _this.monthVm.selectedDate(ticket.StartOn);
-        selectedDateChanged.call(_this, ticket.StartOn);
-      };
     } else {
       // load all techs
 
@@ -130,19 +126,15 @@ define("src/scheduler/scheduleticket.vm", [
           loadTechWeekDays(tech, join.add());
         });
       }, join.add());
-
-      afterLoaded = function() {
-        _this.monthVm.selectedDate.subscribe(selectedDateChanged, _this);
-        // fire event
-        selectedDateChanged.call(_this, _this.monthVm.selectedDate.peek());
-      };
     }
 
     _this.board.busy(true);
     join.when(function(err) {
       _this.board.busy(false);
       if (!err) {
-        afterLoaded();
+        _this.monthVm.selectedDate.subscribe(selectedDateChanged, _this);
+        // fire event
+        selectedDateChanged.call(_this, _this.monthVm.selectedDate.peek());
       }
     });
   };

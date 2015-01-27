@@ -150,8 +150,19 @@ define("src/scheduler/ticket.editor.vm", [
         text: "Name",
       },
     });
+    var tempTechs = [];
+    (function() {
+      var techId = _this.data.TechId.peek();
+      if (techId) {
+        tempTechs.push({
+          ID: techId,
+          FullName: "",
+        });
+      }
+    })();
     _this.data.techCvm = new ComboViewModel({
       selectedValue: _this.data.TechId,
+      list: tempTechs,
       fields: {
         value: "ID",
         text: "FullName",
