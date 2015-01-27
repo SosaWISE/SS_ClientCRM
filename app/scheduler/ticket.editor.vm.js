@@ -54,6 +54,17 @@ define("src/scheduler/ticket.editor.vm", [
       return dt;
     }
   );
+  var timeGroup = {
+    keys: ["StartOn", "EndOn"],
+    validators: [
+      //
+      function(val) {
+        if (val.EndOn.valueOf() <= val.StartOn.valueOf()) {
+          return "End Time must be greater than Start Time";
+        }
+      }
+    ],
+  };
   var schema = {
     _model: true,
     ID: {},
@@ -101,12 +112,14 @@ define("src/scheduler/ticket.editor.vm", [
       validators: [
         ukov.validators.isRequired("Start Time is required"),
       ],
+      validationGroup: timeGroup,
     },
     EndOn: {
       converter: timeConverter,
       validators: [
         ukov.validators.isRequired("End Time is required"),
       ],
+      validationGroup: timeGroup,
     },
     TravelTime: {},
     TechEnRouteOn: {},
