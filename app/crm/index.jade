@@ -33,7 +33,7 @@ html
           //- panels
           <!-- ko foreach:panels -->
           div(data-bind="active:active")
-            a(data-bind="css:id,cmd:$parent.clickPanel")
+            a(data-bind="cmd:$parent.clickPanel")
               div(data-bind="visible:active")
                 div(class="indicator")
               span(data-bind="attr:{class:icoClass}")

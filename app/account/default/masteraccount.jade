@@ -13,7 +13,7 @@ div(data-bind="if:!loadErr()&&!loading()")
     //- div(class="p-module",data-bind="if:activeChild")
     //-   div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild}")
     div(class="p-module",data-bind="if:activeChild()")
-      div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}")
+      div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}",style="height:100%")
 
     div(class="p-nav")
       div(class="toggle-btn", data-bind="click:clickToggleNav,toggle:{'closed':hideNav}")

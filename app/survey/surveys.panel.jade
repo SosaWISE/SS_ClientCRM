@@ -18,8 +18,8 @@ div(class="panel")
   //- active type
   div(class="p-module",data-bind="with:activeChild")
     //- active survey
-    div(data-bind="with:activeChild")
-      div(data-bind="template:viewTmpl")
+    div(data-bind="with:activeChild",style="height:100%")
+      div(data-bind="template:viewTmpl",style="height:100%")
 
   div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
 
