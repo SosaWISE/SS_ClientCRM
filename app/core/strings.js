@@ -12,7 +12,7 @@ define("src/core/strings", [
   "use strict";
 
   var strings = {},
-    formatRegex = /\{([0-9]+)(?::([0-9A-Z$]+))?\}/gi, // {0} or {0:decoratorName}
+    formatRegex = /\{([0-9]+)(?::([0-9A-Z\-_$]+))?\}/gi, // {0} or {0:decoratorName}
     phoneRegx = /^\(?\b([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
     ssnRegx = /^(\d{3})[-]?(\d{2})[-]?(\d{4})$/,
     usdFormatter;
@@ -85,9 +85,8 @@ define("src/core/strings", [
       return dt.format("MM/DD/YYYY");
     },
     datetime: function(dt, isUtc) {
-      // display Local by default
-      // the web server should always return UTC dates, but we want to display in Local
-      //to allow display of nullable dates
+      // Local by default - the web server should always return UTC dates, but we want to display in Local
+      // allow displaying of nullable dates
       if (dt == null || dt === "") {
         return "";
       }
@@ -99,9 +98,8 @@ define("src/core/strings", [
       return dt.format("MM/DD/YYYY hh:mm a");
     },
     time: function(dt, isUtc) {
-      // display Local by default
-      // the web server should always return UTC dates, but we want to display in Local
-      //to allow display of nullable dates
+      // Local by default - the web server should always return UTC dates, but we want to display in Local
+      // allow displaying of nullable dates
       if (dt == null || dt === "") {
         return "";
       }
@@ -157,8 +155,14 @@ define("src/core/strings", [
     dt: function(val) {
       return strings.formatters.datetime(val);
     },
+    dt_utc: function(val) {
+      return strings.formatters.datetime(val, true);
+    },
     t: function(val) {
       return strings.formatters.time(val);
+    },
+    t_utc: function(val) {
+      return strings.formatters.time(val, true);
     },
     space: function(val) {
       val = (val || "") + ""; // make sure it's not null, undefined, or something other than a string

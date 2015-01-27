@@ -28,17 +28,26 @@ define("src/scheduler/calitem", [
     propCheck("EndOn", _this.data.EndOn);
 
     function getStartOn() {
-      return _this.data.StartOn.getValue();
+      var startOn = _this.data.StartOn.getValue();
+      if (!utils.isDate(startOn)) {
+        startOn = _this.board.selectedDate.peek();
+      }
+      return startOn;
     }
 
     function getEndOn() {
-      var startOn = _this.data.StartOn.getValue();
+      var startOn = getStartOn();
       var endOn = _this.data.EndOn.getValue();
+      if (!utils.isDate(endOn)) {
+        endOn = new Date(startOn.valueOf());
+        endOn.setMinutes(endOn.getMinutes() + 15);
+      }
       return new Date(startOn.getFullYear(), startOn.getMonth(), startOn.getDate(),
         endOn.getHours(), endOn.getMinutes()); //, endOn.getSeconds(), endOn.getMilliseconds());
     }
 
     _this.selected = ko.observable(false);
+    _this.scrollTo = ko.observable(false);
     _this.dateText = ko.computed({
       deferEvaluation: true,
       read: function() {
@@ -57,13 +66,13 @@ define("src/scheduler/calitem", [
           left: _this.board.getColLeftPercent(colID),
           // ColumnID is set as part of `position` because `left` is a
           // percentage of the container and not a pixel value, which
-          // makes it impossible to calculate the ColumnID from the
-          // value `left` like we do with `StartOn` and `top`
+          // makes it impossible to calculate the `ColumnID` from
+          // `left` like we do with `StartOn` and `top`
           ColumnID: colID,
         };
       },
       write: function(position) {
-        // y calculations
+        // set times
         var startOn = getStartOn();
         var endOn = getEndOn();
         // find delta between StartOn and EndOn
@@ -74,7 +83,7 @@ define("src/scheduler/calitem", [
         endOn = new Date(startOn.valueOf() + delta);
         _this.data.EndOn(endOn);
 
-        // x calculations
+        // set column
         _this.data.ColumnID(position.ColumnID);
       },
     });
@@ -83,10 +92,14 @@ define("src/scheduler/calitem", [
       read: function() {
         _this.data.StartOn(); // subscribe
         _this.data.EndOn(); // subscribe
-        return _this.board.timeToHeight(getStartOn(), getEndOn());
+        var startOn = getStartOn();
+        var endOn = getEndOn();
+        return _this.board.timeToHeight(startOn, endOn);
       },
       write: function(height) {
-        var endOn = _this.board.heightToTime(getStartOn(), getEndOn(), height);
+        var startOn = getStartOn();
+        var endOn = getEndOn();
+        endOn = _this.board.heightToTime(startOn, endOn, height);
         _this.data.EndOn(endOn);
       },
     });

@@ -1,7 +1,7 @@
 define("src/scheduler/ticket.editor.vm", [
-  "src/core/multiselect.vm",
   "src/scheduler/scheduler-cache",
   "src/scheduler/scheduleticket.vm",
+  "src/core/multiselect.vm",
   "src/core/notify",
   "src/core/utils",
   "src/core/combo.vm",
@@ -12,9 +12,9 @@ define("src/scheduler/ticket.editor.vm", [
   "src/core/joiner",
   "src/core/base.vm",
 ], function(
-  MultiSelectViewModel,
   schedulercache,
   ScheduleTicketViewModel,
+  MultiSelectViewModel,
   notify,
   utils,
   ComboViewModel,
@@ -129,7 +129,7 @@ define("src/scheduler/ticket.editor.vm", [
       "skills",
     ]);
     utils.setIfNull(_this, {
-      title: "New Service Ticket",
+      // title: "New Service Ticket",
       // showUserAccount: false,
       // showSave: true,
       // showSaveAndSchedule: true,
@@ -150,10 +150,18 @@ define("src/scheduler/ticket.editor.vm", [
         text: "Name",
       },
     });
+    _this.data.techCvm = new ComboViewModel({
+      selectedValue: _this.data.TechId,
+      fields: {
+        value: "ID",
+        text: "FullName",
+      },
+    });
     _this.skillsMsvm = new MultiSelectViewModel({
       selectedValues: ukov.wrap([], {}),
       list: _this.skills, //@TODO: remove unwanted skills from skills???
     });
+
 
     // the general note should be in a Read Only format
     //  - 4 - Tech Confirmed
@@ -165,6 +173,24 @@ define("src/scheduler/ticket.editor.vm", [
       statusCodeId !== 5 &&
       statusCodeId !== 7
     );
+
+    _this.scheduleVm = new ScheduleTicketViewModel({
+      ticketVm: _this,
+      // appt: ticket.AppointmentId ? ticket : null,
+    });
+    _this.scheduleVm.monthVm.selectedDate.subscribe(function(dt) {
+      // set date
+      _this.item._startDate = dt;
+
+      var startProp = _this.data.StartOn;
+      var endProp = _this.data.EndOn;
+      // cache EndOn since it may change when StartOn is set
+      var endOn = endProp.getValue();
+      // update times
+      touchPropTime(startProp, startProp.getValue());
+      touchPropTime(endProp, endOn);
+    });
+
 
     //
     // events
@@ -202,9 +228,12 @@ define("src/scheduler/ticket.editor.vm", [
     }, function(busy) {
       return !busy && (!_this.cmdSchedule || !_this.cmdSchedule.busy());
     });
-
     _this.cmdSchedule = ko.command(function(cb) {
+      console.log("cmdSchedule");
       _this.showAppt(!_this.showAppt.peek());
+      if (!_this.scheduleVm.ensureAdded()) {
+        console.log("appointment item not added");
+      }
       cb();
       // saveTicketData(_this, utils.safeCallback(cb, function(err, resp) {
       //   if (err) {
@@ -221,19 +250,15 @@ define("src/scheduler/ticket.editor.vm", [
       //  - 5 - Completed
       //  - 6 - Pending Contractor
       //  - 7 - Waiting Change Form/SIF
-      return !busy && (!_this.cmdSave || !_this.cmdSave.busy()) &&
+      return !busy &&
+        _this.scheduleVm.loaded() && !_this.scheduleVm.board.busy() &&
+        (!_this.cmdSave || !_this.cmdSave.busy()) &&
         (statusCodeId < 4 || 7 < statusCodeId);
     });
 
 
     _this.busy = ko.computed(function() {
       return _this.loading() || _this.cmdSave.busy();
-    });
-
-
-    _this.scheduleVm = new ScheduleTicketViewModel({
-      ticketVm: _this,
-      // appt: ticket.AppointmentId ? ticket : null,
     });
 
     _this.showAppt = ko.observable();
@@ -298,6 +323,12 @@ define("src/scheduler/ticket.editor.vm", [
     }
     return msg;
   };
+
+  function touchPropTime(timeProp, time) {
+    if (timeProp.isValid()) {
+      timeProp.setValue(strings.format("{0:t}", time));
+    }
+  }
 
   function saveTicketData(_this, cb) {
     var skillsData = _this.skillsMsvm.selectedValues;

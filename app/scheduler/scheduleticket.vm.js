@@ -40,11 +40,18 @@ define("src/scheduler/scheduleticket.vm", [
       "ticketVm",
     ]);
 
-    _this.hasAppt = _this.ticketVm.data.model.AppointmentId > 0;
+    _this.hasAppt = function() {
+      return _this.ticketVm.data.AppointmentId.peek() > 0;
+    };
 
-    _this.board = new DayBoard();
-    if (!_this.hasAppt) {
-      _this.board.onAdd = function(top, columnVm) {
+    _this.monthVm = new MonthViewModel();
+    _this.board = new DayBoard({
+      selectedDate: _this.monthVm.selectedDate,
+      onAdd: function(top, columnVm) {
+        if (_this.hasAppt()) {
+          return;
+        }
+
         var startOn = _this.board.topToTime(_this.monthVm.selectedDate.peek(), top);
         var endOn = moment(startOn).add("hour", 1).toDate();
 
@@ -55,7 +62,7 @@ define("src/scheduler/scheduleticket.vm", [
         var calItem = CalItem.create(_this.board, _this.ticketVm.data);
 
         // calItem.onCancel = function() {
-        //   if (calItem.data.model.AppointmentId) {
+        //   if (calItem.data.AppointmentId.peek()) {
         //     return;
         //   }
         //   // remove from list
@@ -70,11 +77,8 @@ define("src/scheduler/scheduleticket.vm", [
         _this.board.items.push(calItem);
 
         return calItem;
-      };
-
-    }
-    _this.monthVm = new MonthViewModel();
-    // _this.dayTechs = ko.observableArray();
+      }
+    });
 
 
     //
@@ -93,7 +97,7 @@ define("src/scheduler/scheduleticket.vm", [
     var _this = this;
     var afterLoaded;
 
-    if (_this.hasAppt) {
+    if (_this.hasAppt()) {
       // load tech for appointment
 
       // get ticket
@@ -143,11 +147,33 @@ define("src/scheduler/scheduleticket.vm", [
     });
   };
 
+  ScheduleTicketViewModel.prototype.ensureAdded = function() {
+    var _this = this;
+    var board = _this.board;
+    var columns = board.columns.peek();
+    if (!columns.length) {
+      return;
+    }
+    var top = board.timeToRow(new Date()) * board.rowHeight;
+    var calItem = board.onAdd(top, columns[0]);
+    console.log("after onAdd", calItem);
+    if (calItem) {
+      _this.board.selectedVm(calItem);
+      calItem.scrollTo(true);
+      return true;
+    }
+  };
+
   function selectedDateChanged(selectedDate) {
     /* jshint validthis:true */
     var _this = this;
+    if (!_this.monthVm.isDateSelected(selectedDate)) {
+      // abort if the date has since changed
+      return;
+    }
     // clear
     _this.board.columns([]);
+    _this.board.items([]);
 
     var join = joiner();
     var day = selectedDate.getDay();
@@ -166,7 +192,7 @@ define("src/scheduler/scheduleticket.vm", [
       }
       return working;
     });
-    // _this.dayTechs(dayTechs);
+    _this.ticketVm.data.techCvm.setList(dayTechs);
 
     _this.board.busy(true);
     join.when(function(err) {
@@ -176,33 +202,47 @@ define("src/scheduler/scheduleticket.vm", [
         return;
       }
 
-
       var columns = dayTechs.map(function(tech, index) {
         return CalCol.create(_this.board, index, tech.ID, tech.FullName);
       });
       _this.board.columns(columns);
 
+      var selectedVm = _this.board.selectedVm.peek();
       var items = [];
       dayTechs.forEach(function(tech) {
-        items = items.concat(tech.weekGones[day].map(function(item) {
+        tech.weekGones[day].forEach(function(item) {
           item.ColumnID = tech.ID;
-          return CalItem.create(_this.board, item);
-        }));
-        items = items.concat(techDayApptsMap[tech.ID].map(function(item) {
+          var vm = CalItem.create(_this.board, item);
+          items.push(vm);
+        });
+
+        techDayApptsMap[tech.ID].forEach(function(item) {
           var vm;
-          if (item.AppointmentId === _this.ticketVm.data.model.AppointmentId) {
+          if (item.AppointmentId === _this.ticketVm.data.AppointmentId.peek()) {
+            if (selectedVm) {
+              if (item.AppointmentId !== selectedVm.data.AppointmentId.peek()) {
+                console.warn("AppointmentId mismatch");
+              }
+              return;
+            }
             vm = CalItem.create(_this.board, _this.ticketVm.data);
-            _this.board.selectedVm(vm);
+            selectedVm = vm;
           } else {
             schedulerhelper.ensureTypeNames(item);
             item.ColumnID = item.TechId;
             // item.ColumnID = tech.ID;
             vm = CalItem.create(_this.board, item);
           }
-          return vm;
-        }));
+          items.push(vm);
+        });
       });
+      if (selectedVm) {
+        items.push(selectedVm);
+      }
       _this.board.items(items);
+      _this.board.selectedVm(selectedVm);
+
+      console.log("_this.board.items(items)", selectedVm ? selectedVm.data.AppointmentId.peek() : "no selectedVm");
     });
   }
 

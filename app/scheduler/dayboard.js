@@ -20,6 +20,10 @@ define("src/scheduler/dayboard", [
     if (options) {
       ko.utils.extend(_this, options);
     }
+    utils.assertProps(_this, [
+      "selectedDate",
+      "onAdd",
+    ]);
     utils.setIfNull(_this, {
       startHour: 0,
       endHour: 24,
@@ -171,7 +175,7 @@ define("src/scheduler/dayboard", [
     init: function(el, valueAccessor) {
       var dayboardVm = ko.unwrap(valueAccessor());
       var dragInfo = null;
-      var $scrollEl = jquery(el).parent();
+      var $scrollEl = jquery(el);
 
       function deselectCurrent() {
         var vm = dayboardVm.selectedVm.peek();
@@ -184,19 +188,22 @@ define("src/scheduler/dayboard", [
       function initDragInfo($target, vm, moveEl, evt) {
         moveEl = jquery(moveEl);
 
-        var moveElOffset = moveEl.offset();
+        // var moveElOffset = moveEl.offset();
+        var startPosition = vm.position.peek();
 
         moveEl.addClass("dragging");
         dragInfo = {
           moveEl: moveEl,
           vm: vm,
           resize: $target.hasClass("resizer"),
-          startPosition: vm.position.peek(),
+          startTop: startPosition.top,
+          // startLeft: startPosition.left,
+          colID: startPosition.ColumnID,
           startHeight: vm.height.peek(),
-          // startY: evt.clientY - (parseInt(moveEl.css("top"), 10) || 0) - $scrollEl.scrollTop(),
-          startY: evt.clientY - moveElOffset.top - $scrollEl.scrollTop(),
+          startY: evt.clientY - (parseInt(moveEl.css("top"), 10) || 0) - $scrollEl.scrollTop(),
+          // startY: evt.clientY - moveElOffset.top - $scrollEl.scrollTop(),
           // startX: evt.clientX - (parseInt(moveEl.css("left"), 10) || 0) - $scrollEl.scrollLeft(),
-          startX: evt.clientX - moveElOffset.left - $scrollEl.scrollLeft(),
+          // startX: evt.clientX - moveElOffset.left - $scrollEl.scrollLeft(),
         };
       }
 
@@ -241,9 +248,9 @@ define("src/scheduler/dayboard", [
             deselectCurrent();
           }
         } else if (!vm) {
-          if (!dayboardVm.onAdd) {
-            return;
-          }
+          // if (!dayboardVm.onAdd) {
+          //   return;
+          // }
 
           var colEl = $target.hasClass("column") ? $target[0] : null;
           var columnVm = colEl ? ko.dataFor(colEl) : null;
@@ -269,7 +276,7 @@ define("src/scheduler/dayboard", [
         })(vm);
         dayboardVm.selectedVm(vm);
 
-        //for now only allow dragging after the item has been selected
+        //only allow dragging after the item has been selected
         // initDragInfo($target, vm, moveEl, evt);
       });
 
@@ -277,24 +284,65 @@ define("src/scheduler/dayboard", [
         if (!dragInfo) {
           return;
         }
-        var top = Math.max(evt.clientY - dragInfo.startY - $scrollEl.scrollTop(), 0);
-        var left = Math.max(evt.clientX - dragInfo.startX - $scrollEl.scrollLeft(), 0);
+        var top = evt.clientY - dragInfo.startY - $scrollEl.scrollTop();
 
         if (dragInfo.resize) {
-          dragInfo.vm.height(dragInfo.startHeight + (top - dragInfo.startPosition.top));
+          var height = dragInfo.startHeight + (top - dragInfo.startTop);
+          height = Math.min(height, dayboardVm.totalHeight - dragInfo.startTop - dayboardVm.rowHeight);
+          height = Math.max(height, dayboardVm.rowHeight);
+          dragInfo.vm.height(height);
         } else {
           // top = Math.min(top, dayboardVm.totalHeight - dragInfo.startHeight); // - dayboardVm.rowHeight);
           top = Math.min(top, dayboardVm.totalHeight - dragInfo.startHeight - dayboardVm.rowHeight);
+          top = Math.max(top, 0);
+          // try to find ColumnID
+          dragInfo.moveEl.hide();
+          var colID = findColumnIDAtPoint(evt.pageX, evt.pageY);
+          dragInfo.moveEl.show();
+          if (colID) {
+            dragInfo.colID = colID;
+          }
           // indirectly set position
           dragInfo.vm.position({
             top: top,
-            left: left,
-            ColumnID: 0,
+            // left: left,
+            ColumnID: dragInfo.colID,
           });
         }
       });
     }
   };
+
+  function findColumnIDAtPoint(x, y) {
+    var colID;
+    var hiddenEls = [];
+
+    var maxLevels = 2;
+    while (maxLevels--) {
+      // get the element under the cursor
+      var el = jquery(document.elementFromPoint(x, y));
+      // test to see if it is a `column`
+      if (el.hasClass("column")) {
+        // get the id
+        var columnVm = ko.dataFor(el[0]);
+        if (columnVm) {
+          colID = columnVm.ID;
+        }
+        break;
+      } else {
+        // hide the element so we can test again
+        el.hide();
+        hiddenEls.push(el);
+      }
+    }
+
+    // re-show hidden elements
+    hiddenEls.forEach(function(el) {
+      el.show();
+    });
+
+    return colID;
+  }
 
   return DayBoard;
 });

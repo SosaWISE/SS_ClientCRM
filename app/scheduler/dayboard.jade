@@ -8,8 +8,10 @@ div(class="board")
       div(class="row",data-bind="position:position,height:height,toggle:{beginsHour:beginsHour}")
         span(class="hour",data-bind="text:$parent.getTime(index)")
     div(class="columns",data-bind="height:totalHeight")
+      //- add columns
       <!-- ko foreach:columns -->
       div(class="column",data-bind="position:position,width:board.columnWidth")
       <!-- /ko -->
+      //- add items
       <!-- ko template:{foreach:items,name:getChildTemplate} -->
       <!-- /ko -->

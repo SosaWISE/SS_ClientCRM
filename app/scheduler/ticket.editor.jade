@@ -39,6 +39,9 @@ div(class="ticket-editor")
       <!-- ko if:showAppt -->
       ul(class="edit-form line-top")
         li
+          span(class="label") Tech
+          div(data-bind="cvm:data.techCvm")
+        li
           <!-- ko if:data.AppointmentId -->
           span(class="label") Appointment Date
           span(class="value",data-bind="text:scheduleVm.monthVm.dateText")
