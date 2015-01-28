@@ -282,8 +282,8 @@ define("src/scheduler/scheduleticket.vm", [
       id: techID,
       link: "Appointments",
       query: {
-        start: start.format(),
-        end: end.format(),
+        start: start.utc().format(),
+        end: end.utc().format(),
       },
     }, setter, cb);
   }
