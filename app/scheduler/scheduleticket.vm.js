@@ -156,6 +156,11 @@ define("src/scheduler/scheduleticket.vm", [
     }
   };
 
+  ScheduleTicketViewModel.prototype.firstOverlapItem = function(testItem) {
+    var _this = this;
+    return _this.board.firstOverlapItem(testItem);
+  };
+
   function selectedDateChanged(selectedDate) {
     /* jshint validthis:true */
     var _this = this;
@@ -233,6 +238,9 @@ define("src/scheduler/scheduleticket.vm", [
       }
       _this.board.items(items);
       _this.board.selectedVm(selectedVm);
+      if (selectedVm) {
+        selectedVm.scrollTo(true);
+      }
 
       console.log("_this.board.items(items)", selectedVm ? selectedVm.data.AppointmentId.peek() : "no selectedVm");
     });
@@ -267,12 +275,15 @@ define("src/scheduler/scheduleticket.vm", [
     return weekGones;
   }
 
-  function loadTechAppts(techID, selectedDate, setter, cb) {
+  function loadTechAppts(techID, dt, setter, cb) {
+    var start = moment([dt.getFullYear(), dt.getMonth(), dt.getDate()]);
+    var end = start.clone().add(1, "d").subtract(3, "ms");
     dataservice.ticketsrv.techs.read({
       id: techID,
       link: "Appointments",
       query: {
-        date: moment(selectedDate).format("MM/DD/YYYY"),
+        start: start.format(),
+        end: end.format(),
       },
     }, setter, cb);
   }

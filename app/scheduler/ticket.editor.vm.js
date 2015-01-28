@@ -103,6 +103,7 @@ define("src/scheduler/ticket.editor.vm", [
 
     AppointmentId: {},
     TechId: {
+      converter: ukov.converters.number(0),
       validators: [
         ukov.validators.isRequired("TechId is required"),
       ],
@@ -355,13 +356,25 @@ define("src/scheduler/ticket.editor.vm", [
   }
 
   function saveTicketData(_this, cb) {
+    var errMsg;
     var skillsData = _this.skillsMsvm.selectedValues;
     if (!_this.data.isValid() || !skillsData.isValid()) {
-      var errMsg = _this.data.errMsg() || skillsData.errMsg();
+      errMsg = _this.data.errMsg() || skillsData.errMsg();
       notify.warn(errMsg, null, 7);
       return cb(errMsg);
     }
 
+    var overlapItem = _this.scheduleVm.firstOverlapItem(_this);
+    if (overlapItem) {
+      var id = overlapItem.data.ID.peek();
+      if (id > 0) {
+        errMsg = strings.format("This appointment overlaps the appointment for Ticket #{0}", id);
+      } else {
+        errMsg = "An appointment can only be scheduled when the tech is scheduled to work.";
+      }
+      notify.warn(errMsg, null, 7);
+      return cb(errMsg);
+    }
 
     var join = joiner();
 

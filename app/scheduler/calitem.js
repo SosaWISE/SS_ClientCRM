@@ -1,9 +1,11 @@
 define("src/scheduler/calitem", [
+  "src/ukov",
   "ko",
   "src/core/strings",
   "src/core/utils",
   "src/core/base.vm",
 ], function(
+  ukov,
   ko,
   strings,
   utils
@@ -24,27 +26,9 @@ define("src/scheduler/calitem", [
       "EndOn",
       "ColumnID",
     ]);
-    propCheck("StartOn", _this.data.StartOn);
-    propCheck("EndOn", _this.data.EndOn);
-
-    function getStartOn() {
-      var startOn = _this.data.StartOn.getValue();
-      if (!utils.isDate(startOn)) {
-        startOn = _this.board.selectedDate.peek();
-      }
-      return startOn;
-    }
-
-    function getEndOn() {
-      var startOn = getStartOn();
-      var endOn = _this.data.EndOn.getValue();
-      if (!utils.isDate(endOn)) {
-        endOn = new Date(startOn.valueOf());
-        endOn.setMinutes(endOn.getMinutes() + 15);
-      }
-      return new Date(startOn.getFullYear(), startOn.getMonth(), startOn.getDate(),
-        endOn.getHours(), endOn.getMinutes()); //, endOn.getSeconds(), endOn.getMilliseconds());
-    }
+    assertUkovProp(_this.data, "StartOn");
+    assertUkovProp(_this.data, "EndOn");
+    assertUkovProp(_this.data, "ColumnID");
 
     _this.selected = ko.observable(false);
     _this.scrollTo = ko.observable(false);
@@ -52,7 +36,7 @@ define("src/scheduler/calitem", [
       deferEvaluation: true,
       read: function() {
         _this.data.StartOn(); // subscribe
-        return strings.format("{0:d}", getStartOn());
+        return strings.format("{0:d}", getStartOn(_this));
       }
     });
     _this.position = ko.computed({
@@ -60,7 +44,7 @@ define("src/scheduler/calitem", [
       read: function() {
         _this.data.StartOn(); // subscribe
         var colID = _this.data.ColumnID(); // subscribe
-        var row = _this.board.timeToRow(getStartOn());
+        var row = _this.board.timeToRow(getStartOn(_this));
         return {
           top: row * _this.board.rowHeight,
           left: _this.board.getColLeftPercent(colID),
@@ -73,8 +57,8 @@ define("src/scheduler/calitem", [
       },
       write: function(position) {
         // set times
-        var startOn = getStartOn();
-        var endOn = getEndOn();
+        var startOn = getStartOn(_this);
+        var endOn = getEndOn(_this);
         // find delta between StartOn and EndOn
         var delta = endOn.valueOf() - startOn.valueOf();
         // convert from screen position to time
@@ -92,13 +76,13 @@ define("src/scheduler/calitem", [
       read: function() {
         _this.data.StartOn(); // subscribe
         _this.data.EndOn(); // subscribe
-        var startOn = getStartOn();
-        var endOn = getEndOn();
+        var startOn = getStartOn(_this);
+        var endOn = getEndOn(_this);
         return _this.board.timeToHeight(startOn, endOn);
       },
       write: function(height) {
-        var startOn = getStartOn();
-        var endOn = getEndOn();
+        var startOn = getStartOn(_this);
+        var endOn = getEndOn(_this);
         endOn = _this.board.heightToTime(startOn, endOn, height);
         _this.data.EndOn(endOn);
       },
@@ -107,7 +91,7 @@ define("src/scheduler/calitem", [
     _this.timespan = ko.computed(function() {
       _this.data.StartOn(); // subscribe
       _this.data.EndOn(); // subscribe
-      return calcTimespan(getStartOn(), getEndOn());
+      return calcTimespan(getStartOn(_this), getEndOn(_this));
     });
 
     _this.getCustomerName = function(data) {
@@ -122,55 +106,120 @@ define("src/scheduler/calitem", [
     //   saveAppt(_this, cb);
     // });
   }
+  CalItem.prototype.overlaps = function(b, ignoreSelf) {
+    var a = this;
+    if (ignoreSelf && a.data.ID.peek() === b.data.ID.peek()) {
+      return false;
+    }
+    return a.data.ColumnID.peek() === b.data.ColumnID.peek() &&
+      getStartOnTime(a) < getEndOnTime(b) &&
+      getEndOnTime(a) > getStartOnTime(b);
+  };
 
-  function propCheck(name, prop) {
-    if (!ko.isObservable(prop) ||
-      !utils.isFunc(prop.getValue) ||
-      !prop.doc ||
-      !prop.doc.converter
-    ) {
+  function toTime(dt) {
+    return (dt.getHours() * 60) + dt.getMinutes();
+  }
+
+  function getStartOnTime(_this) {
+    return toTime(getStartOn(_this));
+  }
+
+  function getEndOnTime(_this) {
+    return toTime(getEndOn(_this));
+  }
+
+
+  function getStartOn(_this) {
+    var startOn = _this.data.StartOn.getValue();
+    if (!utils.isDate(startOn)) {
+      startOn = new Date(_this.board.selectedDate.peek().valueOf());
+      startOn.setHours(_this.board.startHour, 0, 0, 0);
+    }
+    return startOn;
+  }
+
+  function getEndOn(_this) {
+    var endOn = _this.data.EndOn.getValue();
+    var hours, minutes;
+    if (utils.isDate(endOn)) {
+      hours = endOn.getHours();
+      minutes = endOn.getMinutes();
+    } else {
+      hours = _this.board.endHour;
+      if (hours === 24) {
+        hours = 23;
+        minutes = 55;
+      } else {
+        minutes = 0;
+      }
+    }
+    var startOn = getStartOn(_this);
+    return new Date(startOn.getFullYear(), startOn.getMonth(), startOn.getDate(),
+      hours, minutes); //, endOn.getSeconds(), endOn.getMilliseconds());
+  }
+
+  function assertUkovProp(obj, name) {
+    if (!isUkovProp(obj, name)) {
       throw new Error(name + " needs to be a ukov prop with a converter");
     }
   }
 
+  function isUkovProp(obj, name) {
+    var prop = obj[name];
+    return ko.isObservable(prop) && utils.isFunc(prop.getValue) && prop.doc && prop.doc.converter;
+  }
+
+  function isUkovModel(obj) {
+    return obj && obj.model && obj.doc && obj.doc._model;
+  }
+
   function create(board, data) {
-    var id = data.ID || -1;
-    var startOn = data.StartOn;
-    var endOn = data.EndOn;
-    if (ko.isObservable(startOn) && ko.isObservable(endOn)) {
-      return new CalItem({
-        board: board,
-        ID: id,
-        viewTmpl: "tmpl-scheduler-calitem",
-        data: data,
-        editable: true,
-      });
+    var editable = true;
+    if (!isUkovModel(data)) {
+      data.ID = data.ID || -1;
+      data = ukov.wrap(data, readOnlySchema);
+      editable = false;
     }
 
-    return {
+    return new CalItem({
+      editable: editable,
       board: board,
-      ID: id,
-      position: {
-        top: board.timeToRow(startOn) * board.rowHeight,
-        left: board.getColLeftPercent(data.ColumnID),
-        // left: "0px",
-      },
-      height: board.timeToHeight(startOn, endOn),
-      viewTmpl: (id > 0) ? "tmpl-scheduler-calitem" : "tmpl-scheduler-calitem_gone",
-      //
-      data: {
-        model: data,
-      },
-      selected: false,
-      editable: false,
-      timespan: calcTimespan(startOn, endOn),
-    };
+      ID: data.ID,
+      data: data,
+      viewTmpl: (data.ID.peek() >= 0) ? "tmpl-scheduler-calitem" : "tmpl-scheduler-calitem_gone",
+    });
   }
   CalItem.create = create;
 
   function calcTimespan(startOn, endOn) {
     return strings.format("{0:t} - {1:t}", startOn, endOn);
   }
+
+  // var timeConverter = ukov.converters.time(
+  //   function getStartDate(model) {
+  //     return model.StartOn;
+  //   },
+  //   function removeSeconds(dt) {
+  //     dt.setSeconds(0, 0);
+  //     return dt;
+  //   }
+  // );
+  var readOnlyConverter = function() {
+    throw new Error("Read only");
+  };
+  var readOnlySchema = {
+    _model: true,
+    ID: {},
+    StartOn: {
+      converter: readOnlyConverter,
+    },
+    EndOn: {
+      converter: readOnlyConverter,
+    },
+    ColumnID: {
+      converter: readOnlyConverter,
+    },
+  };
 
   return CalItem;
 });

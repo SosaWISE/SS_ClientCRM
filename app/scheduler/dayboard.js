@@ -150,6 +150,18 @@ define("src/scheduler/dayboard", [
     return (calcColumnWidthPercent(_this) * index) + "%";
   };
 
+  DayBoard.prototype.firstOverlapItem = function(testItem) {
+    var result;
+    var _this = this;
+    _this.items.peek().some(function(item) {
+      if (item.overlaps(testItem, true)) {
+        result = item;
+        return true;
+      }
+    });
+    return result;
+  };
+
   function addDateAndRow(_this, dt, row) {
     var timeTicks = _this.rowToTicks(row);
     // clone date
