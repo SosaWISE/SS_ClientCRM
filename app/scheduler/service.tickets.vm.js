@@ -1,27 +1,19 @@
 define("src/scheduler/service.tickets.vm", [
-  "slick",
   "src/scheduler/scheduler-helper",
   "src/scheduler/scheduler-cache",
   "src/scheduler/service.tickets.gvm",
   "src/scheduler/ticket.editor.vm",
   "src/dataservice",
-  "src/ukov",
   "ko",
-  "src/core/strings",
-  "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
-  Slick,
   schedulerhelper,
   schedulercache,
   ServiceTicketsGridViewModel,
   TicketEditorViewModel,
   dataservice,
-  ukov,
   ko,
-  strings,
-  notify,
   utils,
   ControllerViewModel
 ) {
