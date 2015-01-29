@@ -89,10 +89,6 @@ define("src/scheduler/month.vm", [
     _this.year = ko.computed(function() {
       return _this.selectedDate().getFullYear();
     });
-    _this.dateText = ko.computed(function() {
-      // return strings.format("{0:d}", _this.selectedDate());
-      return moment(_this.selectedDate()).format("LL");
-    });
 
     //
     //events

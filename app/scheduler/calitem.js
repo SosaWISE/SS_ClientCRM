@@ -32,13 +32,6 @@ define("src/scheduler/calitem", [
 
     _this.selected = ko.observable(false);
     _this.scrollTo = ko.observable(false);
-    _this.dateText = ko.computed({
-      deferEvaluation: true,
-      read: function() {
-        _this.data.StartOn(); // subscribe
-        return strings.format("{0:d}", getStartOn(_this));
-      }
-    });
     _this.position = ko.computed({
       deferEvaluation: true,
       read: function() {
@@ -97,14 +90,6 @@ define("src/scheduler/calitem", [
     _this.getCustomerName = function(data) {
       return strings.joinTrimmed(' ', data.Salutation, data.FirstName, data.MiddleName, data.LastName, data.Suffix);
     };
-
-    //
-    //events
-    //
-    _this.clickCancel = utils.noop; //@NOTE: to be set by owner
-    // _this.cmdSave = ko.command(function(cb) {
-    //   saveAppt(_this, cb);
-    // });
   }
   CalItem.prototype.overlaps = function(b, ignoreSelf) {
     var a = this;
@@ -174,13 +159,11 @@ define("src/scheduler/calitem", [
   }
 
   function create(board, data) {
-    var editable = true;
-    if (!isUkovModel(data)) {
+    var editable = isUkovModel(data);
+    if (!editable) {
       data.ID = data.ID || -1;
       data = ukov.wrap(data, readOnlySchema);
-      editable = false;
     }
-
     return new CalItem({
       editable: editable,
       board: board,

@@ -5,7 +5,7 @@ define("src/scheduler/scheduleticket.vm", [
   "src/scheduler/month.vm",
   "src/scheduler/calcol",
   "src/scheduler/calitem",
-  "src/scheduler/dayboard",
+  "src/scheduler/calboard",
   "jquery",
   "ko",
   "src/core/joiner",
@@ -19,7 +19,7 @@ define("src/scheduler/scheduleticket.vm", [
   MonthViewModel,
   CalCol,
   CalItem,
-  DayBoard,
+  CalBoard,
   jquery,
   ko,
   joiner,
@@ -36,7 +36,6 @@ define("src/scheduler/scheduleticket.vm", [
     var _this = this;
     ScheduleTicketViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
-      // "layersVm",
       "ticketVm",
     ]);
 
@@ -45,7 +44,11 @@ define("src/scheduler/scheduleticket.vm", [
     };
 
     _this.monthVm = new MonthViewModel();
-    _this.board = new DayBoard({
+    var startOn = _this.ticketVm.data.StartOn.getValue();
+    if (startOn) {
+      _this.monthVm.selectedDate(startOn);
+    }
+    _this.board = new CalBoard({
       selectedDate: _this.monthVm.selectedDate,
       onAdd: function(top, columnVm) {
         if (_this.hasAppt()) {
@@ -97,36 +100,20 @@ define("src/scheduler/scheduleticket.vm", [
     var _this = this;
 
     if (_this.hasAppt()) {
-      // load tech for appointment
-
-      // get ticket
-      var ticket = _this.ticketVm.data.model;
       // set selectedDate now, but notify when loaded
-      _this.monthVm.selectedDate(ticket.StartOn);
-
-      // load service ticket tech
-      dataservice.ticketsrv.techs.read({
-        id: ticket.TechId,
-      }, function(tech) {
-        _this.techs = [tech];
-        loadTechWeekDays(tech, join.add());
-      }, join.add());
-    } else {
-      // load all techs
-
-      //@REVIEW: need more sophisticated tech query
-      dataservice.ticketsrv.techs.read({}, function(val) {
-        _this.techs = val.filter(function(tech) {
-          // only techs with an id (it needs to exist in TS_ tables)
-          return tech.ID;
-        });
-
-        // get weekdays for each tech
-        _this.techs.forEach(function(tech) {
-          loadTechWeekDays(tech, join.add());
-        });
-      }, join.add());
+      _this.monthVm.selectedDate(_this.ticketVm.data.StartOn.peek());
     }
+    // load all techs
+    //@REVIEW: need more sophisticated tech query
+    dataservice.ticketsrv.techs.read({}, function(val) {
+      _this.techs = val.filter(function(tech) {
+        return tech.ID; // only techs with an id (it needs to exist in TS_ tables)
+      });
+      // get weekdays for each tech
+      _this.techs.forEach(function(tech) {
+        loadTechWeekDays(tech, join.add());
+      });
+    }, join.add());
 
     _this.board.busy(true);
     join.when(function(err) {
@@ -137,23 +124,6 @@ define("src/scheduler/scheduleticket.vm", [
         selectedDateChanged.call(_this, _this.monthVm.selectedDate.peek());
       }
     });
-  };
-
-  ScheduleTicketViewModel.prototype.ensureAdded = function() {
-    var _this = this;
-    var board = _this.board;
-    var columns = board.columns.peek();
-    if (!columns.length) {
-      return;
-    }
-    var top = board.timeToRow(new Date()) * board.rowHeight;
-    var calItem = board.onAdd(top, columns[0]);
-    console.log("after onAdd", calItem);
-    if (calItem) {
-      _this.board.selectedVm(calItem);
-      calItem.scrollTo(true);
-      return true;
-    }
   };
 
   ScheduleTicketViewModel.prototype.firstOverlapItem = function(testItem) {
@@ -241,8 +211,6 @@ define("src/scheduler/scheduleticket.vm", [
       if (selectedVm) {
         selectedVm.scrollTo(true);
       }
-
-      console.log("_this.board.items(items)", selectedVm ? selectedVm.data.AppointmentId.peek() : "no selectedVm");
     });
   }
 

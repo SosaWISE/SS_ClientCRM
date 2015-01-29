@@ -27,16 +27,18 @@ define("src/scheduler/ticket.editor.vm", [
 ) {
   "use strict";
 
+  var namePartOrder = ["NOTHING", "Salutation", "FirstName", "MiddleName", "LastName", "Suffix"];
   ko.bindingHandlers.formatCustomerName = {
     init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-
       // pass through to `text` binding
       ko.bindingHandlers.text.init(element, valueAccessor, allBindings, viewModel, bindingContext);
     },
     update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
       function newValueAccessor() {
         var data = ko.unwrap(valueAccessor());
-        return strings.joinTrimmed(" ", data.Salutation, data.FirstName, data.MiddleName, data.LastName, data.Suffix);
+        return strings.joinTrimmed(" ", namePartOrder.map(function(part) {
+          return ko.unwrap(data[part]);
+        }));
       }
 
       // call `text` binding
@@ -124,6 +126,9 @@ define("src/scheduler/ticket.editor.vm", [
     },
     TravelTime: {},
     TechEnRouteOn: {},
+
+    StatusCodeId: {},
+    CustomerMasterFileId: {},
   };
   var apptFields = ["TechId", "StartOn", "EndOn"];
 
@@ -170,7 +175,7 @@ define("src/scheduler/ticket.editor.vm", [
       if (techId) {
         tempTechs.push({
           ID: techId,
-          FullName: "",
+          FullName: _this.item.TechFullName,
         });
       }
     })();
@@ -192,12 +197,12 @@ define("src/scheduler/ticket.editor.vm", [
     //  - 4 - Tech Confirmed
     //  - 5 - Completed
     //  - 7 - Waiting Change Form/SIF
-    var statusCodeId = _this.item.StatusCodeId;
-    _this.showNotesInput = (
-      statusCodeId !== 4 &&
-      statusCodeId !== 5 &&
-      statusCodeId !== 7
-    );
+    _this.showNotesInput = ko.computed(function() {
+      var statusCodeId = _this.data.StatusCodeId();
+      return statusCodeId !== 4 &&
+        statusCodeId !== 5 &&
+        statusCodeId !== 7;
+    });
 
     _this.scheduleVm = new ScheduleTicketViewModel({
       ticketVm: _this,
@@ -251,60 +256,65 @@ define("src/scheduler/ticket.editor.vm", [
         }
       }, utils.noop));
     }, function(busy) {
-      return !busy && (!_this.cmdSchedule || !_this.cmdSchedule.busy());
+      return !busy && !_this.busy() && canSchedule(_this);
     });
-    _this.cmdSchedule = ko.command(function(cb) {
-      console.log("cmdSchedule");
-      _this.showAppt(!_this.showAppt.peek());
-      if (!_this.scheduleVm.ensureAdded()) {
-        console.log("appointment item not added");
-      }
+    _this.cmdScheduleAppt = ko.command(function(cb) {
+      // show appointment scheduler
+      _this.showAppt(true);
       cb();
-      // saveTicketData(_this, utils.safeCallback(cb, function(err, resp) {
-      //   if (err) {
-      //     return;
-      //   }
-      //   if (resp) {
-      //     _this.layerResult = resp.Value;
-      //
-      //   }
-      // }, utils.noop));
     }, function(busy) {
-      // tickets with these status codes can not be scheduled:
-      //  - 4 - Tech Confirmed
-      //  - 5 - Completed
-      //  - 6 - Pending Contractor
-      //  - 7 - Waiting Change Form/SIF
-      return !busy &&
-        _this.scheduleVm.loaded() && !_this.scheduleVm.board.busy() &&
-        (!_this.cmdSave || !_this.cmdSave.busy()) &&
-        (statusCodeId < 4 || 7 < statusCodeId);
+      return !busy && !_this.busy() && canSchedule(_this);
+      // _this.scheduleVm.loaded() && !_this.scheduleVm.board.busy() &&
     });
-
+    _this.cmdCancelAppt = ko.command(function(cb) {
+      var model = _this.data.getValue();
+      dataservice.ticketsrv.serviceTickets.del({
+        id: model.ID,
+        link: "Appointment",
+        query: {
+          v: model.Version,
+        },
+      }, function(val) {
+        _this.data.setValue(val);
+        _this.data.markClean(val, true);
+        // ensure today is selected
+        _this.scheduleVm.monthVm.selectedDate(new Date());
+      }, cb);
+    }, function(busy) {
+      return !busy && !_this.busy() && canSchedule(_this);
+    });
 
     _this.busy = ko.computed(function() {
-      return _this.loading() || _this.cmdSave.busy();
+      return _this.loading() ||
+        _this.cmdSave.busy() ||
+        _this.cmdScheduleAppt.busy() ||
+        _this.cmdCancelAppt.busy();
     });
 
-    _this.showAppt = ko.observable();
     _this.width = ko.observable();
     _this.height = ko.observable();
-
+    _this.showAppt = ko.observable(true);
     _this.showAppt.subscribe(function(show) {
       var ignore = !show;
       apptFields.forEach(function(field) {
         _this.data[field].ignore(ignore);
       });
       _this.data.update(false, true);
+
+      var w, h;
       if (show) {
-        _this.width("calc(100% - 20px)");
-        _this.height("calc(100% - 20px)");
+        // ensure schedule is loaded
+        _this.scheduleVm.load({}, {}, utils.noop);
+        w = "calc(100% - 20px)";
+        h = "100%";
       } else {
-        _this.width(390);
-        _this.height(650);
+        w = "390px";
+        h = "auto";
       }
+      _this.width(w);
+      _this.height(h);
     });
-    _this.showAppt(!!_this.item.AppointmentId);
+    _this.showAppt(false);
   }
   utils.inherits(TicketEditorViewModel, BaseViewModel);
   TicketEditorViewModel.prototype.viewTmpl = "tmpl-scheduler-ticket-editor";
@@ -323,8 +333,6 @@ define("src/scheduler/ticket.editor.vm", [
       _this.skillsMsvm.selectedValues([]);
       _this.skillsMsvm.selectedValues.markClean([], true);
     }
-
-    _this.scheduleVm.load(routeData, extraData, join.add());
   };
 
   function closeLayer(_this) {
@@ -339,20 +347,30 @@ define("src/scheduler/ticket.editor.vm", [
   TicketEditorViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
       msg;
-    if (!_this.layerResult &&
-      (
-        (_this.cmdSave && _this.cmdSave.busy()) ||
-        (_this.cmdSchedule && _this.cmdSchedule.busy())
-      )) {
-      msg = "Please wait for save to finish.";
+    if (!_this.layerResult) {
+      if (_this.cmdSave.busy()) {
+        msg = "Please wait for save to finish.";
+      } else if (_this.cmdCancelAppt.busy()) {
+        msg = "Please wait for appointment cancellation to finish.";
+      }
     }
     return msg;
   };
 
   function touchPropTime(timeProp, time) {
-    if (timeProp.isValid()) {
+    if (!(time instanceof Error)) {
       timeProp.setValue(strings.format("{0:t}", time));
     }
+  }
+
+  function canSchedule(_this) {
+    var statusCodeId = _this.data.StatusCodeId();
+    // tickets with these status codes can not be scheduled:
+    //  - 4 - Tech Confirmed
+    //  - 5 - Completed
+    //  - 6 - Pending Contractor
+    //  - 7 - Waiting Change Form/SIF
+    return (statusCodeId < 4 || 7 < statusCodeId);
   }
 
   function saveTicketData(_this, cb) {

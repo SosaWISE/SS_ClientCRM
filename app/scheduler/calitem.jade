@@ -2,19 +2,22 @@ div(class="appt calitem",data-bind="position:position,height:height,width:board.
   dl
     dt(data-bind="text:timespan")
     dd
-      div(class="cust-info",data-bind="with:data.model")
+      div(class="cust-info",data-bind="with:(editable)?data:data.model")
         div(class="id")
-          span Ticket #
+          |Ticket #
           span(data-bind="text:ID")
         div(class="id")
-          span CMFID:
-          |&nbsp;
+          |CMFID:&nbsp;
           span(data-bind="text:CustomerMasterFileId")
         div(class="name",data-bind="formatCustomerName:$data")
         div
-          span Service Type:
-          |&nbsp;
+          |Service Type:&nbsp;
+          <!-- ko if:$parent.editable -->
+          span(data-bind="text:serviceTypeCvm.selectedText()")
+          <!-- /ko -->
+          <!-- ko if:!$parent.editable -->
           span(data-bind="text:ServiceType")
+          <!-- /ko -->
 
         //- div(class="address",data-bind="text:StreetAddress")
         //- div(class="address",data-bind="text:StreetAddress2")

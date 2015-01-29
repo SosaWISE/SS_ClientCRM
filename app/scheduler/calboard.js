@@ -1,4 +1,4 @@
-define("src/scheduler/dayboard", [
+define("src/scheduler/calboard", [
   "jquery",
   "ko",
   "src/core/notify",
@@ -15,7 +15,7 @@ define("src/scheduler/dayboard", [
   //
   //
   //
-  function DayBoard(options) {
+  function CalBoard(options) {
     var _this = this;
     if (options) {
       ko.utils.extend(_this, options);
@@ -29,7 +29,7 @@ define("src/scheduler/dayboard", [
       endHour: 24,
       rowHeight: 7,
     });
-    // used in dayboard binding
+    // used in calboard binding
     var internalVm = ko.observable();
     _this.selectedVm = ko.computed({
       deferEvaluation: true,
@@ -90,16 +90,16 @@ define("src/scheduler/dayboard", [
     //
     _this.busy = ko.observable(false);
   }
-  DayBoard.prototype.viewTmpl = "tmpl-scheduler-dayboard";
+  CalBoard.prototype.viewTmpl = "tmpl-scheduler-calboard";
 
   //
   // members
   //
-  DayBoard.prototype.getChildTemplate = function(vm) {
-    return vm.viewTmpl;
+  CalBoard.prototype.getChildTemplate = function(vm) {
+    return ko.unwrap(vm.viewTmpl);
   };
 
-  DayBoard.prototype.rowToTicks = function(row) {
+  CalBoard.prototype.rowToTicks = function(row) {
     var _this = this;
     row = Math.floor(row);
     var div = (row / 12);
@@ -107,7 +107,7 @@ define("src/scheduler/dayboard", [
     var minutes = Math.round((div - hours) * 60);
     return ((hours + _this.startHour) * 3600000) + (minutes * 60000);
   };
-  DayBoard.prototype.timeToRow = function(dt, defaultHour) {
+  CalBoard.prototype.timeToRow = function(dt, defaultHour) {
     var _this = this;
     var hours, minutes = 0;
     if (utils.isDate(dt)) {
@@ -121,25 +121,25 @@ define("src/scheduler/dayboard", [
     return ((hours - _this.startHour) * 12) + Math.floor(minutes / 5);
   };
 
-  DayBoard.prototype.topToTime = function(dt, top) {
+  CalBoard.prototype.topToTime = function(dt, top) {
     var _this = this;
     var row = Math.floor(top / _this.rowHeight);
     return addDateAndRow(_this, dt, row);
   };
-  DayBoard.prototype.heightToTime = function(startDt, dt, height) {
+  CalBoard.prototype.heightToTime = function(startDt, dt, height) {
     var _this = this;
     var nRows = height / _this.rowHeight;
     var row = _this.timeToRow(startDt);
     return addDateAndRow(_this, dt, nRows + row);
   };
-  DayBoard.prototype.timeToHeight = function(startDt, endDt) {
+  CalBoard.prototype.timeToHeight = function(startDt, endDt) {
     var _this = this;
     var row = _this.timeToRow(startDt);
     var nRows = _this.timeToRow(endDt, _this.endHour) - row;
     return Math.max(5, nRows * _this.rowHeight);
   };
 
-  DayBoard.prototype.getColLeftPercent = function(colID) {
+  CalBoard.prototype.getColLeftPercent = function(colID) {
     var _this = this;
     var index = 0;
     _this.columns.peek().some(function(c, i) {
@@ -150,7 +150,7 @@ define("src/scheduler/dayboard", [
     return (calcColumnWidthPercent(_this) * index) + "%";
   };
 
-  DayBoard.prototype.firstOverlapItem = function(testItem) {
+  CalBoard.prototype.firstOverlapItem = function(testItem) {
     var result;
     var _this = this;
     _this.items.peek().some(function(item) {
@@ -183,17 +183,17 @@ define("src/scheduler/dayboard", [
   //
   // ui bindings
   //
-  ko.bindingHandlers.dayboard = {
+  ko.bindingHandlers.calboard = {
     init: function(el, valueAccessor) {
-      var dayboardVm = ko.unwrap(valueAccessor());
+      var calboardVm = ko.unwrap(valueAccessor());
       var dragInfo = null;
       var $scrollEl = jquery(el);
 
       function deselectCurrent() {
-        var vm = dayboardVm.selectedVm.peek();
+        var vm = calboardVm.selectedVm.peek();
         if (vm) {
           vm.data.reset();
-          dayboardVm.selectedVm(null);
+          calboardVm.selectedVm(null);
         }
       }
 
@@ -242,7 +242,7 @@ define("src/scheduler/dayboard", [
         var moveEl = ($target.hasClass("editable") ? $target : $target.parents(".calitem.editable"))[0];
         var vm = moveEl ? ko.dataFor(moveEl) : null;
 
-        var currVm = dayboardVm.selectedVm.peek();
+        var currVm = calboardVm.selectedVm.peek();
         if (currVm) {
           if (!vm) {
             return;
@@ -256,40 +256,18 @@ define("src/scheduler/dayboard", [
             notify.warn("Appointment has unsaved changes", "Save or cancel the currently selected appointment.", 5);
             return;
           } else {
-            // nothing to save so deselectCurrent the current and select the new
+            // nothing to save so deselect the current and select the new
             deselectCurrent();
           }
         } else if (!vm) {
-          // if (!dayboardVm.onAdd) {
-          //   return;
-          // }
-
           var colEl = $target.hasClass("column") ? $target[0] : null;
           var columnVm = colEl ? ko.dataFor(colEl) : null;
           if (!columnVm) {
             return;
           }
-
-          vm = dayboardVm.onAdd(evt.clientY - $scrollEl.offset().top + $scrollEl.scrollTop(), columnVm);
+          vm = calboardVm.onAdd(evt.clientY - $scrollEl.offset().top + $scrollEl.scrollTop(), columnVm);
         }
-
-        // override clickCancel
-        (function(vm) {
-          var prevClick = vm.clickCancel;
-          vm.clickCancel = function() {
-            vm.clickCancel = prevClick;
-
-            if (utils.isFunc(vm.onCancel)) {
-              vm.onCancel();
-            }
-            // reset data
-            vm.data.reset();
-          };
-        })(vm);
-        dayboardVm.selectedVm(vm);
-
-        //only allow dragging after the item has been selected
-        // initDragInfo($target, vm, moveEl, evt);
+        calboardVm.selectedVm(vm);
       });
 
       jquery(document).mousemove(function(evt) {
@@ -300,12 +278,12 @@ define("src/scheduler/dayboard", [
 
         if (dragInfo.resize) {
           var height = dragInfo.startHeight + (top - dragInfo.startTop);
-          height = Math.min(height, dayboardVm.totalHeight - dragInfo.startTop - dayboardVm.rowHeight);
-          height = Math.max(height, dayboardVm.rowHeight);
+          height = Math.min(height, calboardVm.totalHeight - dragInfo.startTop - calboardVm.rowHeight);
+          height = Math.max(height, calboardVm.rowHeight);
           dragInfo.vm.height(height);
         } else {
-          // top = Math.min(top, dayboardVm.totalHeight - dragInfo.startHeight); // - dayboardVm.rowHeight);
-          top = Math.min(top, dayboardVm.totalHeight - dragInfo.startHeight - dayboardVm.rowHeight);
+          // top = Math.min(top, calboardVm.totalHeight - dragInfo.startHeight); // - calboardVm.rowHeight);
+          top = Math.min(top, calboardVm.totalHeight - dragInfo.startHeight - calboardVm.rowHeight);
           top = Math.max(top, 0);
           // try to find ColumnID
           dragInfo.moveEl.hide();
@@ -356,5 +334,5 @@ define("src/scheduler/dayboard", [
     return colID;
   }
 
-  return DayBoard;
+  return CalBoard;
 });

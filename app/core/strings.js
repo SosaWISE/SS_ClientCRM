@@ -82,7 +82,7 @@ define("src/core/strings", [
       } else {
         dt = moment.utc(dt);
       }
-      return dt.format("MM/DD/YYYY");
+      return dt.format("L");
     },
     datetime: function(dt, isUtc) {
       // Local by default - the web server should always return UTC dates, but we want to display in Local

@@ -8,7 +8,7 @@
 
   .notes {
     white-space: pre-wrap;
-    max-height: 110px;
+    max-height: 100px;
     overflow: auto;
     display: block;
   }
@@ -22,6 +22,19 @@
       margin-left: 10px;
       overflow: hidden;
     }
+  }
+
+  @ticketWidth: 350px;
+  .ticket-info {
+    color: #fff;
+    width: @ticketWidth;
+  }
+  .ticket-schedule {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: @ticketWidth + 20px;
   }
 
   .cust-info {
@@ -247,14 +260,6 @@
   }
 }
 
-.month-title {
-  .user-select(none);
-  font-weight: 500;
-  text-align: center;
-  cursor: pointer;
-  width: 100%;
-  min-width: 230px;
-}
 .month {
   .user-select(none);
 
@@ -268,7 +273,7 @@
 
   // height: 200px;
   width: 100%;
-  min-width: 230px;
+  min-width: 260px;
   // border: 1px solid white;
   padding: 5px;
   background-color: rgba(0, 0, 0, 0.2);
@@ -307,12 +312,22 @@
   }
 
   ol.days {
+    @dayHeight: 15px;
+
+    li {
+      margin: 0px;
+      padding: 0px;
+      span {
+        height: @dayHeight;
+        line-height: @dayHeight;
+      }
+    }
 
     li.weekDay,
     li.day {
       display: inline-block;
       width: ~"calc(100% / 7)";
-      height: 20px;
+      height: @dayHeight;
       text-align: center;
     }
 
