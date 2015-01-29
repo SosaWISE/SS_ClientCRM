@@ -355,7 +355,7 @@ define("src/account/security/equipment.editor.vm", [
   }
 
   function load_existingEquipmentList(_this, setter, cb) {
-    readAccountSetupSrv(_this, "monitoringStationOS", null, "equipmentExistingList", {}, setter, cb);
+    readAccountSetupSrv(_this, "monitoringStationOS", "", "equipmentExistingList", {}, setter, cb);
   }
 
   function readAccountSetupSrv(_this, collectionName, id, link, query, setter, cb) {
