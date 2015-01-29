@@ -275,6 +275,9 @@ define("src/scheduler/ticket.editor.vm", [
           v: model.Version,
         },
       }, function(val) {
+        //
+        _this.layerResult = val;
+        //
         _this.data.setValue(val);
         _this.data.markClean(val, true);
         // ensure today is selected

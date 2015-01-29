@@ -1,0 +1,19 @@
+div(class="tech",data-bind="with:activeChild")
+  ul(class="actions")
+    li(class="tab under-toggle-btn")
+    <!-- ko if:!editing() -->
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:clickEdit") Edit
+    <!-- /ko -->
+    <!-- ko if:editing -->
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
+    <!-- /ko -->
+
+  div(class="content-wrap")
+    div(class="tech col")
+      div(data-bind="template:viewTmpl")
+
+  div(data-bind="spinner:busy,spinner-rgb:'black'")

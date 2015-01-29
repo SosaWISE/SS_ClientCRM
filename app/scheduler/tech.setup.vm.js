@@ -52,9 +52,6 @@ define("src/scheduler/tech.setup.vm", [
       "item",
       "allSkills",
     ]);
-    utils.setIfNull(_this, {
-
-    });
 
     _this.data = ukov.wrap(_this.item, schema);
     _this.editing = ko.observable(false);
@@ -174,7 +171,7 @@ define("src/scheduler/tech.setup.vm", [
     }
     //
     dataservice.ticketsrv.techs.save({
-      id: model.ID, // if not set then create, else update
+      id: model.ID || "", // if not set then create, else update
       data: model,
     }, function(data) {
       _this.data.setValue(data);

@@ -1,5 +1,34 @@
 @scheduler-bg: @site-maroon;
 
+
+.scheduler .scheduler-panel {
+  @tranSec: .25s;
+
+  .btn-dock {
+    background-color: @scheduler-bg;
+  }
+
+  .dock-left {
+    padding: 10px;
+
+    ul.nav {
+      margin: 10px;
+      a {
+        display: block;
+        padding: 5px 10px;
+        font-size: 1.2em;
+        color: white;
+        &.active {
+          .border-radius(5px);
+          font-weight: bold;
+          background-color: white;
+          color: @scheduler-bg;
+        }
+      }
+    }
+  }
+}
+
 .ticket-editor {
   position: relative;
   height: 100%;
@@ -86,6 +115,7 @@
     }
 
     .tech {
+      padding: 0px 10px;
       color: #ffffff;
       &.dock-content {
         overflow: hidden;

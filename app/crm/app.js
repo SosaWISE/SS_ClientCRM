@@ -127,7 +127,7 @@ define('src/crm/app', [
           {
             precedence: 1,
             name: 'scheduler',
-            path: ':tab/:id',
+            path: ':tab/:id/:p1',
           },
         ],
       }, {
