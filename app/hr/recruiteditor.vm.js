@@ -321,8 +321,8 @@ define("src/hr/recruiteditor.vm", [
       }, notify.iferror));
     });
 
-    _this.scheduleVm = ko.observable();
-    _this.skillsVm = ko.observable();
+    // _this.scheduleVm = ko.observable();
+    // _this.skillsVm = ko.observable();
 
     _this.editing = ko.observable(false);
     _this.viewTmpl = ko.computed(function() {
@@ -336,11 +336,11 @@ define("src/hr/recruiteditor.vm", [
     _this.isDirty = ko.computed({
       deferEvaluation: true,
       read: function() {
-        var scheduleVm = _this.scheduleVm();
-        var skillsVm = _this.skillsVm();
-        return _this.editing() && (!_this.data.isClean() ||
-          (scheduleVm && !scheduleVm.data.isClean()) ||
-          (skillsVm && !skillsVm.data.isClean())
+        // var scheduleVm = _this.scheduleVm();
+        // var skillsVm = _this.skillsVm();
+        return _this.editing() && (!_this.data.isClean() // ||
+          // (scheduleVm && !scheduleVm.data.isClean()) ||
+          // (skillsVm && !skillsVm.data.isClean())
         );
       },
     });
@@ -356,8 +356,8 @@ define("src/hr/recruiteditor.vm", [
           }
           _this.editing(false);
           _this.data.reset(true);
-          _this.scheduleVm.peek().data.reset(true);
-          _this.skillsVm.peek().data.reset(true);
+          // _this.scheduleVm.peek().data.reset(true);
+          // _this.skillsVm.peek().data.reset(true);
         });
       } else {
         _this.editing(false);
@@ -490,12 +490,12 @@ define("src/hr/recruiteditor.vm", [
   }
 
   function saveAllData(_this, cb) {
-    var scheduleVm = _this.scheduleVm.peek();
-    var skillsVm = _this.skillsVm.peek();
+    // var scheduleVm = _this.scheduleVm.peek();
+    // var skillsVm = _this.skillsVm.peek();
 
-    var isValid = _this.data.isValid() && scheduleVm.data.isValid() && skillsVm.data.isValid();
+    var isValid = _this.data.isValid(); // && scheduleVm.data.isValid() && skillsVm.data.isValid();
     if (!isValid) {
-      var errMsg = _this.data.errMsg() || scheduleVm.data.errMsg() || skillsVm.data.errMsg();
+      var errMsg = _this.data.errMsg(); // || scheduleVm.data.errMsg() || skillsVm.data.errMsg();
       notify.warn(errMsg, null, 7);
       cb();
       return;
@@ -503,8 +503,8 @@ define("src/hr/recruiteditor.vm", [
     var join = joiner();
 
     saveRecruit(_this, utils.safeCallback(join.add(), function() {
-      saveRecruitData(_this.id, "weekSchedule", scheduleVm, join.add());
-      saveRecruitData(_this.id, "skills", skillsVm, join.add());
+      // saveRecruitData(_this.id, "weekSchedule", scheduleVm, join.add());
+      // saveRecruitData(_this.id, "skills", skillsVm, join.add());
     }, utils.noop));
 
     join.when(function(err) {
@@ -549,15 +549,15 @@ define("src/hr/recruiteditor.vm", [
   //   }, setter, cb);
   // }
 
-  function saveRecruitData(id, link, vm, cb) {
-    dataservice.hr.recruits.save({
-      id: id,
-      link: link,
-      data: vm.getData(),
-    }, function(val) {
-      vm.setData(val);
-    }, cb);
-  }
+  // function saveRecruitData(id, link, vm, cb) {
+  //   dataservice.hr.recruits.save({
+  //     id: id,
+  //     link: link,
+  //     data: vm.getData(),
+  //   }, function(val) {
+  //     vm.setData(val);
+  //   }, cb);
+  // }
 
   return RecruitEditorViewModel;
 });
