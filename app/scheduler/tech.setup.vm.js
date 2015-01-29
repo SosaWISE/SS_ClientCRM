@@ -1,4 +1,4 @@
-define("src/scheduler/tech.vm", [
+define("src/scheduler/tech.setup.vm", [
   "src/scheduler/scheduler-cache",
   "src/scheduler/techschedule.vm",
   "src/scheduler/techskills.vm",
@@ -45,9 +45,9 @@ define("src/scheduler/tech.vm", [
   //
   //
   //
-  function TechViewModel(options) {
+  function TechSetupViewModel(options) {
     var _this = this;
-    TechViewModel.super_.call(_this, options);
+    TechSetupViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
       "item",
       "allSkills",
@@ -104,14 +104,14 @@ define("src/scheduler/tech.vm", [
     });
   }
 
-  utils.inherits(TechViewModel, ControllerViewModel);
-  TechViewModel.prototype.viewTmpl = "tmpl-scheduler-tech";
+  utils.inherits(TechSetupViewModel, ControllerViewModel);
+  TechSetupViewModel.prototype.viewTmpl = "tmpl-scheduler-tech_setup";
 
   //
   // members
   //
 
-  TechViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
+  TechSetupViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
     var _this = this;
 
     loadVms(_this, join);
@@ -119,7 +119,7 @@ define("src/scheduler/tech.vm", [
 
   function loadVms(_this, join) {
     var routeData = {
-      techid: _this.data.model.ID,
+      id: _this.data.model.ID,
     };
     var extraData = {};
     _this.vms.forEach(function(vm) {
@@ -204,5 +204,5 @@ define("src/scheduler/tech.vm", [
     });
   }
 
-  return TechViewModel;
+  return TechSetupViewModel;
 });

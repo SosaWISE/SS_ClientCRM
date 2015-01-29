@@ -73,7 +73,7 @@ define("src/scheduler/techskills.vm", [
   TechSkillsViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
     var _this = this;
 
-    _this.techid = routeData.techid;
+    _this.techid = routeData.id;
 
     if (!_this.techid) {
       return;

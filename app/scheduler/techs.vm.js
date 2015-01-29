@@ -1,6 +1,6 @@
 define("src/scheduler/techs.vm", [
   "src/scheduler/scheduler-cache",
-  "src/scheduler/tech.vm",
+  "src/scheduler/tech.setup.vm",
   "moment",
   "jquery",
   "ko",
@@ -14,7 +14,7 @@ define("src/scheduler/techs.vm", [
   "src/core/controller.vm",
 ], function(
   schedulercache,
-  TechViewModel,
+  TechSetupViewModel,
   moment,
   jquery,
   ko,
@@ -58,7 +58,7 @@ define("src/scheduler/techs.vm", [
       }
       var vm = selected.vm;
       if (!vm) {
-        selected.vm = vm = new TechViewModel({
+        selected.vm = vm = new TechSetupViewModel({
           item: utils.clone(selected.item),
           allSkills: schedulercache.getList("skills").peek(),
         });

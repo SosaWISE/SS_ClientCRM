@@ -121,7 +121,7 @@ define("src/scheduler/techschedule.vm", [
   TechScheduleViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
     var _this = this;
 
-    _this.techid = routeData.techid;
+    _this.techid = routeData.id;
 
     if (!_this.techid) {
       return;
