@@ -36,7 +36,7 @@ define("src/scheduler/techs.vm", [
     var _this = this;
     TechsViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
-      // "layersVm",
+      "layersVm",
     ]);
     utils.setIfNull(_this, {
 
@@ -86,7 +86,7 @@ define("src/scheduler/techs.vm", [
           return;
         }
         //@REVIEW: is this logic helpful or annoying???
-        var vm = selected.vm.peek();
+        var vm = null; //selected.vm.peek();
         var routeData = (vm || _this).getRouteData();
         routeData.id = selected.value;
         _this.goTo(routeData);
@@ -111,6 +111,7 @@ define("src/scheduler/techs.vm", [
             pcontroller: _this,
             id: id,
             item: utils.clone(wrappedItem.item),
+            layersVm: _this.layersVm,
           });
           wrappedItem.vm(vm);
         }

@@ -2,7 +2,8 @@ div(class="techs")
   div(class="dock l3-250 t3-40 t-show",data-bind="toggle:{'l-show':showNav}")
 
     div(class="dock-content",data-bind="with:activeChild")
-      div(data-bind="template:viewTmpl")
+      div(data-bind="with:activeChild")
+        div(data-bind="template:viewTmpl")
 
     div(class="dock-top")
       ul(class="edit-form",style="margin:3px")

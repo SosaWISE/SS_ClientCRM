@@ -1,4 +1,6 @@
 define("src/scheduler/ticket.editor.vm", [
+  "src/scheduler/ticket.close.vm",
+  "src/scheduler/ticket.model",
   "src/scheduler/scheduler-cache",
   "src/scheduler/scheduleticket.vm",
   "src/core/multiselect.vm",
@@ -12,6 +14,8 @@ define("src/scheduler/ticket.editor.vm", [
   "src/core/joiner",
   "src/core/base.vm",
 ], function(
+  TicketCloseViewModel,
+  ticket_model,
   schedulercache,
   ScheduleTicketViewModel,
   MultiSelectViewModel,
@@ -27,165 +31,21 @@ define("src/scheduler/ticket.editor.vm", [
 ) {
   "use strict";
 
-  var namePartOrder = ["NOTHING", "Salutation", "FirstName", "MiddleName", "LastName", "Suffix"];
-  ko.bindingHandlers.formatCustomerName = {
-    init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      // pass through to `text` binding
-      ko.bindingHandlers.text.init(element, valueAccessor, allBindings, viewModel, bindingContext);
-    },
-    update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      function newValueAccessor() {
-        var data = ko.unwrap(valueAccessor());
-        return strings.joinTrimmed(" ", namePartOrder.map(function(part) {
-          return ko.unwrap(data[part]);
-        }));
-      }
-
-      // call `text` binding
-      ko.bindingHandlers.text.update(element, newValueAccessor, allBindings, viewModel, bindingContext);
-    },
-  };
-
-  var nullStrConverter = ukov.converters.nullString();
-  var timeConverter = ukov.converters.time(
-    function getStartDate(model) {
-      return model._startDate;
-    },
-    function removeSeconds(dt) {
-      dt.setSeconds(0, 0);
-      return dt;
-    }
-  );
-  var timeGroup = {
-    keys: ["StartOn", "EndOn"],
-    validators: [
-      //
-      function(val) {
-        if (val.EndOn.valueOf() <= val.StartOn.valueOf()) {
-          return "End Time must be greater than Start Time";
-        }
-      }
-    ],
-  };
-  var schema = {
-    _model: true,
-    ID: {},
-    // CreatedOn: {},
-    // CreatedBy: {},
-    // ModifiedOn: {},
-    // ModifiedBy: {},
-    IsDeleted: {},
-    Version: {},
-    ServiceTypeId: {
-      validators: [
-        ukov.validators.isRequired("Please select a Service Type"),
-      ],
-    },
-    AccountId: {
-      converter: ukov.converters.number(0),
-    },
-    CurrentAppointmentId: {},
-    MSTicketNum: {},
-    Notes: {},
-    CompletedNote: {},
-    CompletedOn: {},
-
-    // // AccountId: {
-    // //   converter: ukov.converters.number(0),
-    // // },
-    // MonitoringStationNo: {},
-    // MoniConfirmation: {},
-    // TechConfirmation: {},
-    // TechnicianId: {},
-    // TripCharges: {},
-    // Appointment: {},
-    // AgentConfirmation: {},
-    // ExpirationDate: {},
-    // // Notes: {},
-
-    AppointmentId: {},
-    TechId: {
-      converter: ukov.converters.number(0),
-      validators: [
-        ukov.validators.isRequired("TechId is required"),
-      ],
-    },
-    StartOn: {
-      converter: timeConverter,
-      validators: [
-        ukov.validators.isRequired("Start Time is required"),
-      ],
-      validationGroup: timeGroup,
-    },
-    EndOn: {
-      converter: timeConverter,
-      validators: [
-        ukov.validators.isRequired("End Time is required"),
-      ],
-      validationGroup: timeGroup,
-    },
-    TravelTime: {},
-    TechEnRouteOn: {},
-
-    StatusCodeId: {},
-    CustomerMasterFileId: {},
-  };
   var apptFields = ["TechId", "StartOn", "EndOn"];
-
-  var schemaNote = {
-    converter: nullStrConverter,
-    // validators: [
-    //   ukov.validators.isRequired("Please enter a note"),
-    // ],
-  };
 
   function TicketEditorViewModel(options) {
     var _this = this;
     TicketEditorViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, [
+    utils.assertProps(_this, [
       "item",
       "serviceTypes",
       "skills",
     ]);
-    utils.setIfNull(_this, {
-      // title: "New Service Ticket",
-      // showUserAccount: false,
-      // showSave: true,
-      // showSaveAndSchedule: true,
-    });
-
     _this.mixinLoad();
     _this.initFocusFirst();
 
-    _this.note = ukov.wrap("", schemaNote);
-    _this.data = ukov.wrap(_this.item, schema);
-    _this.data.ColumnID = _this.data.TechId; // ColumnID is needed for CalItem
-
-    _this.data.serviceTypeCvm = new ComboViewModel({
-      selectedValue: _this.data.ServiceTypeId,
-      list: options.serviceTypes,
-      fields: {
-        value: "ID",
-        text: "Name",
-      },
-    });
-    var tempTechs = [];
-    (function() {
-      var techId = _this.data.TechId.peek();
-      if (techId) {
-        tempTechs.push({
-          ID: techId,
-          FullName: _this.item.TechFullName,
-        });
-      }
-    })();
-    _this.data.techCvm = new ComboViewModel({
-      selectedValue: _this.data.TechId,
-      list: tempTechs,
-      fields: {
-        value: "ID",
-        text: "FullName",
-      },
+    _this.data = ticket_model(_this.item, {
+      serviceTypes: options.serviceTypes,
     });
     _this.skillsMsvm = new MultiSelectViewModel({
       selectedValues: ukov.wrap([], {}),
@@ -210,7 +70,7 @@ define("src/scheduler/ticket.editor.vm", [
     });
     _this.scheduleVm.monthVm.selectedDate.subscribe(function(dt) {
       // set date
-      _this.item._startDate = dt;
+      _this.data.model._startDate = dt;
 
       var startProp = _this.data.StartOn;
       var endProp = _this.data.EndOn;
@@ -226,35 +86,21 @@ define("src/scheduler/ticket.editor.vm", [
     // events
     //
     _this.clickCancel = function() {
-      _this.layerResult = null;
+      // _this.layerResult = null;
       closeLayer(_this);
     };
 
-    // if (_this.showUserAccount &&
-    //   _this.item.CustomerMasterFileId && _this.item.AccountId) {
-    //   _this.cmdUserAccount = ko.command(function(cb) {
-    //     _this.goTo({
-    //       route: "accounts",
-    //       masterid: _this.item.CustomerMasterFileId,
-    //       id: _this.item.AccountId,
-    //       tab: "servicetickets",
-    //     });
-    //     cb();
-    //   }, function(busy) {
-    //     return !busy;
-    //   });
-    // }
+    if (_this.onOpenAccount && utils.isFunc(_this.onOpenAccount)) {
+      _this.cmdOpenAccount = ko.command(function(cb) {
+        _this.onOpenAccount(_this.data.CustomerMasterFileId.peek(), _this.data.AccountId.peek());
+        cb();
+      }, function(busy) {
+        return !busy && _this.data.CustomerMasterFileId() && _this.data.AccountId();
+      });
+    }
 
     _this.cmdSave = ko.command(function(cb) {
-      saveTicketData(_this, utils.safeCallback(cb, function(err, resp) {
-        if (err) {
-          return;
-        }
-        if (resp && resp.Value) {
-          _this.layerResult = resp.Value;
-          closeLayer(_this);
-        }
-      }, utils.noop));
+      saveTicketData(_this, cb);
     }, function(busy) {
       return !busy && !_this.busy() && canSchedule(_this);
     });
@@ -275,9 +121,7 @@ define("src/scheduler/ticket.editor.vm", [
           v: model.Version,
         },
       }, function(val) {
-        //
         _this.layerResult = val;
-        //
         _this.data.setValue(val);
         _this.data.markClean(val, true);
         // ensure today is selected
@@ -286,12 +130,27 @@ define("src/scheduler/ticket.editor.vm", [
     }, function(busy) {
       return !busy && !_this.busy() && canSchedule(_this);
     });
+    _this.cmdCloseTicket = ko.command(function(cb) {
+      _this.layersVm.show(new TicketCloseViewModel({
+        ticketid: _this.data.ID.peek(),
+        version: _this.data.Version.peek(),
+      }), function(val) {
+        if (val) {
+          _this.layerResult = val;
+          _this.data.setValue(val);
+          _this.data.markClean(val, true);
+        }
+        cb();
+      });
+    }, function(busy) {
+      return !busy && !_this.busy() && canSchedule(_this);
+    });
 
     _this.busy = ko.computed(function() {
-      return _this.loading() ||
+      return (_this.loading() ||
         _this.cmdSave.busy() ||
-        _this.cmdScheduleAppt.busy() ||
-        _this.cmdCancelAppt.busy();
+        _this.cmdCancelAppt.busy()
+      );
     });
 
     _this.width = ko.observable();
@@ -320,15 +179,16 @@ define("src/scheduler/ticket.editor.vm", [
     _this.showAppt(false);
   }
   utils.inherits(TicketEditorViewModel, BaseViewModel);
-  TicketEditorViewModel.prototype.viewTmpl = "tmpl-scheduler-ticket-editor";
+  TicketEditorViewModel.prototype.viewTmpl = "tmpl-scheduler-ticket_editor";
   TicketEditorViewModel.prototype.nowhite = true;
+  TicketEditorViewModel.prototype.cmdOpenAccount = null;
 
   TicketEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
 
     schedulercache.ensure("skills", join.add());
-    if (_this.item.ID) {
-      loadTicketSkills(_this.item.ID, function(val) {
+    if (_this.data.ID.peek()) {
+      loadTicketSkills(_this.data.ID.peek(), function(val) {
         _this.skillsMsvm.selectedValues(val);
         _this.skillsMsvm.selectedValues.markClean(val, true);
       }, join.add());
@@ -355,6 +215,8 @@ define("src/scheduler/ticket.editor.vm", [
         msg = "Please wait for save to finish.";
       } else if (_this.cmdCancelAppt.busy()) {
         msg = "Please wait for appointment cancellation to finish.";
+        // } else if (_this.cmdCloseTicket.busy()) {
+        //   msg = "Please wait for ticket to be closed.";
       }
     }
     return msg;
@@ -400,29 +262,19 @@ define("src/scheduler/ticket.editor.vm", [
     var join = joiner();
 
     saveTicket(_this, utils.safeCallback(join.add(), function() {
-      saveTicketSkills(_this, _this.data.model.ID, join.add());
+      saveTicketSkills(_this, _this.data.ID.peek(), join.add());
     }, utils.noop));
 
     join.when(function(err, resps) {
-      cb(err, resps[0]);
+      resps = resps;
+      if (!err) {
+        closeLayer(_this);
+      }
+      cb(err);
     });
   }
 
   function saveTicket(_this, cb) {
-    if (_this.showNotesInput) {
-      var note = _this.note.getValue();
-      if (note) {
-        var currNotes = _this.data.Notes.peek();
-        if (currNotes) {
-          currNotes += "\n" + note;
-        } else {
-          currNotes = note;
-        }
-        _this.data.Notes(currNotes);
-        _this.note("");
-      }
-    }
-
     var model = _this.data.getValue();
     if (_this.data.isClean() && model.ID) {
       // nothing to save
@@ -434,10 +286,12 @@ define("src/scheduler/ticket.editor.vm", [
 
     model.TravelTime = 0; //@TODO: implement TravelTime
 
+    delete model.Notes; // don't send Notes since AppendNotes is the value that will be used
     dataservice.ticketsrv.serviceTickets.save({
       id: model.ID, // if no value create, else update
       data: model,
     }, function(val) {
+      _this.layerResult = val;
       _this.data.setValue(val);
       _this.data.markClean(val, true);
     }, cb);
@@ -467,29 +321,6 @@ define("src/scheduler/ticket.editor.vm", [
       link: "skills",
     }, setter, cb);
   }
-
-  // function setSkills(_this, skills) {
-  //   // create lookup
-  //   var skillsMap = {};
-  //   skills.forEach(function(item) {
-  //     skillsMap[item.SkillId] = item;
-  //   });
-  //   // set values
-  //   _this.data.skills().forEach(function(item) {
-  //     var skillId = item.model.SkillId;
-  //     var skill = skillsMap[skillId];
-  //     if (skill) {
-  //       skill.checked = true;
-  //     } else {
-  //       skill = {
-  //         checked: false,
-  //         SkillId: skillId,
-  //         Other: null,
-  //       };
-  //     }
-  //     item.setValue(skill);
-  //   });
-  // }
 
   return TicketEditorViewModel;
 });
