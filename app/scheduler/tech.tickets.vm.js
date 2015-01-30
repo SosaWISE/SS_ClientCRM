@@ -1,7 +1,7 @@
-define("src/scheduler/service.tickets.vm", [
+define("src/scheduler/tech.tickets.vm", [
   "src/scheduler/scheduler-helper",
   "src/scheduler/scheduler-cache",
-  "src/scheduler/service.tickets.gvm",
+  "src/scheduler/tech.tickets.gvm",
   "src/scheduler/ticket.editor.vm",
   "src/dataservice",
   "ko",
@@ -10,7 +10,7 @@ define("src/scheduler/service.tickets.vm", [
 ], function(
   schedulerhelper,
   schedulercache,
-  ServiceTicketsGridViewModel,
+  TechTicketsGridViewModel,
   TicketEditorViewModel,
   dataservice,
   ko,
@@ -19,18 +19,15 @@ define("src/scheduler/service.tickets.vm", [
 ) {
   "use strict";
 
-  function ServiceTicketsViewModel(options) {
+  function TechTicketsViewModel(options) {
     var _this = this;
-    ServiceTicketsViewModel.super_.call(_this, options);
+    TechTicketsViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
+      "techSetupVm",
       "layersVm",
     ]);
 
-    if (_this.openAccount) {
-      _this.openAccount = _this.openAccount.bind(_this);
-    }
-
-    _this.gvm = new ServiceTicketsGridViewModel({
+    _this.gvm = new TechTicketsGridViewModel({
       edit: function(ticket, cb) {
         _this.layersVm.show(new TicketEditorViewModel({
           onOpenAccount: _this.openAccount, //
@@ -51,7 +48,7 @@ define("src/scheduler/service.tickets.vm", [
     //
     _this.cmdRefreshGrid = ko.command(function(cb) {
       _this.gvm.setItems([]);
-      _this.loadServiceTickets(function(items) {
+      load_serviceTickets(_this.techSetupVm.data.ID.peek(), function(items) {
         items.forEach(function(item) {
           schedulerhelper.ensureTicketFields(item);
         });
@@ -60,11 +57,13 @@ define("src/scheduler/service.tickets.vm", [
       }, cb);
     });
   }
-  utils.inherits(ServiceTicketsViewModel, ControllerViewModel);
-  ServiceTicketsViewModel.prototype.viewTmpl = "tmpl-scheduler-service_tickets";
+  utils.inherits(TechTicketsViewModel, ControllerViewModel);
+  TechTicketsViewModel.prototype.viewTmpl = "tmpl-scheduler-tech_tickets";
 
-  ServiceTicketsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+  TechTicketsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
+
+    // _this.recruitid = routeData.id;
 
     var typesJoin = join.create();
     schedulercache.ensure("serviceTypes", typesJoin.add());
@@ -81,23 +80,13 @@ define("src/scheduler/service.tickets.vm", [
     });
   };
 
-  ServiceTicketsViewModel.prototype.openAccount = function(masterid, accountid) { // override me
-    var _this = this;
-    _this.goTo({
-      route: "accounts",
-      masterid: masterid,
-      id: accountid,
-      tab: "servicetickets", // ???
-    });
-  };
-
-  ServiceTicketsViewModel.prototype.loadServiceTickets = function(setter, cb) { // override me
-    load_serviceTickets(setter, cb);
-  };
-
-  function load_serviceTickets(setter, cb) {
-    dataservice.ticketsrv.serviceTickets.read({}, setter, cb);
+  function load_serviceTickets(techid, setter, cb) {
+    dataservice.ticketsrv.serviceTickets.read({
+      query: {
+        TechId: techid || 0,
+      }
+    }, setter, cb);
   }
 
-  return ServiceTicketsViewModel;
+  return TechTicketsViewModel;
 });

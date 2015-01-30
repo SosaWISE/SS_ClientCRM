@@ -195,7 +195,7 @@ define("src/scheduler/scheduleticket.vm", [
             vm = CalItem.create(_this.board, _this.ticketVm.data);
             selectedVm = vm;
           } else {
-            schedulerhelper.ensureTypeNames(item);
+            schedulerhelper.ensureTicketFields(item);
             item.ColumnID = item.TechId;
             // item.ColumnID = tech.ID;
             vm = CalItem.create(_this.board, item);

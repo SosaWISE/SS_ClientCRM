@@ -1,16 +1,33 @@
 define("src/scheduler/calitem", [
+  "src/scheduler/scheduler-helper",
   "src/ukov",
   "ko",
   "src/core/strings",
   "src/core/utils",
   "src/core/base.vm",
 ], function(
+  schedulerhelper,
   ukov,
   ko,
   strings,
   utils
 ) {
   "use strict";
+
+  ko.bindingHandlers.formatCustomerName = {
+    init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      // pass through to `text` binding
+      ko.bindingHandlers.text.init(element, valueAccessor, allBindings, viewModel, bindingContext);
+    },
+    update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      function newValueAccessor() {
+        return schedulerhelper.formatCustomerName(valueAccessor());
+      }
+
+      // call `text` binding
+      ko.bindingHandlers.text.update(element, newValueAccessor, allBindings, viewModel, bindingContext);
+    },
+  };
 
   function CalItem(options) {
     var _this = this;

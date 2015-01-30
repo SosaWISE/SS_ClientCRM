@@ -2,21 +2,25 @@ div(class="ticket-editor")
   div(data-bind="spinner:busy,spinner-rgb:'white'")
 
   div(class="ticket-info")
+    ul(class="actions",style="text-align:left;")
+      <!-- ko if:!!cmdOpenAccount -->
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdOpenAccount") Open Customer Account
+      <!-- /ko -->
+      <!-- ko if:data.ID -->
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdCloseTicket") Close Ticket
+      <!-- /ko -->
+
     div(class="cust-info",data-bind="with:data.model")
       div(class="id")
         |Ticket #
         span(data-bind="text:$parent.data.ID")
-        |, CMFID:&nbsp;
+        //- |, CMFID:&nbsp;
+        |, CUST#:&nbsp;
         span(data-bind="text:CustomerMasterFileId")
-      div(class="name",data-bind="formatCustomerName:$data")
-      div(class="address",data-bind="text:StreetAddress")
-      div(class="address",data-bind="text:StreetAddress2")
-      div(class="address")
-        span(data-bind="text:City")
-        |,&nbsp;
-        span(data-bind="text:StateId")
-        |&nbsp;
-        span(data-bind="text:PostalCode")
+      div(class="name",data-bind="text:_FullName")
+      div(class="address",data-bind="text:_FullAddress")
 
     ul(class="edit-form")
       li
@@ -27,13 +31,14 @@ div(class="ticket-editor")
         div(class="max-w160",data-bind="msvm:skillsMsvm")
       li
         span(class="label") General Notes
-        span(class="notes",data-bind="text:data.Notes")
+        span(class="ticket-notes",data-bind="text:data.Notes")
         <!-- ko if:showNotesInput -->
-        textarea(rows="5" data-bind="ukov:note,value:note,valueUpdate:'keyup'")
+        textarea(rows="5",
+          data-bind="ukov:data.AppendNotes,value:data.AppendNotes,valueUpdate:'afterkeydown'")
         <!-- /ko -->
       li
         span(class="label") Monitoring Station Ticket#
-        input(type="text" data-bind="ukov:data.MSTicketNum,value:data.MSTicketNum,valueUpdate:'keyup'")
+        input(type="text",data-bind="ukov:data.MSTicketNum,value:data.MSTicketNum,valueUpdate:'keyup'")
 
     <!-- ko if:!showAppt()&&!data.AppointmentId() -->
     ul(class="actions")
