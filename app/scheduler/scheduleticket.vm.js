@@ -243,7 +243,7 @@ define("src/scheduler/scheduleticket.vm", [
         ];
       }
 
-      weekGones[wday.WeekDay] = gones;
+      weekGones[i] = gones;
     }
     return weekGones;
   }
