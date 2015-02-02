@@ -1,7 +1,6 @@
 define("src/scheduler/techs.vm", [
   "src/scheduler/scheduler-cache",
   "src/scheduler/tech.vm",
-  "moment",
   "jquery",
   "ko",
   "src/dataservice",
@@ -15,7 +14,6 @@ define("src/scheduler/techs.vm", [
 ], function(
   schedulercache,
   TechViewModel,
-  moment,
   jquery,
   ko,
   dataservice,
