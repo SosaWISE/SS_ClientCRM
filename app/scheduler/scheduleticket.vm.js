@@ -216,9 +216,14 @@ define("src/scheduler/scheduleticket.vm", [
 
   function convertWeekDaysToWeekGones(weekdays) {
     var weekGones = new Array(7);
+    var map = {};
     weekdays.forEach(function(wday) {
+      map[wday.WeekDay] = wday;
+    });
+    for (var i = 0; i < 7; i++) {
+      var wday = map[i];
       var gones;
-      if (wday.StartTime) {
+      if (wday && wday.StartTime) {
         gones = [ //
           {
             StartOn: null,
@@ -239,7 +244,7 @@ define("src/scheduler/scheduleticket.vm", [
       }
 
       weekGones[wday.WeekDay] = gones;
-    });
+    }
     return weekGones;
   }
 
