@@ -153,8 +153,9 @@ define("src/scheduler/scheduleticket.vm", [
       });
       if (working) {
         // get appointments
-        loadTechAppts(tech.ID, selectedDate, function(appts) {
-          techDayApptsMap[tech.ID] = appts;
+        loadTechAppts(tech.ID, selectedDate, function(items) {
+          items.forEach(schedulerhelper.afterTicketLoaded);
+          techDayApptsMap[tech.ID] = items;
         }, join.add());
       }
       return working;
@@ -195,7 +196,6 @@ define("src/scheduler/scheduleticket.vm", [
             vm = CalItem.create(_this.board, _this.ticketVm.data);
             selectedVm = vm;
           } else {
-            schedulerhelper.ensureTicketFields(item);
             item.ColumnID = item.TechId;
             // item.ColumnID = tech.ID;
             vm = CalItem.create(_this.board, item);
@@ -244,14 +244,14 @@ define("src/scheduler/scheduleticket.vm", [
   }
 
   function loadTechAppts(techID, dt, setter, cb) {
-    var start = moment([dt.getFullYear(), dt.getMonth(), dt.getDate()]);
+    var start = moment.utc([dt.getFullYear(), dt.getMonth(), dt.getDate()]);
     var end = start.clone().add(1, "d").subtract(3, "ms");
     dataservice.ticketsrv.techs.read({
       id: techID,
       link: "Appointments",
       query: {
-        start: start.utc().format(),
-        end: end.utc().format(),
+        start: start.format(),
+        end: end.format(),
       },
     }, setter, cb);
   }
@@ -261,6 +261,7 @@ define("src/scheduler/scheduleticket.vm", [
       id: tech.ID,
       link: "weekdays",
     }, function(weekdays) {
+      weekdays.forEach(schedulerhelper.afterTechWeekDayLoaded);
       // convert weekdays to gones
       tech.weekGones = convertWeekDaysToWeekGones(weekdays);
     }, cb);

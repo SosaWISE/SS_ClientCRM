@@ -59,7 +59,7 @@ define("src/scheduler/account.service.tickets.vm", [
     _this.cmdAddServiceTicket = ko.command(function(cb) {
       _this.layersVm.show(new TicketEditorViewModel({
         layersVm: _this.layersVm,
-        item: schedulerhelper.ensureTicketFields({
+        item: schedulerhelper.afterTicketLoaded({
           ID: 0,
           //
           AccountId: _this.accountId,
@@ -79,7 +79,6 @@ define("src/scheduler/account.service.tickets.vm", [
         skills: schedulercache.getList("skills").peek(),
       }), function(model) {
         if (model) {
-          schedulerhelper.ensureTicketFields(model);
           _this.gvm.addItem(model);
         }
         cb();

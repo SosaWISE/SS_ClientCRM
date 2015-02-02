@@ -1,4 +1,5 @@
 define("src/scheduler/ticket.editor.vm", [
+  "src/scheduler/scheduler-helper",
   "src/scheduler/ticket.close.vm",
   "src/scheduler/ticket.model",
   "src/scheduler/scheduler-cache",
@@ -14,6 +15,7 @@ define("src/scheduler/ticket.editor.vm", [
   "src/core/joiner",
   "src/core/base.vm",
 ], function(
+  schedulerhelper,
   TicketCloseViewModel,
   ticket_model,
   schedulercache,
@@ -121,9 +123,7 @@ define("src/scheduler/ticket.editor.vm", [
           v: model.Version,
         },
       }, function(val) {
-        _this.layerResult = val;
-        _this.data.setValue(val);
-        _this.data.markClean(val, true);
+        handleTicketResult(_this, val);
         // ensure today is selected
         _this.scheduleVm.monthVm.selectedDate(new Date());
       }, cb);
@@ -136,9 +136,7 @@ define("src/scheduler/ticket.editor.vm", [
         version: _this.data.Version.peek(),
       }), function(val) {
         if (val) {
-          _this.layerResult = val;
-          _this.data.setValue(val);
-          _this.data.markClean(val, true);
+          handleTicketResult(_this, val);
         }
         cb();
       });
@@ -222,6 +220,13 @@ define("src/scheduler/ticket.editor.vm", [
     return msg;
   };
 
+  function handleTicketResult(_this, val) {
+    schedulerhelper.afterTicketLoaded(val);
+    _this.layerResult = val;
+    _this.data.setValue(val);
+    _this.data.markClean(val, true);
+  }
+
   function touchPropTime(timeProp, time) {
     if (!(time instanceof Error)) {
       timeProp.setValue(strings.format("{0:t}", time));
@@ -287,13 +292,12 @@ define("src/scheduler/ticket.editor.vm", [
     model.TravelTime = 0; //@TODO: implement TravelTime
 
     delete model.Notes; // don't send Notes since AppendNotes is the value that will be used
+    schedulerhelper.beforeTicketSaved(model);
     dataservice.ticketsrv.serviceTickets.save({
       id: model.ID, // if no value create, else update
       data: model,
     }, function(val) {
-      _this.layerResult = val;
-      _this.data.setValue(val);
-      _this.data.markClean(val, true);
+      handleTicketResult(_this, val);
     }, cb);
   }
 

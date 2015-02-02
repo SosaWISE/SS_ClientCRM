@@ -38,9 +38,6 @@ define("src/scheduler/service.tickets.vm", [
           serviceTypes: schedulercache.getList("serviceTypes").peek(),
           skills: schedulercache.getList("skills").peek(),
         }), function(model, deleted) {
-          if (model) {
-            schedulerhelper.ensureTicketFields(model);
-          }
           cb(model, deleted);
         });
       },
@@ -52,10 +49,7 @@ define("src/scheduler/service.tickets.vm", [
     _this.cmdRefreshGrid = ko.command(function(cb) {
       _this.gvm.setItems([]);
       _this.loadServiceTickets(function(items) {
-        items.forEach(function(item) {
-          schedulerhelper.ensureTicketFields(item);
-        });
-        //
+        items.forEach(schedulerhelper.afterTicketLoaded);
         _this.gvm.setItems(items);
       }, cb);
     });

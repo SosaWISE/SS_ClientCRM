@@ -35,9 +35,6 @@ define("src/scheduler/tech.tickets.vm", [
           serviceTypes: schedulercache.getList("serviceTypes").peek(),
           skills: schedulercache.getList("skills").peek(),
         }), function(model, deleted) {
-          if (model) {
-            schedulerhelper.ensureTicketFields(model);
-          }
           cb(model, deleted);
         });
       },
@@ -49,10 +46,7 @@ define("src/scheduler/tech.tickets.vm", [
     _this.cmdRefreshGrid = ko.command(function(cb) {
       _this.gvm.setItems([]);
       load_serviceTickets(_this.techSetupVm.data.ID.peek(), function(items) {
-        items.forEach(function(item) {
-          schedulerhelper.ensureTicketFields(item);
-        });
-        //
+        items.forEach(schedulerhelper.afterTicketLoaded);
         _this.gvm.setItems(items);
       }, cb);
     });

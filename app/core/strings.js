@@ -155,13 +155,13 @@ define("src/core/strings", [
     dt: function(val) {
       return strings.formatters.datetime(val);
     },
-    dt_utc: function(val) {
+    utc_dt: function(val) {
       return strings.formatters.datetime(val, true);
     },
     t: function(val) {
       return strings.formatters.time(val);
     },
-    t_utc: function(val) {
+    utc_t: function(val) {
       return strings.formatters.time(val, true);
     },
     space: function(val) {

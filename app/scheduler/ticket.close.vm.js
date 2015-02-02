@@ -1,4 +1,5 @@
 define("src/scheduler/ticket.close.vm", [
+  "src/scheduler/scheduler-helper",
   "src/dataservice",
   "src/ukov",
   "ko",
@@ -6,6 +7,7 @@ define("src/scheduler/ticket.close.vm", [
   "src/core/utils",
   "src/core/base.vm",
 ], function(
+  schedulerhelper,
   dataservice,
   ukov,
   ko,
@@ -67,6 +69,7 @@ define("src/scheduler/ticket.close.vm", [
         link: "Close",
         data: model,
       }, function(val) {
+        schedulerhelper.afterTicketLoaded(val);
         _this.layerResult = val;
         closeLayer(_this);
       }, cb);
