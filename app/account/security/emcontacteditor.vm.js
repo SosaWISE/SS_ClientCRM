@@ -254,7 +254,7 @@ define('src/account/security/emcontacteditor.vm', [
       }
       var model = _this.data.getValue();
       dataservice.msaccountsetupsrv.emergencyContacts.save({
-        id: model.EmergencyContactID,
+        id: model.EmergencyContactID || "",
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
         notify.info('Saved ' + formatFullname(model), '', 3);

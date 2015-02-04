@@ -42,7 +42,7 @@ define('src/account/security/emcontacts.vm', [
       },
       save: function(model) {
         dataservice.msaccountsetupsrv.emergencyContacts.save({
-          id: model.EmergencyContactID,
+          id: model.EmergencyContactID || "",
           data: model,
         }, null, utils.safeCallback(null, function(err, resp) {
           notify.info('Saved ' + formatFullname(model), '', 3);

@@ -294,7 +294,7 @@ define("src/scheduler/ticket.editor.vm", [
     delete model.Notes; // don't send Notes since AppendNotes is the value that will be used
     schedulerhelper.beforeTicketSaved(model);
     dataservice.ticketsrv.serviceTickets.save({
-      id: model.ID, // if no value create, else update
+      id: model.ID || "", // if no value create, else update
       data: model,
     }, function(val) {
       handleTicketResult(_this, val);
