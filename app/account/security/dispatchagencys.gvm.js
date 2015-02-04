@@ -61,13 +61,18 @@ define("src/account/security/dispatchagencys.gvm", [
           name: "Dispatch Phone",
           field: "Phone1",
         }, {
+          id: "StationVerfied",
+          name: "Station Verfied",
+          field: "IsVerified",
+        }, {
           id: "PermitNumber",
           name: "Permit Number",
           field: "PermitNumber",
         }, {
-          id: "StationVerfied",
-          name: "Station Verfied",
-          field: "IsVerified",
+          id: "PermitExpireDate",
+          name: "Expiration Date",
+          field: "PermitExpireDate",
+          formatter: SlickGridViewModel.formatters.datetime,
         },
       ],
     });
