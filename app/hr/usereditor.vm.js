@@ -241,6 +241,7 @@ define('src/hr/usereditor.vm', [
     _this.focusFirst = ko.observable(false);
     _this.data = ukov.wrap({
       UserID: _this.userid || 0,
+      IsActive: true,
     }, schema);
     _this.data.ShirtSizeCvm = new ComboViewModel({
       selectedValue: _this.data.ShirtSize,

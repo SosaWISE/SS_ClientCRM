@@ -188,9 +188,9 @@ define("src/hr/recruiteditor.vm", [
     //
     DealerId: { //               [int]                      REQUIRED       ((5000))
     },
-    // IsActive: { //               [bit]                      REQUIRED       ((1))
-    //   converter: boolConverter,
-    // },
+    IsActive: { //               [bit]                      REQUIRED       ((1))
+      converter: boolConverter,
+    },
     IsDeleted: { //              [bit]                      REQUIRED       ((0))
       converter: boolConverter,
     },
@@ -223,6 +223,7 @@ define("src/hr/recruiteditor.vm", [
       I9StatusID: 1,
       W9StatusID: 1,
       W4StatusID: 1,
+      IsActive: true,
     }, schema);
     _this.data.UserTypeCvm = new ComboViewModel({
       selectedValue: _this.data.UserTypeId,
