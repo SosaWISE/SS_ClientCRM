@@ -101,6 +101,7 @@ module.exports = function(grunt) {
           'app/slick/tparty/slick.rowselectionmodel.js',
           'app/slick/tparty/slick.editors.js',
           'app/slick/tparty/slick.dataview.js',
+          "src/slick/tparty/slick.groupitemmetadataprovider.js",
           'app/slick/tparty/slick-production.js',
           // actual package
           'app/slick/*.js',

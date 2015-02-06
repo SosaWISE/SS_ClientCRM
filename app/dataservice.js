@@ -38,6 +38,14 @@ define("src/dataservice", [
       "customers",
     ]),
 
+    adminsrv: createService("adminsrv", [
+      "actions",
+      "applications",
+      "groupActions",
+      "groupApplications",
+      "users",
+    ]),
+
     humanresourcesrv: createService("humanresourcesrv", [
       "RuTeamLocationList",
       "RuTechnician",

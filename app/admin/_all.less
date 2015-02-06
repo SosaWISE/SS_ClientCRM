@@ -1,0 +1,88 @@
+@admin-bg: @site-blue;
+body.admin {
+  .mixin-body-color(@admin-bg);
+  .mixin-content-active(@admin-bg);
+}
+
+#admin-panel {
+  @tranSec: .25s;
+
+  > .dock {
+    > .dock-left {
+      padding: 10px;
+      .btn-dock {
+        background-color: @admin-bg;
+      }
+
+      ul.nav {
+        margin: 10px;
+        a {
+          display: block;
+          padding: 5px 10px;
+          font-size: 1.2em;
+          color: white;
+          &.active {
+            .border-radius(5px);
+            font-weight: bold;
+            background-color: white;
+            color: @admin-bg;
+          }
+        }
+      }
+    }
+  }
+
+  .btn {
+    .make-color-btn(@admin-bg);
+  }
+
+  .authcontrol {
+    background-color: #fff;
+    height: 100%;
+
+    ul.actions {
+      margin-left: 20px;
+      > li {
+        padding: 5px;
+      }
+    }
+
+    .grid-wrap {
+      // position: relative;
+      position: absolute;
+      top:0;right:0;bottom:0;left:0;
+    }
+
+    .slickgrid {
+      top: 20px;
+      left: 20px;
+
+      border: none;
+      font-size: 14px;
+
+
+      .slick-header-columns {
+        border: none;
+      }
+      .slick-header-column {
+        border: none;
+        height: 0px;
+        padding: 0px;
+        margin: 0px;
+      }
+      .slick-cell {
+        border: none;
+      }
+      .slick-row.odd {
+        background: transparent;
+      }
+
+      .slick-group-toggle.expanded {
+        // background: url(stuff/img/collapse.gif) no-repeat center center;
+      }
+      .slick-group-toggle.collapsed {
+        // background: url(stuff/img/expand.gif) no-repeat center center;
+      }
+    }
+  }
+}

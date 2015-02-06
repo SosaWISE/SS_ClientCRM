@@ -1,0 +1,21 @@
+div(class="group-editor")
+  div(data-bind="spinner:cmdSave.busy,spinner-rgb:'white'")
+
+  h2
+    |Group Rights:&nbsp;
+    span(data-bind="text:groupName")
+
+  ul(class="edit-form")
+    li
+      span(class="label") Actions
+      div(data-bind="template:{name:'tmpl-admin-group',data:actionsMsvm}")
+    li
+      span(class="label") Applications
+      div(data-bind="template:{name:'tmpl-admin-group',data:appsMsvm}")
+
+  ul(class="actions")
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
+

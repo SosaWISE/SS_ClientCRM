@@ -1,0 +1,29 @@
+div(class="authcontrol")
+  //- ,data-bind="toggle:{'may-reload':mayReload}")
+
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+        ul(class="actions")
+          li
+            input(type="text",placeholder="Username",
+              data-bind="ukov:data.Username,value:data.Username,valueUpdate:'keyup',select:focusFirst,enter:cmdUserGroups")
+          li
+            a(class="btn small",tabindex="0",data-bind="cmd:cmdUserGroups") Find User Groups
+          li
+            div(class="checkbox",data-bind="cmd:function(){filter(!filter());}")
+              a(class="btn small",tabindex="0",data-bind="active:filter")
+              | Filter By User Groups
+
+        ul(class="actions",data-bind="foreach:userGroups")
+          li
+            a(class="btn small",tabindex="0",data-bind="cmd:$parent.clickEditGroup") Edit
+            |&nbsp;
+            span(data-bind="text:$data")
+    tr
+      td(class="fh-body")
+        div(class="fh-contents")
+          //- div(class="grid-wrap")
+          div(class="slickgrid",data-bind="slickgrid:gvm")
+
+//- div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

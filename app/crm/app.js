@@ -160,6 +160,22 @@ define("src/crm/app", [
             path: ":collection/:id/:p1",
           },
         ],
+      }, {
+        appid: "hr_man",
+        // appid: "admin",
+        path: "src/admin/admin.panel.vm",
+        options: {
+          id: "admin",
+          title: "Admin",
+          icoClass: "ico fa fa-3x fa-user",
+        },
+        routes: [ //
+          {
+            precedence: 1,
+            name: "admin",
+            path: ":collection/:id/:p1",
+          },
+        ],
       },
     ],
   });
