@@ -52,8 +52,8 @@ define("src/crm/app", [
         appid: "sse_cms_cors",
         path: "src/account/accounts.panel.vm",
         options: {
-          id: "accounts",
-          title: "Accounts",
+          id: "crm",
+          title: "CRM",
           icoClass: "ico fa fa-3x fa-shield",
         },
         routes: [ //
