@@ -1,4 +1,4 @@
-define('src/crm/errorcodes', [], function() {
+define('src/nimis/errorcodes', [], function() {
   "use strict";
 
   return {

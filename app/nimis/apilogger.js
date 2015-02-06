@@ -1,5 +1,5 @@
-define('src/crm/apilogger', [
-  'src/crm/config',
+define('src/nimis/apilogger', [
+  'src/nimis/config',
   'src/dataservice',
   'src/core/notify',
 ], function(

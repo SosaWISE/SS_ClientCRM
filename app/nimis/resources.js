@@ -1,4 +1,4 @@
-define('src/crm/resources', [], function() {
+define('src/nimis/resources', [], function() {
   "use strict";
 
   return {

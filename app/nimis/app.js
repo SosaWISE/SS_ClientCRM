@@ -1,4 +1,4 @@
-define("src/crm/app", [
+define("src/nimis/app", [
   "ko",
   "src/dataservice",
   "src/login/login.panel.vm",
