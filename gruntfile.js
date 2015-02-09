@@ -7,6 +7,7 @@ module.exports = function(grunt) {
   jsfiles = [
     '**/*.js',
     // exclude files
+    "!www/**", // exclude output directory
     '!app/flowMap/**/*.js',
     '!node_modules/**/*.js',
     '!testing/**/*.js',
@@ -26,7 +27,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    www: '../crm-www',
+    www: 'www',
 
     clean: {
       app: {
