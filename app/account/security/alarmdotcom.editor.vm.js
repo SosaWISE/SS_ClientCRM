@@ -1,16 +1,20 @@
 define('src/account/security/alarmdotcom.editor.vm', [
+  "src/account/security/clist.salesinfo.vm",
   'src/core/combo.vm',
   'src/ukov',
   'ko',
   'src/dataservice',
+  "src/core/strings",
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
 ], function(
+  CListSalesInfoViewModel,
   ComboViewModel,
   ukov,
   ko,
   dataservice,
+  strings,
   notify,
   utils,
   BaseViewModel
@@ -22,8 +26,7 @@ define('src/account/security/alarmdotcom.editor.vm', [
   schema = {
     _model: true,
     SerialNumber: {},
-    AlarmDotComCustomerNumber: {},
-    // AlarmPackageId: {},
+    // CellPackageItemId: {},
     EnableTwoWay: {},
   };
 
@@ -39,15 +42,13 @@ define('src/account/security/alarmdotcom.editor.vm', [
 
     _this.focusFirst = ko.observable(false);
     _this.data = ukov.wrap(_this.item || {
-      SerialNumber: '',
-      AlarmDotComCustomerNumber: '',
-      // AlarmPackageId: null,
       EnableTwoWay: false,
     }, schema);
-    // _this.data.AlarmPackageCvm = new ComboViewModel({
-    //   selectedValue: _this.data.AlarmPackageId,
-    //   list: _this.alarmComPackages,
-    //   fields: _this.alarmComPackageFields,
+    // _this.data.CellPackageItemCvm = new ComboViewModel({
+    //   selectedValue: _this.data.CellPackageItemId,
+    //   list: CListSalesInfoViewModel.prototype.cellPackageItemOptions.filter(function(item) {
+    //     return strings.startsWith(item.value, "CELL_SRV_AC");
+    //   }),
     // });
 
     //
