@@ -160,7 +160,7 @@ define('src/hr/teamsearch.vm', [
       // clear grid
       _this.gvm.list([]);
       // do search
-      dataservice.humanresourcesrv.teams.save({
+      dataservice.hr.teams.save({
         data: model,
         link: 'search',
       }, null, utils.safeCallback(cb, function(err, resp) {

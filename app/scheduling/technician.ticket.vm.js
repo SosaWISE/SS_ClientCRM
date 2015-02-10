@@ -61,14 +61,14 @@ define('src/scheduling/technician.ticket.vm', [
     //Initialize empty grid
     this.technicianTicketGvm.list([]);
     //load all tickets for this technician id
-    load_tickets(app.user.peek().GPEmployeeID, 'TID', _this.technicianTicketGvm); //, join.add());
+    load_tickets(_this.technicianTicketGvm); //, join.add());
   };
 
-  function load_tickets(gpEmployeeID, link, cvm, cb) {
+  function load_tickets(cvm, cb) {
     cvm.list([]);
     dataservice.scheduleenginesrv.SeTicketList.read({
-      id: gpEmployeeID,
-      link: link,
+      id: app.user.peek().GPEmployeeID,
+      link: 'TID',
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Code === 0) {
         //Update inventoryListGvm grid
@@ -83,12 +83,9 @@ define('src/scheduling/technician.ticket.vm', [
     _this.layersVm.show(new TechTicketInfoViewModel({
       title: 'Technician Ticket Info',
       rowObj: ticket,
-    }), function onClose(cb) {
-      var param = {
-        id: app.user.peek().GPEmployeeID,
-        link: 'TID'
-      };
-      load_tickets(param, _this.technicianTicketGvm, cb);
+      layersVm: _this.layersVm,
+    }), function onClose() {
+      load_tickets(_this.technicianTicketGvm);
     });
   }
 

@@ -72,19 +72,19 @@ define("src/account/security/dispatchagencys.finder.vm", [
         forceFitColumns: true,
         rowHeight: 27,
       },
-      plugins: [
-        new RowEvent({
-          eventName: "onDblClick",
-          fn: function(item) {
-            console.log(item);
-            if (_this.selectedAgencies == null) {
-              _this.selectedAgencies = [];
-            }
-            _this.selectedAgencies.push(item);
-            _this.cmdSelect.execute();
-          },
-        }),
-      ],
+      // plugins: [
+      //   new RowEvent({
+      //     eventName: "onDblClick",
+      //     fn: function(item) {
+      //       console.log(item);
+      //       if (_this.selectedAgencies == null) {
+      //         _this.selectedAgencies = [];
+      //       }
+      //       _this.selectedAgencies.push(item);
+      //       _this.cmdSelect.execute();
+      //     },
+      //   }),
+      // ],
       columns: [ //
         {
           id: "ID",

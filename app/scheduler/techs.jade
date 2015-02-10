@@ -1,0 +1,25 @@
+div(class="techs")
+  div(class="dock l3-250 t3-40 t-show",data-bind="toggle:{'l-show':showNav}")
+
+    div(class="dock-content",data-bind="with:activeChild")
+      div(data-bind="with:activeChild")
+        div(data-bind="template:viewTmpl")
+
+    div(class="dock-top")
+      ul(class="edit-form",style="margin:3px")
+        li
+          div(class="tech-cvm",data-bind="cvm:techsCvm")
+
+    div(class="dock-left")
+      div(class="btn-dock",data-bind="click:function(){showNav(!showNav())},toggle:{closed:!showNav()}")
+        div(class="close")
+        div(class="open")
+
+      <!-- ko with:techsCvm.selected -->
+      <!-- ko with:vm -->
+      ul(class="nav",data-bind="foreach:childs")
+        li
+          a(data-bind="active:active,click:$parent.clickItem")
+            span(class="name",data-bind="text:title")
+      <!-- /ko -->
+      <!-- /ko -->

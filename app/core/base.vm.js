@@ -46,7 +46,7 @@ define('src/core/base.vm', [
   //
   BaseViewModel.prototype.ensureProps = function(propNames) {
     var _this = this;
-    BaseViewModel.ensureProps(_this, propNames);
+    utils.ensureProps(_this, propNames);
   };
   BaseViewModel.prototype.getTemplate = function(vm) {
     return vm.viewTmpl;
@@ -174,11 +174,7 @@ define('src/core/base.vm', [
   // static functions
   //
   BaseViewModel.ensureProps = function(obj, propNames) {
-    propNames.forEach(function(name) {
-      if (obj[name] == null) {
-        throw new Error('missing ' + name);
-      }
-    });
+    utils.ensureProps(obj, propNames);
   };
 
   function load(routeData, extraData, cb) {

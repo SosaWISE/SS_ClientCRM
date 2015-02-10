@@ -1,0 +1,452 @@
+@scheduler-bg: @site-maroon;
+
+
+.scheduler .scheduler-panel {
+  @tranSec: .25s;
+
+  .btn-dock {
+    background-color: @scheduler-bg;
+  }
+
+  .dock-left {
+    padding: 10px;
+
+    ul.nav {
+      margin: 10px;
+      a {
+        display: block;
+        padding: 5px 10px;
+        font-size: 1.2em;
+        color: white;
+        &.active {
+          .border-radius(5px);
+          font-weight: bold;
+          background-color: white;
+          color: @scheduler-bg;
+        }
+      }
+    }
+  }
+}
+
+
+.ticket-notes {
+  white-space: pre-wrap;
+  max-height: 100px;
+  overflow: auto;
+  display: block;
+}
+.ticket-editor {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  .dock {
+    // bottom: 40px;
+    .dock-left {
+      .box-shadow(none);
+    }
+    .dock-content {
+      color: inherit;
+      margin-left: 10px;
+      overflow: hidden;
+    }
+  }
+
+  @ticketWidth: 350px;
+  .ticket-info {
+    color: #fff;
+    width: @ticketWidth;
+  }
+  .ticket-schedule {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: @ticketWidth + 20px;
+  }
+
+  .cust-info {
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+}
+
+.service-tickets {
+  background-color: #fff;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+
+  ul.actions.left {
+    padding: 10px 0px 0px 7px;
+    li {
+      padding: 0;
+    }
+  }
+
+  .grid-wrap {
+    .slickgrid {
+      top: 35px;
+      right: 10px;
+      bottom: 10px;
+      left: 10px;
+    }
+  }
+}
+
+.scheduler {
+  height: 100%;
+  body& {
+    .mixin-body-color(@scheduler-bg);
+    .mixin-content-active(@scheduler-bg);
+  }
+
+  .btn {
+    .make-color-btn(@scheduler-bg);
+  }
+
+  .techs {
+    padding: 10px;
+    .tech-cvm {
+      max-width: 500px;
+    }
+
+    .tech-setup {
+      height: 100%;
+      padding: 0px 10px;
+      // color: #ffffff;
+      background-color: #fff;
+
+      .col {
+        // padding-left: 20px;
+        margin-bottom: 200px;
+
+        > .title {
+          font-size: 1.3em;
+          font-weight: 500;
+          overflow: hidden;
+          // text-transform: uppercase;
+          text-align: center;
+          display: block;
+        }
+        &.col3 {
+          float:left;
+          width: 33%;
+        }
+
+        .section {
+          // overflow: hidden;
+          position: relative;
+          width: 100%;
+          margin-top: 20px;
+
+          > .title {
+            font-size: 1.2em;
+            font-weight: 500;
+            overflow: hidden;
+            margin-left: 20px;
+            // text-transform: uppercase;
+          }
+          .contents {
+            background-color: #e9e9e9;
+            // overflow: hidden;
+            // color: #222;
+            .border-radius(5px);
+            padding: 10px;
+            .box-shadow(2px 2px 10px -2px rgba(0, 0, 0, 0.7));
+          }
+
+          .transition(opacity .25s;);
+
+          &:not(.disabled) {
+            // cursor: pointer;
+            opacity: 0.9;
+            &:hover {
+              opacity: 1;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+.board {
+  @hourWidth: 50px;
+  background-color: #ffffff;
+  height: 100%;
+
+  .grid {
+    position: relative;
+    &.header {
+      width: ~"calc(100% - 16px);"; //@REVIEW: scrollbar width????
+      height: 20px;
+      overflow: hidden;
+
+      .columns .column {
+        text-align: center;
+      }
+    }
+    &.body {
+      width: 100%;
+      height: ~"calc(100% - 20px);";
+      overflow-y: scroll;
+    }
+
+    .rows {
+      width: 100%;
+      height: 100%;
+      .user-select(none);
+
+      .row {
+        position: absolute;
+        width: 100%;
+        border-top: dotted 1px #ddd;
+        border-bottom: dotted 1px #ddd;
+
+        &.beginsHour {
+          border-top: solid 1px #ddd;
+        }
+
+        .hour {
+          display: block;
+          width: @hourWidth - 5;
+          text-align: right;
+        }
+      }
+    }
+    .columns {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      bottom: 0px;
+      left: @hourWidth;
+      text-align: left;
+
+      .column {
+        display: inline-block;
+        position: absolute;
+        height: 100%;
+        border-left: solid 1px #ddd;
+      }
+
+      .gone,
+      .appt {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        dl {
+          height: 100%;
+          overflow: auto;
+        }
+      }
+
+      .gone {
+        right: 0px;
+        // background-color: rgba(0, 0, 0, 0.5);
+        // background-color: #ddd;
+        background-color: rgba(70, 70, 70, 0.7);
+
+        > * {
+          display: none;
+        }
+      }
+      .appt {
+        background-color: tint(@scheduler-bg, 80%);
+        &.editable {
+          cursor: pointer;
+          background-color: tint(@scheduler-bg, 50%);
+        }
+        right: 1px;
+        .border-radius(3px);
+        padding: 2px;
+
+        > * {
+          text-overflow: ellipsis;
+        }
+
+        .resizer {
+          display: none;
+
+          position: absolute;
+          left: 0px;
+          right: 0px;
+          bottom: 0px;
+          text-align: center;
+          color: black;
+          cursor: ns-resize;
+          height: 8px;
+          line-height: 8px;
+        }
+        &.active {
+          .box-shadow(inset 0 0 5px 0px rgba(0,0,0,0.7));
+          .resizer {
+            display: block;
+          }
+        }
+
+        &.dragging {
+          z-index: 10;
+        }
+      }
+    }
+  }
+}
+
+.tech-schedule {
+  margin: 10px;
+
+  ul.edit-form {
+    white-space: nowrap;
+
+    > li {
+      display: inline-block;
+      width: 120px !important;
+      margin-right: 5px;
+
+      &:not(.label) span {
+        display: block;
+        padding: 8px 0px 3px 0px;
+      }
+    }
+  }
+}
+.tech-skills {
+  margin: 10px;
+
+  ol li.skill {
+    display: inline-block;
+    @skillWidth: 200px;
+    width: @skillWidth;
+
+    a {
+      position: relative;
+    }
+
+    span {
+      width: @skillWidth - 35px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      display: inline-block;
+
+      line-height: 22px;
+      vertical-align: middle;
+    }
+  }
+}
+.tech-tickets {
+  background-color: #fff;
+  height: 100%;
+
+  .grid-wrap {
+    .slickgrid {
+      top: 55px;
+      right: 10px;
+      bottom: 10px;
+      left: 10px;
+    }
+  }
+}
+.tech-ticket {
+  .grid-wrap {
+    position: relative;
+    height: 150px;
+  }
+}
+
+.month {
+  .user-select(none);
+
+  .title {
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    min-width: 230px;
+  }
+
+  // height: 200px;
+  width: 100%;
+  min-width: 260px;
+  // border: 1px solid white;
+  padding: 5px;
+  background-color: rgba(0, 0, 0, 0.2);
+
+  .controls {
+    height: 25px;
+    overflow: hidden;
+    &.padtop {
+      height: 28px;
+      padding-top: 3px;
+    }
+
+    .left,
+    .right {
+      .txt {
+        display: inline-block;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 25px;
+        min-width: 70px;
+      }
+    }
+
+    .left {
+      float: left;
+      // .txt {
+      //   min-width: 70px;
+      // }
+    }
+    .right {
+      float: right;
+      // .txt {
+      //   min-width: 35px;
+      // }
+    }
+  }
+
+  ol.days {
+    @dayHeight: 15px;
+
+    li {
+      margin: 0px;
+      padding: 0px;
+      span {
+        height: @dayHeight;
+        line-height: @dayHeight;
+      }
+    }
+
+    li.weekDay,
+    li.day {
+      display: inline-block;
+      width: ~"calc(100% / 7)";
+      height: @dayHeight;
+      text-align: center;
+    }
+
+    li.weekDay {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    li.day {
+      cursor: pointer;
+
+      &.selected,
+      &:hover {
+        .box-shadow(inset 0 0 1px 1px #FFF);
+      }
+      &.today {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+      &.outOfMonth {
+        color: #999;
+      }
+    }
+  }
+}

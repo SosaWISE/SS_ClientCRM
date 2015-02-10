@@ -18,8 +18,8 @@
     vertical-align: middle;
 
     .layer {
-      color: white;
-      margin: 5px auto;
+      margin: auto;
+      padding: 20px;
       .transition(width 0.25s, height 0.25s;);
 
       position: relative;
@@ -31,6 +31,20 @@
       height: 98%;
       &.autoflow {
         overflow: auto;
+      }
+      &:not(.nowhite) {
+        color: #FFF;
+      }
+
+
+      cursor: move;
+      cursor: -webkit-grab;
+      &.dragging {
+        cursor: move;
+      }
+      // reset cursor for all immediate children
+      > * {
+        cursor: initial;
       }
 
       // > .header {
@@ -47,18 +61,6 @@
       //   }
       // }
       > .content {
-        // padding: 5px 20px 20px 20px;
-        padding: 20px;
-
-        cursor: move;
-        cursor: -webkit-grab;
-        &.dragging {
-          cursor: move;
-        }
-        // reset cursor for all immediate children
-        > * {
-          cursor: initial;
-        }
 
         .actions ul,
         ul.actions {
@@ -83,7 +85,7 @@
       }
 
       a.close {
-        color: inherit;
+        color: white;
         position: absolute;
         top: 3px;
         left: 2px;

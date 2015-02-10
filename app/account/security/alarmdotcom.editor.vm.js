@@ -23,7 +23,7 @@ define('src/account/security/alarmdotcom.editor.vm', [
     _model: true,
     SerialNumber: {},
     AlarmDotComCustomerNumber: {},
-    AlarmPackageId: {},
+    // AlarmPackageId: {},
     EnableTwoWay: {},
   };
 
@@ -41,14 +41,14 @@ define('src/account/security/alarmdotcom.editor.vm', [
     _this.data = ukov.wrap(_this.item || {
       SerialNumber: '',
       AlarmDotComCustomerNumber: '',
-      AlarmPackageId: null,
+      // AlarmPackageId: null,
       EnableTwoWay: false,
     }, schema);
-    _this.data.AlarmPackageCvm = new ComboViewModel({
-      selectedValue: _this.data.AlarmPackageId,
-      list: _this.alarmComPackages,
-      fields: _this.alarmComPackageFields,
-    });
+    // _this.data.AlarmPackageCvm = new ComboViewModel({
+    //   selectedValue: _this.data.AlarmPackageId,
+    //   list: _this.alarmComPackages,
+    //   fields: _this.alarmComPackageFields,
+    // });
 
     //
     // events

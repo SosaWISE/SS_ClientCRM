@@ -37,9 +37,9 @@ define('src/slick/slickgrid.vm', [
     SlickGridViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, ['columns']);
     // columns: [{
-    //	 id: 'col1',
-    //	 name: 'Column Title',
-    //	 field: 'Column1',
+    //   id: 'col1',
+    //   name: 'Column Title',
+    //   field: 'Column1',
     // }]
 
     _this.plugins = _this.plugins || [];

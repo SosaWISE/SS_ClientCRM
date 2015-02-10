@@ -1,0 +1,21 @@
+div(class="appt calitem",
+  data-bind="position:position,height:height,width:board.columnWidth,active:selected,toggle:{editable:editable},scrollMiddle:scrollTo,up:2")
+  dl
+    dt(data-bind="text:timespan")
+    dd(class="cust-info",data-bind="with:(editable)?data:data.model")
+      div(class="id")
+        |Ticket #
+        span(data-bind="text:ID")
+        //- |, CMFID:&nbsp;
+        |, CUST#:&nbsp;
+        span(data-bind="text:CustomerMasterFileId")
+      div(class="name",data-bind="formatCustomerName:$data")
+      div
+        |Service Type:&nbsp;
+        <!-- ko if:$parent.editable -->
+        span(data-bind="text:serviceTypeCvm.selectedText()")
+        <!-- /ko -->
+        <!-- ko if:!$parent.editable -->
+        span(data-bind="text:_ServiceType")
+        <!-- /ko -->
+  div(class="resizer") =

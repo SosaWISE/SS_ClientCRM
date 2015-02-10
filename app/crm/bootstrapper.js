@@ -90,7 +90,7 @@ define('src/crm/bootstrapper', [
       Code: -2,
       Message: msg,
       Url: url,
-    });
+    }, 0);
   };
 
   var deps = [];
@@ -126,7 +126,7 @@ define('src/crm/bootstrapper', [
         notify.error(err);
       } else {
         // if we are authenticated, this will log us in
-        app.setUser(resp.Value.AuthUser);
+        app.setUser(resp.Value);
       }
     });
   });

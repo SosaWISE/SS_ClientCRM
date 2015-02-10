@@ -1,0 +1,11 @@
+div(class="multiselect",data-bind="toggle:{open:isOpen}")
+  div(class="cover",tabindex="0",
+    data-bind="click:toggleOpen,event:{keydown:keydownToggleOpen},ukov:selectedValues")
+    span(data-bind="text:selectedText")
+    span(class="arrow")
+  div(class="combo-list")
+    ul(data-bind="foreach:list,visible:isOpen")
+      li(class="skill")
+        div(class="checkbox",data-bind="cmd:$parent.toggleChecked")
+          a(class="btn small",tabindex="0",data-bind="active:checked")
+          span(data-bind="text:text")

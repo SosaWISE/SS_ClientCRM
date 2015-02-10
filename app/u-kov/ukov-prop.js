@@ -18,7 +18,18 @@ define('src/u-kov/ukov-prop', [
 
   function areEqual(a, b) {
     if (a instanceof Date && b instanceof Date) {
-      return a.getTime() === b.getTime();
+      return a.valueOf() === b.valueOf();
+    } else if (Array.isArray(a) && Array.isArray(b)) {
+      if (a.length !== b.length) {
+        return false;
+      }
+      var i = a.length;
+      while (i--) {
+        if (!areEqual(a[i], b[i])) {
+          return false;
+        }
+      }
+      return true;
     }
     return a === b;
   }
@@ -77,7 +88,7 @@ define('src/u-kov/ukov-prop', [
   fn.updateStoredValue = function() {
     var _this = this,
       val = _this.peek();
-    _this.model[_this.key] = val = convert(_this.doc.converter, val);
+    _this.model[_this.key] = val = convert(_this.doc.converter, val, _this.model);
     return val;
   };
   fn.getValue = function() {
@@ -86,13 +97,13 @@ define('src/u-kov/ukov-prop', [
   };
   fn.setValue = function(val) {
     var _this = this;
-    val = convert(_this.doc.converter, val);
+    val = convert(_this.doc.converter, val, _this.model);
     _this(val);
   };
 
-  function convert(converter, val) {
+  function convert(converter, val, model) {
     if (converter && typeof(val) === 'string') {
-      val = converter(val);
+      val = converter(val, model);
     }
     return val;
   }
@@ -187,7 +198,7 @@ define('src/u-kov/ukov-prop', [
     } else {
       _this.errMsg(getValidationMsg(_this.doc.validators, val, _this.model, _this.ukovModel, _this));
     }
-    return _this.isValid();
+    return _this.isValid.peek();
   };
   fn.validateGroup = function() {
     var _this = this,

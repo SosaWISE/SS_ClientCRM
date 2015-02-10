@@ -186,7 +186,7 @@ define('src/hr/teameditor.vm', [
       cb();
     } else {
       var model = _this.data.getValue();
-      dataservice.humanresourcesrv.teams.save({
+      dataservice.hr.teams.save({
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
         var data = resp.Value,

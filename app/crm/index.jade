@@ -33,7 +33,7 @@ html
           //- panels
           <!-- ko foreach:panels -->
           div(data-bind="active:active")
-            a(data-bind="css:id,cmd:$parent.clickPanel")
+            a(data-bind="cmd:$parent.clickPanel")
               div(data-bind="visible:active")
                 div(class="indicator")
               span(data-bind="attr:{class:icoClass}")
@@ -45,8 +45,8 @@ html
         div(class="wrap")
           div(class="panels", data-bind="foreach:panels")
             <!-- ko if:!lazy -->
-            div(data-bind="active:active,if:active")
-              div(data-bind="template:viewTmpl,attr:{id:id+'-panel'}")
+            div(data-bind="active:active,if:active",style="height:100%")
+              div(data-bind="template:viewTmpl,attr:{id:id+'-panel'}",style="height:100%")
             <!-- /ko -->
             div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
 
@@ -63,6 +63,7 @@ html
       include ../home/_all.jade
       include ../hr/_all.jade
       include ../inventory/_all.jade
+      include ../scheduler/_all.jade
       include ../scheduling/_all.jade
       include ../scrum/_all.jade
       include ../survey/_all.jade

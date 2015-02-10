@@ -1,12 +1,14 @@
-define('src/u-kov/string-converters', [
-  'src/core/jsonhelpers',
-  'src/core/paymenthelper',
-  'src/core/strings',
-  'moment'
+define("src/u-kov/string-converters", [
+  "src/core/jsonhelpers",
+  "src/core/paymenthelper",
+  "src/core/strings",
+  "src/core/utils",
+  "moment"
 ], function(
   jsonhelpers,
   paymenthelper,
   strings,
+  utils,
   moment
 ) {
   "use strict";
@@ -45,14 +47,14 @@ define('src/u-kov/string-converters', [
     return convBool;
   };
   converters.numText = function(errMsg) {
-    errMsg = errMsg || 'invalid number';
+    errMsg = errMsg || "invalid number";
     return function convNumText(val) {
       val = trim(val);
       if (!val) {
         return null;
       }
 
-      // return val.replace(/[^\d]/g, '');
+      // return val.replace(/[^\d]/g, "");
       if (/^[\d]+$/.test(val)) {
         return val;
       } else {
@@ -65,7 +67,7 @@ define('src/u-kov/string-converters', [
   };
 
   converters.number = function(precision, errMsg) {
-    errMsg = errMsg || 'invalid number';
+    errMsg = errMsg || "invalid number";
     var roundingMagnitude = Math.pow(10, precision || 0);
     return function convNumber(val) {
       if (!val) {
@@ -74,7 +76,7 @@ define('src/u-kov/string-converters', [
 
       // remove non-number characters
       // (- and . are needed for negative and decimals. more than one or wrong position will make val NaN)
-      val = val.replace(/[^-.0-9]/g, '');
+      val = val.replace(/[^-.0-9]/g, "");
 
       var num = parseFloat(val);
       if (isNaN(val) || isNaN(num)) {
@@ -98,15 +100,15 @@ define('src/u-kov/string-converters', [
         // convert number string to date
         // e.g.: 050614 -> 05/06/14
         // e.g.: 05062014 -> 05/06/2014
-        val = strings.format('{0}/{1}/{2}', val.substr(0, 2), val.substr(2, 2), val.substr(4));
+        val = strings.format("{0}/{1}/{2}", val.substr(0, 2), val.substr(2, 2), val.substr(4));
       }
 
       // add space at end to match regxs
-      val += ' ';
+      val += " ";
       if (!dateLongYearRegxs.some(function(regx) {
         return regx.test(val);
       })) {
-        // didn't match any of the regular expressions
+        // did not match any of the regular expressions
 
         // try to fixup years
         // chrome already does this, but firefox does not
@@ -127,26 +129,26 @@ define('src/u-kov/string-converters', [
           }
         })) {
           // unable to fixup year
-          return new Error('invalid date');
+          return new Error("invalid date");
         }
       }
 
       // date is always UTC
-      day = moment(val).utc().startOf('day');
+      day = moment(val).utc().startOf("day");
       if (day.isValid()) {
         return day.toDate();
       } else {
-        return new Error('invalid date');
+        return new Error("invalid date");
       }
     };
   };
   converters.datetime = function() {
     var dateConverter = converters.date(),
-      dateFormat = 'MM/DD/YYYY',
+      dateFormat = "MM/DD/YYYY",
       timeFormats = [
-        'hh:mm:ss.SSS A',
-        'hh:mm:ss A',
-        'hh:mm A'
+        "hh:mm:ss.SSS A",
+        "hh:mm:ss A",
+        "hh:mm A"
       ];
     return function convDatetime(val) {
       val = trim(val);
@@ -161,16 +163,16 @@ define('src/u-kov/string-converters', [
           var dt = dateConverter(fullMatch);
           if (dt instanceof Date) {
             // date is UTC
-            replacementValue = moment.utc(dt).format(dateFormat) + ' ';
+            replacementValue = moment.utc(dt).format(dateFormat) + " ";
             return replacementValue;
           } else {
-            throw new Error('dt should always be a Date');
+            throw new Error("dt should always be a Date");
           }
         });
       }
 
       // add space at end to match regxs
-      val += ' ';
+      val += " ";
       // parse date part the same as the date converter
       if (!dateLongYearRegxs.some(function(regx) {
         if (regx.test(val)) {
@@ -183,22 +185,54 @@ define('src/u-kov/string-converters', [
           return true;
         }
       })) {
-        return new Error('invalid datetime');
+        return new Error("invalid datetime");
       }
 
       // datetime is always Local
       timeFormats.some(function(timeFormat) {
-        day = moment(val, dateFormat + ' ' + timeFormat);
+        day = moment(val, dateFormat + " " + timeFormat);
         return day.isValid();
       });
       if (!day.isValid() && replacementValue === val) {
         // allow for only date
-        day = moment(val + '12:00 am', dateFormat + ' ' + 'hh:mm A');
+        day = moment(val + "12:00 am", dateFormat + " " + "hh:mm A");
       }
       if (day.isValid()) {
         return day.toDate();
       } else {
-        return new Error('invalid datetime');
+        return new Error("invalid datetime");
+      }
+    };
+  };
+  converters.time = function(fnGetDate, fnAfterParse) {
+    var dateFormat = "MM/DD/YYYY",
+      timeFormats = [
+        "hh:mm:ss.SSS A",
+        "hh:mm:ss A",
+        "hh:mm A",
+        "hh:mm"
+      ];
+    return function convTime(val, model) {
+      val = trim(val);
+      if (!val) {
+        return null;
+      }
+
+      var date = moment(fnGetDate(model)).format(dateFormat);
+
+      var day;
+      // time is always Local
+      timeFormats.some(function(timeFormat) {
+        day = moment(date + " " + val, dateFormat + " " + timeFormat);
+        return day.isValid();
+      });
+      if (day.isValid()) {
+        if (utils.isFunc(fnAfterParse)) {
+          return fnAfterParse(day.toDate());
+        }
+        return day.toDate();
+      } else {
+        return new Error("invalid time");
       }
     };
   };
@@ -212,11 +246,11 @@ define('src/u-kov/string-converters', [
         return null;
       }
 
-      val = val.replace(/[^\d]/g, '');
+      val = val.replace(/[^\d]/g, "");
       if (13 < val.length && val.length < 17 && paymenthelper.luhnTest(val)) {
         return val;
       } else {
-        return new Error('Invalid number text');
+        return new Error("Invalid number text");
       }
     };
   };
@@ -227,8 +261,8 @@ define('src/u-kov/string-converters', [
 
   function trim(text) {
     if (text) {
-      text = (text + '').replace(/^\s+|\s+$/g, '');
-    } else if (text !== '') {
+      text = (text + "").replace(/^\s+|\s+$/g, "");
+    } else if (text !== "") {
       text = null;
     }
     return text;
@@ -260,7 +294,7 @@ define('src/u-kov/string-converters', [
 
   function convBool(val) {
     val = val.toLowerCase();
-    return val === 'true' || val === '1';
+    return val === "true" || val === "1";
   }
 
   function convJsonString(val) {
@@ -282,12 +316,12 @@ define('src/u-kov/string-converters', [
       return null;
     }
     // remove everything but digits
-    val = val.replace(removeNonDigitsRegx, '');
+    val = val.replace(removeNonDigitsRegx, "");
     // try to match
     if (val.length === 9) {
       return val;
     } else {
-      return new Error('Invalid Social Security Number. Expected format: 123-12-1234');
+      return new Error("Invalid Social Security Number. Expected format: 123-12-1234");
     }
   }
 
@@ -301,7 +335,7 @@ define('src/u-kov/string-converters', [
     if (matches) {
       return matches[1] + matches[2] + matches[3];
     } else {
-      return new Error('Invalid phone number. Expected format: (123) 123-1234');
+      return new Error("Invalid phone number. Expected format: (123) 123-1234");
     }
   }
 
@@ -312,7 +346,7 @@ define('src/u-kov/string-converters', [
     }
 
     if (/\*+/.test(val)) {
-      return val.replace(removeNonStarAndDigitsRegx, '');
+      return val.replace(removeNonStarAndDigitsRegx, "");
     }
     return convPhone(val);
   }

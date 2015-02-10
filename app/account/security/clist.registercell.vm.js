@@ -44,16 +44,16 @@ define('src/account/security/clist.registercell.vm', [
 
     load_msAccountSalesInformations(_this.accountId, utils.safeCallback(join.add(), function(err, resp) {
       var Ctor, vm;
-      switch (resp.Value.CellType) {
-        default:
-        case 'Alarm.com':
-          Ctor = AlarmDotComViewModel;
-          break;
+      switch (resp.Value.CellularVendor) {
         case 'Alarm.net':
           Ctor = AlarmNetViewModel;
           break;
         case 'Telguard':
           Ctor = TelguardViewModel;
+          break;
+        default:
+        case 'Alarm.com':
+          Ctor = AlarmDotComViewModel;
           break;
       }
       if (Ctor) {

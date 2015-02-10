@@ -1,12 +1,12 @@
-define('src/account/default/masteraccount.vm', [
-  'src/account/default/notes.vm',
-  'src/dataservice',
-  'src/account/security/account.vm',
-  'ko',
-  'src/config',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/account/default/masteraccount.vm", [
+  "src/account/default/notes.vm",
+  "src/dataservice",
+  "src/account/security/account.vm",
+  "ko",
+  "src/config",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   NotesViewModel,
   dataservice,
@@ -20,20 +20,20 @@ define('src/account/default/masteraccount.vm', [
   "use strict";
 
   var agingList = [
-      'Current',
-      '1 to 30',
-      '31 to 60',
-      '61 to 90',
-      '91 to 120',
-      '> 120',
-    ],
-    customerTypePrecedence = {
-      PRI: 1,
-      LEAD: 1,
-      SEC: 2,
-      BILL: 3,
-      SHIP: 4,
-    };
+    "Current",
+    "1 to 30",
+    "31 to 60",
+    "61 to 90",
+    "91 to 120",
+    "> 120",
+  ];
+  var customerTypePrecedence = {
+    PRI: 1,
+    LEAD: 1,
+    SEC: 2,
+    BILL: 3,
+    SHIP: 4,
+  };
 
   function sortByCustomerTypeId(a, b) {
     var aP = customerTypePrecedence[a.CustomerTypeId] || 9,
@@ -44,12 +44,12 @@ define('src/account/default/masteraccount.vm', [
   function MasterAccountViewModel(options) {
     var _this = this;
     MasterAccountViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['id', 'title']);
+    ControllerViewModel.ensureProps(_this, ["id", "title"]);
 
     _this.mayReload = ko.observable(false);
     _this.title = ko.observable(_this.title);
-    _this.hideNotes = ko.observable(config.accounts.hideNotes);
-    _this.hideNav = ko.observable(config.accounts.hideNav);
+    _this.hideNotes = ko.observable(config.crm.hideNotes);
+    _this.hideNav = ko.observable(config.crm.hideNav);
 
     _this.customers = ko.observableArray();
 
@@ -95,33 +95,31 @@ define('src/account/default/masteraccount.vm', [
       _this.reload();
     };
     _this.clickNewAccount = function() {
-      alert('I do nothing');
+      alert("I do nothing");
     };
   }
   utils.inherits(MasterAccountViewModel, ControllerViewModel);
-  MasterAccountViewModel.prototype.viewTmpl = 'tmpl-acct-default-masteraccount';
+  MasterAccountViewModel.prototype.viewTmpl = "tmpl-acct-default-masteraccount";
 
   MasterAccountViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
-    call_hasCustomer(_this.id, utils.safeCallback(join.add(), function(err, resp) {
-      var hasCustomer = resp.Value;
+    call_hasCustomer(_this.id, function(hasCustomer) {
       if (!hasCustomer) {
         // close this tab
         _this.closeMsg = utils.noop; // allows closing
         _this.close();
         // then redirect to lead
         _this.goTo({
-          route: 'leads',
+          route: "leads",
           masterid: _this.id,
         });
-        notify.info('Redirected to lead', null, 2);
-        // we're done here
+        notify.info("Redirected to lead", null, 2);
+        // we are done here
         return;
       }
 
-      load_customers(_this.id, utils.safeCallback(join.add(), function(err, resp) {
-        var data = resp.Value;
+      load_customers(_this.id, function(data) {
         data.sort(sortByCustomerTypeId);
         _this.customers(data);
 
@@ -131,8 +129,8 @@ define('src/account/default/masteraccount.vm', [
           load_billingHistory(_this, _this.id, join.add());
           load_aging(_this, _this.id, _this.agings, join.add());
         }, utils.noop));
-      }, utils.noop));
-    }, utils.noop));
+      }, join.add());
+    }, join.add());
 
     join.when(function(err) {
       if (err) {
@@ -156,24 +154,24 @@ define('src/account/default/masteraccount.vm', [
     return msg;
   };
 
-  function call_hasCustomer(masterId, cb) {
+  function call_hasCustomer(masterId, setter, cb) {
     dataservice.qualify.customerMasterFiles.read({
       id: masterId,
-      link: 'hasCustomer',
-    }, null, cb);
+      link: "hasCustomer",
+    }, setter, cb);
   }
 
-  function load_customers(masterId, cb) {
+  function load_customers(masterId, setter, cb) {
     dataservice.qualify.customerMasterFiles.read({
       id: masterId,
-      link: 'customers',
-    }, null, cb);
+      link: "customers",
+    }, setter, cb);
   }
 
   function load_billingInfoSummary(pcontroller, masterId, accounts, cb) {
     dataservice.accountingengine.billingInfoSummary.read({
       id: masterId,
-      link: 'CMFID',
+      link: "CMFID",
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Value) {
         var list = resp.Value.map(function(acct) {
@@ -189,10 +187,10 @@ define('src/account/default/masteraccount.vm', [
   function load_billingHistory(pcontroller, masterId, cb) {
     dataservice.accountingengine.billingHistory.read({
       id: masterId,
-      link: 'CMFID',
+      link: "CMFID",
     }, function(val) {
       val.forEach(function(item) {
-        if (item.BillingType === 'Invoice' && item.BillingAmount > 0) {
+        if (item.BillingType === "Invoice" && item.BillingAmount > 0) {
           // make invoices negative
           item.BillingAmount *= -1;
         }
@@ -226,7 +224,7 @@ define('src/account/default/masteraccount.vm', [
     return new AccountViewModel({
       pcontroller: pcontroller,
       id: id,
-      title: title || '[Unknown]',
+      title: title || "[Unknown]",
       rmr: rmr,
       units: units,
     });
@@ -235,7 +233,7 @@ define('src/account/default/masteraccount.vm', [
   function createAging(pcontroller, index, title, amount) {
     return new ControllerViewModel({
       pcontroller: pcontroller,
-      id: 'age' + index,
+      id: "age" + index,
       index: index,
       title: title,
       amount: amount,

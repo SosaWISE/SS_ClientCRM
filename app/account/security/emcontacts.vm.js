@@ -42,7 +42,7 @@ define('src/account/security/emcontacts.vm', [
       },
       save: function(model) {
         dataservice.msaccountsetupsrv.emergencyContacts.save({
-          id: model.EmergencyContactID,
+          id: model.EmergencyContactID || "",
           data: model,
         }, null, utils.safeCallback(null, function(err, resp) {
           notify.info('Saved ' + formatFullname(model), '', 3);
@@ -82,6 +82,8 @@ define('src/account/security/emcontacts.vm', [
     _this.accountId = routeData.id;
 
     load_phoneTypes(_this, join.add());
+    load_contactTypes(_this, join.add());
+    load_contactAuthorityTypes(_this, join.add());
     load_relationshipTypes(_this, join.add());
     load_contacts(function(list) {
       tempContacts = list;
@@ -107,6 +109,16 @@ define('src/account/security/emcontacts.vm', [
         value: 'PhoneTypeID',
         text: 'PhoneTypeDescription',
       },
+      contactTypes: _this.contactTypes,
+      contactTypeFields: {
+        value: 'EmergencyContactTypeID',
+        text: 'ContactTypeDescription',
+      },
+      contactAuthorityTypes: _this.contactAuthorityTypes,
+      contactAuthorityTypeFields: {
+        value: 'AuthorityID',
+        text: 'AuthorityDescription',
+      },
       relationshipTypes: _this.relationshipTypes,
       relationshipTypeFields: {
         value: 'RelationshipID',
@@ -130,8 +142,31 @@ define('src/account/security/emcontacts.vm', [
 
   function load_phoneTypes(_this, cb) {
     _this.phoneTypes = null;
-    dataservice.msaccountsetupsrv.emergencyContactPhoneTypes.read({}, null, utils.safeCallback(cb, function(err, resp) {
+    dataservice.msaccountsetupsrv.accounts.read({
+      id: _this.accountId,
+      link: 'emergencyContactPhoneTypes',
+    }, null, utils.safeCallback(cb, function(err, resp) {
       _this.phoneTypes = resp.Value;
+    }, utils.no_op));
+  }
+
+  function load_contactAuthorityTypes(_this, cb) {
+    _this.contactAuthorityTypes = null;
+    dataservice.msaccountsetupsrv.accounts.read({
+      id: _this.accountId,
+      link: 'emergencyContactAuthorities',
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      _this.contactAuthorityTypes = resp.Value;
+    }, utils.no_op));
+  }
+
+  function load_contactTypes(_this, cb) {
+    _this.contactTypes = null;
+    dataservice.msaccountsetupsrv.accounts.read({
+      id: _this.accountId,
+      link: 'emergencyContactTypes',
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      _this.contactTypes = resp.Value;
     }, utils.no_op));
   }
 

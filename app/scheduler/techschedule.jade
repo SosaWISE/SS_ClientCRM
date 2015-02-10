@@ -1,0 +1,10 @@
+div(class="tech-schedule",data-bind="foreach:weekdays")
+  ul(class="edit-form")
+    li(class="label")
+      div(class="checkbox")
+        a(class="btn small disabled",data-bind="active:checked")
+        span(style="cursor:default",data-bind="text:day")
+    li
+      span(data-bind="timetext:StartTime")
+    li
+      span(data-bind="timetext:EndTime")

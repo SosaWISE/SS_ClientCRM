@@ -1,17 +1,19 @@
-define('src/account/security/account.vm', [
-  'src/account/security/checklist.vm',
-  'src/account/security/summary.vm',
-  'src/account/security/equipment.vm',
-  'src/account/security/service.ticket.vm',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
-  'ko'
+define("src/account/security/account.vm", [
+  "src/account/security/checklist.vm",
+  "src/account/security/summary.vm",
+  "src/account/security/equipment.vm",
+  "src/account/security/service.ticket.vm",
+  "src/scheduler/account.service.tickets.vm",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
+  "ko"
 ], function(
   ChecklistViewModel,
   SummaryViewModel,
   EquipmentViewModel,
   ServiceTicketViewModel,
+  AccountServiceTicketsViewModel,
   notify,
   utils,
   ControllerViewModel,
@@ -22,7 +24,7 @@ define('src/account/security/account.vm', [
   function AccountViewModel(options) {
     var _this = this;
     AccountViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['id', 'title']);
+    ControllerViewModel.ensureProps(_this, ["id", "title"]);
 
     _this.title = ko.observable(_this.title);
     _this.rmr = ko.observable(_this.rmr);
@@ -35,7 +37,7 @@ define('src/account/security/account.vm', [
     };
   }
   utils.inherits(AccountViewModel, ControllerViewModel);
-  AccountViewModel.prototype.viewTmpl = 'tmpl-security-account';
+  AccountViewModel.prototype.viewTmpl = "tmpl-security-account";
 
   AccountViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
@@ -52,16 +54,17 @@ define('src/account/security/account.vm', [
           pcontroller: _this,
         });
       }
-      checklist.id = 'checklist';
-      checklist.title = 'Setup Checklist';
+      checklist.id = "checklist";
+      checklist.title = "Setup Checklist";
 
       _this.childs([
-        createSummary(_this, 'Account Summary'),
-        createFauxController(_this, 'Signal History'),
-        createEquipment(_this, 'Equipment'),
-        createFauxController(_this, 'Contract Approval'),
         checklist,
-        createServiceTicket(_this, 'Schedule Service')
+        _this.defaultChild = createSummary(_this, "Account Summary"),
+        createFauxController(_this, "Signal History"),
+        createEquipment(_this, "Equipment"),
+        createFauxController(_this, "Contract Approval"),
+        createServiceTicket(_this, "Schedule Service"),
+        createAccountServiceTickets(_this, "Service Tickets"),
       ]);
       cb();
     }, 0);
@@ -88,7 +91,7 @@ define('src/account/security/account.vm', [
       pcontroller: pcontroller,
       id: titleToId(title),
       title: title,
-      viewTmpl: 'tmpl-temptitle',
+      viewTmpl: "tmpl-temptitle",
     });
   }
 
@@ -98,12 +101,19 @@ define('src/account/security/account.vm', [
       id: titleToId(title),
       title: title
     });
+  }
 
+  function createAccountServiceTickets(pcontroller, title) {
+    return new AccountServiceTicketsViewModel({
+      pcontroller: pcontroller,
+      id: titleToId(title),
+      title: title
+    });
   }
 
 
   function titleToId(title) {
-    return title.toLowerCase().replace(/\s+/g, '').replace(/\//g, '-');
+    return title.toLowerCase().replace(/\s+/g, "").replace(/\//g, "-");
   }
 
   return AccountViewModel;

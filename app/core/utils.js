@@ -19,6 +19,13 @@ define('src/core/utils', [
         },
       });
     },
+    assertProps: function(obj, propNames) {
+      propNames.forEach(function(name) {
+        if (obj[name] == null) {
+          throw new Error('missing ' + name);
+        }
+      });
+    },
 
     safeCallback: function(cb, successFn, errorFn) {
       if (!utils.isFunc(cb)) {
@@ -99,6 +106,7 @@ define('src/core/utils', [
 
   };
   utils.no_op = utils.noop; // only for backwards compatibiltiy
+  utils.ensureProps = utils.assertProps; // backwards compatibiltiy
 
   function ifNull(val, propName, defaultValue) {
     if (val[propName] == null) {

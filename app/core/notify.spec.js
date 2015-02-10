@@ -20,11 +20,6 @@ define('src/core/notify.spec', [
       expect(typeof notify.create).toBe('function');
     });
 
-    it('should have a `notify` function', function() {
-      expect(notify.notify).toBeDefined();
-      expect(typeof notify.notify).toBe('function');
-    });
-
     // functions commented out in definition
     // it('should have a `send` function', function() {
     //   expect(notify.send).toBeDefined();

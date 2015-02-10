@@ -161,7 +161,10 @@ define('src/core/mockery', [
         func = fromStringTemplate;
         break;
       case 'object':
-        if (Array.isArray(template)) {
+        if (utils.isDate(template)) {
+          // just return a copy of the date
+          return new Date(template.valueOf());
+        } else if (Array.isArray(template)) {
           func = fromArrayTemplate;
         } else {
           func = fromObjectTemplate;
@@ -423,14 +426,14 @@ define('src/core/mockery', [
     var id = newValue[idName],
       index;
 
-    function idsMatch(item, i) {
+    function findById(item, i) {
       if (item[idName] === id) {
         index = i;
         return true;
       }
     }
     if (id > 0) {
-      if (!list.some(idsMatch)) {
+      if (!list.some(findById)) {
         throw new Error('invalid id. id not in list.');
       }
 

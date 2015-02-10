@@ -1,9 +1,9 @@
-define('src/core/combo.vm', [
-  'ko',
-  'src/core/jsonhelpers',
-  'src/core/strings',
-  'src/core/utils',
-  'src/core/base.vm',
+define("src/core/combo.vm", [
+  "ko",
+  "src/core/jsonhelpers",
+  "src/core/strings",
+  "src/core/utils",
+  "src/core/base.vm",
 ], function(
   ko,
   jsonhelpers,
@@ -14,12 +14,11 @@ define('src/core/combo.vm', [
   "use strict";
 
   var charRegx = /([^\s]{1})/g,
-    regxAnyLetter = '.*',
+    regxAnyLetter = ".*",
     defaultFields = {
-      value: 'value',
-      text: 'text',
-    },
-    defaultNoItemSelected, defaultNoneItem;
+      value: "value",
+      text: "text",
+    };
 
   function ComboViewModel(options) {
     var _this = this;
@@ -27,28 +26,21 @@ define('src/core/combo.vm', [
 
     // ensure fields property exists
     _this.fields = _this.fields || {};
-    _this.fields.value = _this.fields.value || 'value';
-    _this.fields.text = _this.fields.text || 'text';
+    _this.fields.value = _this.fields.value || "value";
+    _this.fields.text = _this.fields.text || "text";
 
-    if (_this.noItemSelectedText) {
-      _this.noItemSelected = wrapItem({
-        value: null,
-        text: _this.noItemSelectedText,
-      }, defaultFields);
-    } else {
-      _this.noItemSelected = defaultNoItemSelected;
-    }
-    if (_this.noneItemText) {
-      _this.noneItem = wrapItem({
-        value: null,
-        text: _this.noneItemText,
-      }, defaultFields);
-    } else {
-      _this.noneItem = defaultNoneItem;
-    }
+    _this.afterWrap = _this.afterWrap || utils.noop;
+    _this.noItemSelected = wrapItem({
+      value: null,
+      text: _this.noItemSelectedText || "[Select One]",
+    }, defaultFields, _this.afterWrap);
+    _this.noneItem = wrapItem({
+      value: null,
+      text: _this.noneItemText || "[None]",
+    }, defaultFields, _this.afterWrap);
 
     _this.activeIndex = -1;
-    _this.filterText = ko.observable('');
+    _this.filterText = ko.observable("");
     _this.selected = ko.observable(_this.noItemSelected);
     if (!_this.selectedValue || !ko.isObservable(_this.selectedValue)) {
       _this.selectedValue = ko.observable();
@@ -92,7 +84,7 @@ define('src/core/combo.vm', [
           _this.selectionHistory.shift(); // remove first item
         }
       } else if (selectedValue !== null) { // in this case, undefined is not null
-        // console.log('selectedValue not in list:', selectedValue);
+        // console.log("selectedValue not in list:", selectedValue);
         //@NOTE: this will call this function again
         // and set `selected` to `noItemSelected` or it will select the first item (if not nullable)
         _this.selectedValue(null);
@@ -137,7 +129,7 @@ define('src/core/combo.vm', [
     };
     _this.clickOpen = function() {
       if (!_this.isOpen()) {
-        // _this.filterText('');
+        // _this.filterText("");
         _this.isOpen(true);
         setTimeout(function() {
           _this.focusInput(true);
@@ -183,7 +175,6 @@ define('src/core/combo.vm', [
       }
 
       switch (keyCode) {
-        default: return true;
         case 27: // escape
           _this.resetActive();
           _this.clickClose();
@@ -204,6 +195,8 @@ define('src/core/combo.vm', [
         case 40: // down arrow
           _this.activateNext(true);
           return false;
+        default:
+          return true;
       }
       return true; // do default action
     };
@@ -233,7 +226,7 @@ define('src/core/combo.vm', [
     }
   }
   utils.inherits(ComboViewModel, BaseViewModel);
-  ComboViewModel.prototype.viewTmpl = 'tmpl-combo';
+  ComboViewModel.prototype.viewTmpl = "tmpl-combo";
   ComboViewModel.prototype.nullable = false;
 
   ComboViewModel.prototype.selectFirst = function() {
@@ -256,16 +249,15 @@ define('src/core/combo.vm', [
   ComboViewModel.prototype.selectedText = function() {
     var _this = this,
       selected = _this.selected();
-    return (selected) ? selected.text : '';
+    return (selected) ? selected.text : "";
   };
   ComboViewModel.prototype.setList = function(list) {
-    list = list || [];
-    var _this = this,
-      wrapList = new Array(list.length),
-      i;
+    var _this = this;
 
-    list.forEach(function(item, index) {
-      wrapList[index] = wrapItem(item, _this.fields);
+    list = list || [];
+    var afterWrap = _this.afterWrap;
+    var wrapList = list.map(function(item) {
+      return wrapItem(item, _this.fields, afterWrap);
     });
     if (_this.nullable) {
       wrapList.unshift(_this.noneItem);
@@ -277,9 +269,9 @@ define('src/core/combo.vm', [
     // set selected value to item in the new list
     //
     // try to find the most recently used value in the list (loop in reverse order)
-    i = _this.selectionHistory.length;
+    var i = _this.selectionHistory.length;
     while (i--) {
-      // console.log('try selection:', _this.selectionHistory[i]);
+      // console.log("try selection:", _this.selectionHistory[i]);
       if (findWrappedItemByValue(wrapList, _this.selectionHistory[i])) {
         _this.setSelectedValue(_this.selectionHistory[i]);
         return;
@@ -295,7 +287,7 @@ define('src/core/combo.vm', [
   };
   ComboViewModel.prototype.addItem = function(item) {
     var _this = this;
-    item = wrapItem(item, _this.fields);
+    item = wrapItem(item, _this.fields, _this.afterWrap);
     _this.list.push(item);
     return item;
   };
@@ -338,21 +330,21 @@ define('src/core/combo.vm', [
     return !!findWrappedItemByValue(list, value);
   };
 
-  function wrapItem(item, fields) {
+  function wrapItem(item, fields, afterWrap) {
     if (!(fields.value in item)) {
-      throw new Error('no ' + fields.value + ' field: ' + jsonhelpers.stringify(item));
+      throw new Error("no " + fields.value + " field: " + jsonhelpers.stringify(item));
     }
     var text, value;
     if (utils.isFunc(fields.text)) {
       // text field can be a format function
       text = fields.text(item);
     } else if (!(fields.text in item)) {
-      throw new Error('no ' + fields.text + ' field: ' + jsonhelpers.stringify(item));
+      throw new Error("no " + fields.text + " field: " + jsonhelpers.stringify(item));
     } else {
       text = ko.unwrap(item[fields.text]);
     }
     value = ko.unwrap(item[fields.value]);
-    return {
+    var wrappedItem = {
       item: item,
       text: text,
       value: value,
@@ -360,6 +352,8 @@ define('src/core/combo.vm', [
       matches: ko.observable(false),
       active: ko.observable(false),
     };
+    afterWrap(wrappedItem);
+    return wrappedItem;
   }
 
   function findWrappedItemByValue(list, value) {
@@ -372,15 +366,6 @@ define('src/core/combo.vm', [
     });
     return wrappedItem;
   }
-
-  defaultNoItemSelected = wrapItem({
-    value: null,
-    text: '[Select One]',
-  }, defaultFields);
-  defaultNoneItem = wrapItem({
-    value: null,
-    text: '[None]',
-  }, defaultFields);
 
   // function indexOfItem(list, item) {
   //   var index = -1;
@@ -458,16 +443,16 @@ define('src/core/combo.vm', [
 
   function createRegx(matches, matchStart) {
     if (matchStart) {
-      return new RegExp('^' + matches.join('') + regxAnyLetter, 'i');
+      return new RegExp("^" + matches.join("") + regxAnyLetter, "i");
     } else {
-      return new RegExp(regxAnyLetter + matches.join(regxAnyLetter) + regxAnyLetter, 'i');
+      return new RegExp(regxAnyLetter + matches.join(regxAnyLetter) + regxAnyLetter, "i");
     }
   }
 
   function createLetterRegxList(matches) {
     var results = new Array(matches.length);
     matches.forEach(function(m, index) {
-      results[index] = new RegExp(m, 'i');
+      results[index] = new RegExp(m, "i");
     });
     return results;
   }
@@ -481,7 +466,7 @@ define('src/core/combo.vm', [
       while (index < length) {
         letter = text[index++];
         if (regx.test(letter)) {
-          results.push('<b>' + letter + '</b>');
+          results.push("<b>" + letter + "</b>");
           return; // break while loop
         } else {
           results.push(letter);
@@ -491,7 +476,7 @@ define('src/core/combo.vm', [
     if (index < length) {
       results.push(text.substr(index));
     }
-    return results.join('');
+    return results.join("");
   }
 
 
@@ -520,7 +505,7 @@ define('src/core/combo.vm', [
     return function() {
       var cvm = ko.unwrap(valueAccessor());
       if (!(cvm instanceof ComboViewModel)) {
-        throw new Error('expected bound value to be a ComboViewModel');
+        throw new Error("expected bound value to be a ComboViewModel");
       }
       return {
         data: cvm,

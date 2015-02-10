@@ -100,6 +100,7 @@ module.exports = function(grunt) {
           'app/slick/tparty/slick.grid.js',
           'app/slick/tparty/slick.rowselectionmodel.js',
           'app/slick/tparty/slick.editors.js',
+          'app/slick/tparty/slick.dataview.js',
           'app/slick/tparty/slick-production.js',
           // actual package
           'app/slick/*.js',
@@ -128,6 +129,7 @@ module.exports = function(grunt) {
           'app/hr/*.js', 'app/viz/*.js',
           'app/inventory/*.js',
           'app/login/*.js',
+          'app/scheduler/*.js',
           'app/scheduling/*.js',
           'app/swing/*.js',
           // exclude specs

@@ -1,0 +1,10 @@
+div(class="service-tickets")
+  div(class="layers",data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
+  ul(class="actions left")
+    li
+      a(class="btn small add-btn",tabindex="0",data-bind="cmd:cmdAddServiceTicket") Add Service Ticket
+    li
+      a(class="btn small add-btn",tabindex="0",data-bind="cmd:cmdRefreshGrid") Refresh Grid
+  div(class="grid-wrap")
+    div(class="slickgrid",data-bind="slickgrid:gvm")
+

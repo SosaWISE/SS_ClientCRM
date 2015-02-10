@@ -1,8 +1,8 @@
-define('src/crm/app', [
-  'ko',
-  'src/dataservice',
-  'src/login/login.panel.vm',
-  'src/core/app.vm',
+define("src/crm/app", [
+  "ko",
+  "src/dataservice",
+  "src/login/login.panel.vm",
+  "src/core/app.vm",
 ], function(
   ko,
   dataservice,
@@ -19,8 +19,8 @@ define('src/crm/app', [
       return new LoginViewModel({
         setUser: setUser,
         routePart: routePart,
-        id: 'login',
-        title: 'Secure Login',
+        id: "login",
+        title: "Secure Login",
         icoClass: null,
       });
     },
@@ -28,121 +28,136 @@ define('src/crm/app', [
       //
       // add anonymous routes
       //
-      router.addAnonRoute(loginVm, 'login', ':type/:destPath/:p1', {
-        type: 'user',
+      router.addAnonRoute(loginVm, "login", ":type/:destPath/:p1", {
+        type: "user",
       });
     },
     panelSettings: [ //
       {
         appid: -1,
-        path: 'src/home/home.panel.vm',
+        path: "src/home/home.panel.vm",
         options: {
-          id: 'home',
-          title: 'Home',
-          icoClass: 'ico fa fa-3x fa-home',
+          id: "home",
+          title: "Home",
+          icoClass: "ico fa fa-3x fa-home",
         },
         routes: [ //
           {
             precedence: 2,
-            name: 'home',
-            path: '',
+            name: "home",
+            path: "",
           },
         ],
       }, {
-        appid: 'sse_cms_cors',
-        path: 'src/account/accounts.panel.vm',
+        appid: "sse_cms_cors",
+        path: "src/account/accounts.panel.vm",
         options: {
-          id: 'accounts',
-          title: 'Accounts',
-          icoClass: 'ico fa fa-3x fa-shield',
+          id: "crm",
+          title: "CRM",
+          icoClass: "ico fa fa-3x fa-shield",
         },
         routes: [ //
           {
             precedence: 1,
-            name: 'accounts',
-            path: ':masterid/:id/:tab/:p1',
+            name: "accounts",
+            path: ":masterid/:id/:tab/:p1",
           }, {
             precedence: 1,
-            name: 'leads',
-            path: ':masterid/:tab/:p1',
+            name: "leads",
+            path: ":masterid/:tab/:p1",
           },
         ],
       }, {
-        appid: 'survey_man',
-        path: 'src/survey/surveys.panel.vm',
+        appid: "survey_man",
+        path: "src/survey/surveys.panel.vm",
         options: {
-          id: 'surveys',
-          title: 'Surveys',
-          icoClass: 'ico fa fa-3x fa-align-left rotate180',
+          id: "surveys",
+          title: "Surveys",
+          icoClass: "ico fa fa-3x fa-align-left rotate180",
         },
         routes: [ //
           {
             precedence: 1,
-            name: 'surveys',
-            path: ':surveytypeid/:surveyid/:locale',
+            name: "surveys",
+            path: ":surveytypeid/:surveyid/:locale",
             defaultRouteData: {
-              // locale: 'en',
+              // locale: "en",
             },
           },
         ],
       }, {
-        appid: 'sse_cms_cors',
-        path: 'src/swing/swing.panel.vm',
+        appid: "sse_cms_cors",
+        path: "src/swing/swing.panel.vm",
         options: {
-          id: 'swing',
-          title: 'Swing',
-          icoClass: 'ico fa fa-3x fa-exchange',
+          id: "swing",
+          title: "Swing",
+          icoClass: "ico fa fa-3x fa-exchange",
         },
         routes: [ //
           {
             precedence: 1,
-            name: 'swing',
-            path: '',
+            name: "swing",
+            path: "",
           },
         ],
       }, {
-        appid: 'sse_cms_cors',
-        path: 'src/inventory/inventory.panel.vm',
+        appid: "sse_cms_cors",
+        path: "src/inventory/inventory.panel.vm",
         options: {
-          id: 'inventory',
-          title: 'Inventory',
-          icoClass: 'ico fa fa-3x fa-barcode',
+          id: "inventory",
+          title: "Inventory",
+          icoClass: "ico fa fa-3x fa-barcode",
         },
         routes: [ //
           {
             precedence: 1,
-            name: 'inventory',
-            path: ':tab',
+            name: "inventory",
+            path: ":tab",
           },
         ],
       }, {
-        appid: 'sse_cms_cors',
-        path: 'src/scheduling/scheduling.panel.vm',
+        appid: "sse_cms_cors",
+        path: "src/scheduler/scheduler.panel.vm",
         options: {
-          id: 'scheduling',
-          title: 'Scheduling',
-          icoClass: 'ico fa fa-3x fa-calendar',
+          id: "scheduler",
+          title: "Schedule\nAdmin",
+          icoClass: "ico fa fa-3x fa-calendar",
         },
         routes: [ //
           {
             precedence: 1,
-            name: 'scheduling',
-            path: ':id/:ticketid',
+            name: "scheduler",
+            path: ":tab/:id/:p1",
           },
         ],
       }, {
-        appid: 'hr_man',
-        path: 'src/hr/hr.panel.vm',
+        appid: "sse_cms_cors",
+        path: "src/scheduling/scheduling.panel.vm",
         options: {
-          id: 'hr',
-          title: 'HR',
-          icoClass: 'ico fa fa-3x fa-users',
+          id: "scheduling",
+          title: "Scheduling",
+          icoClass: "ico fa fa-3x fa-calendar",
         },
         routes: [ //
           {
             precedence: 1,
-            name: 'hr',
-            path: ':collection/:id/:p1',
+            name: "scheduling",
+            path: ":id/:ticketid",
+          },
+        ],
+      }, {
+        appid: "hr_man",
+        path: "src/hr/hr.panel.vm",
+        options: {
+          id: "hr",
+          title: "HR",
+          icoClass: "ico fa fa-3x fa-users",
+        },
+        routes: [ //
+          {
+            precedence: 1,
+            name: "hr",
+            path: ":collection/:id/:p1",
           },
         ],
       }, {

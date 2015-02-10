@@ -198,13 +198,13 @@ define('src/hr/user.vm', [
   // }
 
   function load_user(userid, setter, cb) {
-    dataservice.humanresourcesrv.users.read({
+    dataservice.hr.users.read({
       id: userid,
     }, setter, cb);
   }
 
   function load_recruits(userid, setter, cb) {
-    dataservice.humanresourcesrv.users.read({
+    dataservice.hr.users.read({
       id: userid,
       link: 'recruits',
     }, setter, cb);
