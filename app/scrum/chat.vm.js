@@ -1,12 +1,12 @@
-define('src/scrum/chat.vm', [
-  'src/app',
-  'src/ukov',
-  'src/scrum/ws',
-  'ko',
-  'src/core/strings',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
+define("src/scrum/chat.vm", [
+  "src/app",
+  "src/ukov",
+  "src/scrum/ws",
+  "ko",
+  "src/core/strings",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/base.vm",
 ], function(
   app,
   ukov,
@@ -27,7 +27,7 @@ define('src/scrum/chat.vm', [
     ChatViewModel.super_.call(_this, options);
     // BaseViewModel.ensureProps(_this, []);
 
-    _this.msg = ukov.wrap('', {
+    _this.msg = ukov.wrap("", {
       converter: ukov.converters.string(),
       validators: [ukov.validators.isRequired()],
     });
@@ -49,12 +49,12 @@ define('src/scrum/chat.vm', [
     }
 
     //
-    ws.on('chat:message:add', _this, function(data) {
+    ws.on("chat:message:add", _this, function(data) {
       data.isTime = false;
       data.typing = false;
       _this.msgs.push(data);
     });
-    ws.on('chat:message:typing', _this, function(data) {
+    ws.on("chat:message:typing", _this, function(data) {
       var index = -1;
       typingMsgs.peek().some(function(item, i) {
         if (item.senderId === data.senderId) {
@@ -78,7 +78,7 @@ define('src/scrum/chat.vm', [
         }
       }
     });
-    ws.on('time', _this, function(data) {
+    ws.on("time", _this, function(data) {
       var list = _this.msgs.peek(),
         lastMsg = list[list.length - 1];
       if (lastMsg && lastMsg.isTime) {
@@ -89,12 +89,12 @@ define('src/scrum/chat.vm', [
       _this.msgs.push({
         isTime: true,
         typing: false,
-        name: '',
+        name: "",
         text: strings.formatters.datetimesec(data),
       });
     });
-    ws.on('authorized', _this, function(data) {
-      notify.info(strings.format('Authorized {0} for {1}.', data.User, data.FuncName), null, 5);
+    ws.on("authorized", _this, function(data) {
+      notify.info(strings.format("Authorized {0} for {1}.", data.User, data.FuncName), null, 5);
     });
 
     //
@@ -107,24 +107,24 @@ define('src/scrum/chat.vm', [
       _this.focus(true);
       if (!_this.msg.isValid()) {
         ////////////TESTING//////////////////////////
-        ws.get('/controller/action/123/link', {
+        ws.get("/controller/action/123/link", {
           a: 1,
           b: 2,
         }, null, function(err, resp) {
-          console.log('ws rpc resp:', resp);
+          console.log("ws rpc resp:", resp);
         });
         ////////////TESTING//////////////////////////
         return;
       }
-      ws.sendJson('chat:message:add', getData());
-      _this.msg.setValue('');
+      ws.sendJson("chat:message:add", getData());
+      _this.msg.setValue("");
     };
     _this.msg.subscribe(function() {
-      ws.sendJson('chat:message:typing', getData());
+      ws.sendJson("chat:message:typing", getData());
     });
   }
   utils.inherits(ChatViewModel, BaseViewModel);
-  ChatViewModel.prototype.viewTmpl = 'tmpl-scrum_chat';
+  ChatViewModel.prototype.viewTmpl = "tmpl-scrum_chat";
 
   ChatViewModel.prototype.asdf = function() {
 

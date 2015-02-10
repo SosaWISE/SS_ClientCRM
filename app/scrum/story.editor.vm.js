@@ -1,11 +1,11 @@
-define('src/scrum/story.editor.vm', [
-  'src/dataservice',
-  'src/core/combo.vm',
-  'src/ukov',
-  'ko',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
+define("src/scrum/story.editor.vm", [
+  "src/dataservice",
+  "src/core/combo.vm",
+  "src/ukov",
+  "ko",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/base.vm",
 ], function(
   dataservice,
   ComboViewModel,
@@ -28,7 +28,7 @@ define('src/scrum/story.editor.vm', [
     Name: {
       converter: ukov.converters.string(),
       validators: [
-        ukov.validators.isRequired('Name is required'),
+        ukov.validators.isRequired("Name is required"),
       ],
     },
     Description: {},
@@ -37,7 +37,7 @@ define('src/scrum/story.editor.vm', [
         //
         function(val, model) {
           if (val == null && model.strictValidation) {
-            return 'Points is required';
+            return "Points is required";
           }
         },
       ],
@@ -58,8 +58,8 @@ define('src/scrum/story.editor.vm', [
 
     _this.item = _this.item || {
       StoryTypeId: 1,
-      Name: '',
-      Description: '',
+      Name: "",
+      Description: "",
       Points: null,
       PersonId: null,
       SortOrder: null,
@@ -68,7 +68,7 @@ define('src/scrum/story.editor.vm', [
     };
     _this.item.strictValidation = _this.strictValidation || (_this.item.Points != null);
 
-    _this.title = (_this.item.sid ? _this.item.sid.toUpperCase() : 'New Story');
+    _this.title = (_this.item.sid ? _this.item.sid.toUpperCase() : "New Story");
     _this.data = ukov.wrap(_this.item, schema);
     _this.data.StoryTypeCvm = new ComboViewModel({
       selectedValue: _this.data.StoryTypeId,
@@ -102,9 +102,9 @@ define('src/scrum/story.editor.vm', [
     });
   }
   utils.inherits(StoryEditorViewModel, BaseViewModel);
-  StoryEditorViewModel.prototype.viewTmpl = 'tmpl-scrum_story_editor';
+  StoryEditorViewModel.prototype.viewTmpl = "tmpl-scrum_story_editor";
   StoryEditorViewModel.prototype.width = 800;
-  StoryEditorViewModel.prototype.height = 'auto';
+  StoryEditorViewModel.prototype.height = "auto";
 
 
   function closeLayer(_this) {
@@ -120,7 +120,7 @@ define('src/scrum/story.editor.vm', [
     var _this = this,
       msg;
     if (_this.cmdSave.busy() && !_this.layerResult) {
-      msg = 'Please wait for save to finish.';
+      msg = "Please wait for save to finish.";
     }
     return msg;
   };
@@ -145,43 +145,43 @@ define('src/scrum/story.editor.vm', [
   StoryEditorViewModel.prototype.storyTypeOptions = [ //
     {
       value: 1,
-      text: 'Story',
+      text: "Story",
     }, {
       value: 2,
-      text: 'Bug',
+      text: "Bug",
     },
   ];
   StoryEditorViewModel.prototype.pointOptions = [ //
     {
       value: 0,
-      text: '0',
+      text: "0",
     }, {
       value: 0.5,
-      text: '0.5',
+      text: "0.5",
     }, {
       value: 1,
-      text: '1',
+      text: "1",
     }, {
       value: 2,
-      text: '2',
+      text: "2",
     }, {
       value: 3,
-      text: '3',
+      text: "3",
     }, {
       value: 5,
-      text: '5',
+      text: "5",
     }, {
       value: 8,
-      text: '8',
+      text: "8",
     }, {
       value: 13,
-      text: '13',
+      text: "13",
     }, {
       value: 20,
-      text: '20',
+      text: "20",
     }, {
       value: 40,
-      text: '40',
+      text: "40",
     },
   ];
 

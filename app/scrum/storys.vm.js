@@ -503,9 +503,9 @@ define("src/scrum/storys.vm", [
       }
     }
     if (parentItem) {
-      // find the parent's following sibling
+      // find the following sibling of parent
       var parentSiblingIdx = findIndex(dv, 1, itemIndent - 1, dv.getIdxById(parentItem.sid) + 1);
-      // ensure tmpIdx is not greater than parent's sibling
+      // ensure tmpIdx is not greater than sibling of parent
       if (parentSiblingIdx != null && parentSiblingIdx < tmpIdx) {
         tmpIdx = parentSiblingIdx;
         tmpItem = dv.getItemByIdx(tmpIdx);
@@ -610,7 +610,7 @@ define("src/scrum/storys.vm", [
         throw new Error("invalid type:" + item._metadata.type);
     }
 
-    // edit item if this vm doesn't `take` it
+    // edit item if this vm does not `take` it
     if (!_this.takes(item)) {
       // edit item but with more save restrictions
       _this.editItem(item, cb, {
@@ -747,7 +747,7 @@ define("src/scrum/storys.vm", [
         item = items[i];
         if (showMap[item.sid] || myFilter(item, args, outparams)) {
           retval[idx++] = item;
-          // add parent to show map to show parent even when it doesn't match the filter
+          // add parent to show map to show parent even when it does not match the filter
           showMap[item._metadata.psid] = true;
         } else if (outparams.matches) {
           // show parent even when it or its parent(recursive) is collapsed
@@ -761,7 +761,7 @@ define("src/scrum/storys.vm", [
     dv.uncompiledFilterWithCaching = dv.uncompiledFilter;
     //
     dv.setItems([], "sid");
-    dv.setFilter(true); //@NOTE: this should be the filter function but we're overridding uncompiledFilter. it needs a truthy value since getFilteredAndPagedItems uses it in an if statement
+    dv.setFilter(true); //@NOTE: this should be the filter function but we are overridding uncompiledFilter. it needs a truthy value since getFilteredAndPagedItems uses it in an if statement
 
     // sorting order
     function myComparer(a, b) {
@@ -769,7 +769,7 @@ define("src/scrum/storys.vm", [
       if (result === 0) {
         var ai = a._metadata.indent;
         var bi = b._metadata.indent;
-        // go up until we're at the same indent level
+        // go up until we are at the same indent level
         while (a._metadata.indent < b._metadata.indent) {
           b = map[b._metadata.psid] || _top; // go up to parent
         }

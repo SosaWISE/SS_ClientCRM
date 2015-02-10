@@ -1,15 +1,15 @@
-define('src/scrum/scrum.panel.vm', [
-  'src/core/helpers',
-  'src/dataservice',
-  'src/scrum/chat.vm',
-  'src/scrum/project.vm',
-  'ko',
-  'src/core/layers.vm',
-  'src/core/utils',
-  'src/core/controller.vm',
-  // don't care about reference
-  // 'src/scrum/scrum.dragdrop',
-  'src/scrum/chat.bindings',
+define("src/scrum/scrum.panel.vm", [
+  "src/core/helpers",
+  "src/dataservice",
+  "src/scrum/chat.vm",
+  "src/scrum/project.vm",
+  "ko",
+  "src/core/layers.vm",
+  "src/core/utils",
+  "src/core/controller.vm",
+  // require but ignore references
+  // "src/scrum/scrum.dragdrop",
+  "src/scrum/chat.bindings",
 ], function(
   helpers,
   dataservice,

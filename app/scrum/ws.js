@@ -1,12 +1,12 @@
-define('src/scrum/ws', [
-  'src/config',
-  'src/core/querystring',
-  'src/core/harold',
-  'src/core/strings',
-  'src/core/jsonhelpers',
-  'src/core/notify',
-  'src/core/utils',
-  'ko',
+define("src/scrum/ws", [
+  "src/config",
+  "src/core/querystring",
+  "src/core/harold",
+  "src/core/strings",
+  "src/core/jsonhelpers",
+  "src/core/notify",
+  "src/core/utils",
+  "ko",
 ], function(
   config,
   querystring,
@@ -26,13 +26,13 @@ define('src/scrum/ws', [
 
   //@NOTE: from socket.io client
   var packetTypeList = [
-      'CONNECT',
-      'DISCONNECT',
-      'EVENT',
-      'BINARY_EVENT',
-      'ACK',
-      'BINARY_ACK',
-      'ERROR'
+      "CONNECT",
+      "DISCONNECT",
+      "EVENT",
+      "BINARY_EVENT",
+      "ACK",
+      "BINARY_ACK",
+      "ERROR"
     ],
     requestCount = 0,
     packetTypes = {};
@@ -61,6 +61,7 @@ define('src/scrum/ws', [
     //
     createSocket(_this, uri);
   }
+
   //
   // websocket handlers
   //
@@ -72,13 +73,13 @@ define('src/scrum/ws', [
     _this.transport.onmessage = _this.handleMessage;
   }
   Ws.prototype.handleOpen = function( /*evt*/ ) {
-    notify.warn('WebSocket connection open', null, 2);
+    notify.warn("WebSocket connection open", null, 2);
   };
   Ws.prototype.handleClose = function( /*evt*/ ) {
-    notify.warn('WebSocket connection closed', null, 5);
+    notify.warn("WebSocket connection closed", null, 5);
   };
   Ws.prototype.handleError = function(evt) {
-    notify.warn('WebSocket error', JSON.stringify(evt), 5);
+    notify.warn("WebSocket error", JSON.stringify(evt), 5);
   };
   Ws.prototype.handleMessage = function(evt) {
     var _this = this,
@@ -90,10 +91,10 @@ define('src/scrum/ws', [
     } else {
       eventName = packet.data[0];
       switch (eventName) {
-        case 'request':
+        case "request":
           _this.handleRequest(packet);
           break;
-        case 'response':
+        case "response":
           _this.handleResponse(packet);
           break;
         default:
@@ -103,7 +104,7 @@ define('src/scrum/ws', [
     }
   };
   Ws.prototype.handleRequest = function(pckt) {
-    notify.warn('WebSocket request', JSON.stringify(pckt.data[1]));
+    notify.warn("WebSocket request", JSON.stringify(pckt.data[1]));
   };
   Ws.prototype.handleResponse = function(pckt) {
     var _this = this,
@@ -111,10 +112,10 @@ define('src/scrum/ws', [
     req = _this.pendingRequests[resp.rpcid];
     if (req) {
       delete _this.pendingRequests[resp.rpcid];
-      notify.warn('WebSocket response', JSON.stringify(resp));
+      notify.warn("WebSocket response", JSON.stringify(resp));
       req.callback(null, resp, {});
     } else {
-      notify.warn('Unexpected WebSocket response', JSON.stringify(resp));
+      notify.warn("Unexpected WebSocket response", JSON.stringify(resp));
     }
   };
   //
@@ -132,10 +133,10 @@ define('src/scrum/ws', [
 
   Ws.prototype.get = function(path, queryObj, setter, callback) {
     var _this = this,
-      rpcid = (++requestCount) + '',
-      packet = new StringPacket(packetTypes.EVENT, ['request', {
+      rpcid = (++requestCount) + "",
+      packet = new StringPacket(packetTypes.EVENT, ["request", {
         rpcid: rpcid,
-        method: 'GET',
+        method: "GET",
         url: createRequestUrl(path, queryObj),
         body: {
           bodyProp1: 1,
@@ -161,11 +162,12 @@ define('src/scrum/ws', [
   //
   function createRequestUrl(path, queryObj) {
     var query = querystring.toQuerystring(queryObj);
-    return frontSlash(path) + (query ? ('?' + query) : '');
+    return frontSlash(path) + (query ? ("?" + query) : "");
   }
+
   //
   function frontSlash(text) {
-    return (text || text === 0) ? ('/' + text) : '';
+    return (text || text === 0) ? ("/" + text) : "";
   }
 
 
@@ -181,13 +183,13 @@ define('src/scrum/ws', [
   }
   StringPacket.prototype.encode = function() {
     var _this = this;
-    // '2["eventName",obj]
+    // "2["eventName",obj]
     return _this.typeIndex + jsonhelpers.stringify(_this.data);
   };
   StringPacket.decode = function(str) {
     var typeIndex = Number(str.charAt(0));
     if (typeIndex !== packetTypes.EVENT) {
-      return new Error('unsupported type ' + (packetTypeList[typeIndex] || typeIndex));
+      return new Error("unsupported type " + (packetTypeList[typeIndex] || typeIndex));
     }
     return new StringPacket(typeIndex, jsonhelpers.parse(str.substr(1)));
   };

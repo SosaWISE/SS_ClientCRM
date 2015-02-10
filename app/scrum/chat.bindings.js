@@ -1,6 +1,6 @@
-define('src/scrum/chat.bindings', [
-  'jquery',
-  'ko',
+define("src/scrum/chat.bindings", [
+  "jquery",
+  "ko",
 ], function(
   jquery,
   ko
@@ -21,7 +21,7 @@ define('src/scrum/chat.bindings', [
         subs.push(observable.subscribe(function() {
           // before the array changes check if the scroll bar is at the bottom
           doScroll = atBottom(element);
-        }, null, 'beforeChange'));
+        }, null, "beforeChange"));
         subs.push(observable.subscribe(function() {
           if (doScroll) {
             // after the array has changed keep the scroll bar at the bottom
