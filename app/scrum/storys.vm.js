@@ -42,44 +42,18 @@ define("src/scrum/storys.vm", [
 
   var _indentPixels = 15;
 
-  var taskstepActionsMap = {
-    1: { // Pending
-      next: {
-        stepid: 2,
-        text: "Work on",
-      },
-      fail: null,
-    },
-    2: { // In-Progress
-      next: {
-        stepid: 3,
-        text: "Done",
-      },
-      fail: null,
-    },
-    3: { // Complete
-      next: {
-        stepid: 2,
-        text: "Restart",
-      },
-      fail: {
-        stepid: 1,
-        text: "Failed",
-      },
-    },
-  };
-
   function StorysViewModel(options) {
     var _this = this;
     StorysViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, [
+    utils.assertProps(_this, [
       // "pcontroller",
+      "projectsMap",
       "accepts",
       "takes",
       "rsort",
     ]);
     if (_this.pcontroller) {
-      ControllerViewModel.ensureProps(_this.pcontroller, [
+      utils.assertProps(_this.pcontroller, [
         // "dragHub",
         "layersVm",
         "storyUpdated",
@@ -88,9 +62,11 @@ define("src/scrum/storys.vm", [
     }
 
     // ensure dragHub is set
-    var dragHub = ((_this.pcontroller) ? _this.pcontroller.dragHub : null) || new DragHub({
+    var tmp = _this.pcontroller || {};
+    tmp.dragHub = tmp.dragHub || new DragHub({
       cancelEditOnDrag: true,
     });
+    var dragHub = tmp.dragHub;
 
     _this.filters = ukov.wrap({
       Name: "",
@@ -105,7 +81,7 @@ define("src/scrum/storys.vm", [
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
-        rowHeight: 20,
+        rowHeight: 28,
         multiSelect: false,
         // these are needed for HeaderFilter
         showHeaderRow: true,
@@ -230,25 +206,44 @@ define("src/scrum/storys.vm", [
           }
           return (value == null ? "?" : value) + postfix;
         },
+      }, {
+        behavior: "move",
+        id: "Project",
+        name: "Project",
+        width: 50,
+        // resizable: false,
+        formatter: function(row, cell, value, columnDef, item) {
+          var id = item.ProjectId;
+          if (!id) {
+            return "";
+          }
+          var p = _this.projectsMap[id];
+          return p.Name;
+        },
       },
     ];
 
     if (showState) {
-      var taskstepsMap;
-      // var btnFormat = "<a class=\"{0}\">{1}</a>";
+      columns.push({
+        id: "Assignee",
+        name: "Assignee",
+        // field: "Points",
+        width: 70,
+        minWidth: 50,
+        formatter: function(row, cell, value, columnDef, item) {
+          return getPersonName(item.PersonId);
+        },
+      });
+
       columns.push(new ButtonsColumn({
         id: "stateActions",
         name: "State",
         buttons: [ //
           {
-            fn: function(item) {
-              var action = taskstepActionsMap[item.StepId].next;
-              notify.info("clicked [" + action.text + "] - change to " + taskstepsMap[action.stepid].Name);
-            },
-          }, {
-            fn: function(item) {
-              var action = taskstepActionsMap[item.StepId].fail;
-              notify.info("clicked [" + action.text + "] - change to " + taskstepsMap[action.stepid].Name);
+            fn: function(item, e) {
+              var stepid = parseInt(e.target.getAttribute("data-stepid"), 10);
+              item.StepId = stepid;
+              _this.saveItem(item);
             },
           }
         ],
@@ -257,24 +252,16 @@ define("src/scrum/storys.vm", [
           if (item._metadata.type !== "T") {
             return "";
           }
-          taskstepActionsMap = taskstepActionsMap;
-
-          if (!taskstepsMap) {
-            taskstepsMap = scrumcache.getMap("tasksteps");
-            if (!taskstepsMap) {
-              return "loading...";
-            }
+          var step = scrumcache.getMap("tasksteps")[item.StepId];
+          var result = step.Name;
+          if (step.Actions.length) {
+            result += "&nbsp;&nbsp;";
+            step.Actions.forEach(function(action) {
+              result += strings.format("<a data-stepid=\"{0}\">[{1}]</a>&nbsp;&nbsp;",
+                action.StepId, action.Text);
+            });
           }
-          if (item) {
-            var step = taskstepsMap[item.StepId];
-            var result = step.Name + "&nbsp;&nbsp;";
-
-            var action = taskstepActionsMap[item.StepId];
-            result += getBtnAnchor(action.next);
-            result += getBtnAnchor(action.fail);
-            return result;
-          }
-          return null;
+          return result;
         },
       }));
     }
@@ -290,15 +277,23 @@ define("src/scrum/storys.vm", [
     return columns;
   }
 
-  function getBtnAnchor(action) {
-    if (!action) {
-      return "<a></a>";
+  function getPersonName(personId) {
+    if (!personId) {
+      return "";
     }
-    return strings.format("<a>[{0}]</a>&nbsp;&nbsp;", action.text);
+    var p = scrumcache.getMap("persons")[personId];
+    if (!p) {
+      return "unknown person: " + personId;
+    }
+    if (!p._FullName) {
+      p._FullName = strings.format("{0} {1}", p.FirstName, p.LastName);
+    }
+    return p._FullName;
   }
 
   StorysViewModel.prototype.onLoad = function(routeData, extraData, join) {
     scrumcache.ensure("tasksteps", join.add());
+    scrumcache.ensure("persons", join.add());
   };
 
   StorysViewModel.prototype.getItem = function(sid) {
@@ -307,34 +302,41 @@ define("src/scrum/storys.vm", [
   };
 
   StorysViewModel.prototype.editItem = function(item, cb, editorOptions) {
+    cb = cb || utils.noop;
     var _this = this,
       vm = _this.makeEditor(item, editorOptions);
-    _this.pcontroller.layersVm.show(vm, createSaveHandler(_this, item, cb));
-  };
-  StorysViewModel.prototype.saveItem = function(item, cb, editorOptions) {
-    var _this = this,
-      vm = _this.makeEditor(item, editorOptions);
-    vm.save(createSaveHandler(_this, item, cb));
-  };
-
-  function createSaveHandler(_this, item, cb) {
-    return function(result) {
-      if (result) {
-        result.sid = item._metadata.sid;
-        result._metadata = item._metadata;
-        switch (result._metadata.type) {
-          case "S":
-            _this.pcontroller.storyUpdated(result, true);
-            break;
-          case "T":
-            _this.pcontroller.taskUpdated(result, true);
-            break;
-          default:
-            throw new Error("invalid item type: " + result._metadata.type);
-        }
+    _this.pcontroller.layersVm.show(vm, function(val) {
+      if (val) {
+        onItemSavedHandler(_this.pcontroller, item, val);
       }
       cb();
-    };
+    });
+  };
+  StorysViewModel.prototype.saveItem = function(item, cb, editorOptions) {
+    cb = cb || utils.noop;
+    var _this = this,
+      vm = _this.makeEditor(item, editorOptions);
+    vm.save(function(err, resp) {
+      if (!notify.iferror(err)) {
+        onItemSavedHandler(_this.pcontroller, item, resp.Value);
+      }
+      cb();
+    });
+  };
+
+  function onItemSavedHandler(pcontroller, item, val) {
+    val.sid = item.sid;
+    val._metadata = item._metadata;
+    switch (val._metadata.type) {
+      case "S":
+        pcontroller.storyUpdated(val, true);
+        break;
+      case "T":
+        pcontroller.taskUpdated(val, true);
+        break;
+      default:
+        throw new Error("invalid item type: " + val._metadata.type);
+    }
   }
   StorysViewModel.prototype.makeEditor = function(item, editorOptions /*, parentId*/ ) {
     var vm,
@@ -346,7 +348,6 @@ define("src/scrum/storys.vm", [
         vm = new StoryEditorViewModel(editorOptions);
         break;
       case "T":
-        // throw new Error("TaskEditorViewModel not implemented");
         vm = new TaskEditorViewModel(editorOptions);
         break;
       default:
@@ -368,7 +369,7 @@ define("src/scrum/storys.vm", [
       _this.dv.endUpdate();
     }
   };
-  StorysViewModel.prototype.updateItem = function(item, select) {
+  StorysViewModel.prototype.updateItem = function(item, select, preventResort) {
     var _this = this;
     var sid = item._metadata.sid;
 
@@ -387,9 +388,23 @@ define("src/scrum/storys.vm", [
       return;
     }
 
+    // update parent
+    var psid = item._metadata.psid;
+    if (psid) {
+      var parent = dv.getItemById(psid);
+      if (parent) {
+        // if parent had zero children we need to reSort in
+        // order for the expand/collapse button to show up
+        dv.reSort();
+        _this.updateItem(parent, false, true);
+      }
+    }
+
     // ensure the correct order
     //@REVIEW: this could be removed if we inserted in the correct order...
-    dv.reSort();
+    if (!preventResort) {
+      dv.reSort();
+    }
     //
     if (select) {
       var idx = dv.getIdxById(sid);
@@ -618,8 +633,8 @@ define("src/scrum/storys.vm", [
       });
     } else {
       // save item
-      // _this.saveItem(item, cb, {
-      _this.editItem(item, cb, {
+      _this.saveItem(item, cb, {
+        // _this.editItem(item, cb, {
         strictValidation: true,
       });
     }
@@ -828,11 +843,7 @@ define("src/scrum/storys.vm", [
             break;
           case "T":
             // classes.push("task");
-            if (item.StepId === 1) { // Pending
-              classes.push("stale");
-            } else if (item.StepId === 2) { // In Progress
-              classes.push("inprogress");
-            }
+            classes.push(scrumcache.getMap("tasksteps")[item.StepId].Css);
             break;
         }
       }
@@ -887,6 +898,7 @@ define("src/scrum/storys.vm", [
   function create(pcontroller, options) {
     return new StorysViewModel({
       pcontroller: pcontroller,
+      projectsMap: pcontroller ? pcontroller.projectsMap : {},
       indentOffset: utils.ifNull(options.indentOffset, -1), // default to -1
       accepts: options.accepts,
       takes: options.takes,

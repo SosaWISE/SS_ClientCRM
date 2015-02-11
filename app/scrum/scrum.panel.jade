@@ -11,9 +11,9 @@ div(class="panel scrum",data-bind="active:active,css:{'hide-nav':hideNav}")
     div(class="contents-wrap")
       div(class="contents")
         div(class="section")
-          span(class="title") Projects
+          span(class="title") Project Groups
           div(class="contents")
-            ul(class="projects",data-bind="foreach:projects")
+            ul(class="groups",data-bind="foreach:groups")
               li
                 a(data-bind="active:active,click:$parent.clickItem")
                   span(class="name",data-bind="text:title")

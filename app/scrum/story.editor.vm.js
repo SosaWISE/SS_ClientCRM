@@ -1,16 +1,20 @@
 define("src/scrum/story.editor.vm", [
+  "src/scrum/scrum-cache",
   "src/dataservice",
   "src/core/combo.vm",
   "src/ukov",
   "ko",
+  "src/core/strings",
   "src/core/notify",
   "src/core/utils",
   "src/core/base.vm",
 ], function(
+  scrumcache,
   dataservice,
   ComboViewModel,
   ukov,
   ko,
+  strings,
   notify,
   utils,
   BaseViewModel
@@ -54,7 +58,8 @@ define("src/scrum/story.editor.vm", [
   function StoryEditorViewModel(options) {
     var _this = this;
     StoryEditorViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, []);
+    // utils.assertProps(_this, [
+    // ]);
 
     _this.item = _this.item || {
       StoryTypeId: 1,
@@ -80,9 +85,15 @@ define("src/scrum/story.editor.vm", [
       nullable: true,
     });
     _this.data.PersonCvm = new ComboViewModel({
-      selectedValue: _this.data.PersonId,
-      list: [],
       nullable: true,
+      selectedValue: _this.data.PersonId,
+      list: scrumcache.getList("persons").peek(),
+      fields: {
+        value: "ID",
+        text: function(item) {
+          return strings.format("{0} {1}", item.FirstName, item.LastName);
+        },
+      },
     });
 
     //
@@ -105,7 +116,6 @@ define("src/scrum/story.editor.vm", [
   StoryEditorViewModel.prototype.viewTmpl = "tmpl-scrum_story_editor";
   StoryEditorViewModel.prototype.width = 800;
   StoryEditorViewModel.prototype.height = "auto";
-
 
   function closeLayer(_this) {
     if (_this.layer) {
@@ -130,16 +140,15 @@ define("src/scrum/story.editor.vm", [
       model;
     if (!_this.data.isValid()) {
       notify.warn(_this.data.errMsg(), null, 7);
-      cb(_this.data.errMsg(), null);
-      return;
+      return cb();
     }
 
     model = _this.data.getValue();
-    dataservice.scrum.storys.save(model, null, utils.safeCallback(cb, function(err, resp) {
-      _this.data.markClean(model, true);
-      _this.layerResult = resp.Value;
+    dataservice.scrum.storys.save(model, function(val) {
+      _this.data.markClean(val, true);
+      _this.layerResult = val;
       closeLayer(_this);
-    }, notify.error));
+    }, cb);
   };
 
   StoryEditorViewModel.prototype.storyTypeOptions = [ //

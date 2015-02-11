@@ -88,8 +88,8 @@ define("src/slick/buttonscolumn", [
 
         // find index of anchor tag
         var index = jquery(e.target).index();
-        // get button using index and call button function
-        var btn = _options.buttons[index];
+        // get button using index and call button function, or use first button
+        var btn = _options.buttons[index] || _options.buttons[0];
         if (btn) {
           btn.fn(args.grid.getDataItem(args.row), e);
 

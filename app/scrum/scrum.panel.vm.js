@@ -2,7 +2,7 @@ define("src/scrum/scrum.panel.vm", [
   "src/core/helpers",
   "src/dataservice",
   "src/scrum/chat.vm",
-  "src/scrum/project.vm",
+  "src/scrum/group.vm",
   "ko",
   "src/core/layers.vm",
   "src/core/utils",
@@ -14,7 +14,7 @@ define("src/scrum/scrum.panel.vm", [
   helpers,
   dataservice,
   ChatViewModel,
-  ProjectViewModel,
+  GroupViewModel,
   ko,
   LayersViewModel,
   utils,
@@ -31,7 +31,7 @@ define("src/scrum/scrum.panel.vm", [
       controller: _this,
     });
 
-    _this.projects = _this.childs;
+    _this.groups = _this.childs;
     _this.hideNav = ko.observable(false);
     _this.hideNav(true);
     _this.chatVm = ko.observable();
@@ -56,13 +56,13 @@ define("src/scrum/scrum.panel.vm", [
 
     _this.chatVm(new ChatViewModel());
 
-    load_projects(_this, _this.projects, join.add());
+    load_groups(_this, _this.groups, join.add());
   };
 
-  function load_projects(_this, setter, cb) {
-    dataservice.scrum.projects.read({}, null, utils.safeCallback(cb, function(err, resp) {
+  function load_groups(_this, setter, cb) {
+    dataservice.scrum.scrumGroups.read({}, null, utils.safeCallback(cb, function(err, resp) {
       var list = resp.Value.map(function(item) {
-        return new ProjectViewModel({
+        return new GroupViewModel({
           pcontroller: _this,
           id: item.ID,
           title: item.Name,

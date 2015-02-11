@@ -4,6 +4,7 @@ define("src/scrum/task.editor.vm", [
   "src/core/combo.vm",
   "src/ukov",
   "ko",
+  "src/core/strings",
   "src/core/notify",
   "src/core/utils",
   "src/core/base.vm",
@@ -13,6 +14,7 @@ define("src/scrum/task.editor.vm", [
   ComboViewModel,
   ukov,
   ko,
+  strings,
   notify,
   utils,
   BaseViewModel
@@ -36,7 +38,7 @@ define("src/scrum/task.editor.vm", [
       ],
     },
     PersonId: {},
-    Hours: {
+    Points: {
       converter: ukov.converters.number(2),
       validators: [],
     },
@@ -53,34 +55,40 @@ define("src/scrum/task.editor.vm", [
   function TaskEditorViewModel(options) {
     var _this = this;
     TaskEditorViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, [
-      // "taskSteps"
-    ]);
+    // utils.assertProps(_this, [
+    // ]);
     if (!_this.ParentId && !_this.item) {
       throw new Error("a ParentId or an item is required");
     }
-    _this.mixinLoad();
 
-    _this.title = (_this.item ? "Edit" : "New") + " Task";
-    _this.focusFirst = ko.observable(false);
-    _this.data = ukov.wrap(_this.item || {
+    _this.item = _this.item || {
       ParentId: _this.ParentId,
       Name: "",
       PersonId: null,
-      Hours: null,
+      Points: null,
       StepId: 1,
       SortOrder: null,
       IsDeleted: false,
       Version: 1,
-    }, schema);
+    };
+
+    _this.title = (_this.item ? "Edit" : "New") + " Task";
+    _this.focusFirst = ko.observable(false);
+    _this.data = ukov.wrap(_this.item, schema);
     _this.data.PersonCvm = new ComboViewModel({
-      selectedValue: _this.data.PersonId,
-      list: [],
       nullable: true,
+      selectedValue: _this.data.PersonId,
+      list: scrumcache.getList("persons").peek(),
+      fields: {
+        value: "ID",
+        text: function(item) {
+          return strings.format("{0} {1}", item.FirstName, item.LastName);
+        },
+      },
     });
     _this.data.StepCvm = new ComboViewModel({
       selectedValue: _this.data.StepId,
-      // list: _this.taskSteps,
+      list: scrumcache.getList("tasksteps").peek(),
       fields: {
         value: "ID",
         text: "Name",
@@ -117,17 +125,22 @@ define("src/scrum/task.editor.vm", [
   TaskEditorViewModel.prototype.width = 400;
   TaskEditorViewModel.prototype.height = "auto";
 
-  TaskEditorViewModel.prototype.onLoad = function(routeData, extraData, join) {
+  function closeLayer(_this) {
+    if (_this.layer) {
+      _this.layer.close();
+    }
+  }
+  TaskEditorViewModel.prototype.getResults = function() {
     var _this = this;
-
-    scrumcache.ensure("tasksteps", join.add());
-
-    join.when(function(err) {
-      if (err) {
-        return;
-      }
-      _this.data.StepCvm.setList(scrumcache.getList("tasksteps").peek());
-    });
+    return [_this.layerResult, _this.isDeleted];
+  };
+  TaskEditorViewModel.prototype.closeMsg = function() { // overrides base
+    var _this = this,
+      msg;
+    if (_this.cmdSave.busy() && !_this.layerResult) {
+      msg = "Please wait for save to finish.";
+    }
+    return msg;
   };
 
   TaskEditorViewModel.prototype.save = function(cb) {
@@ -135,20 +148,15 @@ define("src/scrum/task.editor.vm", [
       model;
     if (!_this.data.isValid()) {
       notify.warn(_this.data.errMsg(), null, 7);
-      cb();
-      return;
+      return cb();
     }
 
     model = _this.data.getValue();
-    _this.data.markClean(model, true);
-    dataservice.scrum.tasks.save(model, null, function(err, resp) {
-      if (err) {
-        notify.error(err);
-      } else if (_this.layer) {
-        _this.layer.close(resp.Value);
-      }
-      cb(resp.Value);
-    });
+    dataservice.scrum.tasks.save(model, function(val) {
+      _this.data.markClean(val, true);
+      _this.layerResult = val;
+      closeLayer(_this);
+    }, cb);
   };
 
   return TaskEditorViewModel;

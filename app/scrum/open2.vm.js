@@ -20,6 +20,7 @@ define("src/scrum/open2.vm", [
     Open2ViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
       "layersVm",
+      "projectsMap",
       "sprint",
       "storys",
       "tasks",

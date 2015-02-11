@@ -11,7 +11,7 @@ div(class="story-editor")
     li
       span(class="label") Hours Estimated
       input(type="text", placeholder="",
-        data-bind="ukov:data.Hours,value:data.Hours,valueUpdate:'keyup',cmdEnter:cmdSave")
+        data-bind="ukov:data.Points,value:data.Points,valueUpdate:'keyup',cmdEnter:cmdSave")
     li
       span(class="label") Step
       div(data-bind="template:{name:data.StepCvm.viewTmpl,data:data.StepCvm},cmdEnter:cmdSave")

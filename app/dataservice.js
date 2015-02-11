@@ -145,8 +145,9 @@ define("src/dataservice", [
     scrum: createService("scrum", [
       "persons",
       "projects",
+      "scrumGroups",
       "sprints",
-      "epics",
+      // "epics",
       "storytypes",
       "storys",
       "tasksteps",

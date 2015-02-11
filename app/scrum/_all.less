@@ -43,17 +43,20 @@ body.sockets {
     }
 
     &.story .slick-cell {
-      background-color: rgb(207, 207, 207);
+      background-color: #E5E5E5;
     }
 
-    &.inprogress .slick-cell {
-      background-color: rgb(118, 255, 115);
-    }
     &.blocked .slick-cell {
       background-color: red;
     }
-    &.stale .slick-cell {
-      background-color: rgb(255, 255, 129);
+    &.progressing .slick-cell {
+      background-color: #CCFFCC;
+    }
+    &.testing .slick-cell {
+      background-color: #FFFFCC;
+    }
+    &.complete .slick-cell {
+      background-color: #A8D7FF;
     }
 
     .slick-cell.selected {
@@ -62,7 +65,7 @@ body.sockets {
     }
   }
 
-  .project {
+  .group {
     .tabs {
       background-color: @scrumbg;
     }
@@ -194,7 +197,7 @@ body.sockets {
       }
     }
 
-    ul.projects {
+    ul.groups {
       a {
         position: relative;
 
@@ -632,7 +635,14 @@ body.sockets {
     border-bottom-color: #eee;
     padding-top: 0px;
     padding-bottom: 0px;
-    height: 20px;
+    height: 28px;
+    line-height: 28px;
+
+    &.l0,
+    &.l1,
+    &.l2 {
+      cursor: pointer;
+    }
   }
   .slick-row.odd {
     background: none;
