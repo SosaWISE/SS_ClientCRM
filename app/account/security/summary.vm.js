@@ -1,6 +1,7 @@
 define('src/account/security/summary.vm', [
   'ko',
   'src/account/security/emcontacts.vm',
+  'src/account/security/systemonlineinfo.vm',
   'src/core/layers.vm',
   'src/core/notify',
   'src/core/utils',
@@ -8,6 +9,7 @@ define('src/account/security/summary.vm', [
 ], function(
   ko,
   EmContactsViewModel,
+  SystemOnlineInfoViewModel,
   LayersViewModel,
   notify,
   utils,
@@ -25,6 +27,10 @@ define('src/account/security/summary.vm', [
     });
 
     _this.emcontactsVm = new EmContactsViewModel({
+      layersVm: _this.layersVm,
+    });
+
+    _this.systemonlineinfoVm = new SystemOnlineInfoViewModel({
       layersVm: _this.layersVm,
     });
 
