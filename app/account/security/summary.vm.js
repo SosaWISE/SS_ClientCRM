@@ -46,6 +46,8 @@ define('src/account/security/summary.vm', [
 
     _this.emcontactsVm.loader.reset(); //incase of reload
     _this.emcontactsVm.load(routeData, extraData, join.add());
+    _this.systemonlineinfoVm.loader.reset(); //incase of reload
+    _this.systemonlineinfoVm.load(routeData, extraData, join.add());
 
     //@TODO: load real account
   };
