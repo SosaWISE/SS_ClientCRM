@@ -14,25 +14,29 @@ define('src/account/security/systemonlineinfo.vm', [
   "use strict";
 
   // ** Special KO stuff
-  ko.bindingHandlers.crsss = {
+  ko.bindingHandlers.csr = {
     update: function(element, valueAccessor) {
-      var cls, creditGroup = valueAccessor();
+      var cls, creditGroup = ko.unwrap(valueAccessor()),
+        el = jquery(element);
       switch (creditGroup) {
-        case "Excellent":
         case "Good":
           cls = "green";
           break;
-        case "Sub":
+        case "Warning":
           cls = "yellow";
           break;
-        case "Poor":
+        case "Critical":
           cls = "red";
           break;
-        default:
-          cls = "green";
-          break;
       }
-      jquery(element).addClass(cls);
+
+      if (valueAccessor._prevCls) {
+        el.removeClass(valueAccessor._prevCls);
+      }
+      if (cls) {
+        valueAccessor._prevCls = cls;
+        el.addClass(cls);
+      }
     }
   };
 
@@ -42,24 +46,7 @@ define('src/account/security/systemonlineinfo.vm', [
     ControllerViewModel.ensureProps(_this, ['layersVm']);
 
     // ** Properties
-    _this.creditRank = ko.observable();
-    _this.contract = ko.observable();
-    _this.billing = ko.observable();
-    _this.funding = ko.observable();
-    _this.centralStation = ko.observable();
-    _this.monitoringStatus = ko.observable();
-    _this.cellProvider = ko.observable();
-    _this.cellStatus = ko.observable();
-
-    // ** Bind data
-    // _this.creditRank("Good");
-    _this.contract("Inactive");
-    _this.billing("Active");
-    _this.funding("In House");
-    _this.centralStation("Monitronics");
-    _this.monitoringStatus("Online | On Test");
-    _this.cellProvider("Alarm.com");
-    _this.cellStatus("Registered");
+    _this.msAccountStatus = ko.observableArray();
 
   }
   utils.inherits(SystemOnlineInfoViewModel, ControllerViewModel);
@@ -70,14 +57,7 @@ define('src/account/security/systemonlineinfo.vm', [
     dataservice.monitoringstationsrv.msAccountStatusInformations.read({
       id: routeData.id,
     }, null, utils.safeCallback(join.add(), function(err, resp) {
-      // ** Loop through results and bind information.
-      resp.Value.forEach(function(item) {
-        switch (item.KeyName) {
-          case 'Credit Rank':
-            _this.creditRank(item.Value);
-            break;
-        }
-      });
+      _this.msAccountStatus(resp.Value);
     }, utils.no_op));
   };
 
