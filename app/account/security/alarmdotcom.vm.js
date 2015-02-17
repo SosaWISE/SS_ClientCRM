@@ -161,7 +161,7 @@ define("src/account/security/alarmdotcom.vm", [
     }, utils.noop));
 
     load_alarmcom(_this.accountid, "accountStatus", null, utils.safeCallback(join.add(), function(err, resp) {
-      var result = resp.Value;
+      var result = resp.Value || {};
 
       _this.isRegistered(result.RegistrationStatus === 1);
       var servicePlan;

@@ -1,6 +1,7 @@
 define('src/account/security/summary.vm', [
   'ko',
   'src/account/security/emcontacts.vm',
+  'src/account/security/systemonlineinfo.vm',
   'src/core/layers.vm',
   'src/core/notify',
   'src/core/utils',
@@ -8,6 +9,7 @@ define('src/account/security/summary.vm', [
 ], function(
   ko,
   EmContactsViewModel,
+  SystemOnlineInfoViewModel,
   LayersViewModel,
   notify,
   utils,
@@ -28,6 +30,10 @@ define('src/account/security/summary.vm', [
       layersVm: _this.layersVm,
     });
 
+    _this.systemonlineinfoVm = new SystemOnlineInfoViewModel({
+      layersVm: _this.layersVm,
+    });
+
     //
     // events
     //
@@ -40,6 +46,8 @@ define('src/account/security/summary.vm', [
 
     _this.emcontactsVm.loader.reset(); //incase of reload
     _this.emcontactsVm.load(routeData, extraData, join.add());
+    _this.systemonlineinfoVm.loader.reset(); //incase of reload
+    _this.systemonlineinfoVm.load(routeData, extraData, join.add());
 
     //@TODO: load real account
   };
