@@ -290,6 +290,22 @@ define('src/hr/usereditor.vm', [
         text: 'Description',
       },
     });
+    _this.tcmdActive = ko.command(function(cb) {
+      var toggle = _this.tcmdActive.toggle;
+      toggle.isDown(!toggle.isDown.peek());
+      cb();
+    }, null, {
+      toggle: {
+        isDown: _this.data.IsActive,
+        down: {
+          cls: "active",
+          text: "Active",
+        },
+        up: {
+          text: "Inactive",
+        },
+      }
+    });
 
     _this.editing = ko.observable(false);
     _this.viewTmpl = ko.computed(function() {

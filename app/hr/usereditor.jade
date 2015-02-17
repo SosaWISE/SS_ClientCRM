@@ -1,4 +1,7 @@
 div(class="item-data")
+  ul(class="actions left")
+    li
+      a(class="btn",tabindex="0",data-bind="tcmd:tcmdActive")
   ul(class="actions")
     li(data-bind="if:data.UserID()>0")
       a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
