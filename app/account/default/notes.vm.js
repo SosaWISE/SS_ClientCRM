@@ -207,6 +207,9 @@ define('src/account/default/notes.vm', [
         // make sure selectedValue hasn't changed
         if (_this.data.NoteCategory1IdCvm.selectedValue() === selectedValue) {
           _this.data.NoteCategory2IdCvm.setList(resp.Value);
+          if (!_this.data.NoteCategory2IdCvm.selectedValue.peek()) {
+            _this.data.NoteCategory2IdCvm.selectFirst();
+          }
         }
       }, function(err) {
         notify.error(err);
