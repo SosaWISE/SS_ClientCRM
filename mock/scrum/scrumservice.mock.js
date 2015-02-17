@@ -199,6 +199,7 @@ define("mock/scrum/scrumservice.mock", [
         Name: data.Name,
         Description: data.Description,
         Points: data.Points,
+        StepId: data.StepId,
         SortOrder: data.SortOrder,
         IsDeleted: data.IsDeleted,
         Version: data.Version ? data.Version + 1 : 1,
@@ -254,6 +255,7 @@ define("mock/scrum/scrumservice.mock", [
     scrumGroups,
     projects,
     sprints,
+    storysteps,
     storys,
     tasksteps,
     tasks;
@@ -299,6 +301,46 @@ define("mock/scrum/scrumservice.mock", [
     ],
   }).list;
 
+  storysteps = mockery.fromTemplate({
+    "list|3-3": [ //
+      {
+        ID: "@INC(storysteps)",
+        // Name: "@STORYSTEP_NAME",
+      },
+    ],
+  }).list;
+  storysteps = [ //
+    {
+      ID: 1,
+      Name: "New",
+      Css: "waiting",
+      Actions: [ //
+        {
+          StepId: 2,
+          Text: "Ready for Testing",
+        },
+      ],
+    }, {
+      ID: 2,
+      Name: "Testing",
+      Css: "testing",
+      Actions: [ //
+        {
+          StepId: 3,
+          Text: "Passed",
+        }, {
+          StepId: 1,
+          Text: "Failed",
+        },
+      ],
+    }, {
+      ID: 3,
+      Name: "Closed",
+      Css: "complete",
+      Actions: [],
+    },
+  ];
+
   storys = mockery.fromTemplate({
     // backlog storys
     "list|10-10": [ //
@@ -310,6 +352,7 @@ define("mock/scrum/scrumservice.mock", [
         Name: "Story @FK(storys)",
         Description: "@TEXT(50,80)",
         Points: "@STORY_POINTS",
+        StepId: "@REF_INC(storysteps)",
         SortOrder: "@INC(SortOrder,-1000)", // "@NUMBER(-1000000,-10)",
         IsDeleted: false,
         Version: 1,
@@ -328,6 +371,7 @@ define("mock/scrum/scrumservice.mock", [
         Name: "Story @FK(storys)",
         Description: "@TEXT(50,80)",
         Points: "@STORY_POINTS",
+        StepId: "@REF_INC(storysteps)",
         SortOrder: "@INC(SortOrder2,1000,10)", // "@NUMBER(10,1000000)",
         IsDeleted: false,
         Version: 1,
@@ -346,6 +390,7 @@ define("mock/scrum/scrumservice.mock", [
         Name: "Story @FK(storys)",
         Description: "@TEXT(50,80)",
         Points: null,
+        StepId: "@REF_INC(storysteps)",
         SortOrder: null,
         IsDeleted: false,
         Version: 1,
@@ -386,19 +431,6 @@ define("mock/scrum/scrumservice.mock", [
       ],
     }, {
       ID: 3,
-      Name: "Test",
-      Css: "testing",
-      Actions: [ //
-        {
-          StepId: 4,
-          Text: "Passed",
-        }, {
-          StepId: 1,
-          Text: "Failed",
-        },
-      ],
-    }, {
-      ID: 4,
       Name: "Complete",
       Css: "complete",
       Actions: [],
