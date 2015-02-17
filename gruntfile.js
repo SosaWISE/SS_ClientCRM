@@ -7,6 +7,7 @@ module.exports = function(grunt) {
   jsfiles = [
     '**/*.js',
     // exclude files
+    "!www/**", // exclude output directory
     '!app/flowMap/**/*.js',
     '!node_modules/**/*.js',
     '!testing/**/*.js',
@@ -26,7 +27,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    www: '../crm-www',
+    www: 'www',
 
     clean: {
       app: {
@@ -122,7 +123,7 @@ module.exports = function(grunt) {
       app: {
         src: [
           // include app files
-          'app/crm/*.js',
+          'app/nimis/*.js',
           'app/ukov.js',
           'app/dataservices/*.js', 'app/dataservice.js',
           'app/home/*.js',
@@ -199,6 +200,7 @@ module.exports = function(grunt) {
         },
         files: {
           '<%= www %>/crm/index.html': 'crm/index.jade',
+          '<%= www %>/nimis/index.html': 'nimis/index.jade',
           '<%= www %>/spec/index.html': 'spec/index.jade',
         },
       },
@@ -211,6 +213,7 @@ module.exports = function(grunt) {
         },
         files: {
           '<%= www %>/crm/index.debug.html': 'crm/index.jade',
+          '<%= www %>/nimis/index.debug.html': 'nimis/index.jade',
           '<%= www %>/spec/index.debug.html': 'spec/index.jade',
         },
       },
@@ -222,6 +225,7 @@ module.exports = function(grunt) {
         },
         files: {
           'crm/index.html': 'crm/index.jade',
+          'nimis/index.html': 'nimis/index.jade',
           'spec/index.html': 'spec/index.jade',
         },
       },
@@ -232,7 +236,7 @@ module.exports = function(grunt) {
           cleancss: true,
         },
         files: {
-          '<%= www %>/crm/index.css': 'crm/index.less',
+          '<%= www %>/nimis/index.css': 'nimis/index.less',
         },
       },
       dev: {
@@ -240,7 +244,7 @@ module.exports = function(grunt) {
           cleancss: false,
         },
         files: {
-          'crm/index.css': 'crm/index.less',
+          'nimis/index.css': 'nimis/index.less',
         },
       },
     },

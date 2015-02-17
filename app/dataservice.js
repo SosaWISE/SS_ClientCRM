@@ -98,6 +98,7 @@ define("src/dataservice", [
       "accountDispatchAgencyAssignments",
       "premiseAddress",
       "dispatchAgencyTypes",
+      "msAccountStatusInformations"
     ]),
 
     msaccountsetupsrv: createService("msaccountsetupsrv", [

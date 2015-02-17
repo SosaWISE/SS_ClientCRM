@@ -1,15 +1,15 @@
 // conventional paths
-define('src/app', ['src/crm/app'], function(app) { // alias actual app
+define('src/app', ['src/nimis/app'], function(app) { // alias actual app
   "use strict";
   return app;
 });
-define('src/config', ['src/crm/config'], function(config) { // alias actual config
+define('src/config', ['src/nimis/config'], function(config) { // alias actual config
   "use strict";
   return config;
 });
 
 //
-define('src/crm/bootstrapper', [
+define('src/nimis/bootstrapper', [
   // load main libs
   'jquery',
   'ko',
@@ -26,10 +26,10 @@ define('src/crm/bootstrapper', [
   'src/core/dataservice.base',
   'src/core/joiner',
   'src/dataservice',
-  'src/crm/ping',
-  'src/crm/apilogger',
-  'src/crm/config', 'src/crm/resources', 'src/crm/errorcodes',
-  'src/crm/app',
+  'src/nimis/ping',
+  'src/nimis/apilogger',
+  'src/nimis/config', 'src/nimis/resources', 'src/nimis/errorcodes',
+  'src/nimis/app',
 ], function(
   jquery, ko, // main libs
   p1, p2, p3, //plugins
