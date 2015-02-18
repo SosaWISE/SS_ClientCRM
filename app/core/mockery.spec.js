@@ -163,7 +163,7 @@ define('src/core/mockery.spec', [
         expect(typeof(resp.num)).toBe('number');
       });
       it('@IMG should match expected', function() {
-        expect(resp.img).toBe('http://lorempixel.com/10/20/bob');
+        expect(resp.img).toBe('//lorempixel.com/10/20/bob');
       });
       it('@TEXT should correct length', function() {
         expect(resp.txt.length).toBe(20);
