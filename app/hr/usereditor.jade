@@ -59,6 +59,20 @@ div(class="item-data")
             li
               //-
             li
+              span(class="label") Height
+              input(class="name",type="text",placeholder="",
+                data-bind="ukov:data.Height,feetvalue:data.Height,valueUpdate:'keyup'")
+            li
+              span(class="label") Weight
+              input(class="name",type="text",placeholder="",
+                data-bind="ukov:data.Weight,value:data.Weight,valueUpdate:'keyup'")
+            li
+              span(class="label") Eye Color
+              div(data-bind="cvm:data.EyeColorCvm")
+            li
+              span(class="label") Hair Color
+              div(data-bind="cvm:data.HairColorCvm")
+            li
               span(class="label") Marital Status
               div(data-bind="cvm:data.MaritalStatusCvm")
             li

@@ -57,6 +57,18 @@ div(class="item-data")
             li
               //-
             li
+              span(class="label") Height
+              div(class="text",data-bind="feet:data.Height")
+            li
+              span(class="label") Weight
+              div(class="text",data-bind="text:data.Weight")
+            li
+              span(class="label") Eye Color
+              div(class="text",data-bind="text:data.EyeColorCvm.selectedText()")
+            li
+              span(class="label") Hair Color
+              div(class="text",data-bind="text:data.HairColorCvm.selectedText()")
+            li
               span(class="label") Marital Status
               div(class="text",data-bind="text:data.MaritalStatusCvm.selectedText()")
             li

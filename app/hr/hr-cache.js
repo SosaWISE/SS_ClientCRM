@@ -159,6 +159,79 @@ define("src/hr/hr-cache", [
         Txt: "Off Site",
       },
     ]),
+
+
+
+    // colors from pages 37 & 38 of http://www.fbi.gov/about-us/cjis/fingerprints_biometrics/guidelines-for-preparation-of-fingerprint-cards-and-association-criminal-history-information
+    eyeColors: ko.observableArray([ //
+      {
+        ID: "BLK",
+        Txt: "Black",
+      }, {
+        ID: "BLU",
+        Txt: "Blue",
+      }, {
+        ID: "BRO",
+        Txt: "Brown",
+      }, {
+        ID: "GRY",
+        Txt: "Gray",
+      }, {
+        ID: "GRN",
+        Txt: "Green",
+      }, {
+        ID: "HAZ",
+        Txt: "Hazel",
+      }, {
+        ID: "MAR",
+        Txt: "Maroon",
+      }, {
+        ID: "DIC",
+        Txt: "Dichromatic (two different colors)",
+      },
+    ]),
+    hairColors: ko.observableArray([ //
+      {
+        ID: "BLD",
+        Txt: "Bald",
+      }, {
+        ID: "BLK",
+        Txt: "Black",
+      }, {
+        ID: "BLN",
+        Txt: "Blonde (or strawberry)",
+      }, {
+        ID: "BLU",
+        Txt: "Blue",
+      }, {
+        ID: "BRO",
+        Txt: "Brown",
+      }, {
+        ID: "GRY",
+        Txt: "Gray (or partially gray)",
+      }, {
+        ID: "GRN",
+        Txt: "Green",
+      }, {
+        ID: "ONG",
+        Txt: "Orange",
+      }, {
+        ID: "PLE",
+        Txt: "Purple",
+      }, {
+        ID: "PNK",
+        Txt: "Pink",
+      }, {
+        ID: "RED (or auburn)",
+        Txt: "Red",
+      }, {
+        ID: "SDY",
+        Txt: "Sandy",
+      }, {
+        ID: "WHI",
+        Txt: "White",
+      },
+    ]),
   };
 
   return hrcache;
