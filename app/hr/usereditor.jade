@@ -20,7 +20,8 @@ div(class="item-data")
             li(class="password")
               span(class="label") Password
               a(class="btn small",tabindex="0",data-bind="cmd:clickNewPassword") Generate Random Password
-              div(class="text blank",data-bind="ukov:data.Password,text:data.Password,clickSelect:1",style="cursor:pointer")
+              //- div(class="text blank",data-bind="ukov:data.Password,text:data.Password,clickSelect:1",style="cursor:pointer")
+              input(type="text",placeholder="",data-bind="ukov:data.Password,value:data.Password,valueUpdate:'keyup'")
             li
               span(class="label") Email
               input(type="text",placeholder="",data-bind="ukov:data.Email,value:data.Email,valueUpdate:'keyup'")
