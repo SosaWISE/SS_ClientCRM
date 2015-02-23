@@ -131,7 +131,6 @@ module.exports = function(grunt) {
           'app/inventory/*.js',
           'app/login/*.js',
           'app/scheduler/*.js',
-          'app/scheduling/*.js',
           'app/swing/*.js',
           // exclude specs
           '!app/**/*.spec.js',
@@ -151,7 +150,6 @@ module.exports = function(grunt) {
           'tparty/underscore.js',
           'tparty/markdown.js',
           'tparty/definelibs.js',
-          'tparty/fullcalendar.js',
         ],
         dest: '<%= www %>/lib.debug.js',
       },

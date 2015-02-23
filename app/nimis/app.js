@@ -131,21 +131,6 @@ define("src/nimis/app", [
           },
         ],
       }, {
-        appid: "sse_cms_cors",
-        path: "src/scheduling/scheduling.panel.vm",
-        options: {
-          id: "scheduling",
-          title: "Scheduling",
-          icoClass: "ico fa fa-3x fa-calendar",
-        },
-        routes: [ //
-          {
-            precedence: 1,
-            name: "scheduling",
-            path: ":id/:ticketid",
-          },
-        ],
-      }, {
         appid: "hr_man",
         path: "src/hr/hr.panel.vm",
         options: {
