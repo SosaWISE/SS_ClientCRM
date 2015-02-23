@@ -88,7 +88,7 @@ define('src/account/default/notes.vm', [
       noItemSelectedText: '[Secondary Reason]',
       fields: {
         value: 'NoteCategory2ID',
-        text: 'Description',
+        text: 'Category',
       },
     });
 
@@ -189,7 +189,7 @@ define('src/account/default/notes.vm', [
       }, null, utils.safeCallback(null, function(err, resp) {
         // make sure selectedValue hasn't changed
         if (_this.departmentsCvm.selectedValue() === selectedValue) {
-          _this.data.NoteCategory1IdCvm.setList(resp.Value);
+          _this.data.NoteCategory1IdCvm.setList(resp.Value.sort(byCategory));
         }
       }, function(err) {
         notify.error(err);
@@ -206,7 +206,7 @@ define('src/account/default/notes.vm', [
       }, null, utils.safeCallback(null, function(err, resp) {
         // make sure selectedValue hasn't changed
         if (_this.data.NoteCategory1IdCvm.selectedValue() === selectedValue) {
-          _this.data.NoteCategory2IdCvm.setList(resp.Value);
+          _this.data.NoteCategory2IdCvm.setList(resp.Value.sort(byCategory));
           if (!_this.data.NoteCategory2IdCvm.selectedValue.peek()) {
             _this.data.NoteCategory2IdCvm.selectFirst();
           }
@@ -294,6 +294,16 @@ define('src/account/default/notes.vm', [
     }, null, utils.safeCallback(cb, function(err, resp) {
       gvm.list(resp.Value || []);
     }));
+  }
+
+  function byCategory(a, b) {
+    if (a.Category > b.Category) {
+      return 1;
+    }
+    if (a.Category < b.Category) {
+      return -1;
+    }
+    return 0;
   }
 
 
