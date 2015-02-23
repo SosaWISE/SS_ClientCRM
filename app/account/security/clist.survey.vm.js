@@ -177,6 +177,10 @@ define('src/account/security/clist.survey.vm', [
       var dataContext;
       dataContext = {
         CompanyName: 'Nexsense',
+        Company: {
+          Name: "Nexsense",
+          Phone: "8662055200",
+        },
         ADUserDisplayName: app.user().Firstname,
         PrimaryCustomer: {
           FirstName: priCustomer.FirstName,
