@@ -90,7 +90,7 @@ define('src/survey/surveytype.vm', [
         var list = resp.Value.map(function(model) {
           var vm = createQuestionMeaning(surveyTypeVM, model);
           surveyTypeVM.qmMap[model.QuestionMeaningID] = vm;
-          vm.load(routeData, extraData, join.add());
+          // lazy load survey data // vm.load(routeData, extraData, join.add());
           return vm;
         });
         surveyTypeVM.questionMeanings(list);
