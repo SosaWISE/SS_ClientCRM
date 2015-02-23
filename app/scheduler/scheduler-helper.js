@@ -37,6 +37,13 @@ define("src/scheduler/scheduler-helper", [
       strings.joinTrimmed(" ", item.StreetAddress, item.StreetAddress2),
       item.City, item.StateId, item.PostalCode);
 
+    // tech
+    if (item.TechGPEmployeeID) {
+      item._TechName = strings.format("{0} ({1})", item.TechFullName, item.TechGPEmployeeID);
+    } else {
+      item._TechName = "";
+    }
+
     // times
     timeAfterLoad(item.StartOn);
     timeAfterLoad(item.EndOn);
