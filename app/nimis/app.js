@@ -145,6 +145,21 @@ define("src/nimis/app", [
             path: ":collection/:id/:p1",
           },
         ],
+      }, {
+        appid: "contract_admin",
+        path: "src/contracts/contracts.panel.vm",
+        options: {
+          id: "contracts",
+          title: "Contracts",
+          icoClass: "ico fa fa-3x fa-gears"
+        },
+        routes: [ //
+          {
+            precedence: 1,
+            name: "contracts",
+            path: ":id",
+          },
+        ],
       },
     ],
   });
