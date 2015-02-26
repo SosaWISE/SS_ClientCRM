@@ -144,7 +144,14 @@ define('src/core/app.vm', [
 
     _this.init();
 
-    _this.os = navigator.platform.split(' ')[0].toLowerCase(); // detect os
+    var os = navigator.platform.split(' ')[0]; // detect os
+    if (os) {
+      if (os.length > 3) {
+        os = os.substr(0, 3);
+      }
+      os = os.toLowerCase();
+    }
+    _this.os = "os-" + os;
   }
   AppViewModel.prototype.prefix = '';
   AppViewModel.prototype.postfix = '-panel';

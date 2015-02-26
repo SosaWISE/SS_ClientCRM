@@ -520,11 +520,21 @@ table.fh-wrap {
         top: 0; right: 0; bottom: 0; left: 0;
         overflow: hidden;
         > .contents {
-          width: @navWidth + 17px; // hide scroll bar
           overflow-y: scroll; // but still allow scrolling
           overflow-x: hidden;
           height: 100%;
           padding-bottom: 50px;
+
+          position: absolute;
+          left: 0px;
+          right: 0px;
+          .os-lin &,
+          .os-win & {
+            right: -17px; // hide scroll bar
+          }
+          // .os-mac & {
+          //   right: 0px; // hide scroll bar on mac
+          // }
         }
       }
 
