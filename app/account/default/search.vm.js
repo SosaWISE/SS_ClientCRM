@@ -87,6 +87,22 @@ define('src/account/default/search.vm', [
   function SearchViewModel(options) {
     var _this = this;
     SearchViewModel.super_.call(_this, options);
+    utils.setIfNull(_this, {
+      goToLead: function(cmfid, id) {
+        _this.goTo({
+          route: "leads",
+          masterid: cmfid,
+          id: id,
+        });
+      },
+      goToAccount: function(cmfid, id) {
+        _this.goTo({
+          route: "accounts",
+          masterid: cmfid,
+          id: id,
+        });
+      },
+    });
 
     _this.title = ko.observable(_this.title);
     _this.focusFirst = ko.observable(false);
@@ -121,19 +137,14 @@ define('src/account/default/search.vm', [
             //@HACK: there is an array of AccountTypes, but not an array of FkId. so we're going to assume that
             //       if there is an AccountType of `LEAD` in the array then the FkId is a LeadID........
             console.log(_this);
-            if (acct.AccountTypes.some(function(t) {
+
+            function isLead(t) {
               return t === 'LEAD';
-            })) {
-              _this.goTo({
-                route: 'leads',
-                // id: acct.FkId,
-                masterid: acct.CustomerMasterFileID,
-              });
+            }
+            if (acct.AccountTypes.some(isLead)) {
+              _this.goToLead(acct.CustomerMasterFileID, acct.FkId);
             } else {
-              _this.goTo({
-                route: 'accounts',
-                masterid: acct.CustomerMasterFileID,
-              });
+              _this.goToAccount(acct.CustomerMasterFileID, acct.FkId);
             }
           },
         }),
@@ -247,10 +258,11 @@ define('src/account/default/search.vm', [
       notify.warn(_this.acctNum.errMsg(), null, 5);
     } else {
       id = _this.acctNum.getValue();
-      _this.goTo({
-        route: 'accounts',
-        masterid: id,
-      });
+      _this.goToAccount(id);
+      // _this.goTo({
+      //   route: _this.acctRoute,
+      //   masterid: id,
+      // });
       _this.acctNum.markClean(id, true);
     }
     cb();

@@ -41,8 +41,8 @@ define('src/account/security/clist.qualify.vm', [
     _this.repModel = ko.observable();
     _this.addressModel = ko.observable();
     _this.customers = [
-      createCustomerVm(_this, 'PRI', steps.PRI_LEAD), // 0
-      createCustomerVm(_this, 'SEC', steps.SEC_LEAD), // 1
+      augmentCustomerVm(createCustomerVm("PRI"), _this, steps.PRI_LEAD), // 0
+      augmentCustomerVm(createCustomerVm("SEC"), _this, steps.SEC_LEAD), // 1
     ];
 
     //
@@ -244,13 +244,16 @@ define('src/account/security/clist.qualify.vm', [
     }, setter, cb);
   }
 
-  function createCustomerVm(_this, customerTypeId, enabledStep) {
-    var vm = {
+  function createCustomerVm(customerTypeId) {
+    return {
       customerTypeId: customerTypeId,
       customerType: getCustomerTypeName(customerTypeId),
       lead: ko.observable(),
       creditResult: ko.observable(),
     };
+  }
+
+  function augmentCustomerVm(vm, _this, enabledStep) {
     vm.cmdSendToIS = ko.command(function(cb) {
       dataservice.qualify.insideSales.save({
         id: vm.creditResult().LeadId,
@@ -268,11 +271,11 @@ define('src/account/security/clist.qualify.vm', [
     return vm;
   }
 
-  function createCustCmd(_this, cust, enabledStep) {
+  function createCustCmd(_this, vm, enabledStep) {
     return ko.command(function(cb) {
       showLayer(_this, RunCreditViewModel, function(lead, creditResult) {
         if (lead) {
-          setCustomerData(cust, lead, creditResult);
+          setCustomerData(vm, lead, creditResult);
           if (_this.pcontroller.id !== lead.CustomerMasterFileId) {
             //
             // set new id and title on parent and update url
@@ -288,8 +291,8 @@ define('src/account/security/clist.qualify.vm', [
         addressId: _this.addressModel().AddressID,
         repModel: _this.repModel(),
         cache: _this.cache,
-        customerTypeId: cust.customerTypeId,
-        item: utils.clone(cust.lead.peek()),
+        customerTypeId: vm.customerTypeId,
+        item: utils.clone(vm.lead.peek()),
         customerMasterFileId: (_this.pcontroller.id > 0) ? _this.pcontroller.id : 0,
       });
       cb();

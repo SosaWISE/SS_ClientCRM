@@ -1,0 +1,72 @@
+div(class="contract")
+  |contract&nbsp;
+  span(data-bind="text:id")
+
+div(class="acct-item load-err", data-bind="if:loadErr,toggle:{'may-reload':mayReload}")
+  div(class="col")
+    div Failed to load contract
+    //- ul(class="actions")
+      li
+        a(class="btn small",tabindex="0",data-bind="hasfocus:true,cmd:clickReload") Retry
+      li
+        a(class="btn small",tabindex="0",data-bind="cmd:close") Close
+
+div(data-bind="if:!loadErr()&&!loading()")
+  div(class="acct-item acct-clist-qualify",data-bind="toggle:{'may-reload':mayReload}")
+    div(class="col")
+      <!-- ko foreach:models.customers -->
+      div(class="section",data-bind="toggle:{empty:!CustomerTypeId}")
+        span(class="title",data-bind="text:title")
+        div(class="contents")
+          //- div(data-bind="if:lead")
+          //-   div(data-bind="template:{name:'tmpl-acct-default-customer',data:lead}")
+          //- div(data-bind="if:creditResult")
+          //-   div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult}")
+          //- ul(class="actions")
+          //-   li
+          //-     span(class="btn",tabindex="0",data-bind="cmd:cmdSendToIS") Send to InsideSales.com
+      <!-- /ko -->
+
+      div(class="section")
+        //- ,data-bind="toggle:{empty:!models.premiseAddress}")
+        span(class="title") Premise Address
+        div(class="contents",data-bind="if:models.premiseAddress")
+          //- div(data-bind="template:{data:models.premiseAddress,name:'tmpl-contracts-asdf'}")
+      div(class="section")
+        //- ,data-bind="toggle:{empty:!models.billingAddress}")
+        span(class="title") Billing Address
+        div(class="contents",data-bind="if:models.billingAddress")
+          //- div(data-bind="template:{data:models.billingAddress,name:'tmpl-contracts-asdf'}")
+
+      div(class="section")
+        //- ,data-bind="toggle:{empty:!models.contractTerms}")
+        span(class="title") Contract Terms
+        div(class="contents",data-bind="if:models.contractTerms")
+          //- div(data-bind="template:{data:models.contractTerms,name:'tmpl-contracts-asdf'}")
+
+      div(class="section")
+        //- ,data-bind="toggle:{empty:!models.systemDetails}")
+        span(class="title") System Details
+        div(class="contents",data-bind="if:models.systemDetails")
+          //- div(data-bind="template:{data:models.systemDetails,name:'tmpl-contracts-asdf'}")
+
+      div(class="section")
+        //- ,data-bind="toggle:{empty:!models.accountDetails}")
+        span(class="title") Account Details
+        div(class="contents",data-bind="if:models.accountDetails")
+          //- div(data-bind="template:{data:models.accountDetails,name:'tmpl-contracts-asdf'}")
+
+      div(class="section")
+        //- ,data-bind="toggle:{empty:!models.holds}")
+        span(class="title") Holds
+        div(class="contents",data-bind="if:models.holds")
+          //- div(data-bind="template:{data:models.holds,name:'tmpl-contracts-asdf'}")
+
+
+    //- ul(class="actions")
+      li
+        span(class="btn",tabindex="0",data-bind="cmd:cmdCreateAccount") Create Account
+      //- li
+        span(class="btn",tabindex="0",data-bind="cmd:cmdSendToIS") Send to InsideSales.com
+
+div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")

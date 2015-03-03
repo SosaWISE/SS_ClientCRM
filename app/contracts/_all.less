@@ -5,3 +5,333 @@ body.users {
   .mixin-body-color(@contracts-bg);
   .mixin-content-active(@contracts-bg);
 }
+
+#contracts-panel {
+  height: 100%;
+  @tranSec: .25s;
+
+
+  .credit-result {
+    display:table;
+    width:100%;
+    margin-bottom: 20px;
+
+    padding: 10px;
+    color: white;
+    .border-radius(5px);
+    .box-shadow(0px 0px 4px rgba(0, 0, 0, 0.6));
+
+    > div {
+      display: table-cell;
+    }
+    .title {
+      font-weight: 500;
+    }
+
+    &.excellent {
+      background-color: green;
+    }
+    &.good {
+      background-color: yellow;
+      color: #707070;
+    }
+    &.pass {
+      background-color: orange;
+    }
+    &.sub {
+      background-color: maroon;
+    }
+    &.poor{
+      background-color: red;
+    }
+  }
+
+  .col {
+    // padding-left: 20px;
+    > .title {
+      font-size: 1.3em;
+      font-weight: 500;
+      overflow: hidden;
+      // text-transform: uppercase;
+      text-align: center;
+      display: block;
+    }
+    &.col3 {
+      float:left;
+      width: 33%;
+    }
+
+    .section {
+      // overflow: hidden;
+      position: relative;
+      width: 100%;
+      margin-top: 20px;
+
+      > .title {
+        font-size: 1.2em;
+        font-weight: 500;
+        overflow: hidden;
+        // text-transform: uppercase;
+      }
+      .contents {
+        overflow: hidden;
+        // color: #222;
+        .border-radius(5px);
+        padding: 10px;
+        .box-shadow(1px 1px 10px -2px rgba(0, 0, 0, 0.7));
+
+        .userinfo {
+          min-height: 85px;
+          .img {
+            width: 80px;
+            height: 80px;
+          }
+        }
+      }
+
+      .transition(opacity .25s;);
+
+      &:not(.disabled) {
+        cursor: pointer;
+        opacity: 0.9;
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      &.empty {
+        .user-select(none);
+        overflow: hidden;
+        .border-radius(25px);
+        border-width: 4px;
+        border-style: dashed;
+        // border-color: #6c6c6c;
+        display:table;
+        height: 150px;
+        text-align: center;
+        opacity: 0.2;
+        &:not(.disabled) {
+          opacity: 0.7;
+          &:hover {
+            opacity: 1;
+          }
+          .title:after {
+            content: "\e01b";
+            font-family: 'Nexsense';
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+            text-align: center;
+            margin-left: 5px;
+          }
+          // cursor: pointer;
+        }
+        .title {
+          display:table-cell;
+          vertical-align: middle;
+          font-size: 1.2em;
+          font-weight: 500;
+          text-transform: none;
+        }
+        .contents {
+          display: none;
+        }
+      }
+    }
+  }
+  .load-err {
+    > .col {
+      text-align: center;
+      padding-top: 30px;
+      font-size: 1.2em;
+    }
+  }
+
+  .btn {
+    .make-color-btn(@contracts-bg);
+  }
+
+  .account {
+    @navWidth: 300px;
+    @notesHeight: 0px;
+    @notesTabHeight: 20px;
+
+    // color: white;
+
+    > .p-nav {
+      // overwrite p-nav defaults
+      overflow-y: visible;
+      bottom: @notesHeight;
+      width: @navWidth;
+      // end - overwrite p-nav defaults
+
+      .transition(left @tranSec, bottom @tranSec;);
+
+      .title {
+        font-size: 1.2em;
+        font-weight: 500;
+        overflow-y: hidden;
+        display: block;
+        border-bottom: 1px solid white;
+        margin: 10px 10px 5px 10px;
+        position: relative;
+        height: 26px;
+
+        .add-btn {
+          margin-top: 2px;
+          margin-right: 10px;
+          padding-left: 36px;
+          position: absolute;
+          top: -1px;
+          right: 0px;
+          &:before {
+            .mixin-edit-btn("\e016", 7px, -2px, 16px);
+          }
+
+          &.small {
+            padding: 1px 10px 1px 25px;
+            &:before {
+              .mixin-edit-btn("\e016", 4px, -4px, 13px);
+            }
+          }
+        }
+      }
+      .userinfo {
+        margin: 0px 10px;
+        min-height: 85px;
+        .img {
+          width: 80px;
+          height: 80px;
+        }
+        div {
+          .user-select(initial);
+        }
+      }
+
+      // http://stackoverflow.com/questions/16670931/hide-scroll-bar-but-still-being-able-to-scroll
+      > .contents-wrap {
+        position: absolute;
+        top: 0; right: 0; bottom: 0; left: 0;
+        overflow: hidden;
+        > .contents {
+          overflow-y: scroll; // but still allow scrolling
+          overflow-x: hidden;
+          height: 100%;
+          padding-bottom: 50px;
+
+          position: absolute;
+          left: 0px;
+          right: 0px;
+          .os-lin &,
+          .os-win & {
+            right: -17px; // hide scroll bar
+          }
+          // .os-mac & {
+          //   right: 0px; // hide scroll bar on mac
+          // }
+        }
+      }
+
+      ul.accounts {
+        a {
+          position: relative;
+
+          &.active {
+            color: @contracts-bg;
+          }
+          .name {
+            display: inline-block;
+            width: 75%;
+            // padding-right: 10px;
+          }
+          .amount,
+          .nUnits {
+            display: inline-block;
+            width: 23%;
+            position: relative;
+            text-align: right;
+          }
+          .nUnits:before {
+            position: absolute;
+            top: -8px;
+            left: -4px;
+            font-size: 1.8em;
+            content: '\2713'; // checkmark
+          }
+        }
+        .total {
+          cursor: inherit;
+          font-weight: 500;
+          .amount {
+            border-top: 1px solid white;
+            padding-top: 5px;
+            border-bottom: 4px double white;
+            padding-bottom: 5px;
+            width: 25%;
+          }
+        }
+      }
+
+      .toggle-btn {
+        .box-shadow(inset 0 5px 5px -5px #000000, inset -5px 0 5px -5px #000000, inset -2px -5px 5px -5px #000000;);
+        position: absolute;
+        top: 0px;
+        right: -18px;
+        .border-radius(0px 5px 5px 0px);
+        background-color: @contracts-bg;
+
+        // cover up nav box-shadow
+        &:before {
+          background-color: @contracts-bg;
+          content: '';
+          position: absolute;
+          top: 0px;
+          left: -5px;
+          height: 100%;
+          width: 5px;
+        }
+      }
+    }
+    > .p-module {
+      overflow: auto;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: @notesHeight;
+      left: @navWidth;
+      .transition(left @tranSec, bottom @tranSec;);
+
+      background-color: #fff;
+      // color: #6c6c6c;
+      // padding: 20px;
+
+      .tabs {
+        background-color: @contracts-bg;
+        // padding-left: 20px;
+        .under-toggle-btn {
+          width:17px;height:39px;
+        }
+      }
+    }
+
+    &.hide-nav {
+      > .p-nav {
+        left: -@navWidth;
+      }
+      > .p-module {
+        left: 0px;
+      }
+    }
+
+    &.load-err {
+      > .p-module {
+        left: 0px;
+        bottom: 0px;
+
+        text-align: center;
+        padding-top: 30px;
+        font-size: 1.2em;
+      }
+    }
+  }
+}

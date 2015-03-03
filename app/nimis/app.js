@@ -157,7 +157,7 @@ define("src/nimis/app", [
           {
             precedence: 1,
             name: "contracts",
-            path: ":id",
+            path: ":masterid/:id",
           },
         ],
       },
