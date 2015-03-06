@@ -128,6 +128,10 @@ define("src/nimis/bootstrapper", [
         app.setUser(resp.Value);
       }
     });
+    //
+    dataservice.session.sessionData(function(err, resp) {
+      console.log("sessionData:", JSON.stringify(resp, null, "  "));
+    });
   });
 
   ControllerViewModel.addManualReloadListener();

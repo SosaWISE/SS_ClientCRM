@@ -20,7 +20,7 @@ define("src/nimis/app", [
       // let the request start
       setTimeout(function() {
         // remove session id (effectively logging the user out)
-        sessionstore.setItem("sessid", null);
+        sessionstore.setItem("token", null);
         // call callback
         cb();
       }, 100);

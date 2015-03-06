@@ -114,9 +114,9 @@ define('src/core/dataservice.base', [
   DataserviceBase.prototype.execute = function(context) {
     var _this = this;
     var headers = {};
-    var sess = sessionstore.getItem("sessid");
-    if (sess) {
-      headers["X-NXS-Authorization"] = sess;
+    var token = sessionstore.getItem("token");
+    if (token) {
+      headers.Authorization = "Token" + token;
     }
 
     // make request

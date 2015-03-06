@@ -52,7 +52,7 @@ define("src/login/login.panel.vm", [
         } else {
           var authResult = resp.Value;
           // store session id
-          sessionstore.setItem("sessid", authResult.SessionID);
+          sessionstore.setItem("token", authResult.Token);
           // set user and go to desired destination
           var routeData = _this.getRouteData();
           _this.setUser(authResult.User, routeData.destPath || "/");
