@@ -176,11 +176,17 @@ define("src/account/default/address.validate.vm", [
   function AddressValidateViewModel(options) {
     var _this = this;
     AddressValidateViewModel.super_.call(_this, options);
+    utils.setIfNull(_this, {
+      otherAddresses: [],
+    });
 
     // if (_this.item) {
     //   // ??? make it so Manual button can be toggled ???
     //   _this.item.Validated = false;
     // }
+    if (indexOfAddress(_this.otherAddresses, _this.item) > -1) {
+      _this.item = null;
+    }
 
     _this.initFocusFirst();
     _this.focusOk = ko.observable(false);
@@ -246,8 +252,8 @@ define("src/account/default/address.validate.vm", [
     _this.data.TeamLocationId(_this.repModel.TeamLocationId);
 
     // /////TESTING//////////////////////
-    // _this.data.PostalCode("12345");
-    // _this.data.Address("adsf");
+    // _this.data.PostalCode("66535");
+    // _this.data.Address("12705 SCHOOL CREEK RD");
     // _this.data.PhoneNumber("1234567890");
     // _this.data.PhoneNumber(_this.data.model.PhoneNumber);
     // /////TESTING//////////////////////
@@ -298,6 +304,14 @@ define("src/account/default/address.validate.vm", [
           text: "Validate Address",
         },
       }
+    });
+
+    _this.cmdUseAddress = ko.command(function(cb, item) {
+      cb();
+      _this.layerResult = item.address;
+      closeLayer(_this);
+    }, function(busy) {
+      return !busy && !_this.loading();
     });
 
     _this.loading = _this.tcmdValidate.busy;
@@ -378,6 +392,18 @@ define("src/account/default/address.validate.vm", [
     }, cb);
   }
 
+  function indexOfAddress(otherAddresses, address) {
+    var index = -1;
+    if (address) {
+      otherAddresses.some(function(item, i) {
+        if (item.address.AddressID === address.AddressID) {
+          index = i;
+          return true;
+        }
+      });
+    }
+    return index;
+  }
 
 
   //@TODO: load options from server
