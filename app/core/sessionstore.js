@@ -4,17 +4,19 @@ define("src/core/sessionstore", [
   jsonhelpers
 ) {
   "use strict";
+  // var storage = sessionStorage; // doesn't work for new tabs, unless the tab is created by the existing tab (e.g.: duplicate tab)
+  var storage = localStorage;
 
   var store = {
     setItem: function(name, value) {
       if (value == null) {
-        sessionStorage.removeItem(name);
+        storage.removeItem(name);
       } else {
-        sessionStorage.setItem(name, jsonhelpers.stringify(value));
+        storage.setItem(name, jsonhelpers.stringify(value));
       }
     },
     getItem: function(name) {
-      var value = sessionStorage.getItem(name);
+      var value = storage.getItem(name);
       if (value == null) {
         return value;
       }

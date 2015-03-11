@@ -1,17 +1,19 @@
-define('src/account/default/runcredit.vm', [
-  'src/app',
-  'src/config',
-  'src/core/combo.vm',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
-  'jquery',
-  'ko',
-  'src/ukov',
-  'src/dataservice'
+define("src/account/default/runcredit.vm", [
+  "src/app",
+  "src/config",
+  "src/core/strings",
+  "src/core/combo.vm",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/base.vm",
+  "jquery",
+  "ko",
+  "src/ukov",
+  "src/dataservice"
 ], function(
   app,
   config,
+  strings,
   ComboViewModel,
   notify,
   utils,
@@ -47,9 +49,9 @@ define('src/account/default/runcredit.vm', [
       var newText,
         creditStatus = valueAccessor();
       if (creditStatus) {
-        newText = 'Report Found';
+        newText = "Report Found";
       } else {
-        newText = 'Report Not Found';
+        newText = "Report Not Found";
       }
       jquery(element).html(newText);
     }
@@ -65,11 +67,11 @@ define('src/account/default/runcredit.vm', [
     validationGroup;
 
   validationGroup = {
-    keys: ['SSN', 'DOB', ],
+    keys: ["SSN", "DOB", ],
     validators: [ //
       function(val) {
         if (!val.SSN && !val.DOB) {
-          return 'A valid Social Security # OR a valid Date of Birth must be provided';
+          return "A valid Social Security # OR a valid Date of Birth must be provided";
         }
       },
     ]
@@ -81,7 +83,7 @@ define('src/account/default/runcredit.vm', [
     AddressID: {
       converters: ukov.converters.number(0),
       validators: [
-        ukov.validators.isRequired('AddressID is required'),
+        ukov.validators.isRequired("AddressID is required"),
       ],
     },
     CustomerTypeId: {},
@@ -107,7 +109,7 @@ define('src/account/default/runcredit.vm', [
     FirstName: {
       converter: strConverter,
       validators: [
-        ukov.validators.isRequired('First name is required'),
+        ukov.validators.isRequired("First name is required"),
         max50
       ],
     },
@@ -118,7 +120,7 @@ define('src/account/default/runcredit.vm', [
     LastName: {
       converter: strConverter,
       validators: [
-        ukov.validators.isRequired('Last name is required'),
+        ukov.validators.isRequired("Last name is required"),
         max50
       ],
     },
@@ -134,7 +136,7 @@ define('src/account/default/runcredit.vm', [
     DOB: {
       converter: ukov.converters.date(),
       validators: [
-        ukov.validators.minAge(false, 0, 'Can\'t run credit on the unborn'),
+        ukov.validators.minAge(false, 0, "Credit cannot be run on the unborn"),
       ],
       validationGroup: validationGroup,
     },
@@ -153,21 +155,29 @@ define('src/account/default/runcredit.vm', [
   function RunCreditViewModel(options) {
     var _this = this;
     RunCreditViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, [
-      'addressId',
-      'customerTypeId',
-      'cache',
-      'repModel',
+    utils.assertProps(_this, [
+      "addressId",
+      "customerTypeId",
+      "customerTypeName",
+      "cache",
+      "repModel",
     ]);
-    BaseViewModel.ensureProps(_this.cache, [
-      'localizations',
+    utils.assertProps(_this.cache, [
+      "localizations",
     ]);
+    utils.setIfNull(_this, {
+      otherLeads: [],
+    });
     _this.mixinLoad();
+
+    if (indexOfLead(_this.otherLeads, _this.item) > -1) {
+      _this.item = null;
+    }
 
     _this.item = _this.item || {
       CustomerTypeId: _this.customerTypeId,
       CustomerMasterFileId: _this.customerMasterFileId,
-      LocalizationId: '',
+      LocalizationId: "",
       LeadSourceId: config.leadSourceId,
       LeadDispositionId: config.leadDispositionId,
       DealerId: app.user().DealerId,
@@ -175,16 +185,16 @@ define('src/account/default/runcredit.vm', [
       SalesRepId: _this.repModel.CompanyID,
       TeamLocationId: _this.repModel.TeamLocationId,
       SeasonId: _this.repModel.Seasons[0].SeasonID,
-      // Salutation: '',
-      FirstName: '',
-      MiddleName: '',
-      LastName: '',
-      // Suffix: '',
-      Gender: '',
-      SSN: '',
-      DOB: '',
-      Email: '',
-      ProductSkwId: 'HSSS001' // *OPTIONAL  it will default to 'HSSS001' if not passed.  This Prodcut Skw is for an alarm system.  Depending on what type of lead we are creating you would pass the appropriate Product Skw.
+      // Salutation: "",
+      FirstName: "",
+      MiddleName: "",
+      LastName: "",
+      // Suffix: "",
+      Gender: "",
+      SSN: "",
+      DOB: "",
+      Email: "",
+      ProductSkwId: "HSSS001" // *OPTIONAL  it will default to "HSSS001" if not passed.  This Prodcut Skw is for an alarm system.  Depending on what type of lead we are creating you would pass the appropriate Product Skw.
     };
 
     _this.focusFirst = ko.observable(false);
@@ -196,18 +206,18 @@ define('src/account/default/runcredit.vm', [
 
     // /////TESTING//////////////////////
     // if (!_this.item.LeadID) {
-    //   _this.data.FirstName('Bob');
-    //   _this.data.LastName('Bobbins');
-    //   _this.data.SSN('123456789');
-    //   _this.data.DOB('1/1/1');
+    //   _this.data.FirstName("Bob");
+    //   _this.data.LastName("Bobbins");
+    //   _this.data.SSN("123456789");
+    //   _this.data.DOB("1/1/1");
     // }
     // /////TESTING//////////////////////
 
     _this.localizationCvm = new ComboViewModel({
       selectedValue: _this.data.LocalizationId,
       fields: {
-        text: 'LocalizationName',
-        value: 'LocalizationID',
+        text: "LocalizationName",
+        value: "LocalizationID",
       },
       list: _this.cache.localizations,
     });
@@ -232,8 +242,8 @@ define('src/account/default/runcredit.vm', [
       return !busy && !_this.cmdBypass.busy() && (!creditResult || !creditResult.IsHit);
     });
     _this.cmdBypass = ko.command(function(cb) {
-      notify.confirm('Bypass Credit Check?', 'This is a dialog to ensure you really want to bypass the credit check. Click YES to bypass.', function(result) {
-        if (result === 'yes') {
+      notify.confirm("Bypass Credit Check?", "This is a dialog to ensure you really want to bypass the credit check. Click YES to bypass.", function(result) {
+        if (result === "yes") {
           saveLeadAndRunCredit(_this, true, cb);
         } else {
           cb();
@@ -244,14 +254,25 @@ define('src/account/default/runcredit.vm', [
       return !busy && !_this.cmdRun.busy() && (!creditResult || !creditResult.IsHit);
     });
 
+    _this.cmdUseLead = ko.command(function(cb, item) {
+      saveCustomerMasterLead(_this.customerTypeId, item.lead, function() {
+        _this.leadResult(item.lead);
+        _this.creditResult(item.creditResult);
+        closeLayer(_this);
+      }, cb);
+    }, function(busy) {
+      return !busy && !_this.busy() &&
+        !_this.leadResult() && !_this.creditResult();
+    });
+
     _this.busy = ko.computed(function() {
-      return _this.cmdRun.busy() || _this.cmdBypass.busy();
+      return _this.cmdRun.busy() || _this.cmdBypass.busy() || _this.cmdUseLead.busy();
     });
   }
   utils.inherits(RunCreditViewModel, BaseViewModel);
-  RunCreditViewModel.prototype.viewTmpl = 'tmpl-acct-default-runcredit';
+  RunCreditViewModel.prototype.viewTmpl = "tmpl-acct-default-runcredit";
   RunCreditViewModel.prototype.width = 550;
-  RunCreditViewModel.prototype.height = 'auto';
+  RunCreditViewModel.prototype.height = "auto";
 
   function closeLayer(_this) {
     if (_this.layer) {
@@ -270,7 +291,7 @@ define('src/account/default/runcredit.vm', [
     var _this = this,
       msg;
     if (_this.cmdRun.busy() || _this.cmdBypass.busy()) {
-      msg = 'Please wait for credit check to finish.';
+      msg = "Please wait for credit check to finish.";
     }
     return msg;
   };
@@ -297,8 +318,8 @@ define('src/account/default/runcredit.vm', [
         lead: lead,
         result: creditResult,
         width: 300,
-        height: 'auto',
-        viewTmpl: 'tmpl-acct-default-runcredit-result',
+        height: "auto",
+        viewTmpl: "tmpl-acct-default-runcredit-result",
       }));
     }
   }
@@ -319,7 +340,7 @@ define('src/account/default/runcredit.vm', [
     _this.data.update();
     if (!_this.data.isValid()) {
       notify.warn(_this.data.errMsg(), null, 7);
-      return cb('invalid lead data');
+      return cb("invalid lead data");
     }
 
     var model = _this.data.getValue();
@@ -339,7 +360,7 @@ define('src/account/default/runcredit.vm', [
   function runLeadCredit(_this, bypass, cb) {
     var lead = _this.leadResult.peek();
     if (!lead) {
-      notify.warn('No lead??', null, 7);
+      notify.warn("No lead??", null, 7);
       return cb();
     }
 
@@ -357,6 +378,27 @@ define('src/account/default/runcredit.vm', [
       notify.error(err, 10);
     }));
   }
+
+  function saveCustomerMasterLead(customerTypeId, lead, setter, cb) {
+    dataservice.api_qualify.customerMasterFiles.save({
+      id: lead.CustomerMasterFileId,
+      link: strings.format("MasterLeads/{0}/{1}", customerTypeId, lead.LeadID),
+    }, setter, cb);
+  }
+
+  function indexOfLead(otherLeads, lead) {
+    var index = -1;
+    if (lead) {
+      otherLeads.some(function(item, i) {
+        if (item.lead.LeadID === lead.LeadID) {
+          index = i;
+          return true;
+        }
+      });
+    }
+    return index;
+  }
+
 
   return RunCreditViewModel;
 });

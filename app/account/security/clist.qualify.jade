@@ -16,12 +16,20 @@ div(data-bind="if:!loadErr()&&!loading()")
           div(data-bind="template:{data:repModel,name:'tmpl-acct-default-rep_info'}")
     <!-- ko foreach:leads -->
     div(class="col col2")
-      div(class="section",data-bind="toggle:{empty:!address()&&!lead()}")
+      div(class="section",
+        data-bind="toggle:{empty:!address()&&!lead(),disabled:$parent.hasCustomer}")
         span(class="title",data-bind="cmd:$parent.cmdAddress")
           span(data-bind="text:typeName")
           |&nbsp;Customer
+          //- <!-- ko if:subtitle -->
+          //- br
+          //- span(data-bind="text:subtitle")
+          //- <!-- /ko -->
         div(class="contents")
           div(class="section-item",data-bind="if:address,cmd:$parent.cmdAddress")
+            <!-- ko if:addressSameAsText -->
+            span(class="same-as fa fa-check",data-bind="text:addressSameAsText")
+            <!-- /ko -->
             <!-- ko if:!lead() -->
             a(class="close",title="Remove Address",
               data-bind="click:$parent.clickRemoveAddress,clickBubble:false")
@@ -29,6 +37,9 @@ div(data-bind="if:!loadErr()&&!loading()")
             span(class="title") Address
             div(data-bind="template:{data:address,name:'tmpl-acct-default-address'}")
           div(class="section-item",data-bind="cmd:$parent.cmdQualify")
+            <!-- ko if:leadSameAsText -->
+            span(class="same-as fa fa-check",data-bind="text:leadSameAsText")
+            <!-- /ko -->
             //- span(class="title") Lead
             <!-- ko if:lead -->
             div(data-bind="template:{name:'tmpl-acct-default-customer',data:lead}")

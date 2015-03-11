@@ -27,6 +27,17 @@ define("src/dataservice", [
     user: new UserDataservice(),
     session: new SessionDataservice(),
 
+    //
+    // with /api
+    //
+    api_qualify: createService("api/qualify", [
+      "customerMasterFiles",
+    ]),
+
+    //
+    // no /api
+    //
+
     accountingengine: createService("accountingenginesrv", [
       "aging",
       "billingInfoSummary",

@@ -24,7 +24,7 @@ define("src/account/security/clist.qualify.vm", [
   var typeIdMaps = {
     PRI: "Primary",
     SEC: "Secondary",
-    SHIP: "Monitored",
+    MONI: "Monitored",
   };
   typeIdMaps.LEAD = typeIdMaps.PRI;
 
@@ -36,12 +36,12 @@ define("src/account/security/clist.qualify.vm", [
     _this.mayReload = ko.observable(false);
     _this.title = ko.observable(_this.title);
 
+    _this.hasCustomer = ko.observable(!!_this.hasCustomer);
     _this.repModel = ko.observable();
-    _this.leads = [
-      createLeadVm(_this, "PRI"),
-      createLeadVm(_this, "SEC"),
-      createLeadVm(_this, "SHIP", "(If different than Primary)"),
-    ];
+    _this.leads = [];
+    addLeadVm(_this.leads, "PRI");
+    addLeadVm(_this.leads, "SEC");
+    addLeadVm(_this.leads, "MONI", "(If different than Primary)");
     _this.leadMap = {};
     _this.leads.forEach(function(leadVm) {
       _this.leadMap[leadVm.typeId] = leadVm;
@@ -57,20 +57,21 @@ define("src/account/security/clist.qualify.vm", [
         _this.repModel(val);
       });
     }, function(busy) {
-      return !busy && !_this.repModel();
+      return !busy && !_this.hasCustomer() && !_this.repModel();
     });
     _this.cmdAddress = ko.command(function(cb, leadVm) {
       if (isLeadReadOnly(leadVm)) {
-        notify.warn(leadVm.typeName + " address is no longer editable", null, 7);
+        notify.warn(leadVm.typeName + " address is no longer editable", null, 2);
         return cb();
       }
-      var otherAddresses = _this.leads.filter(isLeadReadOnly).map(function(vm) {
-        return {
-          typeId: vm.typeId,
-          name: vm.typeName,
-          address: vm.address.peek(),
-        };
-      });
+      var otherAddresses = _this.leads.filter(isLeadReadOnly)
+        .map(function(vm) {
+          return {
+            typeId: vm.typeId,
+            name: vm.typeName,
+            address: vm.address.peek(),
+          };
+        });
       var vm = new AddressValidateViewModel({
         otherAddresses: otherAddresses,
         repModel: _this.repModel(),
@@ -83,20 +84,37 @@ define("src/account/security/clist.qualify.vm", [
         }
       });
     }, function(busy) {
-      return !busy && _this.repModel();
+      return !busy && !_this.hasCustomer() && _this.repModel();
     });
     _this.cmdQualify = ko.command(function(cb, leadVm) {
       if (isLeadReadOnly(leadVm)) {
-        notify.warn(leadVm.typeName + " customer is no longer editable", null, 7);
+        notify.warn(leadVm.typeName + " customer is no longer editable", null, 2);
         return cb();
       }
+      var addressID = leadVm.address().AddressID;
+      if (!addressID) {
+        notify.warn("Please add an address first", null, 7);
+        return cb();
+      }
+      var otherLeads = _this.leads.filter(isLeadReadOnly)
+        .filter(withAddress(addressID))
+        .map(function(vm) {
+          return {
+            typeId: vm.typeId,
+            name: vm.typeName,
+            lead: vm.lead.peek(),
+            creditResult: vm.creditResult.peek(),
+          };
+        });
       var routeData = _this.getRouteData();
       var masterid = routeData.masterid;
       var vm = new RunCreditViewModel({
+        otherLeads: otherLeads,
         cache: _this.cache,
         repModel: _this.repModel(),
-        addressId: leadVm.address().AddressID,
+        addressId: addressID,
         customerTypeId: leadVm.typeId,
+        customerTypeName: leadVm.typeName,
         item: utils.clone(leadVm.lead.peek()),
         customerMasterFileId: (masterid > 0) ? masterid : 0,
       });
@@ -117,7 +135,7 @@ define("src/account/security/clist.qualify.vm", [
         }
       });
     }, function(busy) {
-      return !busy && _this.repModel();
+      return !busy && !_this.hasCustomer() && _this.repModel();
     });
     _this.cmdSendToIS = ko.command(function(cb, leadVm) {
       if (!leadVm.creditResult()) {
@@ -150,14 +168,14 @@ define("src/account/security/clist.qualify.vm", [
             checklist: checklistVm,
           });
 
-          _this.hasCustomer = true;
+          _this.hasCustomer(true);
         } else {
           notify.warn("unable to close??");
         }
       }, cb);
     }, function(busy) {
       var primary = _this.leadMap.PRI;
-      return !busy && !_this.hasCustomer && primary.lead() && primary.creditResult();
+      return !busy && !_this.hasCustomer() && primary.lead() && primary.creditResult();
     });
 
     _this.clickRemoveAddress = function(leadVm) {
@@ -231,7 +249,7 @@ define("src/account/security/clist.qualify.vm", [
   }
 
   function load_leadInfo(masterid, customerTypeId, setter, cb) {
-    dataservice.qualify.customerMasterFiles.read({
+    dataservice.api_qualify.customerMasterFiles.read({
       id: masterid,
       link: "leads/" + customerTypeId,
     }, setter, cb);
@@ -254,14 +272,77 @@ define("src/account/security/clist.qualify.vm", [
     });
   }
 
-  function createLeadVm(_this, typeId) {
-    return {
+  function addLeadVm(leads, typeId, subtitle) {
+    var vm = {
       typeId: typeId,
       typeName: typeIdMaps[typeId] || typeId,
+      subtitle: subtitle,
       address: ko.observable(),
+      addressSameAs: ko.computed({
+        deferEvaluation: true, // wait for all leads to be added
+        read: function() {
+          var typeId;
+          leads.some(function(leadVm) {
+            if (leadVm === vm) {
+              // stop looking once we have found ourself since
+              // references can only point to a previous lead
+              return true;
+            }
+            var address1 = vm.address();
+            var address2 = leadVm.address();
+            if (address1 && address2 && address1.AddressID === address2.AddressID) {
+              typeId = leadVm.typeId;
+              return true;
+            }
+          });
+          return typeId;
+        },
+      }),
+      addressSameAsText: ko.computed({
+        deferEvaluation: true,
+        read: function() {
+          // default to what the lead says, since it's possible for the
+          // same address to be used multiple times and a lead can only
+          // be used if the address is also being used
+          var typeId = vm.leadSameAs() || vm.addressSameAs();
+          if (typeId) {
+            return strings.format("Same as {0} Address", typeIdMaps[typeId] || typeId);
+          }
+        },
+      }),
       lead: ko.observable(),
+      leadSameAs: ko.computed({
+        deferEvaluation: true,
+        read: function() {
+          var typeId;
+          leads.some(function(leadVm) {
+            if (leadVm === vm) {
+              // stop looking once we have found ourself since
+              // references can only point to a previous lead
+              return true;
+            }
+            var lead1 = vm.lead();
+            var lead2 = leadVm.lead();
+            if (lead1 && lead2 && lead1.LeadID === lead2.LeadID) {
+              typeId = leadVm.typeId;
+              return true;
+            }
+          });
+          return typeId;
+        },
+      }),
+      leadSameAsText: ko.computed({
+        deferEvaluation: true,
+        read: function() {
+          var typeId = vm.leadSameAs();
+          if (typeId) {
+            return strings.format("Same as {0} Customer", typeIdMaps[typeId] || typeId);
+          }
+        },
+      }),
       creditResult: ko.observable(),
     };
+    leads.push(vm);
   }
 
   function setCustomerData(cust, lead, creditResultAndStuff) {
@@ -288,6 +369,13 @@ define("src/account/security/clist.qualify.vm", [
 
   function isLeadReadOnly(leadVm) {
     return !!leadVm.creditResult.peek();
+  }
+
+  function withAddress(addressID) {
+    return function(leadVm) {
+      var address = leadVm.address.peek();
+      return address && address.AddressID === addressID;
+    };
   }
 
   return CListQualifyViewModel;
