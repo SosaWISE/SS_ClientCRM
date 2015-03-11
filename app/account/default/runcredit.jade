@@ -1,5 +1,16 @@
 //- h2(class="title") Run Credit
 div(class="runcredit-form", data-bind="toggle:{'override':override}")
+  span(class="title")
+    span(data-bind="text:customerTypeName")
+    |&nbsp;Customer
+
+  div(class="actions",style="margin-top:10px;margin-bottom:10px;",
+    data-bind="foreach:otherLeads")
+    a(class="btn bg up",tabindex="0",data-bind="cmd:$parent.cmdUseLead")
+      |Use&nbsp;
+      span(data-bind="text:name")
+      |&nbsp;Customer
+
   ul(class="edit-form limit-width")
     li
       span(class="label") Prefix
@@ -29,7 +40,7 @@ div(class="runcredit-form", data-bind="toggle:{'override':override}")
     li
       span(class="label") Social Security #
       input(type="text", placeholder="123-12-1234",
-        data-bind="ukov:data.SSN,value:data.SSN,valueUpdate:'keyup'")
+        data-bind="ukov:data.SSN,ssnvalue:data.SSN,valueUpdate:'keyup'")
     li
       span(class="label") Date of Birth
       input(type="text", placeholder="mm/dd/yyyy",

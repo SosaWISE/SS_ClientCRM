@@ -337,6 +337,14 @@ table.fh-wrap {
       //   overflow:visible;
       //   height: 600px;
       // }
+
+      .title {
+        display: block;
+        vertical-align: middle;
+        font-size: 1.2em;
+        font-weight: 500;
+        text-transform: none;
+      }
     }
     .runcredit-result {
       margin-bottom: 10px;
@@ -348,11 +356,7 @@ table.fh-wrap {
     }
   }
 
-
-
-
   .col {
-    // padding-left: 20px;
     > .title {
       font-size: 1.3em;
       font-weight: 500;
@@ -360,10 +364,6 @@ table.fh-wrap {
       // text-transform: uppercase;
       text-align: center;
       display: block;
-    }
-    &.col3 {
-      float:left;
-      width: 33%;
     }
 
     .section {
@@ -411,8 +411,8 @@ table.fh-wrap {
         border-width: 4px;
         border-style: dashed;
         // border-color: #6c6c6c;
-        display:table;
-        height: 150px;
+        display: table;
+        height: 150px; // http://stackoverflow.com/a/11275916
         text-align: center;
         opacity: 0.2;
         &:not(.disabled) {
@@ -443,7 +443,62 @@ table.fh-wrap {
         }
       }
     }
+    &.col2 {
+      .section {
+        .contents {
+          display: table;
+          width: 100%;
+          height: 50px;
+          white-space: nowrap;
+          padding: 0px;
+          .section-item {
+            display:table-cell;
+            width: 50%;
+            height: 100%;
+            // vertical-align: top;
+            padding: 5px;
+            margin: 5px;
+            .title {
+              font-size: 1.1em;
+              font-weight: 500;
+            }
+            .same-as {
+              display: block;
+            }
+            &:not(.disabled):hover {
+              background-color: rgba(0, 0, 0, 0.05);
+            }
+          }
+        }
+        &.empty {
+          .contents {
+            display: none;
+          }
+        }
+      }
+    }
+
+    a.close {
+      color: inherit;
+      display: inline-block;
+      // margin-left: -10px;
+      // margin-right: 2px;
+      padding: 1px 5px;
+      &:before {
+        font-family: 'entypo';
+        content: '\2715';
+      }
+      .border-radius(9px);
+      .transition(.1s);
+      &:hover {
+        background: rgba(0, 0, 0, 0.25);
+      }
+      &:active {
+        background: rgba(0, 0, 0, 0.4);
+      }
+    }
   }
+
   .load-err {
     > .col {
       text-align: center;

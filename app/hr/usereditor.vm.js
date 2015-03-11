@@ -342,7 +342,7 @@ define("src/hr/usereditor.vm", [
     _this.data.imgUrl = ko.observable();
     //
     function updateImgUrl() {
-      _this.data.imgUrl(strings.format("//{0}/hr/users/{1}/photo?_={2}",
+      _this.data.imgUrl(strings.format("//{0}/HumanResourceSrv/users/{1}/photo?_={2}",
         config.serviceDomain, _this.data.UserID.peek() || 0, Math.random()));
     }
     _this.data.UserID.subscribe(updateImgUrl);

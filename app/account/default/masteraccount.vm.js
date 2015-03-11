@@ -31,8 +31,9 @@ define("src/account/default/masteraccount.vm", [
     PRI: 1,
     LEAD: 1,
     SEC: 2,
-    BILL: 3,
-    SHIP: 4,
+    MONI: 3,
+    BILL: 4,
+    SHIP: 5,
   };
 
   function sortByCustomerTypeId(a, b) {

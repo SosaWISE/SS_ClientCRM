@@ -30,7 +30,6 @@ define("src/nimis/config", [
   set("useMocks", false);
   set("canMockLogin", true); // only relevant if `useMocks` is true
   //
-  set("token", "SSE_CMS_CORS");
   // set("serviceDomain", "sse.services.cmscors"); // every environment should have this set in webconfig.js
   set("logErrors", true);
   set("titlePrefix", "");

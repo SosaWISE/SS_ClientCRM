@@ -1,5 +1,15 @@
 div(class="addr-validate")
-  h2(class="title") Premise Address
+  h2(class="title")
+    span(data-bind="")
+    |&nbsp;Address
+
+  div(class="actions",style="margin-top:10px;margin-bottom:10px;",
+    data-bind="foreach:otherAddresses")
+    a(class="btn bg up",tabindex="0",data-bind="cmd:$parent.cmdUseAddress")
+      |Use&nbsp;
+      span(data-bind="text:name")
+      |&nbsp;Address
+
   div(style="margin-top:10px;margin-bottom:10px;")
     div(data-bind="cvm:modeCvm")
 
@@ -7,7 +17,7 @@ div(class="addr-validate")
     div(class="addr-form")
       ul(class="edit-form")
         li
-          span(class="label") Premise Phone
+          span(class="label") Phone
           input(type="text", placeholder="(123) 123-1234",
             data-bind="select:focusFirst,ukov:data.PhoneNumber,phonevalue:data.PhoneNumber,valueUpdate:'keyup',enter:tcmdValidate")
         li

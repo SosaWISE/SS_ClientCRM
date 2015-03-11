@@ -132,13 +132,11 @@ define('src/core/app.vm', [
     };
     _this.cmdLogout = ko.command(function(cb) {
       _this.doLogout(function(err) {
-        if (err) {
-          notify.error(err, 10);
-        } else {
+        if (!err) {
           _this.user(null);
           _this.router.endSession();
         }
-        cb();
+        cb(err);
       });
     });
 
