@@ -93,7 +93,10 @@ define("src/core/notify", [
     if (!err || err._notified) {
       return false;
     }
+    // only show this error once
     err._notified = true;
+    // default to no delay
+    delay = delay || 0;
     notify(_this, (err.Code === 0 ? "info" : "error"), err.Url, err.Code,
       _this.errorCodeMap[err.Code] || "Error (code not recognized)", err.Message, delay, options);
     return true;
