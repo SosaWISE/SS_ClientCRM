@@ -160,6 +160,21 @@ define("src/nimis/app", [
             path: ":id",
           },
         ],
+      }, {
+        appid: "funding_admin",
+        path: "src/funding/funding.panel.vm",
+        options: {
+          id: "funding",
+          title: "Funding",
+          icoClass: "ico fa fa-3x fa-btc"
+        },
+        routes: [ //
+          {
+            precedence: 1,
+            name: "funding",
+            path: ":id",
+          },
+        ],
       },
     ],
   });
