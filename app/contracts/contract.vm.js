@@ -1,4 +1,5 @@
 define("src/contracts/contract.vm", [
+  "src/account/default/rep.find.vm",
   "src/account/security/clist.salesinfo.vm",
   "src/account/default/address.validate.vm",
   "src/account/default/runcredit.vm",
@@ -13,6 +14,7 @@ define("src/contracts/contract.vm", [
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
+  RepFindViewModel,
   CListSalesInfoViewModel,
   AddressValidateViewModel,
   RunCreditViewModel,
@@ -71,7 +73,7 @@ define("src/contracts/contract.vm", [
     });
 
     _this.salesInfo = getSalesInfoModel();
-    _this.salesInfoExtras = getSalesInfoExtrasModel();
+    _this.salesInfoExtras = getSalesInfoExtrasModel(_this.layersVm);
 
     //
     // events
@@ -91,8 +93,6 @@ define("src/contracts/contract.vm", [
     };
 
     _this.cmdSave = ko.command(function(cb) {
-      var join = joiner();
-
       var invalid = _this.leads.some(function(leadVm) {
         if (!leadVm.address.peek()) {
           return;
@@ -127,6 +127,7 @@ define("src/contracts/contract.vm", [
         return cb();
       }
 
+      var join = joiner();
       refreshInvoice(_this, join.add());
       saveSalesInfoExtras(_this, join.add());
 
@@ -154,7 +155,6 @@ define("src/contracts/contract.vm", [
           tryNextLead();
         }, join.add());
       })();
-
 
       join.when(cb);
     }, function(busy) {
@@ -831,7 +831,7 @@ define("src/contracts/contract.vm", [
     return data;
   }
 
-  function getSalesInfoExtrasModel() {
+  function getSalesInfoExtrasModel(layersVm) {
     var dateConverter = ukov.converters.date();
     var schema = _static.sdSchema || (_static.sdSchema = {
       _model: true,
@@ -880,6 +880,52 @@ define("src/contracts/contract.vm", [
 
     data.repModel = ko.observable();
     data.tekModel = ko.observable();
+
+    function createLoadRepFunc(modelSetter) {
+      var lastid;
+      return function(companyID) {
+        lastid = companyID;
+        if (lastid) {
+          var item = modelSetter.peek();
+          if (item && item.CompanyID === lastid) {
+            // already loaded
+            return;
+          }
+          // clear before loading new
+          modelSetter(null);
+          // load new
+          loadRep(lastid, function(val) {
+            if (val && val.CompanyID === lastid) {
+              modelSetter(val);
+            }
+          });
+        } else {
+          // clear
+          modelSetter(null);
+        }
+      };
+    }
+
+    data.SalesRepId.subscribe(createLoadRepFunc(data.repModel));
+    data.TechId.subscribe(createLoadRepFunc(data.tekModel));
+
+    function createFindFunc(modelSetter, idSetter) {
+      return function() {
+        if (!repFindVm) {
+          repFindVm = new RepFindViewModel({});
+        }
+        layersVm.show(repFindVm, function(val) {
+          if (val) {
+            // set model before setting id so that it doesn't have to be loaded again
+            modelSetter(val);
+            idSetter(val.CompanyID);
+          }
+        });
+      };
+    }
+    var repFindVm;
+    data.clickRep = createFindFunc(data.repModel, data.SalesRepId);
+    data.clickTek = createFindFunc(data.tekModel, data.TechId);
 
     return data;
   }
@@ -949,8 +995,7 @@ define("src/contracts/contract.vm", [
             salesInfoModel.setValue(acctSalesInfo);
             salesInfoExtrasModel.setValue(acctSalesInfo);
 
-            loadRep(acctSalesInfo.SalesRepId, salesInfoExtrasModel.repModel, join.add());
-            loadRep(acctSalesInfo.TechId, salesInfoExtrasModel.tekModel, join.add());
+            salesInfoExtrasModel.SalesRepId(null);
           }
         }, join.add());
       }, join.add());

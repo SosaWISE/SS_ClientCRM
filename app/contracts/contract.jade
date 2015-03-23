@@ -189,11 +189,13 @@ div(data-bind="if:!loadErr()&&!loading()")
           ul(class="edit-form double-wide",data-bind="with:salesInfoExtras")
             li
               span(class="label") Sales Rep
-              div(class="contents",data-bind="with:repModel")
+              div(class="contents",style="cursor:pointer",
+                data-bind="ukov:SalesRepId,cmd:clickRep,with:repModel")
                 div(data-bind="template:'tmpl-acct-default-rep_info'")
             li
               span(class="label") Technician
-              div(class="contents",data-bind="with:tekModel")
+              div(class="contents",style="cursor:pointer",
+                data-bind="ukov:TechId,cmd:clickTek,with:tekModel")
                 div(data-bind="template:'tmpl-acct-default-rep_info'")
           ul(class="edit-form double-wide",data-bind="with:salesInfoExtras")
             li

@@ -69,7 +69,7 @@ define('src/account/default/rep.find.vm', [
       dataservice.qualify.salesrep.read({
         id: model.CompanyID
       }, null, utils.safeCallback(cb, function(err, resp) {
-        if (resp) {
+        if (resp && resp.Value) {
           // mark clean what was searched
           _this.repData.markClean(model);
           // set rep
