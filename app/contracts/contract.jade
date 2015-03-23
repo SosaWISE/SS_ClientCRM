@@ -96,7 +96,7 @@ div(data-bind="if:!loadErr()&&!loading()")
             li
               span(class="label") Monthly Fee
               input(type="text",
-                data-bind="ukov:MonthlyMonitoringRateActual,likecurrencyvalue:MonthlyMonitoringRateActual")
+                data-bind="ukov:MonthlyMonitoringRateActual,likecurrencyvalue:MonthlyMonitoringRateActual,valueUpdate:'keyup'")
             //- li
             //-   span(class="label") Billing Cycle
             //-   div Monthly
@@ -107,7 +107,7 @@ div(data-bind="if:!loadErr()&&!loading()")
             li
               span(class="label") Activation Fee
               input(type="text",
-                data-bind="ukov:ActivationFeeActual,likecurrencyvalue:ActivationFeeActual")
+                data-bind="ukov:ActivationFeeActual,likecurrencyvalue:ActivationFeeActual,valueUpdate:'keyup'")
             li
               span(class="label") Activation Fee Paid Over
               div(data-bind="cvm:Over3MonthsCvm")
@@ -130,14 +130,14 @@ div(data-bind="if:!loadErr()&&!loading()")
             li
               span(class="label") Contract Date
               input(type="text",
-                data-bind="ukov:ContractSignedDate,datevalue:ContractSignedDate")
+                data-bind="ukov:ContractSignedDate,datevalue:ContractSignedDate,valueUpdate:'keyup'")
             li
               span(class="label") Install Date
               input(type="text",
-                data-bind="ukov:InstallDate,datevalue:InstallDate")
+                data-bind="ukov:InstallDate,datevalue:InstallDate,valueUpdate:'keyup'")
             li
               span(class="label") Online Date
-              input(type="text",disabled,data-bind="datetimetext:SubmittedToCSDate")
+              input(type="text",disabled,data-bind="datetimevalue:SubmittedToCSDate")
           ul(class="edit-form triple-wide",data-bind="with:salesInfo")
             li
               span(class="label") Cell Type
@@ -145,21 +145,23 @@ div(data-bind="if:!loadErr()&&!loading()")
               //- div(data-bind="cvm:CellularTypeCvm")
             li
               span(class="label") Cell Provider
-              div(data-bind="cvm:cellServiceCvm")
+              input(type="text",disabled,data-bind="value:cellServiceCvm.selectedText()")
+              //- div(data-bind="cvm:cellServiceCvm")
             li
               span(class="label") Service Plan
-              div(data-bind="cvm:CellPackageItemCvm")
+              input(type="text",disabled,data-bind="value:CellPackageItemCvm.selectedText()")
+              //- div(data-bind="cvm:CellPackageItemCvm")
             li
               span(class="label") Email
               input(type="text",
-                data-bind="ukov:Email,text:Email")
+                data-bind="ukov:Email,value:Email,valueUpdate:'keyup'")
 
           //- [Upgrades]
             Sales Rep Upgrades           [AE_Invoices]
             Rep Upgrade Paid             [AE_Invoices]
             Technician Upgrades          [AE_Invoices]
             Tech Upgrades Paid           [AE_Invoices]
-          ul(class="edit-form triple-wide",data-bind="with:null")
+          ul(class="edit-form triple-wide",data-bind="with:1")
             //-@TODO: upgrades - waiting for service endpoints
             li
               span(class="label") Sales Rep Upgrades
@@ -197,14 +199,14 @@ div(data-bind="if:!loadErr()&&!loading()")
             li
               span(class="label") AMA Barcode
               input(type="text",
-                data-bind="ukov:AMA,text:AMA")
+                data-bind="ukov:AMA,value:AMA,valueUpdate:'keyup'")
             li
               span(class="label") NOC Barcode
               input(type="text",
-                data-bind="ukov:NOC,text:NOC")
+                data-bind="ukov:NOC,value:NOC,valueUpdate:'keyup'")
             li
               span(class="label") SOP Barcode
               input(type="text",
-                data-bind="ukov:SOP,text:SOP")
+                data-bind="ukov:SOP,value:SOP,valueUpdate:'keyup'")
 
 div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")

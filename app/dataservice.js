@@ -32,6 +32,7 @@ define("src/dataservice", [
     //
     api_contractAdmin: createService("api/contractAdmin", [
       "accounts",
+      "accountSalesInformationExtras",
     ]),
     api_qualify: createService("api/qualify", [
       "customerMasterFiles",
