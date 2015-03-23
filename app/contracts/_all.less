@@ -10,6 +10,68 @@ body.users {
   height: 100%;
   @tranSec: .25s;
 
+  .acct-item {
+    position: absolute;
+    left:0px;top:50px;right:0px;bottom:0px;
+    padding: 0px 10px 200px 10px;
+
+    overflow: auto;
+  }
+
+
+  .addr-validate {
+    .addr-form-wrap {
+      width:100%;
+      // overflow-x: hidden; // for some reason in Chrome this also hides y
+    }
+    .addr-form {
+      width:530px;
+
+      .edit-form {
+        width:260px;
+        display:inline-block;
+        vertical-align:top;
+        &.right-side {
+          margin-left:10px;
+        }
+      }
+    }
+    .result {
+      min-height:150px;
+      .info {
+        margin-top:10px;
+        margin-bottom:10px;
+      }
+    }
+  }
+  .runcredit-form {
+    position:relative;
+    // overflow:hidden;
+
+    // transition: height 0.25s;
+    // height: 265px;
+    // &.override {
+    //   overflow:visible;
+    //   height: 600px;
+    // }
+
+    .title {
+      display: block;
+      vertical-align: middle;
+      font-size: 1.2em;
+      font-weight: 500;
+      text-transform: none;
+    }
+  }
+  .runcredit-result {
+    margin-bottom: 10px;
+    padding-top: 10px;
+    .label {
+      display:inline-block;
+      width:90px;
+    }
+  }
+
 
   .credit-result {
     display:table;
@@ -46,8 +108,11 @@ body.users {
     }
   }
 
+  .redo {
+    .opacity(0.2);
+  }
+
   .col {
-    // padding-left: 20px;
     > .title {
       font-size: 1.3em;
       font-weight: 500;
@@ -62,6 +127,10 @@ body.users {
     }
 
     .section {
+      // &.dirty {
+      //   background-color: rgba(255,255,192,.9) !important;
+      // }
+
       // overflow: hidden;
       position: relative;
       width: 100%;
@@ -72,9 +141,15 @@ body.users {
         font-weight: 500;
         overflow: hidden;
         // text-transform: uppercase;
+        > ul.actions {
+          display: inline-block;
+        }
       }
+      // > ul.actions {
+      //   display: inline-block;
+      // }
       .contents {
-        overflow: hidden;
+        // overflow: hidden;
         // color: #222;
         .border-radius(5px);
         padding: 10px;
@@ -115,15 +190,15 @@ body.users {
           &:hover {
             opacity: 1;
           }
-          .title:after {
-            content: "\e01b";
-            font-family: 'Nexsense';
-            width: 32px;
-            height: 32px;
-            font-size: 16px;
-            text-align: center;
-            margin-left: 5px;
-          }
+          // .title:after {
+          //   content: "\e01b";
+          //   font-family: 'Nexsense';
+          //   width: 32px;
+          //   height: 32px;
+          //   font-size: 16px;
+          //   text-align: center;
+          //   margin-left: 5px;
+          // }
           // cursor: pointer;
         }
         .title {
@@ -132,9 +207,61 @@ body.users {
           font-size: 1.2em;
           font-weight: 500;
           text-transform: none;
+          // > ul.actions {
+          //   display: none;
+          // }
         }
         .contents {
           display: none;
+        }
+      }
+
+      &.dirty {
+        &.empty {
+          background-color: rgba(255,255,192,.9) !important;
+        }
+        .contents {
+          background-color: rgba(255,255,192,.9) !important;
+        }
+      }
+    }
+    &.col2 {
+      .section {
+        .contents {
+          display: table;
+          width: 100%;
+          height: 50px;
+          white-space: nowrap;
+          padding: 0px;
+          .section-item {
+            display:table-cell;
+            width: 50%;
+            &.address {
+              width: 300px;
+            }
+            &.customer {
+              width: ~"calc(100% - 300px)";
+            }
+            height: 100%;
+            // vertical-align: top;
+            padding: 5px;
+            margin: 5px;
+            .title {
+              font-size: 1.1em;
+              font-weight: 500;
+            }
+            .same-as {
+              display: block;
+            }
+            &:not(.disabled):hover {
+              background-color: rgba(0, 0, 0, 0.05);
+            }
+          }
+        }
+        &.empty {
+          .contents {
+            display: none;
+          }
         }
       }
     }
@@ -310,6 +437,11 @@ body.users {
         // padding-left: 20px;
         .under-toggle-btn {
           width:17px;height:39px;
+        }
+      }
+      ul.actions {
+        .under-toggle-btn {
+          width:17px;
         }
       }
     }

@@ -7,6 +7,8 @@ define("src/contracts/master.vm", [
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
+  // use to define ko.bindingHandlers.crg
+  "src/account/default/runcredit.vm",
 ], function(
   jquery,
   ContractViewModel,
@@ -18,25 +20,6 @@ define("src/contracts/master.vm", [
   ControllerViewModel
 ) {
   "use strict";
-
-  // -- Credit Score Group
-  ko.bindingHandlers.crg2 = {
-    update: function(element, valueAccessor) {
-      var cls, creditGroup = valueAccessor();
-      switch (creditGroup) {
-        case "Excellent":
-        case "Good":
-        case "Sub":
-        case "Poor":
-          cls = creditGroup.toLowerCase();
-          break;
-          // default:
-          //   cls = "blank";
-          //   break;
-      }
-      jquery(element).addClass(cls);
-    }
-  };
 
   var customerTypePrecedence = {
     PRI: 1,
@@ -55,7 +38,7 @@ define("src/contracts/master.vm", [
   function MasterViewModel(options) {
     var _this = this;
     MasterViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ["id", "title"]);
+    utils.assertProps(_this, ["id", "title"]);
 
     _this.mayReload = ko.observable(false);
     _this.title = ko.observable(_this.title);
@@ -180,6 +163,7 @@ define("src/contracts/master.vm", [
 
   function createContractVm(_this, id, title, rmr, units) {
     return new ContractViewModel({
+      layersVm: _this.layersVm,
       pcontroller: _this,
       id: id,
       title: title || "[Unknown]",

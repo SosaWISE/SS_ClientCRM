@@ -26,7 +26,7 @@ div(data-bind="if:!loadErr()&&!loading()")
           //- span(data-bind="text:subtitle")
           //- <!-- /ko -->
         div(class="contents")
-          div(class="section-item",data-bind="if:address,cmd:$parent.cmdAddress")
+          div(class="section-item address",data-bind="if:address,cmd:$parent.cmdAddress")
             <!-- ko if:addressSameAsText -->
             span(class="same-as fa fa-check",data-bind="text:addressSameAsText")
             <!-- /ko -->
@@ -34,9 +34,11 @@ div(data-bind="if:!loadErr()&&!loading()")
             a(class="close",title="Remove Address",
               data-bind="click:$parent.clickRemoveAddress,clickBubble:false")
             <!-- /ko -->
-            span(class="title") Address
+            span(class="title")
+              span(data-bind="text:addressTypeName")
+              |&nbsp;Address
             div(data-bind="template:{data:address,name:'tmpl-acct-default-address'}")
-          div(class="section-item",data-bind="cmd:$parent.cmdQualify")
+          div(class="section-item customer",data-bind="cmd:$parent.cmdQualify")
             <!-- ko if:leadSameAsText -->
             span(class="same-as fa fa-check",data-bind="text:leadSameAsText")
             <!-- /ko -->

@@ -36,8 +36,8 @@ define("src/scheduler/account.service.tickets.vm", [
   };
 
   function sortByCustomerTypeId(a, b) {
-    var aP = customerTypePrecedence[a.CustomerTypeId] || 9,
-      bP = customerTypePrecedence[b.CustomerTypeId] || 9;
+    var aP = customerTypePrecedence[a.CustomerTypeId] || 99,
+      bP = customerTypePrecedence[b.CustomerTypeId] || 99;
     return aP - bP;
   }
 

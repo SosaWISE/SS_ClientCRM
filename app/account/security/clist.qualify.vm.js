@@ -25,13 +25,21 @@ define("src/account/security/clist.qualify.vm", [
     PRI: "Primary",
     SEC: "Secondary",
     MONI: "Monitored",
+    BILL: "Billing",
   };
   typeIdMaps.LEAD = typeIdMaps.PRI;
+
+  var addressTypeIdMaps = {
+    PRI: typeIdMaps.PRI,
+    SEC: typeIdMaps.SEC,
+    MONI: "Premise",
+    BILL: typeIdMaps.BILL,
+  };
 
   function CListQualifyViewModel(options) {
     var _this = this;
     CListQualifyViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ["layersVm"]);
+    utils.assertProps(_this, ["layersVm"]);
 
     _this.mayReload = ko.observable(false);
     _this.title = ko.observable(_this.title);
@@ -61,18 +69,28 @@ define("src/account/security/clist.qualify.vm", [
     });
     _this.cmdAddress = ko.command(function(cb, leadVm) {
       if (isLeadReadOnly(leadVm)) {
-        notify.warn(leadVm.typeName + " address is no longer editable", null, 2);
+        notify.warn(leadVm.addressTypeName + " address is no longer editable", null, 2);
         return cb();
       }
+      var uniqueMap = {};
       var otherAddresses = _this.leads.filter(isLeadReadOnly)
+        .filter(function(vm) {
+          var addressId = vm.address.peek().AddressID;
+          if (!uniqueMap[addressId]) {
+            uniqueMap[addressId] = true;
+            return true;
+          }
+        })
         .map(function(vm) {
           return {
             typeId: vm.typeId,
-            name: vm.typeName,
+            name: vm.addressTypeName,
+            // name: vm.typeName,
             address: vm.address.peek(),
           };
         });
       var vm = new AddressValidateViewModel({
+        name: leadVm.addressTypeName,
         otherAddresses: otherAddresses,
         repModel: _this.repModel(),
         item: utils.clone(leadVm.address.peek()),
@@ -91,7 +109,7 @@ define("src/account/security/clist.qualify.vm", [
         notify.warn(leadVm.typeName + " customer is no longer editable", null, 2);
         return cb();
       }
-      var addressID = leadVm.address().AddressID;
+      var addressID = leadVm.address.peek().AddressID;
       if (!addressID) {
         notify.warn("Please add an address first", null, 7);
         return cb();
@@ -221,9 +239,6 @@ define("src/account/security/clist.qualify.vm", [
           dataservice.qualify.addressValidation.read({
             id: creditResultAndStuff.AddressID,
           }, function(address) {
-            // normalize data
-            address.PhoneNumber = address.PhoneNumber || creditResultAndStuff.Phone;
-            address.TimeZone = address.TimeZone || creditResultAndStuff.TimeZoneName;
             // set address
             leadVm.address(address);
           }, join.add());
@@ -272,11 +287,11 @@ define("src/account/security/clist.qualify.vm", [
     });
   }
 
-  function addLeadVm(leads, typeId, subtitle) {
+  function addLeadVm(leads, typeId) {
     var vm = {
       typeId: typeId,
       typeName: typeIdMaps[typeId] || typeId,
-      subtitle: subtitle,
+      addressTypeName: addressTypeIdMaps[typeId] || typeId,
       address: ko.observable(),
       addressSameAs: ko.computed({
         deferEvaluation: true, // wait for all leads to be added
@@ -304,9 +319,10 @@ define("src/account/security/clist.qualify.vm", [
           // default to what the lead says, since it's possible for the
           // same address to be used multiple times and a lead can only
           // be used if the address is also being used
-          var typeId = vm.leadSameAs() || vm.addressSameAs();
+          // var typeId = vm.leadSameAs() || vm.addressSameAs();
+          var typeId = vm.addressSameAs();
           if (typeId) {
-            return strings.format("Same as {0} Address", typeIdMaps[typeId] || typeId);
+            return strings.format("Same as {0} Address", addressTypeIdMaps[typeId] || typeId);
           }
         },
       }),

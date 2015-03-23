@@ -1,4 +1,6 @@
 div(class="contracts-panel",data-bind="if:loaded")
+  div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
+
   table(class="fh-wrap")
     tr
       td(class="fh-header")
@@ -26,5 +28,3 @@ div(class="contracts-panel",data-bind="if:loaded")
             data-bind="template:viewTmpl,active:active")
           <!-- /ko -->
           <!-- /ko -->
-
-div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

@@ -1,20 +1,20 @@
-define('src/account/security/clist.salesinfo.vm', [
-  'underscore',
-  'src/account/security/parts.editor.vm',
-  'src/app',
-  'src/config',
-  'src/slick/buttonscolumn',
-  'src/account/security/frequent.gvm',
-  'src/account/security/clist.salesinfo.gvm',
-  'src/ukov',
-  'src/dataservice',
-  'src/core/numbers',
-  'src/core/strings',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
-  'ko',
-  'src/core/combo.vm',
+define("src/account/security/clist.salesinfo.vm", [
+  "underscore",
+  "src/account/security/parts.editor.vm",
+  "src/app",
+  "src/config",
+  "src/slick/buttonscolumn",
+  "src/account/security/frequent.gvm",
+  "src/account/security/clist.salesinfo.gvm",
+  "src/ukov",
+  "src/dataservice",
+  "src/core/numbers",
+  "src/core/strings",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
+  "ko",
+  "src/core/combo.vm",
 ], function(
   underscore,
   PartsEditorViewModel,
@@ -39,7 +39,7 @@ define('src/account/security/clist.salesinfo.vm', [
     emailDependsOnCellPackageItemIdVg;
 
   emailDependsOnCellPackageItemIdVg = {
-    keys: ['Email', 'CellPackageItemId'],
+    keys: ["Email", "CellPackageItemId"],
     validators: [],
   };
 
@@ -67,9 +67,9 @@ define('src/account/security/clist.salesinfo.vm', [
     AccountId: {},
     ActivationFee: {},
     ActivationFeeActual: {
-      converter: ukov.converters.number(2, 'Invalid activation fee'),
+      converter: ukov.converters.number(2, "Invalid activation fee"),
       validators: [
-        ukov.validators.isRequired('Activation Fee is Required'),
+        ukov.validators.isRequired("Activation Fee is Required"),
       ]
     },
     ActivationFeeItemId: {},
@@ -79,7 +79,7 @@ define('src/account/security/clist.salesinfo.vm', [
     InvoiceID: {},
     MonthlyMonitoringRate: {},
     MonthlyMonitoringRateActual: {
-      converter: ukov.converters.number(2, 'Invalid monthly monitoring rate'),
+      converter: ukov.converters.number(2, "Invalid monthly monitoring rate"),
     },
     MonthlyMonitoringRateItemId: {},
     Over3Months: {},
@@ -119,7 +119,7 @@ define('src/account/security/clist.salesinfo.vm', [
     IsTakeOver: {},
     IsMoni: {
       validators: [
-        // ukov.validators.isRequired('Current Monitoring Station is Required'),
+        // ukov.validators.isRequired("Current Monitoring Station is Required"),
       ],
     },
 
@@ -138,8 +138,8 @@ define('src/account/security/clist.salesinfo.vm', [
       validators: [
         // only required if Alarm.com
         function(val, model, ukovModel) {
-          if (!val && strings.startsWith(ukovModel.CellPackageItemId.peek(), 'CELL_SRV_AC')) { // Alarm.com
-            return 'Email is required';
+          if (!val && strings.startsWith(ukovModel.CellPackageItemId.peek(), "CELL_SRV_AC")) { // Alarm.com
+            return "Email is required";
           }
         },
         ukov.validators.isEmail(),
@@ -152,7 +152,7 @@ define('src/account/security/clist.salesinfo.vm', [
   function CListSalesInfoViewModel(options) {
     var _this = this;
     CListSalesInfoViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['layersVm']);
+    ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
     _this.mayReload = ko.observable(false);
     _this.subs = [];
@@ -164,22 +164,22 @@ define('src/account/security/clist.salesinfo.vm', [
       selectedValue: _this.data.PanelTypeId,
       nullable: true,
       fields: {
-        text: 'PanelTypeName',
-        value: 'PanelTypeID',
+        text: "PanelTypeName",
+        value: "PanelTypeID",
       }
     });
     _this.data.CellularTypeCvm = new ComboViewModel({
       selectedValue: _this.data.CellularTypeId,
       fields: {
-        text: 'CellularTypeName',
-        value: 'CellularTypeID',
+        text: "CellularTypeName",
+        value: "CellularTypeID",
       }
     });
     // _this.data.AlarmComPackageCvm = new ComboViewModel({
     //   selectedValue: _this.data.AlarmComPackageId,
     //   fields: {
-    //     text: 'PackageName',
-    //     value: 'AlarmComPackageID',
+    //     text: "PackageName",
+    //     value: "AlarmComPackageID",
     //   }
     // });
 
@@ -221,15 +221,15 @@ define('src/account/security/clist.salesinfo.vm', [
 
     _this.pointSystemsCvm = new ComboViewModel({
       fields: {
-        text: 'TemplateName',
-        value: 'InvoiceTemplateID',
+        text: "TemplateName",
+        value: "InvoiceTemplateID",
       }
     });
     _this.data.ContractTemplatesCvm = new ComboViewModel({
       selectedValue: _this.data.ContractTemplateId,
       fields: {
-        text: 'ContractName',
-        value: 'ContractTemplateID',
+        text: "ContractName",
+        value: "ContractTemplateID",
       }
     });
 
@@ -281,7 +281,7 @@ define('src/account/security/clist.salesinfo.vm', [
     _this.cellularTypes = ko.observableArray();
     //
     function cellServiceChanged(cellService) {
-      _this.isAlarmCom(cellService === 'CELL_SRV_AC'); // Alarm.com
+      _this.isAlarmCom(cellService === "CELL_SRV_AC"); // Alarm.com
 
       _this.hasCell(!!cellService); // false if no cell package item
       if (_this.hasCell.peek()) {
@@ -290,11 +290,11 @@ define('src/account/security/clist.salesinfo.vm', [
       } else {
         // only No Cell
         _this.data.CellularTypeCvm.setList(_this.cellularTypes.peek().filter(function(type) {
-          return type.CellularTypeID === 'NOCELL';
+          return type.CellularTypeID === "NOCELL";
         }));
       }
       if (!_this.data.CellularTypeCvm.selectedValue.peek()) {
-        // select first item if one isn't selected
+        // select first item if one is not selected
         _this.data.CellularTypeCvm.selectFirst();
       }
 
@@ -303,7 +303,7 @@ define('src/account/security/clist.salesinfo.vm', [
         return cellService && strings.startsWith(item.value, cellService);
       }));
       if (!_this.data.CellPackageItemCvm.selectedValue.peek()) {
-        // select first item if one isn't selected
+        // select first item if one is not selected
         _this.data.CellPackageItemCvm.selectFirst();
       }
     }
@@ -328,11 +328,11 @@ define('src/account/security/clist.salesinfo.vm', [
     });
 
 
-    // bind scope and don't rapid fire requests
+    // bind scope and do not rapid fire requests
     _this.refreshInvoice = underscore.debounce(_this.refreshInvoice.bind(_this), 100);
   }
   utils.inherits(CListSalesInfoViewModel, ControllerViewModel);
-  CListSalesInfoViewModel.prototype.viewTmpl = 'tmpl-security-clist_salesinfo';
+  CListSalesInfoViewModel.prototype.viewTmpl = "tmpl-security-clist_salesinfo";
 
   CListSalesInfoViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
@@ -341,7 +341,7 @@ define('src/account/security/clist.salesinfo.vm', [
       join1 = join.create(),
       join2 = join.create(),
       join3 = join.create(),
-      cb = join.add('1');
+      cb = join.add("1");
 
     _this.currData = null; // clear (incase of reload)
 
@@ -356,16 +356,16 @@ define('src/account/security/clist.salesinfo.vm', [
     //
     // 1 - load types
     //
-    // load_vendorAlarmComPackages(_this.data.AlarmComPackageCvm, join1.add('2'));
-    load_pointSystems(_this.pointSystemsCvm, join1.add('3'));
-    load_panelTypes(_this.data.PanelTypeCvm, join1.add('4'));
-    load_frequentlyInstalledEquipmentGet(_this.frequentGvm, join1.add('6'));
+    // load_vendorAlarmComPackages(_this.data.AlarmComPackageCvm, join1.add("2"));
+    load_pointSystems(_this.pointSystemsCvm, join1.add("3"));
+    load_panelTypes(_this.data.PanelTypeCvm, join1.add("4"));
+    load_frequentlyInstalledEquipmentGet(_this.frequentGvm, join1.add("6"));
     _this.data.CellularTypeCvm.setList([]);
-    load_cellularTypes(_this.cellularTypes, join1.add('5'));
+    load_cellularTypes(_this.cellularTypes, join1.add("5"));
     //
     dataservice.qualify.qualifyCustomerInfos.read({
       id: accountid,
-      link: 'account',
+      link: "account",
     }, null, utils.safeCallback(join1.add(), function(err, resp) {
       customerEmail = resp.CustomerEmail;
       // load sales rep
@@ -422,7 +422,7 @@ define('src/account/security/clist.salesinfo.vm', [
           _this.subs.push(_this.data[key].subscribe(_this.refreshInvoice));
         });
         // try to refresh whenever the cell service changes
-        //  - only needed when there's an error on a previous refresh
+        //  - only needed when there is an error on a previous refresh
         _this.subs.push(_this.data.cellServiceCvm.selectedValue.subscribe(_this.refreshInvoice));
       }
       cb(err);
@@ -437,11 +437,11 @@ define('src/account/security/clist.salesinfo.vm', [
     // reset subnum
     _this._subnum = 1;
     //
-    return strings.format('{0}.', _this._num++);
+    return strings.format("{0}.", _this._num++);
   };
   CListSalesInfoViewModel.prototype.subnum = function() {
     var _this = this;
-    return strings.format('{0}.{1}.', _this._num - 1, _this._subnum++);
+    return strings.format("{0}.{1}.", _this._num - 1, _this._subnum++);
   };
 
   CListSalesInfoViewModel.prototype.refreshInvoice = function(cb) {
@@ -476,7 +476,7 @@ define('src/account/security/clist.salesinfo.vm', [
     // data.AlarmComPackageId = data.CellPackageItemId;
     // delete data.CellPackageItemId;
 
-    // console.log('currData:', JSON.stringify(_this.currData, null, '  '));
+    // console.log("currData:", JSON.stringify(_this.currData, null, "  "));
     dataservice.salessummary.invoiceRefresh.save({
       data: data,
     }, null, utils.safeCallback(cb, function(err, resp) {
@@ -500,10 +500,10 @@ define('src/account/security/clist.salesinfo.vm', [
   function load_invoiceMsInstalls(data, customerEmail, join) {
     dataservice.salessummary.invoiceMsIsntalls.read({
       id: data.AccountId(),
-      link: 'accountid'
-    }, null, utils.safeCallback(join.add('7'), function(err, resp) {
+      link: "accountid"
+    }, null, utils.safeCallback(join.add("7"), function(err, resp) {
       if (resp.Value) {
-        load_msAccountSalesInformations(resp.Value, data, customerEmail, join.add('8'));
+        load_msAccountSalesInformations(resp.Value, data, customerEmail, join.add("8"));
       }
     }, function(err) {
       notify.error(err);
@@ -527,7 +527,7 @@ define('src/account/security/clist.salesinfo.vm', [
         // set both here instead of after loading invoice so the UI looks more fluid??
         // set invoice data
         data.setValue(invoice);
-        // default to customer's email
+        // default to customer"s email
         val.Email = val.Email || customerEmail;
         // set sales info data
         data.setValue(val);
@@ -537,16 +537,18 @@ define('src/account/security/clist.salesinfo.vm', [
 
 
         // set defaults
-        utils.setIfNull(val, 'Over3Months', true);
-        utils.setIfNull(val, 'PaymentTypeId', 'ACH');
-        utils.setIfNull(val, 'BillingDay', 5); // 5th of month
-        utils.setIfNull(val, 'IsTakeOver', false);
-        utils.setIfNull(val, 'IsOwner', true);
-        // utils.setIfNull(val, 'IsMoni', false);
+        utils.setIfNull(val, {
+          Over3Months: true,
+          PaymentTypeId: "ACH",
+          BillingDay: 5, // 5th of month
+          IsTakeOver: false,
+          IsOwner: true,
+          // IsMoni: false,
 
-        // utils.setIfNull(val, 'ContractTemplate', 60); // ?????????????
-        // utils.setIfNull(val, 'Setup1stMonth', 199.00); // ?????????????
-        // utils.setIfNull(val, 'SetupFee', 199.00); // ?????????????
+          // ContractTemplate: 60, // ?????????????
+          // Setup1stMonth: 199.00, // ?????????????
+          // SetupFee: 199.00, // ?????????????
+        });
         data.setValue(val);
       }
     }, function(err) {
@@ -624,25 +626,25 @@ define('src/account/security/clist.salesinfo.vm', [
   CListSalesInfoViewModel.prototype.over3MonthsOptions = [ //
     {
       value: true,
-      text: 'Over 3 Months',
+      text: "Over 3 Months",
     }, {
       value: false,
-      text: 'Paid in Full',
+      text: "Paid in Full",
     },
   ];
   CListSalesInfoViewModel.prototype.paymentTypeOptions = [ //
     {
-      value: 'ACH',
-      text: 'ACH'
+      value: "ACH",
+      text: "ACH"
     }, {
-      value: 'CC',
-      text: 'Credit Card',
+      value: "CC",
+      text: "Credit Card",
     }, {
-      value: 'CHCK',
-      text: 'Check',
+      value: "CHCK",
+      text: "Check",
     }, {
-      value: 'MAN',
-      text: 'Manual Invoice',
+      value: "MAN",
+      text: "Manual Invoice",
     },
   ];
   (function() {
@@ -661,64 +663,64 @@ define('src/account/security/clist.salesinfo.vm', [
   CListSalesInfoViewModel.prototype.isTakeOverOptions = [ //
     {
       value: false,
-      text: 'New Install',
+      text: "New Install",
     }, {
       value: true,
-      text: 'Takeover',
+      text: "Takeover",
     },
   ];
   CListSalesInfoViewModel.prototype.isOwnerOptions = [ //
     {
       value: true,
-      text: 'Home Owner',
+      text: "Home Owner",
     }, {
       value: false,
-      text: 'Renter',
+      text: "Renter",
     },
   ];
   CListSalesInfoViewModel.prototype.cellServiceOptions = [ //
     {
       value: null,
-      text: '[No Cell]',
+      text: "[No Cell]",
     }, {
-      value: 'CELL_SRV_TG',
-      text: 'Telguard',
+      value: "CELL_SRV_TG",
+      text: "Telguard",
     }, {
-      value: 'CELL_SRV_AC',
-      text: 'Alarm.com',
+      value: "CELL_SRV_AC",
+      text: "Alarm.com",
     }, {
-      value: 'CELL_SRV_HW',
-      text: 'HW AlarmNet',
+      value: "CELL_SRV_HW",
+      text: "HW AlarmNet",
     },
   ];
   CListSalesInfoViewModel.prototype.cellPackageItemOptions = [ //
     {
-      value: 'CELL_SRV_AC_AI',
-      text: 'Advanced Interactive',
+      value: "CELL_SRV_AC_AI",
+      text: "Advanced Interactive",
     }, {
-      value: 'CELL_SRV_AC_BI',
-      text: 'Basic Interactive',
+      value: "CELL_SRV_AC_BI",
+      text: "Basic Interactive",
     }, {
-      value: 'CELL_SRV_AC_IG',
-      text: 'Interactive Gold',
+      value: "CELL_SRV_AC_IG",
+      text: "Interactive Gold",
     }, {
-      value: 'CELL_SRV_AC_WSF',
-      text: 'Alarm.Com Wireless Signal Forward',
+      value: "CELL_SRV_AC_WSF",
+      text: "Alarm.Com Wireless Signal Forward",
     }, {
-      value: 'CELL_SRV_HW',
-      text: 'Honeywell Alarm.net Service',
+      value: "CELL_SRV_HW",
+      text: "Honeywell Alarm.net Service",
     }, {
-      value: 'CELL_SRV_TG',
-      text: 'Telguard Monthly',
+      value: "CELL_SRV_TG",
+      text: "Telguard Monthly",
     },
   ];
   CListSalesInfoViewModel.prototype.monitoringStationOptions = [ //
     {
       value: true,
-      text: 'Monitronics',
+      text: "Monitronics",
     }, {
       value: false,
-      text: 'Other',
+      text: "Other",
     },
   ];
 

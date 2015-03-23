@@ -30,6 +30,9 @@ define("src/dataservice", [
     //
     // with /api
     //
+    api_contractAdmin: createService("api/contractAdmin", [
+      "accounts",
+    ]),
     api_qualify: createService("api/qualify", [
       "customerMasterFiles",
     ]),

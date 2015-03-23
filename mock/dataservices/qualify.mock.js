@@ -120,7 +120,7 @@ define('mock/dataservices/qualify.mock', [
         SSN: data.SSN,
         DOB: data.DOB,
         DL: data.DL,
-        DLStateId: data.DLStateId,
+        DLStateID: data.DLStateID,
         Email: data.Email,
         PhoneWork: data.PhoneWork,
         PhoneHome: data.PhoneHome,
@@ -248,6 +248,14 @@ define('mock/dataservices/qualify.mock', [
               },
             ],
           }).list;
+          break;
+        case "hasCustomer":
+          // even ids have a customer
+          result = parseInt(id, 10) % 2;
+          result = !result;
+          break;
+        case "customers":
+          result = [];
           break;
       }
       send(0, result, setter, cb);

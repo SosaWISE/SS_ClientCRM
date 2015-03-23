@@ -79,11 +79,12 @@ define("src/account/default/runcredit.vm", [
 
   schema = {
     _model: true,
+    CreateMasterLead: {},
     LeadID: {},
-    AddressID: {
+    AddressId: {
       converters: ukov.converters.number(0),
       validators: [
-        ukov.validators.isRequired("AddressID is required"),
+        ukov.validators.isRequired("AddressId is required"),
       ],
     },
     CustomerTypeId: {},
@@ -141,7 +142,7 @@ define("src/account/default/runcredit.vm", [
       validationGroup: validationGroup,
     },
     DL: {},
-    DLStateId: {},
+    DLStateID: {},
     Email: {
       converter: strConverter,
       validators: [max256, ukov.validators.isEmail()],
@@ -167,24 +168,21 @@ define("src/account/default/runcredit.vm", [
     ]);
     utils.setIfNull(_this, {
       otherLeads: [],
+      createMasterLead: true,
+      showSaveBtn: false,
     });
     _this.mixinLoad();
 
     if (indexOfLead(_this.otherLeads, _this.item) > -1) {
-      _this.item = null;
+      removeLead(_this.otherLeads, _this.item);
+      _this.item.LeadID = 0;
     }
 
     _this.item = _this.item || {
+      CreateMasterLead: _this.createMasterLead,
       CustomerTypeId: _this.customerTypeId,
       CustomerMasterFileId: _this.customerMasterFileId,
       LocalizationId: "",
-      LeadSourceId: config.leadSourceId,
-      LeadDispositionId: config.leadDispositionId,
-      DealerId: app.user().DealerId,
-      AddressID: _this.addressId,
-      SalesRepId: _this.repModel.CompanyID,
-      TeamLocationId: _this.repModel.TeamLocationId,
-      SeasonId: _this.repModel.Seasons[0].SeasonID,
       // Salutation: "",
       FirstName: "",
       MiddleName: "",
@@ -196,6 +194,14 @@ define("src/account/default/runcredit.vm", [
       Email: "",
       ProductSkwId: "HSSS001" // *OPTIONAL  it will default to "HSSS001" if not passed.  This Prodcut Skw is for an alarm system.  Depending on what type of lead we are creating you would pass the appropriate Product Skw.
     };
+    //
+    _this.item.LeadSourceId = _this.item.LeadSourceId || config.leadSourceId;
+    _this.item.LeadDispositionId = _this.item.LeadDispositionId || config.leadDispositionId;
+    _this.item.DealerId = _this.item.DealerId || app.user().DealerId;
+    //
+    _this.item.SalesRepId = _this.item.SalesRepId || _this.repModel.CompanyID;
+    _this.item.TeamLocationId = _this.item.TeamLocationId || _this.repModel.TeamLocationId;
+    _this.item.SeasonId = _this.item.SeasonId || _this.repModel.Seasons[0].SeasonID;
 
     _this.focusFirst = ko.observable(false);
     _this.leadResult = ko.observable(null);
@@ -203,6 +209,8 @@ define("src/account/default/runcredit.vm", [
     _this.loaded = ko.observable(false);
     _this.override = ko.observable(false);
     _this.data = ukov.wrap(_this.item, schema);
+    _this.data.AddressId(_this.addressId);
+    _this.data.CustomerTypeId(_this.customerTypeId);
 
     // /////TESTING//////////////////////
     // if (!_this.item.LeadID) {
@@ -235,11 +243,24 @@ define("src/account/default/runcredit.vm", [
       var creditResult = _this.creditResult();
       return !busy && creditResult && creditResult.IsHit;
     });
+    _this.cmdSave = ko.command(function(cb) {
+      saveLead(_this, function(err) {
+        if (err) {
+          return cb(err);
+        }
+        cb();
+        closeLayer(_this);
+      });
+
+    }, function(busy) {
+      var creditResult = _this.creditResult();
+      return !busy && !_this.busy() && (!creditResult || !creditResult.IsHit);
+    });
     _this.cmdRun = ko.command(function(cb) {
       saveLeadAndRunCredit(_this, false, cb);
     }, function(busy) {
       var creditResult = _this.creditResult();
-      return !busy && !_this.cmdBypass.busy() && (!creditResult || !creditResult.IsHit);
+      return !busy && !_this.busy() && (!creditResult || !creditResult.IsHit);
     });
     _this.cmdBypass = ko.command(function(cb) {
       notify.confirm("Bypass Credit Check?", "This is a dialog to ensure you really want to bypass the credit check. Click YES to bypass.", function(result) {
@@ -251,22 +272,26 @@ define("src/account/default/runcredit.vm", [
       });
     }, function(busy) {
       var creditResult = _this.creditResult();
-      return !busy && !_this.cmdRun.busy() && (!creditResult || !creditResult.IsHit);
+      return !busy && !_this.busy() && (!creditResult || !creditResult.IsHit);
     });
 
     _this.cmdUseLead = ko.command(function(cb, item) {
-      saveCustomerMasterLead(_this.customerTypeId, item.lead, function() {
+      _this.handleUseLead(item, function() {
+        cb();
         _this.leadResult(item.lead);
         _this.creditResult(item.creditResult);
         closeLayer(_this);
-      }, cb);
+      });
     }, function(busy) {
       return !busy && !_this.busy() &&
         !_this.leadResult() && !_this.creditResult();
     });
 
     _this.busy = ko.computed(function() {
-      return _this.cmdRun.busy() || _this.cmdBypass.busy() || _this.cmdUseLead.busy();
+      return _this.cmdSave.busy() ||
+        _this.cmdRun.busy() ||
+        _this.cmdBypass.busy() ||
+        _this.cmdUseLead.busy();
     });
   }
   utils.inherits(RunCreditViewModel, BaseViewModel);
@@ -292,6 +317,8 @@ define("src/account/default/runcredit.vm", [
       msg;
     if (_this.cmdRun.busy() || _this.cmdBypass.busy()) {
       msg = "Please wait for credit check to finish.";
+    } else if (_this.cmdSave.busy()) {
+      msg = "Please wait for save to finish.";
     }
     return msg;
   };
@@ -307,6 +334,11 @@ define("src/account/default/runcredit.vm", [
     // var _this = this,
     //   cb = join.add();
     // load_localization(_this.localizationCvm, cb);
+  };
+
+  RunCreditViewModel.prototype.handleUseLead = function(item, cb) {
+    var _this = this;
+    saveCustomerMasterLead(_this.customerTypeId, item.lead, null, cb);
   };
 
   function tryShowCreditResult(_this) {
@@ -397,6 +429,13 @@ define("src/account/default/runcredit.vm", [
       });
     }
     return index;
+  }
+
+  function removeLead(otherLeads, lead) {
+    var index = indexOfLead(otherLeads, lead);
+    if (index >= 0) {
+      otherLeads.splice(index, 1);
+    }
   }
 
 

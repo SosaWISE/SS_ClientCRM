@@ -454,6 +454,12 @@ table.fh-wrap {
           .section-item {
             display:table-cell;
             width: 50%;
+            &.address {
+              width: 250px;
+            }
+            &.customer {
+              width: ~"calc(100% - 250px)";
+            }
             height: 100%;
             // vertical-align: top;
             padding: 5px;
