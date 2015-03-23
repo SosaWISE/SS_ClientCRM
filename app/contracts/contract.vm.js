@@ -994,8 +994,6 @@ define("src/contracts/contract.vm", [
             });
             salesInfoModel.setValue(acctSalesInfo);
             salesInfoExtrasModel.setValue(acctSalesInfo);
-
-            salesInfoExtrasModel.SalesRepId(null);
           }
         }, join.add());
       }, join.add());
