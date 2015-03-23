@@ -86,6 +86,10 @@ module.exports = function(grunt) {
         src: ['app/account/**/*.js', '!app/account/**/*.spec.js', ],
         dest: '<%= www %>/account.debug.js',
       },
+      contracts_pkg: {
+        src: ['app/contracts/**/*.js', '!app/contracts/**/*.spec.js', ],
+        dest: '<%= www %>/contracts.debug.js',
+      },
       survey_pkg: {
         src: ['app/survey/**/*.js', '!app/survey/**/*.spec.js', ],
         dest: '<%= www %>/survey.debug.js',
@@ -170,6 +174,7 @@ module.exports = function(grunt) {
         },
         files: {
           '<%= www %>/account.js': ['<%= www %>/account.debug.js'],
+          '<%= www %>/contracts.js': ['<%= www %>/contracts.debug.js'],
           '<%= www %>/survey.js': ['<%= www %>/survey.debug.js'],
           '<%= www %>/core.js': ['<%= www %>/core.debug.js'],
           '<%= www %>/slick.js': ['<%= www %>/slick.debug.js'],
