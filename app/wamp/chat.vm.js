@@ -139,7 +139,8 @@ define("src/wamp/chat.vm", [
       });
     };
     connection.onclose = function(reason, details) {
-      details = details;
+      console.warn(reason);
+      console.warn(details);
     };
 
     connection.open();
