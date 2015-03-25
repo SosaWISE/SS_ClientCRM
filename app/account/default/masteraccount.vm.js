@@ -31,8 +31,9 @@ define("src/account/default/masteraccount.vm", [
     PRI: 1,
     LEAD: 1,
     SEC: 2,
-    BILL: 3,
-    SHIP: 4,
+    MONI: 3,
+    BILL: 4,
+    SHIP: 5,
   };
 
   function sortByCustomerTypeId(a, b) {
@@ -48,8 +49,8 @@ define("src/account/default/masteraccount.vm", [
 
     _this.mayReload = ko.observable(false);
     _this.title = ko.observable(_this.title);
-    _this.hideNotes = ko.observable(config.accounts.hideNotes);
-    _this.hideNav = ko.observable(config.accounts.hideNav);
+    _this.hideNotes = ko.observable(config.crm.hideNotes);
+    _this.hideNav = ko.observable(config.crm.hideNav);
 
     _this.customers = ko.observableArray();
 

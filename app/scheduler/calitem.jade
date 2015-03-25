@@ -1,27 +1,21 @@
-div(class="appt calitem",data-bind="position:position,height:height,active:selected,toggle:{editable:editable}")
+div(class="appt calitem",
+  data-bind="position:position,height:height,width:board.columnWidth,active:selected,toggle:{editable:editable},scrollMiddle:scrollTo,up:2")
   dl
     dt(data-bind="text:timespan")
-    dd
-      div(class="cust-info",data-bind="with:data.model")
-        div(class="id")
-          span Ticket #
-          span(data-bind="text:ID")
-        div(class="id")
-          span CMFID:
-          |&nbsp;
-          span(data-bind="text:CustomerMasterFileId")
-        div(class="name",data-bind="formatCustomerName:$data")
-        div
-          span Service Type:
-          |&nbsp;
-          span(data-bind="text:ServiceType")
-
-        //- div(class="address",data-bind="text:StreetAddress")
-        //- div(class="address",data-bind="text:StreetAddress2")
-        //- div(class="address")
-        //-   span(data-bind="text:City")
-        //-   |,&nbsp;
-        //-   span(data-bind="text:StateId")
-        //-   |&nbsp;
-        //-   span(data-bind="text:PostalCode")
+    dd(class="cust-info",data-bind="with:(editable)?data:data.model")
+      div(class="id")
+        |Ticket #
+        span(data-bind="text:ID")
+        //- |, CMFID:&nbsp;
+        |, CUST#:&nbsp;
+        span(data-bind="text:CustomerMasterFileId")
+      div(class="name",data-bind="formatCustomerName:$data")
+      div
+        |Service Type:&nbsp;
+        <!-- ko if:$parent.editable -->
+        span(data-bind="text:serviceTypeCvm.selectedText()")
+        <!-- /ko -->
+        <!-- ko if:!$parent.editable -->
+        span(data-bind="text:_ServiceType")
+        <!-- /ko -->
   div(class="resizer") =

@@ -1,5 +1,15 @@
 div(class="addr-validate")
-  h2(class="title") Premise Address
+  h2(class="title")
+    span(data-bind="text:name")
+    |&nbsp;Address
+
+  div(class="actions",style="margin-top:10px;margin-bottom:10px;",
+    data-bind="foreach:otherAddresses")
+    a(class="btn bg up",tabindex="0",data-bind="cmd:$parent.cmdUseAddress")
+      |Use&nbsp;
+      span(data-bind="text:name")
+      |&nbsp;Address
+
   div(style="margin-top:10px;margin-bottom:10px;")
     div(data-bind="cvm:modeCvm")
 
@@ -7,9 +17,9 @@ div(class="addr-validate")
     div(class="addr-form")
       ul(class="edit-form")
         li
-          span(class="label") Premise Phone
+          span(class="label") Phone
           input(type="text", placeholder="(123) 123-1234",
-            data-bind="select:focusFirst,ukov:data.PhoneNumber,phonevalue:data.PhoneNumber,valueUpdate:'keyup',enter:tcmdValidate")
+            data-bind="select:focusFirst,ukov:data.Phone,phonevalue:data.Phone,valueUpdate:'keyup',enter:tcmdValidate")
         li
           span(class="label") Zip code
           input(type="text", placeholder="12345",
@@ -17,11 +27,11 @@ div(class="addr-validate")
         li
           span(class="label") Street Address
           input(type="text", placeholder="55 W Main St",
-            data-bind="ukov:data.Address,value:data.Address,valueUpdate:'keyup',enter:tcmdValidate")
+            data-bind="ukov:data.StreetAddress,value:data.StreetAddress,valueUpdate:'keyup',enter:tcmdValidate")
         li
           span(class="label") Street Address 2
           input(type="text", placeholder="#14",
-            data-bind="ukov:data.Address2,value:data.Address2,valueUpdate:'keyup',enter:tcmdValidate")
+            data-bind="ukov:data.StreetAddress2,value:data.StreetAddress2,valueUpdate:'keyup',enter:tcmdValidate")
         <!-- ko if:mode()!=='V' -->
         li
           span(class="label") City

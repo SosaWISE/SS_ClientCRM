@@ -151,7 +151,7 @@ define("src/scheduler/appt.editor.vm", [
 
     var model = _this.data.getValue();
     dataservice.ticketsrv.appointments.save({
-      id: model.ID, // if no value then create, else update
+      id: model.ID || "", // if no value then create, else update
       data: model,
     }, null, utils.safeCallback(cb, function(err, resp) {
       _this.data.markClean(resp.Value, true);

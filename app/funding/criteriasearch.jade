@@ -1,0 +1,11 @@
+div(class="funding-search")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-body")
+        div(class="fn-contents")
+          div(class="grid-wrap")
+            div(class="slickgrid",style="background:white;margin:10px;color:black",data-bind="slickgrid:gvm")
+
+          div(data-bind="spinner:cmdSearch.busy,spinner-rgb:'white'")
+
+div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'white'")

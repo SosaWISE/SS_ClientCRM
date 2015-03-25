@@ -19,28 +19,25 @@ define('mock/dataservices/session.mock', [
           Message: '',
           Value: {
             // logged in
-            AuthUser: {
-              UserID: 0,
-              DealerId: 5000,
-              Ssid: null,
-              SessionID: 0,
-              Username: "DevUser",
-              Firstname: "Master",
-              Lastname: "Account",
-              GPEmployeeID: "MSTR001",
-              UserEmployeeTypeID: "CORP",
-              UserEmployeeTypeName: "Corporate",
-              SecurityLevel: 9,
-              Apps: [
-                "sse_cms_cors",
-                "hr_man",
-              ],
-              Actions: [
-                "hr_user_edit"
-              ],
-            },
-            // // logged out
-            // AuthUser: null,
+            UserID: 0,
+            DealerId: 5000,
+            Ssid: null,
+            SessionID: 0,
+            Username: "DevUser",
+            Firstname: "Master",
+            Lastname: "Account",
+            GPEmployeeID: "MSTR001",
+            UserEmployeeTypeID: "CORP",
+            UserEmployeeTypeName: "Corporate",
+            SecurityLevel: 9,
+            Apps: [
+              "sse_cms_cors",
+              "hr_man",
+              "contract_admin",
+            ],
+            Actions: [
+              "hr_user_edit"
+            ],
           },
         };
         cb(null, resp);

@@ -1,0 +1,43 @@
+@funding-bg: @site-darkgreen;
+
+body.funding,
+body.packets {
+  .mixin-body-color(@funding-bg);
+  .mixin-content-active(@funding-bg);
+}
+
+#funding-panel .funding-panel {
+  @tranSec: .25s;
+
+  .btn-dock {
+    background-color: @funding-bg;
+  }
+  > .dock-left {
+    padding: 10px;
+
+    ul.nav {
+      margin: 10px;
+      a {
+        display: block;
+        padding: 5px 10px;
+        font-size: 1.2em;
+        color: white;
+        &.active {
+          .border-radius(5px);
+          font-weight: bold;
+          background-color: white;
+          color: @funding-bg;
+        }
+      }
+    }
+  }
+
+  .funding-search{
+    color: white;
+    .spinner-wrap {
+      // match .slickgrid margins
+      top:10px;right:10px;bottom:10px;left:10px;
+    }
+
+  }
+}

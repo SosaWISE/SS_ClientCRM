@@ -111,11 +111,10 @@ define("src/account/security/clist.systemtest.vm", [
         !_this.clearingTest();
     });
     _this.tcmdServiceState = ko.command(function(cb) {
-      var toggle = _this.tcmdServiceState.toggle;
-      var inService = !toggle.isDown();
-      var oosCatData = inService ? null : "CAN";
-      setServiceStatus(_this, oosCatData, function(oosCat) {
-        toggle.isDown(oosCat === null);
+      var toggle = _this.tcmdServiceState.toggle,
+        inService = !toggle.isDown();
+      setServiceStatus(_this, inService, function(oosCat) {
+        toggle.isDown(oosCat.InService);
       }, cb);
     }, null, {
       toggle: {
@@ -220,7 +219,7 @@ define("src/account/security/clist.systemtest.vm", [
       id: _this.accountId,
       link: "ServiceStatus",
     }, function(oosCat) {
-      _this.tcmdServiceState.toggle.isDown(oosCat === null);
+      _this.tcmdServiceState.toggle.isDown(oosCat.InService);
     }, cb);
   }
 

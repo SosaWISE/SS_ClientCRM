@@ -16,7 +16,6 @@ window.require = {
     underscore: '/tparty/underscore', // Allows for excellent data manipulation like linq in C#.
     markdown: '/tparty/markdown',
     slick: '/app/slick/slick-dev',
-    fullcalendar: '/tparty/fullcalendar',
     pixi: '/tparty/pixi.dev',
     autobahn: '/app/wamp/tparty/autobahn',
   },

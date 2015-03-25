@@ -1,4 +1,7 @@
 div(class="item-data")
+  ul(class="actions left")
+    li
+      a(class="btn",tabindex="0",data-bind="tcmd:tcmdActive")
   ul(class="actions")
     li(data-bind="if:data.UserID()>0")
       a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
@@ -17,7 +20,8 @@ div(class="item-data")
             li(class="password")
               span(class="label") Password
               a(class="btn small",tabindex="0",data-bind="cmd:clickNewPassword") Generate Random Password
-              div(class="text blank",data-bind="ukov:data.Password,text:data.Password,clickSelect:1",style="cursor:pointer")
+              //- div(class="text blank",data-bind="ukov:data.Password,text:data.Password,clickSelect:1",style="cursor:pointer")
+              input(type="text",placeholder="",data-bind="ukov:data.Password,value:data.Password,valueUpdate:'keyup'")
             li
               span(class="label") Email
               input(type="text",placeholder="",data-bind="ukov:data.Email,value:data.Email,valueUpdate:'keyup'")
@@ -33,11 +37,15 @@ div(class="item-data")
             li
               span(class="label") Employee Type
               div(data-bind="cvm:data.UserEmployeeTypeCvm")
-            li(class="full")
-              span(class="label") Name
-              input(class="name",type="text",placeholder="",data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup'")
-              input(class="mname",type="text",placeholder="",data-bind="ukov:data.MiddleName,value:data.MiddleName,valueUpdate:'keyup'")
-              input(class="name",type="text",placeholder="",data-bind="ukov:data.LastName,value:data.LastName,valueUpdate:'keyup'")
+            li(class="third")
+              span(class="label") First Name
+              input(class="name",type="text",placeholder="First",data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup'")
+            li(class="third")
+              span(class="label") Middle Name
+              input(class="mname",type="text",placeholder="Middle",data-bind="ukov:data.MiddleName,value:data.MiddleName,valueUpdate:'keyup'")
+            li(class="third")
+              span(class="label") Last Name
+              input(class="name",type="text",placeholder="Last",data-bind="ukov:data.LastName,value:data.LastName,valueUpdate:'keyup'")
             li
               span(class="label") Preferred Name
               input(type="text",placeholder="",data-bind="ukov:data.PreferredName,value:data.PreferredName,valueUpdate:'keyup'")
@@ -55,6 +63,20 @@ div(class="item-data")
               div(data-bind="cvm:data.SexCvm")
             li
               //-
+            li
+              span(class="label") Height
+              input(class="name",type="text",placeholder="",
+                data-bind="ukov:data.Height,feetvalue:data.Height,valueUpdate:'keyup'")
+            li
+              span(class="label") Weight
+              input(class="name",type="text",placeholder="",
+                data-bind="ukov:data.Weight,value:data.Weight,valueUpdate:'keyup'")
+            li
+              span(class="label") Eye Color
+              div(data-bind="cvm:data.EyeColorCvm")
+            li
+              span(class="label") Hair Color
+              div(data-bind="cvm:data.HairColorCvm")
             li
               span(class="label") Marital Status
               div(data-bind="cvm:data.MaritalStatusCvm")

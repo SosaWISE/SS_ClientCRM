@@ -2,7 +2,6 @@ define("src/account/security/account.vm", [
   "src/account/security/checklist.vm",
   "src/account/security/summary.vm",
   "src/account/security/equipment.vm",
-  "src/account/security/service.ticket.vm",
   "src/scheduler/account.service.tickets.vm",
   "src/core/notify",
   "src/core/utils",
@@ -12,7 +11,6 @@ define("src/account/security/account.vm", [
   ChecklistViewModel,
   SummaryViewModel,
   EquipmentViewModel,
-  ServiceTicketViewModel,
   AccountServiceTicketsViewModel,
   notify,
   utils,
@@ -63,7 +61,6 @@ define("src/account/security/account.vm", [
         createFauxController(_this, "Signal History"),
         createEquipment(_this, "Equipment"),
         createFauxController(_this, "Contract Approval"),
-        createServiceTicket(_this, "Schedule Service"),
         createAccountServiceTickets(_this, "Service Tickets"),
       ]);
       cb();
@@ -92,14 +89,6 @@ define("src/account/security/account.vm", [
       id: titleToId(title),
       title: title,
       viewTmpl: "tmpl-temptitle",
-    });
-  }
-
-  function createServiceTicket(pcontroller, title) {
-    return new ServiceTicketViewModel({
-      pcontroller: pcontroller,
-      id: titleToId(title),
-      title: title
     });
   }
 

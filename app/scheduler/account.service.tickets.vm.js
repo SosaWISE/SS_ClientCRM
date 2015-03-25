@@ -36,8 +36,8 @@ define("src/scheduler/account.service.tickets.vm", [
   };
 
   function sortByCustomerTypeId(a, b) {
-    var aP = customerTypePrecedence[a.CustomerTypeId] || 9,
-      bP = customerTypePrecedence[b.CustomerTypeId] || 9;
+    var aP = customerTypePrecedence[a.CustomerTypeId] || 99,
+      bP = customerTypePrecedence[b.CustomerTypeId] || 99;
     return aP - bP;
   }
 
@@ -52,13 +52,14 @@ define("src/scheduler/account.service.tickets.vm", [
     //   "layersVm",
     // ]);
 
+
     //
     // events
     //
     _this.cmdAddServiceTicket = ko.command(function(cb) {
       _this.layersVm.show(new TicketEditorViewModel({
         layersVm: _this.layersVm,
-        item: schedulerhelper.ensureTypeNames({
+        item: schedulerhelper.afterTicketLoaded({
           ID: 0,
           //
           AccountId: _this.accountId,
@@ -78,8 +79,7 @@ define("src/scheduler/account.service.tickets.vm", [
         skills: schedulercache.getList("skills").peek(),
       }), function(model) {
         if (model) {
-          schedulerhelper.ensureTypeNames(model);
-          _this.gvm.insertItem(model);
+          _this.gvm.addItem(model);
         }
         cb();
       });
@@ -104,6 +104,8 @@ define("src/scheduler/account.service.tickets.vm", [
     // call base
     AccountServiceTicketsViewModel.super_.prototype.onLoad.call(_this, routeData, extraData, join);
   };
+
+  AccountServiceTicketsViewModel.prototype.openAccount = null; // overrides base
 
   AccountServiceTicketsViewModel.prototype.loadServiceTickets = function(setter, cb) { // overrides base
     var _this = this;

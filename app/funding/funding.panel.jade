@@ -1,0 +1,16 @@
+div(class="funding-panel dock l3-200",data-bind="toggle:{'l-show':showNav}")
+  div(class="dock-content", data-bind="with:activeChild",style="height:100%")
+    div(data-bind="template:{name:viewTmpl}",style="height:100%")
+
+  div(class="dock-left")
+    div(class="btn-dock", data-bind="click:function(){showNav(!showNav())}, toggle:{'closed':!showNav()}")
+      div(class="close")
+      div(class="open")
+
+    h2 Funding Manager
+    ul(class="nav",data-bind="foreach:childs")
+      li
+        a(data-bind="active:active,click:$parent.clickItem")
+          span(data-bind="text:title")
+
+  div(calss="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

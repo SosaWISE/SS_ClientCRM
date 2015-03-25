@@ -185,6 +185,8 @@ define('src/core/controller.vm', [
       child.activate(routeCtx);
     }
     _this._prevChild = child;
+    //
+    setTopLayerActive(_this, true);
   };
   ControllerViewModel.prototype.findChild = function(routeData) {
     var _this = this,
@@ -219,7 +221,27 @@ define('src/core/controller.vm', [
         _this.activeChild(null);
       }
     }
+    //
+    setTopLayerActive(_this, false);
   };
+
+  function setTopLayerActive(_this, active) {
+    var layersVm = _this.layersVm;
+    if (!layersVm) {
+      return;
+    }
+    var layer = layersVm.getTopLayer();
+    if (!layer) {
+      return;
+    }
+    var vm = layer.vm();
+    if (vm) {
+      vm.active(active);
+      if (active) {
+        layersVm.focus();
+      }
+    }
+  }
 
   ControllerViewModel.prototype.canClose = function() { // overrides base
     var _this = this;

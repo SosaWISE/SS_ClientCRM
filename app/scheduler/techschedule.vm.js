@@ -1,4 +1,5 @@
 define("src/scheduler/techschedule.vm", [
+  "src/scheduler/scheduler-helper",
   "moment",
   "src/dataservice",
   "ko",
@@ -7,6 +8,7 @@ define("src/scheduler/techschedule.vm", [
   "src/core/utils",
   "src/core/base.vm",
 ], function(
+  schedulerhelper,
   moment,
   dataservice,
   ko,
@@ -121,7 +123,7 @@ define("src/scheduler/techschedule.vm", [
   TechScheduleViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
     var _this = this;
 
-    _this.techid = routeData.techid;
+    _this.techid = routeData.id;
 
     if (!_this.techid) {
       return;
@@ -130,6 +132,7 @@ define("src/scheduler/techschedule.vm", [
       id: _this.techid,
       link: "weekdays",
     }, function(weekdays) {
+      weekdays.forEach(schedulerhelper.afterTechWeekDayLoaded);
       _this.setData(weekdays);
     }, join.add());
   };
@@ -169,11 +172,13 @@ define("src/scheduler/techschedule.vm", [
   TechScheduleViewModel.prototype.saveData = function(cb) {
     var _this = this;
     var data = _this.getData();
+    data.forEach(schedulerhelper.beforeTechWeekDaySaved);
     dataservice.ticketsrv.techs.save({
       id: _this.techid || 0,
       link: "weekdays",
       data: data,
     }, function(val) {
+      val.forEach(schedulerhelper.afterTechWeekDayLoaded);
       _this.setData(val);
     }, cb);
   };

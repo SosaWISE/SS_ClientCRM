@@ -1,0 +1,30 @@
+div(class="contracts-panel",data-bind="if:loaded")
+  div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
+
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+        ul(class="tabs cf")
+          //-HACK to not be convered up by toggle-btn
+          li(class="tab under-toggle-btn")
+          li(class="tab",data-bind="active:searchVm()&&searchVm().active")
+            a(data-bind="click:clickSearch") Search
+          <!-- ko foreach:list -->
+          li(class="tab",data-bind="active:active")
+            a(data-bind="click:$parent.clickItem,text:title")
+            span(data-bind="if:active")
+              a(class="close",data-bind="click:close")
+          <!-- /ko -->
+    tr
+      td(class="fh-body")
+        div(class="fh-contents")
+          <!-- ko if:searchVm()&&searchVm().active() -->
+          div(class="tab",
+            data-bind="template:{name:searchVm().viewTmpl,data:searchVm()},active:searchVm().active")
+          <!-- /ko -->
+          <!-- ko foreach:list -->
+          <!-- ko if:active -->
+          div(class="tab",
+            data-bind="template:viewTmpl,active:active")
+          <!-- /ko -->
+          <!-- /ko -->

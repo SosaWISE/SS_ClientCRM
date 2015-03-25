@@ -1,0 +1,21 @@
+div(class="close-ticket")
+  div(data-bind="spinner:cmdCloseTicket.busy,spinner-rgb:'white'")
+
+  ul(class="edit-form")
+    li
+      span(class="label") Closing Note
+      textarea(rows="5",
+        data-bind="ukov:data.CompletedNote,value:data.CompletedNote,valueUpdate:'afterkeydown'")
+    li
+      span(class="label") Monitoring Station Confirmation
+      input(type="text",data-bind="ukov:data.MSConfirmation,value:data.MSConfirmation,valueUpdate:'keyup'")
+    li
+      span(class="label") Dealer Confirmation
+      span(class="ticket-notes",data-bind="text:data.Notes")
+      input(type="text",data-bind="ukov:data.DealerConfirmation,value:data.DealerConfirmation,valueUpdate:'keyup'")
+
+  ul(class="actions")
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:clickClose") Cancel
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:cmdCloseTicket") Complete

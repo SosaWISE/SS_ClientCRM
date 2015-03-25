@@ -29,7 +29,7 @@ div(class="alarmdotcom",data-bind="toggle:{'may-reload':mayReload}")
                   span(class="value",data-bind="text:AlarmDotComCustomerNumber")
                 li
                   span(class="label") Service Plan:
-                  span(class="value",data-bind="text:AlarmPackage")
+                  span(class="value",data-bind="text:ServicePlan")
                 li
                   span(class="label") Two-Way Voice:
                   span(class="value",data-bind="text:EnableTwoWay?'Yes':'No'")
@@ -39,6 +39,8 @@ div(class="alarmdotcom",data-bind="toggle:{'may-reload':mayReload}")
                       a(class="btn small",tabindex="0",data-bind="cmd:$parent.cmdSwapModem,clickBubble:false") Swap Modem
                     li
                       a(class="btn small",tabindex="0",data-bind="cmd:$parent.cmdUnregister,clickBubble:false") Unregister
+                    li
+                      a(class="btn small",tabindex="0",data-bind="cmd:$parent.cmdChangeServicePackage,clickBubble:false") Change Service Plan
 
     tr
       td(class="fh-body")

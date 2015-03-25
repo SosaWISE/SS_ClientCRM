@@ -29,6 +29,12 @@
           throw new Error("invalid toggle command extension");
         }
         _cmd.toggle = extensions.toggle;
+        _cmd.toggle.text = ko.computed(function() {
+          return (_cmd.toggle.isDown() ? _cmd.toggle.down : _cmd.toggle.up).text;
+        });
+        _cmd.toggle.title = ko.computed(function() {
+          return (_cmd.toggle.isDown() ? _cmd.toggle.down : _cmd.toggle.up).title;
+        });
       }
     }
     _cmd.busy = ko.observable();
@@ -222,11 +228,10 @@
       }
       var toggle = tcmd.toggle;
       var isDown = toggle.isDown();
-      var curr = isDown ? toggle.down : toggle.up;
       // change text
-      ko.utils.setTextContent(element, curr.text);
+      ko.utils.setTextContent(element, toggle.text.peek());
       // change title
-      element.setAttribute("title", curr.title);
+      element.setAttribute("title", toggle.title.peek());
       // toggle class
       var el = jquery(element);
       if (isDown) {

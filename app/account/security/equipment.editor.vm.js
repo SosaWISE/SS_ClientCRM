@@ -234,7 +234,7 @@ define("src/account/security/equipment.editor.vm", [
       }
       var model = _this.data.getValue();
       dataservice.msaccountsetupsrv.equipments.save({
-        id: model.AccountEquipmentID, // if no value create, else update
+        id: model.AccountEquipmentID || "", // if no value create, else update
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
         _this.data.markClean(model, true);
@@ -253,7 +253,7 @@ define("src/account/security/equipment.editor.vm", [
           cb();
           return;
         }
-        dataservice.msaccountsetupsrv.equipments.del(_this.item.AccountEquipmentID, null, utils.safeCallback(cb, function(err, resp) {
+        dataservice.msaccountsetupsrv.equipments.del(_this.item.AccountEquipmentID, "", utils.safeCallback(cb, function(err, resp) {
           if (!resp.Value) {
             console.log("item already deleted or item does not exist");
           }
@@ -355,7 +355,7 @@ define("src/account/security/equipment.editor.vm", [
   }
 
   function load_existingEquipmentList(_this, setter, cb) {
-    readAccountSetupSrv(_this, "monitoringStationOS", null, "equipmentExistingList", {}, setter, cb);
+    readAccountSetupSrv(_this, "monitoringStationOS", "", "equipmentExistingList", {}, setter, cb);
   }
 
   function readAccountSetupSrv(_this, collectionName, id, link, query, setter, cb) {

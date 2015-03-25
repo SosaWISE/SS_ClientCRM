@@ -1,0 +1,28 @@
+div(class="tech-setup")
+  ul(class="actions")
+    li(class="tab under-toggle-btn")
+    <!-- ko if:!editing() -->
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:clickEdit") Edit
+    <!-- /ko -->
+    <!-- ko if:editing -->
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
+    <!-- /ko -->
+
+  div(class="content-wrap")
+    div(class="tech col")
+      div(class="section",data-bind="with:scheduleVm")
+        //- span(class="title") Schedule
+        h2(class="title") Schedule
+        div(class="contents")
+          div(data-bind="template:{name:viewTmpl}")
+      div(class="section",data-bind="with:skillsVm")
+        //- span(class="title") Skill Level &amp; Competancy
+        h2(class="title") Skill Level &amp; Competancy
+        div(class="contents")
+          div(data-bind="template:{name:viewTmpl}")
+
+  div(data-bind="spinner:busy,spinner-rgb:'black'")

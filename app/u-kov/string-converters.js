@@ -29,7 +29,9 @@ define("src/u-kov/string-converters", [
     ],
     allDigitsRegx = /^[0-9]+$/,
     removeNonStarAndDigitsRegx = /[^*0-9]/g,
-    removeNonDigitsRegx = /[^0-9]/g;
+    removeNonDigitsRegx = /[^0-9]/g,
+    removeNonQuotesAndDigitsRegx = /[^'"0-9]/g,
+    feetRegx = /^(?:([0-9]+)')?(?:([0-9]+)"?)?$/;
 
   converters.string = function() {
     return convString;
@@ -105,29 +107,34 @@ define("src/u-kov/string-converters", [
 
       // add space at end to match regxs
       val += " ";
-      if (!dateLongYearRegxs.some(function(regx) {
+
+      function testRegx(regx) {
         return regx.test(val);
-      })) {
+      }
+
+      function fixupYear(regx) {
+        var matches = regx.exec(val);
+        if (matches) {
+          val = val.replace(regx, function(fullMatch, p1, year) {
+            year = parseInt(year, 10);
+            if (year < 50) {
+              year += 2000;
+            } else {
+              year += 1900;
+            }
+            return p1 + year;
+          });
+          return true;
+        }
+      }
+
+      if (!dateLongYearRegxs.some(testRegx)) {
         // did not match any of the regular expressions
 
         // try to fixup years
         // chrome already does this, but firefox does not
         // just trying to make them behave the same
-        if (!dateShortYearRegxs.some(function(regx) {
-          var matches = regx.exec(val);
-          if (matches) {
-            val = val.replace(regx, function(fullMatch, p1, year) {
-              year = parseInt(year, 10);
-              if (year < 50) {
-                year += 2000;
-              } else {
-                year += 1900;
-              }
-              return p1 + year;
-            });
-            return true;
-          }
-        })) {
+        if (!dateShortYearRegxs.some(fixupYear)) {
           // unable to fixup year
           return new Error("invalid date");
         }
@@ -174,17 +181,14 @@ define("src/u-kov/string-converters", [
       // add space at end to match regxs
       val += " ";
       // parse date part the same as the date converter
-      if (!dateLongYearRegxs.some(function(regx) {
+      function tryReplaceDate(regx) {
         if (regx.test(val)) {
           replaceDate(regx);
           return true;
         }
-      }) && !dateShortYearRegxs.some(function(regx) {
-        if (regx.test(val)) {
-          replaceDate(regx);
-          return true;
-        }
-      })) {
+      }
+
+      if (!dateLongYearRegxs.some(tryReplaceDate) && !dateShortYearRegxs.some(tryReplaceDate)) {
         return new Error("invalid datetime");
       }
 
@@ -256,6 +260,28 @@ define("src/u-kov/string-converters", [
   };
   converters.ssn = function() {
     return convSsn;
+  };
+
+  // convert feet to inches. e.g.: (string)5'9" -> (int)69
+  converters.inches = function(errMsg) {
+    errMsg = errMsg || "invalid feet";
+    return function convFeet(val) {
+      val = trim(val);
+      if (!val) {
+        return null;
+      }
+
+      val = val.replace(removeNonQuotesAndDigitsRegx, "");
+      var matches = val.length ? feetRegx.exec(val) : null;
+      if (matches) {
+        var inches = parseInt(matches[2], 10) || 0;
+        // if (inches < 13 || */matches[1] == null) {
+        var feet = parseInt(matches[1], 10) || 0;
+        return (12 * feet) + inches;
+        // }
+      }
+      return new Error(errMsg);
+    };
   };
 
 

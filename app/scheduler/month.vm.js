@@ -62,7 +62,6 @@ define("src/scheduler/month.vm", [
 
     var internalSelectedDate = ko.observable(new Date(0));
     _this.selectedDate = ko.computed({
-      deferEvaluation: true,
       read: function() {
         return internalSelectedDate();
       },
@@ -84,24 +83,11 @@ define("src/scheduler/month.vm", [
         internalSelectedDate(selectedDate);
       }
     });
-    _this.monthName = ko.computed({
-      deferEvaluation: true,
-      read: function() {
-        return moment(_this.selectedDate()).format("MMMM");
-      },
+    _this.monthName = ko.computed(function() {
+      return moment(_this.selectedDate()).format("MMMM");
     });
-    _this.year = ko.computed({
-      deferEvaluation: true,
-      read: function() {
-        return _this.selectedDate().getFullYear();
-      },
-    });
-    _this.dateText = ko.computed({
-      deferEvaluation: true,
-      read: function() {
-        // return strings.format("{0:d}", _this.selectedDate());
-        return moment(_this.selectedDate()).format("LL");
-      },
+    _this.year = ko.computed(function() {
+      return _this.selectedDate().getFullYear();
     });
 
     //

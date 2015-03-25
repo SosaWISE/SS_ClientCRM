@@ -1,0 +1,20 @@
+div(class="criterias",data-bind="if:loaded")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-header")
+        ul(class="tabs cf")
+          //-HACK to not be covered up by toggle-btn
+          li(class="tab under-toggle-btn")
+          li(class="tab",data-bind="active:searchVm()&&searchVm().active")
+            a(data-bind="click:clickSearch") Search
+          <!-- ko foreach:list -->
+          li(class="tab",data-bind="active:active")
+            a(data-bind="click:$parent.clickItem,text:title")
+            span(data-bind="if:active")
+              a(class="close",data-bind="click:close")
+          <!-- /ko -->
+          li(class="tab")
+            a(data-bind="click:clickNew") +
+    tr
+      td(class="fh-body")
+        div(class="fh-contents")

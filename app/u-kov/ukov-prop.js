@@ -198,7 +198,7 @@ define('src/u-kov/ukov-prop', [
     } else {
       _this.errMsg(getValidationMsg(_this.doc.validators, val, _this.model, _this.ukovModel, _this));
     }
-    return _this.isValid();
+    return _this.isValid.peek();
   };
   fn.validateGroup = function() {
     var _this = this,

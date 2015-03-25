@@ -1,69 +1,98 @@
 div(class="ticket-editor")
   div(data-bind="spinner:busy,spinner-rgb:'white'")
 
-  div(class="dock l3-350 l-show")
-    div(class="dock-left")
-      div(class="cust-info",data-bind="with:data.model")
-        div(class="id")
-          span Ticket #
-          span(data-bind="text:$parent.data.ID")
-        div(class="id")
-          span CMFID:
-          |&nbsp;
-          span(data-bind="text:CustomerMasterFileId")
-        div(class="name",data-bind="formatCustomerName:$data")
-        div(class="address",data-bind="text:StreetAddress")
-        div(class="address",data-bind="text:StreetAddress2")
-        div(class="address")
-          span(data-bind="text:City")
-          |,&nbsp;
-          span(data-bind="text:StateId")
-          |&nbsp;
-          span(data-bind="text:PostalCode")
-      ul(class="edit-form")
-        li
-          span(class="label") Service Type
-          div(data-bind="cvm:data.serviceTypeCvm")
-        li
-          span(class="label") Ticket pertains to
-          div(class="max-w160",data-bind="msvm:skillsMsvm")
-        li
-          span(class="label") General Notes
-          span(class="notes",data-bind="text:data.Notes")
-          <!-- ko if:showNotesInput -->
-          textarea(rows="5" data-bind="ukov:note,value:note,valueUpdate:'keyup'")
-          <!-- /ko -->
-        li
-          span(class="label") Monitoring Station Ticket#
-          input(type="text" data-bind="ukov:data.MSTicketNum,value:data.MSTicketNum,valueUpdate:'keyup'")
-      <!-- ko if:showAppt -->
-      ul(class="edit-form line-top")
-        li
-          <!-- ko if:data.AppointmentId -->
-          span(class="label") Appointment Date
-          span(class="value",data-bind="text:scheduleVm.monthVm.dateText")
-          <!-- /ko -->
-          <!-- ko if:!data.AppointmentId() -->
-          div(data-bind="template:{name:scheduleVm.monthVm.viewTmpl,data:scheduleVm.monthVm}")
-          <!-- /ko -->
-        li
-          span(class="label") Start Time
-          input(type="text",data-bind="ukov:data.StartOn,timevalue:data.StartOn,valueUpdate:'keyup'")
-        li
-          span(class="label") End Time
-          input(type="text",data-bind="ukov:data.EndOn,timevalue:data.EndOn,valueUpdate:'keyup'")
+  div(class="ticket-info")
+    ul(class="actions",style="text-align:left;")
+      <!-- ko if:!!cmdOpenAccount -->
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdOpenAccount") Open Customer Account
       <!-- /ko -->
-      ul(class="actions")
-        li
-          a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
-        li
-          a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
-      <!-- ko if:!showAppt() -->
-      ul(class="actions")
-        li
-          a(class="btn",tabindex="0",data-bind="cmd:cmdSchedule") Show Schedule
+      <!-- ko if:data.ID -->
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdCloseTicket") Close Ticket
       <!-- /ko -->
 
-    <!-- ko if:showAppt -->
-    div(class="dock-content",data-bind="template:{name:'tmpl-scheduler-schedule',data:scheduleVm}")
+    div(class="cust-info",data-bind="with:data.model")
+      div(class="id")
+        |Ticket #
+        span(data-bind="text:$parent.data.ID")
+        //- |, CMFID:&nbsp;
+        |, Customer #:&nbsp;
+        span(data-bind="text:CustomerMasterFileId")
+      div(class="name",data-bind="text:_FullName")
+      div(class="address",data-bind="text:_FullAddress")
+      div(class="address",data-bind="text:_LatLong")
+
+    ul(class="edit-form")
+      li
+        span(class="label") Service Type
+        div(data-bind="cvm:data.serviceTypeCvm")
+      li
+        span(class="label") Ticket pertains to
+        div(class="max-w160",data-bind="msvm:skillsMsvm")
+      li
+        span(class="label") General Notes
+        span(class="ticket-notes",data-bind="text:data.Notes")
+        <!-- ko if:showNotesInput -->
+        textarea(rows="5",
+          data-bind="ukov:data.AppendNotes,value:data.AppendNotes,valueUpdate:'afterkeydown'")
+        <!-- /ko -->
+      li
+        span(class="label") Monitoring Station Ticket#
+        input(type="text",data-bind="ukov:data.MSTicketNum,value:data.MSTicketNum,valueUpdate:'keyup'")
+
+    <!-- ko if:!showAppt()&&!data.AppointmentId() -->
+    ul(class="actions")
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdScheduleAppt") Schedule Appt.
     <!-- /ko -->
+    <!-- ko if:showAppt()||data.TechId() -->
+    ul(class="actions line-top",style="text-align:left;")
+      <!-- ko if:!showAppt() -->
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdCancelAppt") Cancel Appt.
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdScheduleAppt") Reschedule Appt.
+      <!-- /ko -->
+    ul(class="edit-form")
+      <!-- ko if:showAppt -->
+      li
+        div(data-bind="template:{name:scheduleVm.monthVm.viewTmpl,data:scheduleVm.monthVm}")
+      li
+        span(class="label") Start Time
+        input(type="text",data-bind="ukov:data.StartOn,timevalue:data.StartOn,valueUpdate:'keyup'")
+      li
+        span(class="label") End Time
+        input(type="text",data-bind="ukov:data.EndOn,timevalue:data.EndOn,valueUpdate:'keyup'")
+      <!-- /ko -->
+      <!-- ko if:!showAppt()&&data.TechId() -->
+      li
+        span(class="label") Tech
+        div(class="text",data-bind="text:data.techCvm.selectedText()")
+      li
+        span(class="label") Appointment Date
+        div(class="text",data-bind="datetext:scheduleVm.monthVm.selectedDate")
+      li
+        span(class="label") Time
+        span(type="text",data-bind="timetext:data.StartOn")
+        |&nbsp;-&nbsp;
+        span(type="text",data-bind="timetext:data.EndOn")
+      <!-- /ko -->
+    <!-- /ko -->
+
+    ul(class="actions")
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
+
+  <!-- ko if:showAppt -->
+  div(class="ticket-schedule-wrap")
+    ul(class="edit-form double-wide")
+      li
+        div(data-bind="cvm:data.teamCvm")
+    ul(class="edit-form double-wide")
+      li
+        div(data-bind="cvm:data.techCvm")
+    div(class="ticket-schedule",data-bind="template:{name:'tmpl-scheduler-schedule',data:scheduleVm}")
+  <!-- /ko -->

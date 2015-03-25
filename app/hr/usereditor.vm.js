@@ -1,16 +1,16 @@
-define('src/hr/usereditor.vm', [
-  'src/viz/idphoto.vm',
-  'src/config',
-  'src/hr/hr-cache',
-  'src/hr/usersearch.vm',
-  'src/core/combo.vm',
-  'src/dataservice',
-  'src/ukov',
-  'src/core/strings',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
-  'ko'
+define("src/hr/usereditor.vm", [
+  "src/viz/idphoto.vm",
+  "src/config",
+  "src/hr/hr-cache",
+  "src/hr/usersearch.vm",
+  "src/core/combo.vm",
+  "src/dataservice",
+  "src/ukov",
+  "src/core/strings",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
+  "ko"
 ], function(
   IdPhotoViewModel,
   config,
@@ -27,6 +27,7 @@ define('src/hr/usereditor.vm', [
 ) {
   "use strict";
   var schema,
+    max20 = ukov.validators.maxLength(20),
     max50 = ukov.validators.maxLength(50),
     max100 = ukov.validators.maxLength(100),
     isEmailValidator = ukov.validators.isEmail(),
@@ -40,7 +41,7 @@ define('src/hr/usereditor.vm', [
     intConverter = ukov.converters.number(0),
     defaultRecruitedBy = {
       UserID: 0,
-      FullName: '',
+      FullName: "",
     };
 
   schema = {
@@ -56,14 +57,14 @@ define('src/hr/usereditor.vm', [
     UserName: {
       converter: toLowerConverter,
       validators: [
-        ukov.validators.isRequired('Username is required'),
+        ukov.validators.isRequired("Username is required"),
         ukov.validators.isUsername(),
         ukov.validators.isInLengthRange(2, 50),
       ],
     },
     Password: {
       // validators: [
-      //   ukov.validators.isRequired('Password is required'),
+      //   ukov.validators.isRequired("Password is required"),
       //   ukov.validators.isPassword(),
       // ],
     },
@@ -79,13 +80,13 @@ define('src/hr/usereditor.vm', [
     GPEmployeeID: {
       converter: toUpperConverter,
       validators: [
-        ukov.validators.isRequired('CompanyID is required'),
+        ukov.validators.isRequired("CompanyID is required"),
         ukov.validators.isCompanyID(),
       ],
     },
     UserEmployeeTypeId: {
       validators: [
-        ukov.validators.isRequired('Employee type is required'),
+        ukov.validators.isRequired("Employee type is required"),
       ],
     },
     PermanentAddressID: {},
@@ -99,7 +100,7 @@ define('src/hr/usereditor.vm', [
     FirstName: {
       validators: [
         max50,
-        ukov.validators.isRequired('First name is required'),
+        ukov.validators.isRequired("First name is required"),
       ],
     },
     MiddleName: {
@@ -109,7 +110,7 @@ define('src/hr/usereditor.vm', [
     LastName: {
       validators: [
         max50,
-        ukov.validators.isRequired('Last name is required'),
+        ukov.validators.isRequired("Last name is required"),
       ],
     },
     PreferredName: {
@@ -148,7 +149,7 @@ define('src/hr/usereditor.vm', [
     },
     Sex: {
       validators: [
-        ukov.validators.isRequired('Gender is required'),
+        ukov.validators.isRequired("Gender is required"),
       ],
     },
     ShirtSize: {},
@@ -169,10 +170,28 @@ define('src/hr/usereditor.vm', [
       converter: dateConverter,
       validators: [max50],
     },
-    Height: {},
-    Weight: {},
-    EyeColor: {},
-    HairColor: {},
+    Height: {
+      converter: ukov.converters.inches("Invalid Height"),
+      validators: [
+        ukov.validators.isInt(),
+        ukov.validators.isInRange(0, 120, "Height is not between {0:ft} and {1:ft}")
+      ],
+    },
+    Weight: {
+      converter: intConverter,
+      validators: [
+        ukov.validators.isInt(),
+        ukov.validators.isInRange(0, 2000),
+      ],
+    },
+    EyeColor: {
+      converter: nullStrConverter,
+      validators: [max20],
+    },
+    HairColor: {
+      converter: nullStrConverter,
+      validators: [max20],
+    },
     PhoneHome: {
       converter: phoneConverter,
     },
@@ -206,13 +225,13 @@ define('src/hr/usereditor.vm', [
 
     RecruitedByID: {
       validators: [
-        ukov.validators.isRequired('Recruited by is required'),
+        ukov.validators.isRequired("Recruited by is required"),
       ],
     },
     RecruitedDate: {
       converter: dateConverter,
       validators: [
-        ukov.validators.isRequired('Recruited date is required'),
+        ukov.validators.isRequired("Recruited date is required"),
       ],
     },
 
@@ -227,75 +246,87 @@ define('src/hr/usereditor.vm', [
     var _this = this;
     UserEditorViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
-      'layersVm',
+      "layersVm",
     ]);
-    // ControllerViewModel.ensureProps(_this.cache, [
-    //   'shirtSizes',
-    //   'hatSizes',
-    //   'sexs',
-    //   'maritalStatuses',
-    //   'userEmployeeTypes',
-    //   'phoneCellCarriers',
-    // ]);
+
+    var idTxtFields = {
+      value: "ID",
+      text: "Txt",
+    };
 
     _this.focusFirst = ko.observable(false);
     _this.data = ukov.wrap({
       UserID: _this.userid || 0,
+      IsActive: true,
     }, schema);
     _this.data.ShirtSizeCvm = new ComboViewModel({
       selectedValue: _this.data.ShirtSize,
       nullable: true,
-      fields: {
-        value: 'ID',
-        text: 'Txt',
-      },
+      fields: idTxtFields,
     });
     _this.data.UserEmployeeTypeCvm = new ComboViewModel({
       selectedValue: _this.data.UserEmployeeTypeId,
       nullable: true,
       fields: {
-        value: 'UserEmployeeTypeID',
-        text: 'UserEmployeeTypeName',
+        value: "UserEmployeeTypeID",
+        text: "UserEmployeeTypeName",
       },
     });
     _this.data.HatSizeCvm = new ComboViewModel({
       selectedValue: _this.data.HatSize,
       nullable: true,
-      fields: {
-        value: 'ID',
-        text: 'Txt',
-      },
+      fields: idTxtFields,
+    });
+    _this.data.EyeColorCvm = new ComboViewModel({
+      selectedValue: _this.data.EyeColor,
+      nullable: true,
+      fields: idTxtFields,
+    });
+    _this.data.HairColorCvm = new ComboViewModel({
+      selectedValue: _this.data.HairColor,
+      nullable: true,
+      fields: idTxtFields,
     });
     _this.data.SexCvm = new ComboViewModel({
       selectedValue: _this.data.Sex,
-      fields: {
-        value: 'ID',
-        text: 'Txt',
-      },
+      fields: idTxtFields,
     });
     _this.data.MaritalStatusCvm = new ComboViewModel({
       selectedValue: _this.data.MaritalStatus,
       nullable: true,
-      fields: {
-        value: 'ID',
-        text: 'Txt',
-      },
+      fields: idTxtFields,
     });
     _this.data.PhoneCellCarrierCvm = new ComboViewModel({
       selectedValue: _this.data.PhoneCellCarrierID,
       nullable: true,
       fields: {
-        value: 'PhoneCellCarrierID',
-        text: 'Description',
+        value: "PhoneCellCarrierID",
+        text: "Description",
       },
+    });
+    _this.tcmdActive = ko.command(function(cb) {
+      var toggle = _this.tcmdActive.toggle;
+      toggle.isDown(!toggle.isDown.peek());
+      cb();
+    }, null, {
+      toggle: {
+        isDown: _this.data.IsActive,
+        down: {
+          cls: "active",
+          text: "Active",
+        },
+        up: {
+          text: "Inactive",
+        },
+      }
     });
 
     _this.editing = ko.observable(false);
     _this.viewTmpl = ko.computed(function() {
       if (_this.editing()) {
-        return 'tmpl-hr-usereditor';
+        return "tmpl-hr-usereditor";
       } else {
-        return 'tmpl-hr-userinfo';
+        return "tmpl-hr-userinfo";
       }
     });
     _this.isDirty = ko.computed({
@@ -311,7 +342,7 @@ define('src/hr/usereditor.vm', [
     _this.data.imgUrl = ko.observable();
     //
     function updateImgUrl() {
-      _this.data.imgUrl(strings.format('//{0}/hr/users/{1}/photo?_={2}',
+      _this.data.imgUrl(strings.format("//{0}/HumanResourceSrv/users/{1}/photo?_={2}",
         config.serviceDomain, _this.data.UserID.peek() || 0, Math.random()));
     }
     _this.data.UserID.subscribe(updateImgUrl);
@@ -331,7 +362,7 @@ define('src/hr/usereditor.vm', [
       dataservice.hr.users.read({
         id: userid,
       }, null, utils.safeCallback(null, function(err, resp) {
-        // only set if the userid hasn't changed
+        // only set if the userid has not changed
         if (_this.data.RecruitedByID.peek() === userid) {
           var data = resp.Value;
           data.FullName = calcFullName(data.PreferredName, data.FirstName, data.LastName);
@@ -344,16 +375,16 @@ define('src/hr/usereditor.vm', [
     // events
     //
     function resetData(result) {
-      if (result === 'yes') {
+      if (result === "yes") {
         _this.editing(false);
         _this.data.reset(true);
       }
     }
     _this.clickCancel = function() {
       if (!_this.isDirty()) {
-        resetData('yes');
+        resetData("yes");
       } else {
-        notify.confirm('Reset changes?', 'There are unsaved changes. Click yes to undo these changes.', resetData);
+        notify.confirm("Reset changes?", "There are unsaved changes. Click yes to undo these changes.", resetData);
       }
     };
     _this.clickEdit = function() {
@@ -392,7 +423,7 @@ define('src/hr/usereditor.vm', [
       if (!imgUrl || userid < 1) {
         cb();
         if (userid < 1) {
-          notify.info('Save the user first', null, 5);
+          notify.info("Save the user first", null, 5);
         }
         return;
       }
@@ -422,36 +453,40 @@ define('src/hr/usereditor.vm', [
     genPassword(_this);
   }
   utils.inherits(UserEditorViewModel, ControllerViewModel);
-  // UserEditorViewModel.prototype.viewTmpl = 'tmpl-hr-usereditor';
-  // viewTmpl: 'tmpl-hr-userinfo',
+  // UserEditorViewModel.prototype.viewTmpl = "tmpl-hr-usereditor";
+  // viewTmpl: "tmpl-hr-userinfo",
 
   UserEditorViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
-    hrcache.ensure('shirtSizes', join.add());
-    hrcache.ensure('hatSizes', join.add());
-    hrcache.ensure('sexs', join.add());
-    hrcache.ensure('maritalStatuses', join.add());
-    hrcache.ensure('userEmployeeTypes', join.add());
-    hrcache.ensure('phoneCellCarriers', join.add());
+    hrcache.ensure("shirtSizes", join.add());
+    hrcache.ensure("hatSizes", join.add());
+    hrcache.ensure("eyeColors", join.add());
+    hrcache.ensure("hairColors", join.add());
+    hrcache.ensure("sexs", join.add());
+    hrcache.ensure("maritalStatuses", join.add());
+    hrcache.ensure("userEmployeeTypes", join.add());
+    hrcache.ensure("phoneCellCarriers", join.add());
 
     join.when(function(err) {
       if (err) {
         return;
       }
-      _this.data.ShirtSizeCvm.setList(hrcache.getList('shirtSizes').peek());
-      _this.data.HatSizeCvm.setList(hrcache.getList('hatSizes').peek());
-      _this.data.SexCvm.setList(hrcache.getList('sexs').peek());
-      _this.data.MaritalStatusCvm.setList(hrcache.getList('maritalStatuses').peek());
-      _this.data.UserEmployeeTypeCvm.setList(hrcache.getList('userEmployeeTypes').peek());
-      _this.data.PhoneCellCarrierCvm.setList(hrcache.getList('phoneCellCarriers').peek());
+      _this.data.ShirtSizeCvm.setList(hrcache.getList("shirtSizes").peek());
+      _this.data.HatSizeCvm.setList(hrcache.getList("hatSizes").peek());
+      _this.data.EyeColorCvm.setList(hrcache.getList("eyeColors").peek());
+      _this.data.HairColorCvm.setList(hrcache.getList("hairColors").peek());
+      _this.data.SexCvm.setList(hrcache.getList("sexs").peek());
+      _this.data.MaritalStatusCvm.setList(hrcache.getList("maritalStatuses").peek());
+      _this.data.UserEmployeeTypeCvm.setList(hrcache.getList("userEmployeeTypes").peek());
+      _this.data.PhoneCellCarrierCvm.setList(hrcache.getList("phoneCellCarriers").peek());
     });
   };
   UserEditorViewModel.prototype.setItem = function(item) {
     var _this = this;
     // set item now in order to show title even if onLoad is never called
     _this.data.setValue(item);
-    // set item once we're loaded
+    // set item once we are loaded
     _this.loader.onLoad(function() {
       _this.data.setValue(item);
       _this.data.markClean(item);
@@ -462,16 +497,16 @@ define('src/hr/usereditor.vm', [
     var _this = this,
       msg;
     if (_this.cmdSave.busy()) {
-      msg = 'Please wait for save to finish.';
+      msg = "Please wait for save to finish.";
     } else if (_this.isDirty.peek() && _this.data.UserID.peek() > 0) {
-      msg = 'There are unsaved changes for User Info. Please cancel the edit before closing.';
+      msg = "There are unsaved changes for User Info. Please cancel the edit before closing.";
     }
     return msg;
   };
 
   function calcFullName(pname, fname, lname) {
-    // return strings.joinTrimmed(' ', _this.data.PreferredName() || _this.data.FirstName(), _this.data.LastName());
-    return strings.joinTrimmed(' ', pname || fname, lname);
+    // return strings.joinTrimmed(" ", _this.data.PreferredName() || _this.data.FirstName(), _this.data.LastName());
+    return strings.joinTrimmed(" ", pname || fname, lname);
   }
 
   function genPassword(_this) {

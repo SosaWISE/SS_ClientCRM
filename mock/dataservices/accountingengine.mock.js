@@ -56,6 +56,16 @@ define('mock/dataservices/accountingengine.mock', [
 
       send(0, result, setter, cb);
     };
+    dataservice.accountingengine.billingHistory.read = function(params, setter, cb) {
+      var result; //, id = params.id;
+      switch (params.link || null) {
+        case "CMFID":
+          result = [];
+          break;
+      }
+
+      send(0, result, setter, cb);
+    };
 
     dataservice.accountingengine.customerSearches.save = function(params, setter, cb) {
       var result, template, fname, lname, data = params.data;

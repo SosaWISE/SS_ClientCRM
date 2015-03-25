@@ -27,6 +27,24 @@ define("src/dataservice", [
     user: new UserDataservice(),
     session: new SessionDataservice(),
 
+    //
+    // with /api
+    //
+    api_contractAdmin: createService("api/contractAdmin", [
+      "accounts",
+      "accountSalesInformationExtras",
+    ]),
+    api_qualify: createService("api/qualify", [
+      "customerMasterFiles",
+    ]),
+    api_ticket: createService("api/ticket", [
+      "teams",
+    ]),
+
+    //
+    // no /api
+    //
+
     accountingengine: createService("accountingenginesrv", [
       "aging",
       "billingInfoSummary",
@@ -91,12 +109,14 @@ define("src/dataservice", [
 
     monitoringstationsrv: createService("monitoringStationSrv", [
       "msAccounts",
+      "msIndustryAccounts",
       "accounts",
       "msAccountSalesInformations",
       "dispatchAgencies",
       "accountDispatchAgencyAssignments",
       "premiseAddress",
       "dispatchAgencyTypes",
+      "msAccountStatusInformations"
     ]),
 
     msaccountsetupsrv: createService("msaccountsetupsrv", [

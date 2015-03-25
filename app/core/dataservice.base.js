@@ -1,10 +1,12 @@
 define('src/core/dataservice.base', [
   'jquery',
+  'src/core/sessionstore',
   'src/core/jsonhelpers',
   'src/core/querystring',
   'src/core/utils',
 ], function(
   jquery,
+  sessionstore,
   jsonhelpers,
   querystring,
   utils
@@ -35,17 +37,17 @@ define('src/core/dataservice.base', [
 
   // post/get with params object (easy to mock)
   DataserviceBase.prototype.save = function(params, setter, callback) {
-    this.ajax('POST', params.id, params.link, params.query, params.data, setter, callback);
+    this.ajax('POST', getId(params), getLink(params), params.query, params.data, setter, callback);
   };
   DataserviceBase.prototype.read = function(params, setter, callback) {
-    this.ajax('GET', params.id, params.link, params.query, params.data, setter, callback);
+    this.ajax('GET', getId(params), getLink(params), params.query, params.data, setter, callback);
   };
   // DataserviceBase.prototype.update = function(id, data, setter, callback) {
   //   this.ajax('PATCH', id, null, null, data, setter, callback);
   // };
   DataserviceBase.prototype.del = DataserviceBase.prototype.delete = function(params, setter, callback) {
     if (utils.isObject(params)) {
-      this.ajax('DELETE', params.id, params.link, params.query, params.data, setter, callback);
+      this.ajax('DELETE', getId(params), getLink(params), params.query, params.data, setter, callback);
     } else {
       this.ajax('DELETE', params, null, null, null, setter, callback);
     }
@@ -111,6 +113,11 @@ define('src/core/dataservice.base', [
 
   DataserviceBase.prototype.execute = function(context) {
     var _this = this;
+    var headers = {};
+    var token = sessionstore.getItem("token");
+    if (token) {
+      headers.Authorization = "Token" + token;
+    }
 
     // make request
     return jquery.ajax({
@@ -123,6 +130,7 @@ define('src/core/dataservice.base', [
       contentType: context.contentType,
       dataType: context.dataType,
 
+      headers: headers,
       crossDomain: true,
       /** This needs to be enabled once we are in production.
        * The header property Access-Control-Allow-Origin also needs to be changed from '*' wildcard to where the client is
@@ -260,6 +268,27 @@ define('src/core/dataservice.base', [
 
   function frontSlash(text) {
     return (text || text === 0) ? ('/' + text) : '';
+  }
+
+  function getStringValue(params, name) {
+    if (!_hasOwnProperty.call(params, name)) {
+      return null;
+    }
+    var result = params[name];
+    // if the property has been set, but is null/undefined, convert it to a string
+    if (result == null) {
+      result += "";
+    }
+    return result;
+  }
+  var _hasOwnProperty = Object.prototype.hasOwnProperty;
+
+  function getId(params) {
+    return getStringValue(params, "id");
+  }
+
+  function getLink(params) {
+    return getStringValue(params, "link");
   }
 
   return DataserviceBase;

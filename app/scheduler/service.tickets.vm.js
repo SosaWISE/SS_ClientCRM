@@ -1,27 +1,19 @@
 define("src/scheduler/service.tickets.vm", [
-  "slick",
   "src/scheduler/scheduler-helper",
   "src/scheduler/scheduler-cache",
   "src/scheduler/service.tickets.gvm",
   "src/scheduler/ticket.editor.vm",
   "src/dataservice",
-  "src/ukov",
   "ko",
-  "src/core/strings",
-  "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
-  Slick,
   schedulerhelper,
   schedulercache,
   ServiceTicketsGridViewModel,
   TicketEditorViewModel,
   dataservice,
-  ukov,
   ko,
-  strings,
-  notify,
   utils,
   ControllerViewModel
 ) {
@@ -34,16 +26,18 @@ define("src/scheduler/service.tickets.vm", [
       "layersVm",
     ]);
 
+    if (_this.openAccount) {
+      _this.openAccount = _this.openAccount.bind(_this);
+    }
+
     _this.gvm = new ServiceTicketsGridViewModel({
       edit: function(ticket, cb) {
         _this.layersVm.show(new TicketEditorViewModel({
+          onOpenAccount: _this.openAccount, //
           item: utils.clone(ticket),
           serviceTypes: schedulercache.getList("serviceTypes").peek(),
           skills: schedulercache.getList("skills").peek(),
         }), function(model, deleted) {
-          if (model) {
-            schedulerhelper.ensureTypeNames(model);
-          }
           cb(model, deleted);
         });
       },
@@ -55,10 +49,7 @@ define("src/scheduler/service.tickets.vm", [
     _this.cmdRefreshGrid = ko.command(function(cb) {
       _this.gvm.setItems([]);
       _this.loadServiceTickets(function(items) {
-        items.forEach(function(item) {
-          schedulerhelper.ensureTypeNames(item);
-        });
-        //
+        items.forEach(schedulerhelper.afterTicketLoaded);
         _this.gvm.setItems(items);
       }, cb);
     });
@@ -81,6 +72,16 @@ define("src/scheduler/service.tickets.vm", [
       } else {
         _this.cmdRefreshGrid.execute(cb);
       }
+    });
+  };
+
+  ServiceTicketsViewModel.prototype.openAccount = function(masterid, accountid) { // override me
+    var _this = this;
+    _this.goTo({
+      route: "accounts",
+      masterid: masterid,
+      id: accountid,
+      tab: "servicetickets", // ???
     });
   };
 

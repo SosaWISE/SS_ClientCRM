@@ -12,9 +12,10 @@ define("src/core/strings", [
   "use strict";
 
   var strings = {},
-    formatRegex = /\{([0-9]+)(?::([0-9A-Z$]+))?\}/gi, // {0} or {0:decoratorName}
+    formatRegex = /\{([0-9]+)(?::([0-9A-Z\-_$]+))?\}/gi, // {0} or {0:decoratorName}
     phoneRegx = /^\(?\b([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
     ssnRegx = /^(\d{3})[-]?(\d{2})[-]?(\d{4})$/,
+    digitsRegx = /^[0-9]+$/,
     usdFormatter;
 
   // e.g.: strings.format("{0} {1}", "bob", "bobbins") === "bob bobbins"
@@ -82,12 +83,11 @@ define("src/core/strings", [
       } else {
         dt = moment.utc(dt);
       }
-      return dt.format("MM/DD/YYYY");
+      return dt.format("L");
     },
     datetime: function(dt, isUtc) {
-      // display Local by default
-      // the web server should always return UTC dates, but we want to display in Local
-      //to allow display of nullable dates
+      // Local by default - the web server should always return UTC dates, but we want to display in Local
+      // allow displaying of nullable dates
       if (dt == null || dt === "") {
         return "";
       }
@@ -99,9 +99,8 @@ define("src/core/strings", [
       return dt.format("MM/DD/YYYY hh:mm a");
     },
     time: function(dt, isUtc) {
-      // display Local by default
-      // the web server should always return UTC dates, but we want to display in Local
-      //to allow display of nullable dates
+      // Local by default - the web server should always return UTC dates, but we want to display in Local
+      // allow displaying of nullable dates
       if (dt == null || dt === "") {
         return "";
       }
@@ -145,6 +144,23 @@ define("src/core/strings", [
         return val;
       }
     },
+    feet: function(val) {
+      if (!val && val !== 0) {
+        return val;
+      }
+      if (digitsRegx.test(val)) {
+        var inches = parseInt(val, 10);
+        var feet = Math.floor(inches / 12);
+        inches = inches % 12;
+        if (inches > 0) {
+          return strings.format("{0}'{1}\"", feet, inches);
+        } else {
+          return strings.format("{0}'", feet);
+        }
+      } else {
+        return val;
+      }
+    },
   };
   strings.decorators = {
     // wrap formatters in case they are modified outside of this file
@@ -157,8 +173,14 @@ define("src/core/strings", [
     dt: function(val) {
       return strings.formatters.datetime(val);
     },
+    utc_dt: function(val) {
+      return strings.formatters.datetime(val, true);
+    },
     t: function(val) {
       return strings.formatters.time(val);
+    },
+    utc_t: function(val) {
+      return strings.formatters.time(val, true);
     },
     space: function(val) {
       val = (val || "") + ""; // make sure it's not null, undefined, or something other than a string
@@ -175,7 +197,10 @@ define("src/core/strings", [
       } else {
         return val;
       }
-    }
+    },
+    ft: function(val) {
+      return strings.formatters.feet(val);
+    },
   };
   // aliases
   strings.decorators.$ = strings.decorators.c;
