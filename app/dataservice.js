@@ -56,6 +56,10 @@ define("src/dataservice", [
       "customers",
     ]),
 
+    fundingsrv: createService("fundingsrv", [
+      "criterias",
+    ]),
+
     humanresourcesrv: createService("humanresourcesrv", [
       "RuTeamLocationList",
       "RuTechnician",
