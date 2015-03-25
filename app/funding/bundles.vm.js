@@ -1,4 +1,4 @@
-define('src/funding/packets.vm', [
+define('src/funding/bundles.vm', [
   'src/dataservice',
   'ko',
   'src/core/utils',
@@ -10,12 +10,10 @@ define('src/funding/packets.vm', [
   ControllerViewModel) {
   'use strict';
 
-  //  var newPacketID = -1;
-
-  function PacketsViewModel(options) {
+  function BundlesViewModel(options) {
     // ** Initialize
     var _this = this;
-    PacketsViewModel.super_.call(_this, options);
+    BundlesViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
       'layersVm'
     ]);
@@ -38,9 +36,9 @@ define('src/funding/packets.vm', [
   }
 
   // ** Inherits
-  utils.inherits(PacketsViewModel, ControllerViewModel);
-  PacketsViewModel.prototype.viewTmpl = 'tmpl-funding-packets';
+  utils.inherits(BundlesViewModel, ControllerViewModel);
+  BundlesViewModel.prototype.viewTmpl = 'tmpl-funding-bundles';
 
   // ** Return VM
-  return PacketsViewModel;
+  return BundlesViewModel;
 });
