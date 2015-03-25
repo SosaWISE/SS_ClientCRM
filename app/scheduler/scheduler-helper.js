@@ -36,6 +36,7 @@ define("src/scheduler/scheduler-helper", [
     item._FullAddress = strings.format("{0} {1}, {2} {3}",
       strings.joinTrimmed(" ", item.StreetAddress, item.StreetAddress2),
       item.City, item.StateId, item.PostalCode);
+    item._LatLong = strings.format("({0}, {1})", item.Latitude, item.Longitude);
 
     // tech
     if (item.TechGPEmployeeID) {

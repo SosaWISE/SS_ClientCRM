@@ -21,6 +21,7 @@ div(class="ticket-editor")
         span(data-bind="text:CustomerMasterFileId")
       div(class="name",data-bind="text:_FullName")
       div(class="address",data-bind="text:_FullAddress")
+      div(class="address",data-bind="text:_LatLong")
 
     ul(class="edit-form")
       li
@@ -56,9 +57,6 @@ div(class="ticket-editor")
     ul(class="edit-form")
       <!-- ko if:showAppt -->
       li
-        span(class="label") Scheduled Tech
-        div(data-bind="cvm:data.techCvm")
-      li
         div(data-bind="template:{name:scheduleVm.monthVm.viewTmpl,data:scheduleVm.monthVm}")
       li
         span(class="label") Start Time
@@ -89,5 +87,12 @@ div(class="ticket-editor")
         a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
 
   <!-- ko if:showAppt -->
-  div(class="ticket-schedule",data-bind="template:{name:'tmpl-scheduler-schedule',data:scheduleVm}")
+  div(class="ticket-schedule-wrap")
+    ul(class="edit-form double-wide")
+      li
+        div(data-bind="cvm:data.teamCvm")
+    ul(class="edit-form double-wide")
+      li
+        div(data-bind="cvm:data.techCvm")
+    div(class="ticket-schedule",data-bind="template:{name:'tmpl-scheduler-schedule',data:scheduleVm}")
   <!-- /ko -->

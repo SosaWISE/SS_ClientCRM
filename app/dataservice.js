@@ -37,6 +37,9 @@ define("src/dataservice", [
     api_qualify: createService("api/qualify", [
       "customerMasterFiles",
     ]),
+    api_ticket: createService("api/ticket", [
+      "teams",
+    ]),
 
     //
     // no /api
