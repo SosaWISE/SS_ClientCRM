@@ -1,0 +1,81 @@
+div(class="panel account active load-err", data-bind="if:loadErr,toggle:{'may-reload':mayReload}")
+  div(class="p-module")
+    div Failed to load customer account
+    ul(class="actions")
+      li
+        a(class="btn small",tabindex="0",data-bind="hasfocus:true,cmd:clickReload") Retry
+      li
+        a(class="btn small",tabindex="0",data-bind="cmd:close") Close
+
+div(data-bind="if:!loadErr()&&!loading()")
+  div(class="panel account", data-bind="active:active,toggle:{'hide-nav':hideNav,'may-reload':mayReload}")
+
+    //- div(class="p-module",data-bind="if:activeChild")
+    //-   div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild}")
+    div(class="p-module",data-bind="if:activeChild()")
+      div(data-bind="template:{name:activeChild().viewTmpl,data:activeChild()}",style="height:100%")
+
+    div(class="p-nav")
+      div(class="toggle-btn", data-bind="click:clickToggleNav,toggle:{'closed':hideNav}")
+        div(class="close")
+        div(class="open")
+
+      div(class="contents-wrap")
+        div(class="contents")
+          div(class="section")
+            span(class="title") Contract Owner
+            div(class="contents",data-bind="foreach:customers")
+              div(class="info userinfo")
+                div(class="img-wrap")
+                  div(class="img", style="background-image:url(/stuff/img/nophoto.jpg)")
+                div(class="name",data-bind="text:FullName")
+                div(class="address", data-bind="text:StreetAddress")
+                div(class="address", data-bind="text:StreetAddress2")
+                div(class="address")
+                  span(data-bind="text:City")
+                  |,&nbsp;
+                  span(data-bind="text:StateId")
+                  |&nbsp;
+                  span(data-bind="text:PostalCode")
+                div(class="separator")
+                div(class="phone mobile", data-bind="phonetext:PhoneMobile")
+                div(class="phone work", data-bind="phonetext:PhoneWork")
+                div(class="phone home", data-bind="phonetext:PhoneHome")
+                div(class="email", data-bind="text:Email")
+                div(class="credit-result", data-bind="crg:CreditGroup")
+                  |Credit Group:&nbsp;
+                  span(data-bind="text:CreditGroup")
+
+          div(class="section")
+            div(class="title")
+              span Accounts
+            div(class="contents")
+              ul(class="accounts")
+                <!-- ko foreach:accounts -->
+                li
+                  a(data-bind="active:active,click:$parent.clickItem")
+                    span(class="name",data-bind="text:title")
+                    <!-- ko if:hasRmr -->
+                    span(class="amount",data-bind="currencyHtml:rmr")
+                    <!-- /ko -->
+                    <!-- ko ifnot:hasRmr -->
+                    span(class="nUnits",data-bind="text:units")
+                    <!-- /ko -->
+                <!-- /ko -->
+                li
+                  a(class="total")
+                    span(class="name") Total RMR
+                    span(class="amount",data-bind="currencyHtml:totalRmr")
+
+          div(class="section")
+            span(class="title") Payment History
+            div(class="contents")
+              ul(class="accounts")
+                <!-- ko foreach:paymentHistory -->
+                li
+                  a(class="",data-bind="attr:{title:BillingType+' #: '+BillingNumber}")
+                    span(class="name",data-bind="datetext:BillingDate")
+                    span(class="amount",data-bind="currencyHtml:BillingAmount")
+                <!-- /ko -->
+
+div(data-bind="spinner:loading,spinner-rgb:'white'")

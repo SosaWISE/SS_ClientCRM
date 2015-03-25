@@ -108,7 +108,9 @@ define('src/viz/idphoto.vm', [
   // }
 
   function IdPhotoViewModel(options) {
-    var _this = this;
+    var _this = this,
+      currPhoto,
+      canSave = ko.observable(false);
     IdPhotoViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
       'userid',
@@ -121,8 +123,6 @@ define('src/viz/idphoto.vm', [
     //
     // events
     //
-    var currPhoto;
-    var canSave = ko.observable(false);
     _this.cmdRotateLeft = ko.command(function(cb) {
       rotateSprite(currPhoto, Math.PI / -2);
       fitToBounds(group, boxWidth, boxHeight, false);
@@ -144,15 +144,15 @@ define('src/viz/idphoto.vm', [
       // ensure the stage is rendered
       renderer.render(stage);
 
-      var quality = 0.95;
-      var fd = new FormData();
+      var quality = 0.95,
+        fd = new FormData();
       fd.append('file', canvasHelper.toBlob(renderer.view, quality), quality + 'photo.jpg');
 
       // uploadFormData('//' + config.serviceDomain + '/humanresourcesrv/users/' + _this.userid + '/upload', fd, function(err, resp) {
       //   resp = resp;
       //   cb();
       // });
-      dataservice.humanresourcesrv.users.save({
+      dataservice.hr.users.save({
         id: _this.userid,
         link: 'upload',
         data: fd,

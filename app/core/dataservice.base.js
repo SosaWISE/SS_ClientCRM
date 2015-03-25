@@ -1,10 +1,12 @@
 define('src/core/dataservice.base', [
   'jquery',
+  'src/core/sessionstore',
   'src/core/jsonhelpers',
   'src/core/querystring',
   'src/core/utils',
 ], function(
   jquery,
+  sessionstore,
   jsonhelpers,
   querystring,
   utils
@@ -111,6 +113,11 @@ define('src/core/dataservice.base', [
 
   DataserviceBase.prototype.execute = function(context) {
     var _this = this;
+    var headers = {};
+    var token = sessionstore.getItem("token");
+    if (token) {
+      headers.Authorization = "Token" + token;
+    }
 
     // make request
     return jquery.ajax({
@@ -123,6 +130,7 @@ define('src/core/dataservice.base', [
       contentType: context.contentType,
       dataType: context.dataType,
 
+      headers: headers,
       crossDomain: true,
       /** This needs to be enabled once we are in production.
        * The header property Access-Control-Allow-Origin also needs to be changed from '*' wildcard to where the client is

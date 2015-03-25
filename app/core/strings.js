@@ -15,6 +15,7 @@ define("src/core/strings", [
     formatRegex = /\{([0-9]+)(?::([0-9A-Z\-_$]+))?\}/gi, // {0} or {0:decoratorName}
     phoneRegx = /^\(?\b([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
     ssnRegx = /^(\d{3})[-]?(\d{2})[-]?(\d{4})$/,
+    digitsRegx = /^[0-9]+$/,
     usdFormatter;
 
   // e.g.: strings.format("{0} {1}", "bob", "bobbins") === "bob bobbins"
@@ -151,6 +152,23 @@ define("src/core/strings", [
         return val;
       }
     },
+    feet: function(val) {
+      if (!val && val !== 0) {
+        return val;
+      }
+      if (digitsRegx.test(val)) {
+        var inches = parseInt(val, 10);
+        var feet = Math.floor(inches / 12);
+        inches = inches % 12;
+        if (inches > 0) {
+          return strings.format("{0}'{1}\"", feet, inches);
+        } else {
+          return strings.format("{0}'", feet);
+        }
+      } else {
+        return val;
+      }
+    },
   };
   strings.decorators = {
     // wrap formatters in case they are modified outside of this file
@@ -187,7 +205,10 @@ define("src/core/strings", [
       } else {
         return val;
       }
-    }
+    },
+    ft: function(val) {
+      return strings.formatters.feet(val);
+    },
   };
   // aliases
   strings.decorators.$ = strings.decorators.c;

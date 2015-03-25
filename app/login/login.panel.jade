@@ -5,8 +5,8 @@ div(class="login", data-bind="swapLoginFields:1")
     //- placeholder for login form --)
     span(class="ph-loginform")
     div(class="helper-actions")
-      input(type="checkbox", id="remember", data-bind="checked:rememberMe", class="remember")
-      label(for="remember") Remember me
+      //- input(type="checkbox", id="remember", data-bind="checked:rememberMe", class="remember")
+      //- label(for="remember") Remember me
       a(data-bind="click:clickForgot", class="btn-forgot") Forgot your password?
 
   div(data-bind="spinner:cmdLogin.busy,spinner-rgb:'white'")

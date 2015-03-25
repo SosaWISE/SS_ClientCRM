@@ -174,5 +174,29 @@ define("src/u-kov/string-converters.spec", [
         expect(converter("09/04/1982 11 am").constructor.name).toBe(errName); // missing hours
       });
     });
+
+    describe("inches converter", function() {
+      var converter = converters.inches();
+
+      it("should return null when empty string", function() {
+        expect(converter("")).toBeNull();
+      });
+      it("should always return expected output when valid", function() {
+        expect(converter("5'9\"")).toBe(69);
+        expect(converter("5'")).toBe(60);
+        expect(converter("9\"")).toBe(9);
+        expect(converter("123")).toBe(123);
+        expect(converter("0")).toBe(0);
+        expect(converter("5'24\"")).toBe(84);
+        expect(converter("7'0\"")).toBe(84);
+      });
+      it("should return Error when invalid", function() {
+        expect(converter("bob") instanceof Error).toBe(true);
+        expect(converter("5'5'") instanceof Error).toBe(true);
+        expect(converter("5''") instanceof Error).toBe(true);
+        expect(converter("5\"5'") instanceof Error).toBe(true);
+        expect(converter("\"") instanceof Error).toBe(true);
+      });
+    });
   });
 });

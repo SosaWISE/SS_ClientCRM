@@ -14,28 +14,48 @@ div(data-bind="if:!loadErr()&&!loading()")
         span(class="title") Sales Rep
         div(class="contents",data-bind="if:repModel")
           div(data-bind="template:{data:repModel,name:'tmpl-acct-default-rep_info'}")
-      div(class="section",data-bind="cmd:cmdAddress,toggle:{empty:!addressModel()}")
-        span(class="title") Premise
-        div(class="contents",data-bind="if:addressModel")
-          div(data-bind="template:{data:addressModel,name:'tmpl-acct-default-address'}")
-      <!-- ko foreach:customers -->
-      div(class="section",data-bind="cmd:cmdCustomer,toggle:{empty:!lead()}")
-        span(class="title",data-bind="text:customerType") e.g.: Premise/Primary or Secondary
+    <!-- ko foreach:leads -->
+    div(class="col col2")
+      div(class="section",
+        data-bind="toggle:{empty:!address()&&!lead(),disabled:$parent.hasCustomer}")
+        span(class="title",data-bind="cmd:$parent.cmdAddress")
+          span(data-bind="text:typeName")
+          |&nbsp;Customer
+          //- <!-- ko if:subtitle -->
+          //- br
+          //- span(data-bind="text:subtitle")
+          //- <!-- /ko -->
         div(class="contents")
-          div(data-bind="if:lead")
+          div(class="section-item address",data-bind="if:address,cmd:$parent.cmdAddress")
+            <!-- ko if:addressSameAsText -->
+            span(class="same-as fa fa-check",data-bind="text:addressSameAsText")
+            <!-- /ko -->
+            <!-- ko if:!lead() -->
+            a(class="close",title="Remove Address",
+              data-bind="click:$parent.clickRemoveAddress,clickBubble:false")
+            <!-- /ko -->
+            span(class="title")
+              span(data-bind="text:addressTypeName")
+              |&nbsp;Address
+            div(data-bind="template:{data:address,name:'tmpl-acct-default-address'}")
+          div(class="section-item customer",data-bind="cmd:$parent.cmdQualify")
+            <!-- ko if:leadSameAsText -->
+            span(class="same-as fa fa-check",data-bind="text:leadSameAsText")
+            <!-- /ko -->
+            //- span(class="title") Lead
+            <!-- ko if:lead -->
             div(data-bind="template:{name:'tmpl-acct-default-customer',data:lead}")
-          div(data-bind="if:creditResult")
+            <!-- /ko -->
+            <!-- ko if:!lead() -->
+            div(class="title") Customer
+            <!-- /ko -->
+            <!-- ko if:creditResult -->
             div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult}")
-          ul(class="actions")
-            li
-              span(class="btn",tabindex="0",data-bind="cmd:cmdSendToIS") Send to InsideSales.com
-      <!-- /ko -->
-
-      //- div(class="section",data-bind="cmd:cmdCustomer,toggle:{empty:!customerModel()}")
-      //-   span(class="title") Customer
-      //-   div(class="contents",data-bind="if:customerModel()&&creditResult()")
-      //-     div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult}")
-      //-     div(data-bind="template:{name:'tmpl-acct-default-customer',data:customerModel}")
+            <!-- /ko -->
+            //- ul(class="actions")
+              li
+                span(class="btn",tabindex="0",data-bind="cmd:$parent.cmdSendToIS") Send to InsideSales.com
+    <!-- /ko -->
 
     ul(class="actions")
       li

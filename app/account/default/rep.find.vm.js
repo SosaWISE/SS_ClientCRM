@@ -1,16 +1,20 @@
 define('src/account/default/rep.find.vm', [
+  "src/config",
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
   'ko',
   'src/ukov',
+  "src/core/strings",
   'src/dataservice',
 ], function(
+  config,
   notify,
   utils,
   BaseViewModel,
   ko,
   ukov,
+  strings,
   dataservice
 ) {
   "use strict";
@@ -65,10 +69,12 @@ define('src/account/default/rep.find.vm', [
       dataservice.qualify.salesrep.read({
         id: model.CompanyID
       }, null, utils.safeCallback(cb, function(err, resp) {
-        if (resp) {
+        if (resp && resp.Value) {
           // mark clean what was searched
           _this.repData.markClean(model);
           // set rep
+          resp.Value.ImagePath = strings.format("//{0}/HumanResourceSrv/users/{1}/photo",
+            config.serviceDomain, resp.Value.UserID);
           _this.rep(resp.Value);
           _this.focusOk(true);
         }

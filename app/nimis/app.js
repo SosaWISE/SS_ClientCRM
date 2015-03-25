@@ -2,18 +2,28 @@ define("src/nimis/app", [
   "ko",
   "src/dataservice",
   "src/login/login.panel.vm",
+  "src/core/sessionstore",
   "src/core/app.vm",
 ], function(
   ko,
   dataservice,
   LoginViewModel,
+  sessionstore,
   AppViewModel
 ) {
   "use strict";
 
   var app = new AppViewModel({
     doLogout: function(cb) {
-      dataservice.user.logout(cb);
+      // logout without caring about response
+      dataservice.user.logout();
+      // let the request start
+      setTimeout(function() {
+        // remove session id (effectively logging the user out)
+        sessionstore.setItem("token", null);
+        // call callback
+        cb();
+      }, 100);
     },
     createLogin: function(setUser, routePart) {
       return new LoginViewModel({
@@ -131,21 +141,6 @@ define("src/nimis/app", [
           },
         ],
       }, {
-        appid: "sse_cms_cors",
-        path: "src/scheduling/scheduling.panel.vm",
-        options: {
-          id: "scheduling",
-          title: "Scheduling",
-          icoClass: "ico fa fa-3x fa-calendar",
-        },
-        routes: [ //
-          {
-            precedence: 1,
-            name: "scheduling",
-            path: ":id/:ticketid",
-          },
-        ],
-      }, {
         appid: "hr_man",
         path: "src/hr/hr.panel.vm",
         options: {
@@ -158,6 +153,36 @@ define("src/nimis/app", [
             precedence: 1,
             name: "hr",
             path: ":collection/:id/:p1",
+          },
+        ],
+      }, {
+        appid: "contract_admin",
+        path: "src/contracts/contracts.panel.vm",
+        options: {
+          id: "contracts",
+          title: "Contracts",
+          icoClass: "ico fa fa-3x fa-gears"
+        },
+        routes: [ //
+          {
+            precedence: 1,
+            name: "contracts",
+            path: ":masterid/:id",
+          },
+        ],
+      }, {
+        appid: "funding_admin",
+        path: "src/funding/funding.panel.vm",
+        options: {
+          id: "funding",
+          title: "Funding",
+          icoClass: "ico fa fa-3x fa-btc"
+        },
+        routes: [ //
+          {
+            precedence: 1,
+            name: "funding",
+            path: ":id",
           },
         ],
       }, {

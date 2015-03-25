@@ -5,6 +5,7 @@ window.require = {
   },
   pkgs: {
     '/account.js': 'src/account',
+    '/contracts.js': 'src/contracts',
     '/survey.js': 'src/survey',
     '/core.js': 'src/core',
     '/ukov.js': 'src/u-kov',

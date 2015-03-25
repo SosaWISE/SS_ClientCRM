@@ -11,22 +11,40 @@ define("src/scheduler/service.tickets.gvm", [
     var _this = this;
     options = options || {};
     options.filterFields = [
+      "_FullName",
+      "CustomerMasterFileId",
       "ID",
       "_StatusCode",
       "MSTicketNum",
       "_ServiceType",
-      "TechGPEmployeeID",
+      "_TechName",
     ];
+
+    //  - Show Tech phone #(on click or hover)
+    // Filterable by Geographic location.  In other words by office.
+
+
     options.columns = [ //
       {
+        id: "ID",
+        name: "Ticket #",
+        field: "ID",
+        sortable: true,
+        width: 30,
+      }, {
+        id: "_FullName",
+        name: "Customer",
+        field: "_FullName",
+        sortable: true,
+      }, {
+        id: "CustomerMasterFileId",
+        name: "Customer #",
+        field: "CustomerMasterFileId",
+        sortable: true,
+      }, {
         id: "_StatusCode",
         name: "Status",
         field: "_StatusCode",
-        sortable: true,
-      }, {
-        id: "ID",
-        name: "ID",
-        field: "ID",
         sortable: true,
       }, {
         id: "MSTicketNum",
@@ -39,9 +57,9 @@ define("src/scheduler/service.tickets.gvm", [
         field: "_ServiceType",
         sortable: true,
       }, {
-        id: "TechGPEmployeeID",
+        id: "_TechName",
         name: "Tech",
-        field: "TechGPEmployeeID",
+        field: "_TechName",
         sortable: true,
       },
       // {

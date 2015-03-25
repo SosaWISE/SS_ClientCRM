@@ -1,4 +1,8 @@
 div(class="item-data")
+  ul(class="actions left")
+    li
+      //- a(class="btn",tabindex="0",data-bind="tcmd:tcmdActive")
+      span(data-bind="text:tcmdActive.toggle.text")
   ul(class="actions")
     li
       a(class="btn",tabindex="0",data-bind="cmd:clickEdit") Edit
@@ -30,10 +34,14 @@ div(class="item-data")
             li
               span(class="label") Employee Type
               div(class="text",data-bind="text:data.UserEmployeeTypeCvm.selectedText()")
-            li(class="full")
-              span(class="label") Name
+            li(class="third")
+              span(class="label") First Name
               div(class="name text",data-bind="text:data.FirstName")
+            li(class="third")
+              span(class="label") Middle Name
               div(class="mname text",data-bind="text:data.MiddleName")
+            li(class="third")
+              span(class="label") Last Name
               div(class="name text",data-bind="text:data.LastName")
             li
               span(class="label") Preferred Name
@@ -52,6 +60,18 @@ div(class="item-data")
               div(class="text",data-bind="text:data.SexCvm.selectedText()")
             li
               //-
+            li
+              span(class="label") Height
+              div(class="text",data-bind="feet:data.Height")
+            li
+              span(class="label") Weight
+              div(class="text",data-bind="text:data.Weight")
+            li
+              span(class="label") Eye Color
+              div(class="text",data-bind="text:data.EyeColorCvm.selectedText()")
+            li
+              span(class="label") Hair Color
+              div(class="text",data-bind="text:data.HairColorCvm.selectedText()")
             li
               span(class="label") Marital Status
               div(class="text",data-bind="text:data.MaritalStatusCvm.selectedText()")

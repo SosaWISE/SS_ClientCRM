@@ -22,8 +22,8 @@ define('src/dataservices/session', [
       AppToken: appToken,
     }, null, cb);
   };
-  SessionDataservice.prototype.terminate = function(cb) {
-    this.post('SessionTerminate', null, null, cb);
+  SessionDataservice.prototype.sessionData = function(cb) {
+    this.get('SessionData', null, null, cb);
   };
 
   return SessionDataservice;

@@ -60,7 +60,7 @@ define('src/core/mockery', [
       // return (fkCount % count) + identitySeed;
     },
     IMG: function(cache, width, height, category) {
-      return 'http://lorempixel.com/' + width + '/' + height + '/' + (category || '');
+      return '//lorempixel.com/' + width + '/' + height + '/' + (category || '');
     },
     TEXT: function(cache, min, max) {
       var results = [],
