@@ -74,6 +74,8 @@ define("src/scheduler/account.service.tickets.vm", [
           City: _this.customer.City,
           StateId: _this.customer.StateId,
           PostalCode: _this.customer.PostalCode,
+          Latitude: _this.customer.Latitude || 0,
+          Longitude: _this.customer.Longitude || 0,
         }),
         serviceTypes: schedulercache.getList("serviceTypes").peek(),
         skills: schedulercache.getList("skills").peek(),
