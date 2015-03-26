@@ -58,6 +58,8 @@ define("src/dataservice", [
 
     fundingsrv: createService("fundingsrv", [
       "criterias",
+      "packets",
+      "packetItems",
     ]),
 
     humanresourcesrv: createService("humanresourcesrv", [
