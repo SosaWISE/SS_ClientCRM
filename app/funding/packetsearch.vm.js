@@ -47,11 +47,21 @@ define('src/funding/packetsearch.vm', [
 
     _this.gvm = new PacketSearchGridViewModel({
       open: _this.open || function(item) {
-        console.log(item);
+        //console.log(item);
+        dataservice.fundingsrv.packetItems.read({
+          id: item.PacketID, // TODO:  Magic number
+        }, null, utils.safeCallback(null, function(err, resp) {
+          // set result in grid
+          _this.gvmItems.list(resp.Value);
+          _this.gvmItems.setSelectedRows([]);
+        }, function(err) {
+          notify.error(err, 30);
+        }));
+        return true;
       }
     });
 
-    _this.gvmItem = new PacketItemSearchGridViewModel({
+    _this.gvmItems = new PacketItemSearchGridViewModel({
       open: _this.open || function(item) {
         console.log(item);
       }
@@ -73,8 +83,6 @@ define('src/funding/packetsearch.vm', [
     }, function(err) {
       notify.error(err, 30);
     }));
-
-    dataservice.fundingsrv.packetItems.read();
   };
 
   // ** clearData

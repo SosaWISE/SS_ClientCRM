@@ -19,18 +19,22 @@ define('src/funding/packetsearch.gvm', [
         forceFitColumns: true,
       },
       plugins: [
+        // new RowEvent({
+        //   eventName: 'onDblClick',
+        //   fn: options.open,
+        // }),
         new RowEvent({
-          eventName: 'onDblClick',
+          evertName: 'onClick',
           fn: options.open,
         }),
       ],
       columns: [ //
         {
           id: 'PacketID',
-          name: 'Packet ID',
+          name: 'P ID',
           field: 'PacketID',
           width: 50,
-          formater: function(row, cell, value) {
+          formatter: function(row, cell, value) {
             return 'PID ' + value;
           },
         }, {
@@ -43,7 +47,7 @@ define('src/funding/packetsearch.gvm', [
           name: 'Criteria Id',
           field: 'CriteriaId',
           width: 50,
-          formater: function(row, cell, value) {
+          formatter: function(row, cell, value) {
             return 'CID ' + value;
           },
         }, {
@@ -51,7 +55,7 @@ define('src/funding/packetsearch.gvm', [
           name: 'Purchaser ID',
           field: 'PurchaserID',
           width: 50,
-          formater: function(row, cell, value) {
+          formatter: function(row, cell, value) {
             return 'PID ' + value;
           }
         }, {
@@ -64,6 +68,9 @@ define('src/funding/packetsearch.gvm', [
           name: 'Submitted On',
           field: 'SubmittedOn',
           width: 50,
+          formatter: function(row, cell, value) {
+            return utils.getLocalDateTime(value);
+          },
         }, {
           id: 'SubmittedBy',
           name: 'Submitted By',
@@ -74,6 +81,7 @@ define('src/funding/packetsearch.gvm', [
           name: 'Created On',
           field: 'CreatedOn',
           width: 50,
+          formatter: SlickGridViewModel.formatters.datetime,
         }, {
           id: 'CreatedBy',
           name: 'Created By',

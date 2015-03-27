@@ -2,10 +2,12 @@ define('src/funding/packetitemsearch.gvm', [
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/core/utils',
+  'src/slick/buttonscolumn',
 ], function(
   RowEvent,
   SlickGridViewModel,
-  utils
+  utils,
+  ButtonsColumn
 ) {
   "use strict";
 
@@ -25,9 +27,18 @@ define('src/funding/packetitemsearch.gvm', [
         }),
       ],
       columns: [ //
-        {
+        new ButtonsColumn({
+          id: 'actions',
+          name: '',
+          buttons: [{
+            text: 'X',
+            fn: function(item) {
+              console.log(item);
+            },
+          }],
+        }), {
           id: 'PacketItemID',
-          name: 'PacketItem ID',
+          name: 'PI ID',
           field: 'PacketItemID',
           width: 50,
           formater: function(row, cell, value) {
@@ -35,22 +46,22 @@ define('src/funding/packetitemsearch.gvm', [
           },
         }, {
           id: 'PacketId',
-          name: 'Packet Id',
+          name: 'P ID',
           field: 'PacketId',
           width: 50,
         }, {
           id: 'CustomerNumber',
-          name: 'Customer Number',
+          name: 'Cust #',
           field: 'CustomerNumber',
           width: 50,
         }, {
           id: 'CustomerId',
-          name: 'Customer ID',
+          name: 'C ID',
           field: 'CustomerId',
           width: 50,
         }, {
           id: 'AccountId',
-          name: 'Account Id',
+          name: 'A ID',
           field: 'AccountId',
           width: 50,
         }, {
@@ -73,6 +84,14 @@ define('src/funding/packetitemsearch.gvm', [
           name: 'Account Status Note',
           field: 'AccountStatusNote',
           width: 150,
+        }, {
+          id: 'CreatedOn',
+          name: 'Created',
+          field: 'CreatedOn',
+          width: 50,
+          formater: function(row, cell, value) {
+            return utils.getLocalDateTime(value);
+          },
         }
       ]
     });
