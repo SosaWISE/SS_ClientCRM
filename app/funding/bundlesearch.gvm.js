@@ -1,4 +1,4 @@
-define('scr/funding/bundlesearch.gvm', [
+define('src/funding/bundlesearch.gvm', [
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/core/utils',

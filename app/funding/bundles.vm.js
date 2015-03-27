@@ -1,10 +1,12 @@
 define('src/funding/bundles.vm', [
   'src/dataservice',
+  'src/funding/bundlesearch.vm',
   'ko',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
   dataservice,
+  BundleSearchViewModel,
   ko,
   utils,
   ControllerViewModel) {
@@ -38,6 +40,20 @@ define('src/funding/bundles.vm', [
   // ** Inherits
   utils.inherits(BundlesViewModel, ControllerViewModel);
   BundlesViewModel.prototype.viewTmpl = 'tmpl-funding-bundles';
+
+  BundlesViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+    var _this = this;
+
+    _this.searchVm(new BundleSearchViewModel({
+      pcontroller: _this,
+      id: 'search',
+      title: 'Search',
+    }));
+    _this.defaultChild = _this.searchVm.peek();
+
+    join.add()();
+
+  };
 
   // ** Return VM
   return BundlesViewModel;

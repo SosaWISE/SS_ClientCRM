@@ -49,7 +49,7 @@ define('src/funding/packetsearch.vm', [
       open: _this.open || function(item) {
         //console.log(item);
         dataservice.fundingsrv.packetItems.read({
-          id: item.PacketID, // TODO:  Magic number
+          id: item.PacketID,
         }, null, utils.safeCallback(null, function(err, resp) {
           // set result in grid
           _this.gvmItems.list(resp.Value);

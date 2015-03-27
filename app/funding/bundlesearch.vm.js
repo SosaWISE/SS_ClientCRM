@@ -1,6 +1,7 @@
 define('src/funding/bundlesearch.vm', [
   'src/dataservice',
-  'src/funding/criteriasearch.gvm',
+  'src/funding/bundlesearch.gvm',
+  'src/funding/bundleitemsearch.gvm',
   'ko',
   'src/ukov',
   'src/core/notify',
@@ -8,7 +9,8 @@ define('src/funding/bundlesearch.vm', [
   'src/core/controller.vm',
 ], function(
   dataservice,
-  CriteriaSearchGridViewModel,
+  BundleSearchGridViewModel,
+  BundleItemSearchGridViewModel,
   ko,
   ukov,
   notify,
@@ -38,8 +40,24 @@ define('src/funding/bundlesearch.vm', [
     });
     _this.gvm = new BundleSearchGridViewModel({
       open: _this.open || function(item) {
-        console.log(item);
+        //console.log(item);
+        dataservice.fundingsrv.bundleItems.read({
+          id: item.BundleID,
+        }, null, utils.safeCallback(null, function(err, resp) {
+          // set result in grid
+          _this.gvmItems.list(resp.Value);
+          _this.gvmItems.setSelectedRows([]);
+        }, function(err) {
+          notify.error(err, 30);
+        }));
+        return true;
       },
+    });
+
+    _this.gvmItems = new BundleItemSearchGridViewModel({
+      open: _this.open || function(item) {
+        console.log(item);
+      }
     });
   }
 
@@ -51,17 +69,35 @@ define('src/funding/bundlesearch.vm', [
   BundleSearchViewModel.prototype.onLoad = function(routeData, extraData, join) {
     var _this = this;
 
-    dataservice.fundingsrv.criterias.read({}, null, utils.safeCallback(join.add(), function(err, resp) {
+    dataservice.fundingsrv.bundles.read({}, null, utils.safeCallback(join.add(), function(err, resp) {
       // set results in grid
       _this.gvm.list(resp.Value);
       _this.gvm.setSelectedRows([]);
     }, function(err) {
       notify.error(err, 30);
     }));
-    // join.when(function(err) {
-    //   if (err) {
-    //     return;
-    //   }
-    // });
   };
+
+  function clearData(_this) {
+    var data = {
+      BundleID: {},
+      PurchaserId: nullStrConverter,
+    };
+    _this.data.setValue(data);
+    _this.data.markClean(data, true);
+  }
+
+  function search(_this, cb) {
+    _this.gvm.list([]);
+
+    dataservice.fundingsrv.bundles.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      // set results in grid
+      _this.gvm.list(resp.Value);
+      _this.gvm.setSelectedRows([]);
+    }, function(err) {
+      notify.error(err, 30);
+    }));
+  }
+
+  return BundleSearchViewModel;
 });

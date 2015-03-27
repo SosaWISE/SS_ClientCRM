@@ -60,6 +60,8 @@ define("src/dataservice", [
       "criterias",
       "packets",
       "packetItems",
+      "bundles",
+      "bundleItems"
     ]),
 
     humanresourcesrv: createService("humanresourcesrv", [
