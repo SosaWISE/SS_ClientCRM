@@ -2,6 +2,7 @@ define('src/funding/packetsearch.vm', [
   'src/dataservice',
   'src/funding/packetsearch.gvm',
   'src/funding/packetitemsearch.gvm',
+  'src/funding/packetitem.editor.vm',
   'ko',
   'src/ukov',
   'src/core/notify',
@@ -11,6 +12,7 @@ define('src/funding/packetsearch.vm', [
   dataservice,
   PacketSearchGridViewModel,
   PacketItemSearchGridViewModel,
+  PacketItemEditorViewModel,
   ko,
   ukov,
   notify,
@@ -37,6 +39,7 @@ define('src/funding/packetsearch.vm', [
   function PacketSearchViewModel(options) {
     var _this = this;
     PacketSearchViewModel.super_.call(_this, options);
+    ControllerViewModel.ensureProps(_this, ['layersVm']);
 
     _this.data = ukov.wrap({}, schema);
     clearData(_this);
@@ -63,7 +66,26 @@ define('src/funding/packetsearch.vm', [
 
     _this.gvmItems = new PacketItemSearchGridViewModel({
       open: _this.open || function(item) {
-        console.log(item);
+        _this.layersVm.show(new PacketItemEditorViewModel({
+          item: utils.clone(_this.packetItem) || {
+            PacketItemID: item.PacketItemID
+          },
+          panelTypes: _this.panelTypes,
+          panelTypeFields: {
+            value: 'PanelTypeID',
+            text: 'PanelTypeName',
+          },
+          cellularTypes: _this.cellularTypes,
+          cellularTypeFields: {
+            value: 'CellularTypeID',
+            text: 'CellularTypeName',
+          },
+        }), function onClose(result){
+          if (result)  {
+            _this.packetItem = result;
+//            _this.updatePacketItemData();
+          }
+        });
       }
     });
   }
@@ -83,6 +105,13 @@ define('src/funding/packetsearch.vm', [
     }, function(err) {
       notify.error(err, 30);
     }));
+
+    load_types('panelTypes', function(results) {
+      _this.panelTypes = results;
+    }, join);
+    load_cellularTypes(function(results) {
+      _this.cellularTypes = results;
+    }, join);
   };
 
   // ** clearData
@@ -114,6 +143,20 @@ define('src/funding/packetsearch.vm', [
     }, function(err) {
       notify.error(err, 30);
     }));
+  }
+
+  function load_types(typeName, setter, join) {
+    var cb = join.add();
+    dataservice.msaccountsetupsrv[typeName].read({}, null, utils.safeCallback(cb, function(err, resp) {
+      setter(resp.Value);
+    }));
+  }
+
+  function load_cellularTypes(setter, join) {
+    var cb = join.add();
+    dataservice.salessummary.cellularTypes.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      setter(resp.Value);
+    }, utils.no_op));
   }
 
   // ** Return class

@@ -48,7 +48,9 @@ define('src/funding/packets.vm', [
     _this.searchVm(new PacketSearchViewModel({
       pcontroller: _this,
       id: 'search',
-      title: 'Search Packet'
+      title: 'Search Packet',
+      layersVm: _this.layersVm,
+
     }));
     _this.defaultChild = _this.searchVm.peek();
 
