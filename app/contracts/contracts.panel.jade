@@ -4,8 +4,6 @@ div(class="contracts-panel",data-bind="if:loaded")
     tr
       td(class="fh-header")
         ul(class="tabs cf")
-          //-HACK to not be convered up by toggle-btn
-          li(class="tab under-toggle-btn")
           li(class="tab",data-bind="active:searchVm()&&searchVm().active")
             a(data-bind="click:clickSearch") Search
           <!-- ko foreach:list -->
