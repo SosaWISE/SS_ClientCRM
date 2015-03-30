@@ -45,7 +45,10 @@ define("src/account/default/masteraccount.vm", [
   function MasterAccountViewModel(options) {
     var _this = this;
     MasterAccountViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ["id", "title"]);
+    utils.assertProps(_this, [
+      "id",
+      "title",
+    ]);
 
     _this.mayReload = ko.observable(false);
     _this.title = ko.observable(_this.title);

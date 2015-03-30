@@ -2,7 +2,6 @@ define("src/contracts/contracts.panel.vm", [
   "src/contracts/master.vm",
   "src/account/default/search.vm",
   "ko",
-  "src/core/layers.vm",
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
@@ -10,7 +9,6 @@ define("src/contracts/contracts.panel.vm", [
   MasterViewModel,
   SearchViewModel,
   ko,
-  LayersViewModel,
   notify,
   utils,
   ControllerViewModel
@@ -23,10 +21,6 @@ define("src/contracts/contracts.panel.vm", [
 
     _this.searchVm = ko.observable();
     _this.list = _this.childs;
-
-    _this.layersVm = new LayersViewModel({
-      controller: _this,
-    });
 
     //
     // events
@@ -88,7 +82,6 @@ define("src/contracts/contracts.panel.vm", [
   function createMasterVM(pcontroller, id, name) {
     return new MasterViewModel({
       pcontroller: pcontroller,
-      layersVm: pcontroller.layersVm,
       id: id,
       title: name,
       name: name,

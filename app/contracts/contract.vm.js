@@ -7,6 +7,7 @@ define("src/contracts/contract.vm", [
   "src/dataservice",
   "src/ukov",
   "ko",
+  "src/core/layers.vm",
   "src/core/joiner",
   "src/core/combo.vm",
   "src/core/strings",
@@ -22,6 +23,7 @@ define("src/contracts/contract.vm", [
   dataservice,
   ukov,
   ko,
+  LayersViewModel,
   joiner,
   ComboViewModel,
   strings,
@@ -53,7 +55,12 @@ define("src/contracts/contract.vm", [
   function ContractViewModel(options) {
     var _this = this;
     ContractViewModel.super_.call(_this, options);
-    utils.assertProps(_this, ["layersVm"]);
+    // utils.assertProps(_this, [
+    // ]);
+
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
+    });
 
     _this.list = _this.childs;
     _this.mayReload = ko.observable(false);
@@ -141,7 +148,7 @@ define("src/contracts/contract.vm", [
         //
         var lead = leadVm.lead.peek();
         var leadid = lead ? lead.LeadID : null;
-        updateCustomerAccount(_this.id, leadVm.typeId, leadid, function() {
+        updateCustomerAccount(_this.acctid, leadVm.typeId, leadid, function() {
           // update original
           leadVm._original = {
             address: leadVm.address.peek(),
@@ -308,6 +315,14 @@ define("src/contracts/contract.vm", [
     _this.clickReset = function(leadVm) {
       resetCustomerAccountData(leadVm);
     };
+
+    _this.clickOpenCrm = function() {
+      _this.goTo({
+        route: "accounts",
+        masterid: _this.masterid,
+        id: _this.acctid,
+      });
+    };
   }
   utils.inherits(ContractViewModel, ControllerViewModel);
   ContractViewModel.prototype.viewTmpl = "tmpl-contracts-contract";
@@ -325,6 +340,9 @@ define("src/contracts/contract.vm", [
   ContractViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
+    _this.masterid = routeData.masterid;
+    _this.acctid = routeData.id;
+
     load_localizations(_this, join.add());
 
     // load leads for master file
@@ -333,7 +351,7 @@ define("src/contracts/contract.vm", [
       clearVm(leadVm);
 
       var customerTypeId = leadVm.typeId;
-      load_customerAccount(_this.id, customerTypeId, function(custAcct) {
+      load_customerAccount(_this.acctid, customerTypeId, function(custAcct) {
         if (!custAcct) {
           return;
         }
@@ -353,7 +371,7 @@ define("src/contracts/contract.vm", [
       }, join.add());
     });
 
-    loadSalesInfo(_this.id, _this.salesInfo, _this.salesInfoExtras, join);
+    loadSalesInfo(_this.acctid, _this.salesInfo, _this.salesInfoExtras, join);
   };
 
   function load_localizations(_this, cb) {
@@ -1081,7 +1099,7 @@ define("src/contracts/contract.vm", [
     var data = _this.salesInfoExtras;
     var model = data.getValue();
     dataservice.api_contractAdmin.accountSalesInformationExtras.save({
-      id: _this.id,
+      id: _this.acctid,
       data: model,
     }, function(val) {
       data.markClean(val, true);

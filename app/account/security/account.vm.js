@@ -1,4 +1,5 @@
 define("src/account/security/account.vm", [
+  "src/contracts/contract.vm",
   "src/account/security/checklist.vm",
   "src/account/security/summary.vm",
   "src/account/security/equipment.vm",
@@ -8,6 +9,7 @@ define("src/account/security/account.vm", [
   "src/core/controller.vm",
   "ko"
 ], function(
+  ContractViewModel,
   ChecklistViewModel,
   SummaryViewModel,
   EquipmentViewModel,
@@ -22,7 +24,10 @@ define("src/account/security/account.vm", [
   function AccountViewModel(options) {
     var _this = this;
     AccountViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ["id", "title"]);
+    utils.assertProps(_this, [
+      "id",
+      "title",
+    ]);
 
     _this.title = ko.observable(_this.title);
     _this.rmr = ko.observable(_this.rmr);
@@ -38,33 +43,33 @@ define("src/account/security/account.vm", [
   AccountViewModel.prototype.viewTmpl = "tmpl-security-account";
 
   AccountViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this,
-      cb = join.add(),
-      checklist;
+    var _this = this;
 
-    setTimeout(function() {
+    var checklist = extraData.checklist;
+    if (checklist && checklist instanceof ChecklistViewModel) {
       checklist = extraData.checklist;
-      if (checklist && checklist instanceof ChecklistViewModel) {
-        checklist = extraData.checklist;
-        checklist.updateRouting(_this);
-      } else {
-        checklist = new ChecklistViewModel({
-          pcontroller: _this,
-        });
-      }
-      checklist.id = "checklist";
-      checklist.title = "Setup Checklist";
+      checklist.updateRouting(_this);
+    } else {
+      checklist = new ChecklistViewModel({
+        pcontroller: _this,
+      });
+    }
+    checklist.id = "checklist";
+    checklist.title = "Setup Checklist";
 
-      _this.childs([
-        checklist,
-        _this.defaultChild = createSummary(_this, "Account Summary"),
-        createFauxController(_this, "Signal History"),
-        createEquipment(_this, "Equipment"),
-        createFauxController(_this, "Contract Approval"),
-        createAccountServiceTickets(_this, "Service Tickets"),
-      ]);
-      cb();
-    }, 0);
+    var list = [
+      checklist,
+      _this.defaultChild = createSummary(_this, "Account Summary"),
+      createFauxController(_this, "Signal History"),
+      createEquipment(_this, "Equipment"),
+      createFauxController(_this, "Contract Approval"),
+      createAccountServiceTickets(_this, "Service Tickets"),
+    ];
+    // if (???) {
+    list.push(createContractVm(_this, "Contract Admin"));
+    // }
+    _this.childs(list);
+    join.add()();
   };
 
   function createEquipment(pcontroller, title) {
@@ -97,6 +102,14 @@ define("src/account/security/account.vm", [
       pcontroller: pcontroller,
       id: titleToId(title),
       title: title
+    });
+  }
+
+  function createContractVm(_this, title) {
+    return new ContractViewModel({
+      pcontroller: _this,
+      id: titleToId(title),
+      title: title,
     });
   }
 

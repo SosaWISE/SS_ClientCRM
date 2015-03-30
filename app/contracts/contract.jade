@@ -1,214 +1,221 @@
-div(class="acct-item load-err", data-bind="if:loadErr,css{'may-reload':mayReload}")
-  div(class="col")
-    div Failed to load contract
-    //- ul(class="actions")
-      li
-        a(class="btn small",tabindex="0",data-bind="hasfocus:true,cmd:clickReload") Retry
-      li
-        a(class="btn small",tabindex="0",data-bind="cmd:close") Close
-
-div(data-bind="if:!loadErr()&&!loading()")
-  ul(class="actions")
-    li(class="tab under-toggle-btn")
-    li
-      a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
-    li
-      a(class="btn",tabindex="0",data-bind="cmd:cmdReset") Reset All
-    li
-      a(class="btn",tabindex="0",data-bind="cmd:cmdSaveAndApprove") Save &amp; Approve
-
-  div(class="acct-item acct-clist-qualify",data-bind="css:{'may-reload':mayReload}")
-
-    <!-- ko foreach:leads -->
-    div(class="col col2")
-      div(class="section",data-bind="css:{dirty:isDirty,empty:empty}")
-        div(class="title",data-bind="cmd:$parent.clickAddressEmpty")
-          span(data-bind="cmd:$parent.clickAddressNotEmpty")
-            span(data-bind="text:typeName")
-            |&nbsp;Customer
-          ul(class="actions")
-            li
-              a(class="btn fa fa-arrow-up",title="Swap with previous customer",
-                data-bind="cmd:$parent.clickUp,clickBubble:false")
-            li
-              a(class="btn fa fa-arrow-down",title="Swap with next customer",
-                data-bind="cmd:$parent.clickDown,clickBubble:false")
-            li
-              a(class="btn",
-                data-bind="cmd:$parent.clickDelete,clickBubble:false") Delete
-            li
-              a(class="btn",
-                data-bind="cmd:$parent.clickReset,clickBubble:false") Reset
-          //- <!-- ko if:subtitle -->
-          //- br
-          //- span(data-bind="text:subtitle")
-          //- <!-- /ko -->
-        div(class="contents")
-          div(class="section-item address",data-bind="if:address,cmd:$parent.clickAddress")
-            <!-- ko if:addressSameAsText -->
-            span(class="same-as fa fa-check",data-bind="text:addressSameAsText")
-            <!-- /ko -->
-            <!-- ko if:!lead() -->
-            a(class="close",title="Remove Address",
-              data-bind="click:$parent.clickRemoveAddress,clickBubble:false")
-            <!-- /ko -->
-            span(class="title")
-              span(data-bind="text:addressTypeName")
-              |&nbsp;Address
-            div(data-bind="template:{data:address,name:'tmpl-acct-default-address'}")
-          div(class="section-item customer",data-bind="cmd:$parent.clickQualify,css:{redo:leadRedo}")
-            <!-- ko if:leadSameAsText -->
-            span(class="same-as fa fa-check",data-bind="text:leadSameAsText")
-            <!-- /ko -->
-            //- span(class="title") Lead
-            <!-- ko if:lead -->
-            div(data-bind="template:{name:'tmpl-acct-default-customer',data:lead}")
-            <!-- /ko -->
-            <!-- ko if:!lead() -->
-            div(class="title") Customer
-            <!-- /ko -->
-            <!-- ko if:creditResult -->
-            div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult},css:{redo:creditRedo}")
-            <!-- /ko -->
-            //- ul(class="actions")
-              li
-                span(class="btn",tabindex="0",data-bind="cmd:$parent.cmdSendToIS") Send to InsideSales.com
-    <!-- /ko -->
-
+div(class="contract-wrap")
+  div(class="acct-item load-err", data-bind="if:loadErr,css{'may-reload':mayReload}")
     div(class="col")
+      div Failed to load contract
+      //- ul(class="actions")
+        li
+          a(class="btn small",tabindex="0",data-bind="hasfocus:true,cmd:clickReload") Retry
+        li
+          a(class="btn small",tabindex="0",data-bind="cmd:close") Close
 
-      div(class="section disabled")
-        span(class="title") Contract Terms
-        div(class="contents",data-bind="with:salesInfo")
-          //- [Contract Terms]
-            Total Value of Contract      (computed: Contract Length * Monthly Fee)
-            Contract Length              [AE_Contracts]
-            Monthly Fee                  [AE_Contracts] -> [/msaccountsetupsrv/invoiceMsIsntalls/100290/accountid]
-            Activation Fee               [AE_Invoices] -> [/msaccountsetupsrv/invoiceMsIsntalls/100290/accountid]
-            Activation Fee Paid          [AE_Invoices] -> [/msaccountsetupsrv/invoiceMsIsntalls/100290/accountid]
-            Billing Cycle                ???
-            Billing Date                 [MS_AccountSalesInformations]
-          //- ul(class="edit-form triple-wide")
-          ul(class="edit-form double-wide")
-            li
-              span(class="label") Contract Length
-              div(data-bind="cvm:ContractTemplatesCvm")
-            li
-              span(class="label") Monthly Fee
-              input(type="text",
-                data-bind="ukov:MonthlyMonitoringRateActual,likecurrencyvalue:MonthlyMonitoringRateActual,valueUpdate:'keyup'")
-            //- li
-            //-   span(class="label") Billing Cycle
-            //-   div Monthly
-            li
-              span(class="label") Billing Date
-              div(data-bind="cvm:BillingDayCvm")
-          ul(class="edit-form double-wide")
-            li
-              span(class="label") Activation Fee
-              input(type="text",
-                data-bind="ukov:ActivationFeeActual,likecurrencyvalue:ActivationFeeActual,valueUpdate:'keyup'")
-            li
-              span(class="label") Activation Fee Paid Over
-              div(data-bind="cvm:Over3MonthsCvm")
+  div(data-bind="if:!loadErr()&&!loading()")
+    div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
+
+    ul(class="actions",style="float:right;")
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:clickOpenCrm") Open CRM Account
+      li(class="tab under-toggle-btn")
+    ul(class="actions")
+      li(class="tab under-toggle-btn")
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdReset") Reset All
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdSaveAndApprove") Save &amp; Approve
+
+    div(class="acct-item",data-bind="css:{'may-reload':mayReload}")
+
+      <!-- ko foreach:leads -->
+      div(class="col col2")
+        div(class="section",data-bind="css:{dirty:isDirty,empty:empty}")
+          div(class="title",data-bind="cmd:$parent.clickAddressEmpty")
+            span(data-bind="cmd:$parent.clickAddressNotEmpty")
+              span(data-bind="text:typeName")
+              |&nbsp;Customer
+            ul(class="actions")
+              li
+                a(class="btn fa fa-arrow-up",title="Swap with previous customer",
+                  data-bind="cmd:$parent.clickUp,clickBubble:false")
+              li
+                a(class="btn fa fa-arrow-down",title="Swap with next customer",
+                  data-bind="cmd:$parent.clickDown,clickBubble:false")
+              li
+                a(class="btn",
+                  data-bind="cmd:$parent.clickDelete,clickBubble:false") Delete
+              li
+                a(class="btn",
+                  data-bind="cmd:$parent.clickReset,clickBubble:false") Reset
+            //- <!-- ko if:subtitle -->
+            //- br
+            //- span(data-bind="text:subtitle")
+            //- <!-- /ko -->
+          div(class="contents")
+            div(class="section-item address",data-bind="if:address,cmd:$parent.clickAddress")
+              <!-- ko if:addressSameAsText -->
+              span(class="same-as fa fa-check",data-bind="text:addressSameAsText")
+              <!-- /ko -->
+              <!-- ko if:!lead() -->
+              a(class="close",title="Remove Address",
+                data-bind="click:$parent.clickRemoveAddress,clickBubble:false")
+              <!-- /ko -->
+              span(class="title")
+                span(data-bind="text:addressTypeName")
+                |&nbsp;Address
+              div(data-bind="template:{data:address,name:'tmpl-acct-default-address'}")
+            div(class="section-item customer",data-bind="cmd:$parent.clickQualify,css:{redo:leadRedo}")
+              <!-- ko if:leadSameAsText -->
+              span(class="same-as fa fa-check",data-bind="text:leadSameAsText")
+              <!-- /ko -->
+              //- span(class="title") Lead
+              <!-- ko if:lead -->
+              div(data-bind="template:{name:'tmpl-acct-default-customer',data:lead}")
+              <!-- /ko -->
+              <!-- ko if:!lead() -->
+              div(class="title") Customer
+              <!-- /ko -->
+              <!-- ko if:creditResult -->
+              div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult},css:{redo:creditRedo}")
+              <!-- /ko -->
+              //- ul(class="actions")
+                li
+                  span(class="btn",tabindex="0",data-bind="cmd:$parent.cmdSendToIS") Send to InsideSales.com
+      <!-- /ko -->
+
+      div(class="col")
+
+        div(class="section disabled")
+          span(class="title") Contract Terms
+          div(class="contents",data-bind="with:salesInfo")
+            //- [Contract Terms]
+              Total Value of Contract      (computed: Contract Length * Monthly Fee)
+              Contract Length              [AE_Contracts]
+              Monthly Fee                  [AE_Contracts] -> [/msaccountsetupsrv/invoiceMsIsntalls/100290/accountid]
+              Activation Fee               [AE_Invoices] -> [/msaccountsetupsrv/invoiceMsIsntalls/100290/accountid]
+              Activation Fee Paid          [AE_Invoices] -> [/msaccountsetupsrv/invoiceMsIsntalls/100290/accountid]
+              Billing Cycle                ???
+              Billing Date                 [MS_AccountSalesInformations]
+            //- ul(class="edit-form triple-wide")
+            ul(class="edit-form double-wide")
+              li
+                span(class="label") Contract Length
+                div(data-bind="cvm:ContractTemplatesCvm")
+              li
+                span(class="label") Monthly Fee
+                input(type="text",
+                  data-bind="ukov:MonthlyMonitoringRateActual,likecurrencyvalue:MonthlyMonitoringRateActual,valueUpdate:'keyup'")
+              //- li
+              //-   span(class="label") Billing Cycle
+              //-   div Monthly
+              li
+                span(class="label") Billing Date
+                div(data-bind="cvm:BillingDayCvm")
+            ul(class="edit-form double-wide")
+              li
+                span(class="label") Activation Fee
+                input(type="text",
+                  data-bind="ukov:ActivationFeeActual,likecurrencyvalue:ActivationFeeActual,valueUpdate:'keyup'")
+              li
+                span(class="label") Activation Fee Paid Over
+                div(data-bind="cvm:Over3MonthsCvm")
 
 
-      div(class="section disabled")
-        span(class="title") System Details
-        div(class="contents")
-          //- [System Details]
-            Contract Date                [MS_AccountSalesInformations].ContractSignedDate
-            Install Date                 [MS_AccountSalesInformations].InstallDate
-            Online Date                  [MS_AccountSalesInformations].SubmittedToCSDate
-            Service Type                 ???
-            Cell Type                    [MS_Accounts].CellularTypeId
-            Cell Provider                [MS_Accounts].CellularVendor
-            Service Plan                 [MS_Accounts].CellPackageItemId
-            Service Plan Addons          ???
-            Email per Cell Provider      [MS_AccountSalesInformations].Email OR [Alarm.com]
-          ul(class="edit-form triple-wide",data-bind="with:salesInfoExtras")
-            li
-              span(class="label") Contract Date
-              input(type="text",
-                data-bind="ukov:ContractSignedDate,datevalue:ContractSignedDate,valueUpdate:'keyup'")
-            li
-              span(class="label") Install Date
-              input(type="text",
-                data-bind="ukov:InstallDate,datevalue:InstallDate,valueUpdate:'keyup'")
-            li
-              span(class="label") Online Date
-              input(type="text",disabled,data-bind="datetimevalue:SubmittedToCSDate")
-          ul(class="edit-form triple-wide",data-bind="with:salesInfo")
-            li
-              span(class="label") Cell Type
-              input(type="text",disabled,data-bind="value:CellularTypeCvm.selectedText()")
-              //- div(data-bind="cvm:CellularTypeCvm")
-            li
-              span(class="label") Cell Provider
-              input(type="text",disabled,data-bind="value:cellServiceCvm.selectedText()")
-              //- div(data-bind="cvm:cellServiceCvm")
-            li
-              span(class="label") Service Plan
-              input(type="text",disabled,data-bind="value:CellPackageItemCvm.selectedText()")
-              //- div(data-bind="cvm:CellPackageItemCvm")
-            li
-              span(class="label") Email
-              input(type="text",
-                data-bind="ukov:Email,value:Email,valueUpdate:'keyup'")
+        div(class="section disabled")
+          span(class="title") System Details
+          div(class="contents")
+            //- [System Details]
+              Contract Date                [MS_AccountSalesInformations].ContractSignedDate
+              Install Date                 [MS_AccountSalesInformations].InstallDate
+              Online Date                  [MS_AccountSalesInformations].SubmittedToCSDate
+              Service Type                 ???
+              Cell Type                    [MS_Accounts].CellularTypeId
+              Cell Provider                [MS_Accounts].CellularVendor
+              Service Plan                 [MS_Accounts].CellPackageItemId
+              Service Plan Addons          ???
+              Email per Cell Provider      [MS_AccountSalesInformations].Email OR [Alarm.com]
+            ul(class="edit-form triple-wide",data-bind="with:salesInfoExtras")
+              li
+                span(class="label") Contract Date
+                input(type="text",
+                  data-bind="ukov:ContractSignedDate,datevalue:ContractSignedDate,valueUpdate:'keyup'")
+              li
+                span(class="label") Install Date
+                input(type="text",
+                  data-bind="ukov:InstallDate,datevalue:InstallDate,valueUpdate:'keyup'")
+              li
+                span(class="label") Online Date
+                input(type="text",disabled,data-bind="datetimevalue:SubmittedToCSDate")
+            ul(class="edit-form triple-wide",data-bind="with:salesInfo")
+              li
+                span(class="label") Cell Type
+                input(type="text",disabled,data-bind="value:CellularTypeCvm.selectedText()")
+                //- div(data-bind="cvm:CellularTypeCvm")
+              li
+                span(class="label") Cell Provider
+                input(type="text",disabled,data-bind="value:cellServiceCvm.selectedText()")
+                //- div(data-bind="cvm:cellServiceCvm")
+              li
+                span(class="label") Service Plan
+                input(type="text",disabled,data-bind="value:CellPackageItemCvm.selectedText()")
+                //- div(data-bind="cvm:CellPackageItemCvm")
+              li
+                span(class="label") Email
+                input(type="text",
+                  data-bind="ukov:Email,value:Email,valueUpdate:'keyup'")
 
-          //- [Upgrades]
-            Sales Rep Upgrades           [AE_Invoices]
-            Rep Upgrade Paid             [AE_Invoices]
-            Technician Upgrades          [AE_Invoices]
-            Tech Upgrades Paid           [AE_Invoices]
-          ul(class="edit-form triple-wide",data-bind="with:1")
-            //-@TODO: upgrades - waiting for service endpoints
-            li
-              span(class="label") Sales Rep Upgrades
-              input(type="text",data-bind="")
-            //- li
-            //-   span(class="label") Rep Upgrades Paid Over
-            //-   div(data-bind="")
-            li
-              span(class="label") Technician Upgrades
-              input(type="text",data-bind="")
-            //- li
-            //-   span(class="label") Tech Upgrades Paid Over
-            //-   div(data-bind="")
+            //- [Upgrades]
+              Sales Rep Upgrades           [AE_Invoices]
+              Rep Upgrade Paid             [AE_Invoices]
+              Technician Upgrades          [AE_Invoices]
+              Tech Upgrades Paid           [AE_Invoices]
+            ul(class="edit-form triple-wide",data-bind="with:1")
+              //-@TODO: upgrades - waiting for service endpoints
+              li
+                span(class="label") Sales Rep Upgrades
+                input(type="text",data-bind="")
+              //- li
+              //-   span(class="label") Rep Upgrades Paid Over
+              //-   div(data-bind="")
+              li
+                span(class="label") Technician Upgrades
+                input(type="text",data-bind="")
+              //- li
+              //-   span(class="label") Tech Upgrades Paid Over
+              //-   div(data-bind="")
 
 
-      div(class="section disabled")
-        span(class="title") Account Details
-        div(class="contents")
-          //- [Account Details]
-            Sales Rep                    [MS_AccountSalesInformations]
-            Technician                   [MS_AccountSalesInformations]
-            AMA Barcode                  [MS_AccountSalesInformations]
-            NOC Barcode                  [MS_AccountSalesInformations]
-            SOP Barcode                  [MS_AccountSalesInformations]
-          ul(class="edit-form double-wide",data-bind="with:salesInfoExtras")
-            li
-              span(class="label") Sales Rep
-              div(class="contents",style="cursor:pointer",
-                data-bind="ukov:SalesRepId,cmd:clickRep,with:repModel")
-                div(data-bind="template:'tmpl-acct-default-rep_info'")
-            li
-              span(class="label") Technician
-              div(class="contents",style="cursor:pointer",
-                data-bind="ukov:TechId,cmd:clickTek,with:tekModel")
-                div(data-bind="template:'tmpl-acct-default-rep_info'")
-          ul(class="edit-form double-wide",data-bind="with:salesInfoExtras")
-            li
-              span(class="label") AMA Barcode
-              input(type="text",
-                data-bind="ukov:AMA,value:AMA,valueUpdate:'keyup'")
-            li
-              span(class="label") NOC Barcode
-              input(type="text",
-                data-bind="ukov:NOC,value:NOC,valueUpdate:'keyup'")
-            li
-              span(class="label") SOP Barcode
-              input(type="text",
-                data-bind="ukov:SOP,value:SOP,valueUpdate:'keyup'")
+        div(class="section disabled")
+          span(class="title") Account Details
+          div(class="contents")
+            //- [Account Details]
+              Sales Rep                    [MS_AccountSalesInformations]
+              Technician                   [MS_AccountSalesInformations]
+              AMA Barcode                  [MS_AccountSalesInformations]
+              NOC Barcode                  [MS_AccountSalesInformations]
+              SOP Barcode                  [MS_AccountSalesInformations]
+            ul(class="edit-form double-wide",data-bind="with:salesInfoExtras")
+              li
+                span(class="label") Sales Rep
+                div(class="contents",style="cursor:pointer",
+                  data-bind="ukov:SalesRepId,cmd:clickRep,with:repModel")
+                  div(data-bind="template:'tmpl-acct-default-rep_info'")
+              li
+                span(class="label") Technician
+                div(class="contents",style="cursor:pointer",
+                  data-bind="ukov:TechId,cmd:clickTek,with:tekModel")
+                  div(data-bind="template:'tmpl-acct-default-rep_info'")
+            ul(class="edit-form double-wide",data-bind="with:salesInfoExtras")
+              li
+                span(class="label") AMA Barcode
+                input(type="text",
+                  data-bind="ukov:AMA,value:AMA,valueUpdate:'keyup'")
+              li
+                span(class="label") NOC Barcode
+                input(type="text",
+                  data-bind="ukov:NOC,value:NOC,valueUpdate:'keyup'")
+              li
+                span(class="label") SOP Barcode
+                input(type="text",
+                  data-bind="ukov:SOP,value:SOP,valueUpdate:'keyup'")
 
-div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
