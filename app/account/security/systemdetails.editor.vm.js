@@ -42,7 +42,7 @@ define('src/account/security/systemdetails.editor.vm', [
     ]);
     _this.mixinLoad();
 
-      _this.data = ukov.wrap(_this.item, schema);
+    _this.data = ukov.wrap(_this.item, schema);
 
     _this.data.PanelTypeCvm = new ComboViewModel({
       selectedValue: _this.data.PanelTypeId,
@@ -77,9 +77,10 @@ define('src/account/security/systemdetails.editor.vm', [
         notify.warn(_this.data.errMsg(), null, 7);
         cb();
         return;
+      }
       var model = _this.data.getValue();
       _this.data.markClean(model, true);
-       dataservice.msaccountsetupsrv.systemDetails.save({
+      dataservice.msaccountsetupsrv.systemDetails.save({
         id: model.AccountID,
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
