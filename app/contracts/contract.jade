@@ -108,8 +108,8 @@ div(class="contract-wrap")
               //-   span(class="label") Billing Cycle
               //-   div Monthly
               li
-                span(class="label") Billing Date
-                div(data-bind="cvm:BillingDayCvm")
+                span(class="label") Contract Value
+                input(type="text",disabled,data-bind="currencyvalue:contractValue")
             ul(class="edit-form double-wide")
               li
                 span(class="label") Activation Fee
@@ -118,6 +118,9 @@ div(class="contract-wrap")
               li
                 span(class="label") Activation Fee Paid Over
                 div(data-bind="cvm:Over3MonthsCvm")
+              li
+                span(class="label") Billing Date
+                div(data-bind="cvm:BillingDayCvm")
 
 
         div(class="section disabled")

@@ -1,4 +1,5 @@
 define("src/account/security/account.vm", [
+  "src/app",
   "src/contracts/contract.vm",
   "src/account/security/checklist.vm",
   "src/account/security/summary.vm",
@@ -9,6 +10,7 @@ define("src/account/security/account.vm", [
   "src/core/controller.vm",
   "ko"
 ], function(
+  app,
   ContractViewModel,
   ChecklistViewModel,
   SummaryViewModel,
@@ -65,9 +67,9 @@ define("src/account/security/account.vm", [
       createFauxController(_this, "Contract Approval"),
       createAccountServiceTickets(_this, "Service Tickets"),
     ];
-    // if (???) {
-    list.push(createContractVm(_this, "Contract Admin"));
-    // }
+    if (inTextList(app.user.peek().Apps, "contract_admin")) {
+      list.push(createContractVm(_this, "Contract Admin"));
+    }
     _this.childs(list);
     join.add()();
   };
@@ -110,6 +112,18 @@ define("src/account/security/account.vm", [
       pcontroller: _this,
       id: titleToId(title),
       title: title,
+    });
+  }
+
+  function inTextList(list, text) {
+    if (!list) {
+      return false;
+    }
+    // text = text.toUpperCase();
+    text = text.toLowerCase();
+    return list.some(function(str) {
+      // return str.toUpperCase() === text;
+      return str.toLowerCase() === text;
     });
   }
 

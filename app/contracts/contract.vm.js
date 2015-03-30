@@ -846,6 +846,21 @@ define("src/contracts/contract.vm", [
     data.IsTakeOver.subscribe(isTakeOverChanged);
     isTakeOverChanged();
 
+    data.contractValue = ko.computed({
+      deferEvaluation: true,
+      read: function() {
+        // subscribe to changes
+        data.MonthlyMonitoringRateActual();
+        data.ContractTemplateId();
+        // calculate
+        var item = data.ContractTemplatesCvm.selectedItem();
+        if (!item) {
+          return "";
+        }
+        return data.MonthlyMonitoringRateActual.getValue() * item.ContractLength;
+      },
+    });
+
     return data;
   }
 
