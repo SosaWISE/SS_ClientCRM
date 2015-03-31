@@ -26,6 +26,19 @@ div(class="contract-wrap")
 
     div(class="acct-item",data-bind="css:{'may-reload':mayReload}")
 
+      div(class="col",data-bind="with:salesInfoExtras")
+        div(class="section disabled",data-bind="if:ApproverID")
+          span(class="title") Contract Approved
+          div(class="contents")
+            ul(class="edit-form double-wide")
+              li
+                span(class="label") Approved By
+                div(data-bind="text:ApproverID")
+            ul(class="edit-form double-wide")
+              li
+                span(class="label") Approved On
+                div(data-bind="datetimetext:ApprovedDate")
+
       <!-- ko foreach:leads -->
       div(class="col col2")
         div(class="section",data-bind="css:{dirty:isDirty,empty:empty}")
@@ -148,6 +161,10 @@ div(class="contract-wrap")
               li
                 span(class="label") Online Date
                 input(type="text",disabled,data-bind="datetimevalue:SubmittedToCSDate")
+              li
+                span(class="label") NOC Date
+                input(type="text",
+                  data-bind="ukov:NOCDate,datevalue:NOCDate,valueUpdate:'keyup'")
             ul(class="edit-form triple-wide",data-bind="with:salesInfo")
               li
                 span(class="label") Cell Type
@@ -171,7 +188,7 @@ div(class="contract-wrap")
               Rep Upgrade Paid             [AE_Invoices]
               Technician Upgrades          [AE_Invoices]
               Tech Upgrades Paid           [AE_Invoices]
-            ul(class="edit-form triple-wide",data-bind="with:1")
+            ul(class="edit-form triple-wide",data-bind="with:systemDetails")
               //-@TODO: upgrades - waiting for service endpoints
               li
                 span(class="label") Sales Rep Upgrades
@@ -185,6 +202,10 @@ div(class="contract-wrap")
               //- li
               //-   span(class="label") Tech Upgrades Paid Over
               //-   div(data-bind="")
+              li
+                span(class="label") Password
+                input(type="text",
+                  data-bind="ukov:AccountPassword,value:AccountPassword,valueUpdate:'keyup'")
 
 
         div(class="section disabled")

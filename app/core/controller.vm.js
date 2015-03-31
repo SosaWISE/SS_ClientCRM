@@ -389,8 +389,8 @@ define('src/core/controller.vm', [
   //
   ControllerViewModel.addManualReloadListener = function() {
     document.addEventListener("click", function(evt) {
-      // shift+ctrl or shift+alt or shift+ctrl+alt should get passed this
-      if (!evt.shiftKey || !(evt.ctrlKey || evt.altKey)) {
+      // ctrl+alt or shift+alt or ctrl+shift+alt should get passed this
+      if (!evt.altKey || !(evt.shiftKey || evt.ctrlKey)) {
         return;
       }
       // stop the event from firing
