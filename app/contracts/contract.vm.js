@@ -1,5 +1,6 @@
 define("src/contracts/contract.vm", [
   "src/app",
+  "src/account/security/equipment.gvm",
   "src/account/default/rep.find.vm",
   "src/account/security/clist.salesinfo.vm",
   "src/account/default/address.validate.vm",
@@ -17,6 +18,7 @@ define("src/contracts/contract.vm", [
   "src/core/controller.vm",
 ], function(
   app,
+  EquipmentGridViewModel,
   RepFindViewModel,
   CListSalesInfoViewModel,
   AddressValidateViewModel,
@@ -84,6 +86,18 @@ define("src/contracts/contract.vm", [
     _this.salesInfo = getSalesInfoModel();
     _this.salesInfoExtras = getSalesInfoExtrasModel(_this.layersVm);
     _this.systemDetails = getSystemDetailsModel();
+
+    _this.systemDetailsExtras = {
+      industry: ko.observable(),
+      receiver: ko.observable(),
+      submissionConf: ko.observable(),
+      twoWayConf: ko.observable(),
+    };
+
+    _this.equipmentGvm = new EquipmentGridViewModel({
+      byPart: true,
+      edit: utils.noop,
+    });
 
     //
     // events
@@ -267,6 +281,88 @@ define("src/contracts/contract.vm", [
   utils.inherits(ContractViewModel, ControllerViewModel);
   ContractViewModel.prototype.viewTmpl = "tmpl-contracts-contract";
 
+  ContractViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+    var _this = this;
+    var subjoin = join.create();
+
+    _this.masterid = routeData.masterid;
+    _this.acctid = routeData.id;
+
+    load_localizations(_this, subjoin.add());
+
+    // load leads for master file
+    _this.leads.forEach(function(leadVm) {
+      // clear incase of reload
+      clearVm(leadVm);
+
+      var customerTypeId = leadVm.typeId;
+      load_customerAccount(_this.acctid, customerTypeId, function(custAcct) {
+        if (!custAcct) {
+          return;
+        }
+
+        // load credit and stuff
+        load_qualifyCustomerInfos(custAcct.Customer.LeadId, function(creditResultAndStuff) {
+          // set original data
+          var mcAddress = custAcct.Address;
+          var customer = custAcct.Customer;
+          leadVm._original = {
+            address: toQlAddress(mcAddress),
+            lead: toLead(customer, mcAddress),
+            creditResult: toCreditResult(creditResultAndStuff),
+          };
+          resetCustomerAccountData(leadVm);
+        }, subjoin.add());
+      }, subjoin.add());
+    });
+
+    loadSalesInfo(_this, _this.acctid, _this.salesInfo, _this.salesInfoExtras, subjoin);
+
+    load_systemDetails(_this.acctid, function(results) {
+      _this.systemDetails.setValue(results);
+      _this.systemDetails.markClean({}, true);
+    }, subjoin.add());
+    load_industryAccountWithReceiverLines(_this.acctid, function(list) {
+      list.some(function(item) {
+        if (item.PrimaryCSID === "Yes") {
+          _this.systemDetailsExtras.industry(item.IndustryAccount);
+          _this.systemDetailsExtras.receiver(item.ReceiverNumber);
+          return true;
+        }
+      });
+    }, subjoin.add());
+
+    load_equipment(_this.acctid, _this.equipmentGvm, join.add());
+
+    var cb = join.add();
+    subjoin.when(function(err) {
+      if (!err) {
+        // try to set contract and noc dates
+        var model = _this.salesInfoExtras;
+        var contractDate = model.ContractSignedDate.getValue();
+        if (!contractDate) {
+          // default to credit result createdon
+          var leadVm = _this.leads[0];
+          if (leadVm) {
+            var creditResult = leadVm.creditResult.peek();
+            if (creditResult) {
+              contractDate = creditResult.CreatedOn;
+              model.ContractSignedDate.setValue(contractDate);
+            }
+          }
+        }
+
+        if (!model.NOCDate.getValue() && utils.isDate(contractDate)) {
+          // default to 3 days(excluding weekends and holidays) after contract date
+          load_nocDate(contractDate, function(val) {
+            model.NOCDate.setValue(val.NOCDate);
+          }, join.add());
+        }
+      }
+      cb(err);
+    });
+  };
+
   function move(_this, leadVm, direction) {
     var index = _this.leads.indexOf(leadVm);
     var otherVm = _this.leads[index + direction];
@@ -348,81 +444,6 @@ define("src/contracts/contract.vm", [
 
     join.when(cb);
   }
-
-  ContractViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this;
-    var subjoin = join.create();
-
-    _this.masterid = routeData.masterid;
-    _this.acctid = routeData.id;
-
-    load_localizations(_this, subjoin.add());
-
-    // load leads for master file
-    _this.leads.forEach(function(leadVm) {
-      // clear incase of reload
-      clearVm(leadVm);
-
-      var customerTypeId = leadVm.typeId;
-      load_customerAccount(_this.acctid, customerTypeId, function(custAcct) {
-        if (!custAcct) {
-          return;
-        }
-
-        // load credit and stuff
-        load_qualifyCustomerInfos(custAcct.Customer.LeadId, function(creditResultAndStuff) {
-          // set original data
-          var mcAddress = custAcct.Address;
-          var customer = custAcct.Customer;
-          leadVm._original = {
-            address: toQlAddress(mcAddress),
-            lead: toLead(customer, mcAddress),
-            creditResult: toCreditResult(creditResultAndStuff),
-          };
-          resetCustomerAccountData(leadVm);
-        }, subjoin.add());
-      }, subjoin.add());
-    });
-
-    loadSalesInfo(_this, _this.acctid, _this.salesInfo, _this.salesInfoExtras, subjoin);
-
-    load_systemDetails(_this.acctid, function(results) {
-      // // set defaults
-      // utils.setIfNull(results, {
-      //   asdf: true,
-      // });
-      _this.systemDetails.setValue(results);
-      _this.systemDetails.markClean({}, true);
-    }, subjoin.add());
-
-    var cb = join.add();
-    subjoin.when(function(err) {
-      if (!err) {
-        // try to set contract and noc dates
-        var model = _this.salesInfoExtras;
-        var contractDate = model.ContractSignedDate.getValue();
-        if (!contractDate) {
-          // default to credit result createdon
-          var leadVm = _this.leads[0];
-          if (leadVm) {
-            var creditResult = leadVm.creditResult.peek();
-            if (creditResult) {
-              contractDate = creditResult.CreatedOn;
-              model.ContractSignedDate.setValue(contractDate);
-            }
-          }
-        }
-
-        if (!model.NOCDate.getValue() && utils.isDate(contractDate)) {
-          // default to 3 days(excluding weekends and holidays) after contract date
-          load_nocDate(contractDate, function(val) {
-            model.NOCDate.setValue(val.NOCDate);
-          }, join.add());
-        }
-      }
-      cb(err);
-    });
-  };
 
   function load_localizations(_this, cb) {
     _this.cache = _this.cache || {};
@@ -1164,6 +1185,21 @@ define("src/contracts/contract.vm", [
       link: strings.format("{0}-{1}-{2}",
         startDate.getUTCMonth() + 1, startDate.getUTCDate(), startDate.getUTCFullYear()),
     }, setter, cb);
+  }
+
+  function load_industryAccountWithReceiverLines(acctid, setter, cb) {
+    dataservice.monitoringstationsrv.msAccounts.read({
+      id: acctid,
+      link: "IndustryAccountWithReceiverLines",
+    }, setter, cb);
+  }
+
+  function load_equipment(acctid, gvm, cb) {
+    gvm.list([]);
+    dataservice.msaccountsetupsrv.accounts.read({
+      id: acctid,
+      link: "equipment",
+    }, gvm.list, cb);
   }
 
   function refreshInvoice(_this, cb) {

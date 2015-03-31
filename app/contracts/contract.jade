@@ -149,7 +149,7 @@ div(class="contract-wrap")
               Service Plan                 [MS_Accounts].CellPackageItemId
               Service Plan Addons          ???
               Email per Cell Provider      [MS_AccountSalesInformations].Email OR [Alarm.com]
-            ul(class="edit-form triple-wide",data-bind="with:salesInfoExtras")
+            ul(class="edit-form quad-wide",data-bind="with:salesInfoExtras")
               li
                 span(class="label") Contract Date
                 input(type="text",
@@ -165,7 +165,7 @@ div(class="contract-wrap")
                 span(class="label") NOC Date
                 input(type="text",
                   data-bind="ukov:NOCDate,datevalue:NOCDate,valueUpdate:'keyup'")
-            ul(class="edit-form triple-wide",data-bind="with:salesInfo")
+            ul(class="edit-form quad-wide",data-bind="with:salesInfo")
               li
                 span(class="label") Cell Type
                 input(type="text",disabled,data-bind="value:CellularTypeCvm.selectedText()")
@@ -188,7 +188,7 @@ div(class="contract-wrap")
               Rep Upgrade Paid             [AE_Invoices]
               Technician Upgrades          [AE_Invoices]
               Tech Upgrades Paid           [AE_Invoices]
-            ul(class="edit-form triple-wide",data-bind="with:systemDetails")
+            ul(class="edit-form quad-wide",data-bind="with:systemDetails")
               //-@TODO: upgrades - waiting for service endpoints
               li
                 span(class="label") Sales Rep Upgrades
@@ -206,6 +206,28 @@ div(class="contract-wrap")
                 span(class="label") Password
                 input(type="text",
                   data-bind="ukov:AccountPassword,value:AccountPassword,valueUpdate:'keyup'")
+            //-
+            ul(class="edit-form quad-wide",data-bind="with:systemDetailsExtras")
+              li
+                span(class="label") Submission Confirmation #
+                input(type="text",disabled,data-bind="value:submissionConf")
+              li
+                span(class="label") 2-Way Confirmation #
+                input(type="text",disabled,data-bind="value:twoWayConf")
+              li
+                span(class="label") Industry/CS #
+                input(type="text",disabled,data-bind="value:industry")
+              li
+                span(class="label") Receiver Line
+                input(type="text",disabled,data-bind="value:receiver")
+
+            div
+              |Total Points:&nbsp;
+              span(data-bind="text:equipmentGvm.totalPoints")
+            div(class="grid-wrap rv equipment-left")
+              div(class="slickgrid",data-bind="slickgrid:equipmentGvm")
+            div(class="grid-wrap rv equipment-right")
+              div(class="slickgrid",data-bind="slickgrid:equipmentGvm.byPartGvm")
 
 
         div(class="section disabled")
