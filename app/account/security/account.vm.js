@@ -64,7 +64,6 @@ define("src/account/security/account.vm", [
       _this.defaultChild = createSummary(_this, "Account Summary"),
       createFauxController(_this, "Signal History"),
       createEquipment(_this, "Equipment"),
-      createFauxController(_this, "Contract Approval"),
       createAccountServiceTickets(_this, "Service Tickets"),
     ];
     if (inTextList(app.user.peek().Apps, "contract_admin")) {

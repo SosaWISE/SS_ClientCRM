@@ -1,11 +1,11 @@
-define('src/account/security/summary.vm', [
-  'ko',
-  'src/account/security/emcontacts.vm',
-  'src/account/security/systemonlineinfo.vm',
-  'src/core/layers.vm',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/account/security/summary.vm", [
+  "ko",
+  "src/account/security/emcontacts.vm",
+  "src/account/security/systemonlineinfo.vm",
+  "src/core/layers.vm",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   ko,
   EmContactsViewModel,
@@ -39,7 +39,7 @@ define('src/account/security/summary.vm', [
     //
   }
   utils.inherits(SummaryViewModel, ControllerViewModel);
-  SummaryViewModel.prototype.viewTmpl = 'tmpl-security-summary';
+  SummaryViewModel.prototype.viewTmpl = "tmpl-security-summary";
 
   SummaryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;

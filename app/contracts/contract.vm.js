@@ -1,5 +1,6 @@
 define("src/contracts/contract.vm", [
   "src/app",
+  "src/account/security/emcontacts.vm",
   "src/account/security/equipment.gvm",
   "src/account/default/rep.find.vm",
   "src/account/security/clist.salesinfo.vm",
@@ -18,6 +19,7 @@ define("src/contracts/contract.vm", [
   "src/core/controller.vm",
 ], function(
   app,
+  EmContactsViewModel,
   EquipmentGridViewModel,
   RepFindViewModel,
   CListSalesInfoViewModel,
@@ -97,6 +99,10 @@ define("src/contracts/contract.vm", [
     _this.equipmentGvm = new EquipmentGridViewModel({
       byPart: true,
       edit: utils.noop,
+    });
+
+    _this.emcontactsVm = new EmContactsViewModel({
+      layersVm: null,
     });
 
     //
@@ -288,7 +294,7 @@ define("src/contracts/contract.vm", [
     _this.masterid = routeData.masterid;
     _this.acctid = routeData.id;
 
-    load_localizations(_this, subjoin.add());
+    load_localizations(_this, join.add());
 
     // load leads for master file
     _this.leads.forEach(function(leadVm) {
@@ -321,7 +327,7 @@ define("src/contracts/contract.vm", [
     load_systemDetails(_this.acctid, function(results) {
       _this.systemDetails.setValue(results);
       _this.systemDetails.markClean({}, true);
-    }, subjoin.add());
+    }, join.add());
     load_industryAccountWithReceiverLines(_this.acctid, function(list) {
       list.some(function(item) {
         if (item.PrimaryCSID === "Yes") {
@@ -330,9 +336,12 @@ define("src/contracts/contract.vm", [
           return true;
         }
       });
-    }, subjoin.add());
+    }, join.add());
 
     load_equipment(_this.acctid, _this.equipmentGvm, join.add());
+
+    _this.emcontactsVm.loader.reset(); //incase of reload
+    _this.emcontactsVm.load(routeData, extraData, join.add());
 
     var cb = join.add();
     subjoin.when(function(err) {

@@ -230,6 +230,12 @@ div(class="contract-wrap")
               div(class="slickgrid",data-bind="slickgrid:equipmentGvm.byPartGvm")
 
 
+        div(class="section disabled",data-bind="with:emcontactsVm")
+          span(class="title") Emergency Contacts
+          div(class="contents")
+            div(class="grid-wrap rv")
+              div(class="slickgrid",data-bind="slickgrid:gvm")
+
         div(class="section disabled")
           span(class="title") Paperwork Details
           div(class="contents")
