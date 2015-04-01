@@ -1,11 +1,11 @@
-define('src/account/security/clist.equipment.vm', [
-  'ko',
-  'src/account/security/equipment.editor.vm',
-  'src/account/security/equipment.gvm',
-  'src/core/layers.vm',
-  'src/core/notify',
-  'src/core/utils',
-  'src/account/security/equipment.vm',
+define("src/account/security/clist.equipment.vm", [
+  "ko",
+  "src/account/security/equipment.editor.vm",
+  "src/account/security/equipment.gvm",
+  "src/core/layers.vm",
+  "src/core/notify",
+  "src/core/utils",
+  "src/account/security/equipment.vm",
 ], function(
   ko,
   EquipmentEditorViewModel,
@@ -20,10 +20,12 @@ define('src/account/security/clist.equipment.vm', [
   function CListEquipmentViewModel(options) {
     var _this = this;
     CListEquipmentViewModel.super_.call(_this, options);
-    _this.ensureProps(['layersVm', 'pcontroller']);
+    utils.assertProps(_this, [
+      "pcontroller",
+    ]);
   }
   utils.inherits(CListEquipmentViewModel, EquipmentViewModel);
-  // CListEquipmentViewModel.prototype.viewTmpl = 'tmpl-security-clist_equipment';
+  // CListEquipmentViewModel.prototype.viewTmpl = "tmpl-security-clist_equipment";
 
   // don't override base since we're not doing anything different.
   // CListEquipmentViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base

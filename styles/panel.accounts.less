@@ -34,6 +34,9 @@
     display: none;
   }
 }
+.under-toggle-btn {
+  width:17px;height:39px;
+}
 
 .info > {
   .separator {
@@ -177,6 +180,7 @@ table.fh-wrap {
 }
 
 
+#contracts-panel,
 #crm-panel > .accounts {
   height: 100%;
   @tranSec: .25s;
@@ -300,59 +304,59 @@ table.fh-wrap {
 
     .rep-find {
     }
+  }
 
-    .addr-validate {
-      .addr-form-wrap {
-        width:100%;
-        // overflow-x: hidden; // for some reason in Chrome this also hides y
-      }
-      .addr-form {
-        width:530px;
-
-        .edit-form {
-          width:260px;
-          display:inline-block;
-          vertical-align:top;
-          &.right-side {
-            margin-left:10px;
-          }
-        }
-      }
-      .result {
-        min-height:150px;
-        .info {
-          margin-top:10px;
-          margin-bottom:10px;
-        }
-      }
+  .addr-validate {
+    .addr-form-wrap {
+      width:100%;
+      // overflow-x: hidden; // for some reason in Chrome this also hides y
     }
+    .addr-form {
+      width:530px;
 
-    .runcredit-form {
-      position:relative;
-      // overflow:hidden;
-
-      // transition: height 0.25s;
-      // height: 265px;
-      // &.override {
-      //   overflow:visible;
-      //   height: 600px;
-      // }
-
-      .title {
-        display: block;
-        vertical-align: middle;
-        font-size: 1.2em;
-        font-weight: 500;
-        text-transform: none;
-      }
-    }
-    .runcredit-result {
-      margin-bottom: 10px;
-      padding-top: 10px;
-      .label {
+      .edit-form {
+        width:260px;
         display:inline-block;
-        width:90px;
+        vertical-align:top;
+        &.right-side {
+          margin-left:10px;
+        }
       }
+    }
+    .result {
+      min-height:150px;
+      .info {
+        margin-top:10px;
+        margin-bottom:10px;
+      }
+    }
+  }
+
+  .runcredit-form {
+    position:relative;
+    // overflow:hidden;
+
+    // transition: height 0.25s;
+    // height: 265px;
+    // &.override {
+    //   overflow:visible;
+    //   height: 600px;
+    // }
+
+    .title {
+      display: block;
+      vertical-align: middle;
+      font-size: 1.2em;
+      font-weight: 500;
+      text-transform: none;
+    }
+  }
+  .runcredit-result {
+    margin-bottom: 10px;
+    padding-top: 10px;
+    .label {
+      display:inline-block;
+      width:90px;
     }
   }
 
@@ -379,7 +383,7 @@ table.fh-wrap {
         // text-transform: uppercase;
       }
       .contents {
-        overflow: hidden;
+        // overflow: hidden;
         // color: #222;
         .border-radius(5px);
         padding: 10px;
@@ -674,10 +678,6 @@ table.fh-wrap {
 
       .tabs {
         background-color: @account-bg;
-        // padding-left: 20px;
-        .under-toggle-btn {
-          width:17px;height:39px;
-        }
       }
     }
     > .notes {

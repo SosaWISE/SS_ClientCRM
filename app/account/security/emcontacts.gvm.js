@@ -1,10 +1,10 @@
-define('src/account/security/emcontacts.gvm', [
-  'ko',
-  'src/slick/moverows',
-  'src/slick/rowevent',
-  'src/slick/slickgrid.vm',
-  'src/core/strings',
-  'src/core/utils',
+define("src/account/security/emcontacts.gvm", [
+  "ko",
+  "src/slick/moverows",
+  "src/slick/rowevent",
+  "src/slick/slickgrid.vm",
+  "src/core/strings",
+  "src/core/utils",
 ], function(
   ko,
   MoveRows,
@@ -18,6 +18,35 @@ define('src/account/security/emcontacts.gvm', [
   function EmContactsGridViewModel(options) {
     var _this = this,
       list = ko.observableArray();
+    var plugins = [];
+    if (options.save) {
+      plugins.push(new MoveRows({
+        observableArray: list,
+        orderName: "OrderNumber",
+        onOrderChanged: function(changedRows) {
+          changedRows.forEach(function(item) {
+            options.save(item);
+          });
+        },
+      }));
+    }
+    if (options.save) {
+      plugins.push(new RowEvent({
+        eventName: "onDblClick",
+        fn: function(item) {
+          options.edit(item, function(model, deleted) {
+            if (!model) { // nothing changed
+              return;
+            }
+            if (deleted) { // remove deleted item
+              _this.list.remove(item);
+            } else { // update in place
+              _this.list.replace(item, model);
+            }
+          });
+        },
+      }));
+    }
     EmContactsGridViewModel.super_.call(_this, {
       gridOptions: {
         enableColumnReorder: false,
@@ -25,79 +54,54 @@ define('src/account/security/emcontacts.gvm', [
         rowHeight: 27,
       },
       list: list,
-      plugins: [
-        new MoveRows({
-          observableArray: list,
-          orderName: 'OrderNumber',
-          onOrderChanged: function(changedRows) {
-            changedRows.forEach(function(item) {
-              options.save(item);
-            });
-          },
-        }),
-        new RowEvent({
-          eventName: 'onDblClick',
-          fn: function(item) {
-            options.edit(item, function(model, deleted) {
-              if (!model) { // nothing changed
-                return;
-              }
-              if (deleted) { // remove deleted item
-                _this.list.remove(item);
-              } else { // update in place
-                _this.list.replace(item, model);
-              }
-            });
-          },
-        }),
-      ],
+      plugins: plugins,
       columns: [ //
         {
-          id: '#',
-          name: '',
+          id: "#",
+          name: "",
           width: 30,
-          behavior: 'selectAndMove',
+          behavior: "selectAndMove",
           resizable: false,
-          cssClass: 'cell-reorder',
+          cssClass: "cell-reorder",
         }, {
-          id: 'Name',
-          name: 'Name',
+          id: "Name",
+          name: "Name",
           width: 50,
           formatter: options.fullnameFormatter,
         }, {
-          id: 'RelationshipId',
-          name: 'Relationship',
-          field: 'RelationshipId',
+          id: "RelationshipId",
+          name: "Relationship",
+          field: "RelationshipId",
           width: 50,
           formatter: options.relationshipFormatter,
         }, {
-          id: 'Phone1',
-          name: 'Primary Phone',
-          field: 'Phone1',
+          id: "Phone1",
+          name: "Primary Phone",
+          field: "Phone1",
           width: 50,
           formatter: function(row, cell, value, columnDef, dataCtx) {
             return formatPhoneAndType(value, dataCtx.Phone1TypeId);
           },
         }, {
-          id: 'Phone2',
-          name: 'Secondary Phone',
-          field: 'Phone2',
+          id: "Phone2",
+          name: "Secondary Phone",
+          field: "Phone2",
           width: 50,
           formatter: function(row, cell, value, columnDef, dataCtx) {
             return formatPhoneAndType(value, dataCtx.Phone2TypeId);
           },
         }, {
-          id: 'Phone3',
-          name: 'Alternate Phone',
-          field: 'Phone3',
+          id: "Phone3",
+          name: "Alternate Phone",
+          field: "Phone3",
           width: 50,
           formatter: function(row, cell, value, columnDef, dataCtx) {
             return formatPhoneAndType(value, dataCtx.Phone3TypeId);
           },
         }, {
-          id: 'HasKey',
-          name: 'Has Keys',
-          field: 'HasKey',
+          id: "HasKey",
+          name: "Has Keys",
+          field: "HasKey",
           // resizable: false,
           width: 30,
           minWidth: 15,
@@ -109,7 +113,7 @@ define('src/account/security/emcontacts.gvm', [
     function formatPhoneAndType(phone, type) {
       type = options.getPhoneType(type);
       if (type && type.MsPhoneTypeId && phone) {
-        return type.MsPhoneTypeId + ': ' + strings.formatters.phone(phone);
+        return type.MsPhoneTypeId + ": " + strings.formatters.phone(phone);
       }
       return phone;
     }
@@ -122,7 +126,7 @@ define('src/account/security/emcontacts.gvm', [
   //     var item = _this.grid.getDataItem(menuVm.cell.row);
   //     console.log(item);
   //   };
-  //   menuVm.viewTmpl = 'tmpl-security-emcontacts_ctxmenu';
+  //   menuVm.viewTmpl = "tmpl-security-emcontacts_ctxmenu";
   // };
 
   EmContactsGridViewModel.prototype.nextOrderNumber = function() {

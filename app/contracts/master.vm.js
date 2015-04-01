@@ -106,8 +106,6 @@ define("src/contracts/master.vm", [
       msg;
     // just close if there is an error
     if (!_this.loadErr()) {
-      // check if notesVm has a close msg
-      msg = _this.notesVm.closeMsg();
       // get default close msg
       if (!msg) {
         msg = MasterViewModel.super_.prototype.closeMsg.call(_this);
@@ -163,7 +161,6 @@ define("src/contracts/master.vm", [
 
   function createContractVm(_this, id, title, rmr, units) {
     return new ContractViewModel({
-      layersVm: _this.layersVm,
       pcontroller: _this,
       id: id,
       title: title || "[Unknown]",

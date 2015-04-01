@@ -1,10 +1,10 @@
-define('src/account/security/equipment.gvm', [
-  'ko',
-  'src/slick/rowevent',
-  'src/slick/slickgrid.vm',
-  'src/core/numbers',
-  'src/core/strings',
-  'src/core/utils',
+define("src/account/security/equipment.gvm", [
+  "ko",
+  "src/slick/rowevent",
+  "src/slick/slickgrid.vm",
+  "src/core/numbers",
+  "src/core/strings",
+  "src/core/utils",
 ], function(
   ko,
   RowEvent,
@@ -25,7 +25,7 @@ define('src/account/security/equipment.gvm', [
       },
       plugins: [
         new RowEvent({
-          eventName: 'onDblClick',
+          eventName: "onDblClick",
           fn: function(item) {
             console.log("Item double clicked: ", item);
             options.edit(item, function(model, deleted) {
@@ -38,66 +38,66 @@ define('src/account/security/equipment.gvm', [
                 _this.list.replace(item, model);
               }
             });
-            // alert('double clicked');
+            // alert("double clicked");
           },
         }),
       ],
       columns: [ //
         {
-          id: 'Zone',
-          name: 'Zone',
-          field: 'Zone',
+          id: "Zone",
+          name: "Zone",
+          field: "Zone",
         }, {
-          id: 'Points',
-          name: 'Points',
-          field: 'ActualPoints',
+          id: "ActualPoints",
+          name: "Points",
+          field: "ActualPoints",
         }, {
-          id: 'Equipment',
-          name: 'Equipment',
-          field: 'ItemDesc',
+          id: "ItemDesc",
+          name: "Equipment",
+          field: "ItemDesc",
         }, {
-          id: 'PartNumber',
-          name: 'Part #',
-          field: 'ItemSKU',
+          id: "ItemSKU",
+          name: "Part #",
+          field: "ItemSKU",
         }, {
-          id: 'Location',
-          name: 'Location',
-          field: 'EquipmentLocationDesc',
+          id: "EquipmentLocationDesc",
+          name: "Location",
+          field: "EquipmentLocationDesc",
         }, {
-          id: 'Barcode',
-          name: 'Barcode',
-          field: 'BarcodeId',
+          id: "BarcodeId",
+          name: "Barcode",
+          field: "BarcodeId",
         }, {
-          id: 'AssignedTo',
-          name: 'Assigned To',
-          field: 'GPEmployeeId',
+          id: "GPEmployeeId",
+          name: "Assigned To",
+          field: "GPEmployeeId",
         }, {
-          id: 'ExistingWiring',
-          name: 'Existing Wiring',
-          field: 'IsExistingWiring',
+          id: "IsExistingWiring",
+          name: "Existing Wiring",
+          field: "IsExistingWiring",
           minWidth: 15,
           width: 30,
           formatter: SlickGridViewModel.formatters.xFormatter,
         }, {
-          id: 'ExistingEquipment',
-          name: 'Existing Equipment',
-          field: 'IsExisting',
+          id: "IsExisting",
+          name: "Existing Equipment",
+          field: "IsExisting",
           minWidth: 15,
           width: 30,
           formatter: SlickGridViewModel.formatters.xFormatter,
         }, {
-          id: 'TechUpgrade',
-          name: 'Tech Upgrade',
-          field: 'IsServiceUpgrade',
+          id: "IsServiceUpgrade",
+          name: "Tech Upgrade",
+          field: "IsServiceUpgrade",
           minWidth: 15,
           width: 30,
           formatter: SlickGridViewModel.formatters.xFormatter,
         }, {
-          id: 'UpgradePrice',
-          name: 'Upgrade Price',
-          field: 'Price',
+          id: "Price",
+          name: "Upgrade Price",
+          field: "Price",
           formatter: function(row, cell, value, columnDef, dataCtx) {
-            return (value > 0 && dataCtx.IsServiceUpgrade) ? strings.formatters.currency(value) : '';
+            return (value > 0 && dataCtx.IsServiceUpgrade) ? strings.formatters.currency(value) : "";
           },
         },
       ],
@@ -111,8 +111,63 @@ define('src/account/security/equipment.gvm', [
     });
 
     _this.loading = ko.observable(false);
+
+    if (options.byPart) {
+      _this.byPartGvm = new EquipmentByPartGridViewModel();
+      _this.list.subscribe(function(list) {
+        var byPartMap = {};
+        var byPartList = [];
+        list.forEach(function(item) {
+          var id = item.ItemSKU;
+          var group = byPartMap[id];
+          if (!group) {
+            byPartMap[id] = group = {
+              ItemSKU: id,
+              ActualPoints: item.ActualPoints,
+              Count: 0,
+            };
+            byPartList.push(group);
+          }
+          group.Count++;
+        });
+        _this.byPartGvm.list(byPartList);
+      });
+    }
   }
   utils.inherits(EquipmentGridViewModel, SlickGridViewModel);
+
+  function EquipmentByPartGridViewModel() {
+    var _this = this;
+    EquipmentByPartGridViewModel.super_.call(_this, {
+      gridOptions: {
+        enableColumnReorder: false,
+        forceFitColumns: true,
+        rowHeight: 27,
+      },
+      columns: [ //
+        {
+          id: "ItemSKU",
+          name: "Part #",
+          field: "ItemSKU",
+        }, {
+          id: "ActualPoints",
+          name: "Points",
+          field: "ActualPoints",
+        }, {
+          id: "Count",
+          name: "Count",
+          field: "Count",
+        }, {
+          id: "PartPoints",
+          name: "Part Points",
+          formatter: function(row, cell, value, columnDef, dataCtx) {
+            return dataCtx.Count * dataCtx.ActualPoints;
+          },
+        },
+      ],
+    });
+  }
+  utils.inherits(EquipmentByPartGridViewModel, SlickGridViewModel);
 
   return EquipmentGridViewModel;
 });

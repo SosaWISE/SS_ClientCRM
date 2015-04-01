@@ -26,12 +26,6 @@ define("src/account/security/equipment.vm", [
   function EquipmentViewModel(options) {
     var _this = this;
     EquipmentViewModel.super_.call(_this, options);
-    // ControllerViewModel.ensureProps(_this, ["layersVm"]);
-
-    _this.layersVm = _this.layersVm || new LayersViewModel({
-      controller: _this,
-    });
-
 
     _this.gvm = new EquipmentGridViewModel({
       edit: function(eqItem, cb) {
@@ -43,7 +37,6 @@ define("src/account/security/equipment.vm", [
     //
     // events
     //
-
 
     function createReloadGvmCb(cb) {
       return function(result) {
@@ -57,17 +50,20 @@ define("src/account/security/equipment.vm", [
     _this.cmdAddByPart = ko.command(function(cb) {
       showEquipmentEditor(_this, "part", null, createReloadGvmCb(cb));
     }, function(busy) {
-      return !busy && !_this.cmdAddByBarcode.busy() && !_this.cmdAddExistingEquipment.busy();
+      return !busy && _this.layersVm &&
+        !_this.cmdAddByBarcode.busy() && !_this.cmdAddExistingEquipment.busy();
     });
     _this.cmdAddByBarcode = ko.command(function(cb) {
       showEquipmentEditor(_this, "barcode", null, createReloadGvmCb(cb));
     }, function(busy) {
-      return !busy && !_this.cmdAddByPart.busy() && !_this.cmdAddExistingEquipment.busy();
+      return !busy && _this.layersVm &&
+        !_this.cmdAddByPart.busy() && !_this.cmdAddExistingEquipment.busy();
     });
     _this.cmdAddExistingEquipment = ko.command(function(cb) {
       showEquipmentEditor(_this, "existing", null, createReloadGvmCb(cb));
     }, function(busy) {
-      return !busy && !_this.cmdAddByPart.busy() && !_this.cmdAddByBarcode.busy();
+      return !busy && _this.layersVm &&
+        !_this.cmdAddByPart.busy() && !_this.cmdAddByBarcode.busy();
     });
   }
   utils.inherits(EquipmentViewModel, ControllerViewModel);
@@ -120,6 +116,9 @@ define("src/account/security/equipment.vm", [
   }
 
   function showEquipmentEditor(_this, addBy, item, cb) {
+    if (!_this.layersVm) {
+      return;
+    }
     var vm = new EquipmentEditorViewModel({
       addBy: addBy,
       item: item,

@@ -40,6 +40,7 @@ define("src/core/ko.bindingHandlers.formatters", [
       return val;
     };
   }
+  ko.bindingHandlers.currencyvalue = createFormatter("value", makeFormattedCurrencyValueAccessor);
   ko.bindingHandlers.currencytext = createFormatter("text", makeFormattedCurrencyValueAccessor);
 
   function makeHtmlFormattedCurrencyValueAccessor(valueAccessor) {
