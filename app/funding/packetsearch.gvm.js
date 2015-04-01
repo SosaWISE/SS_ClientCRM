@@ -31,12 +31,12 @@ define('src/funding/packetsearch.gvm', [
       columns: [ //
         {
           id: 'PacketID',
-          name: 'P ID',
+          name: 'Packet ID',
           field: 'PacketID',
           width: 50,
-          formatter: function(row, cell, value) {
-            return 'PID ' + value;
-          },
+          // formatter: function(row, cell, value) {
+          //   return 'PID ' + value;
+          // },
         }, {
           id: 'CriteriaName',
           name: 'Criteria Name',
