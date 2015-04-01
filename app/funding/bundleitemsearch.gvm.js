@@ -30,6 +30,7 @@ define('src/funding/bundleitemsearch.gvm', [
         new ButtonsColumn({
           id: 'actions',
           name: '',
+          width: 20,
           buttons: [{
             text: 'X',
             fn: function(item) {

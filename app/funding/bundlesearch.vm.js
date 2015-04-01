@@ -2,6 +2,7 @@ define('src/funding/bundlesearch.vm', [
   'src/dataservice',
   'src/funding/bundlesearch.gvm',
   'src/funding/bundleitemsearch.gvm',
+  'src/funding/packetitemsearch.gvm',
   'ko',
   'src/ukov',
   'src/core/notify',
@@ -11,6 +12,7 @@ define('src/funding/bundlesearch.vm', [
   dataservice,
   BundleSearchGridViewModel,
   BundleItemSearchGridViewModel,
+  PacketItemSearchGridViewModel,
   ko,
   ukov,
   notify,
@@ -56,7 +58,21 @@ define('src/funding/bundlesearch.vm', [
 
     _this.gvmItems = new BundleItemSearchGridViewModel({
       open: _this.open || function(item) {
-        console.log(item);
+        // console.log(item);
+        dataservice.fundingsrv.gvmPackItems.read({
+          id: item.PacketId,
+        }, null, utils.safeCallback(null, function(err, resp) {
+          _this.gvmPackItems.list(resp.Value);
+          _this.gvmPackItems.setSelectedRows([]);
+        }, function(err) {
+          notify.error(err, 30);
+        }));
+        return true;
+      }
+    });
+    _this.gvmPackItems = new PacketItemSearchGridViewModel({
+      open: _this.open || function(item) {
+        console.log('This is where we open tha packetItem.', item);
       }
     });
   }

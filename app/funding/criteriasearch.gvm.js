@@ -62,7 +62,8 @@ define('src/funding/criteriasearch.gvm', [
           id: 'CreatedOn',
           name: 'Created On',
           field: 'CreatedOn',
-          width: 100,
+          width: 50,
+          formatter: SlickGridViewModel.formatters.datetime,
         }
       ]
     });
