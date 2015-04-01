@@ -30,6 +30,7 @@ define('src/funding/packetitemsearch.gvm', [
         new ButtonsColumn({
           id: 'actions',
           name: '',
+          width: 30,
           buttons: [{
             text: 'X',
             fn: function(item) {
@@ -38,60 +39,83 @@ define('src/funding/packetitemsearch.gvm', [
           }],
         }), {
           id: 'PacketItemID',
-          name: 'PI ID',
+          name: 'ID',
           field: 'PacketItemID',
-          width: 50,
+          width: 10,
           formater: function(row, cell, value) {
             return 'PIT ' + value;
           },
-        }, {
-          id: 'PacketId',
-          name: 'P ID',
-          field: 'PacketId',
-          width: 50,
+          // }, {
+          //   id: 'PacketId',
+          //   name: 'P ID',
+          //   field: 'PacketId',
+          //   width: 50,
         }, {
           id: 'CustomerNumber',
           name: 'Cust #',
           field: 'CustomerNumber',
-          width: 50,
-        }, {
-          id: 'CustomerId',
-          name: 'C ID',
-          field: 'CustomerId',
-          width: 50,
+          width: 40,
+          // }, {
+          //   id: 'CustomerId',
+          //   name: 'C ID',
+          //   field: 'CustomerId',
+          //   width: 50,
         }, {
           id: 'AccountId',
-          name: 'A ID',
+          name: 'Acct ID',
           field: 'AccountId',
-          width: 50,
+          width: 40,
+        }, {
+          id: 'Csid',
+          name: 'Csid',
+          field: 'Csid',
+          width: 40,
         }, {
           id: 'FirstName',
           name: 'First Name',
           field: 'FirstName',
-          width: 100,
+          width: 50,
         }, {
           id: 'LastName',
           name: 'Last Name',
           field: 'LastName',
-          width: 100,
+          width: 50,
+        }, {
+          id: 'Bureau',
+          name: 'Bureau',
+          field: 'Bureau',
+          width: 50,
+        }, {
+          id: 'Gateway',
+          name: 'Gateway',
+          field: 'Gateway',
+          width: 50,
+        }, {
+          id: 'TransactionID',
+          name: 'Tran ID',
+          field: 'TransactionID',
+          width: 50,
+        }, {
+          id: 'ReportGuid',
+          name: 'Token',
+          field: 'ReportGuid',
+          width: 50,
         }, {
           id: 'AccountFundingShortDesc',
           name: 'Funding Desc',
           field: 'AccountFundingShortDesc',
-          width: 150,
+          width: 75,
         }, {
           id: 'AccountStatusNote',
           name: 'Account Status Note',
           field: 'AccountStatusNote',
-          width: 150,
+          width: 75,
         }, {
           id: 'CreatedOn',
           name: 'Created',
           field: 'CreatedOn',
-          width: 50,
-          formater: function(row, cell, value) {
-            return utils.getLocalDateTime(value);
-          },
+          width: 85,
+          formatter: SlickGridViewModel.formatters.datetime,
         }
       ]
     });

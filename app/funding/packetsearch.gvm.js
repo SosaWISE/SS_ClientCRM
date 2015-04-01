@@ -31,7 +31,7 @@ define('src/funding/packetsearch.gvm', [
       columns: [ //
         {
           id: 'PacketID',
-          name: 'Packet ID',
+          name: 'ID',
           field: 'PacketID',
           width: 50,
           // formatter: function(row, cell, value) {
@@ -42,22 +42,22 @@ define('src/funding/packetsearch.gvm', [
           name: 'Criteria Name',
           field: 'CriteriaName',
           width: 100,
-        }, {
-          id: 'CriteriaId',
-          name: 'Criteria Id',
-          field: 'CriteriaId',
-          width: 50,
-          formatter: function(row, cell, value) {
-            return 'CID ' + value;
-          },
-        }, {
-          id: 'PurchaserID',
-          name: 'Purchaser ID',
-          field: 'PurchaserID',
-          width: 50,
-          formatter: function(row, cell, value) {
-            return 'PID ' + value;
-          }
+          // }, {
+          //   id: 'CriteriaId',
+          //   name: 'Criteria Id',
+          //   field: 'CriteriaId',
+          //   width: 50,
+          //   formatter: function(row, cell, value) {
+          //     return 'CID ' + value;
+          //   },
+          // }, {
+          //   id: 'PurchaserID',
+          //   name: 'Purchaser ID',
+          //   field: 'PurchaserID',
+          //   width: 50,
+          //   formatter: function(row, cell, value) {
+          //     return 'PID ' + value;
+          //   }
         }, {
           id: 'PurchaserName',
           name: 'Purchaser',
@@ -65,28 +65,26 @@ define('src/funding/packetsearch.gvm', [
           width: 100,
         }, {
           id: 'SubmittedOn',
-          name: 'Submitted On',
+          name: 'Sub On',
           field: 'SubmittedOn',
-          width: 50,
-          formatter: function(row, cell, value) {
-            return utils.getLocalDateTime(value);
-          },
-        }, {
-          id: 'SubmittedBy',
-          name: 'Submitted By',
-          field: 'SubmittedBy',
-          width: 50,
-        }, {
-          id: 'CreatedOn',
-          name: 'Created On',
-          field: 'CreatedOn',
           width: 50,
           formatter: SlickGridViewModel.formatters.datetime,
         }, {
-          id: 'CreatedBy',
-          name: 'Created By',
-          field: 'CreatedBy',
+          id: 'SubmittedBy',
+          name: 'Sub By',
+          field: 'SubmittedBy',
           width: 50,
+          // }, {
+          //   id: 'CreatedOn',
+          //   name: 'Created On',
+          //   field: 'CreatedOn',
+          //   width: 50,
+          //   formatter: SlickGridViewModel.formatters.datetime,
+          // }, {
+          //   id: 'CreatedBy',
+          //   name: 'Created By',
+          //   field: 'CreatedBy',
+          //   width: 50,
         }
       ],
     });
