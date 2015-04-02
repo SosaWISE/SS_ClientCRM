@@ -149,6 +149,7 @@ define("src/dataservice", [
       "technician",
       "address",
       "addressValidation",
+      "premiseAddressValidation",
       "runCredit",
       "qualifyCustomerInfos",
       "insideSales",
