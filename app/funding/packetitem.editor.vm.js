@@ -1,4 +1,4 @@
-define('src/funding/packetitem.editor.vm',[
+define('src/funding/packetitem.editor.vm', [
   'src/dataservice',
   'src/core/combo.vm',
   'src/core/notify',
@@ -6,7 +6,7 @@ define('src/funding/packetitem.editor.vm',[
   'src/core/base.vm',
   'ko',
   'src/ukov',
- ], function(
+], function(
   dataservice,
   ComboViewModel,
   notify,
@@ -14,7 +14,7 @@ define('src/funding/packetitem.editor.vm',[
   BaseViewModel,
   ko,
   ukov
-){
+) {
   "use strict";
 
   var schema;
@@ -32,7 +32,8 @@ define('src/funding/packetitem.editor.vm',[
     IsOwner: {},
     CellPackageItemId: {},
   };
-  function PacketItemEditViewModel(options){
+
+  function PacketItemEditViewModel(options) {
     var _this = this;
     PacketItemEditViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
@@ -71,7 +72,7 @@ define('src/funding/packetitem.editor.vm',[
     //
     // Event
     //
-    _this.clickCancel = function (){
+    _this.clickCancel = function() {
       _this.layerResult = null;
       closeLayer(_this);
     };
@@ -93,10 +94,8 @@ define('src/funding/packetitem.editor.vm',[
   PacketItemEditViewModel.prototype.width = 290;
   PacketItemEditViewModel.prototype.height = 'auto';
 
-  function closeLayer(_this)
-  {
-    if(_this.layer)
-    {
+  function closeLayer(_this) {
+    if (_this.layer) {
       _this.layer.close();
     }
   }
@@ -104,4 +103,4 @@ define('src/funding/packetitem.editor.vm',[
   // ** Return class
   return PacketItemEditViewModel;
 
- });
+});
