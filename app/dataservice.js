@@ -35,6 +35,10 @@ define("src/dataservice", [
       "accountSalesInformationExtras",
       "helpers",
     ]),
+    api_ms: createService("api/ms", [
+      "accounts",
+      "holds",
+    ]),
     api_qualify: createService("api/qualify", [
       "customerMasterFiles",
     ]),

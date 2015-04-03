@@ -1,5 +1,6 @@
 define("src/contracts/contract.vm", [
   "src/app",
+  "src/account/security/holds.vm",
   "src/account/security/emcontacts.vm",
   "src/account/security/equipment.gvm",
   "src/account/default/rep.find.vm",
@@ -19,6 +20,7 @@ define("src/contracts/contract.vm", [
   "src/core/controller.vm",
 ], function(
   app,
+  HoldsViewModel,
   EmContactsViewModel,
   EquipmentGridViewModel,
   RepFindViewModel,
@@ -103,6 +105,10 @@ define("src/contracts/contract.vm", [
 
     _this.emcontactsVm = new EmContactsViewModel({
       layersVm: null,
+    });
+
+    _this.holdsVm = new HoldsViewModel({
+      layersVm: _this.layersVm,
     });
 
     //
@@ -342,6 +348,9 @@ define("src/contracts/contract.vm", [
 
     _this.emcontactsVm.loader.reset(); //incase of reload
     _this.emcontactsVm.load(routeData, extraData, join.add());
+
+    _this.holdsVm.loader.reset(); //incase of reload
+    _this.holdsVm.load(routeData, extraData, join.add());
 
     var cb = join.add();
     subjoin.when(function(err) {
@@ -947,6 +956,7 @@ define("src/contracts/contract.vm", [
 
   function getSalesInfoExtrasModel(layersVm) {
     var dateConverter = ukov.converters.date();
+    var boolConverter = ukov.converters.bool();
     var schema = _static.sdSchema || (_static.sdSchema = {
       _model: true,
       // fields from MS_AccountSalesInformations
@@ -1001,6 +1011,13 @@ define("src/contracts/contract.vm", [
         validators: [
           ukov.validators.isRequired("NOC Date is Required"),
         ]
+      },
+
+      OptOutCorporate: {
+        converter: boolConverter,
+      },
+      OptOutAffiliate: {
+        converter: boolConverter,
       },
     });
 

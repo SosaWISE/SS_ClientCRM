@@ -30,7 +30,7 @@ define("src/account/security/emcontacts.gvm", [
         },
       }));
     }
-    if (options.save) {
+    if (options.edit) {
       plugins.push(new RowEvent({
         eventName: "onDblClick",
         fn: function(item) {

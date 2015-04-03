@@ -269,5 +269,18 @@ div(class="contract-wrap")
                 span(class="label") SOP Barcode
                 input(type="text",
                   data-bind="ukov:SOP,value:SOP,valueUpdate:'keyup'")
+              li
+                div(class="checkbox",data-bind="cmd:function(){OptOutCorporate(!OptOutCorporate.peek())}")
+                  a(class="btn small",data-bind="active:OptOutCorporate")
+                  | Opt Out of Nexsense Marketing
+              li
+                div(class="checkbox",data-bind="cmd:function(){OptOutAffiliate(!OptOutAffiliate.peek())}")
+                  a(class="btn small",data-bind="active:OptOutAffiliate")
+                  | Opt Out of Affiliate Marketing
+
+
+        div(class="section disabled",data-bind="with:holdsVm")
+          span(class="title") Holds
+          div(class="contents",data-bind="template:viewTmpl")
 
   div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
