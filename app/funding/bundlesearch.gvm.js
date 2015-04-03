@@ -1,4 +1,4 @@
-define('src/funding/criteriasearch.gvm', [
+define('src/funding/bundlesearch.gvm', [
   'src/slick/rowevent',
   'src/slick/slickgrid.vm',
   'src/core/utils',
@@ -9,10 +9,10 @@ define('src/funding/criteriasearch.gvm', [
 ) {
   "use strict";
 
-  function CriteriaSearchGridViewModel(options) {
+  function BundleSearchGridViewModel(options) {
     var _this = this;
     SlickGridViewModel.ensureProps(options, []);
-    CriteriaSearchGridViewModel.super_.call(_this, {
+    BundleSearchGridViewModel.super_.call(_this, {
       scrollToTop: true,
       gridOptions: {
         enableColumnReorder: false,
@@ -26,38 +26,31 @@ define('src/funding/criteriasearch.gvm', [
       ],
       columns: [ //
         {
-          id: 'CriteriaID',
-          name: 'Criteria ID',
-          field: 'CriteriaID',
+          id: 'BundleID',
+          name: 'B ID',
+          field: 'BundleID',
           width: 50,
-          formatter: function(row, cell, value) {
-            return 'CID ' + value;
-          },
         }, {
           id: 'PurchaserName',
           name: 'Purchaser Name',
           field: 'PurchaserName',
-          width: 100,
+          width: 50,
         }, {
-          id: 'CriteriaName',
-          name: 'Name',
-          field: 'CriteriaName',
-          width: 100,
+          id: 'SubmittedBy',
+          name: 'Submitted By',
+          field: 'SubmittedBy',
+          width: 50,
         }, {
-          id: 'Description',
-          name: 'Description',
-          field: 'Description',
-          width: 150,
-        }, {
-          id: 'FilterString',
-          name: 'Filter',
-          field: 'FilterString',
-          width: 150,
+          id: 'SubmittedOn',
+          name: 'Submitted On',
+          field: 'SubmittedOn',
+          width: 50,
+          formatter: SlickGridViewModel.formatters.datetime,
         }, {
           id: 'CreatedBy',
           name: 'Created By',
           field: 'CreatedBy',
-          width: 100,
+          width: 50,
         }, {
           id: 'CreatedOn',
           name: 'Created On',
@@ -67,8 +60,9 @@ define('src/funding/criteriasearch.gvm', [
         }
       ]
     });
-  }
-  utils.inherits(CriteriaSearchGridViewModel, SlickGridViewModel);
 
-  return CriteriaSearchGridViewModel;
+  }
+  utils.inherits(BundleSearchGridViewModel, SlickGridViewModel);
+
+  return BundleSearchGridViewModel;
 });

@@ -7,6 +7,7 @@ window.require = {
     '/account.js': 'src/account',
     '/contracts.js': 'src/contracts',
     '/survey.js': 'src/survey',
+    '/funding.js': 'src/funding',
     '/core.js': 'src/core',
     '/ukov.js': 'src/u-kov',
     '/mock.js': 'mock',

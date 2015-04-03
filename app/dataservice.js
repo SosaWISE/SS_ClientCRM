@@ -63,6 +63,10 @@ define("src/dataservice", [
 
     fundingsrv: createService("fundingsrv", [
       "criterias",
+      "packets",
+      "packetItems",
+      "bundles",
+      "bundleItems"
     ]),
 
     humanresourcesrv: createService("humanresourcesrv", [
@@ -149,6 +153,7 @@ define("src/dataservice", [
       "technician",
       "address",
       "addressValidation",
+      "premiseAddressValidation",
       "runCredit",
       "qualifyCustomerInfos",
       "insideSales",

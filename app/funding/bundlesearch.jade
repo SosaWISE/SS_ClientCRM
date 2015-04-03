@@ -1,0 +1,15 @@
+div(class="funding-search")
+  table(class="fh-wrap")
+    tr
+      td(class="fh-body")
+        div(class="fn-contents")
+          div(class="grid-wrap left")
+            div(class="slickgrid",style="background:white;margin:10px;color:black",data-bind="slickgrid:gvm")
+          div(class="grid-wrap right")
+            div(class="slickgrid",style="background:white;margin:10px;color:black",data-bind="slickgrid:gvmItems")
+            div(class="slickgrid",style="background:white;margin:10px;color:black",data-bind="slickgrid:gvmPackItems")
+
+          div(data-bind="spinner:cmdSearch.busy,spinner-rgb:'white'")
+
+div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'white'")
+

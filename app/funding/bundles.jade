@@ -18,3 +18,8 @@ div(class="bundles",data-bind="if:loaded")
     tr
       td(class="fh-body")
         div(class="fh-contents")
+          <!-- ko with:searchVm() -->
+          <!-- ko if:active -->
+          div(class="tab", data-bind="template:viewTmpl,active:active")
+          <!-- /ko -->
+          <!-- /ko -->

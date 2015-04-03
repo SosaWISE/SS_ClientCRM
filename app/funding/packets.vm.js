@@ -1,10 +1,12 @@
 define('src/funding/packets.vm', [
   'src/dataservice',
+  'src/funding/packetsearch.vm',
   'ko',
   'src/core/utils',
   'src/core/controller.vm',
 ], function(
   dataservice,
+  PacketSearchViewModel,
   ko,
   utils,
   ControllerViewModel) {
@@ -40,6 +42,21 @@ define('src/funding/packets.vm', [
   // ** Inherits
   utils.inherits(PacketsViewModel, ControllerViewModel);
   PacketsViewModel.prototype.viewTmpl = 'tmpl-funding-packets';
+  PacketsViewModel.prototype.onLoad = function(routeData, extraData, join) {
+    var _this = this;
+
+    _this.searchVm(new PacketSearchViewModel({
+      pcontroller: _this,
+      id: 'search',
+      title: 'Search Packet',
+      layersVm: _this.layersVm,
+
+    }));
+    _this.defaultChild = _this.searchVm.peek();
+
+    join.add()();
+
+  };
 
   // ** Return VM
   return PacketsViewModel;

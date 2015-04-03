@@ -76,6 +76,13 @@ define('src/core/utils', [
     isDate: function(obj) {
       return (obj instanceof Date);
     },
+    getLocalDateTime: function(obj) {
+      var d = new Date(obj);
+      var t = new Date();
+      var h = t.getTimezoneOffset() / -60;
+
+      return d.setHours(d.getHours() + h);
+    },
     isObject: function(obj) {
       return typeof(obj) === 'object' || (obj instanceof Object);
     },

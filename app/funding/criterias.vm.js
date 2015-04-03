@@ -55,6 +55,7 @@ define('src/funding/criterias.vm', [
     join.add()();
 
   };
+
   // ** Return VM
   return CriteriasViewModel;
 });
