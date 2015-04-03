@@ -65,7 +65,7 @@ define('src/funding/packetsearch.vm', [
     });
 
     _this.gvmItems = new PacketItemSearchGridViewModel({
-      open: _this.open || function(item) {
+      open: function(item) {
         _this.layersVm.show(new PacketItemEditorViewModel({
           item: utils.clone(_this.packetItem) || {
             PacketItemID: item.PacketItemID
