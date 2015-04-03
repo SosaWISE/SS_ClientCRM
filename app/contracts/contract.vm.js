@@ -94,8 +94,6 @@ define("src/contracts/contract.vm", [
     _this.systemDetailsExtras = {
       industry: ko.observable(),
       receiver: ko.observable(),
-      submissionConf: ko.observable(),
-      twoWayConf: ko.observable(),
     };
 
     _this.equipmentGvm = new EquipmentGridViewModel({
@@ -351,20 +349,6 @@ define("src/contracts/contract.vm", [
 
     _this.holdsVm.loader.reset(); //incase of reload
     _this.holdsVm.load(routeData, extraData, join.add());
-
-    var twoWayCb = join.add();
-    loadTwoWayTestData(_this.acctid, function(data) {
-      if (data) {
-        _this.systemDetailsExtras.twoWayConf(data.ConfirmedBy);
-      }
-    }, function(err) {
-      if (err && strings.contains(err.Message, "not implemented")) {
-        // currently only implemented for AvantGuard
-        err = null;
-        _this.systemDetailsExtras.twoWayConf("Not Implemented for Monitoring Station");
-      }
-      twoWayCb(err);
-    });
 
     var cb = join.add();
     subjoin.when(function(err) {
@@ -1240,13 +1224,6 @@ define("src/contracts/contract.vm", [
       id: acctid,
       link: "equipment",
     }, gvm.list, cb);
-  }
-
-  function loadTwoWayTestData(acctid, setter, cb) {
-    dataservice.monitoringstationsrv.msAccounts.read({
-      id: acctid,
-      link: "TwoWayTestData",
-    }, setter, cb);
   }
 
   function refreshInvoice(_this, cb) {

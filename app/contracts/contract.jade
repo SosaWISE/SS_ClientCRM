@@ -192,13 +192,13 @@ div(class="contract-wrap")
               //-@TODO: upgrades - waiting for service endpoints
               li
                 span(class="label") Sales Rep Upgrades
-                input(type="text",data-bind="")
+                input(type="text",disabled,data-bind="")
               //- li
               //-   span(class="label") Rep Upgrades Paid Over
               //-   div(data-bind="")
               li
                 span(class="label") Technician Upgrades
-                input(type="text",data-bind="")
+                input(type="text",disabled,data-bind="")
               //- li
               //-   span(class="label") Tech Upgrades Paid Over
               //-   div(data-bind="")
@@ -207,19 +207,26 @@ div(class="contract-wrap")
                 input(type="text",
                   data-bind="ukov:AccountPassword,value:AccountPassword,valueUpdate:'keyup'")
             //-
-            ul(class="edit-form quad-wide",data-bind="with:systemDetailsExtras")
+            ul(class="edit-form quad-wide")
+              <!-- ko with:salesInfoExtras -->
+              li
+                span(class="label") Nexsense Confirmation #
+                input(type="text",disabled,data-bind="value:AccountSubmitId")
               li
                 span(class="label") Submission Confirmation #
-                input(type="text",disabled,data-bind="value:submissionConf")
+                input(type="text",disabled,data-bind="value:CsConfirmationNumber")
               li
                 span(class="label") 2-Way Confirmation #
-                input(type="text",disabled,data-bind="value:twoWayConf")
+                input(type="text",disabled,data-bind="value:CsTwoWayConfNumber")
+              <!-- /ko -->
+              <!-- ko with:systemDetailsExtras -->
               li
                 span(class="label") Industry/CS #
                 input(type="text",disabled,data-bind="value:industry")
               li
                 span(class="label") Receiver Line
                 input(type="text",disabled,data-bind="value:receiver")
+              <!-- /ko -->
 
             div
               |Total Points:&nbsp;

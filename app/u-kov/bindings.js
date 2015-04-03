@@ -1,6 +1,6 @@
-define('src/u-kov/bindings', [
-  'jquery',
-  'ko',
+define("src/u-kov/bindings", [
+  "jquery",
+  "ko",
 ], function(
   jquery,
   ko
@@ -26,24 +26,29 @@ define('src/u-kov/bindings', [
   };
 
   function updateElement(element, ukovItem) {
-    var cls, title = '';
+    var cls, title = "";
     if (!ukovItem) {
-      throw new Error('no ukovItem');
+      throw new Error("no ukovItem");
     }
     if (ukovItem.isSaving && ukovItem.isSaving()) {
-      cls = 'form-saving';
+      cls = "form-saving";
     } else if (ukovItem.isValid && !ukovItem.isValid()) {
-      cls = 'form-error';
-      title = 'Invalid: ' + ukovItem.errMsg();
+      cls = "form-error";
+      title = "Invalid: " + ukovItem.errMsg();
     } else if (ukovItem.isClean && !ukovItem.isClean()) {
-      cls = 'form-dirty';
+      cls = "form-dirty";
+      //@REVIEW: it would be nice to format this like the value... but how??
+      title = ukovItem.cleanVal.peek();
+      if (title == null) {
+        title = "(null)";
+      }
     } else {
       cls = null;
     }
 
     element = jquery(element);
     //
-    element.attr('title', title);
+    element.attr("title", title);
     //
     if (ukovItem._ukovPrevCls) {
       element.removeClass(ukovItem._ukovPrevCls);
