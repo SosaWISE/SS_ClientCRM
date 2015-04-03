@@ -279,6 +279,9 @@ define("src/core/strings", [
   strings.endsWith = function(str, val) {
     return strWithTest(str, val, false);
   };
+  strings.contains = function(str, val) {
+    return str.indexOf(val) > -1;
+  };
 
   strings.repeat = function(text, num) {
     return new Array(num + 1).join(text);
