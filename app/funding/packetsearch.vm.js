@@ -80,10 +80,10 @@ define('src/funding/packetsearch.vm', [
             value: 'CellularTypeID',
             text: 'CellularTypeName',
           },
-        }), function onClose(result){
-          if (result)  {
+        }), function onClose(result) {
+          if (result) {
             _this.packetItem = result;
-//            _this.updatePacketItemData();
+            //            _this.updatePacketItemData();
           }
         });
       }
