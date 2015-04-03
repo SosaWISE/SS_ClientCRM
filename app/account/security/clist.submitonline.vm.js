@@ -34,6 +34,7 @@ define("src/account/security/clist.submitonline.vm", [
     });
 
     _this.submissionData = ko.observable();
+    _this.salesInfo = ko.observable();
 
     //
     // events
@@ -97,6 +98,8 @@ define("src/account/security/clist.submitonline.vm", [
         _this.dispatchAgencyTypes = val;
       }, join.add());
     }, join.add());
+
+    load_msAccountSalesInformations(_this.accountId, _this.salesInfo, join.add());
   };
 
   function load_dispatchAgencys(accountId, gvm, cb) {
@@ -117,6 +120,12 @@ define("src/account/security/clist.submitonline.vm", [
   function load_dispatchAgencyTypes(msOsId, setter, cb) {
     dataservice.monitoringstationsrv.dispatchAgencyTypes.read({
       id: msOsId,
+    }, setter, cb);
+  }
+
+  function load_msAccountSalesInformations(acctid, setter, cb) {
+    dataservice.monitoringstationsrv.msAccountSalesInformations.read({
+      id: acctid,
     }, setter, cb);
   }
 
