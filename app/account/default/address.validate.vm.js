@@ -368,37 +368,46 @@ define("src/account/default/address.validate.vm", [
     addrData.update(false, true);
   };
 
+  function processSalesRepLicReq(salesLicReq) {
+    var blockProcess = false;
+    salesLicReq.forEach(function(lic) {
+      switch (lic.LockTypeName) {
+        case "Hard Lock":
+          notify.warn("HARD LOCK: " + lic.CallCenterMessage, null, 0);
+          blockProcess = false;
+          break;
+        case "Soft Lock":
+          notify.warn("SOFT LOCK: " + lic.CallCenterMessage, null, 0);
+          blockProcess = false;
+          break;
+        case "No Lock":
+          notify.warn("LICENSING ISSUE: " + lic.CallCenterMessage, null, 0);
+          break;
+      }
+    });
+    return blockProcess;
+  }
+
   function saveAddress(_this, model, cb) {
     dataservice.qualify.address.post(null, model, function(data) {
-      _this.data.setValue(data);
-      _this.data.markClean(data, true);
-      //
-      _this.result(data);
-      // store now since we want to use this even if escape key is pressed...
-      _this.layerResult = _this.result.peek();
-      //
-      _this.focusOk(true);
+      var blockProcess = processSalesRepLicReq(data.SalesLicReq);
+
+      if (!blockProcess) {
+        _this.data.setValue(data.VerifiedAddress);
+        _this.data.markClean(data.VerifiedAddress, true);
+        //
+        _this.result(data.VerifiedAddress);
+        // store now since we want to use this even if escape key is pressed...
+        _this.layerResult = _this.result.peek();
+        //
+        _this.focusOk(true);
+      }
     }, cb);
   }
 
   function validateAddress(_this, model, cb) {
     dataservice.qualify.premiseAddressValidation.post(null, model, function(data) {
-      var blockProcess = false;
-      data.SalesLicReq.forEach(function(lic) {
-        switch (lic.LockTypeName) {
-          case "Hard Lock":
-            notify.warn("HARD LOCK: " + lic.CallCenterMessage, null, 0);
-            blockProcess = false;
-            break;
-          case "Soft Lock":
-            notify.warn("SOFT LOCK: " + lic.CallCenterMessage, null, 0);
-            blockProcess = false;
-            break;
-          case "No Lock":
-            notify.warn("LICENSING ISSUE: " + lic.CallCenterMessage, null, 0);
-            break;
-        }
-      });
+      var blockProcess = processSalesRepLicReq(data.SalesLicReq);
 
       if (!blockProcess) {
         if (data.VerifiedAddress.DPV) { // address validation succeeded
