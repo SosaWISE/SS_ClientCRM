@@ -4,7 +4,7 @@ define("src/contracts/contract.vm", [
   "src/account/security/emcontacts.vm",
   "src/account/security/equipment.gvm",
   "src/account/default/rep.find.vm",
-  "src/account/security/clist.salesinfo.vm",
+  "src/account/salesinfo/options",
   "src/account/default/address.validate.vm",
   "src/account/default/runcredit.vm",
   "src/account/default/search.vm",
@@ -24,7 +24,7 @@ define("src/contracts/contract.vm", [
   EmContactsViewModel,
   EquipmentGridViewModel,
   RepFindViewModel,
-  CListSalesInfoViewModel,
+  salesInfoOptions,
   AddressValidateViewModel,
   RunCreditViewModel,
   SearchViewModel,
@@ -847,21 +847,21 @@ define("src/contracts/contract.vm", [
 
     data.Over3MonthsCvm = new ComboViewModel({
       selectedValue: data.Over3Months,
-      list: CListSalesInfoViewModel.prototype.over3MonthsOptions,
+      list: salesInfoOptions.over3Months,
     });
 
     data.BillingDayCvm = new ComboViewModel({
       selectedValue: data.BillingDay,
-      list: CListSalesInfoViewModel.prototype.billingDayOptions,
+      list: salesInfoOptions.billingDay,
     });
 
     data.cellServiceCvm = new ComboViewModel({
       selectedValue: ko.observable(null),
-      list: CListSalesInfoViewModel.prototype.cellServiceOptions,
+      list: salesInfoOptions.cellService,
     });
     data.CellPackageItemCvm = new ComboViewModel({
       selectedValue: data.CellPackageItemId,
-      list: CListSalesInfoViewModel.prototype.cellPackageItemOptions,
+      list: salesInfoOptions.cellPackageItem,
     });
 
     data.pointSystemsCvm = new ComboViewModel({
@@ -916,7 +916,7 @@ define("src/contracts/contract.vm", [
       }
 
       // filter Cell Packages by the selected Cell Service
-      data.CellPackageItemCvm.setList(CListSalesInfoViewModel.prototype.cellPackageItemOptions.filter(function(item) {
+      data.CellPackageItemCvm.setList(salesInfoOptions.cellPackageItem.filter(function(item) {
         return cellService && strings.startsWith(item.value, cellService);
       }));
       if (!data.CellPackageItemCvm.selectedValue.peek()) {

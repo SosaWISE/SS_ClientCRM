@@ -46,5 +46,7 @@ define("src/nimis/config", [
     hideNotes: false,
   });
 
+  set("salesInfosMax", {});
+
   return config;
 });
