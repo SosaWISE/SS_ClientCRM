@@ -443,9 +443,6 @@ define("src/hr/recruiteditor.vm", [
         return true;
       }
     });
-    if (_this.seasonName.peek() === "unknown season") {
-      debugger;
-    }
     _this.data.SeasonID(item.SeasonID);
     _this.data.RecruitID(item.RecruitID);
     // set item once we have loaded
