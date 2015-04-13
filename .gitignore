@@ -1,7 +1,7 @@
 # Only add patterns specific to this project
 
-# anything dir that ends with 2
-*2/
+# anything dir that ends with t2
+*t2/
 
 ## Windows
 Thumbs.db

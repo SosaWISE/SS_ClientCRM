@@ -1,0 +1,24 @@
+div(class="parts-editor")
+  div(data-bind="spinner:cmdSave.busy,spinner-rgb:'white'")
+
+  //- h2(class="title") Add Part
+  //- div(class="line-top")
+  div
+    ul(class="edit-form")
+      li
+        span(class="label") Part
+        div(data-bind="cvm:data.ItemCvm")
+      li
+        span(class="label") Assign To Sales Rep
+        div(data-bind="cvm:data.AssigneeCvm")
+      li
+        span(class="label") Qty
+        input(type="text",placeholder="",
+          data-bind="ukov:data.Qty,value:data.Qty,valueUpdate:'keyup'")
+
+  div(class="line-top")
+    ul(class="actions")
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:clickCancel") Cancel
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdSave,select:focusOk") Save
