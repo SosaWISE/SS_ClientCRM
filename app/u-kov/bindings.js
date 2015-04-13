@@ -42,6 +42,7 @@ define("src/u-kov/bindings", [
       if (title == null) {
         title = "(null)";
       }
+      title = "Clean: " + title;
     } else {
       cls = null;
     }
@@ -49,14 +50,16 @@ define("src/u-kov/bindings", [
     element = jquery(element);
     //
     element.attr("title", title);
-    //
-    if (ukovItem._ukovPrevCls) {
-      element.removeClass(ukovItem._ukovPrevCls);
+    // store on the element so that the same ukovItem
+    // can be bound to multiple elements simultaneously
+    var ukovPrevCls = element.data("ukovPrevCls");
+    if (ukovPrevCls) {
+      element.removeClass(ukovPrevCls);
     }
     if (cls) {
       element.addClass(cls);
     }
-    ukovItem._ukovPrevCls = cls;
+    element.data("ukovPrevCls", cls);
   }
 
   exports.updateElement = updateElement;

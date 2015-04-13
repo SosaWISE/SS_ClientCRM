@@ -37,7 +37,7 @@ define('src/core/route.spec', [
     });
     it('`regx` property should be a RexExp with expected value', function() {
       expect(route.regx instanceof RegExp).toBe(true);
-      expect(route.regx.toString()).toBe('/^(\/devices)(\/[^\/]*)?(\/[^\/]*)?(\/[^\/]*)?(.*)$/');
+      expect(route.regx.toString()).toBe('/^(\\/devices)(\\/[^\\/]*)?(\\/[^\\/]*)?(\\/[^\\/]*)?(.*)$/');
     });
     it('`parts` property should be an array with expected values', function() {
       expect(Array.isArray(route.parts)).toBe(true);

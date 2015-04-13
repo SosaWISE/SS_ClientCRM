@@ -130,6 +130,10 @@ define("src/account/security/clist.systemtest.vm", [
         },
       }
     });
+
+    _this.vms = [ // nested view models
+      _this.signalHistoryVm,
+    ];
   }
   utils.inherits(CListSystemTestViewModel, ControllerViewModel);
   CListSystemTestViewModel.prototype.viewTmpl = "tmpl-security-clist_systemtest";
@@ -137,8 +141,10 @@ define("src/account/security/clist.systemtest.vm", [
   CListSystemTestViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
     _this.accountId = routeData.id;
-    _this.signalHistoryVm.loader.reset(); //incase of reload
-    _this.signalHistoryVm.load(routeData, extraData, join.add());
+
+    _this.vms.forEach(function(vm) {
+      vm.load(routeData, extraData, join.add());
+    });
 
     reloadActiveTests(_this, join.add());
     loadTwoWayTestData(_this, join.add());

@@ -17,7 +17,7 @@ define('src/core/helpers', [
         loadErr = ko.observable(false);
 
       function once(cb) {
-        if (loaded()) {
+        if (loaded.peek()) {
           if (utils.isFunc(cb)) {
             cb();
           }
@@ -26,7 +26,7 @@ define('src/core/helpers', [
             callbacks.push(cb);
           }
 
-          if (!loading()) {
+          if (!loading.peek()) {
             loading(true);
             if (utils.isFunc(load)) {
               load(loadCb);
@@ -36,7 +36,7 @@ define('src/core/helpers', [
       }
 
       function loadCb(err, bubbleErr) {
-        if (!loading()) {
+        if (!loading.peek()) {
           console.log('onetimer: loadCb called but wasn\'t loading');
           return;
         }
@@ -54,27 +54,31 @@ define('src/core/helpers', [
         return true;
       }
 
-      function canReset() {
-        return !loading();
-      }
+      // function canReset() {
+      //   return !loading.peek();
+      // }
 
       once.loadCb = loadCb;
       once.loaded = loaded;
       once.loading = loading;
       once.loadErr = loadErr;
-      once.canReset = canReset;
-      once.reset = function() {
-        if (canReset()) {
-          loaded(false);
-          loadErr(false);
-          return true;
-        }
+      // once.canReset = canReset;
+      once.reset = function() { //force) {
+        // if (force) {
+        loading(false);
+        callbacks = [];
+        // }
+        // if (canReset()) {
+        loaded(false);
+        loadErr(false);
+        return true;
+        // }
       };
       once.onLoad = function(cb) {
         if (!utils.isFunc(cb)) {
           return;
         }
-        if (loaded()) {
+        if (loaded.peek()) {
           cb();
         } else {
           callbacks.push(cb);

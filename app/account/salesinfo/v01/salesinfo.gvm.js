@@ -1,4 +1,4 @@
-define("src/account/salesinfo/v01.gvm", [
+define("src/account/salesinfo/v01/salesinfo.gvm", [
   "ko",
   "src/slick/buttonscolumn",
   // "src/slick/rowevent",

@@ -1,6 +1,6 @@
 define("src/account/security/clist.salesinfo.vm", [
-  "src/account/salesinfo/v02.vm",
-  "src/account/salesinfo/v01.vm",
+  "src/account/salesinfo/v02/salesinfo.vm",
+  "src/account/salesinfo/v01/salesinfo.vm",
   "ko",
   "src/config",
   "src/core/numbers",
@@ -40,16 +40,21 @@ define("src/account/security/clist.salesinfo.vm", [
     var vm;
     if (acctid <= config.salesInfosMax.v01) {
       vm = new SalesInfoV01ViewModel({
+        pcontroller: _this,
         layersVm: _this.layersVm,
       });
     } else if (acctid <= config.salesInfosMax.v02) {
       vm = new SalesInfoV02ViewModel({
+        pcontroller: _this,
         layersVm: _this.layersVm,
       });
     }
 
     if (vm) {
-      // vm.loader.reset();
+      // _this.vms = [vm];
+      // _this.vms.forEach(function(vm) {
+      //   vm.load(routeData, extraData, join.add());
+      // });
       vm.load(routeData, extraData, join.add());
       _this.vm(vm);
     } else {

@@ -84,6 +84,7 @@ define('src/core/joiner', [
     var _this = this;
     _this._callbacks.push(cb);
     tryWhen(_this);
+    return _this; // allow chaining
   };
   Joiner.prototype.after = function(cb) {
     var _this = this;
@@ -92,6 +93,7 @@ define('src/core/joiner', [
     if (_this._err) {
       tryWhen(_this);
     }
+    return _this; // allow chaining
   };
 
   Joiner.prototype.results = function() {

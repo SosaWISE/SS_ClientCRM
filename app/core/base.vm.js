@@ -1,10 +1,10 @@
-define('src/core/base.vm', [
-  'src/core/strings',
-  'src/core/helpers',
-  'src/core/joiner',
-  'src/core/notify',
-  'src/core/utils',
-  'ko'
+define("src/core/base.vm", [
+  "src/core/strings",
+  "src/core/helpers",
+  "src/core/joiner",
+  "src/core/notify",
+  "src/core/utils",
+  "ko"
 ], function(
   strings,
   helpers,
@@ -34,10 +34,10 @@ define('src/core/base.vm', [
   BaseViewModel.prototype.yesNoOptions = [ //
     {
       value: false,
-      text: 'No'
+      text: "No"
     }, {
       value: true,
-      text: 'Yes'
+      text: "Yes"
     },
   ];
 
@@ -72,7 +72,7 @@ define('src/core/base.vm', [
     var _this = this;
     _this.load = load;
     if (!utils.isFunc(_this.onLoad)) {
-      // only define if it hasn't already been defined
+      // only define if it has not already been defined
       _this.onLoad = utils.no_op;
     }
     _this.loader = helpers.onetimer();
@@ -83,48 +83,37 @@ define('src/core/base.vm', [
   BaseViewModel.prototype.getRouteData = function() {
     return {};
   };
-  BaseViewModel.prototype.reload = function(cb) {
-    var _this = this,
-      canReload = _this.canReload(),
-      routeData;
-    if (canReload) {
-      _this.loader.reset();
-      routeData = _this.getRouteData();
-      _this.load(routeData, {}, cb);
-      if (utils.isFunc(_this.goTo)) { // this is more controller.vm territory... but so is getRouteData...
-        _this.goTo(routeData);
-      }
-    } else {
-      // call now
-      cb();
-    }
-    // return true if reloaded
-    return canReload;
-  };
-  BaseViewModel.prototype.canReload = function() {
+  BaseViewModel.prototype.reset = function(preventNested) {
     var _this = this;
-    return ko.isObservable(_this.mayReload) && _this.loader.canReset();
-  };
-  BaseViewModel.prototype.attemptReload = function() {
-    var _this = this,
-      title = ko.unwrap(_this.title);
-    if (_this.canReload()) {
-      _this.mayReload(true);
-      notify.confirm('Reload Section?',
-        strings.format('Do you want to reload {0}?', title),
-        function(result) {
-          _this.mayReload(false);
-          if (result === 'yes') {
-            if (!_this.reload()) {
-              notify.warn(strings.format('Failed to reload {0}?', title));
-            }
-          }
-        });
-    } else if (ko.isObservable(_this.mayReload)) {
-      notify.warn(strings.format('Currently can\'t reload {0}?', title), null, 5);
-    } else {
-      console.log(title, 'reload not enabled');
+    if (_this.loader) {
+      _this.loader.reset();
     }
+    if (!preventNested && _this.vms) {
+      _this.vms.forEach(function(vm) {
+        vm.reset();
+      });
+    }
+  };
+  BaseViewModel.prototype.reload = function(cb) {
+    var _this = this;
+    _this.reset();
+    var routeData = _this.getRouteData();
+    _this.load(routeData, {}, cb);
+    if (utils.isFunc(_this.goTo)) { // this is more controller.vm territory... but so is getRouteData...
+      _this.goTo(routeData);
+    }
+  };
+  BaseViewModel.prototype.showReload = function() {
+    var _this = this;
+    var title = ko.unwrap(_this.title);
+    var mayReload = _this.mayReload || utils.noop;
+    mayReload(true);
+    notify.confirm("Reload Section?", strings.format("Do you want to reload {0}?", title), function(result) {
+      mayReload(false);
+      if (result === "yes") {
+        _this.reload();
+      }
+    });
   };
   // this will be over written when mixinLoad is called
   BaseViewModel.prototype.load = function(routeData, extraData, cb) {
@@ -147,7 +136,7 @@ define('src/core/base.vm', [
       }
       // active this controller
       _this.onActivate(routeCtx);
-      // we're done with activating
+      // we are done with activating
       routeCtx.done();
     });
   };
@@ -171,6 +160,48 @@ define('src/core/base.vm', [
   };
 
   //
+  BaseViewModel.prototype.vms = null; // nested view models
+  BaseViewModel.prototype.destroy = function() {
+    var _this = this;
+    //
+    _this.deactivate();
+    // remove handlers
+    if (_this.handler) {
+      _this.handler.unsubscribeAll();
+    }
+    // reset loader (but prevent resetting nested view models, since destroy will reset them)
+    _this.reset(true);
+
+    var allVms = [
+      // nested view models
+      ko.utils.peekObservable(_this.vms),
+      // recursively destroy children (kind of specific to controller.vm,
+      // but works for any childs array that is set)
+      ko.utils.peekObservable(_this.childs),
+      // other possible view models
+      [
+        ko.utils.peekObservable(_this.activeChild),
+        ko.utils.peekObservable(_this.vm),
+      ],
+    ];
+    allVms.forEach(function(vms) {
+      if (!vms) {
+        return;
+      }
+      vms.forEach(function(vm) {
+        if (!vm) {
+          return;
+        }
+        vm.destroy();
+      });
+    });
+
+    // destroy self specific data
+    _this.onDestroy();
+  };
+  BaseViewModel.prototype.onDestroy = function() {};
+
+  //
   // static functions
   //
   BaseViewModel.ensureProps = function(obj, propNames) {
@@ -181,7 +212,7 @@ define('src/core/base.vm', [
     ///////TESTING////////////////////////////
     // all too often i pass a join instead of a callback function...
     if (cb && !utils.isFunc(cb)) {
-      throw new Error('load callback must be a function');
+      throw new Error("load callback must be a function");
     }
     ///////TESTING////////////////////////////
 
@@ -190,7 +221,7 @@ define('src/core/base.vm', [
       loader = _this.loader,
       join;
 
-    // call onLoad if it hasn't been called yet
+    // call onLoad if it has not been called yet
     if (!loader.loaded() && !loader.loading()) {
       // add callback to list and set as loading
       loader(cb);
@@ -201,8 +232,8 @@ define('src/core/base.vm', [
         if (errResp) {
           notify.error(errResp);
         }
-        // tell the loader we're done
-        // - we already showed the error so don't pass it along
+        // tell the loader we are done
+        // - we already showed the error so do not pass it along
         loader.loadCb(errResp, false);
       });
     } else {

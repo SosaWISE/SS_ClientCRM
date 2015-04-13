@@ -101,6 +101,10 @@ define("src/account/default/masteraccount.vm", [
     _this.clickNewAccount = function() {
       alert("I do nothing");
     };
+
+    _this.vms = [ // nested view models
+      _this.notesVm,
+    ];
   }
   utils.inherits(MasterAccountViewModel, ControllerViewModel);
   MasterAccountViewModel.prototype.viewTmpl = "tmpl-acct-default-masteraccount";
@@ -127,7 +131,6 @@ define("src/account/default/masteraccount.vm", [
         data.sort(sortByCustomerTypeId);
         _this.customers(data);
 
-        _this.notesVm.loader.reset(); //incase of reload
         _this.notesVm.load(routeData, extraData, utils.safeCallback(join.add(), function() {
           load_billingInfoSummary(_this, _this.id, _this.accounts, join.add());
           load_billingHistory(_this, _this.id, join.add());

@@ -52,9 +52,7 @@ define('src/survey/surveys.panel.vm', [
     tokensVM = new TokensViewModel();
     possibleAnswersVM = new PossibleAnswersViewModel();
 
-    tokensVM.loader.reset(); //incase of reload
     tokensVM.load(routeData, extraData, depJoin.add());
-    possibleAnswersVM.loader.reset(); //incase of reload
     possibleAnswersVM.load(routeData, extraData, depJoin.add());
 
     dataservice.survey.surveyTypes.read({}, null, function(err, resp) {

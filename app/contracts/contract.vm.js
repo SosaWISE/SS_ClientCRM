@@ -1,5 +1,6 @@
 define("src/contracts/contract.vm", [
   "src/app",
+  "src/account/accounts-cache",
   "src/account/security/holds.vm",
   "src/account/security/emcontacts.vm",
   "src/account/security/equipment.gvm",
@@ -11,6 +12,7 @@ define("src/contracts/contract.vm", [
   "src/dataservice",
   "src/ukov",
   "ko",
+  "src/core/subscriptionhandler",
   "src/core/layers.vm",
   "src/core/joiner",
   "src/core/combo.vm",
@@ -20,6 +22,7 @@ define("src/contracts/contract.vm", [
   "src/core/controller.vm",
 ], function(
   app,
+  accountscache,
   HoldsViewModel,
   EmContactsViewModel,
   EquipmentGridViewModel,
@@ -31,6 +34,7 @@ define("src/contracts/contract.vm", [
   dataservice,
   ukov,
   ko,
+  SubscriptionHandler,
   LayersViewModel,
   joiner,
   ComboViewModel,
@@ -66,6 +70,7 @@ define("src/contracts/contract.vm", [
     // utils.assertProps(_this, [
     // ]);
 
+    _this.handler = new SubscriptionHandler();
     _this.layersVm = new LayersViewModel({
       controller: _this,
     });
@@ -87,7 +92,7 @@ define("src/contracts/contract.vm", [
       _this.leadMap[leadVm.typeId] = leadVm;
     });
 
-    _this.salesInfo = getSalesInfoModel();
+    _this.salesInfo = getSalesInfoModel(_this.handler);
     _this.salesInfoExtras = getSalesInfoExtrasModel(_this.layersVm);
     _this.systemDetails = getSystemDetailsModel();
 
@@ -287,6 +292,11 @@ define("src/contracts/contract.vm", [
         id: _this.acctid,
       });
     };
+
+    _this.vms = [ // nested view models
+      _this.emcontactsVm,
+      _this.holdsVm,
+    ];
   }
   utils.inherits(ContractViewModel, ControllerViewModel);
   ContractViewModel.prototype.viewTmpl = "tmpl-contracts-contract";
@@ -344,11 +354,9 @@ define("src/contracts/contract.vm", [
 
     load_equipment(_this.acctid, _this.equipmentGvm, join.add());
 
-    _this.emcontactsVm.loader.reset(); //incase of reload
-    _this.emcontactsVm.load(routeData, extraData, join.add());
-
-    _this.holdsVm.loader.reset(); //incase of reload
-    _this.holdsVm.load(routeData, extraData, join.add());
+    _this.vms.forEach(function(vm) {
+      vm.load(routeData, extraData, join.add());
+    });
 
     var cb = join.add();
     subjoin.when(function(err) {
@@ -728,7 +736,7 @@ define("src/contracts/contract.vm", [
     validators: [],
   };
 
-  function getSalesInfoModel() {
+  function getSalesInfoModel(handler) {
     var schema = _static.ctSchema || (_static.ctSchema = {
       _model: true,
       DealerId: {},
@@ -840,8 +848,8 @@ define("src/contracts/contract.vm", [
     data.CellularTypeCvm = new ComboViewModel({
       selectedValue: data.CellularTypeId,
       fields: {
-        text: "CellularTypeName",
         value: "CellularTypeID",
+        text: "CellularTypeName",
       }
     });
 
@@ -852,29 +860,32 @@ define("src/contracts/contract.vm", [
 
     data.BillingDayCvm = new ComboViewModel({
       selectedValue: data.BillingDay,
-      list: salesInfoOptions.billingDay,
+      list: salesInfoOptions.billingDays,
     });
 
     data.cellServiceCvm = new ComboViewModel({
       selectedValue: ko.observable(null),
-      list: salesInfoOptions.cellService,
-    });
+      fields: accountscache.metadata("cellServiceTypes"),
+    }).subscribe(accountscache.getList("cellServiceTypes"), handler);
     data.CellPackageItemCvm = new ComboViewModel({
       selectedValue: data.CellPackageItemId,
-      list: salesInfoOptions.cellPackageItem,
+      fields: accountscache.metadata("cellPackageItems"),
+    });
+    handler.subscribe(accountscache.getList("cellPackageItems"), function() {
+      updateCellPackageItemCvm(data);
     });
 
     data.pointSystemsCvm = new ComboViewModel({
       fields: {
-        text: "TemplateName",
         value: "InvoiceTemplateID",
+        text: "TemplateName",
       }
     });
     data.ContractTemplatesCvm = new ComboViewModel({
       selectedValue: data.ContractTemplateId,
       fields: {
-        text: "ContractName",
         value: "ContractTemplateID",
+        text: "ContractName",
       }
     });
 
@@ -916,9 +927,10 @@ define("src/contracts/contract.vm", [
       }
 
       // filter Cell Packages by the selected Cell Service
-      data.CellPackageItemCvm.setList(salesInfoOptions.cellPackageItem.filter(function(item) {
-        return cellService && strings.startsWith(item.value, cellService);
-      }));
+      // data.CellPackageItemCvm.setList(salesInfoOptions.cellPackageItem.filter(function(item) {
+      //   return cellService && strings.startsWith(item.value, cellService);
+      // }));
+      updateCellPackageItemCvm(data);
       if (!data.CellPackageItemCvm.selectedValue.peek()) {
         // select first item if one is not selected
         data.CellPackageItemCvm.selectFirst();
@@ -1322,6 +1334,14 @@ define("src/contracts/contract.vm", [
       id: acctid,
       link: strings.format("CustomerAccounts/{0}", customerTypeId),
     }, setter, cb);
+  }
+
+  function updateCellPackageItemCvm(data) {
+    var cellService = data.cellServiceCvm.selectedValue.peek();
+    var list = accountscache.getList("cellPackageItems").peek();
+    data.CellPackageItemCvm.setList(list.filter(function(item) {
+      return cellService && strings.startsWith(item.value, cellService);
+    }));
   }
 
 

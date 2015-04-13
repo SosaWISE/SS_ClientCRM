@@ -211,7 +211,7 @@ define('src/survey/question.vm', [
       surveyVM: _this.topVm,
       surveyTypeVM: _this.topVm.surveyTypeVM,
       tokensVM: _this.topVm.tokensVM,
-      parent: parent,
+      // parent: parent,
       nextName: _this.name.peek(),
       groupOrder: _this.groupOrder.peek(),
     });

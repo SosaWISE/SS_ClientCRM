@@ -1,13 +1,13 @@
-define('src/account/security/parts.editor.vm', [
-  'src/account/default/rep.find.vm',
-  'src/dataservice',
-  'src/core/combo.vm',
-  'src/core/strings',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
-  'ko',
-  'src/ukov',
+define("src/account/salesinfo/v01/parts.editor.vm", [
+  "src/account/default/rep.find.vm",
+  "src/dataservice",
+  "src/core/combo.vm",
+  "src/core/strings",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/base.vm",
+  "ko",
+  "src/ukov",
 ], function(
   RepFindViewModel,
   dataservice,
@@ -29,19 +29,19 @@ define('src/account/security/parts.editor.vm', [
 
     InvoiceID: {
       validators: [
-        ukov.validators.isRequired('Zip code is required'),
+        ukov.validators.isRequired("Zip code is required"),
       ],
     },
     BarcodeId: {
       converter: strConverter,
       validators: [
-        ukov.validators.isRequired('Barcode is required'),
+        ukov.validators.isRequired("Barcode is required"),
       ],
     },
     ItemSku: {
       converter: strConverter,
       validators: [
-        ukov.validators.isRequired('Part # is required'),
+        ukov.validators.isRequired("Part # is required"),
       ],
     },
     Qty: {
@@ -57,10 +57,10 @@ define('src/account/security/parts.editor.vm', [
       assignToList;
     PartsEditorViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
-      'byPart',
-      'invoiceID',
-      'layersVm',
-      'reps',
+      "byPart",
+      "invoiceID",
+      "layersVm",
+      "reps",
     ]);
 
     _this.focusFirst = ko.observable();
@@ -94,7 +94,7 @@ define('src/account/security/parts.editor.vm', [
     assignToList = _this.getAssignToList();
     _this.data.AssignToCvm = new ComboViewModel({
       // try to select first item in assignToList
-      selectedValue: ukov.wrap(assignToList.length ? assignToList[0].value : '', {
+      selectedValue: ukov.wrap(assignToList.length ? assignToList[0].value : "", {
         validators: [ //
           function(value) {
             value = value || null;
@@ -111,7 +111,7 @@ define('src/account/security/parts.editor.vm', [
             }
 
             if (!value) {
-              return 'Please assign the equipment to someone';
+              return "Please assign the equipment to someone";
             }
           },
         ]
@@ -119,10 +119,10 @@ define('src/account/security/parts.editor.vm', [
       list: assignToList,
       actions: [ //
         {
-          text: 'Find Rep',
+          text: "Find Rep",
           onClick: function(filterText) {
             var vm = new RepFindViewModel({
-              title: 'Find Rep',
+              title: "Find Rep",
               text: filterText,
             });
             if (filterText.length) {
@@ -158,7 +158,7 @@ define('src/account/security/parts.editor.vm', [
       }
       dataservice.invoicesrv.invoiceItems.save({
         id: _this.invoiceID,
-        link: _this.byPart ? 'AddByPartNumber' : 'AddByBarcode',
+        link: _this.byPart ? "AddByPartNumber" : "AddByBarcode",
         data: _this.data.getValue(),
       }, null, utils.safeCallback(cb, function(err, resp) {
         _this.layerResult = resp.Value;
@@ -169,9 +169,9 @@ define('src/account/security/parts.editor.vm', [
     });
   }
   utils.inherits(PartsEditorViewModel, BaseViewModel);
-  PartsEditorViewModel.prototype.viewTmpl = 'tmpl-security-parts_editor';
+  PartsEditorViewModel.prototype.viewTmpl = "tmpl-salesinfo-v01-parts_editor";
   PartsEditorViewModel.prototype.width = 290;
-  PartsEditorViewModel.prototype.height = 'auto';
+  PartsEditorViewModel.prototype.height = "auto";
 
   function closeLayer(_this) {
     if (_this.layer) {
@@ -186,7 +186,7 @@ define('src/account/security/parts.editor.vm', [
     var _this = this,
       msg;
     if (_this.cmdSave.busy() && !_this.layerResult) {
-      msg = 'Please wait for save to finish.';
+      msg = "Please wait for save to finish.";
     }
     return msg;
   };
@@ -196,7 +196,7 @@ define('src/account/security/parts.editor.vm', [
     return _this.reps.map(function(rep) {
       return {
         value: rep.CompanyID,
-        text: strings.format('{0} - {1}', rep.CompanyID, strings.joinTrimmed(' ', rep.FirstName, rep.LastName)),
+        text: strings.format("{0} - {1}", rep.CompanyID, strings.joinTrimmed(" ", rep.FirstName, rep.LastName)),
         // cssClass: css,
       };
     });

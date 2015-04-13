@@ -1,14 +1,16 @@
-define("src/account/salesinfo/v02.vm", [
+define("src/account/salesinfo/v01/salesinfo.vm", [
   "underscore",
-  "src/account/security/parts.editor.vm",
+  "src/account/accounts-cache",
+  "src/account/salesinfo/v01/parts.editor.vm",
   "src/app",
   "src/config",
   "src/slick/buttonscolumn",
   "src/account/security/frequent.gvm",
-  "src/account/salesinfo/v02.gvm",
+  "src/account/salesinfo/v01/salesinfo.gvm",
   "src/account/salesinfo/options",
   "src/ukov",
   "src/dataservice",
+  "src/core/subscriptionhandler",
   "src/core/numbers",
   "src/core/strings",
   "src/core/notify",
@@ -18,15 +20,17 @@ define("src/account/salesinfo/v02.vm", [
   "src/core/combo.vm",
 ], function(
   underscore,
+  accountscache,
   PartsEditorViewModel,
   app,
   config,
   ButtonsColumn,
   FrequentGridViewModel,
-  SalesInfoV02GridViewModel,
+  SalesInfoV01GridViewModel,
   salesInfoOptions,
   ukov,
   dataservice,
+  SubscriptionHandler,
   numbers,
   strings,
   notify,
@@ -149,52 +153,21 @@ define("src/account/salesinfo/v02.vm", [
     },
     // ContractLength: {},
     ContractTemplateId: {},
-
-
-
-    HasUpgrades: {},
-    UpgradesCost: {},
-    UpgradesOver3Months: {},
   };
 
-  function SalesInfoV02ViewModel(options) {
+  function SalesInfoViewModel(options) {
     var _this = this;
-    SalesInfoV02ViewModel.super_.call(_this, options);
+    SalesInfoViewModel.super_.call(_this, options);
     utils.assertProps(_this, ["layersVm"]);
 
     _this.mixinLoad();
+    _this.handler = new SubscriptionHandler();
+    // _this.subs = new SubscriptionHandler();
 
-    _this.subs = [];
     _this.title = ko.observable(_this.title);
     _this.data = ukov.wrap({
       DealerId: app.user().DealerId,
     }, schema);
-
-    _this.systemTypeCvm = new ComboViewModel({
-      selectedValue: ko.observable("NEW"),
-      list: salesInfoOptions.systemTypes,
-    });
-    _this.showExistingEquipment = ko.computed(function() {
-      return _this.systemTypeCvm.selectedValue() === "TKO";
-    });
-    _this.data.PackageCvm = new ComboViewModel({
-      // fields: {
-      //   text: "Name",
-      //   value: "ID",
-      // }
-    });
-
-    _this.data.HasUpgradesCvm = new ComboViewModel({
-      selectedValue: _this.data.HasUpgrades,
-      list: _this.yesNoOptions,
-    });
-    _this.data.UpgradesOver3MonthsCvm = new ComboViewModel({
-      selectedValue: _this.data.UpgradesOver3Months,
-      list: salesInfoOptions.over3Months,
-    });
-
-
-
     _this.data.PanelTypeCvm = new ComboViewModel({
       selectedValue: _this.data.PanelTypeId,
       nullable: true,
@@ -206,15 +179,15 @@ define("src/account/salesinfo/v02.vm", [
     _this.data.CellularTypeCvm = new ComboViewModel({
       selectedValue: _this.data.CellularTypeId,
       fields: {
-        text: "CellularTypeName",
         value: "CellularTypeID",
-      }
+        text: "CellularTypeName",
+      },
     });
     // _this.data.AlarmComPackageCvm = new ComboViewModel({
     //   selectedValue: _this.data.AlarmComPackageId,
     //   fields: {
-    //     text: "PackageName",
     //     value: "AlarmComPackageID",
+    //     text: "PackageName",
     //   }
     // });
 
@@ -224,11 +197,11 @@ define("src/account/salesinfo/v02.vm", [
     });
     _this.data.PaymentTypeCvm = new ComboViewModel({
       selectedValue: _this.data.PaymentTypeId,
-      list: salesInfoOptions.paymentType,
+      fields: accountscache.metadata("paymentTypes"),
     });
     _this.data.BillingDayCvm = new ComboViewModel({
       selectedValue: _this.data.BillingDay,
-      list: salesInfoOptions.billingDay,
+      list: salesInfoOptions.billingDays,
     });
     _this.data.IsTakeOverCvm = new ComboViewModel({
       selectedValue: _this.data.IsTakeOver,
@@ -240,18 +213,23 @@ define("src/account/salesinfo/v02.vm", [
     });
     _this.data.cellServiceCvm = new ComboViewModel({
       selectedValue: ko.observable(null),
-      list: salesInfoOptions.cellService,
+      fields: accountscache.metadata("cellServiceTypes"),
     });
     _this.data.CellPackageItemCvm = new ComboViewModel({
       selectedValue: _this.data.CellPackageItemId,
-      list: salesInfoOptions.cellPackageItem,
+      fields: accountscache.metadata("cellPackageItems"),
     });
 
     _this.data.IsMoniCvm = new ComboViewModel({
       selectedValue: _this.data.IsMoni,
-      list: salesInfoOptions.monitoringStation,
+      list: salesInfoOptions.isMonitronics,
     });
 
+    _this.handler.subscribe(accountscache.getList("paymentTypes"), _this.data.PaymentTypeCvm.setList);
+    _this.handler.subscribe(accountscache.getList("cellServiceTypes"), _this.data.cellServiceCvm.setList);
+    _this.handler.subscribe(accountscache.getList("cellPackageItems"), function() {
+      updateCellPackageItemCvm(_this);
+    });
 
 
     _this.pointSystemsCvm = new ComboViewModel({
@@ -275,7 +253,7 @@ define("src/account/salesinfo/v02.vm", [
         showPartsEditor(_this, true, part.ItemSKU, null);
       },
     });
-    _this.partsGvm = new SalesInfoV02GridViewModel({
+    _this.partsGvm = new SalesInfoV01GridViewModel({
       deletePart: function(part) {
         dataservice.invoicesrv.invoiceItems.del(part.InvoiceItemID, null, utils.safeCallback(null, function(err, resp) {
           if (resp.Value) {
@@ -334,9 +312,10 @@ define("src/account/salesinfo/v02.vm", [
       }
 
       // filter Cell Packages by the selected Cell Service
-      _this.data.CellPackageItemCvm.setList(salesInfoOptions.cellPackageItem.filter(function(item) {
-        return cellService && strings.startsWith(item.value, cellService);
-      }));
+      // _this.data.CellPackageItemCvm.setList(accountscache.getList("cellPackageItems").peek().filter(function(item) {
+      //   return cellService && strings.startsWith(item.value, cellService);
+      // }));
+      updateCellPackageItemCvm(_this);
       if (!_this.data.CellPackageItemCvm.selectedValue.peek()) {
         // select first item if one is not selected
         _this.data.CellPackageItemCvm.selectFirst();
@@ -366,10 +345,10 @@ define("src/account/salesinfo/v02.vm", [
     // bind scope and do not rapid fire requests
     _this.refreshInvoice = underscore.debounce(_this.refreshInvoice.bind(_this), 100);
   }
-  utils.inherits(SalesInfoV02ViewModel, BaseViewModel);
-  SalesInfoV02ViewModel.prototype.viewTmpl = "tmpl-salesinfo-v02";
+  utils.inherits(SalesInfoViewModel, BaseViewModel);
+  SalesInfoViewModel.prototype.viewTmpl = "tmpl-salesinfo-v01-salesinfo";
 
-  SalesInfoV02ViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+  SalesInfoViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       accountid = routeData.id,
       customerEmail,
@@ -380,13 +359,14 @@ define("src/account/salesinfo/v02.vm", [
 
     _this.currData = null; // clear (incase of reload)
 
-    // remove old subscriptions
-    _this.subs.forEach(function(s) {
-      s.dispose();
-    });
-    _this.subs = [];
+    // remove old subscriptions to refreshInvoice
+    _this.handler.unsubscribe(_this.refreshInvoice);
 
     _this.data.AccountId(accountid);
+
+    accountscache.ensure("paymentTypes", join.add());
+    accountscache.ensure("cellServiceTypes", join.add());
+    accountscache.ensure("cellPackageItems", join.add());
 
     //
     // 1 - load types
@@ -452,19 +432,19 @@ define("src/account/salesinfo/v02.vm", [
     //
     join3.after(function(err) {
       if (!err) {
-        // // subscribe to updates after everyting has been set
-        // Object.keys(_this.data.doc).forEach(function(key) {
-        //   _this.subs.push(_this.data[key].subscribe(_this.refreshInvoice));
-        // });
-        // // try to refresh whenever the cell service changes
-        // //  - only needed when there is an error on a previous refresh
-        // _this.subs.push(_this.data.cellServiceCvm.selectedValue.subscribe(_this.refreshInvoice));
+        // subscribe to updates after everyting has been set
+        Object.keys(_this.data.doc).forEach(function(key) {
+          _this.handler.subscribe(_this.data[key], _this.refreshInvoice);
+        });
+        // try to refresh whenever the cell service changes
+        //  - only needed when there is an error on a previous refresh
+        _this.handler.subscribe(_this.data.cellServiceCvm.selectedValue, _this.refreshInvoice);
       }
       cb(err);
     });
   };
 
-  SalesInfoV02ViewModel.prototype.num = function(first) {
+  SalesInfoViewModel.prototype.num = function(first) {
     var _this = this;
     if (first) {
       _this._num = first;
@@ -474,12 +454,12 @@ define("src/account/salesinfo/v02.vm", [
     //
     return strings.format("{0}.", _this._num++);
   };
-  SalesInfoV02ViewModel.prototype.subnum = function() {
+  SalesInfoViewModel.prototype.subnum = function() {
     var _this = this;
     return strings.format("{0}.{1}.", _this._num - 1, _this._subnum++);
   };
 
-  SalesInfoV02ViewModel.prototype.refreshInvoice = function(cb) {
+  SalesInfoViewModel.prototype.refreshInvoice = function(cb) {
     var _this = this,
       data;
     if (!utils.isFunc(cb)) {
@@ -580,10 +560,6 @@ define("src/account/salesinfo/v02.vm", [
           IsOwner: true,
           // IsMoni: false,
 
-          HasUpgrades: false,
-          UpgradesCost: 0,
-          UpgradesOver3Months: false,
-
           // ContractTemplate: 60, // ?????????????
           // Setup1stMonth: 199.00, // ?????????????
           // SetupFee: 199.00, // ?????????????
@@ -661,5 +637,13 @@ define("src/account/salesinfo/v02.vm", [
     };
   }
 
-  return SalesInfoV02ViewModel;
+  function updateCellPackageItemCvm(_this) {
+    var cellService = _this.data.cellServiceCvm.selectedValue.peek();
+    var list = accountscache.getList("cellPackageItems").peek();
+    _this.data.CellPackageItemCvm.setList(list.filter(function(item) {
+      return cellService && strings.startsWith(item.value, cellService);
+    }));
+  }
+
+  return SalesInfoViewModel;
 });

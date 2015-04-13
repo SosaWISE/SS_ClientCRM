@@ -5,7 +5,6 @@ define("src/account/security/equipment.vm", [
   "src/account/security/equipment.editor.vm",
   "src/account/security/equipment.gvm",
   "src/core/strings",
-  "src/core/layers.vm",
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
@@ -16,7 +15,6 @@ define("src/account/security/equipment.vm", [
   EquipmentEditorViewModel,
   EquipmentGridViewModel,
   strings,
-  LayersViewModel,
   notify,
   utils,
   ControllerViewModel
@@ -28,6 +26,7 @@ define("src/account/security/equipment.vm", [
     EquipmentViewModel.super_.call(_this, options);
 
     _this.gvm = new EquipmentGridViewModel({
+      existingOnly: _this.existingOnly,
       edit: function(eqItem, cb) {
         //showDispatchAgencyEditor(_this, agency, cb);
         showEquipmentEditor(_this, "", utils.clone(eqItem), cb);

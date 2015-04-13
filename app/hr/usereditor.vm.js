@@ -249,11 +249,6 @@ define("src/hr/usereditor.vm", [
       "layersVm",
     ]);
 
-    var idTxtFields = {
-      value: "ID",
-      text: "Txt",
-    };
-
     _this.focusFirst = ko.observable(false);
     _this.data = ukov.wrap({
       UserID: _this.userid || 0,
@@ -262,47 +257,41 @@ define("src/hr/usereditor.vm", [
     _this.data.ShirtSizeCvm = new ComboViewModel({
       selectedValue: _this.data.ShirtSize,
       nullable: true,
-      fields: idTxtFields,
+      fields: hrcache.metadata("shirtSizes"),
     });
     _this.data.UserEmployeeTypeCvm = new ComboViewModel({
       selectedValue: _this.data.UserEmployeeTypeId,
       nullable: true,
-      fields: {
-        value: "UserEmployeeTypeID",
-        text: "UserEmployeeTypeName",
-      },
+      fields: hrcache.metadata("userEmployeeTypes"),
     });
     _this.data.HatSizeCvm = new ComboViewModel({
       selectedValue: _this.data.HatSize,
       nullable: true,
-      fields: idTxtFields,
+      fields: hrcache.metadata("hatSizes"),
     });
     _this.data.EyeColorCvm = new ComboViewModel({
       selectedValue: _this.data.EyeColor,
       nullable: true,
-      fields: idTxtFields,
+      fields: hrcache.metadata("eyeColors"),
     });
     _this.data.HairColorCvm = new ComboViewModel({
       selectedValue: _this.data.HairColor,
       nullable: true,
-      fields: idTxtFields,
+      fields: hrcache.metadata("hairColors"),
     });
     _this.data.SexCvm = new ComboViewModel({
       selectedValue: _this.data.Sex,
-      fields: idTxtFields,
+      fields: hrcache.metadata("shirtSizes"),
     });
     _this.data.MaritalStatusCvm = new ComboViewModel({
       selectedValue: _this.data.MaritalStatus,
       nullable: true,
-      fields: idTxtFields,
+      fields: hrcache.metadata("maritalStatuses"),
     });
     _this.data.PhoneCellCarrierCvm = new ComboViewModel({
       selectedValue: _this.data.PhoneCellCarrierID,
       nullable: true,
-      fields: {
-        value: "PhoneCellCarrierID",
-        text: "Description",
-      },
+      fields: hrcache.metadata("phoneCellCarriers"),
     });
     _this.tcmdActive = ko.command(function(cb) {
       var toggle = _this.tcmdActive.toggle;

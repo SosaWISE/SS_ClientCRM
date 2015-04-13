@@ -42,65 +42,7 @@ define("src/account/security/equipment.gvm", [
           },
         }),
       ],
-      columns: [ //
-        {
-          id: "Zone",
-          name: "Zone",
-          field: "Zone",
-        }, {
-          id: "ActualPoints",
-          name: "Points",
-          field: "ActualPoints",
-        }, {
-          id: "ItemDesc",
-          name: "Equipment",
-          field: "ItemDesc",
-        }, {
-          id: "ItemSKU",
-          name: "Part #",
-          field: "ItemSKU",
-        }, {
-          id: "EquipmentLocationDesc",
-          name: "Location",
-          field: "EquipmentLocationDesc",
-        }, {
-          id: "BarcodeId",
-          name: "Barcode",
-          field: "BarcodeId",
-        }, {
-          id: "GPEmployeeId",
-          name: "Assigned To",
-          field: "GPEmployeeId",
-        }, {
-          id: "IsExistingWiring",
-          name: "Existing Wiring",
-          field: "IsExistingWiring",
-          minWidth: 15,
-          width: 30,
-          formatter: SlickGridViewModel.formatters.xFormatter,
-        }, {
-          id: "IsExisting",
-          name: "Existing Equipment",
-          field: "IsExisting",
-          minWidth: 15,
-          width: 30,
-          formatter: SlickGridViewModel.formatters.xFormatter,
-        }, {
-          id: "IsServiceUpgrade",
-          name: "Tech Upgrade",
-          field: "IsServiceUpgrade",
-          minWidth: 15,
-          width: 30,
-          formatter: SlickGridViewModel.formatters.xFormatter,
-        }, {
-          id: "Price",
-          name: "Upgrade Price",
-          field: "Price",
-          formatter: function(row, cell, value, columnDef, dataCtx) {
-            return (value > 0 && dataCtx.IsServiceUpgrade) ? strings.formatters.currency(value) : "";
-          },
-        },
-      ],
+      columns: getColumns(options),
     });
 
     _this.totalPoints = ko.computed(function() {
@@ -135,6 +77,76 @@ define("src/account/security/equipment.gvm", [
     }
   }
   utils.inherits(EquipmentGridViewModel, SlickGridViewModel);
+
+  function getColumns(options) {
+    var columns = [ //
+      {
+        id: "Zone",
+        name: "Zone",
+        field: "Zone",
+      }, {
+        id: "ActualPoints",
+        name: "Points",
+        field: "ActualPoints",
+      }, {
+        id: "ItemDesc",
+        name: "Equipment",
+        field: "ItemDesc",
+      }, {
+        id: "ItemSKU",
+        name: "Part #",
+        field: "ItemSKU",
+      }, {
+        id: "EquipmentLocationDesc",
+        name: "Location",
+        field: "EquipmentLocationDesc",
+      },
+    ];
+
+    if (options.existingOnly) {
+      return columns;
+    }
+
+    return columns.concat([ //
+      {
+        id: "BarcodeId",
+        name: "Barcode",
+        field: "BarcodeId",
+      }, {
+        id: "GPEmployeeId",
+        name: "Assigned To",
+        field: "GPEmployeeId",
+      }, {
+        id: "IsExistingWiring",
+        name: "Existing Wiring",
+        field: "IsExistingWiring",
+        minWidth: 15,
+        width: 30,
+        formatter: SlickGridViewModel.formatters.xFormatter,
+      }, {
+        id: "IsExisting",
+        name: "Existing Equipment",
+        field: "IsExisting",
+        minWidth: 15,
+        width: 30,
+        formatter: SlickGridViewModel.formatters.xFormatter,
+      }, {
+        id: "IsServiceUpgrade",
+        name: "Tech Upgrade",
+        field: "IsServiceUpgrade",
+        minWidth: 15,
+        width: 30,
+        formatter: SlickGridViewModel.formatters.xFormatter,
+      }, {
+        id: "Price",
+        name: "Upgrade Price",
+        field: "Price",
+        formatter: function(row, cell, value, columnDef, dataCtx) {
+          return (value > 0 && dataCtx.IsServiceUpgrade) ? strings.formatters.currency(value) : "";
+        },
+      },
+    ]);
+  }
 
   function EquipmentByPartGridViewModel() {
     var _this = this;

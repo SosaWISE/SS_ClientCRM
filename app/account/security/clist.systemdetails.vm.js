@@ -1,7 +1,7 @@
 define("src/account/security/clist.systemdetails.vm", [
   "src/account/default/rep.find.vm",
   "src/account/security/systemdetails.editor.vm",
-  "src/account/security/clist.equipment.vm",
+  "src/account/security/equipment.vm",
   "src/core/notify",
   "src/dataservice",
   "ko",
@@ -10,7 +10,7 @@ define("src/account/security/clist.systemdetails.vm", [
 ], function(
   RepFindViewModel,
   SystemDetailsEditorViewModel,
-  CListEquipmentViewModel,
+  EquipmentViewModel,
   notify,
   dataservice,
   ko,
@@ -21,7 +21,6 @@ define("src/account/security/clist.systemdetails.vm", [
 
   function CListSystemDetailsViewModel(options) {
     var _this = this;
-
     CListSystemDetailsViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
@@ -29,7 +28,7 @@ define("src/account/security/clist.systemdetails.vm", [
     _this.repData = ko.observable();
     _this.systemData = ko.observable();
 
-    _this.equipmentVm = new CListEquipmentViewModel({
+    _this.equipmentVm = new EquipmentViewModel({
       pcontroller: _this,
       layersVm: _this.layersVm,
     });
@@ -95,6 +94,10 @@ define("src/account/security/clist.systemdetails.vm", [
     }, function(busy) {
       return !busy;
     });
+
+    _this.vms = [ // nested view models
+      _this.equipmentVm,
+    ];
   }
   utils.inherits(CListSystemDetailsViewModel, ControllerViewModel);
   CListSystemDetailsViewModel.prototype.viewTmpl = "tmpl-security-clist_systemdetails";
@@ -104,8 +107,9 @@ define("src/account/security/clist.systemdetails.vm", [
 
     _this.accountId = routeData.id;
 
-    _this.equipmentVm.loader.reset(); //incase of reload
-    _this.equipmentVm.load(routeData, extraData, join.add());
+    _this.vms.forEach(function(vm) {
+      vm.load(routeData, extraData, join.add());
+    });
 
     load_types("panelTypes", function(results) {
       _this.panelTypes = results;

@@ -1,132 +1,141 @@
 /* global describe, it, expect, beforeEach */
-define('src/core/harold.spec', [
-  'src/core/harold'
+define("src/core/harold.spec", [
+  "src/core/harold"
 ], function(
   harold
 ) {
   "use strict";
 
-  describe('harold', function() {
+  describe("harold", function() {
     var h;
     beforeEach(function() {
       // start anew
       h = harold.create();
     });
 
-    it('should have a `fetch` function', function() {
-      expect(typeof harold.fetch).toBe('function');
+    it("should have a `fetch` function", function() {
+      expect(typeof harold.fetch).toBe("function");
     });
-    it('should have an `onFetch` function', function() {
-      expect(typeof harold.onFetch).toBe('function');
+    it("should have an `onFetch` function", function() {
+      expect(typeof harold.onFetch).toBe("function");
     });
-    it('should have an `unFetch` function', function() {
-      expect(typeof harold.unFetch).toBe('function');
+    it("should have an `offFetch` function", function() {
+      expect(typeof harold.offFetch).toBe("function");
     });
-    it('should have a `send` function', function() {
-      expect(typeof harold.send).toBe('function');
+    it("should have a `send` function", function() {
+      expect(typeof harold.send).toBe("function");
     });
-    it('should have an `onSend` function', function() {
-      expect(typeof harold.onSend).toBe('function');
+    it("should have an `on` function", function() {
+      expect(typeof harold.on).toBe("function");
     });
-    it('should have an `unSend` function', function() {
-      expect(typeof harold.unSend).toBe('function');
+    it("should have an `off` function", function() {
+      expect(typeof harold.off).toBe("function");
     });
 
-    describe('fetch', function() {
-      it('should throw exception when the is no `onFetch` function', function() {
+    describe("fetch", function() {
+      it("should throw exception when the is no `onFetch` function", function() {
         expect(function() {
-          h.fetch('evt:name');
+          h.fetch("evt:name");
         }).toThrow();
       });
-      it('should return result of `onFetch` function', function() {
-        var ctx = {},
-          result = 'onFetch result';
-        h.onFetch('evt:name', ctx, function() {
-          return result;
+      it("should return result of `onFetch` function", function() {
+        h.onFetch("evt:name", function() {
+          return "abc";
         });
-        expect(h.fetch('evt:name')).toBe(result);
+        expect(h.fetch("evt:name")).toBe("abc");
       });
     });
 
-    describe('send', function() {
-      it('should run even when there are no `onSend` functions', function() {
+    describe("send", function() {
+      it("should run even when there are no subscriptions", function() {
         expect(function() {
-          h.send('evt:name');
+          h.send("evt:name");
         }).not.toThrow();
       });
-      it('should send data to all `onSend` functions', function() {
-        var ctx = {},
-          sendValues = [];
-        h.onSend('evt:NO', ctx, function(data) {
-          sendValues.push(data + 'NO');
+      it("should send data to all subscriptions", function() {
+        var sendValues = [];
+        h.on("evt:NO", function(data) {
+          sendValues.push(data + "NO");
         });
-        h.onSend('evt:name', ctx, function(data) {
-          sendValues.push(data + '1');
+        h.on("evt:name", function(data) {
+          sendValues.push(data + "1");
         });
-        h.onSend('evt:name', ctx, function(data) {
-          sendValues.push(data + '2');
-        });
-        //
-        h.send('evt:name', 'val');
-        //
-        expect(sendValues.length).toBe(2);
-        expect(sendValues[0]).toBe('val1');
-        expect(sendValues[1]).toBe('val2');
-      });
-      it('should call `onSend` functions with correct context', function() {
-        var ctx = {},
-          sendCtx;
-        h.onSend('evt:name', ctx, function() {
-          sendCtx = this;
+        h.on("evt:name", function(data) {
+          sendValues.push(data + "2");
         });
         //
-        h.send('evt:name', 'val');
+        h.send("evt:name", "val");
         //
-        expect(sendCtx).toBe(ctx);
+        expect(sendValues).toEqual(["val1", "val2"]);
       });
     });
-    describe('unSend', function() {
-      it('should remove `onSend` functions that match eventName and context', function() {
-        var ctx1 = {},
-          ctx2 = {},
-          sendValues = [];
-        h.onSend('evt:a', ctx1, function(data) {
-          sendValues.push(data + 'a1');
-        });
-        h.onSend('evt:a', ctx2, function(data) {
-          sendValues.push(data + 'a2');
-        });
-        h.onSend('evt:b', ctx1, function(data) {
-          sendValues.push(data + 'b1');
-        });
-        h.onSend('evt:b', ctx2, function(data) {
-          sendValues.push(data + 'b2');
-        });
-        // remove
-        h.unSend('evt:a', ctx1);
-        h.unSend('evt:b', ctx2);
+    describe("off", function() {
+      it("should remove subscriptions that match eventName and function", function() {
+        var sendValues = [];
         //
-        h.send('evt:a', 'val');
-        h.send('evt:b', 'val');
-        expect(sendValues.length).toBe(2);
-        expect(sendValues[0]).toBe('vala2');
-        expect(sendValues[1]).toBe('valb1');
+        function a1(data) {
+          sendValues.push(data + "1");
+        }
+        //
+        function a2(data) {
+          sendValues.push(data + "2");
+        }
+        //
+        h.on("evt:a", a1);
+        h.on("evt:a", a1); // duplicates are allowed...
+        h.on("evt:a", a2);
+        //
+        h.send("evt:a", "one");
+        // remove
+        h.off("evt:a", a2);
+        //
+        h.send("evt:a", "two");
+        //
+        expect(sendValues).toEqual(["one1", "one1", "one2", "two1", "two1"]);
       });
-      it('no context should remove all `onSend` functions that match eventName', function() {
-        var ctx1 = {},
-          ctx2 = {},
-          sendValues = [];
-        h.onSend('evt:a', ctx1, function() {
-          sendValues.push('a1');
+      it("no function should remove all subscriptions that match eventName", function() {
+        var sendValues = [];
+        h.on("evt:a", function() {
+          sendValues.push("a1");
         });
-        h.onSend('evt:a', ctx2, function() {
-          sendValues.push('a2');
+        h.on("evt:a", function() {
+          sendValues.push("a2");
+        });
+        h.on("evt:b", function() {
+          sendValues.push("b1");
         });
         // remove all
-        h.unSend('evt:a', null);
+        h.off("evt:a");
         //
-        h.send('evt:a', 'val');
-        expect(sendValues.length).toBe(0);
+        h.send("evt:a", "val");
+        h.send("evt:b", "val");
+        //
+        expect(sendValues).toEqual(["b1"]);
+      });
+    });
+    describe("once", function() {
+      it("should be called only one time", function() {
+        var sendValues = [];
+        h.once("evt:a", function(data) {
+          sendValues.push(data + "a1");
+        });
+        //
+        h.send("evt:a", "val");
+        h.send("evt:a", "val");
+        //
+        expect(sendValues).toEqual(["vala1"]);
+      });
+      it("should be removed by `off`", function() {
+        var sendValues = [];
+        //
+        function a1(data) {
+          sendValues.push(data + "a1");
+        }
+        h.once("evt:a", a1);
+        //
+        h.off("evt:a", a1);
+        //
+        expect(sendValues).toEqual([]);
       });
     });
   });

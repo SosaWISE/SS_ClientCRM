@@ -1,14 +1,11 @@
-define('src/core/harold', [
-  'src/core/arrays'
+define("src/core/harold", [
+  "src/core/arrays"
 ], function(
   arrays
 ) {
   "use strict";
 
-  function Harold() {
-    this._fetchers = {};
-    this._listeners = {};
-  }
+  function Harold() {}
   Harold.prototype.create = function() {
     return new Harold();
   };
@@ -17,85 +14,98 @@ define('src/core/harold', [
   //
   // fetch
   //
-  Harold.prototype.fetch = function(eventName) {
-    var fetcher = this._fetchers[eventName];
+  Harold.prototype.fetch = function(event) {
+    this._fetchers = this._fetchers || {};
+    var fetcher = this._fetchers[event];
     if (!fetcher) {
-      throw new Error('no fetcher');
+      throw new Error("no fetcher");
     }
-    return fetcher.cb.apply(fetcher.ctx, arrays.argsToArray(arguments, 1));
+    return fetcher.cb.apply(this, arrays.argsToArray(arguments, 1));
   };
-  Harold.prototype.onFetch = function(eventName, context, callback) {
-    if (!eventName || !context || !callback) {
-      throw new Error('invalid args');
+  Harold.prototype.onFetch = function(event, callback) {
+    if (!event || !callback) {
+      throw new Error("missing event name and/or callback");
     }
 
-    if (this._fetchers[eventName]) {
-      throw new Error('duplicate fetcher: \'' + eventName + '\'');
+    this._fetchers = this._fetchers || {};
+    if (this._fetchers[event]) {
+      throw new Error("duplicate fetcher: '" + event + "'");
     }
-    this._fetchers[eventName] = {
+    this._fetchers[event] = {
       cb: callback,
-      ctx: context
     };
   };
-  Harold.prototype.unFetch = function(eventName) {
-    delete this._fetchers[eventName];
+  Harold.prototype.offFetch = function(event) {
+    this._fetchers = this._fetchers || {};
+    delete this._fetchers[event];
   };
 
 
   //
   // send
   //
-  Harold.prototype.send = function(eventName) {
-    var eventListeners = this._listeners[eventName],
-      args;
-    if (eventListeners) {
-      // create args array
-      args = arrays.argsToArray(arguments, 1);
-      // copy listeners
-      eventListeners = arrays.argsToArray(eventListeners);
-      // send
-      eventListeners.forEach(function(listener) {
-        listener.cb.apply(listener.ctx, args);
-      });
-    }
-  };
-  Harold.prototype.onSend = function(eventName, context, callback) {
-    if (!eventName || !context || !callback) {
-      throw new Error('invalid args');
-    }
 
-    var eventListeners = this._listeners[eventName];
-    if (!eventListeners) {
-      this._listeners[eventName] = eventListeners = [];
-    }
-    eventListeners.push({
-      cb: callback,
-      ctx: context
-    });
-  };
-  Harold.prototype.unSend = function(eventName, context) {
-    if (!eventName) {
-      throw new Error('invalid args');
-    }
-
-    var newListeners, eventListeners = this._listeners[eventName];
-    if (eventListeners) {
-      newListeners = [];
-      if (context) {
-        eventListeners.forEach(function(listener) {
-          if (listener.ctx !== context) {
-            newListeners.push(listener);
-          }
-        });
-      }
-
-      if (newListeners.length) {
-        this._listeners[eventName] = newListeners;
-      } else {
-        delete this._listeners[eventName];
+  Harold.prototype.send = function(event) {
+    this._callbacks = this._callbacks || {};
+    var args = [].slice.call(arguments, 1),
+      callbacks = this._callbacks["$" + event];
+    if (callbacks) {
+      callbacks = callbacks.slice(0);
+      for (var i = 0, len = callbacks.length; i < len; ++i) {
+        callbacks[i].apply(this, args);
       }
     }
-    return false;
+    return this;
+  };
+
+  Harold.prototype.on = function(event, fn) {
+    var _this = this;
+    _this._callbacks = _this._callbacks || {};
+    (_this._callbacks["$" + event] = _this._callbacks["$" + event] || [])
+      .push(fn);
+    return _this;
+  };
+
+  Harold.prototype.once = function(event, fn) {
+    var _this = this;
+
+    function on() {
+      _this.off(event, on);
+      fn.apply(_this, arguments);
+    }
+
+    on.oncefn = fn; // allow fn to be removed in `off` function
+    _this.on(event, on);
+    return _this;
+  };
+
+  Harold.prototype.off = function(event, fn) {
+    this._callbacks = this._callbacks || {};
+    // all
+    if (0 === arguments.length) {
+      this._callbacks = {};
+      return this;
+    }
+    // specific event
+    var callbacks = this._callbacks["$" + event];
+    if (!callbacks) {
+      return this;
+    }
+    // remove all handlers
+    if (1 === arguments.length) {
+      delete this._callbacks["$" + event];
+      return this;
+    }
+    // remove specific handler
+    var cb;
+    for (var i = 0; i < callbacks.length; i++) {
+      cb = callbacks[i];
+      if (cb === fn || cb.fn === fn) {
+        callbacks.splice(i, 1);
+        break;
+      }
+    }
+    return this;
   };
 
   return new Harold();

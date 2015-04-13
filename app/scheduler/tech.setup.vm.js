@@ -61,13 +61,12 @@ define("src/scheduler/tech.setup.vm", [
       allSkills: _this.allSkills,
     });
 
-    _this.vms = [_this, _this.scheduleVm, _this.skillsVm];
+    _this.vmList = [_this, _this.scheduleVm, _this.skillsVm];
     _this.isClean = ko.computed(function() {
-      return _this.vms.every(function(vm) {
+      return _this.vmList.every(function(vm) {
         return vm.data.isClean();
       });
     });
-
 
     //
     // events
@@ -81,7 +80,7 @@ define("src/scheduler/tech.setup.vm", [
           if (result !== "yes") {
             return;
           }
-          resetData(_this.vms);
+          resetData(_this.vmList);
           _this.editing(false);
         });
       } else {
@@ -97,6 +96,11 @@ define("src/scheduler/tech.setup.vm", [
     _this.busy = ko.computed(function() {
       return _this.loading() || _this.cmdSave.busy();
     });
+
+    _this.vms = [ // nested view models
+      _this.scheduleVm,
+      _this.skillsVm,
+    ];
   }
 
   utils.inherits(TechSetupViewModel, ControllerViewModel);
@@ -109,26 +113,32 @@ define("src/scheduler/tech.setup.vm", [
   TechSetupViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
     var _this = this;
 
-    loadVms(_this, join);
-  };
-
-  function loadVms(_this, join) {
-    var routeData = {
+    routeData = {
       id: _this.data.model.ID,
     };
-    var extraData = {};
     _this.vms.forEach(function(vm) {
-      if (vm === _this) {
-        // don't reload this vm since it's already loading
-        return;
-      }
       vm.load(routeData, extraData, join.add());
     });
-  }
+    // loadVmList(_this, join);
+  };
+
+  // function loadVmList(_this, join) {
+  //   var routeData = {
+  //     id: _this.data.model.ID,
+  //   };
+  //   var extraData = {};
+  //   _this.vmList.forEach(function(vm) {
+  //     if (vm === _this) {
+  //       // don't reload this vm since it's already loading
+  //       return;
+  //     }
+  //     vm.load(routeData, extraData, join.add());
+  //   });
+  // }
 
   function saveAllData(_this, cb) {
-    if (!isValidPeek(_this.vms)) {
-      notify.warn(errMsgPeek(_this.vms), null, 7);
+    if (!isValidPeek(_this.vmList)) {
+      notify.warn(errMsgPeek(_this.vmList), null, 7);
       return cb();
     }
 
@@ -139,7 +149,7 @@ define("src/scheduler/tech.setup.vm", [
 
       var join = joiner();
       var techid = _this.data.model.ID;
-      _this.vms.forEach(function(vm) {
+      _this.vmList.forEach(function(vm) {
         if (utils.isFunc(vm.saveData)) {
           vm.techid = techid;
           vm.saveData(join.add());
@@ -178,23 +188,23 @@ define("src/scheduler/tech.setup.vm", [
   }
 
 
-  function isValidPeek(vms) {
-    return vms.every(function(vm) {
+  function isValidPeek(vmList) {
+    return vmList.every(function(vm) {
       return vm.data.isValid.peek();
     });
   }
 
-  function errMsgPeek(vms) {
+  function errMsgPeek(vmList) {
     var err;
-    vms.some(function(vm) {
+    vmList.some(function(vm) {
       err = vm.data.errMsg.peek();
       return err;
     });
     return err;
   }
 
-  function resetData(vms) {
-    vms.forEach(function(vm) {
+  function resetData(vmList) {
+    vmList.forEach(function(vm) {
       vm.data.reset(true);
     });
   }

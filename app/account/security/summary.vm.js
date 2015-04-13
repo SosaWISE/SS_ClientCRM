@@ -37,6 +37,11 @@ define("src/account/security/summary.vm", [
     //
     // events
     //
+
+    _this.vms = [ // nested view models
+      _this.emcontactsVm,
+      _this.systemonlineinfoVm,
+    ];
   }
   utils.inherits(SummaryViewModel, ControllerViewModel);
   SummaryViewModel.prototype.viewTmpl = "tmpl-security-summary";
@@ -44,10 +49,9 @@ define("src/account/security/summary.vm", [
   SummaryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
-    _this.emcontactsVm.loader.reset(); //incase of reload
-    _this.emcontactsVm.load(routeData, extraData, join.add());
-    _this.systemonlineinfoVm.loader.reset(); //incase of reload
-    _this.systemonlineinfoVm.load(routeData, extraData, join.add());
+    _this.vms.forEach(function(vm) {
+      vm.load(routeData, extraData, join.add());
+    });
 
     //@TODO: load real account
   };
