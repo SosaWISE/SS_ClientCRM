@@ -22,6 +22,7 @@ define("src/account/salesinfo/v02/contract.model", [
 
     var data = ukov.wrap({
       ID: 0,
+      ModifiedOn: new Date(),
     }, schema);
 
     data.ContractTemplateCvm = new ComboViewModel({
