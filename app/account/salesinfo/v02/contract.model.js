@@ -20,7 +20,9 @@ define("src/account/salesinfo/v02/contract.model", [
     ]);
     // var handler = options.handler;
 
-    var data = ukov.wrap({}, schema);
+    var data = ukov.wrap({
+      ID: 0,
+    }, schema);
 
     data.ContractTemplateCvm = new ComboViewModel({
       selectedValue: data.ContractTemplateId,
