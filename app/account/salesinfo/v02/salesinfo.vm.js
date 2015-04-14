@@ -165,9 +165,6 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
           // order descending
           return b.ContractLength - a.ContractLength;
         }));
-        if (!_this.contract.ContractTemplateCvm.selectedValue.peek()) {
-          _this.contract.ContractTemplateCvm.selectFirst();
-        }
       }, subjoin.add());
     }
 
@@ -195,13 +192,8 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
           return;
         }
         load_qualifyCustomerInfos(custAcct.Customer.LeadId, function(creditResultAndStuff) {
-          var creditGroup = creditResultAndStuff.CreditGroup;
-          _this.creditGroup(creditGroup);
-          var score = creditResultAndStuff.Score;
-          _this.creditScore(score);
-          console.log("credit group", creditGroup);
-          console.log("credit score", score);
-
+          _this.creditGroup(creditResultAndStuff.CreditGroup);
+          _this.creditScore(creditResultAndStuff.Score);
         }, subjoin.add());
       }, subjoin.add());
       //
@@ -227,8 +219,10 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
         BillingDay: 5, // 5th of month
       });
       _this.salesinfo.setValue(val);
-      // //
-      // _this.contract.markClean({}, true);
+      //
+      if (!_this.contract.ContractTemplateCvm.selectedValue.peek()) {
+        _this.contract.ContractTemplateCvm.selectFirst();
+      }
 
       // add subscriptions
       _this.handler
