@@ -8,6 +8,11 @@ div(class="acct-item acct-clist-systemdetails",data-bind="toggle:{'may-reload':m
             div(class="contents",data-bind="if:repData")
               div(data-bind="template:{data:repData,name:'tmpl-acct-default-rep_info'}")
 
+          div(class="section",data-bind="cmd:cmdFindRep,toggle:{empty:!premiseAddress()}")
+            span(class="title") Premise Address
+            div(class="contents",data-bind="if:premiseAddress")
+              div(data-bind="template:{data:premiseAddress,name:'tmpl-acct-default-address'}")
+
           div(class="section",data-bind="cmd:cmdEditSystemDetails,toggle:{empty:!systemData()}")
             span(class="title") System Details
             div(class="contents",data-bind="with:systemData")
