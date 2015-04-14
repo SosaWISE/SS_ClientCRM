@@ -3,6 +3,7 @@ define("src/account/salesinfo/v02/salesinfo.gvm", [
   "ko",
   "src/slick/rowevent",
   "src/slick/slickgrid.vm",
+  "src/core/money",
   "src/core/strings",
   "src/core/utils",
 ], function(
@@ -10,6 +11,7 @@ define("src/account/salesinfo/v02/salesinfo.gvm", [
   ko,
   RowEvent,
   SlickGridViewModel,
+  money,
   strings,
   utils
 ) {
@@ -83,6 +85,7 @@ define("src/account/salesinfo/v02/salesinfo.gvm", [
       ],
     });
 
+    _this.basePoints = ko.observable(0);
     _this.pointsGiven = ko.observable(0);
     _this.pointsAvailable = ko.observable(0);
     _this.pointsTotal = ko.observable(0);
@@ -100,11 +103,11 @@ define("src/account/salesinfo/v02/salesinfo.gvm", [
           pointsGiven += (dataItem.SystemPoints * dataItem.groupItems.length);
         } else {
           // use price
-          retailTotal += (dataItem.RetailPrice * dataItem.groupItems.length);
+          retailTotal = money.add(retailTotal, money.mult(dataItem.RetailPrice, dataItem.groupItems.length));
         }
       });
       _this.pointsGiven(pointsGiven);
-      pointsAvailable = 8 - pointsGiven;
+      pointsAvailable = _this.basePoints.peek() - pointsGiven;
       _this.pointsAvailable(pointsAvailable);
       if (pointsAvailable < 0) {
         pointsTotal = 30 * (-1 * pointsAvailable);

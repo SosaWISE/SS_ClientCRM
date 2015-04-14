@@ -1,4 +1,6 @@
 div(class="acct-item v02-sales-info")
+  div(data-bind="spinner:busy,spinner-rgb:'white'")
+
   div(class="ssiVars")
     table(class="fh-wrap")
       tr
@@ -33,13 +35,13 @@ div(class="acct-item v02-sales-info")
               div(class="letter",data-bind="text:num()")
               div(class="question") Package
               div(class="answer")
-                div(data-bind="cvm:salesinfo.PackageCvm")
+                div(data-bind="cvm:salesinfo.AccountPackageCvm")
 
             div(class="line")
               div(class="letter",data-bind="text:num()")
               div(class="question") Contract Length
               div(class="answer")
-                //- div(data-bind="cvm:data.ContractTemplatesCvm")
+                div(data-bind="cvm:contract.ContractTemplateCvm")
 
             div(class="line")
               div(class="letter",data-bind="text:num()")
@@ -57,7 +59,7 @@ div(class="acct-item v02-sales-info")
 
             div(class="line")
               div(class="letter",data-bind="text:num()")
-              div(class="question") Activation paid over
+              div(class="question") Activation Paid Over
               div(class="answer")
                 div(data-bind="cvm:invoice.activation.over3MonthsCvm")
 
@@ -73,24 +75,24 @@ div(class="acct-item v02-sales-info")
               div(class="answer")
                 div(data-bind="cvm:salesinfo.BillingDayCvm")
 
-            div(class="line")
-              div(class="letter",data-bind="text:num()")
-              div(class="question") Will there be any upgrades to the package?
-              div(class="answer")
-                //- div(data-bind="cvm:salesinfo.HasPackageUpgradesCvm")
-                div(data-bind="cvm:invoice.upgrades.hasItemCvm")
-            div(class="subline",data-bind="if:invoice.upgrades.hasItem")
-              div(class="line")
-                div(class="letter",data-bind="text:subnum()")
-                div(class="question") Upgrades fee
-                div(class="answer")
-                  input(type="text",class="inputField",
-                    data-bind="ukov:invoice.upgrades.fee,likecurrencyvalue:invoice.upgrades.fee")
-              div(class="line")
-                div(class="letter",data-bind="text:subnum()")
-                div(class="question") Upgrades paid over
-                div(class="answer")
-                  div(data-bind="cvm:invoice.upgrades.over3MonthsCvm")
+            //- div(class="line")
+            //-   div(class="letter",data-bind="text:num()")
+            //-   div(class="question") Will there be any upgrades to the package?
+            //-   div(class="answer")
+            //-     //- div(data-bind="cvm:salesinfo.HasPackageUpgradesCvm")
+            //-     div(data-bind="cvm:invoice.upgrades.hasItemCvm")
+            //- div(class="subline",data-bind="if:invoice.upgrades.hasItem")
+            //-   div(class="line")
+            //-     div(class="letter",data-bind="text:subnum()")
+            //-     div(class="question") Upgrades fee
+            //-     div(class="answer")
+            //-       input(type="text",class="inputField",
+            //-         data-bind="ukov:invoice.upgrades.fee,likecurrencyvalue:invoice.upgrades.fee")
+            //-   div(class="line")
+            //-     div(class="letter",data-bind="text:subnum()")
+            //-     div(class="question") Upgrades paid over
+            //-     div(class="answer")
+            //-       div(data-bind="cvm:invoice.upgrades.over3MonthsCvm")
 
 
 
@@ -128,7 +130,7 @@ div(class="acct-item v02-sales-info")
           div(class="title") Inventory
           ul(class="actions")
             li
-              a(class="btn small",tabindex="0",data-bind="cmd:cmdAddPart") Add By Part #
+              a(class="btn small",tabindex="0",data-bind="cmd:cmdAddPart") Add Part
       tr
         td(class="fh-body")
           div(class="fh-contents",data-bind="with:invoiceGvm")
@@ -139,7 +141,7 @@ div(class="acct-item v02-sales-info")
                 div(class="name") Points Given:
                 div(class="value",data-bind="likecurrencytext:pointsGiven")
               div
-                div(class="name") Points Available:
+                div(class="name") Points Banked:
                 div(class="value",data-bind="likecurrencytext:pointsAvailable")
             div(class="totals")
               div

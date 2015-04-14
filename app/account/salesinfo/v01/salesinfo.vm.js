@@ -26,7 +26,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
   config,
   ButtonsColumn,
   FrequentGridViewModel,
-  SalesInfoV01GridViewModel,
+  SalesInfoGridViewModel,
   salesInfoOptions,
   ukov,
   dataservice,
@@ -198,7 +198,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
     _this.data.PaymentTypeCvm = new ComboViewModel({
       selectedValue: _this.data.PaymentTypeId,
       fields: accountscache.metadata("paymentTypes"),
-    });
+    }).subscribe(accountscache.getList("paymentTypes"), _this.handler);
     _this.data.BillingDayCvm = new ComboViewModel({
       selectedValue: _this.data.BillingDay,
       list: salesInfoOptions.billingDays,
@@ -214,21 +214,18 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
     _this.data.cellServiceCvm = new ComboViewModel({
       selectedValue: ko.observable(null),
       fields: accountscache.metadata("cellServiceTypes"),
-    });
+    }).subscribe(accountscache.getList("cellServiceTypes"), _this.handler);
     _this.data.CellPackageItemCvm = new ComboViewModel({
       selectedValue: _this.data.CellPackageItemId,
       fields: accountscache.metadata("cellPackageItems"),
+    });
+    _this.handler.subscribe(accountscache.getList("cellPackageItems"), function() {
+      updateCellPackageItemCvm(_this);
     });
 
     _this.data.IsMoniCvm = new ComboViewModel({
       selectedValue: _this.data.IsMoni,
       list: salesInfoOptions.isMonitronics,
-    });
-
-    _this.handler.subscribe(accountscache.getList("paymentTypes"), _this.data.PaymentTypeCvm.setList);
-    _this.handler.subscribe(accountscache.getList("cellServiceTypes"), _this.data.cellServiceCvm.setList);
-    _this.handler.subscribe(accountscache.getList("cellPackageItems"), function() {
-      updateCellPackageItemCvm(_this);
     });
 
 
@@ -253,7 +250,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
         showPartsEditor(_this, true, part.ItemSKU, null);
       },
     });
-    _this.partsGvm = new SalesInfoV01GridViewModel({
+    _this.partsGvm = new SalesInfoGridViewModel({
       deletePart: function(part) {
         dataservice.invoicesrv.invoiceItems.del(part.InvoiceItemID, null, utils.safeCallback(null, function(err, resp) {
           if (resp.Value) {
@@ -641,7 +638,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
     var cellService = _this.data.cellServiceCvm.selectedValue.peek();
     var list = accountscache.getList("cellPackageItems").peek();
     _this.data.CellPackageItemCvm.setList(list.filter(function(item) {
-      return cellService && strings.startsWith(item.value, cellService);
+      return cellService && strings.startsWith(item.ID, cellService);
     }));
   }
 

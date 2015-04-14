@@ -116,7 +116,13 @@ define("src/account/salesinfo/v02/invoiceitems.editor.vm", [
 
     _this.data.ItemCvm = new ComboViewModel({
       selectedValue: _this.data.ItemId,
-      fields: accountscache.metadata("invoices/items"),
+      // fields: accountscache.metadata("invoices/items"),
+      fields: {
+        value: "ID",
+        text: function(item) {
+          return strings.format("{1} - {0}", item.ItemDesc, item.ItemSKU);
+        },
+      },
       // assumes invoices/items have already been loaded
       list: accountscache.getList("invoices/items").peek().filter(function(item) {
         return !item.IsDeleted;
@@ -192,11 +198,11 @@ define("src/account/salesinfo/v02/invoiceitems.editor.vm", [
           }
           copyInvoiceItemFromItem(invoiceItem, item);
           invoiceItem.SalesmanId = salesmanId;
-          invoiceItem.TechnicianId = null;
-          invoiceItem.ProductBarcodeId = null;
-          invoiceItem.AccountEquipmentId = null;
-          invoiceItem.IsActive = true;
-          invoiceItem.IsDeleted = false;
+          // invoiceItem.TechnicianId = null;
+          // invoiceItem.ProductBarcodeId = null;
+          // invoiceItem.AccountEquipmentId = null;
+          // invoiceItem.IsActive = true;
+          // invoiceItem.IsDeleted = false;
         } else {
           // deleted
           invoiceItem.IsDeleted = true;
@@ -272,14 +278,24 @@ define("src/account/salesinfo/v02/invoiceitems.editor.vm", [
   function copyInvoiceItemFromItem(invoiceItem, item) {
     invoiceItem.ItemId = item.ID;
     invoiceItem.Qty = 1; // always 1
-    // invoiceItem.SalesmanId = salesmanId;
-    // invoiceItem.TechnicianId = null;
     invoiceItem.Cost = item.Cost;
     invoiceItem.RetailPrice = item.Price;
     invoiceItem.PriceWithTax = item.Price;
     invoiceItem.SystemPoints = item.SystemPoints;
     invoiceItem.TaxOptionId = item.TaxOptionId;
-    // invoiceItem.IsDeleted = false;
+    // if this is being called the invoice
+    // item should be active and not deleted
+    invoiceItem.IsActive = true;
+    invoiceItem.IsDeleted = false;
+    // ensure fields are set
+    utils.setIfNull(invoiceItem, {
+      SalesmanId: null,
+      TechnicianId: null,
+      ProductBarcodeId: null,
+      AccountEquipmentId: null,
+      // IsActive: true,
+      // IsDeleted: false,
+    });
   }
   InvoiceItemsEditorViewModel.copyInvoiceItemFromItem = copyInvoiceItemFromItem;
 

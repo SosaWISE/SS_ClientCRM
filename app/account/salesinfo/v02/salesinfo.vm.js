@@ -1,6 +1,7 @@
 define("src/account/salesinfo/v02/salesinfo.vm", [
   "underscore",
   "src/account/accounts-cache",
+  "src/account/salesinfo/v02/contract.model",
   "src/account/salesinfo/v02/invoiceitems.editor.vm",
   "src/account/salesinfo/v02/invoice.model",
   "src/account/salesinfo/v02/salesinfo.model",
@@ -11,6 +12,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   "src/dataservice",
   "ko",
   "src/core/subscriptionhandler",
+  "src/core/joiner",
   "src/core/arrays",
   "src/core/strings",
   "src/core/notify",
@@ -19,6 +21,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
 ], function(
   underscore,
   accountscache,
+  contract_model,
   InvoiceItemsEditorViewModel,
   invoice_model,
   salesinfo_model,
@@ -29,6 +32,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   dataservice,
   ko,
   SubscriptionHandler,
+  joiner,
   arrays,
   strings,
   notify,
@@ -45,24 +49,31 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     _this.mixinLoad();
     _this.handler = new SubscriptionHandler();
 
+    _this.creditGroup = ko.observable();
+    _this.creditScore = ko.observable();
+
+    function saveItems(invItems, cb) {
+      saveInvoiceItems(_this, invItems, cb);
+    }
+
     _this.invoice = invoice_model({
       layersVm: _this.layersVm,
       handler: _this.handler,
       yesNoOptions: _this.yesNoOptions,
-      getRepId: function() {
-        return "REP001";
-      },
-      getTekId: function() {
-        return "TEK001";
-      },
+      saveInvoiceItems: saveItems,
     });
     _this.salesinfo = salesinfo_model({
       layersVm: _this.layersVm,
       handler: _this.handler,
       yesNoOptions: _this.yesNoOptions,
     });
+    _this.contract = contract_model({
+      layersVm: _this.layersVm,
+      handler: _this.handler,
+    });
 
     _this.title = ko.observable(_this.title);
+    _this.savingInvItems = ko.observable(0);
 
     _this.equipmentVm = new EquipmentViewModel({
       pcontroller: _this.pcontroller,
@@ -72,10 +83,6 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
 
     _this.frequentGvm = new FrequentGridViewModel({
       addPart: function(part) {
-        //itemId, salesrepId
-        // var item = arrays.first(accountscache.getList("invoices/items").peek(), function(item) {
-        //   return item.ItemSKU === part.ItemSKU;
-        // });
         showInvoiceItemsEditor(_this, null, part.ItemID);
       },
     });
@@ -91,7 +98,19 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     _this.cmdAddPart = ko.command(function(cb) {
       showInvoiceItemsEditor(_this, null, null, null, cb);
     });
+    _this.cmdSaveData = ko.command(function(cb) {
+      var join = joiner();
+      saveSalesInfo(_this, join.add());
+      saveContract(_this, join.add());
+      join.when(cb);
+    });
+    _this.saveData = function() {
+      _this.cmdSaveData.execute();
+    };
 
+    _this.busy = ko.computed(function() {
+      return _this.savingInvItems() || _this.cmdSaveData.busy();
+    });
 
     // bind scope and do not rapid fire requests
     _this.updateInvoiceGvm = updateInvoiceGvm.bind(_this);
@@ -109,6 +128,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   SalesInfoViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
     var acctid = routeData.id;
+    _this.acctid = acctid;
     // customerEmail,
     // var joinTypes = join.create();
     // join2 = join.create(),
@@ -139,8 +159,16 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       // ensure types needed by models
       _this.invoice.load(subjoin.add());
       _this.salesinfo.load(subjoin.add());
-      //
       load_frequentlyInstalledEquipmentGet(_this.frequentGvm.list, subjoin.add());
+      load_contractLengths(function(list) {
+        _this.contract.ContractTemplateCvm.setList(list.sort(function(a, b) {
+          // order descending
+          return b.ContractLength - a.ContractLength;
+        }));
+        if (!_this.contract.ContractTemplateCvm.selectedValue.peek()) {
+          _this.contract.ContractTemplateCvm.selectFirst();
+        }
+      }, subjoin.add());
     }
 
     function step2(cb) {
@@ -159,6 +187,27 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       load_msAccountSalesInformations(acctid, function(val) {
         _this.salesinfo.setValue(val);
         _this.salesinfo.markClean({}, true);
+        setPrevPkg(_this, _this.salesinfo.AccountPackageCvm.selectedItem());
+      }, subjoin.add());
+      // load credit
+      load_customerAccount(acctid, "PRI", function(custAcct) {
+        if (!custAcct) {
+          return;
+        }
+        load_qualifyCustomerInfos(custAcct.Customer.LeadId, function(creditResultAndStuff) {
+          var creditGroup = creditResultAndStuff.CreditGroup;
+          _this.creditGroup(creditGroup);
+          var score = creditResultAndStuff.Score;
+          _this.creditScore(score);
+          console.log("credit group", creditGroup);
+          console.log("credit score", score);
+
+        }, subjoin.add());
+      }, subjoin.add());
+      //
+      load_contract(acctid, function(val) {
+        _this.contract.setValue(val);
+        _this.contract.markClean({}, true);
       }, subjoin.add());
     }
 
@@ -166,20 +215,57 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     _this.handler
       .unsubscribe(_this.updateInvoiceGvm)
       .unsubscribe(_this.packageChanged)
-      .unsubscribe(_this.refreshInvoice);
-    // add subscriptions
+      .unsubscribe(_this.saveData);
+    //
     function step3(cb) {
-      //
-      _this.handler
-        .subscribe(_this.invoice.invoiceItems, _this.updateInvoiceGvm)
-        .subscribe(_this.salesinfo.PackageCvm.selectedValue, _this.packageChanged);
+      // set defaults
+      var val = _this.salesinfo.getValue();
+      utils.setIfNull(val, {
+        AccountCreationTypeId: "NEW",
+        Over3Months: false,
+        PaymentTypeId: "ACH",
+        BillingDay: 5, // 5th of month
+      });
+      _this.salesinfo.setValue(val);
       // //
-      // Object.keys(_this.invoice.doc).forEach(function(key) {
-      //   _this.handler.subscribe(_this.invoice[key], _this.refreshInvoice);
-      // });
-      // Object.keys(_this.salesinfo.doc).forEach(function(key) {
-      //   _this.handler.subscribe(_this.salesinfo[key], _this.refreshInvoice);
-      // });
+      // _this.contract.markClean({}, true);
+
+      // add subscriptions
+      _this.handler
+        .subscribe(_this.invoice.invoiceItems, _this.updateInvoiceGvm, false)
+        .subscribe(_this.salesinfo.AccountPackageCvm.selectedValue, _this.packageChanged, true);
+      //
+      Object.keys(_this.salesinfo.doc).forEach(function(key) {
+        _this.handler.subscribe(_this.salesinfo[key], _this.saveData, true);
+      });
+      Object.keys(_this.contract.doc).forEach(function(key) {
+        _this.handler.subscribe(_this.contract[key], _this.saveData, true);
+      });
+
+      // try to add activation fee
+      var setupInvItems = _this.invoice.findInvoiceItems(["SETUP_FEE"], []).filter(function(invItem) {
+        return !invItem.IsDeleted;
+      });
+      if (!setupInvItems.length) {
+        var activationItemId;
+        var score = _this.creditScore.peek();
+        if (score >= 625) { // Good, Excellent ???
+          activationItemId = "SETUP_FEE_69"; //@TODO: create
+        } else if (score >= 600 && score <= 624) { // Sub ???
+          activationItemId = "SETUP_FEE_199";
+        } else { //if (score < 600) { // Poor ???
+          activationItemId = "SETUP_FEE_299"; //@TODO: create
+        }
+        var invoiceItem = _this.invoice.findInvoiceItems(["SETUP_FEE"], [])[0];
+        if (!invoiceItem) {
+          invoiceItem = {};
+        }
+        // create/update invoice item
+        var item = accountscache.getMap("invoices/items")[activationItemId];
+        InvoiceItemsEditorViewModel.copyInvoiceItemFromItem(invoiceItem, item);
+        saveInvoiceItems(_this, [invoiceItem]);
+      }
+
       // done (synchronously)
       cb();
     }
@@ -233,7 +319,8 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     var modelNumber = strings.trim(pkgItem.ModelNumber);
     var itemId = strings.trim(pkgItem.ItemId);
     return items.filter(function(item) {
-      return item.ModelNumber === modelNumber || item.ID === itemId;
+      return (item.ModelNumber && item.ModelNumber === modelNumber) ||
+        (item.ID && item.ID === itemId);
     });
   }
 
@@ -254,6 +341,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     var items = accountscache.getList("invoices/items").peek();
     var itemsMap = accountscache.getMap("invoices/items");
 
+    var invItemsToSave = [];
     var pkg = _this._prevpkg;
     if (pkg) {
       // delete package items
@@ -268,16 +356,22 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
         if (invoiceItem) {
           // delete invoice item
           invoiceItem.IsDeleted = true;
+          //
+          invItemsToSave.push(invoiceItem);
         } else {
           console.warn("invoice item not found...");
         }
       });
-      // notify invoice items have changed
-      _this.invoice.invoiceItems(invoiceItems);
     }
 
-    pkg = _this.salesinfo.PackageCvm.selectedItem();
+    pkg = _this.salesinfo.AccountPackageCvm.selectedItem();
     if (pkg) {
+      _this.invoiceGvm.basePoints(pkg.BasePoints);
+      _this.invoice.rmr.range({
+        min: pkg.MinRMR,
+        max: pkg.MaxRMR,
+      });
+
       // add package items
       pkg.PackageItems.forEach(function(pkgItem) {
         var filteredItems = getPackageFilteredItems(items, pkgItem);
@@ -299,19 +393,103 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
         }
         // create/update invoice item
         InvoiceItemsEditorViewModel.copyInvoiceItemFromItem(invoiceItem, item);
-        invoiceItem.SalesmanId = null; //salesmanId;
-        invoiceItem.TechnicianId = null;
-        invoiceItem.ProductBarcodeId = null;
-        invoiceItem.AccountEquipmentId = null;
-        invoiceItem.IsActive = true;
-        invoiceItem.IsDeleted = false;
+        // invoiceItem.SalesmanId = null; //salesmanId;
+        // invoiceItem.TechnicianId = null;
+        // invoiceItem.ProductBarcodeId = null;
+        // invoiceItem.AccountEquipmentId = null;
+        // invoiceItem.IsActive = true;
+        // invoiceItem.IsDeleted = false;
+        //
+        invItemsToSave.push(invoiceItem);
       });
-      // notify invoice items have changed
-      _this.invoice.invoiceItems(invoiceItems);
-
     }
 
+    setPrevPkg(_this, pkg);
+
+    //
+    saveInvoiceItems(_this, invItemsToSave);
+  }
+
+  function setPrevPkg(_this, pkg) {
     _this._prevpkg = pkg;
+    if (pkg) {
+      _this.invoiceGvm.basePoints(pkg.BasePoints);
+      _this.invoice.rmr.range({
+        min: pkg.MinRMR,
+        max: pkg.MaxRMR,
+      });
+    } else {
+      _this.invoiceGvm.basePoints(0);
+      _this.invoice.rmr.range({});
+    }
+  }
+
+  function saveInvoiceItems(_this, invoiceItems, cb) {
+    if (!invoiceItems.length) {
+      return cb;
+    }
+    // remove duplicate items (object equality)
+    invoiceItems = underscore.uniq(invoiceItems);
+    //
+    var invoice = _this.invoice();
+    _this.savingInvItems(true);
+    dataservice.api_ms.invoices.save({
+      id: invoice.ID,
+      data: {
+        ModifiedOn: invoice.ModifiedOn,
+        InvoiceItems: invoiceItems,
+      }
+    }, function(inv) {
+      if (inv) {
+        _this.invoice(inv);
+      }
+    }, function(err) {
+      _this.savingInvItems(false);
+      notify.iferror(err);
+      if (utils.isFunc(cb)) {
+        cb(err);
+      }
+    });
+  }
+
+  function saveSalesInfo(_this, cb) {
+    var data = _this.salesinfo;
+    if (!data.isValid()) {
+      notify.warn(data.errMsg(), null, 7);
+      return cb();
+    }
+    if (data.isClean.peek()) {
+      return cb();
+    }
+    var model = data.getValue();
+    dataservice.api_ms.accounts.save({
+      id: _this.acctid,
+      link: "AccountSalesInformations",
+      data: model,
+    }, function(val) {
+      data.setValue(val);
+      data.markClean({}, true);
+    }, cb);
+  }
+
+  function saveContract(_this, cb) {
+    var data = _this.contract;
+    if (!data.isValid()) {
+      notify.warn(data.errMsg(), null, 7);
+      return cb();
+    }
+    if (data.isClean.peek()) {
+      return cb();
+    }
+    var model = data.getValue();
+    dataservice.api_ms.accounts.save({
+      id: _this.acctid,
+      link: "Contract",
+      data: model,
+    }, function(val) {
+      data.setValue(val);
+      data.markClean({}, true);
+    }, cb);
   }
 
   SalesInfoViewModel.prototype.num = function(first) {
@@ -362,7 +540,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     // delete data.CellPackageItemId;
 
     // console.log("currData:", JSON.stringify(_this.currData, null, "  "));
-    dataservice.salessummary.invoiceRefresh.save({
+    dataservice.salessummaryvaloiceRefresh.save({
       data: data,
     }, null, utils.safeCallback(cb, function(err, resp) {
       // make sure this is the last response
@@ -393,10 +571,48 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     }, setter, cb);
   }
 
+  function load_contract(acctid, setter, cb) {
+    dataservice.api_ms.accounts.read({
+      id: acctid,
+      link: "Contract",
+    }, setter, cb);
+  }
+
+  function load_customerAccount(acctid, customerTypeId, setter, cb) {
+    dataservice.api_contractAdmin.accounts.read({
+      id: acctid,
+      link: strings.format("CustomerAccounts/{0}", customerTypeId),
+    }, setter, cb);
+  }
+
+  function load_qualifyCustomerInfos(leadID, setter, cb) {
+    dataservice.qualify.qualifyCustomerInfos.read({
+      id: leadID,
+      link: "lead",
+    }, setter, function(err, resp) {
+      if (err && err.Code === 70110) { // item not found code
+        // if the item was not found we just want null, not an error
+        err = null;
+        resp.Code = 0;
+        resp.Message = "";
+        // setter would not have been called so call it now
+        setter(null);
+      }
+      cb(err, resp);
+    });
+  }
+
   function load_frequentlyInstalledEquipmentGet(setter, cb) {
     setter([]);
     dataservice.salessummary.frequentlyInstalledEquipmentGet.read({}, setter, cb);
   }
+
+  function load_contractLengths(setter, cb) {
+    dataservice.salessummary.contractLengthsGet.read({
+      id: 1,
+    }, setter, cb);
+  }
+
 
   function showInvoiceItemsEditor(_this, invoiceItemGrp, itemId, salesrepId, cb) {
     try {

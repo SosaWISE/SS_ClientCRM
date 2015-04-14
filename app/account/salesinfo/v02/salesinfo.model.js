@@ -49,8 +49,8 @@ define("src/account/salesinfo/v02/salesinfo.model", [
       list: salesInfoOptions.billingDays,
     });
 
-    data.PackageCvm = new ComboViewModel({
-      selectedValue: data.PackageId,
+    data.AccountPackageCvm = new ComboViewModel({
+      selectedValue: data.AccountPackageId,
       fields: accountscache.metadata("packages"),
     }).subscribe(accountscache.getList("packages"), handler);
     data.HasPackageUpgradesCvm = new ComboViewModel({
@@ -128,6 +128,11 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     FriendsAndFamilyTypeId: {},
     AccountSubmitId: {},
     AccountCancelReasonId: {},
+    AccountPackageId: {
+      validators: [
+        ukov.validators.isRequired("Package is required"),
+      ]
+    },
     TechId: {},
     SalesRepId: {},
     AccountFundingStatusId: {},
@@ -150,7 +155,7 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     ContractSignedDate: {
       converter: dateConverter,
       // validators: [
-      //   ukov.validators.isRequired("Contract Date is Required"),
+      //   ukov.validators.isRequired("Contract Date is required"),
       // ]
     },
     CancelDate: {
@@ -166,7 +171,7 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     NOCDate: {
       converter: dateConverter,
       // validators: [
-      //   ukov.validators.isRequired("NOC Date is Required"),
+      //   ukov.validators.isRequired("NOC Date is required"),
       // ]
     },
     OptOutCorporate: {
@@ -175,7 +180,6 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     OptOutAffiliate: {
       converter: boolConverter,
     },
-    PackageId: {},
     AccountCreationTypeId: {},
     HasPackageUpgrades: {},
     ModifiedOn: {},
