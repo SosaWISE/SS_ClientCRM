@@ -41,6 +41,16 @@ define("src/account/accounts-cache", [
         }, null, cb);
       },
     },
+    "types/friendsAndFamily": {
+      value: "ID",
+      text: "Name",
+      read: function(cb) {
+        dataservice.api_ms.types.read({
+          link: "friendsAndFamily",
+        }, null, cb);
+      },
+    },
+
     packages: {
       value: "ID",
       text: "AccountPackageName",

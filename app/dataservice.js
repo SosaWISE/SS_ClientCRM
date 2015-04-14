@@ -40,6 +40,7 @@ define("src/dataservice", [
       "holds",
       "invoices",
       "packages",
+      "types",
     ]),
     api_qualify: createService("api/qualify", [
       "customerMasterFiles",
