@@ -1,11 +1,12 @@
 define("src/contracts/contract.vm", [
   "src/app",
   "src/account/accounts-cache",
+  "src/account/salesinfo/options",
   "src/account/security/holds.vm",
   "src/account/security/emcontacts.vm",
   "src/account/security/equipment.gvm",
   "src/account/default/rep.find.vm",
-  "src/account/salesinfo/options",
+  "src/account/default/payby.vm",
   "src/account/default/address.validate.vm",
   "src/account/default/runcredit.vm",
   "src/account/default/search.vm",
@@ -23,11 +24,12 @@ define("src/contracts/contract.vm", [
 ], function(
   app,
   accountscache,
+  salesInfoOptions,
   HoldsViewModel,
   EmContactsViewModel,
   EquipmentGridViewModel,
   RepFindViewModel,
-  salesInfoOptions,
+  PayByViewModel,
   AddressValidateViewModel,
   RunCreditViewModel,
   SearchViewModel,
@@ -114,6 +116,9 @@ define("src/contracts/contract.vm", [
       layersVm: _this.layersVm,
     });
 
+    _this.paymentMethod = ko.observable();
+
+
     //
     // events
     //
@@ -152,6 +157,8 @@ define("src/contracts/contract.vm", [
       //
       _this.salesInfo.reset();
       _this.salesInfoExtras.reset();
+      //
+      _this.paymentMethod(_this.paymentMethod._original);
       //
       cb();
     }, function(busy) {
@@ -293,6 +300,19 @@ define("src/contracts/contract.vm", [
       });
     };
 
+    _this.clickPaymentMethod = function() {
+      var vm = new PayByViewModel({
+        item: utils.clone(_this.paymentMethod.peek()),
+      });
+      _this.layersVm.show(vm, function(result) {
+        if (result) {
+          _this.paymentMethod(result);
+        }
+      });
+    };
+
+    _this.setPaymentMethod = setPaymentMethod.bind(_this);
+
     _this.vms = [ // nested view models
       _this.emcontactsVm,
       _this.holdsVm,
@@ -354,6 +374,8 @@ define("src/contracts/contract.vm", [
 
     load_equipment(_this.acctid, _this.equipmentGvm, join.add());
 
+    load_acctPaymentMethod(_this.acctid, _this.setPaymentMethod, join.add());
+
     _this.vms.forEach(function(vm) {
       vm.load(routeData, extraData, join.add());
     });
@@ -386,6 +408,13 @@ define("src/contracts/contract.vm", [
       cb(err);
     });
   };
+
+  function setPaymentMethod(paymentMethod) {
+    /* jshint validthis:true */
+    var _this = this;
+    _this.paymentMethod(paymentMethod);
+    _this.paymentMethod._original = paymentMethod;
+  }
 
   function move(_this, leadVm, direction) {
     var index = _this.leads.indexOf(leadVm);
@@ -435,11 +464,16 @@ define("src/contracts/contract.vm", [
       notify.warn(_this.systemDetails.errMsg(), null, 7);
       return cb();
     }
+    if (!_this.paymentMethod.peek()) {
+      notify.warn("Please enter a payment method", null, 7);
+      return cb();
+    }
 
     var join = joiner();
     refreshInvoice(_this, join.add());
     saveSalesInfoExtras(_this, approve, join.add());
     saveSystemDetails(_this, join.add());
+    savePaymentMethod(_this, join.add());
 
     // save leads one after the other (don't want to make multiple customers for the same lead)
     var index = 0;
@@ -499,6 +533,13 @@ define("src/contracts/contract.vm", [
       }
       cb(err, resp);
     });
+  }
+
+  function load_acctPaymentMethod(acctid, setter, cb) {
+    dataservice.api_ms.accounts.read({
+      id: acctid,
+      link: "PaymentMethod",
+    }, setter, cb);
   }
 
   function addLeadVm(leads, typeId) {
@@ -1309,6 +1350,19 @@ define("src/contracts/contract.vm", [
     }, function(val) {
       data.markClean(val, true);
     }, cb);
+  }
+
+  function savePaymentMethod(_this, cb) {
+    var model = _this.paymentMethod.peek();
+    //
+    model.ID = model.ID || 0;
+    model.ModifiedOn = model.ModifiedOn || new Date();
+    //
+    dataservice.api_ms.accounts.save({
+      id: _this.acctid,
+      link: "PaymentMethod",
+      data: model,
+    }, _this.setPaymentMethod, cb);
   }
 
   function updateCustomerAccount(acctid, customerTypeId, leadid, setter, cb) {

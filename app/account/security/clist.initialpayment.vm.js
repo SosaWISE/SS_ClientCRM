@@ -1,12 +1,12 @@
-define('src/account/security/clist.initialpayment.vm', [
-  'src/account/default/payby.vm',
-  'src/dataservice',
-  'ko',
-  'src/ukov',
-  'src/core/combo.vm',
-  'src/core/notify',
-  'src/core/controller.vm',
-  'src/core/utils',
+define("src/account/security/clist.initialpayment.vm", [
+  "src/account/default/payby.vm",
+  "src/dataservice",
+  "ko",
+  "src/ukov",
+  "src/core/combo.vm",
+  "src/core/notify",
+  "src/core/controller.vm",
+  "src/core/utils",
 ], function(
   PayByViewModel,
   dataservice,
@@ -22,7 +22,7 @@ define('src/account/security/clist.initialpayment.vm', [
   function CListInitialPaymentViewModel(options) {
     var _this = this;
     CListInitialPaymentViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['layersVm']);
+    ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
     _this.mayReload = ko.observable(false);
     _this.breakdown = ko.observable();
@@ -66,21 +66,21 @@ define('src/account/security/clist.initialpayment.vm', [
 
     // _this.methodCvm = new ComboViewModel({
     //   fields: {
-    //     text: 'PaymentMethod',
-    //     value: 'PaymentMethodId',
+    //     text: "PaymentMethod",
+    //     value: "PaymentMethodId",
     //   },
     //   list: [
     //     {
     //       PaymentMethodId: 1,
-    //       PaymentMethod: 'Credit Card',
+    //       PaymentMethod: "Credit Card",
     //     },
     //     {
     //       PaymentMethodId: 2,
-    //       PaymentMethod: 'EFT',
+    //       PaymentMethod: "EFT",
     //     },
     //     {
     //       PaymentMethodId: 3,
-    //       PaymentMethod: 'Invoice',
+    //       PaymentMethod: "Invoice",
     //     },
     //   ],
     // });
@@ -98,7 +98,7 @@ define('src/account/security/clist.initialpayment.vm', [
     // _this.methodCvm.selectedValue(1);
   }
   utils.inherits(CListInitialPaymentViewModel, ControllerViewModel);
-  CListInitialPaymentViewModel.prototype.viewTmpl = 'tmpl-security-clist_initialpayment';
+  CListInitialPaymentViewModel.prototype.viewTmpl = "tmpl-security-clist_initialpayment";
 
   CListInitialPaymentViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,

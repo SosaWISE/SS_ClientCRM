@@ -286,6 +286,12 @@ div(class="contract-wrap")
                   | Opt Out of Affiliate Marketing
 
 
+        div(class="section disabled",data-bind="cmd:clickPaymentMethod,toggle:{empty:!paymentMethod()}")
+          span(class="title") Payment Method
+          div(class="contents",data-bind="with:paymentMethod")
+            div(data-bind="template:'tmpl-account-default-payment_method'")
+
+
         div(class="section disabled",data-bind="with:holdsVm")
           span(class="title") Holds
           div(class="contents",data-bind="template:viewTmpl")

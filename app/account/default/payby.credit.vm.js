@@ -1,11 +1,11 @@
-define('src/account/default/payby.credit.vm', [
-  'src/core/paymenthelper',
-  'ko',
-  'src/ukov',
-  'src/core/combo.vm',
-  'src/core/notify',
-  'src/core/base.vm',
-  'src/core/utils',
+define("src/account/default/payby.credit.vm", [
+  "src/core/paymenthelper",
+  "ko",
+  "src/ukov",
+  "src/core/combo.vm",
+  "src/core/notify",
+  "src/core/base.vm",
+  "src/core/utils",
 ], function(
   paymenthelper,
   ko,
@@ -49,30 +49,30 @@ define('src/account/default/payby.credit.vm', [
     cardTypeOptions;
 
   cardTypeIdToNameMap = {
-    1: 'visa',
-    2: 'mastercard',
-    3: 'discover',
-    4: 'amex',
+    1: "visa",
+    2: "mastercard",
+    3: "discover",
+    4: "amex",
   };
   // cardTypeIdToCCVMap = {
-  //   1: 'CVV (Card Verification Value)',
-  //   2: 'CVC (Card Validation Code)',
-  //   3: 'CID (Card Identification Number)',
-  //   4: 'CID (Card Identification Number)',
+  //   1: "CVV (Card Verification Value)",
+  //   2: "CVC (Card Validation Code)",
+  //   3: "CID (Card Identification Number)",
+  //   4: "CID (Card Identification Number)",
   // };
 
   cardValidationGroup = {
-    keys: ['CardTypeId', 'CardNumber', 'VerificationValue'],
+    keys: ["CardTypeId", "CardNumber", "VerificationValue"],
     // no validators needed here, just need this in order to revalidate
     // CardNumber and VerificationValue whenever CardTypeId changes
     validators: [],
   };
   expirationValidationGroup = {
-    keys: ['ExpirationMonth', 'ExpirationYear'],
+    keys: ["ExpirationMonth", "ExpirationYear"],
     validators: [ //
       function(group) {
         if (!paymenthelper.isValidExpiration(group.ExpirationYear, group.ExpirationMonth)) {
-          return 'Invalid expiration date';
+          return "Invalid expiration date";
         }
       },
     ],
@@ -80,22 +80,28 @@ define('src/account/default/payby.credit.vm', [
 
   schema = {
     _model: true,
+
+    //
+    ID: {},
+    ModifiedOn: {},
+    //
+
     CardTypeId: {
       // converter: ukov.converters.toUpper(),
       validationGroup: cardValidationGroup,
       validators: [
-        ukov.validators.isRequired('Card type is required'),
+        ukov.validators.isRequired("Card type is required"),
       ],
     },
     CardNumber: {
       converter: ukov.converters.ccard(),
       validationGroup: cardValidationGroup,
       validators: [
-        ukov.validators.isRequired('Card number is required'),
+        ukov.validators.isRequired("Card number is required"),
         function(val, model) {
           var name = cardTypeIdToNameMap[model.CardTypeId];
           if (!paymenthelper.isValidCreditCard(name, val)) {
-            return 'Invalid credit card number';
+            return "Invalid credit card number";
           }
         },
       ],
@@ -104,7 +110,7 @@ define('src/account/default/payby.credit.vm', [
       converter: nullStrConverter,
       validationGroup: cardValidationGroup,
       validators: [
-        // ukov.validators.isRequired('Security Code is required'),
+        // ukov.validators.isRequired("Security Code is required"),
         function(val, model) {
           if (val == null) {
             return;
@@ -112,30 +118,29 @@ define('src/account/default/payby.credit.vm', [
           var length = val.length,
             isAmex = model.CardTypeId === 4; // American Express
           if ((isAmex && length !== 4) || (!isAmex && length !== 3)) {
-            return 'Invalid Security Code for Card type';
+            return "Invalid Security Code for Card type";
           }
         },
       ],
     },
-    Expiration: {},
     ExpirationMonth: {
       // converter: ukov.converters.toUpper(),
       validationGroup: expirationValidationGroup,
       validators: [
-        ukov.validators.isRequired('Expiration month is required'),
+        ukov.validators.isRequired("Expiration month is required"),
       ],
     },
     ExpirationYear: {
       // converter: ukov.converters.toUpper(),
       validationGroup: expirationValidationGroup,
       validators: [
-        ukov.validators.isRequired('Expiration year is required'),
+        ukov.validators.isRequired("Expiration year is required"),
       ],
     },
     NameOnCard: {
       // converter: ukov.converters.toUpper(),
       validators: [
-        ukov.validators.isRequired('Name on card is required'),
+        ukov.validators.isRequired("Name on card is required"),
       ],
     },
   };
@@ -144,38 +149,38 @@ define('src/account/default/payby.credit.vm', [
     var _this = this;
     PayByCreditViewModel.super_.call(_this, options);
 
-    _this.title = 'Credit Card';
+    _this.title = "Credit Card";
 
-    _this.data = ukov.wrap({
+    _this.data = ukov.wrap(_this.item || {
       CardTypeId: null,
-      CardNumber: '',
-      VerificationValue: '',
+      CardNumber: "",
+      VerificationValue: "",
       ExpirationMonth: null,
       ExpirationYear: null,
-      NameOnCard: '',
+      NameOnCard: "",
     }, schema);
     _this.data.CardTypeCvm = new ComboViewModel({
       selectedValue: _this.data.CardTypeId,
       list: cardTypeOptions,
       fields: {
-        value: 'CreditCardTypeID',
-        text: 'CardType',
+        value: "CreditCardTypeID",
+        text: "CardType",
       },
     });
     _this.data.ExpirationMonthCvm = new ComboViewModel({
       selectedValue: _this.data.ExpirationMonth,
       list: paymenthelper.getExpirationMonths(),
-      noItemSelectedText: 'Month',
+      noItemSelectedText: "Month",
     });
     _this.data.ExpirationYearCvm = new ComboViewModel({
       selectedValue: _this.data.ExpirationYear,
       list: paymenthelper.getExpirationYears(),
-      noItemSelectedText: 'Year',
+      noItemSelectedText: "Year",
     });
-    // this feels like a HACK...
-    _this.data.Expiration.getValue = function() {
-      return (_this.data.ExpirationMonth.getValue() + 1) + '/' + _this.data.ExpirationYear.getValue();
-    };
+    // // this feels like a HACK...
+    // _this.data.Expiration.getValue = function() {
+    //   return _this.data.ExpirationMonth.getValue() + "/" + _this.data.ExpirationYear.getValue();
+    // };
 
     _this.cvvMsg = ko.computed({
       deferEvaluation: true,
@@ -198,7 +203,7 @@ define('src/account/default/payby.credit.vm', [
     //
   }
   utils.inherits(PayByCreditViewModel, BaseViewModel);
-  PayByCreditViewModel.prototype.viewTmpl = 'tmpl-acct-default-payby_credit';
+  PayByCreditViewModel.prototype.viewTmpl = "tmpl-acct-default-payby_credit";
 
   PayByCreditViewModel.prototype.setSelected = function(selected) {
     var _this = this;
@@ -209,16 +214,16 @@ define('src/account/default/payby.credit.vm', [
   cardTypeOptions = [ //
     {
       CreditCardTypeID: 1,
-      CardType: 'Visa',
+      CardType: "Visa",
     }, {
       CreditCardTypeID: 2,
-      CardType: 'MasterCard',
+      CardType: "MasterCard",
     }, {
       CreditCardTypeID: 3,
-      CardType: 'Discover',
+      CardType: "Discover",
     }, {
       CreditCardTypeID: 4,
-      CardType: 'American Express',
+      CardType: "American Express",
     },
   ];
 

@@ -1,9 +1,9 @@
-define('src/account/default/payby.invoice.vm', [
-  'ko',
-  'src/ukov',
-  'src/core/notify',
-  'src/core/base.vm',
-  'src/core/utils',
+define("src/account/default/payby.invoice.vm", [
+  "ko",
+  "src/ukov",
+  "src/core/notify",
+  "src/core/base.vm",
+  "src/core/utils",
 ], function(
   ko,
   ukov,
@@ -15,10 +15,16 @@ define('src/account/default/payby.invoice.vm', [
 
   var schema = {
     _model: true,
+
+    //
+    ID: {},
+    ModifiedOn: {},
+    //
+
     CheckNumber: {
       converter: ukov.converters.numText(),
       validators: [
-        ukov.validators.isRequired('Check number is required'),
+        ukov.validators.isRequired("Check number is required"),
       ],
     },
   };
@@ -27,17 +33,17 @@ define('src/account/default/payby.invoice.vm', [
     var _this = this;
     PayByInvoiceViewModel.super_.call(_this, options);
 
-    _this.title = 'Invoice';
+    _this.title = "Invoice";
 
-    _this.data = ukov.wrap({
-      CheckNumber: '',
+    _this.data = ukov.wrap(_this.item || {
+      CheckNumber: "",
     }, schema);
 
     _this.selected = ko.observable();
     _this.setSelected(false);
   }
   utils.inherits(PayByInvoiceViewModel, BaseViewModel);
-  PayByInvoiceViewModel.prototype.viewTmpl = 'tmpl-acct-default-payby_invoice';
+  PayByInvoiceViewModel.prototype.viewTmpl = "tmpl-acct-default-payby_invoice";
 
   PayByInvoiceViewModel.prototype.setSelected = function(selected) {
     var _this = this;
