@@ -340,6 +340,10 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     if (pkg) {
       // delete package items
       pkg.PackageItems.forEach(function(pkgItem) {
+        if (pkgItem.AccountPackageItemTypeId === "FEES") {
+          console.log("AccountPackageItemTypeId: FEES excluded");
+          return;
+        }
         var filteredItems = getPackageFilteredItems(items, pkgItem);
         if (!filteredItems.length) {
           console.warn("no items for package item were found...");
@@ -368,13 +372,31 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
 
       // add package items
       pkg.PackageItems.forEach(function(pkgItem) {
+        if (pkgItem.AccountPackageItemTypeId === "FEES") {
+          console.log("AccountPackageItemTypeId: FEES excluded");
+          return;
+        }
         var filteredItems = getPackageFilteredItems(items, pkgItem);
         if (!filteredItems.length) {
           console.warn("no items for package item were found...");
           return;
         }
+        var item, invoiceItem;
+
+        //@HACK: only allow one of non-equipment items, so start with all of them deleted
+        if (pkgItem.AccountPackageItemTypeId !== "EQPM") {
+          while (true) {
+            invoiceItem = getInvoiceItemByFilteredItems(false, invoiceItems, filteredItems);
+            if (!invoiceItem) {
+              break;
+            }
+            invoiceItem.IsDeleted = true;
+            invItemsToSave.push(invoiceItem);
+          }
+        }
+
         // attempt to find an existing deleted invoice item for any of the filtered items
-        var item, invoiceItem = getInvoiceItemByFilteredItems(true, invoiceItems, filteredItems);
+        invoiceItem = getInvoiceItemByFilteredItems(true, invoiceItems, filteredItems);
         if (!invoiceItem) {
           // create if one not found
           invoiceItem = {};
