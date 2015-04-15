@@ -56,6 +56,14 @@ define("src/account/accounts-cache", [
       text: "AccountPackageName",
     },
 
+    localizations: {
+      value: "LocalizationID",
+      text: "LocalizationName",
+      read: function(cb) {
+        dataservice.maincore.localizations.read({}, null, cb);
+      },
+    },
+
     accountCreationTypes: defaultMeta,
     paymentTypes: defaultMeta,
     cellServiceTypes: defaultMeta,

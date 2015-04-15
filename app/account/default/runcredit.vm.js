@@ -1,4 +1,5 @@
 define("src/account/default/runcredit.vm", [
+  "src/account/accounts-cache",
   "src/app",
   "src/config",
   "src/core/strings",
@@ -11,6 +12,7 @@ define("src/account/default/runcredit.vm", [
   "src/ukov",
   "src/dataservice"
 ], function(
+  accountscache,
   app,
   config,
   strings,
@@ -160,11 +162,7 @@ define("src/account/default/runcredit.vm", [
       "addressId",
       "customerTypeId",
       "customerTypeName",
-      "cache",
       "repModel",
-    ]);
-    utils.assertProps(_this.cache, [
-      "localizations",
     ]);
     utils.setIfNull(_this, {
       otherLeads: [],
@@ -223,11 +221,8 @@ define("src/account/default/runcredit.vm", [
 
     _this.localizationCvm = new ComboViewModel({
       selectedValue: _this.data.LocalizationId,
-      fields: {
-        text: "LocalizationName",
-        value: "LocalizationID",
-      },
-      list: _this.cache.localizations,
+      fields: accountscache.metadata("localizations"),
+      list: accountscache.getList("localizations").peek(),
     });
     if (!_this.localizationCvm.selectedValue.peek()) {
       _this.localizationCvm.selectFirst();

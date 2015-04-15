@@ -1,7 +1,9 @@
 div(class="acct-item acct-clist-initialpayment",data-bind="toggle:{'may-reload':mayReload}")
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
+
   div(class="col")
     //- ,style="margin-left:10px;margin-right:30px;")
-    div(class="section")
+    //- div(class="section")
       span(class="title") Initial Payment Breakdown
       div(class="contents",data-bind="with:breakdown")
         ul(class="breakdown")
@@ -26,26 +28,77 @@ div(class="acct-item acct-clist-initialpayment",data-bind="toggle:{'may-reload':
           li(class="total-group")
             span(class="name") Total:
             span(class="amount",data-bind="currencyHtml:Total")
+
     div(class="section",data-bind="cmd:clickPaymentMethod,toggle:{empty:!initialPaymentMethod()}")
       span(class="title") Initial Payment Method
       div(class="contents",data-bind="with:initialPaymentMethod")
         div(data-bind="template:'tmpl-account-default-payment_method'")
+
     div
       div(class="checkbox",data-bind="cmd:function(){recurringSame(!recurringSame())}")
         a(class="btn small",data-bind="active:recurringSame")
         span Recurring Payment same as Initial Payment
-      div(class="section",data-bind="visible:!recurringSame(),cmd:clickRecurringPaymentMethod,toggle:{empty:!recurringPaymentMethod()}")
+      div(class="section",data-bind="visible:!recurringSame(),cmd:cmdRecurringPaymentMethod,toggle:{empty:!paymentMethod()}")
         span(class="title") Recurring Payment Method
-        div(class="contents",data-bind="with:recurringPaymentMethod")
+        div(class="contents",data-bind="with:paymentMethod")
           div(data-bind="template:'tmpl-account-default-payment_method'")
-    div
-      div(class="checkbox",data-bind="cmd:function(){addressSame(!addressSame())}")
-        a(class="btn small",data-bind="active:addressSame")
-        span Billing Address same as Premise Address
-      div(class="section",data-bind="visible:!addressSame(),cmd:clickAddress,toggle:{empty:!address()}")
-        span(class="title") Billing Address
-        div(class="contents",data-bind="with:address()")
-          div(data-bind="template:viewTmpl")
+
+  div(class="col col2")
+    //- BIlling Lead
+    <!-- ko with:leads[1] -->
+    div(class="section",data-bind="css:{dirty:isDirty,empty:empty}")
+      div(class="title",data-bind="cmd:$parent.clickAddressEmpty")
+        span(data-bind="cmd:$parent.clickAddressNotEmpty")
+          span(data-bind="text:typeName")
+          //- |&nbsp;Customer
+        //- ul(class="actions")
+        //-   li
+        //-     a(class="btn fa fa-arrow-up",title="Swap with previous customer",
+        //-       data-bind="cmd:$parent.clickUp,clickBubble:false")
+        //-   li
+        //-     a(class="btn fa fa-arrow-down",title="Swap with next customer",
+        //-       data-bind="cmd:$parent.clickDown,clickBubble:false")
+        //-   li
+        //-     a(class="btn",
+        //-       data-bind="cmd:$parent.clickDelete,clickBubble:false") Delete
+        //-   li
+        //-     a(class="btn",
+        //-       data-bind="cmd:$parent.clickReset,clickBubble:false") Reset
+        //- <!-- ko if:subtitle -->
+        //- br
+        //- span(data-bind="text:subtitle")
+        //- <!-- /ko -->
+      div(class="contents")
+        div(class="section-item address",data-bind="if:address,cmd:$parent.clickAddress")
+          <!-- ko if:addressSameAsText -->
+          span(class="same-as fa fa-check",data-bind="text:addressSameAsText")
+          <!-- /ko -->
+          //- <!-- ko if:!lead() -->
+          //- a(class="close",title="Remove Address",
+          //-   data-bind="click:$parent.clickRemoveAddress,clickBubble:false")
+          //- <!-- /ko -->
+          span(class="title")
+            span(data-bind="text:addressTypeName")
+            |&nbsp;Address
+          div(data-bind="template:{data:address,name:'tmpl-acct-default-address'}")
+        div(class="section-item customer",data-bind="cmd:$parent.clickQualify,css:{redo:leadRedo}")
+          <!-- ko if:leadSameAsText -->
+          span(class="same-as fa fa-check",data-bind="text:leadSameAsText")
+          <!-- /ko -->
+          //- span(class="title") Lead
+          <!-- ko if:lead -->
+          div(data-bind="template:{name:'tmpl-acct-default-customer',data:lead}")
+          <!-- /ko -->
+          <!-- ko if:!lead() -->
+          div(class="title") Customer
+          <!-- /ko -->
+          <!-- ko if:creditResult -->
+          div(data-bind="template:{name:'tmpl-acct-default-credit',data:creditResult},css:{redo:creditRedo}")
+          <!-- /ko -->
+          //- ul(class="actions")
+            li
+              span(class="btn",tabindex="0",data-bind="cmd:$parent.cmdSendToIS") Send to InsideSales.com
+    <!-- /ko -->
 
   div(class="actions")
-    span(class="btn small",tabindex="0",data-bind="cmd:cmdRunPayment") Run Payment
+    span(class="btn small",tabindex="0",data-bind="cmd:cmdSave") Save

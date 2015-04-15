@@ -126,16 +126,6 @@ define("src/contracts/contract.vm", [
       _this.selectChild(vm);
     };
 
-    _this.repModel = {
-      CompanyID: "SOSA001",
-      TeamLocationId: 1,
-      Seasons: [ //
-        {
-          SeasonID: 3,
-        },
-      ],
-    };
-
     function canSave( /*busy*/ ) {
       var custAcctsCanSave = _this.leads.every(function(vm) {
         return !vm.leadRedo() && !vm.creditRedo();
@@ -176,6 +166,11 @@ define("src/contracts/contract.vm", [
       }
     };
     _this.clickAddress = function(leadVm) {
+      var repModel = _this.salesInfoExtras.repModel.peek();
+      if (!repModel) {
+        notify.warn("Please select a Sales Rep first", null, 7);
+        return;
+      }
       var address = utils.clone(leadVm.address.peek());
       var uniqueMap = {};
       var otherAddresses = _this.leads
@@ -206,7 +201,7 @@ define("src/contracts/contract.vm", [
       var vm = new AddressValidateViewModel({
         name: leadVm.addressTypeName,
         otherAddresses: otherAddresses,
-        repModel: _this.repModel,
+        repModel: repModel,
         item: address,
       });
       _this.layersVm.show(vm, function(address) {
@@ -217,6 +212,11 @@ define("src/contracts/contract.vm", [
       });
     };
     _this.clickQualify = function(leadVm) {
+      var repModel = _this.salesInfoExtras.repModel.peek();
+      if (!repModel) {
+        notify.warn("Please select a Sales Rep first", null, 7);
+        return;
+      }
       var lead = utils.clone(leadVm.lead.peek());
       var addressId = leadVm.address.peek().AddressID;
       if (!addressId) {
@@ -261,8 +261,7 @@ define("src/contracts/contract.vm", [
         createMasterLead: false,
         showSaveBtn: true,
         otherLeads: otherLeads,
-        cache: _this.cache,
-        repModel: _this.repModel,
+        repModel: repModel,
         addressId: addressId,
         customerTypeId: leadVm.typeId,
         customerTypeName: leadVm.typeName,
@@ -301,14 +300,7 @@ define("src/contracts/contract.vm", [
     };
 
     _this.clickPaymentMethod = function() {
-      var vm = new PayByViewModel({
-        item: utils.clone(_this.paymentMethod.peek()),
-      });
-      _this.layersVm.show(vm, function(result) {
-        if (result) {
-          _this.paymentMethod(result);
-        }
-      });
+      showPaymentMethod(_this, _this.paymentMethod);
     };
 
     _this.setPaymentMethod = setPaymentMethod.bind(_this);
@@ -328,7 +320,7 @@ define("src/contracts/contract.vm", [
     _this.masterid = routeData.masterid;
     _this.acctid = routeData.id;
 
-    load_localizations(_this, join.add());
+    accountscache.ensure("localizations");
 
     // load leads for master file
     _this.leads.forEach(function(leadVm) {
@@ -374,7 +366,7 @@ define("src/contracts/contract.vm", [
 
     load_equipment(_this.acctid, _this.equipmentGvm, join.add());
 
-    load_acctPaymentMethod(_this.acctid, _this.setPaymentMethod, join.add());
+    load_acctPaymentMethod(_this.acctid, "PaymentMethod", _this.setPaymentMethod, join.add());
 
     _this.vms.forEach(function(vm) {
       vm.load(routeData, extraData, join.add());
@@ -408,6 +400,20 @@ define("src/contracts/contract.vm", [
       cb(err);
     });
   };
+
+  function showPaymentMethod(_this, paymentMethodObservable, cb) {
+    var vm = new PayByViewModel({
+      item: utils.clone(paymentMethodObservable.peek()),
+    });
+    _this.layersVm.show(vm, function(result) {
+      if (result) {
+        paymentMethodObservable(result);
+      }
+      if (utils.isFunc(cb)) {
+        cb();
+      }
+    });
+  }
 
   function setPaymentMethod(paymentMethod) {
     /* jshint validthis:true */
@@ -473,7 +479,7 @@ define("src/contracts/contract.vm", [
     refreshInvoice(_this, join.add());
     saveSalesInfoExtras(_this, approve, join.add());
     saveSystemDetails(_this, join.add());
-    savePaymentMethod(_this, join.add());
+    savePaymentMethod(_this, _this.paymentMethod.peek(), "PaymentMethod", _this.setPaymentMethod, join.add());
 
     // save leads one after the other (don't want to make multiple customers for the same lead)
     var index = 0;
@@ -503,14 +509,6 @@ define("src/contracts/contract.vm", [
     join.when(cb);
   }
 
-  function load_localizations(_this, cb) {
-    _this.cache = _this.cache || {};
-    _this.cache.localizations = [];
-    dataservice.maincore.localizations.read({}, function(val) {
-      _this.cache.localizations = val;
-    }, cb);
-  }
-
   function load_customerAccount(acctid, customerTypeId, setter, cb) {
     dataservice.api_contractAdmin.accounts.read({
       id: acctid,
@@ -535,10 +533,10 @@ define("src/contracts/contract.vm", [
     });
   }
 
-  function load_acctPaymentMethod(acctid, setter, cb) {
+  function load_acctPaymentMethod(acctid, link, setter, cb) {
     dataservice.api_ms.accounts.read({
       id: acctid,
-      link: "PaymentMethod",
+      link: link,
     }, setter, cb);
   }
 
@@ -1352,17 +1350,16 @@ define("src/contracts/contract.vm", [
     }, cb);
   }
 
-  function savePaymentMethod(_this, cb) {
-    var model = _this.paymentMethod.peek();
+  function savePaymentMethod(_this, model, link, setter, cb) {
     //
     model.ID = model.ID || 0;
     model.ModifiedOn = model.ModifiedOn || new Date();
     //
     dataservice.api_ms.accounts.save({
       id: _this.acctid,
-      link: "PaymentMethod",
+      link: link,
       data: model,
-    }, _this.setPaymentMethod, cb);
+    }, setter, cb);
   }
 
   function updateCustomerAccount(acctid, customerTypeId, leadid, setter, cb) {
