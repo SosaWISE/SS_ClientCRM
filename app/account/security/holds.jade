@@ -1,0 +1,10 @@
+div(class="acct-holds")
+  ul(class="actions left cf")
+    li
+      a(class="btn small add-btn",tabindex="0",data-bind="cmd:cmdAdd") Add Hold
+    li
+      div(class="checkbox",data-bind="cmd:function(){gvm.includeFixed(!gvm.includeFixed.peek())}")
+        a(class="btn small",data-bind="active:gvm.includeFixed")
+        | Include Removed Holds
+  div(class="grid-wrap relative rv")
+    div(class="slickgrid",data-bind="slickgrid:gvm")

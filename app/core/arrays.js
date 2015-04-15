@@ -1,5 +1,5 @@
-define('src/core/arrays', [
-  'ko',
+define("src/core/arrays", [
+  "ko",
 ], function(
   ko
 ) {
@@ -32,6 +32,18 @@ define('src/core/arrays', [
         // put at end of list
         list.push(item);
       }
+    },
+
+    findById: function(list, id, idName) {
+      var result;
+      var peekList = ko.isObservable(list) ? list.peek() : list;
+      peekList.some(function(item) {
+        if (item[idName] === id) {
+          result = item;
+          return true;
+        }
+      });
+      return result;
     },
 
   };

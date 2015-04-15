@@ -1,0 +1,11 @@
+div(class="packetitem-editor")
+  div(data-bind="spinner:loading,spinner-rgb:'white'")
+
+  h2(class="title") Packet Item Details
+
+  div(class="line-top")
+    ul(class="edit-form limit-width")
+
+      li
+        span(class="label") Cellular Type
+        div(data-bind="cvm:data.CellularTypeCvm")

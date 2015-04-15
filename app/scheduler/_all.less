@@ -58,12 +58,20 @@
     color: #fff;
     width: @ticketWidth;
   }
-  .ticket-schedule {
+  .ticket-schedule-wrap {
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: @ticketWidth + 20px;
+
+    .ticket-schedule {
+      position: absolute;
+      top: 45px;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
   }
 
   .cust-info {
@@ -359,7 +367,7 @@
   }
 }
 
-.month {
+.month-ctrl {
   .user-select(none);
 
   .title {

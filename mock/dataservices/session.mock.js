@@ -33,6 +33,7 @@ define('mock/dataservices/session.mock', [
             Apps: [
               "sse_cms_cors",
               "hr_man",
+              "contract_admin",
             ],
             Actions: [
               "hr_user_edit"

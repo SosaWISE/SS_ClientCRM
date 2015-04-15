@@ -1,0 +1,69 @@
+@contracts-bg: @site-magenta;
+
+body.contracts,
+body.users {
+  .mixin-body-color(@contracts-bg);
+  .mixin-content-active(@contracts-bg);
+}
+
+#contracts-panel {
+
+  .redo {
+    .opacity(0.2);
+  }
+  .btn {
+    .make-color-btn(@contracts-bg);
+  }
+
+  .account {
+    > .p-nav {
+      .toggle-btn {
+        background-color: @contracts-bg;
+        &:before {
+          background-color: @contracts-bg;
+        }
+      }
+    }
+    > .p-module {
+      bottom: 0;
+    }
+  }
+}
+
+.contract-wrap {
+  height: 100%;
+
+  .acct-item {
+    position: absolute;
+    left:0px;top:50px;right:0px;bottom:0px;
+    padding: 0px 10px 400px 10px;
+
+    overflow: auto;
+  }
+
+  .grid-wrap {
+    position: relative;
+    height: 150px;
+    width: 100%;
+
+    display: inline-block;
+    vertical-align: top;
+    &.equipment-left {
+      width: 30%;
+    }
+    &.equipment-right {
+      width: 70%;
+    }
+  }
+
+  ul.actions {
+    display: inline-block;
+  }
+
+  .hold-notes {
+    white-space: pre-wrap;
+    max-height: 100px;
+    overflow: auto;
+    display: block;
+  }
+}

@@ -31,14 +31,14 @@ define("src/account/default/address.validate.vm", [
     SeasonId: true,
     SalesRepId: true,
     TeamLocationId: true,
-    PhoneNumber: true,
+    Phone: true,
     PostalCode: true,
-    Address: true,
-    Address2: true,
+    StreetAddress: true,
+    StreetAddress2: true,
   };
   var advNoIgnoreMap = {
     City: true,
-    State: true,
+    StateId: true,
   };
 
   schema = {
@@ -49,7 +49,7 @@ define("src/account/default/address.validate.vm", [
     SeasonId: {},
     SalesRepId: {},
     TeamLocationId: {},
-    PhoneNumber: {
+    Phone: {
       converter: ukov.converters.phone(),
       validators: [
         ukov.validators.isRequired("Premise phone is required"),
@@ -62,14 +62,14 @@ define("src/account/default/address.validate.vm", [
         ukov.validators.isZipCode(),
       ],
     },
-    Address: {
+    StreetAddress: {
       converter: strConverter,
       validators: [
         ukov.validators.isRequired("Street address is required"),
         max50,
       ],
     },
-    Address2: {
+    StreetAddress2: {
       converter: nullStrConverter,
       validators: [max50],
     },
@@ -89,7 +89,7 @@ define("src/account/default/address.validate.vm", [
         max50,
       ],
     },
-    State: {
+    StateId: {
       validators: [
         ukov.validators.isRequired("State is required"),
         max4,
@@ -176,15 +176,27 @@ define("src/account/default/address.validate.vm", [
   function AddressValidateViewModel(options) {
     var _this = this;
     AddressValidateViewModel.super_.call(_this, options);
+    utils.ensureProps(_this, [
+      "name",
+    ]);
+    utils.setIfNull(_this, {
+      otherAddresses: [],
+    });
+
+    _this.initFocusFirst();
+    _this.focusOk = ko.observable(false);
 
     // if (_this.item) {
     //   // ??? make it so Manual button can be toggled ???
     //   _this.item.Validated = false;
     // }
-
-    _this.initFocusFirst();
-    _this.focusOk = ko.observable(false);
-    _this.result = ko.observable(_this.item);
+    if (indexOfAddress(_this.otherAddresses, _this.item) > -1) {
+      removeAddress(_this.otherAddresses, _this.item);
+      _this.item.AddressID = 0;
+      _this.result = ko.observable(null);
+    } else {
+      _this.result = ko.observable(_this.item);
+    }
 
     _this.data = ukov.wrap(_this.item || {
       DealerId: 5000, // ?????
@@ -195,7 +207,7 @@ define("src/account/default/address.validate.vm", [
     }, schema);
 
     _this.data.StateCvm = new ComboViewModel({
-      selectedValue: _this.data.State,
+      selectedValue: _this.data.StateId,
       list: _this.stateOptions,
       nullable: true,
     });
@@ -239,17 +251,17 @@ define("src/account/default/address.validate.vm", [
       ],
     });
     _this.mode.subscribe(_this.modeChanged.bind(_this));
-    _this.mode(_this.item ? "M" : "V");
+    _this.mode(_this.item ? "A" : "V");
 
     _this.data.SeasonId(_this.repModel.Seasons[0].SeasonID);
     _this.data.SalesRepId(_this.repModel.CompanyID);
     _this.data.TeamLocationId(_this.repModel.TeamLocationId);
 
     // /////TESTING//////////////////////
-    // _this.data.PostalCode("12345");
-    // _this.data.Address("adsf");
-    // _this.data.PhoneNumber("1234567890");
-    // _this.data.PhoneNumber(_this.data.model.PhoneNumber);
+    // _this.data.PostalCode("66535");
+    // _this.data.StreetAddress("12705 SCHOOL CREEK RD");
+    // _this.data.Phone("1234567890");
+    // _this.data.Phone(_this.data.model.Phone);
     // /////TESTING//////////////////////
 
     //
@@ -300,6 +312,14 @@ define("src/account/default/address.validate.vm", [
       }
     });
 
+    _this.cmdUseAddress = ko.command(function(cb, item) {
+      cb();
+      _this.layerResult = item.address;
+      closeLayer(_this);
+    }, function(busy) {
+      return !busy && !_this.loading();
+    });
+
     _this.loading = _this.tcmdValidate.busy;
   }
   utils.inherits(AddressValidateViewModel, BaseViewModel);
@@ -348,36 +368,83 @@ define("src/account/default/address.validate.vm", [
     addrData.update(false, true);
   };
 
-  function saveAddress(_this, model, cb) {
-    dataservice.qualify.address.post(null, model, function(data) {
-      _this.data.setValue(data);
-      _this.data.markClean(data, true);
-      //
-      _this.result(data);
-      // store now since we want to use this even if escape key is pressed...
-      _this.layerResult = _this.result.peek();
-      //
-      _this.focusOk(true);
-    }, cb);
+  function processSalesRepLicReq(salesLicReq) {
+    var blockProcess = false;
+    salesLicReq.forEach(function(lic) {
+      switch (lic.LockTypeName) {
+        case "Hard Lock":
+          notify.warn("HARD LOCK: " + lic.CallCenterMessage, null, 0);
+          blockProcess = false;
+          break;
+        case "Soft Lock":
+          notify.warn("SOFT LOCK: " + lic.CallCenterMessage, null, 0);
+          blockProcess = false;
+          break;
+        case "No Lock":
+          notify.warn("LICENSING ISSUE: " + lic.CallCenterMessage, null, 0);
+          break;
+      }
+    });
+    return blockProcess;
   }
 
-  function validateAddress(_this, model, cb) {
-    dataservice.qualify.addressValidation.post(null, model, function(data) {
-      if (data.DPV) { // address validation succeeded
-        _this.data.setValue(data);
-        _this.data.markClean(data, true);
+  function saveAddress(_this, model, cb) {
+    dataservice.qualify.address.post(null, model, function(data) {
+      var blockProcess = processSalesRepLicReq(data.SalesLicReq);
+
+      if (!blockProcess) {
+        _this.data.setValue(data.VerifiedAddress);
+        _this.data.markClean(data.VerifiedAddress, true);
         //
-        _this.result(data);
+        _this.result(data.VerifiedAddress);
         // store now since we want to use this even if escape key is pressed...
         _this.layerResult = _this.result.peek();
         //
         _this.focusOk(true);
-      } else {
-        notify.warn("Failed to validate address", null, 7);
       }
     }, cb);
   }
 
+  function validateAddress(_this, model, cb) {
+    dataservice.qualify.premiseAddressValidation.post(null, model, function(data) {
+      var blockProcess = processSalesRepLicReq(data.SalesLicReq);
+
+      if (!blockProcess) {
+        if (data.VerifiedAddress.DPV) { // address validation succeeded
+          _this.data.setValue(data.VerifiedAddress);
+          _this.data.markClean(data.VerifiedAddress, true);
+          //
+          _this.result(data.VerifiedAddress);
+          // store now since we want to use this even if escape key is pressed...
+          _this.layerResult = _this.result.peek();
+          //
+          _this.focusOk(true);
+        } else {
+          notify.warn("Failed to validate address", null, 7);
+        }
+      }
+    }, cb);
+  }
+
+  function indexOfAddress(otherAddresses, address) {
+    var index = -1;
+    if (address) {
+      otherAddresses.some(function(item, i) {
+        if (item.address.AddressID === address.AddressID) {
+          index = i;
+          return true;
+        }
+      });
+    }
+    return index;
+  }
+
+  function removeAddress(otherAddresses, address) {
+    var index = indexOfAddress(otherAddresses, address);
+    if (index >= 0) {
+      otherAddresses.splice(index, 1);
+    }
+  }
 
 
   //@TODO: load options from server
@@ -563,28 +630,73 @@ define("src/account/default/address.validate.vm", [
   ];
   AddressValidateViewModel.prototype.timeZoneOptions = [ //
     {
+      value: 1,
+      text: "Atlantic Daylight Time"
+    }, {
       value: 2,
       text: "Atlantic Standard Time"
+    }, {
+      value: 3,
+      text: "Eastern Daylight Time"
     }, {
       value: 4,
       text: "Eastern Standard Time"
     }, {
+      value: 5,
+      text: "Central Daylight Time"
+    }, {
       value: 6,
       text: "Central Standard Time"
+    }, {
+      value: 7,
+      text: "Mountain Daylight Time"
     }, {
       value: 8,
       text: "Mountain Standard Time"
     }, {
+      value: 9,
+      text: "Pacific Daylight Time"
+    }, {
       value: 10,
       text: "Pacific Standard Time"
     }, {
+      value: 11,
+      text: "Alaska Daylight Time"
+    }, {
       value: 12,
       text: "Alaska Standard Time"
+    }, {
+      value: 13,
+      text: "Hawaii-Aleutian Daylight Time"
     }, {
       value: 14,
       text: "Hawaii-Aleutian Standard Time"
     },
   ];
+
+  ko.bindingHandlers.timeZone = {
+    init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      // pass through to `text` binding
+      ko.bindingHandlers.text.init(element, valueAccessor, allBindings, viewModel, bindingContext);
+    },
+    update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      function newValueAccessor() {
+        var timeZone = "NO ZONE";
+        var id = ko.unwrap(valueAccessor());
+        AddressValidateViewModel.prototype.timeZoneOptions.some(function(item) {
+          if (item.value === id) {
+            timeZone = item.text;
+            return true;
+          }
+        });
+        return timeZone;
+      }
+
+      // call `text` binding
+      ko.bindingHandlers.text.update(element, newValueAccessor, allBindings, viewModel, bindingContext);
+    },
+  };
+
   AddressValidateViewModel.prototype.addressDirectionalTypeOptions = [ //
     {
       value: "N",

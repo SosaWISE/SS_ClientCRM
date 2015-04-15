@@ -36,8 +36,8 @@ define("src/scheduler/account.service.tickets.vm", [
   };
 
   function sortByCustomerTypeId(a, b) {
-    var aP = customerTypePrecedence[a.CustomerTypeId] || 9,
-      bP = customerTypePrecedence[b.CustomerTypeId] || 9;
+    var aP = customerTypePrecedence[a.CustomerTypeId] || 99,
+      bP = customerTypePrecedence[b.CustomerTypeId] || 99;
     return aP - bP;
   }
 
@@ -74,6 +74,8 @@ define("src/scheduler/account.service.tickets.vm", [
           City: _this.customer.City,
           StateId: _this.customer.StateId,
           PostalCode: _this.customer.PostalCode,
+          Latitude: _this.customer.Latitude || 0,
+          Longitude: _this.customer.Longitude || 0,
         }),
         serviceTypes: schedulercache.getList("serviceTypes").peek(),
         skills: schedulercache.getList("skills").peek(),

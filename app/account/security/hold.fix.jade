@@ -1,0 +1,39 @@
+div(class="hold-fix")
+  div(data-bind="spinner:cmdSave.busy,spinner-rgb:'white'")
+
+  ul(class="edit-form")
+    li
+      span(class="label") Reason
+      div(data-bind="text:reason")
+    li
+      span(class="label") Note
+      div(class="hold-notes",data-bind="text:item.HoldDescription")
+    <!-- ko if:fixed -->
+    li
+      span(class="label") Removed By
+      div(class="hold-notes",data-bind="text:item.FixedBy")
+    li
+      span(class="label") Removed On
+      div(class="hold-notes",data-bind="datetimetext:item.FixedOn")
+    li
+      span(class="label") Closing Note
+      div(class="hold-notes",data-bind="text:item.FixedNote")
+    <!-- /ko -->
+    <!-- ko if:!fixed -->
+    li
+      span(class="label") Closing Note
+      textarea(rows="10",
+        data-bind="ukov:data.FixedNote,value:data.FixedNote,valueUpdate:'afterkeydown'")
+    <!-- /ko -->
+
+  ul(class="actions")
+    <!-- ko if:fixed -->
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:clickClose") Close
+    <!-- /ko -->
+    <!-- ko if:!fixed -->
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:clickClose") Cancel
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Remove Hold
+    <!-- /ko -->

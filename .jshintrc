@@ -3,7 +3,7 @@
   "node": true,
   "browser": true,
 
-  "onevar": true,
+  "onevar": false,
   "laxcomma": true,
 
   "eqeqeq": true,

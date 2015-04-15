@@ -1,0 +1,20 @@
+div(class="hold-new")
+  div(data-bind="spinner:cmdSave.busy,spinner-rgb:'white'")
+
+  ul(class="edit-form")
+    li
+      span(class="label") Primary Reason
+      div(data-bind="cvm:catg1Cvm")
+    li
+      span(class="label") Secondary Reason
+      div(data-bind="cvm:data.Catg2Cvm")
+    li
+      span(class="label") Note
+      textarea(rows="10",
+        data-bind="ukov:data.HoldDescription,value:data.HoldDescription,valueUpdate:'afterkeydown'")
+
+  ul(class="actions")
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:clickClose") Cancel
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Add Hold

@@ -27,6 +27,29 @@ define("src/dataservice", [
     user: new UserDataservice(),
     session: new SessionDataservice(),
 
+    //
+    // with /api
+    //
+    api_contractAdmin: createService("api/contractAdmin", [
+      "accounts",
+      "accountSalesInformationExtras",
+      "helpers",
+    ]),
+    api_ms: createService("api/ms", [
+      "accounts",
+      "holds",
+    ]),
+    api_qualify: createService("api/qualify", [
+      "customerMasterFiles",
+    ]),
+    api_ticket: createService("api/ticket", [
+      "teams",
+    ]),
+
+    //
+    // no /api
+    //
+
     accountingengine: createService("accountingenginesrv", [
       "aging",
       "billingInfoSummary",
@@ -36,6 +59,14 @@ define("src/dataservice", [
       "customerSearches",
       "customerCardInfos",
       "customers",
+    ]),
+
+    fundingsrv: createService("fundingsrv", [
+      "criterias",
+      "packets",
+      "packetItems",
+      "bundles",
+      "bundleItems"
     ]),
 
     adminsrv: createService("adminsrv", [
@@ -106,6 +137,7 @@ define("src/dataservice", [
       "accountDispatchAgencyAssignments",
       "premiseAddress",
       "dispatchAgencyTypes",
+      "msAccountStatusInformations"
     ]),
 
     msaccountsetupsrv: createService("msaccountsetupsrv", [
@@ -129,6 +161,7 @@ define("src/dataservice", [
       "technician",
       "address",
       "addressValidation",
+      "premiseAddressValidation",
       "runCredit",
       "qualifyCustomerInfos",
       "insideSales",

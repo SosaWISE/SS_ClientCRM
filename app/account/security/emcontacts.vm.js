@@ -1,12 +1,12 @@
-define('src/account/security/emcontacts.vm', [
-  'ko',
-  'src/dataservice',
-  'src/account/security/emcontacteditor.vm',
-  'src/account/security/emcontacts.gvm',
-  'src/core/strings',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/account/security/emcontacts.vm", [
+  "ko",
+  "src/dataservice",
+  "src/account/security/emcontacteditor.vm",
+  "src/account/security/emcontacts.gvm",
+  "src/core/strings",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   ko,
   dataservice,
@@ -22,7 +22,9 @@ define('src/account/security/emcontacts.vm', [
   function EmContactsViewModel(options) {
     var _this = this;
     EmContactsViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['layersVm']);
+    // utils.assertProps(_this, [
+    //   "layersVm",
+    // ]);
 
     //
     // events
@@ -34,19 +36,21 @@ define('src/account/security/emcontacts.vm', [
         }
         cb();
       });
+    }, function(busy) {
+      return !busy && _this.layersVm;
     });
 
     _this.gvm = new EmContactsGridViewModel({
-      edit: function(contact, cb) {
+      edit: !_this.layersVm ? null : function(contact, cb) {
         _this.showContactEditor(contact, cb);
       },
-      save: function(model) {
+      save: !_this.layersVm ? null : function(model) {
         dataservice.msaccountsetupsrv.emergencyContacts.save({
           id: model.EmergencyContactID || "",
           data: model,
         }, null, utils.safeCallback(null, function(err, resp) {
-          notify.info('Saved ' + formatFullname(model), '', 3);
-          if (resp.Message && resp.Message !== 'Success') {
+          notify.info("Saved " + formatFullname(model), "", 3);
+          if (resp.Message && resp.Message !== "Success") {
             notify.error(resp, 3);
           }
         }, function(err) {
@@ -57,8 +61,8 @@ define('src/account/security/emcontacts.vm', [
         return formatFullname(dataCtx);
       },
       relationshipFormatter: function(row, cell, value) {
-        var relationship = findById(_this.relationshipTypes, value, 'RelationshipID');
-        return relationship ? relationship.RelationshipDescription : 'Unknown Relationship';
+        var relationship = findById(_this.relationshipTypes, value, "RelationshipID");
+        return relationship ? relationship.RelationshipDescription : "Unknown Relationship";
       },
       getPhoneType: function(phoneTypeId) {
         var result;
@@ -73,7 +77,7 @@ define('src/account/security/emcontacts.vm', [
     });
   }
   utils.inherits(EmContactsViewModel, ControllerViewModel);
-  EmContactsViewModel.prototype.viewTmpl = 'tmpl-security-emcontacts';
+  EmContactsViewModel.prototype.viewTmpl = "tmpl-security-emcontacts";
 
   EmContactsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
@@ -99,6 +103,9 @@ define('src/account/security/emcontacts.vm', [
   };
   EmContactsViewModel.prototype.showContactEditor = function(contact, cb) {
     var _this = this;
+    if (!_this.layersVm) {
+      return cb();
+    }
     _this.layersVm.show(new EmContactEditorViewModel({
       item: utils.clone(contact),
       // customerId: 0, //????
@@ -106,23 +113,23 @@ define('src/account/security/emcontacts.vm', [
       orderNumber: _this.gvm.nextOrderNumber(),
       phoneTypes: _this.phoneTypes,
       phoneTypeFields: {
-        value: 'PhoneTypeID',
-        text: 'PhoneTypeDescription',
+        value: "PhoneTypeID",
+        text: "PhoneTypeDescription",
       },
       contactTypes: _this.contactTypes,
       contactTypeFields: {
-        value: 'EmergencyContactTypeID',
-        text: 'ContactTypeDescription',
+        value: "EmergencyContactTypeID",
+        text: "ContactTypeDescription",
       },
       contactAuthorityTypes: _this.contactAuthorityTypes,
       contactAuthorityTypeFields: {
-        value: 'AuthorityID',
-        text: 'AuthorityDescription',
+        value: "AuthorityID",
+        text: "AuthorityDescription",
       },
       relationshipTypes: _this.relationshipTypes,
       relationshipTypeFields: {
-        value: 'RelationshipID',
-        text: 'RelationshipDescription',
+        value: "RelationshipID",
+        text: "RelationshipDescription",
       },
     }), cb);
   };
@@ -130,7 +137,7 @@ define('src/account/security/emcontacts.vm', [
   function load_contacts(setter, accountId, cb) {
     dataservice.msaccountsetupsrv.accounts.read({
       id: accountId,
-      link: 'emergencyContacts',
+      link: "emergencyContacts",
     }, null, utils.safeCallback(cb, function(err, resp) {
       // sort emergency contacts
       resp.Value.sort(function(a, b) {
@@ -144,7 +151,7 @@ define('src/account/security/emcontacts.vm', [
     _this.phoneTypes = null;
     dataservice.msaccountsetupsrv.accounts.read({
       id: _this.accountId,
-      link: 'emergencyContactPhoneTypes',
+      link: "emergencyContactPhoneTypes",
     }, null, utils.safeCallback(cb, function(err, resp) {
       _this.phoneTypes = resp.Value;
     }, utils.no_op));
@@ -154,7 +161,7 @@ define('src/account/security/emcontacts.vm', [
     _this.contactAuthorityTypes = null;
     dataservice.msaccountsetupsrv.accounts.read({
       id: _this.accountId,
-      link: 'emergencyContactAuthorities',
+      link: "emergencyContactAuthorities",
     }, null, utils.safeCallback(cb, function(err, resp) {
       _this.contactAuthorityTypes = resp.Value;
     }, utils.no_op));
@@ -164,7 +171,7 @@ define('src/account/security/emcontacts.vm', [
     _this.contactTypes = null;
     dataservice.msaccountsetupsrv.accounts.read({
       id: _this.accountId,
-      link: 'emergencyContactTypes',
+      link: "emergencyContactTypes",
     }, null, utils.safeCallback(cb, function(err, resp) {
       _this.contactTypes = resp.Value;
     }, utils.no_op));
@@ -174,7 +181,7 @@ define('src/account/security/emcontacts.vm', [
     _this.relationshipTypes = null;
     dataservice.msaccountsetupsrv.accounts.read({
       id: _this.accountId,
-      link: 'emergencyContactRelationships',
+      link: "emergencyContactRelationships",
     }, null, utils.safeCallback(cb, function(err, resp) {
       _this.relationshipTypes = resp.Value;
     }, utils.no_op));
@@ -193,7 +200,7 @@ define('src/account/security/emcontacts.vm', [
 
 
   function formatFullname(d) {
-    return strings.joinTrimmed(' ', d.Prefix, d.FirstName, d.MiddleName, d.LastName, d.Postfix);
+    return strings.joinTrimmed(" ", d.Prefix, d.FirstName, d.MiddleName, d.LastName, d.Postfix);
   }
 
 

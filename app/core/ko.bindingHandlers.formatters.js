@@ -40,6 +40,7 @@ define("src/core/ko.bindingHandlers.formatters", [
       return val;
     };
   }
+  ko.bindingHandlers.currencyvalue = createFormatter("value", makeFormattedCurrencyValueAccessor);
   ko.bindingHandlers.currencytext = createFormatter("text", makeFormattedCurrencyValueAccessor);
 
   function makeHtmlFormattedCurrencyValueAccessor(valueAccessor) {
@@ -142,4 +143,18 @@ define("src/core/ko.bindingHandlers.formatters", [
     };
   }
   ko.bindingHandlers.ssnvalue = createFormatter("value", makeSsnValueAccessor);
+
+
+  //
+  // Feet binding
+  //
+  function makeFeetValueAccessor(valueAccessor) {
+    return function() {
+      return strings.formatters.feet(ko.unwrap(valueAccessor()));
+    };
+  }
+  ko.bindingHandlers.feet = createFormatter("text", makeFeetValueAccessor);
+  ko.bindingHandlers.feetvalue = createFormatter("value", makeFeetValueAccessor);
+
+
 });

@@ -1,12 +1,12 @@
-define('src/account/security/clist.systemdetails.vm', [
-  'src/account/default/rep.find.vm',
-  'src/account/security/systemdetails.editor.vm',
-  'src/account/security/clist.equipment.vm',
-  'src/core/notify',
-  'src/dataservice',
-  'ko',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/account/security/clist.systemdetails.vm", [
+  "src/account/default/rep.find.vm",
+  "src/account/security/systemdetails.editor.vm",
+  "src/account/security/clist.equipment.vm",
+  "src/core/notify",
+  "src/dataservice",
+  "ko",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   RepFindViewModel,
   SystemDetailsEditorViewModel,
@@ -23,7 +23,7 @@ define('src/account/security/clist.systemdetails.vm', [
     var _this = this;
 
     CListSystemDetailsViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['layersVm']);
+    ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
     _this.mayReload = ko.observable(false);
     _this.repData = ko.observable();
@@ -39,7 +39,7 @@ define('src/account/security/clist.systemdetails.vm', [
     //
     _this.cmdFindRep = ko.command(function(cb) {
       _this.layersVm.show(new RepFindViewModel({
-        title: 'Technician',
+        title: "Technician",
       }), function onClose(result) {
         if (!result) {
           cb();
@@ -67,23 +67,23 @@ define('src/account/security/clist.systemdetails.vm', [
         },
         panelTypes: _this.panelTypes,
         panelTypeFields: {
-          value: 'PanelTypeID',
-          text: 'PanelTypeName',
+          value: "PanelTypeID",
+          text: "PanelTypeName",
         },
         systemTypes: _this.systemTypes,
         systemTypeFields: {
-          value: 'SystemTypeID',
-          text: 'SystemTypeName',
+          value: "SystemTypeID",
+          text: "SystemTypeName",
         },
         cellularTypes: _this.cellularTypes,
         cellularTypeFields: {
-          value: 'CellularTypeID',
-          text: 'CellularTypeName',
+          value: "CellularTypeID",
+          text: "CellularTypeName",
         },
         dslSeizureTypes: _this.dslSeizureTypes,
         dslSeizureTypeFields: {
-          value: 'DslSeizureID',
-          text: 'DslSeizure',
+          value: "DslSeizureID",
+          text: "DslSeizure",
         },
       }), function onClose(result) {
         if (result) {
@@ -97,7 +97,7 @@ define('src/account/security/clist.systemdetails.vm', [
     });
   }
   utils.inherits(CListSystemDetailsViewModel, ControllerViewModel);
-  CListSystemDetailsViewModel.prototype.viewTmpl = 'tmpl-security-clist_systemdetails';
+  CListSystemDetailsViewModel.prototype.viewTmpl = "tmpl-security-clist_systemdetails";
 
   CListSystemDetailsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
@@ -107,16 +107,16 @@ define('src/account/security/clist.systemdetails.vm', [
     _this.equipmentVm.loader.reset(); //incase of reload
     _this.equipmentVm.load(routeData, extraData, join.add());
 
-    load_types('panelTypes', function(results) {
+    load_types("panelTypes", function(results) {
       _this.panelTypes = results;
     }, join);
-    load_types('serviceTypes', function(results) {
+    load_types("serviceTypes", function(results) {
       _this.systemTypes = results;
     }, join);
     load_cellularTypes(function(results) {
       _this.cellularTypes = results;
     }, join);
-    load_types('dslSeizureTypes', function(results) {
+    load_types("dslSeizureTypes", function(results) {
       _this.dslSeizureTypes = results;
     }, join);
 
@@ -140,12 +140,12 @@ define('src/account/security/clist.systemdetails.vm', [
     var _this = this,
       sd = _this.systemDetails;
     _this.systemData({
-      ms: 'boh!',
+      ms: "boh!",
       accountPassword: sd.AccountPassword,
-      panelType: findName(_this.panelTypes, sd.PanelTypeId, 'PanelTypeID', 'PanelTypeName'),
-      systemType: findName(_this.systemTypes, sd.SystemTypeId, 'SystemTypeID', 'SystemTypeName'),
-      cellularType: findName(_this.cellularTypes, sd.CellularTypeId, 'CellularTypeID', 'CellularTypeName'),
-      dslSeizure: findName(_this.dslSeizureTypes, sd.DslSeizureId, 'DslSeizureID', 'DslSeizure'),
+      panelType: findName(_this.panelTypes, sd.PanelTypeId, "PanelTypeID", "PanelTypeName"),
+      systemType: findName(_this.systemTypes, sd.SystemTypeId, "SystemTypeID", "SystemTypeName"),
+      cellularType: findName(_this.cellularTypes, sd.CellularTypeId, "CellularTypeID", "CellularTypeName"),
+      dslSeizure: findName(_this.dslSeizureTypes, sd.DslSeizureId, "DslSeizureID", "DslSeizure"),
     });
   };
 
@@ -160,7 +160,7 @@ define('src/account/security/clist.systemdetails.vm', [
     if (foundItem) {
       return foundItem[displayName];
     } else {
-      return '';
+      return "";
     }
   }
 

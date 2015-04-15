@@ -1,9 +1,13 @@
 define("src/scheduler/ticket.model", [
+  "src/core/numbers",
+  "src/core/strings",
   "src/core/utils",
   "src/core/combo.vm",
   "ko",
   "src/ukov",
 ], function(
+  numbers,
+  strings,
   utils,
   ComboViewModel,
   ko,
@@ -101,6 +105,18 @@ define("src/scheduler/ticket.model", [
     CustomerMasterFileId: {},
   };
 
+  function tempTechs(item) {
+    var techs = [];
+    var id = item.TechId;
+    if (id) {
+      techs.push({
+        ID: id,
+        FullName: item.TechFullName,
+      });
+    }
+    return techs;
+  }
+
   return function(item, options) {
     utils.ensureProps(options, [
       "serviceTypes",
@@ -117,22 +133,22 @@ define("src/scheduler/ticket.model", [
         text: "Name",
       },
     });
-    var tempTechs = [];
-    (function() {
-      var techId = model.TechId.peek();
-      if (techId) {
-        tempTechs.push({
-          ID: techId,
-          FullName: item.TechFullName,
-        });
-      }
-    })();
     model.techCvm = new ComboViewModel({
       selectedValue: model.TechId,
-      list: tempTechs,
+      list: tempTechs(item),
       fields: {
         value: "ID",
         text: "FullName",
+      },
+    });
+
+    model.teamCvm = new ComboViewModel({
+      fields: {
+        value: "TeamId",
+        text: function(item) {
+          return strings.format("{0} ({1} miles)",
+            item.Team.Description, (item.distance == null) ? "?" : numbers.roundTo(item.distance, 2));
+        },
       },
     });
 

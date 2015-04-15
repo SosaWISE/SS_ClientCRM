@@ -185,6 +185,8 @@ define('src/core/controller.vm', [
       child.activate(routeCtx);
     }
     _this._prevChild = child;
+    //
+    setTopLayerActive(_this, true);
   };
   ControllerViewModel.prototype.findChild = function(routeData) {
     var _this = this,
@@ -219,7 +221,27 @@ define('src/core/controller.vm', [
         _this.activeChild(null);
       }
     }
+    //
+    setTopLayerActive(_this, false);
   };
+
+  function setTopLayerActive(_this, active) {
+    var layersVm = _this.layersVm;
+    if (!layersVm) {
+      return;
+    }
+    var layer = layersVm.getTopLayer();
+    if (!layer) {
+      return;
+    }
+    var vm = layer.vm();
+    if (vm) {
+      vm.active(active);
+      if (active) {
+        layersVm.focus();
+      }
+    }
+  }
 
   ControllerViewModel.prototype.canClose = function() { // overrides base
     var _this = this;
@@ -367,8 +389,8 @@ define('src/core/controller.vm', [
   //
   ControllerViewModel.addManualReloadListener = function() {
     document.addEventListener("click", function(evt) {
-      // shift+ctrl or shift+alt or shift+ctrl+alt should get passed this
-      if (!evt.shiftKey || !(evt.ctrlKey || evt.altKey)) {
+      // ctrl+alt or shift+alt or ctrl+shift+alt should get passed this
+      if (!evt.altKey || !(evt.shiftKey || evt.ctrlKey)) {
         return;
       }
       // stop the event from firing

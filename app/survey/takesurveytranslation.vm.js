@@ -92,6 +92,10 @@ define('src/survey/takesurveytranslation.vm', [
       _this.contextEditorVm = new ContextEditorViewModel({
         dataContext: {
           CompanyName: 'Nexsense',
+          Company: {
+            Name: "Nexsense",
+            Phone: "8662055200",
+          },
           ADUserDisplayName: 'ADUserDisplayName',
           PrimaryCustomer: {
             FirstName: 'Bob',

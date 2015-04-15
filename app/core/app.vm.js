@@ -132,19 +132,24 @@ define('src/core/app.vm', [
     };
     _this.cmdLogout = ko.command(function(cb) {
       _this.doLogout(function(err) {
-        if (err) {
-          notify.error(err, 10);
-        } else {
+        if (!err) {
           _this.user(null);
           _this.router.endSession();
         }
-        cb();
+        cb(err);
       });
     });
 
     _this.init();
 
-    _this.os = navigator.platform.split(' ')[0].toLowerCase(); // detect os
+    var os = navigator.platform.split(' ')[0]; // detect os
+    if (os) {
+      if (os.length > 3) {
+        os = os.substr(0, 3);
+      }
+      os = os.toLowerCase();
+    }
+    _this.os = "os-" + os;
   }
   AppViewModel.prototype.prefix = '';
   AppViewModel.prototype.postfix = '-panel';

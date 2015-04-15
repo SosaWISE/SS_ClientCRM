@@ -295,3 +295,28 @@ textarea.right-side {
 }
 
 
+
+
+.edit-form {
+  &.double-wide,
+  &.triple-wide,
+  &.quad-wide {
+    display: inline-block;
+    vertical-align: top;
+  }
+  &.double-wide {
+    // width: 50%;
+    width: ~"calc(50% - 10px)";
+    margin-right: 10px;
+  }
+  &.triple-wide {
+    // width: 33%;
+    width: ~"calc(33% - 10px)";
+    margin-right: 10px;
+  }
+  &.quad-wide {
+    // width: 25%;
+    width: ~"calc(25% - 10px)";
+    margin-right: 10px;
+  }
+}
