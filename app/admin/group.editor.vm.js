@@ -146,7 +146,7 @@ define("src/admin/group.editor.vm", [
     // }
 
     var list = data.getValue();
-    dataservice.adminsrv[name].save({
+    dataservice.api_admin[name].save({
       id: groupName,
       data: list,
     }, function(val) {

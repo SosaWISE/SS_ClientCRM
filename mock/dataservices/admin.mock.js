@@ -20,7 +20,7 @@ define("mock/dataservices/admin.mock", [
       });
     }
 
-    dataservice.adminsrv.actions.read = function(params, setter, cb) {
+    dataservice.api_admin.actions.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -29,7 +29,7 @@ define("mock/dataservices/admin.mock", [
       }
       send(0, result, setter, cb);
     };
-    dataservice.adminsrv.applications.read = function(params, setter, cb) {
+    dataservice.api_admin.applications.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -38,7 +38,7 @@ define("mock/dataservices/admin.mock", [
       }
       send(0, result, setter, cb);
     };
-    dataservice.adminsrv.groupActions.read = function(params, setter, cb) {
+    dataservice.api_admin.groupActions.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -47,7 +47,7 @@ define("mock/dataservices/admin.mock", [
       }
       send(0, result, setter, cb);
     };
-    dataservice.adminsrv.groupApplications.read = function(params, setter, cb) {
+    dataservice.api_admin.groupApplications.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
@@ -56,7 +56,7 @@ define("mock/dataservices/admin.mock", [
       }
       send(0, result, setter, cb);
     };
-    dataservice.adminsrv.users.read = function(params, setter, cb) {
+    dataservice.api_admin.users.read = function(params, setter, cb) {
       var result; //, id = params.id;
       switch (params.link || null) {
         case null:
@@ -96,7 +96,7 @@ define("mock/dataservices/admin.mock", [
       return notDeleted(mockery.filterListBy(list, "GroupName", groupName));
     }
 
-    dataservice.adminsrv.groupActions.save = function(params, setter, cb) {
+    dataservice.api_admin.groupActions.save = function(params, setter, cb) {
       var result, groupName = params.id;
       switch (params.link || null) {
         case null:
@@ -107,7 +107,7 @@ define("mock/dataservices/admin.mock", [
       }
       send(0, result, setter, cb);
     };
-    dataservice.adminsrv.groupApplications.save = function(params, setter, cb) {
+    dataservice.api_admin.groupApplications.save = function(params, setter, cb) {
       var result, groupName = params.id;
       switch (params.link || null) {
         case null:

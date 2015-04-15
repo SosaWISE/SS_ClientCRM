@@ -106,11 +106,11 @@ define("src/admin/authcontrol.vm", [
   };
 
   function load_admin_list(name, setter, cb) {
-    dataservice.adminsrv[name].read({}, setter, cb);
+    dataservice.api_admin[name].read({}, setter, cb);
   }
 
   function load_userGroups(username, setter, cb) {
-    dataservice.adminsrv.users.read({
+    dataservice.api_admin.users.read({
       id: username,
       link: "groups",
     }, setter, cb);

@@ -45,6 +45,13 @@ define("src/dataservice", [
     api_ticket: createService("api/ticket", [
       "teams",
     ]),
+    api_admin: createService("api_admin", [
+      "actions",
+      "applications",
+      "groupActions",
+      "groupApplications",
+      "users",
+    ]),
 
     //
     // no /api
@@ -67,14 +74,6 @@ define("src/dataservice", [
       "packetItems",
       "bundles",
       "bundleItems"
-    ]),
-
-    adminsrv: createService("adminsrv", [
-      "actions",
-      "applications",
-      "groupActions",
-      "groupApplications",
-      "users",
     ]),
 
     humanresourcesrv: createService("humanresourcesrv", [
