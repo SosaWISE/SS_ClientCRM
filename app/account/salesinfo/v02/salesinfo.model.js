@@ -120,6 +120,8 @@ define("src/account/salesinfo/v02/salesinfo.model", [
 
   var dateConverter = ukov.converters.date();
   var boolConverter = ukov.converters.bool();
+  var nullStrConverter = ukov.converters.nullString();
+  var max256 = ukov.validators.maxLength(256);
   var schema = {
     _model: true,
 
@@ -137,7 +139,10 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     SalesRepId: {},
     AccountFundingStatusId: {},
     BillingDay: {}, // Billing Day of Month
-    Email: {},
+    Email: {
+      converter: nullStrConverter,
+      validators: [max256, ukov.validators.isEmail()],
+    },
     IsMoni: {},
     SystemTypeId: {}, // (NEW|UPG|TKO) // IsTakeOver: {},
     IsOwner: {},

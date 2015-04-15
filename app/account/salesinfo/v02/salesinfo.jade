@@ -75,6 +75,13 @@ div(class="acct-item v02-sales-info")
               div(class="answer")
                 div(data-bind="cvm:salesinfo.BillingDayCvm")
 
+            div(class="line")
+              div(class="letter",data-bind="text:num()")
+              div(class="question") What is your email address?
+              div(class="answer")
+                input(type="text",class="inputField",
+                  data-bind="ukov:salesinfo.Email,value:salesinfo.Email")
+
             //- div(class="line")
             //-   div(class="letter",data-bind="text:num()")
             //-   div(class="question") Will there be any upgrades to the package?

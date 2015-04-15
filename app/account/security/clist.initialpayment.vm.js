@@ -686,7 +686,7 @@ define("src/account/security/clist.initialpayment.vm", [
     return strings.joinTrimmed(" ", data.Salutation, data.FirstName, data.MiddleName, data.LastName, data.Suffix);
   }
 
-  function savePaymentMethod(_this, model, link, cb) {
+  function savePaymentMethod(_this, model, link, setter, cb) {
     //
     model.ID = model.ID || 0;
     model.ModifiedOn = model.ModifiedOn || new Date();
@@ -695,7 +695,7 @@ define("src/account/security/clist.initialpayment.vm", [
       id: _this.acctid,
       link: link,
       data: model,
-    }, _this.setPaymentMethod, cb);
+    }, setter, cb);
   }
 
   function updateCustomerAccount(acctid, customerTypeId, leadid, setter, cb) {
