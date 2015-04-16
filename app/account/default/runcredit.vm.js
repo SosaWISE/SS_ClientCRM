@@ -226,9 +226,6 @@ define("src/account/default/runcredit.vm", [
       selectedValue: _this.data.LocalizationId,
       fields: accountscache.metadata("localizations"),
     }).subscribe(accountscache.getList("localizations"), _this.handler);
-    if (!_this.localizationCvm.selectedValue.peek()) {
-      _this.localizationCvm.selectFirst();
-    }
 
     //
     // events
@@ -327,9 +324,14 @@ define("src/account/default/runcredit.vm", [
     }, 100);
   };
   RunCreditViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    // var _this = this,
-    //   cb = join.add();
+    var _this = this;
+
     accountscache.ensure("localizations", join.add());
+    join.when(function() {
+      if (!_this.localizationCvm.selectedValue.peek()) {
+        _this.localizationCvm.selectFirst();
+      }
+    });
   };
 
   RunCreditViewModel.prototype.handleUseLead = function(item, cb) {
