@@ -2,6 +2,7 @@ define("src/account/default/runcredit.vm", [
   "src/account/accounts-cache",
   "src/app",
   "src/config",
+  "src/core/subscriptionhandler",
   "src/core/strings",
   "src/core/combo.vm",
   "src/core/notify",
@@ -15,6 +16,7 @@ define("src/account/default/runcredit.vm", [
   accountscache,
   app,
   config,
+  SubscriptionHandler,
   strings,
   ComboViewModel,
   notify,
@@ -170,6 +172,7 @@ define("src/account/default/runcredit.vm", [
       showSaveBtn: false,
     });
     _this.mixinLoad();
+    _this.handler = new SubscriptionHandler();
 
     if (indexOfLead(_this.otherLeads, _this.item) > -1) {
       removeLead(_this.otherLeads, _this.item);
@@ -222,8 +225,7 @@ define("src/account/default/runcredit.vm", [
     _this.localizationCvm = new ComboViewModel({
       selectedValue: _this.data.LocalizationId,
       fields: accountscache.metadata("localizations"),
-      list: accountscache.getList("localizations").peek(),
-    });
+    }).subscribe(accountscache.getList("localizations"), _this.handler);
     if (!_this.localizationCvm.selectedValue.peek()) {
       _this.localizationCvm.selectFirst();
     }
@@ -325,10 +327,9 @@ define("src/account/default/runcredit.vm", [
     }, 100);
   };
   RunCreditViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    join.add()();
     // var _this = this,
     //   cb = join.add();
-    // load_localization(_this.localizationCvm, cb);
+    accountscache.ensure("localizations", join.add());
   };
 
   RunCreditViewModel.prototype.handleUseLead = function(item, cb) {
