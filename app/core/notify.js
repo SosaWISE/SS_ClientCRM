@@ -1,10 +1,10 @@
 define("src/core/notify", [
   "jquery",
-  // "src/core/strings",
+  "src/core/utils",
   "ko",
 ], function(
   jquery,
-  // strings,
+  utils,
   ko
 ) {
   "use strict";
@@ -50,7 +50,7 @@ define("src/core/notify", [
     var _this = this;
     _this.list = ko.observableArray();
     // _this.addAtTop = true; // when notices appear at bottom
-    _this.atTop = ko.observable(false);
+    _this.atTop = ko.observable(true);
 
     //
     // events
@@ -99,6 +99,9 @@ define("src/core/notify", [
     delay = delay || 0;
     notify(_this, (err.Code === 0 ? "info" : "error"), err.Url, err.Code,
       _this.errorCodeMap[err.Code] || "Error (code not recognized)", err.Message, delay, options);
+    //
+    utils.tryThrowHandledErr(err);
+    // true - error was shown
     return true;
   };
   // same as `error` but only uses the first argument.

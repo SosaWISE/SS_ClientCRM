@@ -1,7 +1,7 @@
-define('src/nimis/apilogger', [
-  'src/nimis/config',
-  'src/dataservice',
-  'src/core/notify',
+define("src/nimis/apilogger", [
+  "src/nimis/config",
+  "src/dataservice",
+  "src/core/notify",
 ], function(
   config,
   dataservice,
@@ -23,28 +23,29 @@ define('src/nimis/apilogger', [
 
   function saveLog(typeId, msgObj) {
     if (!config.logErrors || !msgObj) {
+      notify.warn("Error NOT logged. Error logging is disabled.", null, 15);
       return false;
     }
 
     msgObj.MessageTypeId = typeId;
     // msgObj = {
     //   MessageTypeId: typeId,
-    //   Header: '',
-    //   Message: '',
-    //   Version: '',
-    //   ComputerName: '',
-    //   SourceView: '',
+    //   Header: "",
+    //   Message: "",
+    //   Version: "",
+    //   ComputerName: "",
+    //   SourceView: "",
     // };
 
     dataservice.base.save({
-      link: 'logerror',
+      link: "logerror",
       data: msgObj,
     }, null, function(err, resp) {
       if (err) {
         console.warn(err.Message);
         notify.error(err);
       } else {
-        notify.warn('Error logged - MessageID: ' + resp.Value);
+        notify.info("Error logged - MessageID: " + resp.Value, null, 15);
       }
     });
     return true;

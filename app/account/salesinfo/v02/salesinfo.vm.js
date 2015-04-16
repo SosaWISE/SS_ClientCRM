@@ -145,14 +145,10 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       vm.load(routeData, extraData, join.add());
     });
 
-    function step1(cb) {
-      // when done, start next step, then call callback
+    function step1() {
+      // start next step when done
       var subjoin = join.create()
-        .after(function(err) {
-          if (!err) {
-            step2(join.add());
-          }
-        }).after(cb);
+        .after(utils.safeCallback(join.add(), step2, utils.noop));
       // ensure types
       accountscache.ensure("invoices/items", subjoin.add());
       accountscache.ensure("packages", subjoin.add());
@@ -168,14 +164,10 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       }, subjoin.add());
     }
 
-    function step2(cb) {
-      // when done, start next step, then call callback
+    function step2() {
+      // start next step when done
       var subjoin = join.create()
-        .after(function(err) {
-          if (!err) {
-            step3(join.add());
-          }
-        }).after(cb);
+        .after(utils.safeCallback(join.add(), step3, utils.noop));
       //
       load_installInvoice(acctid, function(val) {
         _this.invoice(val);
@@ -209,7 +201,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       .unsubscribe(_this.packageChanged)
       .unsubscribe(_this.saveData);
     //
-    function step3(cb) {
+    function step3() {
       // set defaults
       var val = _this.salesinfo.getValue();
       utils.setIfNull(val, {
@@ -244,28 +236,25 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
         var activationItemId;
         var score = _this.creditScore.peek();
         if (score >= 625) { // Good, Excellent ???
-          activationItemId = "SETUP_FEE_69"; //@TODO: create
+          activationItemId = "SETUP_FEE_69";
         } else if (score >= 600 && score <= 624) { // Sub ???
           activationItemId = "SETUP_FEE_199";
         } else { //if (score < 600) { // Poor ???
-          activationItemId = "SETUP_FEE_299"; //@TODO: create
+          activationItemId = "SETUP_FEE_299";
         }
         var invoiceItem = _this.invoice.findInvoiceItems(["SETUP_FEE"], [])[0];
         if (!invoiceItem) {
           invoiceItem = {};
         }
         // create/update invoice item
-        var item = accountscache.getMap("invoices/items")[activationItemId];
+        var item = mustGetItem(activationItemId);
         InvoiceItemsEditorViewModel.copyInvoiceItemFromItem(invoiceItem, item);
         saveInvoiceItems(_this, [invoiceItem]);
       }
-
-      // done (synchronously)
-      cb();
     }
 
     // start at first step
-    step1(join.add());
+    step1();
   };
 
   function updateInvoiceGvm(invoiceItems) {
@@ -327,13 +316,20 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     });
   }
 
+  function mustGetItem(itemId) {
+    var item = accountscache.getMap("invoices/items")[itemId];
+    if (!item) {
+      throw new Error("Failed to find item: `" + itemId + "`");
+    }
+    return item;
+  }
+
   function packageChanged() {
     /* jshint validthis:true */
     var _this = this;
     // var invoice = _this.invoice();
     var invoiceItems = _this.invoice.invoiceItems.peek();
     var items = accountscache.getList("invoices/items").peek();
-    var itemsMap = accountscache.getMap("invoices/items");
 
     var invItemsToSave = [];
     var pkg = _this._prevpkg;
@@ -405,7 +401,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
           item = filteredItems[0];
         } else {
           // get item for invoice item
-          item = itemsMap[invoiceItem.ItemId];
+          item = mustGetItem(invoiceItem.ItemId);
         }
         // create/update invoice item
         InvoiceItemsEditorViewModel.copyInvoiceItemFromItem(invoiceItem, item);
@@ -631,16 +627,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
 
 
   function showInvoiceItemsEditor(_this, invoiceItemGrp, itemId, salesrepId, cb) {
-    try {
-      _this.layersVm.show(createInvoiceItemsEditor(_this, invoiceItemGrp, itemId, salesrepId), createInvoiceItemsEditorCb(_this, cb));
-    } catch (ex) {
-      // catch and display any errors
-      //@REVIEW: not sure why the global error handler fails to catch them...
-      notify.error({
-        Code: -2,
-        Message: ex.stack,
-      }, 0);
-    }
+    _this.layersVm.show(createInvoiceItemsEditor(_this, invoiceItemGrp, itemId, salesrepId), createInvoiceItemsEditorCb(_this, cb));
   }
 
   function tryAddRep(_this, newRep) {
