@@ -2,8 +2,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
   "underscore",
   "src/account/accounts-cache",
   "src/account/salesinfo/v01/parts.editor.vm",
-  "src/app",
-  "src/config",
+  "howie",
   "src/slick/buttonscolumn",
   "src/account/security/frequent.gvm",
   "src/account/salesinfo/v01/salesinfo.gvm",
@@ -22,8 +21,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
   underscore,
   accountscache,
   PartsEditorViewModel,
-  app,
-  config,
+  howie,
   ButtonsColumn,
   FrequentGridViewModel,
   SalesInfoGridViewModel,
@@ -166,7 +164,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
 
     _this.title = ko.observable(_this.title);
     _this.data = ukov.wrap({
-      DealerId: app.user().DealerId,
+      DealerId: howie.fetch("app").user().DealerId,
     }, schema);
     _this.data.PanelTypeCvm = new ComboViewModel({
       selectedValue: _this.data.PanelTypeId,

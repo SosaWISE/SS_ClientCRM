@@ -1,5 +1,5 @@
 define("src/contracts/contract.vm", [
-  "src/app",
+  "howie",
   "src/account/accounts-cache",
   "src/account/salesinfo/options",
   "src/account/security/holds.vm",
@@ -22,7 +22,7 @@ define("src/contracts/contract.vm", [
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
-  app,
+  howie,
   accountscache,
   salesInfoOptions,
   HoldsViewModel,
@@ -46,6 +46,7 @@ define("src/contracts/contract.vm", [
   ControllerViewModel
 ) {
   "use strict";
+
   var _static = {};
 
   var typeIdMaps = {
@@ -1326,7 +1327,7 @@ define("src/contracts/contract.vm", [
     var model = data.getValue();
     if (approve) {
       model.ApprovedDate = new Date();
-      model.ApproverID = app.user.peek().GPEmployeeID;
+      model.ApproverID = howie.fetch("app").user.peek().GPEmployeeID;
     }
     dataservice.api_contractAdmin.accountSalesInformationExtras.save({
       id: _this.acctid,

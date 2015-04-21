@@ -56,7 +56,7 @@ define('specui/browser', [
     }
     var done = false;
     runs(function() {
-      setTimeout(function() {
+      window.setTimeout(function() {
         done = true;
       }, milliseconds);
     });

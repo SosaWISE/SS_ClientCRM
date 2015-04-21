@@ -3,7 +3,7 @@ define("src/account/default/masteraccount.vm", [
   "src/dataservice",
   "src/account/security/account.vm",
   "ko",
-  "src/config",
+  "howie",
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
@@ -12,7 +12,7 @@ define("src/account/default/masteraccount.vm", [
   dataservice,
   AccountViewModel,
   ko,
-  config,
+  howie,
   notify,
   utils,
   ControllerViewModel
@@ -52,8 +52,8 @@ define("src/account/default/masteraccount.vm", [
 
     _this.mayReload = ko.observable(false);
     _this.title = ko.observable(_this.title);
-    _this.hideNotes = ko.observable(config.crm.hideNotes);
-    _this.hideNav = ko.observable(config.crm.hideNav);
+    _this.hideNotes = ko.observable(howie.fetch("config").crm.hideNotes);
+    _this.hideNav = ko.observable(howie.fetch("config").crm.hideNav);
 
     _this.customers = ko.observableArray();
 

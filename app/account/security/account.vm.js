@@ -1,5 +1,5 @@
 define("src/account/security/account.vm", [
-  "src/app",
+  "howie",
   "src/contracts/contract.vm",
   "src/account/security/checklist.vm",
   "src/account/security/summary.vm",
@@ -10,7 +10,7 @@ define("src/account/security/account.vm", [
   "src/core/controller.vm",
   "ko"
 ], function(
-  app,
+  howie,
   ContractViewModel,
   ChecklistViewModel,
   SummaryViewModel,
@@ -66,7 +66,7 @@ define("src/account/security/account.vm", [
       createEquipment(_this, "Equipment"),
       createAccountServiceTickets(_this, "Service Tickets"),
     ];
-    if (inTextList(app.user.peek().Apps, "contract_admin")) {
+    if (inTextList(howie.fetch("app").user.peek().Apps, "contract_admin")) {
       list.push(createContractVm(_this, "Contract Admin"));
     }
     _this.childs(list);

@@ -105,7 +105,7 @@ define('src/account/default/search.vm', [
     });
 
     _this.title = ko.observable(_this.title);
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.acctNum = ukov.wrap('', acctNumSchema);
     _this.data = ukov.wrap({
       // only set initial values for PageSize and PageNumber. all other values should be null by default.
@@ -204,16 +204,6 @@ define('src/account/default/search.vm', [
       _this.clearData();
       _this.focusFirst(true);
     };
-
-    //
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the rep id
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
-    });
   }
   utils.inherits(SearchViewModel, ControllerViewModel);
   SearchViewModel.prototype.viewTmpl = 'tmpl-acct-default-search';

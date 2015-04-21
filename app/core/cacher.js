@@ -107,7 +107,7 @@ define("src/core/cacher", [
       ensureLoaded(cb, prefix + name, function(cb) {
         var list = hardcodedCache[name];
         if (list) {
-          setTimeout(function() {
+          window.setTimeout(function() {
             cb(null, {
               Value: list,
             });

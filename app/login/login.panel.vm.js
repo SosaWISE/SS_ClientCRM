@@ -40,7 +40,7 @@ define("src/login/login.panel.vm", [
       };
     })();
     _this.cmdLogin = ko.command(function(cb) {
-      // setTimeout(function() {
+      // window.setTimeout(function() {
       dataservice.user.auth({
         Username: _this.username(),
         Password: _this.password(),

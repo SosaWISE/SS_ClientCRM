@@ -1,7 +1,6 @@
 define("src/account/default/runcredit.vm", [
   "src/account/accounts-cache",
-  "src/app",
-  "src/config",
+  "howie",
   "src/core/subscriptionhandler",
   "src/core/strings",
   "src/core/combo.vm",
@@ -14,8 +13,7 @@ define("src/account/default/runcredit.vm", [
   "src/dataservice"
 ], function(
   accountscache,
-  app,
-  config,
+  howie,
   SubscriptionHandler,
   strings,
   ComboViewModel,
@@ -196,15 +194,15 @@ define("src/account/default/runcredit.vm", [
       ProductSkwId: "HSSS001" // *OPTIONAL  it will default to "HSSS001" if not passed.  This Prodcut Skw is for an alarm system.  Depending on what type of lead we are creating you would pass the appropriate Product Skw.
     };
     //
-    _this.item.LeadSourceId = _this.item.LeadSourceId || config.leadSourceId;
-    _this.item.LeadDispositionId = _this.item.LeadDispositionId || config.leadDispositionId;
-    _this.item.DealerId = _this.item.DealerId || app.user().DealerId;
+    _this.item.LeadSourceId = _this.item.LeadSourceId || howie.fetch("config").leadSourceId;
+    _this.item.LeadDispositionId = _this.item.LeadDispositionId || howie.fetch("config").leadDispositionId;
+    _this.item.DealerId = _this.item.DealerId || howie.fetch("app").user().DealerId;
     //
     _this.item.SalesRepId = _this.item.SalesRepId || _this.repModel.CompanyID;
     _this.item.TeamLocationId = _this.item.TeamLocationId || _this.repModel.TeamLocationId;
     _this.item.SeasonId = _this.item.SeasonId || _this.repModel.Seasons[0].SeasonID;
 
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.leadResult = ko.observable(null);
     _this.creditResult = ko.observable(null);
     _this.loaded = ko.observable(false);
@@ -315,13 +313,6 @@ define("src/account/default/runcredit.vm", [
       msg = "Please wait for save to finish.";
     }
     return msg;
-  };
-  RunCreditViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
-    var _this = this;
-    // this timeout makes it possible to focus the input
-    setTimeout(function() {
-      _this.focusFirst(true);
-    }, 100);
   };
   RunCreditViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;

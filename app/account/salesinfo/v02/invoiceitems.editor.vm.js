@@ -72,15 +72,7 @@ define("src/account/salesinfo/v02/invoiceitems.editor.vm", [
 
     _this.mixinLoad();
 
-    _this.focusOk = ko.observable();
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to actually focus
-        setTimeout(function() {
-          _this.focusOk(true);
-        }, 100);
-      }
-    });
+    _this.initActiveFocus("focusOk");
 
     // if (!_this.item) {
     //   _this.item = {

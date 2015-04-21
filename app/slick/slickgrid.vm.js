@@ -156,8 +156,8 @@ define("src/slick/slickgrid.vm", [
       console.warn("grid is already bound");
       _this.unBound();
     }
-    _this.bindTimeout = setTimeout(function() {
-      _this.bindTimeout = null;
+    _this.bindTimeoutId = window.setTimeout(function() {
+      _this.bindTimeoutId = 0;
 
       _this.grid = new Slick.Grid(element, _this.dataView || _this.list(), _this.columns, _this.gridOptions);
       if (!_this.noSelection) {
@@ -194,8 +194,8 @@ define("src/slick/slickgrid.vm", [
       container;
 
     // make sure we do not bind
-    clearTimeout(_this.bindTimeout);
-    _this.bindTimeout = null;
+    window.clearTimeout(_this.bindTimeoutId);
+    _this.bindTimeoutId = 0;
 
     if (_this.grid) {
       container = _this.grid.getContainerNode();

@@ -72,7 +72,7 @@ define('src/hr/teamsearch.vm', [
     // ]);
 
     _this.title = ko.observable(_this.title);
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.data = ukov.wrap({}, schema);
     clearData(_this);
     _this.data.SeasonCvm = new ComboViewModel({
@@ -104,16 +104,6 @@ define('src/hr/teamsearch.vm', [
       clearData(_this);
       _this.focusFirst(true);
     };
-
-    //
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the rep id
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
-    });
   }
   utils.inherits(TeamSearchViewModel, ControllerViewModel);
   TeamSearchViewModel.prototype.viewTmpl = 'tmpl-hr-teamsearch';

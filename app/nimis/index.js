@@ -13,8 +13,8 @@ window.onerror = function(message, url, line, column, err) {
     if (el) {
       el.innerHTML = seconds;
       seconds++;
-      setTimeout(tick, 1000);
+      window.setTimeout(tick, 1000);
     }
   }
-  setTimeout(tick, 0);
+  window.setTimeout(tick, 0);
 })();

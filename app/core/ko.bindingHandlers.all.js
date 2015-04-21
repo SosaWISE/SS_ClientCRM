@@ -26,11 +26,11 @@
         var hasVal = ko.unwrap(valueAccessor()),
           el = jquery(element);
         if (hasVal) {
-          // setTimeout(function() { // needed for browser transitions????
+          // window.setTimeout(function() { // needed for browser transitions????
           el.addClass(cls);
           // }, 0);
         } else {
-          // setTimeout(function() {
+          // window.setTimeout(function() {
           el.removeClass(cls);
           // }, 0);
         }
@@ -48,11 +48,11 @@
       Object.keys(obj).forEach(function(cls) {
         var hasVal = ko.unwrap(obj[cls]);
         if (hasVal) {
-          // setTimeout(function() { // needed for browser transitions
+          // window.setTimeout(function() { // needed for browser transitions
           el.addClass(cls);
           // }, 0);
         } else {
-          // setTimeout(function() {
+          // window.setTimeout(function() {
           el.removeClass(cls);
           // }, 0);
         }

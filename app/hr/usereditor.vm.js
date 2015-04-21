@@ -1,6 +1,6 @@
 define("src/hr/usereditor.vm", [
   "src/viz/idphoto.vm",
-  "src/config",
+  "howie",
   "src/hr/hr-cache",
   "src/hr/usersearch.vm",
   "src/core/combo.vm",
@@ -13,7 +13,7 @@ define("src/hr/usereditor.vm", [
   "ko"
 ], function(
   IdPhotoViewModel,
-  config,
+  howie,
   hrcache,
   UserSearchViewModel,
   ComboViewModel,
@@ -26,6 +26,7 @@ define("src/hr/usereditor.vm", [
   ko
 ) {
   "use strict";
+
   var schema,
     max20 = ukov.validators.maxLength(20),
     max50 = ukov.validators.maxLength(50),
@@ -249,7 +250,7 @@ define("src/hr/usereditor.vm", [
       "layersVm",
     ]);
 
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.data = ukov.wrap({
       UserID: _this.userid || 0,
       IsActive: true,
@@ -332,7 +333,7 @@ define("src/hr/usereditor.vm", [
     //
     function updateImgUrl() {
       _this.data.imgUrl(strings.format("//{0}/HumanResourceSrv/users/{1}/photo?_={2}",
-        config.serviceDomain, _this.data.UserID.peek() || 0, Math.random()));
+        howie.fetch("config").serviceDomain, _this.data.UserID.peek() || 0, Math.random()));
     }
     _this.data.UserID.subscribe(updateImgUrl);
 
@@ -426,16 +427,6 @@ define("src/hr/usereditor.vm", [
         }
         cb();
       });
-    });
-
-    //
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the rep id
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
     });
 
     // always start with a generated password

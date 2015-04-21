@@ -1,7 +1,9 @@
-define('src/nimis/ping', [
-  'src/dataservice',
-  'src/config'
+define("src/nimis/ping", [
+  "src/core/bigticker",
+  "src/dataservice",
+  "src/config"
 ], function(
+  bigticker,
   dataservice,
   config
 ) {
@@ -12,16 +14,16 @@ define('src/nimis/ping', [
     nErrs = 0;
 
   function ping(url) {
-    // we've stopped
+    // we have stopped
     if (!run) {
       return false;
     }
-    // we're already running
+    // are already running
     if (timeoutId) {
       return false;
     }
 
-    timeoutId = setTimeout(function() {
+    timeoutId = bigticker.setTimeout(function() {
       dataservice.base.read({
         link: url,
       }, null, function(err) {
@@ -29,11 +31,11 @@ define('src/nimis/ping', [
         nErrs = (err) ? (nErrs + 1) : 0;
         if (nErrs < maxAttempts) { // stop after N failed attempts
           if (nErrs !== 0) {
-            console.warn('still pinging, but user appears to be logged out...', err);
+            console.warn("still pinging, but user appears to be logged out...", err);
           }
           ping(url);
         } else {
-          console.warn('stop pinging, user appears to be logged out.');
+          console.warn("stop pinging, user appears to be logged out.");
         }
       });
     }, config.pingInterval);
@@ -47,7 +49,7 @@ define('src/nimis/ping', [
     },
     stop: function() {
       run = false;
-      clearTimeout(timeoutId);
+      bigticker.clearTimeout(timeoutId);
       timeoutId = 0;
     },
   };

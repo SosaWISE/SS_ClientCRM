@@ -1,11 +1,24 @@
-// conventional paths
-define("src/app", ["src/nimis/app"], function(app) { // alias actual app
+// create howie
+define("howie", [
+  "src/core/harold",
+  //
+  "src/nimis/app",
+  "src/nimis/config",
+], function(
+  harold,
+  app,
+  config
+) {
   "use strict";
-  return app;
-});
-define("src/config", ["src/nimis/config"], function(config) { // alias actual config
-  "use strict";
-  return config;
+
+  harold.onFetch("app", function() {
+    return app;
+  });
+  harold.onFetch("config", function() {
+    return config;
+  });
+
+  return harold;
 });
 
 //
@@ -26,10 +39,9 @@ define("src/nimis/bootstrapper", [
   "src/core/dataservice.base",
   "src/core/joiner",
   "src/dataservice",
-  "src/nimis/ping",
   "src/nimis/apilogger",
-  "src/nimis/config", "src/nimis/resources", "src/nimis/errorcodes",
-  "src/nimis/app",
+  "src/nimis/resources", "src/nimis/errorcodes",
+  "howie",
 ], function(
   jquery, ko, // main libs
   p1, p2, p3, //plugins
@@ -42,12 +54,14 @@ define("src/nimis/bootstrapper", [
   DataserviceBase,
   joiner,
   dataservice,
-  ping,
   apilogger,
-  config, resources, errorcodes,
-  app
+  resources, errorcodes,
+  howie
 ) {
   "use strict";
+
+  var config = howie.fetch("config");
+  var app = howie.fetch("app");
 
   console.log("Version: ", config.version);
   console.log("CORS Domain: " + config.serviceDomain);
@@ -116,10 +130,6 @@ define("src/nimis/bootstrapper", [
         jquery("#login-container").remove();
         // incase it didn"t get moved before the user was set
         jquery("#loginform").remove();
-        // start pinging to keep session alive
-        ping.start("ping");
-      } else {
-        ping.stop();
       }
     });
 

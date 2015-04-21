@@ -37,8 +37,7 @@ define("src/nimis/config", [
   set("leadSourceId", 1);
   set("leadDispositionId", 9);
   set("apiTimeout", 1000 * 30);
-  set("joinerTimeout", 1000 * 60);
-  set("pingInterval", 1000 * 60 * 29); // One minute less than the session timeout (30 min).
+  set("joinerTimeout", 1000 * 20);
 
   //
   set("crm", {

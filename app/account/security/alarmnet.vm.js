@@ -27,7 +27,7 @@ define('src/account/security/alarmnet.vm', [
   AlarmNetViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     // var _this = this,
     var cb = join.add();
-    setTimeout(function() {
+    window.setTimeout(function() {
       //@TODO: load real data
 
       cb();

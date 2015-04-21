@@ -50,7 +50,7 @@ define('src/core/app.vm', [
       cb = join.add();
     require(_this.path, function(PanelViewModel) {
       if (!PanelViewModel) {
-        setTimeout(function() { // show message after depends.js error
+        window.setTimeout(function() { // show message after depends.js error
           notify.warn('Failed to load ' + _this.title + ' panel code.');
         }, 0);
       } else {

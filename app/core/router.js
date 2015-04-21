@@ -48,8 +48,8 @@ define('src/core/router', [
         _this._ignoreCount--;
         return;
       }
-      // clearTimeout(changeTimeout);
-      // changeTimeout = setTimeout(function() {
+      // window.clearTimeout(changeTimeout);
+      // changeTimeout = window.setTimeout(function() {
       changePath();
       // }, 0);
     });

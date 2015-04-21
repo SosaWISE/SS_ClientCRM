@@ -200,7 +200,7 @@ define("src/core/notify", [
         return false;
       }
 
-      clearInterval(intervalId);
+      window.clearInterval(intervalId);
       intervalId = null;
       if (n.seconds() > 0 && n.seconds() < delay) {
         n.seconds(delay);
@@ -212,7 +212,7 @@ define("src/core/notify", [
       if (intervalId || s <= 0) {
         return;
       }
-      intervalId = setInterval(function() {
+      intervalId = window.setInterval(function() {
         // decrement seconds remaining
         var s = n.seconds() - 1;
         n.seconds(s);
@@ -220,7 +220,7 @@ define("src/core/notify", [
           // remove from list
           n.onRemove();
           // make sure the interval stops
-          clearInterval(intervalId);
+          window.clearInterval(intervalId);
         }
       }, s < 1 ? (s * 1000) : 1000);
     };

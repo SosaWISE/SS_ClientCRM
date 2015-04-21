@@ -36,7 +36,7 @@
     delete config.pkgs;
   }
 
-  // setTimeout(function() {
+  // window.setTimeout(function() {
   //   console.log('dependantsMap', JSON.stringify(dependantsMap, null, '  '));
   // }, 1100);
 
@@ -267,7 +267,7 @@
         } catch (ex) {
           // console.error('DEPENDS ERROR: failed to define `' + mod.name + '` - ' + ex);
           // throw error in a different context
-          setTimeout(function() {
+          window.setTimeout(function() {
             throw new Error('DEPENDS: failed to define `' + mod.name + '` - ' + ex.stack.toString());
           }, 0);
         }
@@ -345,7 +345,7 @@
   function onReady(cb) {
     if (document.body) {
       cb();
-      // setTimeout( cb,0 );
+      // window.setTimeout( cb,0 );
     } else {
       document.addEventListener("DOMContentLoaded", cb, false);
     }

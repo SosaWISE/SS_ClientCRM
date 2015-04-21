@@ -13,7 +13,7 @@ define('mock/dataservices/session.mock', [
     }
 
     SessionDataservice.prototype.start = function(appToken, cb) {
-      setTimeout(function() {
+      window.setTimeout(function() {
         var resp = {
           Code: 0,
           Message: '',

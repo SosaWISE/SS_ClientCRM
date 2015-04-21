@@ -1,5 +1,5 @@
 define('src/account/default/rep.find.vm', [
-  "src/config",
+  "howie",
   'src/core/notify',
   'src/core/utils',
   'src/core/base.vm',
@@ -8,7 +8,7 @@ define('src/account/default/rep.find.vm', [
   "src/core/strings",
   'src/dataservice',
 ], function(
-  config,
+  howie,
   notify,
   utils,
   BaseViewModel,
@@ -37,7 +37,7 @@ define('src/account/default/rep.find.vm', [
     RepFindViewModel.super_.call(_this, options);
 
     _this.title = _this.title || 'Sales Rep';
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.focusOk = ko.observable(false);
     _this.repData = ukov.wrap({
       CompanyID: _this.text || '',
@@ -74,7 +74,7 @@ define('src/account/default/rep.find.vm', [
           _this.repData.markClean(model);
           // set rep
           resp.Value.ImagePath = strings.format("//{0}/HumanResourceSrv/users/{1}/photo",
-            config.serviceDomain, resp.Value.UserID);
+            howie.fetch("config").serviceDomain, resp.Value.UserID);
           _this.rep(resp.Value);
           _this.focusOk(true);
         }
@@ -82,15 +82,6 @@ define('src/account/default/rep.find.vm', [
         notify.error(err);
         _this.focusFirst(true);
       }));
-    });
-
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the rep id
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
     });
   }
   utils.inherits(RepFindViewModel, BaseViewModel);

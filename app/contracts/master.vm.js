@@ -3,7 +3,7 @@ define("src/contracts/master.vm", [
   "src/contracts/contract.vm",
   "src/dataservice",
   "ko",
-  "src/config",
+  "howie",
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
@@ -14,7 +14,7 @@ define("src/contracts/master.vm", [
   ContractViewModel,
   dataservice,
   ko,
-  config,
+  howie,
   notify,
   utils,
   ControllerViewModel
@@ -42,7 +42,7 @@ define("src/contracts/master.vm", [
 
     _this.mayReload = ko.observable(false);
     _this.title = ko.observable(_this.title);
-    _this.hideNav = ko.observable(config.crm.hideNav);
+    _this.hideNav = ko.observable(howie.fetch("config").crm.hideNav);
 
     _this.customers = ko.observableArray();
 

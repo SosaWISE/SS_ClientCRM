@@ -39,7 +39,7 @@ define("src/account/security/alarmdotcom.changeservicepackage.vm", [
     _this.mixinLoad();
     _this.handler = new SubscriptionHandler();
 
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.data = ukov.wrap({
       CellPackageItemId: _this.CellPackageItemId,
     }, schema);
@@ -77,16 +77,6 @@ define("src/account/security/alarmdotcom.changeservicepackage.vm", [
       }, function(err) {
         notify.error(err);
       }));
-    });
-
-    //
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the rep id
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
     });
   }
   utils.inherits(AlarmDotComChangeServicePackageViewModel, BaseViewModel);

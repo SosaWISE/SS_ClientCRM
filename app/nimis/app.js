@@ -18,7 +18,7 @@ define("src/nimis/app", [
       // logout without caring about response
       dataservice.user.logout();
       // let the request start
-      setTimeout(function() {
+      window.setTimeout(function() {
         // remove session id (effectively logging the user out)
         sessionstore.setItem("token", null);
         // call callback

@@ -1,5 +1,6 @@
 define("src/core/_all.spec", [
   "src/core/arrays.spec",
+  "src/core/bigticker.spec",
   "src/core/combo.vm.spec",
   "src/core/dataservice.base.spec",
   "src/core/harold.spec",
