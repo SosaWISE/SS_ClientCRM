@@ -23,6 +23,7 @@
     "define",
     "console",
 
+    "StorageEvent",
     "FileReader",
     "HTMLInputElement",
     "HTMLAnchorElement",

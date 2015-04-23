@@ -252,22 +252,24 @@ define("src/core/notify", [
   // });
 
 
-  Notifier.prototype.alert = function(title, msg, cb, layersVm) {
+  Notifier.prototype.alert = function(title, msg, cb, layersVm, options) {
     var _this = this;
-    show(_this, title, msg, cb, layersVm, ["ok"]);
+    return show(_this, title, msg, cb, layersVm, ["ok"], options);
   };
-  Notifier.prototype.confirm = function(title, msg, cb, layersVm) {
+  Notifier.prototype.confirm = function(title, msg, cb, layersVm, options) {
     var _this = this;
-    show(_this, title, msg, cb, layersVm, ["yes", "no"]);
+    return show(_this, title, msg, cb, layersVm, ["yes", "no"], options);
   };
 
-  function show(_this, title, msg, cb, layersVm, actionNames) {
-    var vm = new _this.DialogViewModel({
+  function show(_this, title, msg, cb, layersVm, actionNames, options) {
+    options = ko.utils.extend({
       title: title || "",
       msg: msg || "",
       actionNames: actionNames,
-    });
+    }, options);
+    var vm = new _this.DialogViewModel(options);
     (layersVm || _this.layersVm).alert(vm, cb);
+    return vm;
   }
 
 

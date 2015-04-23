@@ -1,6 +1,6 @@
 define("src/core/override.vm", [
   "ko",
-  "src/core/subscriptionhandler",
+  "src/core/handler",
   "src/core/combo.vm",
   "src/core/strings",
   "src/core/harold",
@@ -9,7 +9,7 @@ define("src/core/override.vm", [
   "src/core/base.vm",
 ], function(
   ko,
-  SubscriptionHandler,
+  Handler,
   ComboViewModel,
   strings,
   harold,
@@ -33,7 +33,7 @@ define("src/core/override.vm", [
     _this.title = ko.observable(_this.title);
     _this.initFocusFirst();
     _this.mixinLoad();
-    _this.handler = new SubscriptionHandler();
+    _this.handler = new Handler();
 
     var accache = harold.fetch("accache");
 
@@ -93,6 +93,14 @@ define("src/core/override.vm", [
       msg = "Please wait for action request to finish.";
     }
     return msg;
+  };
+  OverrideViewModel.prototype.forceClose = function() {
+    var _this = this;
+    var tmp = _this.closeMsg;
+    _this.closeMsg = utils.noop;
+    _this.layerResult = null;
+    closeLayer(_this);
+    _this.closeMsg = tmp;
   };
 
   OverrideViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base

@@ -5,6 +5,7 @@ define("src/core/_all.spec", [
   "src/core/combo.vm.spec",
   "src/core/dataservice.base.spec",
   "src/core/harold.spec",
+  "src/core/handler.spec",
   "src/core/helpers.spec",
   "src/core/joiner.spec",
   "src/core/jsonhelpers.spec",

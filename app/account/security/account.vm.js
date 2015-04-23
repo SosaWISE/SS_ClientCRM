@@ -66,7 +66,7 @@ define("src/account/security/account.vm", [
       createEquipment(_this, "Equipment"),
       createAccountServiceTickets(_this, "Service Tickets"),
     ];
-    if (inTextList(howie.fetch("app").user.peek().Apps, "contract_admin")) {
+    if (inTextList(howie.fetch("user").Apps, "contract_admin")) {
       list.push(createContractVm(_this, "Contract Admin"));
     }
     _this.childs(list);

@@ -1,12 +1,22 @@
 // nickname harold
 define("howie", [
+  "ko",
   "src/core/harold",
+  //@HACK
+  "src/core/ko.command",
 ], function(
+  ko,
   harold
 ) {
   "use strict";
 
-  var app = {};
+  var app = {
+    //@HACK
+    user: ko.observable(),
+    layersVm: {
+      show: function() {},
+    }
+  };
   harold.onFetch("app", function() {
     return app;
   });

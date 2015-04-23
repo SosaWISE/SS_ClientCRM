@@ -57,7 +57,7 @@ define("src/core/login.vm", [
   LoginViewModel.prototype.viewTmpl = "tmpl-core-login";
   LoginViewModel.prototype.width = 400;
   LoginViewModel.prototype.height = "auto";
-  LoginViewModel.prototype.mustAuthorize = false;
+  LoginViewModel.prototype.hideClose = false;
   LoginViewModel.prototype.getDestPath = utils.noop;
 
   function closeLayer(_this) {
@@ -82,7 +82,16 @@ define("src/core/login.vm", [
     if (_this.layerResult) {
       return true;
     }
-    return !_this.mustAuthorize;
+    return !_this.hideClose;
+  };
+  LoginViewModel.prototype.forceClose = function() {
+    var _this = this;
+    var tmp = _this.closeMsg;
+    _this.closeMsg = utils.noop;
+    _this.layerResult = null;
+    _this.hideClose = false;
+    closeLayer(_this);
+    _this.closeMsg = tmp;
   };
 
   return LoginViewModel;

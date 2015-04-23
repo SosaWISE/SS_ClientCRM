@@ -34,6 +34,7 @@ define("src/core/dialog.vm", [
   DialogViewModel.prototype.viewTmpl = "tmpl-core-dialog";
   DialogViewModel.prototype.width = 600;
   DialogViewModel.prototype.height = "auto";
+  DialogViewModel.prototype.hideClose = false;
 
   function closeLayer(_this) {
     if (_this.layer) {
@@ -43,6 +44,22 @@ define("src/core/dialog.vm", [
   DialogViewModel.prototype.getResults = function() {
     var _this = this;
     return [_this.layerResult];
+  };
+  DialogViewModel.prototype.canClose = function() { // overrides base
+    var _this = this;
+    if (_this.layerResult) {
+      return true;
+    }
+    return !_this.hideClose;
+  };
+  DialogViewModel.prototype.forceClose = function() {
+    var _this = this;
+    var tmp = _this.closeMsg;
+    _this.closeMsg = utils.noop;
+    _this.layerResult = null;
+    _this.hideClose = false;
+    closeLayer(_this);
+    _this.closeMsg = tmp;
   };
 
   return DialogViewModel;

@@ -1,6 +1,6 @@
 define("src/core/dataservice.base", [
   "jquery",
-  "src/core/sessionstore",
+  "src/core/storage",
   "src/core/jsonhelpers",
   "src/core/querystring",
   "src/core/authorize",
@@ -8,7 +8,7 @@ define("src/core/dataservice.base", [
   "src/core/harold",
 ], function(
   jquery,
-  sessionstore,
+  storage,
   jsonhelpers,
   querystring,
   authorize,
@@ -119,9 +119,14 @@ define("src/core/dataservice.base", [
   // DataserviceBase.timeout = 1000 * 6;
   // DataserviceBase.timeout = 1000 * 60 * 3;
 
+  function getToken() {
+    var auth = storage.getItem("auth");
+    return auth ? auth.Token : null;
+  }
+
   function execute(context) {
     var headers = {};
-    var token = context.token || sessionstore.getItem("token");
+    var token = context.token || getToken();
     if (token) {
       headers.Authorization = "Token" + token;
     }

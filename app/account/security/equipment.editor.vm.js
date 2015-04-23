@@ -299,7 +299,7 @@ define("src/account/security/equipment.editor.vm", [
         _this.data.ZoneTypeCvm.setList(val);
       }, join.add());
     }
-    load_rep(_this, howie.fetch("app").user.peek().GPEmployeeID, join.add());
+    load_rep(_this, howie.fetch("user").GPEmployeeID, join.add());
     load_rep(_this, _this.item.GPEmployeeId, join.add());
     load_equipmentLocation(_this, _this.data.EquipmentLocationCvm, _this.monitoringStationOsId, join.add());
     if (_this.data.EquipmentCvm) {

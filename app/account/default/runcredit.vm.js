@@ -1,7 +1,7 @@
 define("src/account/default/runcredit.vm", [
   "src/account/accounts-cache",
   "howie",
-  "src/core/subscriptionhandler",
+  "src/core/handler",
   "src/core/strings",
   "src/core/combo.vm",
   "src/core/notify",
@@ -14,7 +14,7 @@ define("src/account/default/runcredit.vm", [
 ], function(
   accountscache,
   howie,
-  SubscriptionHandler,
+  Handler,
   strings,
   ComboViewModel,
   notify,
@@ -170,7 +170,7 @@ define("src/account/default/runcredit.vm", [
       showSaveBtn: false,
     });
     _this.mixinLoad();
-    _this.handler = new SubscriptionHandler();
+    _this.handler = new Handler();
 
     if (indexOfLead(_this.otherLeads, _this.item) > -1) {
       removeLead(_this.otherLeads, _this.item);
@@ -196,7 +196,7 @@ define("src/account/default/runcredit.vm", [
     //
     _this.item.LeadSourceId = _this.item.LeadSourceId || howie.fetch("config").leadSourceId;
     _this.item.LeadDispositionId = _this.item.LeadDispositionId || howie.fetch("config").leadDispositionId;
-    _this.item.DealerId = _this.item.DealerId || howie.fetch("app").user().DealerId;
+    _this.item.DealerId = _this.item.DealerId || howie.fetch("user").DealerId;
     //
     _this.item.SalesRepId = _this.item.SalesRepId || _this.repModel.CompanyID;
     _this.item.TeamLocationId = _this.item.TeamLocationId || _this.repModel.TeamLocationId;

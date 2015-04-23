@@ -1,5 +1,6 @@
 define("src/core/app.vm", [
   "ko",
+  "src/core/harold",
   "src/core/layers.vm",
   "src/core/router",
   "src/core/notify",
@@ -7,6 +8,7 @@ define("src/core/app.vm", [
   "src/core/controller.vm",
 ], function(
   ko,
+  harold,
   LayersViewModel,
   Router,
   notify,
@@ -107,10 +109,7 @@ define("src/core/app.vm", [
     ]);
     ko.utils.extend(_this, options);
 
-    // _this.setUser = _this.setUser.bind(_this);
-
     _this.router = new Router();
-    _this.user = ko.observable(null);
     _this.login = ko.observable(null);
     _this.panels = ko.observableArray([]);
     _this.notify = notify;
@@ -136,7 +135,6 @@ define("src/core/app.vm", [
     _this.cmdLogout = ko.command(function(cb) {
       _this.onLogout(function(err) {
         if (!err) {
-          _this.user(null);
           _this.router.endSession();
         }
         cb(err);
@@ -157,6 +155,10 @@ define("src/core/app.vm", [
   AppViewModel.prototype.routePart = "route";
   AppViewModel.prototype.init = function() {
     var _this = this;
+    if (_this._inited) {
+      return;
+    }
+    _this._inited = true;
     // create
     var loginVm = _this.createLogin(_this.routePart);
     setTemplate(loginVm, _this.prefix, _this.postfix);
@@ -164,12 +166,18 @@ define("src/core/app.vm", [
     _this.login(loginVm);
     // add anonymous routes
     _this.addAnonRoutes(_this.router, loginVm);
+    //
+    _this.setUser = setUser.bind(_this);
+    harold.on("user", _this.setUser);
   };
-  AppViewModel.prototype.setUser = function(user, destPath) {
-    var _this = this,
-      appsMap, panels, tmpRoutes;
+
+  function setUser(user) { //, destPath) {
+    /* jshint validthis:true */
+    var _this = this;
+    var appsMap, panels, tmpRoutes;
     // do nothing if the user being set is null or we already have a user
-    if (user && !_this.user.peek()) {
+    if (user) {
+      harold.off("user", _this.setUser);
       // add routes
       appsMap = makeAppsMap(user.Apps);
       panels = [];
@@ -203,19 +211,17 @@ define("src/core/app.vm", [
       });
       //
       _this.panels(panels);
-      // set user
-      _this.user(user);
       // ensure the router is started
-      _this.router.init(_this.user);
-      if (destPath) {
+      _this.router.init();
+      if (user.destPath) {
         // go to destination path
-        _this.router.goToPath(destPath);
+        _this.router.goToPath(user.destPath);
       }
     } else {
       // ensure the router is started
-      _this.router.init(_this.user);
+      _this.router.init();
     }
-  };
+  }
 
   function setTemplate(panel, prefix, postfix) {
     panel.viewTmpl = "tmpl-" + (prefix || "") + panel.id + (postfix || "");

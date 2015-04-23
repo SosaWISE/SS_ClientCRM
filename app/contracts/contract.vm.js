@@ -13,7 +13,7 @@ define("src/contracts/contract.vm", [
   "src/dataservice",
   "src/ukov",
   "ko",
-  "src/core/subscriptionhandler",
+  "src/core/handler",
   "src/core/layers.vm",
   "src/core/joiner",
   "src/core/combo.vm",
@@ -36,7 +36,7 @@ define("src/contracts/contract.vm", [
   dataservice,
   ukov,
   ko,
-  SubscriptionHandler,
+  Handler,
   LayersViewModel,
   joiner,
   ComboViewModel,
@@ -73,7 +73,7 @@ define("src/contracts/contract.vm", [
     // utils.assertProps(_this, [
     // ]);
 
-    _this.handler = new SubscriptionHandler();
+    _this.handler = new Handler();
     _this.layersVm = new LayersViewModel({
       controller: _this,
     });
@@ -1327,7 +1327,7 @@ define("src/contracts/contract.vm", [
     var model = data.getValue();
     if (approve) {
       model.ApprovedDate = new Date();
-      model.ApproverID = howie.fetch("app").user.peek().GPEmployeeID;
+      model.ApproverID = howie.fetch("user").GPEmployeeID;
     }
     dataservice.api_contractAdmin.accountSalesInformationExtras.save({
       id: _this.acctid,

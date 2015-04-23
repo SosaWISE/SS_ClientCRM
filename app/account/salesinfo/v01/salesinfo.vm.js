@@ -9,7 +9,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
   "src/account/salesinfo/options",
   "src/ukov",
   "src/dataservice",
-  "src/core/subscriptionhandler",
+  "src/core/handler",
   "src/core/numbers",
   "src/core/strings",
   "src/core/notify",
@@ -28,7 +28,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
   salesInfoOptions,
   ukov,
   dataservice,
-  SubscriptionHandler,
+  Handler,
   numbers,
   strings,
   notify,
@@ -159,12 +159,11 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
     utils.assertProps(_this, ["layersVm"]);
 
     _this.mixinLoad();
-    _this.handler = new SubscriptionHandler();
-    // _this.subs = new SubscriptionHandler();
+    _this.handler = new Handler();
 
     _this.title = ko.observable(_this.title);
     _this.data = ukov.wrap({
-      DealerId: howie.fetch("app").user().DealerId,
+      DealerId: howie.fetch("user").DealerId,
     }, schema);
     _this.data.PanelTypeCvm = new ComboViewModel({
       selectedValue: _this.data.PanelTypeId,
@@ -355,7 +354,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
     _this.currData = null; // clear (incase of reload)
 
     // remove old subscriptions to refreshInvoice
-    _this.handler.unsubscribe(_this.refreshInvoice);
+    _this.handler.dispose(_this.refreshInvoice);
 
     _this.data.AccountId(accountid);
 

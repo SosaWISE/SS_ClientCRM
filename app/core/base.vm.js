@@ -172,7 +172,8 @@ define("src/core/base.vm", [
     _this.deactivate();
     // remove handlers
     if (_this.handler) {
-      _this.handler.unsubscribeAll();
+      _this.handler.disposeAll();
+      _this.handler.offAll();
     }
     // reset loader (but prevent resetting nested view models, since destroy will reset them)
     _this.reset(true);

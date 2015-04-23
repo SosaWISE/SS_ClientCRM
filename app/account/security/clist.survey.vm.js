@@ -179,7 +179,7 @@ define("src/account/security/clist.survey.vm", [
           Name: "Nexsense",
           Phone: "8662055200",
         },
-        ADUserDisplayName: howie.fetch("app").user().Firstname,
+        ADUserDisplayName: howie.fetch("user").Firstname,
         PrimaryCustomer: {
           FirstName: priCustomer.FirstName,
           LastName: priCustomer.LastName,

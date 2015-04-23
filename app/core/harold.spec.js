@@ -104,13 +104,32 @@ define("src/core/harold.spec", [
         h.on("evt:b", function() {
           sendValues.push("b1");
         });
-        // remove all
+        // remove all for event
         h.off("evt:a");
         //
         h.send("evt:a", "val");
         h.send("evt:b", "val");
         //
         expect(sendValues).toEqual(["b1"]);
+      });
+      it("no eventName and no function should remove all subscriptions", function() {
+        var sendValues = [];
+        h.on("evt:a", function() {
+          sendValues.push("a1");
+        });
+        h.on("evt:a", function() {
+          sendValues.push("a2");
+        });
+        h.on("evt:b", function() {
+          sendValues.push("b1");
+        });
+        // remove all
+        h.off();
+        //
+        h.send("evt:a", "val");
+        h.send("evt:b", "val");
+        //
+        expect(sendValues).toEqual([]);
       });
     });
     describe("once", function() {

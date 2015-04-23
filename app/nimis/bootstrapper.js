@@ -94,7 +94,7 @@ define("src/nimis/bootstrapper", [
   "src/dataservice",
   "src/core/notify",
   "src/core/authorize",
-  "src/core/sessionstore",
+  "src/core/storage",
   "src/core/utils",
   "howie",
 ], function(
@@ -104,7 +104,7 @@ define("src/nimis/bootstrapper", [
   dataservice,
   notify,
   authorize,
-  sessionstore,
+  storage,
   utils,
   howie
 ) {
@@ -119,7 +119,20 @@ define("src/nimis/bootstrapper", [
   console.log("OS: " + app.os);
 
   // user authorization
-  (function() {
+  var setUser = (function() {
+    //
+    var user = null;
+    howie.onFetch("user", function() {
+      return user;
+    });
+    // howie.on("user:set", function(val) {
+    //   howie.send("user", user = val);
+    // });
+    function setUser(newUser) {
+      user = newUser;
+      howie.send("user", user);
+    }
+
     function login(destPath, data, cb) {
       dataservice.user.auth(data, utils.safeCallback(cb, function(err, resp) {
         if (err) {
@@ -127,10 +140,25 @@ define("src/nimis/bootstrapper", [
           return notify.error(err, 10);
         }
         var authResult = resp.Value;
+        var newUser = authResult.User;
+        if (user && user.Username !== newUser.Username) {
+          console.warn("attempted to change username");
+          storage.setItem("auth", authResult, true);
+          return;
+        }
+        // silently set user
+        user = newUser;
         // store session id
-        sessionstore.setItem("token", authResult.Token);
-        // set user and go to desired destination
-        app.setUser(authResult.User, destPath);
+        storage.setItem("auth", authResult);
+        // notify user has changed
+        newUser.destPath = destPath;
+        setUser(newUser);
+        //
+        // once there is a user, destroy the login forms
+        app.login(null);
+        jquery("#login-container").remove();
+        // incase it didn"t get moved before the user was set
+        jquery("#loginform").remove();
       }));
     }
     app.onLogin = authorize.onLogin = login;
@@ -141,7 +169,7 @@ define("src/nimis/bootstrapper", [
       // let the request start
       window.setTimeout(function() {
         // remove session id (effectively logging the user out)
-        sessionstore.setItem("token", null);
+        storage.setItem("auth", null);
         // call callback
         cb();
       }, 100);
@@ -154,6 +182,8 @@ define("src/nimis/bootstrapper", [
       }, setter, cb);
     }
     authorize.onActionRequest = actionRequest;
+
+    return setUser;
   })();
 
   // init app
@@ -194,22 +224,12 @@ define("src/nimis/bootstrapper", [
       }, config);
     }
 
-    app.user.subscribe(function(user) {
-      if (user) {
-        // once there is a user, destroy the login forms (for security purposes)
-        app.login(null);
-        jquery("#login-container").remove();
-        // incase it didn"t get moved before the user was set
-        jquery("#loginform").remove();
-      }
-    });
-
     dataservice.session.start("", function(err, resp) {
       if (err) {
         notify.error(err);
       } else {
         // if we are authenticated, this will log us in
-        app.setUser(resp.Value);
+        setUser(resp.Value);
       }
     });
     //

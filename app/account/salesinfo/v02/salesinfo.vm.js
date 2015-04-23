@@ -11,7 +11,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   "src/account/salesinfo/options",
   "src/dataservice",
   "ko",
-  "src/core/subscriptionhandler",
+  "src/core/handler",
   "src/core/joiner",
   "src/core/arrays",
   "src/core/strings",
@@ -31,7 +31,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   salesInfoOptions,
   dataservice,
   ko,
-  SubscriptionHandler,
+  Handler,
   joiner,
   arrays,
   strings,
@@ -47,7 +47,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     utils.assertProps(_this, ["layersVm"]);
 
     _this.mixinLoad();
-    _this.handler = new SubscriptionHandler();
+    _this.handler = new Handler();
 
     _this.creditGroup = ko.observable();
     _this.creditScore = ko.observable();
@@ -197,9 +197,9 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
 
     // remove old subscriptions
     _this.handler
-      .unsubscribe(_this.updateInvoiceGvm)
-      .unsubscribe(_this.packageChanged)
-      .unsubscribe(_this.saveData);
+      .dispose(_this.updateInvoiceGvm)
+      .dispose(_this.packageChanged)
+      .dispose(_this.saveData);
     //
     function step3() {
       // set defaults
