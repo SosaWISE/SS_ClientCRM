@@ -26,7 +26,7 @@ define("src/account/salesinfo/v01/salesinfo.gvm", [
       //   new RowEvent({
       //     eventName: "onDblClick",
       //     fn: function() {
-      //       alert("double clicked");
+      //       window.alert("double clicked");
       //     },
       //   }),
       // ],

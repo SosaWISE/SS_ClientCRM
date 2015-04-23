@@ -30,8 +30,9 @@ define("src/dataservice", [
     //
     // with /api
     //
-    api_admin: createService("api/admin", [
+    api_ac: createService("api/ac", [
       "actionRequests",
+      "types",
     ]),
     api_contractAdmin: createService("api/contractAdmin", [
       "accounts",

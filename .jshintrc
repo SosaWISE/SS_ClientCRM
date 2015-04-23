@@ -21,7 +21,6 @@
     "Intl",
     "require",
     "define",
-    "alert",
     "console",
 
     "FileReader",

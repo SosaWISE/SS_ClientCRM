@@ -1,4 +1,4 @@
-// create howie
+// nickname harold
 define("howie", [
   "src/core/harold",
 ], function(

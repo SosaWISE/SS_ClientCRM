@@ -88,15 +88,15 @@ define("src/account/security/alarmdotcom.vm", [
     });
 
     _this.cmdValidateAccountNum = ko.command(function(cb) {
-      alert("ValidateAccountNum");
+      window.alert("ValidateAccountNum");
       cb();
     });
     _this.cmdValidateIndustryNum = ko.command(function(cb) {
-      alert("ValidateIndustryNum");
+      window.alert("ValidateIndustryNum");
       cb();
     });
     _this.cmdValidateSerialNum = ko.command(function(cb) {
-      alert("ValidateSerialNum");
+      window.alert("ValidateSerialNum");
       cb();
     });
 

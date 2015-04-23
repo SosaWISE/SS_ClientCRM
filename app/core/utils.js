@@ -26,6 +26,13 @@ define("src/core/utils", [
         }
       });
     },
+    assertPropFuncs: function(obj, funcNames) {
+      funcNames.forEach(function(name) {
+        if (!utils.isFunc(obj[name])) {
+          throw new Error(name + " is not a function");
+        }
+      });
+    },
 
     tryThrowHandledErr: function(err) {
       //

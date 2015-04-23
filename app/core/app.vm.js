@@ -1,11 +1,13 @@
-define('src/core/app.vm', [
-  'ko',
-  'src/core/router',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/core/app.vm", [
+  "ko",
+  "src/core/layers.vm",
+  "src/core/router",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   ko,
+  LayersViewModel,
   Router,
   notify,
   utils,
@@ -51,14 +53,14 @@ define('src/core/app.vm', [
     require(_this.path, function(PanelViewModel) {
       if (!PanelViewModel) {
         window.setTimeout(function() { // show message after depends.js error
-          notify.warn('Failed to load ' + _this.title + ' panel code.');
+          notify.warn("Failed to load " + _this.title + " panel code.");
         }, 0);
       } else {
         // create
         var index = _this.panels.peek().indexOf(_this),
           panelVm;
         if (index < 0) {
-          notify.warn('Failed to find panel in list of panels');
+          notify.warn("Failed to find panel in list of panels");
         } else {
           panelVm = new PanelViewModel(_this.panelOptions);
           // set as not a lazy panel
@@ -84,7 +86,7 @@ define('src/core/app.vm', [
           _this.panel = panelVm;
         }
       }
-      // and we're done
+      // and we are done
       cb();
     });
   };
@@ -97,21 +99,22 @@ define('src/core/app.vm', [
   function AppViewModel(options) {
     var _this = this;
     ControllerViewModel.ensureProps(options, [
-      'doLogout',
-      'createLogin',
-      'panelSettings',
-      // 'addAnonRoutes',
-      // 'addRoutes',
+      // "onLogout",
+      "createLogin",
+      "panelSettings",
+      // "addAnonRoutes",
+      // "addRoutes",
     ]);
     ko.utils.extend(_this, options);
 
-    _this.setUser = _this.setUser.bind(_this);
+    // _this.setUser = _this.setUser.bind(_this);
 
     _this.router = new Router();
     _this.user = ko.observable(null);
     _this.login = ko.observable(null);
     _this.panels = ko.observableArray([]);
     _this.notify = notify;
+    _this.layersVm = new LayersViewModel();
 
     //
     // events
@@ -119,7 +122,7 @@ define('src/core/app.vm', [
     _this.clickPanel = function(panelVm) {
       if (panelVm === _this) {
         // try to find home route
-        var route = _this.router.findRoute('home');
+        var route = _this.router.findRoute("home");
         if (!route) {
           return;
         }
@@ -131,7 +134,7 @@ define('src/core/app.vm', [
       panelVm.goTo(panelVm.getRouteData(), null, true);
     };
     _this.cmdLogout = ko.command(function(cb) {
-      _this.doLogout(function(err) {
+      _this.onLogout(function(err) {
         if (!err) {
           _this.user(null);
           _this.router.endSession();
@@ -140,9 +143,7 @@ define('src/core/app.vm', [
       });
     });
 
-    _this.init();
-
-    var os = navigator.platform.split(' ')[0]; // detect os
+    var os = navigator.platform.split(" ")[0]; // detect os
     if (os) {
       if (os.length > 3) {
         os = os.substr(0, 3);
@@ -151,15 +152,13 @@ define('src/core/app.vm', [
     }
     _this.os = "os-" + os;
   }
-  AppViewModel.prototype.prefix = '';
-  AppViewModel.prototype.postfix = '-panel';
-  AppViewModel.prototype.routePart = 'route';
+  AppViewModel.prototype.prefix = "";
+  AppViewModel.prototype.postfix = "-panel";
+  AppViewModel.prototype.routePart = "route";
   AppViewModel.prototype.init = function() {
-    var _this = this,
-      loginVm;
-
+    var _this = this;
     // create
-    loginVm = _this.createLogin(_this.setUser, _this.routePart);
+    var loginVm = _this.createLogin(_this.routePart);
     setTemplate(loginVm, _this.prefix, _this.postfix);
     // add view models
     _this.login(loginVm);
@@ -219,7 +218,7 @@ define('src/core/app.vm', [
   };
 
   function setTemplate(panel, prefix, postfix) {
-    panel.viewTmpl = 'tmpl-' + (prefix || '') + panel.id + (postfix || '');
+    panel.viewTmpl = "tmpl-" + (prefix || "") + panel.id + (postfix || "");
   }
 
   function makeAppsMap(apps) {

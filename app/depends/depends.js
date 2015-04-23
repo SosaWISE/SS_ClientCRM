@@ -165,6 +165,7 @@
       if (dependant) {
         if (walkUp(dependant, name)) {
           // circular dependency, use undefined as the dependency value
+          console.warn("circular dependency: " + dependant + " and " + name);
           return moduleResolved({}, index);
         }
         // add dependant to map

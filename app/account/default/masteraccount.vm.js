@@ -99,7 +99,7 @@ define("src/account/default/masteraccount.vm", [
       _this.reload();
     };
     _this.clickNewAccount = function() {
-      alert("I do nothing");
+      window.alert("I do nothing");
     };
 
     _this.vms = [ // nested view models

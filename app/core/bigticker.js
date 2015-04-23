@@ -38,6 +38,10 @@ define("src/core/bigticker", [
     }
   };
 
+  BigTicker.prototype.isPaused = function() {
+    var _this = this;
+    return _this._paused;
+  };
   BigTicker.prototype.pause = function() {
     var _this = this;
     if (_this._paused) {

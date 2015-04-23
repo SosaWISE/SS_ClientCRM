@@ -38,7 +38,7 @@ define("src/account/security/equipment.gvm", [
                 _this.list.replace(item, model);
               }
             });
-            // alert("double clicked");
+            // window.alert("double clicked");
           },
         }),
       ],

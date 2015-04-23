@@ -73,13 +73,7 @@ define("src/core/notify", [
   Notifier.prototype.init = function(LayersViewModel, DialogViewModel, resources, errorCodeMap) {
     var _this = this;
     // default layers view model for dialogs
-    _this.layersVm = new LayersViewModel({
-      controller: {
-        getRouteData: function() {
-          return {};
-        },
-      },
-    });
+    _this.layersVm = new LayersViewModel();
     _this.DialogViewModel = DialogViewModel;
     _this.resources = resources;
     _this.errorCodeMap = errorCodeMap;

@@ -92,7 +92,8 @@
   //---------------------------
   //@NOTE: this only works one time
   ko.bindingHandlers.swapLoginFields = {
-    init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    init: function(element, valueAccessor) {
+      var viewModel = ko.unwrap(valueAccessor());
       element = jquery(element);
       var loginformEl = document.getElementById("loginform");
       // replace placeholders with the actual fields from hidden form
@@ -239,13 +240,15 @@
   //---------------------------
   ko.bindingHandlers.select = {
     update: function(element, valueAccessor) {
-      var observable = valueAccessor();
-      if (observable()) {
+      var value = valueAccessor();
+      if (ko.unwrap(value)) {
         element.focus();
         if (utils.isFunc(element.select)) {
           element.select();
         }
-        observable(false);
+        if (ko.isObservable(value)) {
+          value(false);
+        }
       }
     },
   };

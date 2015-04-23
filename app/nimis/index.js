@@ -1,6 +1,6 @@
 window.onerror = function(message, url, line, column, err) {
   'use strict';
-  alert(err.stack);
+  window.alert(err.stack);
 };
 
 // show seconds
