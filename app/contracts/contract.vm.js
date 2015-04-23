@@ -459,19 +459,15 @@ define("src/contracts/contract.vm", [
       return cb();
     }
 
-    if (!_this.salesInfo.isValid.peek()) {
-      notify.warn(_this.salesInfo.errMsg(), null, 7);
+    var useRequired = approve;
+    if (!validateModel(_this.salesInfo, useRequired) ||
+      !validateModel(_this.salesInfoExtras, useRequired) ||
+      !validateModel(_this.systemDetails, useRequired)
+    ) {
       return cb();
     }
-    if (!_this.salesInfoExtras.isValid.peek()) {
-      notify.warn(_this.salesInfoExtras.errMsg(), null, 7);
-      return cb();
-    }
-    if (!_this.systemDetails.isValid.peek()) {
-      notify.warn(_this.systemDetails.errMsg(), null, 7);
-      return cb();
-    }
-    if (!_this.paymentMethod.peek()) {
+    var paymentMethod = _this.paymentMethod.peek();
+    if (useRequired && !paymentMethod) {
       notify.warn("Please enter a payment method", null, 7);
       return cb();
     }
@@ -480,7 +476,9 @@ define("src/contracts/contract.vm", [
     refreshInvoice(_this, join.add());
     saveSalesInfoExtras(_this, approve, join.add());
     saveSystemDetails(_this, join.add());
-    savePaymentMethod(_this, _this.paymentMethod.peek(), "PaymentMethod", _this.setPaymentMethod, join.add());
+    if (paymentMethod) {
+      savePaymentMethod(_this, paymentMethod, "PaymentMethod", _this.setPaymentMethod, join.add());
+    }
 
     // save leads one after the other (don't want to make multiple customers for the same lead)
     var index = 0;
@@ -508,6 +506,21 @@ define("src/contracts/contract.vm", [
     })();
 
     join.when(cb);
+  }
+
+  function validateModel(model, useRequired) {
+    var tmp = model.UseRequired.peek();
+    model.UseRequired(useRequired);
+    model.validate();
+    model.update();
+    var valid = model.isValid.peek();
+    if (!valid) {
+      notify.warn(model.errMsg(), null, 7);
+    }
+    model.UseRequired(tmp);
+    model.validate();
+    model.update();
+    return valid;
   }
 
   function load_customerAccount(acctid, customerTypeId, setter, cb) {
@@ -779,7 +792,10 @@ define("src/contracts/contract.vm", [
   function getSalesInfoModel(handler) {
     var schema = _static.ctSchema || (_static.ctSchema = {
       _model: true,
+      UseRequired: {},
+      //
       DealerId: {},
+
 
       //
       // From Invoice
@@ -803,7 +819,7 @@ define("src/contracts/contract.vm", [
       ActivationFeeActual: {
         converter: ukov.converters.number(2, "Invalid activation fee"),
         validators: [
-          ukov.validators.isRequired("Activation Fee is Required"),
+          ukov.validators.maybeRequired("Activation Fee is Required", "UseRequired"),
         ]
       },
       ActivationFeeItemId: {},
@@ -883,7 +899,10 @@ define("src/contracts/contract.vm", [
       ContractTemplateId: {},
     });
 
-    var data = ukov.wrap({}, schema);
+    var data = ukov.wrap({
+      UseRequired: true,
+    }, schema);
+    data.UseRequired.ignore(true);
 
     data.CellularTypeCvm = new ComboViewModel({
       selectedValue: data.CellularTypeId,
@@ -1009,6 +1028,8 @@ define("src/contracts/contract.vm", [
     var boolConverter = ukov.converters.bool();
     var schema = _static.sdSchema || (_static.sdSchema = {
       _model: true,
+      UseRequired: {},
+
       // fields from MS_AccountSalesInformations
       // PaymentTypeId:{},
       FriendsAndFamilyTypeId: {},
@@ -1035,8 +1056,8 @@ define("src/contracts/contract.vm", [
       ContractSignedDate: {
         converter: dateConverter,
         validators: [
-          ukov.validators.isRequired("Contract Date is Required"),
-        ]
+          ukov.validators.maybeRequired("Contract Date is Required", "UseRequired"),
+        ],
       },
       CancelDate: {
         converter: dateConverter,
@@ -1059,8 +1080,8 @@ define("src/contracts/contract.vm", [
       NOCDate: {
         converter: dateConverter,
         validators: [
-          ukov.validators.isRequired("NOC Date is Required"),
-        ]
+          ukov.validators.maybeRequired("NOC Date is Required", "UseRequired"),
+        ],
       },
 
       OptOutCorporate: {
@@ -1071,7 +1092,10 @@ define("src/contracts/contract.vm", [
       },
     });
 
-    var data = ukov.wrap({}, schema);
+    var data = ukov.wrap({
+      UseRequired: true,
+    }, schema);
+    data.UseRequired.ignore(true);
 
     data.repModel = ko.observable();
     data.tekModel = ko.observable();
@@ -1126,12 +1150,16 @@ define("src/contracts/contract.vm", [
   }
 
   function getSystemDetailsModel() {
+    var nullStrConverter = ukov.converters.nullString();
     var schema = _static.systemDetailsSchema || (_static.systemDetailsSchema = {
       _model: true,
+      UseRequired: {},
+      //
       AccountID: {},
       AccountPassword: {
+        converter: nullStrConverter,
         validators: [
-          ukov.validators.isRequired("Password is Required"),
+          ukov.validators.maybeRequired("Password is Required", "UseRequired"),
         ],
       },
       PanelTypeId: {},
@@ -1140,7 +1168,10 @@ define("src/contracts/contract.vm", [
       DslSeizureId: {},
     });
 
-    var data = ukov.wrap({}, schema);
+    var data = ukov.wrap({
+      UseRequired: true,
+    }, schema);
+    data.UseRequired.ignore(true);
 
     return data;
   }
