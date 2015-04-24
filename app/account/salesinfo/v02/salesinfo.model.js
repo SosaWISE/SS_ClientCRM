@@ -1,7 +1,7 @@
 define("src/account/salesinfo/v02/salesinfo.model", [
   "src/account/default/rep.find.vm",
   "src/account/salesinfo/options",
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "src/dataservice",
   "ko",
   "src/ukov",
@@ -11,7 +11,7 @@ define("src/account/salesinfo/v02/salesinfo.model", [
 ], function(
   RepFindViewModel,
   salesInfoOptions,
-  accountscache,
+  mscache,
   dataservice,
   ko,
   ukov,
@@ -33,16 +33,16 @@ define("src/account/salesinfo/v02/salesinfo.model", [
 
     data.AccountCreationTypeCvm = new ComboViewModel({
       selectedValue: data.AccountCreationTypeId,
-      fields: accountscache.metadata("accountCreationTypes"),
-    }).subscribe(accountscache.getList("accountCreationTypes"), handler);
+      fields: mscache.metadata("accountCreationTypes"),
+    }).subscribe(mscache.getList("accountCreationTypes"), handler);
     data.showExistingEquipment = ko.computed(function() {
       return data.AccountCreationTypeCvm.selectedValue() === "TKO";
     });
 
     data.PaymentTypeCvm = new ComboViewModel({
       selectedValue: data.PaymentTypeId,
-      fields: accountscache.metadata("paymentTypes"),
-    }).subscribe(accountscache.getList("paymentTypes"), handler);
+      fields: mscache.metadata("paymentTypes"),
+    }).subscribe(mscache.getList("paymentTypes"), handler);
 
     data.BillingDayCvm = new ComboViewModel({
       selectedValue: data.BillingDay,
@@ -51,8 +51,8 @@ define("src/account/salesinfo/v02/salesinfo.model", [
 
     data.AccountPackageCvm = new ComboViewModel({
       selectedValue: data.AccountPackageId,
-      fields: accountscache.metadata("packages"),
-    }).subscribe(accountscache.getList("packages"), handler);
+      fields: mscache.metadata("packages"),
+    }).subscribe(mscache.getList("packages"), handler);
     data.HasPackageUpgradesCvm = new ComboViewModel({
       selectedValue: data.HasPackageUpgrades,
       fields: options.yesNoOptions,
@@ -60,9 +60,9 @@ define("src/account/salesinfo/v02/salesinfo.model", [
 
     data.load = function(cb) {
       var join = joiner().after(cb);
-      accountscache.ensure("accountCreationTypes", join.add());
-      accountscache.ensure("paymentTypes", join.add());
-      accountscache.ensure("packages", join.add());
+      mscache.ensure("accountCreationTypes", join.add());
+      mscache.ensure("paymentTypes", join.add());
+      mscache.ensure("packages", join.add());
     };
 
 

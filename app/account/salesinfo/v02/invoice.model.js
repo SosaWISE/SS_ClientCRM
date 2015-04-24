@@ -1,7 +1,7 @@
 define("src/account/salesinfo/v02/invoice.model", [
   "src/account/salesinfo/v02/invoiceitems.editor.vm",
   "src/account/salesinfo/options",
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "ko",
   "src/ukov",
   "src/core/strings",
@@ -12,7 +12,7 @@ define("src/account/salesinfo/v02/invoice.model", [
 ], function(
   InvoiceItemsEditorViewModel,
   salesInfoOptions,
-  accountscache,
+  mscache,
   ko,
   ukov,
   strings,
@@ -50,7 +50,7 @@ define("src/account/salesinfo/v02/invoice.model", [
 
     data.load = function(cb) {
       var join = joiner().after(cb);
-      accountscache.ensure("invoices/items", join.add());
+      mscache.ensure("invoices/items", join.add());
     };
 
     var ignore = true;
@@ -99,7 +99,7 @@ define("src/account/salesinfo/v02/invoice.model", [
             // create item
             invItems.push(invoiceItem = {});
           }
-          var item = accountscache.getMap("invoices/items")[itemId];
+          var item = mscache.getMap("invoices/items")[itemId];
           InvoiceItemsEditorViewModel.copyInvoiceItemFromItem(invoiceItem, item);
           //
           invoiceItem.RetailPrice = fee;
@@ -134,7 +134,7 @@ define("src/account/salesinfo/v02/invoice.model", [
               // create item
               invItems.push(invoiceItem = {});
             }
-            var item = accountscache.getMap("invoices/items")[over3ItemId];
+            var item = mscache.getMap("invoices/items")[over3ItemId];
             InvoiceItemsEditorViewModel.copyInvoiceItemFromItem(invoiceItem, item);
             //
             // @Over3MonthsDisc =
@@ -247,7 +247,7 @@ define("src/account/salesinfo/v02/invoice.model", [
         return true;
       }
       // get the InvoiceItem then check for existance of ItemTypeId
-      var item = accountscache.getMap("invoices/items")[invoiceItem.ItemId];
+      var item = mscache.getMap("invoices/items")[invoiceItem.ItemId];
       return item && typeIdMap[item.ItemTypeId];
     });
   }

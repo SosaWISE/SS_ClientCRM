@@ -1,4 +1,4 @@
-define("src/account/ac-cache", [
+define("src/account/accache", [
   "src/dataservice",
   "src/core/cacher",
 ], function(

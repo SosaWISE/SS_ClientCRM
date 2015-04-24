@@ -1,6 +1,6 @@
 define("src/contracts/contract.vm", [
   "howie",
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "src/account/salesinfo/options",
   "src/account/security/holds.vm",
   "src/account/security/emcontacts.vm",
@@ -23,7 +23,7 @@ define("src/contracts/contract.vm", [
   "src/core/controller.vm",
 ], function(
   howie,
-  accountscache,
+  mscache,
   salesInfoOptions,
   HoldsViewModel,
   EmContactsViewModel,
@@ -333,7 +333,7 @@ define("src/contracts/contract.vm", [
     _this.masterid = routeData.masterid;
     _this.acctid = routeData.id;
 
-    accountscache.ensure("localizations");
+    mscache.ensure("localizations");
 
     // load leads for master file
     _this.leads.forEach(function(leadVm) {
@@ -947,13 +947,13 @@ define("src/contracts/contract.vm", [
 
     data.cellServiceCvm = new ComboViewModel({
       selectedValue: ko.observable(null),
-      fields: accountscache.metadata("cellServiceTypes"),
-    }).subscribe(accountscache.getList("cellServiceTypes"), handler);
+      fields: mscache.metadata("cellServiceTypes"),
+    }).subscribe(mscache.getList("cellServiceTypes"), handler);
     data.CellPackageItemCvm = new ComboViewModel({
       selectedValue: data.CellPackageItemId,
-      fields: accountscache.metadata("cellPackageItems"),
+      fields: mscache.metadata("cellPackageItems"),
     });
-    handler.subscribe(accountscache.getList("cellPackageItems"), function() {
+    handler.subscribe(mscache.getList("cellPackageItems"), function() {
       updateCellPackageItemCvm(data);
     });
 
@@ -1444,7 +1444,7 @@ define("src/contracts/contract.vm", [
 
   function updateCellPackageItemCvm(data) {
     var cellService = data.cellServiceCvm.selectedValue.peek();
-    var list = accountscache.getList("cellPackageItems").peek();
+    var list = mscache.getList("cellPackageItems").peek();
     data.CellPackageItemCvm.setList(list.filter(function(item) {
       return cellService && strings.startsWith(item.value, cellService);
     }));

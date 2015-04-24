@@ -1,5 +1,5 @@
 define("src/account/security/alarmdotcom.changeservicepackage.vm", [
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "src/core/combo.vm",
   "src/ukov",
   "ko",
@@ -10,7 +10,7 @@ define("src/account/security/alarmdotcom.changeservicepackage.vm", [
   "src/core/utils",
   "src/core/base.vm",
 ], function(
-  accountscache,
+  mscache,
   ComboViewModel,
   ukov,
   ko,
@@ -46,9 +46,9 @@ define("src/account/security/alarmdotcom.changeservicepackage.vm", [
 
     _this.data.CellPackageItemCvm = new ComboViewModel({
       selectedValue: _this.data.CellPackageItemId,
-      fields: accountscache.metadata("cellPackageItems"),
+      fields: mscache.metadata("cellPackageItems"),
     });
-    _this.handler.subscribe(accountscache.getList("cellPackageItems"), function(list) {
+    _this.handler.subscribe(mscache.getList("cellPackageItems"), function(list) {
       _this.data.CellPackageItemCvm.setList(list.filter(function(item) {
         return strings.startsWith(item.ID, "CELL_SRV_AC");
       }));
@@ -103,7 +103,7 @@ define("src/account/security/alarmdotcom.changeservicepackage.vm", [
   };
 
   AlarmDotComChangeServicePackageViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    accountscache.ensure("cellPackageItems", join.add());
+    mscache.ensure("cellPackageItems", join.add());
   };
 
   return AlarmDotComChangeServicePackageViewModel;

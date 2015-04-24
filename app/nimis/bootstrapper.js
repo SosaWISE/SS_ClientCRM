@@ -29,7 +29,7 @@ define("setup", [
   "src/core/ko.command",
   "src/core/ko.bindingHandlers.all",
   //
-  "src/account/ac-cache",
+  "src/account/accache",
   //
   "src/nimis/resources",
   "src/nimis/errorcodes",

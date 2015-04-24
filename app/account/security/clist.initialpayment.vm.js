@@ -1,5 +1,5 @@
 define("src/account/security/clist.initialpayment.vm", [
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "src/account/salesinfo/v02/salesinfo.model",
   "src/account/default/payby.vm",
   "src/account/default/address.validate.vm",
@@ -15,7 +15,7 @@ define("src/account/security/clist.initialpayment.vm", [
   "src/core/controller.vm",
   "src/core/utils",
 ], function(
-  accountscache,
+  mscache,
   salesinfo_model,
   PayByViewModel,
   AddressValidateViewModel,
@@ -237,7 +237,7 @@ define("src/account/security/clist.initialpayment.vm", [
           }
         }).after(cb);
       //
-      accountscache.ensure("localizations");
+      mscache.ensure("localizations");
       //
       _this.salesinfo.load(subjoin.add());
       load_acctPaymentMethod(_this.acctid, "InitialPaymentMethod", _this.initialPaymentMethod, subjoin.add());

@@ -1,6 +1,6 @@
 define("src/account/salesinfo/v01/salesinfo.vm", [
   "underscore",
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "src/account/salesinfo/v01/parts.editor.vm",
   "howie",
   "src/slick/buttonscolumn",
@@ -19,7 +19,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
   "src/core/combo.vm",
 ], function(
   underscore,
-  accountscache,
+  mscache,
   PartsEditorViewModel,
   howie,
   ButtonsColumn,
@@ -194,8 +194,8 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
     });
     _this.data.PaymentTypeCvm = new ComboViewModel({
       selectedValue: _this.data.PaymentTypeId,
-      fields: accountscache.metadata("paymentTypes"),
-    }).subscribe(accountscache.getList("paymentTypes"), _this.handler);
+      fields: mscache.metadata("paymentTypes"),
+    }).subscribe(mscache.getList("paymentTypes"), _this.handler);
     _this.data.BillingDayCvm = new ComboViewModel({
       selectedValue: _this.data.BillingDay,
       list: salesInfoOptions.billingDays,
@@ -210,13 +210,13 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
     });
     _this.data.cellServiceCvm = new ComboViewModel({
       selectedValue: ko.observable(null),
-      fields: accountscache.metadata("cellServiceTypes"),
-    }).subscribe(accountscache.getList("cellServiceTypes"), _this.handler);
+      fields: mscache.metadata("cellServiceTypes"),
+    }).subscribe(mscache.getList("cellServiceTypes"), _this.handler);
     _this.data.CellPackageItemCvm = new ComboViewModel({
       selectedValue: _this.data.CellPackageItemId,
-      fields: accountscache.metadata("cellPackageItems"),
+      fields: mscache.metadata("cellPackageItems"),
     });
-    _this.handler.subscribe(accountscache.getList("cellPackageItems"), function() {
+    _this.handler.subscribe(mscache.getList("cellPackageItems"), function() {
       updateCellPackageItemCvm(_this);
     });
 
@@ -306,7 +306,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
       }
 
       // filter Cell Packages by the selected Cell Service
-      // _this.data.CellPackageItemCvm.setList(accountscache.getList("cellPackageItems").peek().filter(function(item) {
+      // _this.data.CellPackageItemCvm.setList(mscache.getList("cellPackageItems").peek().filter(function(item) {
       //   return cellService && strings.startsWith(item.value, cellService);
       // }));
       updateCellPackageItemCvm(_this);
@@ -358,9 +358,9 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
 
     _this.data.AccountId(accountid);
 
-    accountscache.ensure("paymentTypes", join.add());
-    accountscache.ensure("cellServiceTypes", join.add());
-    accountscache.ensure("cellPackageItems", join.add());
+    mscache.ensure("paymentTypes", join.add());
+    mscache.ensure("cellServiceTypes", join.add());
+    mscache.ensure("cellPackageItems", join.add());
 
     //
     // 1 - load types
@@ -633,7 +633,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
 
   function updateCellPackageItemCvm(_this) {
     var cellService = _this.data.cellServiceCvm.selectedValue.peek();
-    var list = accountscache.getList("cellPackageItems").peek();
+    var list = mscache.getList("cellPackageItems").peek();
     _this.data.CellPackageItemCvm.setList(list.filter(function(item) {
       return cellService && strings.startsWith(item.ID, cellService);
     }));

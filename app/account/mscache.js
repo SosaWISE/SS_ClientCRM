@@ -1,4 +1,4 @@
-define("src/account/accounts-cache", [
+define("src/account/mscache", [
   "src/dataservice",
   "src/core/cacher",
 ], function(
@@ -7,9 +7,9 @@ define("src/account/accounts-cache", [
 ) {
   "use strict";
 
-  var prefix = "accounts-";
+  var prefix = "ms-";
 
-  var accountscache = {
+  var mscache = {
     getList: function(name) {
       return cacher.getList(prefix, name, metaMap);
     },
@@ -168,5 +168,5 @@ define("src/account/accounts-cache", [
     ],
   };
 
-  return accountscache;
+  return mscache;
 });

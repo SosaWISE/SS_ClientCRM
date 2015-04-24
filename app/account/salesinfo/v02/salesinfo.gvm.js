@@ -1,5 +1,5 @@
 define("src/account/salesinfo/v02/salesinfo.gvm", [
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "ko",
   "src/slick/rowevent",
   "src/slick/slickgrid.vm",
@@ -7,7 +7,7 @@ define("src/account/salesinfo/v02/salesinfo.gvm", [
   "src/core/strings",
   "src/core/utils",
 ], function(
-  accountscache,
+  mscache,
   ko,
   RowEvent,
   SlickGridViewModel,
@@ -40,7 +40,7 @@ define("src/account/salesinfo/v02/salesinfo.gvm", [
           name: "Description",
           width: 200,
           formatter: function(row, cell, value, columnDef, dataItem) {
-            var item = accountscache.getMap("invoices/items")[dataItem.ItemId];
+            var item = mscache.getMap("invoices/items")[dataItem.ItemId];
             return (item) ? item.ItemDesc : "Unknown Invoice Item";
           },
         }, {

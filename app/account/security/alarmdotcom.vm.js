@@ -1,6 +1,6 @@
 define("src/account/security/alarmdotcom.vm", [
   "src/dataservice",
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "src/account/security/alarmdotcom.changeservicepackage.vm",
   "src/account/security/alarmdotcom.swapmodem.vm",
   "src/account/security/alarmdotcom.editor.vm",
@@ -12,7 +12,7 @@ define("src/account/security/alarmdotcom.vm", [
   "src/core/controller.vm",
 ], function(
   dataservice,
-  accountscache,
+  mscache,
   AlarmDotComChangeServicePackageViewModel,
   AlarmDotComSwapModemViewModel,
   AlarmDotComEditorViewModel,
@@ -154,8 +154,8 @@ define("src/account/security/alarmdotcom.vm", [
       var subjoin = join.create()
         .after(utils.safeCallback(join.add(), step2, utils.noop));
       // ensure types
-      accountscache.ensure("localizations", subjoin.add());
-      accountscache.ensure("cellPackageItems", subjoin.add());
+      mscache.ensure("localizations", subjoin.add());
+      mscache.ensure("cellPackageItems", subjoin.add());
     }
 
     function step2() {
@@ -181,7 +181,7 @@ define("src/account/security/alarmdotcom.vm", [
 
         _this.isRegistered(result.RegistrationStatus === 1);
         var servicePlan;
-        accountscache.getList("cellPackageItems").peek().some(function(item) {
+        mscache.getList("cellPackageItems").peek().some(function(item) {
           if (item.ID === result.CellPackageItemId) {
             servicePlan = item.Txt;
             return true;

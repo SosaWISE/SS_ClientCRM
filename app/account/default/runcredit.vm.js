@@ -1,5 +1,5 @@
 define("src/account/default/runcredit.vm", [
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "howie",
   "src/core/handler",
   "src/core/strings",
@@ -12,7 +12,7 @@ define("src/account/default/runcredit.vm", [
   "src/ukov",
   "src/dataservice"
 ], function(
-  accountscache,
+  mscache,
   howie,
   Handler,
   strings,
@@ -222,8 +222,8 @@ define("src/account/default/runcredit.vm", [
 
     _this.localizationCvm = new ComboViewModel({
       selectedValue: _this.data.LocalizationId,
-      fields: accountscache.metadata("localizations"),
-    }).subscribe(accountscache.getList("localizations"), _this.handler);
+      fields: mscache.metadata("localizations"),
+    }).subscribe(mscache.getList("localizations"), _this.handler);
 
     //
     // events
@@ -317,7 +317,7 @@ define("src/account/default/runcredit.vm", [
   RunCreditViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
-    accountscache.ensure("localizations", join.add());
+    mscache.ensure("localizations", join.add());
     join.when(function() {
       if (!_this.localizationCvm.selectedValue.peek()) {
         _this.localizationCvm.selectFirst();

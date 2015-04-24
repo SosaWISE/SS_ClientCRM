@@ -1,5 +1,5 @@
 define("src/account/salesinfo/v02/invoiceitems.editor.vm", [
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "src/account/default/rep.find.vm",
   "src/dataservice",
   "src/core/combo.vm",
@@ -11,7 +11,7 @@ define("src/account/salesinfo/v02/invoiceitems.editor.vm", [
   "ko",
   "src/ukov",
 ], function(
-  accountscache,
+  mscache,
   RepFindViewModel,
   dataservice,
   ComboViewModel,
@@ -108,7 +108,7 @@ define("src/account/salesinfo/v02/invoiceitems.editor.vm", [
 
     _this.data.ItemCvm = new ComboViewModel({
       selectedValue: _this.data.ItemId,
-      // fields: accountscache.metadata("invoices/items"),
+      // fields: mscache.metadata("invoices/items"),
       fields: {
         value: "ID",
         text: function(item) {
@@ -116,7 +116,7 @@ define("src/account/salesinfo/v02/invoiceitems.editor.vm", [
         },
       },
       // assumes invoices/items have already been loaded
-      list: accountscache.getList("invoices/items").peek().filter(function(item) {
+      list: mscache.getList("invoices/items").peek().filter(function(item) {
         return !item.IsDeleted;
       }),
     });
