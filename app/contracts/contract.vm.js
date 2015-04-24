@@ -119,6 +119,18 @@ define("src/contracts/contract.vm", [
 
     _this.paymentMethod = ko.observable();
 
+    _this.status = ko.computed(function() {
+      var st;
+      if (_this.salesInfoExtras.ApproverID()) {
+        st = "approved";
+      } else if (_this.holdsVm.hasRepFrontEndHolds()) {
+        st = "blocked";
+      } else {
+        st = "ready";
+      }
+      return st;
+    });
+
 
     //
     // events

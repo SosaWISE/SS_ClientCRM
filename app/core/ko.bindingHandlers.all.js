@@ -105,19 +105,20 @@
   };
 
 
-  // setClass
+  // cls
   //---------------------------
-  ko.bindingHandlers.setClass = {
+  ko.bindingHandlers.cls = {
     update: function(element, valueAccessor) {
       var cls = ko.unwrap(valueAccessor()),
         el = jquery(element);
-      if (valueAccessor._prevCls) {
-        el.removeClass(valueAccessor._prevCls);
+      var prevCls = el.data("prevCls");
+      if (prevCls) {
+        el.removeClass(prevCls);
       }
       if (cls) {
-        valueAccessor._prevCls = cls;
         el.addClass(cls);
       }
+      el.data("prevCls", cls);
     },
   };
 

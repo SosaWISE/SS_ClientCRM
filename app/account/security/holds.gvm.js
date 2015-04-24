@@ -15,8 +15,8 @@ define("src/account/security/holds.gvm", [
 
   function HoldGridViewModel(options) {
     var _this = this;
-    var internalList = ko.observableArray();
 
+    _this.internalList = ko.observableArray();
     _this.includeFixed = ko.observable(false);
 
     HoldGridViewModel.super_.call(_this, {
@@ -27,7 +27,7 @@ define("src/account/security/holds.gvm", [
       },
       // list: ko.observableArray(),
       list: ko.computed(function() {
-        var list = internalList().sort(function(a, b) {
+        var list = _this.internalList().sort(function(a, b) {
           // sort descending by created on
           return b.CreatedOn.valueOf() - a.CreatedOn.valueOf();
         });
@@ -39,7 +39,7 @@ define("src/account/security/holds.gvm", [
         }
         return list;
       }),
-      plugins: getPlugins(_this, internalList, options),
+      plugins: getPlugins(_this, options),
       columns: [ //
         {
           width: 30,
@@ -59,6 +59,18 @@ define("src/account/security/holds.gvm", [
           field: "CreatedBy",
         }, {
           width: 30,
+          id: "IsRepFrontEndHold",
+          name: "Rep Front End Hold",
+          field: "Catg2Id",
+          formatter: options.isRepFrontEndHoldFormatter,
+        }, {
+          width: 30,
+          id: "IsRepBackEndHold",
+          name: "Rep Back End Hold",
+          field: "Catg2Id",
+          formatter: options.isRepBackEndHoldFormatter,
+        }, {
+          width: 30,
           id: "FixedOn",
           name: "Removed On",
           field: "FixedOn",
@@ -73,15 +85,15 @@ define("src/account/security/holds.gvm", [
     });
 
     _this.setList = function(list) {
-      internalList(list);
+      _this.internalList(list);
     };
     _this.addItem = function(item) {
-      internalList.splice(0, 0, item);
+      _this.internalList.splice(0, 0, item);
     };
   }
   utils.inherits(HoldGridViewModel, SlickGridViewModel);
 
-  function getPlugins(_this, internalList, options) {
+  function getPlugins(_this, options) {
     var plugins = [];
     if (options.edit) {
       plugins.push(new RowEvent({
@@ -92,7 +104,7 @@ define("src/account/security/holds.gvm", [
               return;
             }
             // update in place
-            internalList.replace(item, model);
+            _this.internalList.replace(item, model);
           });
         },
       }));

@@ -50,6 +50,24 @@ define("src/account/accounts-cache", [
         }, null, cb);
       },
     },
+    "holds/catg1s": {
+      value: "ID",
+      text: "Name",
+      read: function(cb) {
+        dataservice.api_ms.holds.read({
+          link: "catg1s",
+        }, null, cb);
+      },
+    },
+    "holds/catg2s": {
+      value: "ID",
+      text: "Name",
+      read: function(cb) {
+        dataservice.api_ms.holds.read({
+          link: "catg2s",
+        }, null, cb);
+      },
+    },
 
     packages: {
       value: "ID",
