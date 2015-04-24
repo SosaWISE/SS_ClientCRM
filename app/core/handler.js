@@ -20,7 +20,7 @@ define("src/core/handler", [], function() {
       return _this; // allow chaining
     };
 
-    _this.unsubscribe = function(fn) {
+    _this.dispose = function(fn) {
       var i = _subs.length;
       while (i--) {
         if (_subs[i].fn === fn) {
