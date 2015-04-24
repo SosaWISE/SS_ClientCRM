@@ -1,14 +1,15 @@
-define('src/account/default/search.vm', [
-  'src/account/default/address.validate.vm',
-  'src/core/combo.vm',
-  'src/dataservice',
-  'src/slick/rowevent',
-  'src/slick/slickgrid.vm',
-  'src/ukov',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
-  'ko'
+define("src/account/default/search.vm", [
+  "src/account/default/address.validate.vm",
+  "src/core/combo.vm",
+  "src/dataservice",
+  "src/slick/rowevent",
+  "src/slick/slickgrid.vm",
+  "src/ukov",
+  "src/core/strings",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
+  "ko"
 ], function(
   AddressValidateViewModel,
   ComboViewModel,
@@ -16,6 +17,7 @@ define('src/account/default/search.vm', [
   RowEvent,
   SlickGridViewModel,
   ukov,
+  strings,
   notify,
   utils,
   ControllerViewModel,
@@ -27,9 +29,9 @@ define('src/account/default/search.vm', [
     typeMap;
 
   acctNumSchema = {
-    converter: ukov.converters.numText('Invalid customer number'),
+    converter: ukov.converters.numText("Invalid customer number"),
     validators: [
-      ukov.validators.isRequired('Please enter a customer number'),
+      ukov.validators.isRequired("Please enter a customer number"),
     ],
   };
 
@@ -56,10 +58,11 @@ define('src/account/default/search.vm', [
         ukov.validators.isZipCode(),
       ],
     },
+    ExcludeLeads: {},
     PageSize: {
       converter: ukov.converters.number(0),
       validators: [
-        ukov.validators.isRequired('Results per Page is required'),
+        ukov.validators.isRequired("Results per Page is required"),
       ],
     },
     PageNumber: {
@@ -68,19 +71,19 @@ define('src/account/default/search.vm', [
   };
 
   function createType(cls, title) {
-    return '<div class="acct-ico ' + cls + '" title="' + title + '"></div>';
+    return strings.format("<div class=\"acct-ico {0}\" title=\"{1}\"></div>", cls, title);
   }
 
   typeMap = {
-    LEAD: createType('lead', 'Lead'),
+    LEAD: createType("lead", "Lead"),
 
-    ALRM: createType('alrm', 'Alarm System'),
-    INSEC: createType('insec', 'Internet Security'),
-    LFLCK: createType('lflck', 'Life Lock'),
-    NUMAN: createType('numan', 'NuManna'),
-    PERS: createType('pers', 'GPS Tracking Device'),
-    SKPLT: createType('skplt', 'Strick Plate'),
-    WNFIL: createType('wnfil', 'Window Film'),
+    ALRM: createType("alrm", "Alarm System"),
+    INSEC: createType("insec", "Internet Security"),
+    LFLCK: createType("lflck", "Life Lock"),
+    NUMAN: createType("numan", "NuManna"),
+    PERS: createType("pers", "GPS Tracking Device"),
+    SKPLT: createType("skplt", "Strick Plate"),
+    WNFIL: createType("wnfil", "Window Film"),
   };
 
   // ctor
@@ -106,8 +109,9 @@ define('src/account/default/search.vm', [
 
     _this.title = ko.observable(_this.title);
     _this.initFocusFirst();
-    _this.acctNum = ukov.wrap('', acctNumSchema);
+    _this.acctNum = ukov.wrap("", acctNumSchema);
     _this.data = ukov.wrap({
+      ExcludeLeads: !!options.excludeLeads,
       // only set initial values for PageSize and PageNumber. all other values should be null by default.
       PageSize: 25,
       PageNumber: 1,
@@ -132,14 +136,14 @@ define('src/account/default/search.vm', [
       },
       plugins: [
         new RowEvent({
-          eventName: 'onDblClick',
+          eventName: "onDblClick",
           fn: function(acct) {
-            //@HACK: there is an array of AccountTypes, but not an array of FkId. so we're going to assume that
+            //@HACK: there is an array of AccountTypes, but not an array of FkId. so we are going to assume that
             //       if there is an AccountType of `LEAD` in the array then the FkId is a LeadID........
             console.log(_this);
 
             function isLead(t) {
-              return t === 'LEAD';
+              return t === "LEAD";
             }
             if (acct.AccountTypes.some(isLead)) {
               _this.goToLead(acct.CustomerMasterFileID, acct.FkId);
@@ -151,39 +155,39 @@ define('src/account/default/search.vm', [
       ],
       columns: [ //
         {
-          id: 'Icons',
-          name: 'Acct Types',
-          field: 'AccountTypes',
+          id: "Icons",
+          name: "Acct Types",
+          field: "AccountTypes",
           width: 50,
           formatter: function(row, cell, value) {
             var results = new Array(value.length);
             value.forEach(function(type, i) {
               results[i] = typeMap[type];
             });
-            return results.join('');
+            return results.join("");
           },
         }, {
-          id: 'CustomerMasterFileID',
-          name: 'CMFID',
-          field: 'CustomerMasterFileID',
+          id: "CustomerMasterFileID",
+          name: "CMFID",
+          field: "CustomerMasterFileID",
           width: 30,
         }, {
-          id: 'Fullname',
-          name: 'Full name',
-          field: 'Fullname',
+          id: "Fullname",
+          name: "Full name",
+          field: "Fullname",
         }, {
-          id: 'Phone',
-          name: 'Phone',
-          field: 'Phone',
+          id: "Phone",
+          name: "Phone",
+          field: "Phone",
           formatter: SlickGridViewModel.formatters.phone,
         }, {
-          id: 'City',
-          name: 'City',
-          field: 'City',
+          id: "City",
+          name: "City",
+          field: "City",
         }, {
-          id: 'Email',
-          name: 'Email',
-          field: 'Email',
+          id: "Email",
+          name: "Email",
+          field: "Email",
         },
       ],
     });
@@ -206,19 +210,19 @@ define('src/account/default/search.vm', [
     };
   }
   utils.inherits(SearchViewModel, ControllerViewModel);
-  SearchViewModel.prototype.viewTmpl = 'tmpl-acct-default-search';
+  SearchViewModel.prototype.viewTmpl = "tmpl-acct-default-search";
   SearchViewModel.prototype.page = 1; // first page. needed in cmdSearch
 
   SearchViewModel.prototype.pageSizeOptions = [ //
     {
       value: 25,
-      text: '25',
+      text: "25",
     }, {
       value: 50,
-      text: '50',
+      text: "50",
     }, {
       value: 100,
-      text: '100',
+      text: "100",
     },
   ];
 
@@ -231,14 +235,15 @@ define('src/account/default/search.vm', [
         City: null,
         StateId: null,
         PostalCode: null,
-        // don't reset PageSize or PageNumber
+        // do not reset below values
+        // ExcludeLeads: false,
         // PageSize: 25,
         // PageNumber: 1,
       };
     _this.data.setValue(data);
     _this.data.markClean(data, true);
 
-    _this.acctNum.setValue('');
+    _this.acctNum.setValue("");
     _this.acctNum.markClean();
   };
   SearchViewModel.prototype.openAccount = function(cb) {
@@ -260,18 +265,18 @@ define('src/account/default/search.vm', [
   SearchViewModel.prototype.search = function(page, cb) {
     var _this = this,
       model;
-    if (page < 1) { // don't set to a page less than 1
+    if (page < 1) { // do not set to a page less than 1
       cb();
     } else if (!_this.data.isValid()) {
       notify.warn(_this.data.errMsg(), null, 7);
       cb();
       // } else if (_this.data.isClean() && _this.data.PageNumber() === page) {
       //   // only search if something has changed
-      //   notify.warn('Search criteria hasn\'t changed. No search made.', null, 3);
+      //   notify.warn("Search criteria has not changed. No search made.", null, 3);
       //   cb();
     } else {
       model = _this.data.getValue();
-      // set page here instead of on `data` so that the pager isn't updated until the search is done
+      // set page here instead of on `data` so that the pager is not updated until the search is done
       model.PageNumber = page;
       // clear grid
       _this.gvm.list([]);
@@ -303,7 +308,7 @@ define('src/account/default/search.vm', [
     pages.push({
       page: currPage - 1,
       disabled: false,
-      text: '<<',
+      text: "<<",
       active: false,
     });
     // add pages
@@ -312,7 +317,7 @@ define('src/account/default/search.vm', [
       pages.push({
         page: pg,
         disabled: !valid, // disable invalid pages
-        text: !valid ? ' ' : pg, // no text for invalid pages
+        text: !valid ? " " : pg, // no text for invalid pages
         active: pg === currPage,
       });
     }
@@ -320,7 +325,7 @@ define('src/account/default/search.vm', [
     pages.push({
       page: currPage + 1,
       disabled: false,
-      text: '>>',
+      text: ">>",
       active: false,
     });
     return pages;
