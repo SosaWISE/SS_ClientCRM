@@ -446,6 +446,17 @@ define("src/contracts/contract.vm", [
   }
 
   function saveAll(_this, approve, cb) {
+    if (approve) {
+      switch (_this.status.peek()) {
+        case "approved":
+          notify.warn("Already Approved", "This account has already been approved.", 2);
+          return cb();
+        case "blocked":
+          notify.warn("Rep Front End Holds", "The account cannot be approved when rep fron end holds exist.", 2);
+          return cb();
+      }
+    }
+
     var invalid = _this.leads.some(function(leadVm) {
       if (!leadVm.address.peek()) {
         return;

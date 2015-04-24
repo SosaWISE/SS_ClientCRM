@@ -25,6 +25,18 @@ define("src/account/accounts-cache", [
     },
   };
 
+  function compareName(a, b) {
+    a = a.Name;
+    b = b.Name;
+    var result = 0;
+    if (a < b) {
+      result = -1;
+    } else if (a > b) {
+      result = 1;
+    }
+    return result;
+  }
+
   var defaultMeta = {
     value: "ID",
     text: "Txt",
@@ -53,6 +65,7 @@ define("src/account/accounts-cache", [
     "holds/catg1s": {
       value: "ID",
       text: "Name",
+      comparer: compareName,
       read: function(cb) {
         dataservice.api_ms.holds.read({
           link: "catg1s",
@@ -62,6 +75,7 @@ define("src/account/accounts-cache", [
     "holds/catg2s": {
       value: "ID",
       text: "Name",
+      comparer: compareName,
       read: function(cb) {
         dataservice.api_ms.holds.read({
           link: "catg2s",
