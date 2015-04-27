@@ -1,21 +1,21 @@
 define("src/account/security/alarmdotcom.changeservicepackage.vm", [
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "src/core/combo.vm",
   "src/ukov",
   "ko",
   "src/dataservice",
-  "src/core/subscriptionhandler",
+  "src/core/handler",
   "src/core/strings",
   "src/core/notify",
   "src/core/utils",
   "src/core/base.vm",
 ], function(
-  accountscache,
+  mscache,
   ComboViewModel,
   ukov,
   ko,
   dataservice,
-  SubscriptionHandler,
+  Handler,
   strings,
   notify,
   utils,
@@ -37,18 +37,18 @@ define("src/account/security/alarmdotcom.changeservicepackage.vm", [
     ]);
 
     _this.mixinLoad();
-    _this.handler = new SubscriptionHandler();
+    _this.handler = new Handler();
 
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.data = ukov.wrap({
       CellPackageItemId: _this.CellPackageItemId,
     }, schema);
 
     _this.data.CellPackageItemCvm = new ComboViewModel({
       selectedValue: _this.data.CellPackageItemId,
-      fields: accountscache.metadata("cellPackageItems"),
+      fields: mscache.metadata("cellPackageItems"),
     });
-    _this.handler.subscribe(accountscache.getList("cellPackageItems"), function(list) {
+    _this.handler.subscribe(mscache.getList("cellPackageItems"), function(list) {
       _this.data.CellPackageItemCvm.setList(list.filter(function(item) {
         return strings.startsWith(item.ID, "CELL_SRV_AC");
       }));
@@ -78,16 +78,6 @@ define("src/account/security/alarmdotcom.changeservicepackage.vm", [
         notify.error(err);
       }));
     });
-
-    //
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the rep id
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
-    });
   }
   utils.inherits(AlarmDotComChangeServicePackageViewModel, BaseViewModel);
   AlarmDotComChangeServicePackageViewModel.prototype.viewTmpl = "tmpl-security-alarmdotcom_changeservicepackage";
@@ -113,7 +103,7 @@ define("src/account/security/alarmdotcom.changeservicepackage.vm", [
   };
 
   AlarmDotComChangeServicePackageViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    accountscache.ensure("cellPackageItems", join.add());
+    mscache.ensure("cellPackageItems", join.add());
   };
 
   return AlarmDotComChangeServicePackageViewModel;

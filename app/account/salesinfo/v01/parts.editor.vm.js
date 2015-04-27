@@ -63,16 +63,7 @@ define("src/account/salesinfo/v01/parts.editor.vm", [
       "reps",
     ]);
 
-    _this.focusFirst = ko.observable();
-    _this.focusOk = ko.observable();
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to actually focus
-        setTimeout(function() {
-          _this.focusOk(true);
-        }, 100);
-      }
-    });
+    _this.initActiveFocus("focusOk");
 
     _this.data = ukov.wrap(_this.item || {
       InvoiceID: _this.invoiceID,

@@ -138,6 +138,17 @@ define('src/u-kov/validators', [
       }
     };
   };
+  validators.maybeRequired = function(message, maybeProp) {
+    message = message || valRequired;
+    return function(val, model) {
+      if (!model[maybeProp]) {
+        return;
+      }
+      if (!val && val !== 0 && val !== false) {
+        return message;
+      }
+    };
+  };
 
   validators.isPassword = function(minLength, message) {
     // ensure min length is 6 or greater

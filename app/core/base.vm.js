@@ -54,16 +54,21 @@ define("src/core/base.vm", [
 
   BaseViewModel.prototype.initFocusFirst = function() {
     var _this = this;
-    if (_this.focusFirst) {
+    _this.initActiveFocus("focusFirst");
+  };
+  BaseViewModel.prototype.initActiveFocus = function(name) {
+    var _this = this;
+    if (_this[name]) {
       // do nothing duplicate calls
       return;
     }
-    _this.focusFirst = ko.observable(true);
+    var obs = ko.observable(true);
+    _this[name] = obs;
     _this.active.subscribe(function(active) {
       if (active) {
         // this timeout makes it possible to focus the input field
-        setTimeout(function() {
-          _this.focusFirst(true);
+        window.setTimeout(function() {
+          obs(true);
         }, 100);
       }
     });
@@ -167,7 +172,8 @@ define("src/core/base.vm", [
     _this.deactivate();
     // remove handlers
     if (_this.handler) {
-      _this.handler.unsubscribeAll();
+      _this.handler.disposeAll();
+      _this.handler.offAll();
     }
     // reset loader (but prevent resetting nested view models, since destroy will reset them)
     _this.reset(true);

@@ -67,7 +67,7 @@ define('src/inventory/receive.inventory.vm', [
     _this.layersVm = new LayersViewModel({
       controller: _this,
     });
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.data = ukov.wrap(_this.item || {}, schema);
 
     //This is the dropdown vendor type
@@ -202,15 +202,6 @@ define('src/inventory/receive.inventory.vm', [
       //clear grid
       _this.inventoryListGvm.list([]);
     };
-
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the po#
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
-    });
   }
   utils.inherits(ReceiveInventoryViewModel, ControllerViewModel);
   ReceiveInventoryViewModel.prototype.viewTmpl = 'tmpl-inventory-receive';

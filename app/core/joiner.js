@@ -1,6 +1,8 @@
-define('src/core/joiner', [
-  'src/core/arrays',
+define("src/core/joiner", [
+  "src/core/bigticker",
+  "src/core/arrays",
 ], function(
+  bigticker,
   arrays
 ) {
   "use strict";
@@ -32,7 +34,7 @@ define('src/core/joiner', [
       waiting, results, addKey,
       timeout;
     if (_this.isDisposed()) {
-      throw new Error('joiner is disposed');
+      throw new Error("joiner is disposed");
     }
     if (_this._err) {
       // all further adds are ignored
@@ -48,7 +50,7 @@ define('src/core/joiner', [
     waiting.push(addKey);
 
     function cb(err, val) {
-      clearTimeout(timeout);
+      bigticker.clearTimeout(timeout);
       var index = waiting.indexOf(addKey);
       if (index < 0) {
         // already called or a previous callback passed a value for err
@@ -70,13 +72,13 @@ define('src/core/joiner', [
       tryWhen(_this);
     }
 
-    timeout = setTimeout(function() {
+    timeout = bigticker.setTimeout(function() {
       if (timeoutCb) {
         timeoutCb();
       }
       cb({
         Code: 1, // ???,
-        Message: 'Joiner.add(' + c + ') timed out - ' + (name || '[unnamed]'),
+        Message: "Joiner.add(" + c + ") timed out - " + (name || "[unnamed]"),
       });
     }, _this.timeout * (timeoutMultiplier || 1));
 

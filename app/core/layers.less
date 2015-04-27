@@ -1,112 +1,118 @@
-.layers .layer-table {
-  z-index: 99; // put above slickgrid // changed to 99 to put above fullcalendar grid
-  position: absolute;
-  display: table;
-  width: 100%;
-  height: 100%;
+.layers {
 
   // only show the background on the topmost layer
-  &:last-child {
+  .layer-table:last-child {
     background-color: rgba(0,0,0, 0.2);
+  }
+  &.dark .layer-table:last-child {
+    background-color: rgba(0,0,0, 0.8);
   }
   // &:not(:last-child) {
   //   display: none;
   // }
 
-  .layer-cell {
-    display: table-cell;
-    vertical-align: middle;
+  .layer-table {
+    z-index: 99; // put above slickgrid // changed to 99 to put above fullcalendar grid
+    position: absolute;
+    display: table;
+    width: 100%;
+    height: 100%;
 
-    .layer {
-      margin: auto;
-      padding: 20px;
-      .transition(width 0.25s, height 0.25s;);
+    .layer-cell {
+      display: table-cell;
+      vertical-align: middle;
 
-      position: relative;
+      .layer {
+        margin: auto;
+        padding: 20px;
+        .transition(width 0.25s, height 0.25s;);
 
-      .border-radius(5px);
-      .box-shadow(0px 0px 10px rgba(0, 0, 0, 0.25));
-      // default size
-      width: 98%;
-      height: 98%;
-      &.autoflow {
-        overflow: auto;
-      }
-      &:not(.nowhite) {
-        color: #FFF;
-      }
+        position: relative;
+
+        .border-radius(5px);
+        .box-shadow(0px 0px 10px rgba(0, 0, 0, 0.25));
+        // default size
+        width: 98%;
+        height: 98%;
+        &.autoflow {
+          overflow: auto;
+        }
+        &:not(.nowhite) {
+          color: #FFF;
+        }
 
 
-      cursor: move;
-      cursor: -webkit-grab;
-      &.dragging {
         cursor: move;
-      }
-      // reset cursor for all immediate children
-      > * {
-        cursor: initial;
-      }
+        cursor: -webkit-grab;
+        &.dragging {
+          cursor: move;
+        }
+        // reset cursor for all immediate children
+        > * {
+          cursor: initial;
+        }
 
-      // > .header {
-      //   .user-select(none);
-      //   background: rgba(0,0,0,0.15);
-      //   height: 15px;
-      //   > .handle.drag {
-      //     height: 100%;
-      //     cursor: move;
-      //     cursor: -webkit-grab;
-      //     &.dragging {
-      //       cursor: move;
-      //     }
-      //   }
-      // }
-      > .content {
+        // > .header {
+        //   .user-select(none);
+        //   background: rgba(0,0,0,0.15);
+        //   height: 15px;
+        //   > .handle.drag {
+        //     height: 100%;
+        //     cursor: move;
+        //     cursor: -webkit-grab;
+        //     &.dragging {
+        //       cursor: move;
+        //     }
+        //   }
+        // }
+        > .content {
 
-        .actions ul,
-        ul.actions {
-          text-align: right;
-          display: block;
-          li {
-            display: inline-block;
-            padding: 10px 0px 10px 5px;
+          .actions ul,
+          ul.actions {
+            text-align: right;
+            display: block;
+            li {
+              display: inline-block;
+              padding: 10px 0px 10px 5px;
+            }
+          }
+
+          // correctly show scroll bars
+          table.fh-wrap {
+            height: ~"calc(100% - 40px)"; // `calc` is a CSS3 function. too bad it took til now to find out about it...
           }
         }
 
-        // correctly show scroll bars
-        table.fh-wrap {
-          height: ~"calc(100% - 40px)"; // `calc` is a CSS3 function. too bad it took til now to find out about it...
-        }
-      }
-
-      h2.title {
-        text-shadow: 0 1px 0 #fff;
-        // padding: 15px 0px 0px 15px;
-        // text-transform: uppercase;
-      }
-
-      a.close {
-        color: white;
-        position: absolute;
-        top: 3px;
-        left: 2px;
-        padding: 1px 5px;
-        &:before {
-          font-family: 'entypo';
-          content: '\2715';
-        }
-        .border-radius(9px);
-        .transition(.1s);
-        &:hover {
-          background: rgba(0, 0, 0, 0.25);
-        }
-        &:active {
-          background: rgba(0, 0, 0, 0.4);
+        h2.title {
+          text-shadow: 0 1px 0 #fff;
+          // padding: 15px 0px 0px 15px;
+          // text-transform: uppercase;
         }
 
-        // in windows put it on the right side
-        .os-win & {
-          left: initial;
-          right: 2px;
+        a.close {
+          color: white;
+          position: absolute;
+          top: 3px;
+          left: 2px;
+          padding: 1px 5px;
+          &:before {
+            font-family: 'entypo';
+            content: '\2715';
+          }
+          .border-radius(9px);
+          .transition(.1s);
+          &:hover {
+            background: rgba(0, 0, 0, 0.25);
+          }
+          &:active {
+            background: rgba(0, 0, 0, 0.4);
+          }
+
+          // in windows put it on the right side
+          .os-win & {
+            left: initial;
+            right: 2px;
+          }
         }
       }
     }

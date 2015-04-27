@@ -42,7 +42,7 @@ define('src/inventory/report.inventory.vm', [
     ReportInventoryViewModel.super_.call(_this, options);
 
     //Set barcode field as first focusable
-    _this.focusFirst = ko.observable(true);
+    _this.initFocusFirst();
 
     _this.data = ukov.wrap(_this.item || {
       LocationType: null,
@@ -190,7 +190,7 @@ define('src/inventory/report.inventory.vm', [
       //Root element for added elements
       toAppend = "<div class='addedElements'></div>";
 
-      //Get data from grids            
+      //Get data from grids
       unScanItemList = _this.unScannedListGvm.list();
       scanItemList = _this.scannedListGvm.list();
 
@@ -207,7 +207,7 @@ define('src/inventory/report.inventory.vm', [
       //Add break line for spacing
       unScanItems += "<br />";
 
-      //now for unknown items            
+      //now for unknown items
       for (inc = 0; inc < scanItemList.length; inc++) {
         scanItems += "<div class='items'>" + scanItemList[inc].ProductBarcodeId + "|" + scanItemList[inc].ItemDesc + "</div>";
       }
@@ -295,16 +295,6 @@ define('src/inventory/report.inventory.vm', [
 
       }
     });
-
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the barcode field
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
-    });
-
   }
 
   utils.inherits(ReportInventoryViewModel, ControllerViewModel);

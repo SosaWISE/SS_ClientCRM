@@ -1,8 +1,7 @@
 define("src/account/default/runcredit.vm", [
-  "src/account/accounts-cache",
-  "src/app",
-  "src/config",
-  "src/core/subscriptionhandler",
+  "src/account/mscache",
+  "howie",
+  "src/core/handler",
   "src/core/strings",
   "src/core/combo.vm",
   "src/core/notify",
@@ -13,10 +12,9 @@ define("src/account/default/runcredit.vm", [
   "src/ukov",
   "src/dataservice"
 ], function(
-  accountscache,
-  app,
-  config,
-  SubscriptionHandler,
+  mscache,
+  howie,
+  Handler,
   strings,
   ComboViewModel,
   notify,
@@ -172,7 +170,7 @@ define("src/account/default/runcredit.vm", [
       showSaveBtn: false,
     });
     _this.mixinLoad();
-    _this.handler = new SubscriptionHandler();
+    _this.handler = new Handler();
 
     if (indexOfLead(_this.otherLeads, _this.item) > -1) {
       removeLead(_this.otherLeads, _this.item);
@@ -196,15 +194,15 @@ define("src/account/default/runcredit.vm", [
       ProductSkwId: "HSSS001" // *OPTIONAL  it will default to "HSSS001" if not passed.  This Prodcut Skw is for an alarm system.  Depending on what type of lead we are creating you would pass the appropriate Product Skw.
     };
     //
-    _this.item.LeadSourceId = _this.item.LeadSourceId || config.leadSourceId;
-    _this.item.LeadDispositionId = _this.item.LeadDispositionId || config.leadDispositionId;
-    _this.item.DealerId = _this.item.DealerId || app.user().DealerId;
+    _this.item.LeadSourceId = _this.item.LeadSourceId || howie.fetch("config").leadSourceId;
+    _this.item.LeadDispositionId = _this.item.LeadDispositionId || howie.fetch("config").leadDispositionId;
+    _this.item.DealerId = _this.item.DealerId || howie.fetch("user").DealerId;
     //
     _this.item.SalesRepId = _this.item.SalesRepId || _this.repModel.CompanyID;
     _this.item.TeamLocationId = _this.item.TeamLocationId || _this.repModel.TeamLocationId;
     _this.item.SeasonId = _this.item.SeasonId || _this.repModel.Seasons[0].SeasonID;
 
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.leadResult = ko.observable(null);
     _this.creditResult = ko.observable(null);
     _this.loaded = ko.observable(false);
@@ -224,8 +222,8 @@ define("src/account/default/runcredit.vm", [
 
     _this.localizationCvm = new ComboViewModel({
       selectedValue: _this.data.LocalizationId,
-      fields: accountscache.metadata("localizations"),
-    }).subscribe(accountscache.getList("localizations"), _this.handler);
+      fields: mscache.metadata("localizations"),
+    }).subscribe(mscache.getList("localizations"), _this.handler);
 
     //
     // events
@@ -316,17 +314,10 @@ define("src/account/default/runcredit.vm", [
     }
     return msg;
   };
-  RunCreditViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
-    var _this = this;
-    // this timeout makes it possible to focus the input
-    setTimeout(function() {
-      _this.focusFirst(true);
-    }, 100);
-  };
   RunCreditViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
-    accountscache.ensure("localizations", join.add());
+    mscache.ensure("localizations", join.add());
     join.when(function() {
       if (!_this.localizationCvm.selectedValue.peek()) {
         _this.localizationCvm.selectFirst();

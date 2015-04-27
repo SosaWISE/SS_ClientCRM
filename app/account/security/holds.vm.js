@@ -1,6 +1,7 @@
 define("src/account/security/holds.vm", [
   "ko",
   "src/dataservice",
+  "src/account/mscache",
   "src/account/security/hold.new.vm",
   "src/account/security/hold.fix.vm",
   "src/account/security/holds.gvm",
@@ -12,6 +13,7 @@ define("src/account/security/holds.vm", [
 ], function(
   ko,
   dataservice,
+  mscache,
   HoldNewViewModel,
   HoldFixViewModel,
   HoldGridViewModel,
@@ -30,26 +32,33 @@ define("src/account/security/holds.vm", [
     //   "layersVm",
     // ]);
 
-    function catg2Formatter(value) {
-      var catg2 = arrays.findById(_this.catg2s, value, "Catg2ID");
-      if (!catg2) {
-        return strings.format("({0})", value);
-      }
-      value = catg2.Catg1Id;
-      var catg1 = arrays.findById(_this.catg1s, value, "Catg1ID");
-      if (!catg1) {
-        return strings.format("({0}):{1}", value, catg2.CatgName);
-      }
-      return strings.format("{0}:{1}", catg1.CatgName, catg2.CatgName);
-    }
-
     _this.gvm = new HoldGridViewModel({
       edit: !_this.layersVm ? null : function(hold, cb) {
-        showFix(_this, hold, catg2Formatter, cb);
+        showFix(_this, hold, cb);
       },
       catg2Formatter: function(row, cell, value) {
         return catg2Formatter(value);
       },
+      isRepFrontEndHoldFormatter: function(row, cell, id) {
+        var catg2 = mscache.getMap("holds/catg2s")[id];
+        return (catg2 && catg2.IsRepFrontEndHold) ? "Yes" : "No";
+      },
+      isRepBackEndHoldFormatter: function(row, cell, id) {
+        var catg2 = mscache.getMap("holds/catg2s")[id];
+        return (catg2 && catg2.IsRepBackEndHold) ? "Yes" : "No";
+      },
+    });
+
+    _this.hasRepFrontEndHolds = ko.computed(function() {
+      var map = mscache.getMap("holds/catg2s");
+      return _this.gvm.internalList().some(function(item) {
+        // exclude fixed holds
+        if (!!item.FixedOn) {
+          return false;
+        }
+        var catg2 = map[item.Catg2Id];
+        return catg2 && catg2.IsRepFrontEndHold;
+      });
     });
 
     //
@@ -70,29 +79,44 @@ define("src/account/security/holds.vm", [
   HoldsViewModel.prototype.viewTmpl = "tmpl-security-holds";
 
   HoldsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this,
-      tempHolds;
+    var _this = this;
 
     _this.acctid = routeData.id;
 
-    load_category("catg1s", function(val) {
-      _this.catg1s = val;
-    }, join.add());
-    load_category("catg2s", function(val) {
-      _this.catg2s = val;
-    }, join.add());
-    load_accountHolds(_this.acctid, function(list) {
-      tempHolds = list;
-    }, join.add());
+    function step1() {
+      // start next step when done
+      var subjoin = join.create()
+        .after(utils.safeCallback(join.add(), step2, utils.noop));
+      // ensure types
+      mscache.ensure("holds/catg1s", subjoin.add());
+      mscache.ensure("holds/catg2s", subjoin.add());
+    }
 
     _this.gvm.setList([]); // incase of reload
-    join.when(function(err) {
-      if (err) {
-        return;
-      }
-      _this.gvm.setList(tempHolds);
-    });
+    function step2() {
+      var subjoin = join;
+      //
+      load_accountHolds(_this.acctid, function(list) {
+        _this.gvm.setList(list);
+      }, subjoin.add());
+    }
+
+    // start at first step
+    step1();
   };
+
+  function catg2Formatter(id) {
+    var catg2 = mscache.getMap("holds/catg2s")[id];
+    if (!catg2) {
+      return strings.format("({0})", id);
+    }
+    id = catg2.Catg1Id;
+    var catg1 = mscache.getMap("holds/catg1s")[id];
+    if (!catg1) {
+      return strings.format("({0}):{1}", id, catg2.Name);
+    }
+    return strings.format("{0}:{1}", catg1.Name, catg2.Name);
+  }
 
   function showNew(_this, cb) {
     if (!_this.layersVm) {
@@ -100,20 +124,14 @@ define("src/account/security/holds.vm", [
     }
     _this.layersVm.show(new HoldNewViewModel({
       acctid: _this.acctid,
-      catg1s: _this.catg1s,
-      catg1sFields: {
-        value: "Catg1ID",
-        text: "CatgName",
-      },
-      catg2s: _this.catg2s,
-      catg2sFields: {
-        value: "Catg2ID",
-        text: "CatgName",
-      },
+      catg1s: mscache.getList("holds/catg1s").peek(),
+      catg1sFields: mscache.metadata("holds/catg1s"),
+      catg2s: mscache.getList("holds/catg2s").peek(),
+      catg2sFields: mscache.metadata("holds/catg2s"),
     }), cb);
   }
 
-  function showFix(_this, hold, catg2Formatter, cb) {
+  function showFix(_this, hold, cb) {
     if (!_this.layersVm) {
       return cb();
     }
@@ -127,12 +145,6 @@ define("src/account/security/holds.vm", [
     dataservice.api_ms.accounts.read({
       id: acctid,
       link: "holds",
-    }, setter, cb);
-  }
-
-  function load_category(category, setter, cb) {
-    dataservice.api_ms.holds.read({
-      link: category,
     }, setter, cb);
   }
 

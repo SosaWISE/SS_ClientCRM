@@ -1,5 +1,5 @@
 define("src/account/security/clist.initialpayment.vm", [
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "src/account/salesinfo/v02/salesinfo.model",
   "src/account/default/payby.vm",
   "src/account/default/address.validate.vm",
@@ -7,7 +7,7 @@ define("src/account/security/clist.initialpayment.vm", [
   "src/dataservice",
   "ko",
   "src/ukov",
-  "src/core/subscriptionhandler",
+  "src/core/handler",
   "src/core/combo.vm",
   "src/core/joiner",
   "src/core/strings",
@@ -15,7 +15,7 @@ define("src/account/security/clist.initialpayment.vm", [
   "src/core/controller.vm",
   "src/core/utils",
 ], function(
-  accountscache,
+  mscache,
   salesinfo_model,
   PayByViewModel,
   AddressValidateViewModel,
@@ -23,7 +23,7 @@ define("src/account/security/clist.initialpayment.vm", [
   dataservice,
   ko,
   ukov,
-  SubscriptionHandler,
+  Handler,
   ComboViewModel,
   joiner,
   strings,
@@ -39,7 +39,7 @@ define("src/account/security/clist.initialpayment.vm", [
     ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
     _this.mayReload = ko.observable(false);
-    _this.handler = new SubscriptionHandler();
+    _this.handler = new Handler();
 
     // _this.breakdown = ko.observable();
     _this.initialPaymentMethod = ko.observable();
@@ -237,7 +237,7 @@ define("src/account/security/clist.initialpayment.vm", [
           }
         }).after(cb);
       //
-      accountscache.ensure("localizations");
+      mscache.ensure("localizations");
       //
       _this.salesinfo.load(subjoin.add());
       load_acctPaymentMethod(_this.acctid, "InitialPaymentMethod", _this.initialPaymentMethod, subjoin.add());

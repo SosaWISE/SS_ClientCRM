@@ -118,7 +118,7 @@ define("src/core/combo.vm", [
       _this.clickingItem = false;
       if (_this.isOpen()) {
         _this.isOpen(false);
-        setTimeout(function() {
+        window.setTimeout(function() {
           if (!preventFocus) {
             _this.focusInput(true);
             _this.selectInput(true);
@@ -131,7 +131,7 @@ define("src/core/combo.vm", [
       if (!_this.isOpen()) {
         // _this.filterText("");
         _this.isOpen(true);
-        setTimeout(function() {
+        window.setTimeout(function() {
           _this.focusInput(true);
           _this.selectInput(true);
         }, 0);
@@ -226,7 +226,7 @@ define("src/core/combo.vm", [
     }
   }
   utils.inherits(ComboViewModel, BaseViewModel);
-  ComboViewModel.prototype.viewTmpl = "tmpl-combo";
+  ComboViewModel.prototype.viewTmpl = "tmpl-core-combo";
   ComboViewModel.prototype.nullable = false;
 
   ComboViewModel.prototype.subscribe = function(observable, subscriptionHandler, fn) {
@@ -235,6 +235,12 @@ define("src/core/combo.vm", [
     return _this; // allow chaining
   };
 
+  ComboViewModel.prototype.ensureSelected = function() {
+    var _this = this;
+    if (!_this.selectedValue.peek()) {
+      _this.selectFirst();
+    }
+  };
   ComboViewModel.prototype.selectFirst = function() {
     var _this = this;
     _this.selectItem(_this.list.peek()[0]);

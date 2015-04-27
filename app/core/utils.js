@@ -26,6 +26,13 @@ define("src/core/utils", [
         }
       });
     },
+    assertPropFuncs: function(obj, funcNames) {
+      funcNames.forEach(function(name) {
+        if (!utils.isFunc(obj[name])) {
+          throw new Error(name + " is not a function");
+        }
+      });
+    },
 
     tryThrowHandledErr: function(err) {
       //
@@ -35,7 +42,7 @@ define("src/core/utils", [
       // attempt to log error by throwing an unhandled exception
       err.Code = err.Code || -21; // handled exception
       err.ex.handledErr = err;
-      setTimeout(function() {
+      window.setTimeout(function() {
         throw err.ex;
       }, 0);
     },

@@ -1,18 +1,18 @@
 define("src/dataservice", [
   "src/core/dataservice.base",
-  "src/config",
+  "howie",
   "src/dataservices/user",
   "src/dataservices/session",
 ], function(
   DataserviceBase,
-  config,
+  howie,
   UserDataservice,
   SessionDataservice
 ) {
   "use strict";
 
   function createService(name, subPaths) {
-    var serviceDomain = config.serviceDomain + "/" + name,
+    var serviceDomain = howie.fetch("config").serviceDomain + "/" + name,
       result = {};
 
     subPaths.forEach(function(collectionName) {
@@ -23,13 +23,17 @@ define("src/dataservice", [
   }
 
   return {
-    base: new DataserviceBase(null, config.serviceDomain),
+    base: new DataserviceBase(null, howie.fetch("config").serviceDomain),
     user: new UserDataservice(),
     session: new SessionDataservice(),
 
     //
     // with /api
     //
+    api_ac: createService("api/ac", [
+      "actionRequests",
+      "types",
+    ]),
     api_contractAdmin: createService("api/contractAdmin", [
       "accounts",
       "accountSalesInformationExtras",

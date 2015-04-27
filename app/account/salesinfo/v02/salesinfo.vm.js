@@ -1,6 +1,6 @@
 define("src/account/salesinfo/v02/salesinfo.vm", [
   "underscore",
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "src/account/salesinfo/v02/contract.model",
   "src/account/salesinfo/v02/invoiceitems.editor.vm",
   "src/account/salesinfo/v02/invoice.model",
@@ -11,7 +11,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   "src/account/salesinfo/options",
   "src/dataservice",
   "ko",
-  "src/core/subscriptionhandler",
+  "src/core/handler",
   "src/core/joiner",
   "src/core/arrays",
   "src/core/strings",
@@ -20,7 +20,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   "src/core/base.vm",
 ], function(
   underscore,
-  accountscache,
+  mscache,
   contract_model,
   InvoiceItemsEditorViewModel,
   invoice_model,
@@ -31,7 +31,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   salesInfoOptions,
   dataservice,
   ko,
-  SubscriptionHandler,
+  Handler,
   joiner,
   arrays,
   strings,
@@ -47,7 +47,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     utils.assertProps(_this, ["layersVm"]);
 
     _this.mixinLoad();
-    _this.handler = new SubscriptionHandler();
+    _this.handler = new Handler();
 
     _this.creditGroup = ko.observable();
     _this.creditScore = ko.observable();
@@ -150,8 +150,8 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       var subjoin = join.create()
         .after(utils.safeCallback(join.add(), step2, utils.noop));
       // ensure types
-      accountscache.ensure("invoices/items", subjoin.add());
-      accountscache.ensure("packages", subjoin.add());
+      mscache.ensure("invoices/items", subjoin.add());
+      mscache.ensure("packages", subjoin.add());
       // ensure types needed by models
       _this.invoice.load(subjoin.add());
       _this.salesinfo.load(subjoin.add());
@@ -197,9 +197,9 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
 
     // remove old subscriptions
     _this.handler
-      .unsubscribe(_this.updateInvoiceGvm)
-      .unsubscribe(_this.packageChanged)
-      .unsubscribe(_this.saveData);
+      .dispose(_this.updateInvoiceGvm)
+      .dispose(_this.packageChanged)
+      .dispose(_this.saveData);
     //
     function step3() {
       // set defaults
@@ -317,7 +317,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   }
 
   function mustGetItem(itemId) {
-    var item = accountscache.getMap("invoices/items")[itemId];
+    var item = mscache.getMap("invoices/items")[itemId];
     if (!item) {
       throw new Error("Failed to find item: `" + itemId + "`");
     }
@@ -329,7 +329,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     var _this = this;
     // var invoice = _this.invoice();
     var invoiceItems = _this.invoice.invoiceItems.peek();
-    var items = accountscache.getList("invoices/items").peek();
+    var items = mscache.getList("invoices/items").peek();
 
     var invItemsToSave = [];
     var pkg = _this._prevpkg;

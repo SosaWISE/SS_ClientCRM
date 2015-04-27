@@ -38,7 +38,7 @@ define("src/account/security/alarmdotcom.editor.vm", [
       "alarmComPackageFields",
     ]);
 
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.data = ukov.wrap(_this.item || {
       EnableTwoWay: false,
     }, schema);
@@ -71,16 +71,6 @@ define("src/account/security/alarmdotcom.editor.vm", [
         notify.error(err);
       }));
     });
-
-    //
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the rep id
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
-    });
   }
   utils.inherits(AlarmDotComEditorViewModel, BaseViewModel);
   AlarmDotComEditorViewModel.prototype.viewTmpl = "tmpl-security-alarmdotcom_editor";
@@ -108,7 +98,7 @@ define("src/account/security/alarmdotcom.editor.vm", [
   AlarmDotComEditorViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     // var _this = this,
     var cb = join.add();
-    setTimeout(function() {
+    window.setTimeout(function() {
       //@TODO: load real data
 
       cb();

@@ -1,9 +1,9 @@
-define('src/core/layers.vm', [
-  'ko',
-  'src/core/arrays',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
+define("src/core/layers.vm", [
+  "ko",
+  "src/core/arrays",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/base.vm",
 ], function(
   ko,
   arrays,
@@ -15,13 +15,13 @@ define('src/core/layers.vm', [
 
   //
   function selectTopLayer(element) {
-    return element.querySelector('.layer-table:last-child');
+    return element.querySelector(".layer-table:last-child");
   }
   //
   function ensureFocusable(element) {
-    var tabindex = parseInt(element.getAttribute('tabindex'), 10);
+    var tabindex = parseInt(element.getAttribute("tabindex"), 10);
     if (Number.isNaN(tabindex) || tabindex < 0) {
-      element.setAttribute('tabindex', '0');
+      element.setAttribute("tabindex", "0");
     }
   }
   ko.bindingHandlers.preventFocusUnderLayer = {
@@ -42,10 +42,10 @@ define('src/core/layers.vm', [
         }
       }, false); // give someone a chance to cancel this event
 
-      //      .layer        container
+      //      .layers       container
       element.parentElement.parentElement.addEventListener("focus", function(evt) {
         var topLayer = selectTopLayer(element);
-        // if there is a topLayer and that layer doesn't contain the target
+        // if there is a topLayer and that layer does not contain the target
         if (topLayer && element !== evt.target && !topLayer.contains(evt.target)) {
           // stop the event
           evt.stopPropagation();
@@ -60,13 +60,15 @@ define('src/core/layers.vm', [
   function LayersViewModel(options) {
     var _this = this;
     LayersViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, ['controller']);
+    // utils.assertProps(_this, [
+    //   "controller",
+    // ]);
 
     _this.showLayers = ko.observableArray();
     _this.alertLayers = ko.observableArray();
   }
   utils.inherits(LayersViewModel, BaseViewModel);
-  LayersViewModel.prototype.viewTmpl = 'tmpl-layers';
+  LayersViewModel.prototype.viewTmpl = "tmpl-core-layers";
   LayersViewModel.prototype.focus = function() {}; // default to doing nothing
 
   LayersViewModel.prototype.show = function(viewModel, onClose, routeData) {
@@ -102,6 +104,7 @@ define('src/core/layers.vm', [
 
     lastActive = document.activeElement;
     layer = {
+      hideClose: (viewModel ? viewModel.hideClose : false) || false,
       vm: ko.observable(null),
       close: function() {
         if (subscription) {
@@ -113,8 +116,10 @@ define('src/core/layers.vm', [
           results, msg, vm = layer.vm();
 
         // check if the layer vm can be closed
-        if (vm && (msg = vm.closeMsg())) {
-          notify.warn(msg, null, 7);
+        if (vm && ((msg = vm.closeMsg()) || !vm.canClose())) {
+          if (msg) {
+            notify.warn(msg, null, 7);
+          }
           return false;
         }
 
@@ -159,8 +164,11 @@ define('src/core/layers.vm', [
     });
 
     subscription = layer.vm.subscribe(function(vm) {
-      var ctx = createContext(vm, routeData || layersVm.controller.getRouteData(), null, function() {
-        // console.log('activated layer');
+      if (!routeData) {
+        routeData = layersVm.controller ? layersVm.controller.getRouteData() : {};
+      }
+      var ctx = createContext(vm, routeData, null, function() {
+        // console.log("activated layer");
       });
 
       if (prevCtx) {

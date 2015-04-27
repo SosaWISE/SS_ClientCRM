@@ -5,6 +5,7 @@ define("src/core/harold", [
 ) {
   "use strict";
 
+  // The Herald, aka howie
   function Harold() {}
   Harold.prototype.create = function() {
     return new Harold();
@@ -46,16 +47,17 @@ define("src/core/harold", [
   //
 
   Harold.prototype.send = function(event) {
-    this._callbacks = this._callbacks || {};
+    var _this = this;
+    _this._callbacks = _this._callbacks || {};
     var args = [].slice.call(arguments, 1),
-      callbacks = this._callbacks["$" + event];
+      callbacks = _this._callbacks["$" + event];
     if (callbacks) {
       callbacks = callbacks.slice(0);
       for (var i = 0, len = callbacks.length; i < len; ++i) {
-        callbacks[i].apply(this, args);
+        callbacks[i].apply(_this, args);
       }
     }
-    return this;
+    // return _this;
   };
 
   Harold.prototype.on = function(event, fn) {
@@ -63,20 +65,28 @@ define("src/core/harold", [
     _this._callbacks = _this._callbacks || {};
     (_this._callbacks["$" + event] = _this._callbacks["$" + event] || [])
       .push(fn);
-    return _this;
+    //
+    function off() {
+      _this.off(event, fn);
+    }
+    return off;
   };
 
   Harold.prototype.once = function(event, fn) {
     var _this = this;
 
-    function on() {
+    function off() {
       _this.off(event, on);
+    }
+
+    function on() {
+      off();
       fn.apply(_this, arguments);
     }
 
     on.oncefn = fn; // allow fn to be removed in `off` function
     _this.on(event, on);
-    return _this;
+    return off;
   };
 
   Harold.prototype.off = function(event, fn) {

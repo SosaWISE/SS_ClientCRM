@@ -1,7 +1,7 @@
 define("src/account/salesinfo/v02/invoice.model", [
   "src/account/salesinfo/v02/invoiceitems.editor.vm",
   "src/account/salesinfo/options",
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "ko",
   "src/ukov",
   "src/core/strings",
@@ -12,7 +12,7 @@ define("src/account/salesinfo/v02/invoice.model", [
 ], function(
   InvoiceItemsEditorViewModel,
   salesInfoOptions,
-  accountscache,
+  mscache,
   ko,
   ukov,
   strings,
@@ -50,7 +50,7 @@ define("src/account/salesinfo/v02/invoice.model", [
 
     data.load = function(cb) {
       var join = joiner().after(cb);
-      accountscache.ensure("invoices/items", join.add());
+      mscache.ensure("invoices/items", join.add());
     };
 
     var ignore = true;
@@ -99,7 +99,7 @@ define("src/account/salesinfo/v02/invoice.model", [
             // create item
             invItems.push(invoiceItem = {});
           }
-          var item = accountscache.getMap("invoices/items")[itemId];
+          var item = mscache.getMap("invoices/items")[itemId];
           InvoiceItemsEditorViewModel.copyInvoiceItemFromItem(invoiceItem, item);
           //
           invoiceItem.RetailPrice = fee;
@@ -134,7 +134,7 @@ define("src/account/salesinfo/v02/invoice.model", [
               // create item
               invItems.push(invoiceItem = {});
             }
-            var item = accountscache.getMap("invoices/items")[over3ItemId];
+            var item = mscache.getMap("invoices/items")[over3ItemId];
             InvoiceItemsEditorViewModel.copyInvoiceItemFromItem(invoiceItem, item);
             //
             // @Over3MonthsDisc =
@@ -198,31 +198,31 @@ define("src/account/salesinfo/v02/invoice.model", [
 
     return data;
   }
-  var rangeValidationGroup = {
-    keys: ["fee", "range"],
-    // no validators needed here, just need this in order to revalidate fee whenever range changes
-    validators: [],
-  };
+  // var rangeValidationGroup = {
+  //   keys: ["fee", "range"],
+  //   // no validators needed here, just need this in order to revalidate fee whenever range changes
+  //   validators: [],
+  // };
   var computedInvItemSchema = {
     _model: true,
     range: {
-      validationGroup: rangeValidationGroup,
+      // validationGroup: rangeValidationGroup,
     },
     fee: {
       converter: ukov.converters.number(2, "Invalid fee"),
       validators: [
         ukov.validators.isRequired(),
         // ukov.validators.isInRange(0, 999, "Invalid amount"),
-        function(val, model) {
-          var range = model.range || {};
-          var min = range.min || 0;
-          var max = range.max || 999;
-          if (val < min || max < val) {
-            return strings.format("Must be between {0:$} and {1:$}", min, max);
-          }
-        }
+        // function(val, model) {
+        //   var range = model.range || {};
+        //   var min = range.min || 0;
+        //   var max = range.max || 999;
+        //   if (val < min || max < val) {
+        //     return strings.format("Must be between {0:$} and {1:$}", min, max);
+        //   }
+        // }
       ],
-      validationGroup: rangeValidationGroup,
+      // validationGroup: rangeValidationGroup,
     },
     over3Months: {
       converter: ukov.converters.bool(),
@@ -247,7 +247,7 @@ define("src/account/salesinfo/v02/invoice.model", [
         return true;
       }
       // get the InvoiceItem then check for existance of ItemTypeId
-      var item = accountscache.getMap("invoices/items")[invoiceItem.ItemId];
+      var item = mscache.getMap("invoices/items")[invoiceItem.ItemId];
       return item && typeIdMap[item.ItemTypeId];
     });
   }

@@ -5,7 +5,7 @@ div(data-bind="preventFocusUnderLayer:1")
       div(class="layer", data-bind="mover:0,width:width,height:height,css:{autoflow:vm().autoflow,nowhite:vm().nowhite}")
         //- div(class="header")
         //-   div(class="handle drag",data-bind="mover:2")
-        a(class="close",data-bind="click:close")
+        a(class="close",data-bind="click:close,visible:!hideClose")
         div(class="content", data-bind="template:{name:vm().viewTmpl,data:vm}")
   <!-- /ko -->
   <!-- ko foreach:alertLayers -->

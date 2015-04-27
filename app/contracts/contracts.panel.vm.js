@@ -46,6 +46,7 @@ define("src/contracts/contracts.panel.vm", [
     }
 
     _this.searchVm(new SearchViewModel({
+      excludeLeads: true,
       // routeName: "contracts",
       pcontroller: _this,
       id: "search",

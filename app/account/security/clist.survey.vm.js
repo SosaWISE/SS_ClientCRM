@@ -1,18 +1,16 @@
-define('src/account/security/clist.survey.vm', [
-  'src/app',
-  'src/config',
-  'ko',
-  'src/dataservice',
-  'src/survey/takesurvey.vm',
-  'src/account/security/clist.survey.gvm',
-  'src/core/strings',
-  'src/core/joiner',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/account/security/clist.survey.vm", [
+  "howie",
+  "ko",
+  "src/dataservice",
+  "src/survey/takesurvey.vm",
+  "src/account/security/clist.survey.gvm",
+  "src/core/strings",
+  "src/core/joiner",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
-  app,
-  config,
+  howie,
   ko,
   dataservice,
   TakeSurveyViewModel,
@@ -28,7 +26,7 @@ define('src/account/security/clist.survey.vm', [
   function CListSurveyViewModel(options) {
     var _this = this;
     CListSurveyViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['surveyTypeId']);
+    ControllerViewModel.ensureProps(_this, ["surveyTypeId"]);
 
     _this.mayReload = ko.observable(false);
     _this.loadingSurvey = ko.observable();
@@ -61,7 +59,7 @@ define('src/account/security/clist.survey.vm', [
     _this.cmdRetakeLastSurvey = ko.command(function(cb) {
       var surveyResultView = _this.gvm.list()[0];
       if (!surveyResultView) {
-        notify.warn('Please select a survey result', null, 7);
+        notify.warn("Please select a survey result", null, 7);
         cb();
         return;
       }
@@ -74,14 +72,14 @@ define('src/account/security/clist.survey.vm', [
     });
   }
   utils.inherits(CListSurveyViewModel, ControllerViewModel);
-  CListSurveyViewModel.prototype.viewTmpl = 'tmpl-security-clist_survey';
+  CListSurveyViewModel.prototype.viewTmpl = "tmpl-security-clist_survey";
 
   CListSurveyViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
     _this.accountid = routeData.id;
     //@REVIEW: how to get correct LocalizatonID
-    _this.locale = 'en';
+    _this.locale = "en";
 
     // remove current survey (incase of reload)
     _this.activeChild(_this.currentSurveyVm = null);
@@ -97,7 +95,7 @@ define('src/account/security/clist.survey.vm', [
       // re-set active child to survey being taken
       _this.activeChild(_this.currentSurveyVm);
     } else if (!_this.gvm.list.peek().length) {
-      // take the survey since it hasn't been taken yet
+      // take the survey since it has not been taken yet
       _this.cmdTakeSurvey.execute();
     }
     // CListSurveyViewModel.super_.prototype.onActivate.call(_this, routeCtx);
@@ -129,14 +127,14 @@ define('src/account/security/clist.survey.vm', [
     // load primary customer
     dataservice.monitoringstationsrv.accounts.read({
       id: _this.accountid,
-      link: 'customers/pri',
+      link: "customers/pri",
     }, function(val) {
       priCustomer = val;
 
       // load premise address
       dataservice.accountingengine.customers.read({
         id: priCustomer.CustomerID,
-        link: 'addresses/prem',
+        link: "addresses/prem",
       }, function(val) {
         premAddress = val;
       }, join.add());
@@ -145,7 +143,7 @@ define('src/account/security/clist.survey.vm', [
     // load salesrep
     dataservice.monitoringstationsrv.accounts.read({
       id: _this.accountid,
-      link: 'salesrep',
+      link: "salesrep",
     }, function(val) {
       salesRep = val;
     }, join.add());
@@ -153,7 +151,7 @@ define('src/account/security/clist.survey.vm', [
     // load details
     dataservice.monitoringstationsrv.accounts.read({
       id: _this.accountid,
-      link: 'details',
+      link: "details",
     }, function(val) {
       details = val;
     }, join.add());
@@ -176,16 +174,16 @@ define('src/account/security/clist.survey.vm', [
 
       var dataContext;
       dataContext = {
-        CompanyName: 'Nexsense',
+        CompanyName: "Nexsense",
         Company: {
           Name: "Nexsense",
           Phone: "8662055200",
         },
-        ADUserDisplayName: app.user().Firstname,
+        ADUserDisplayName: howie.fetch("user").Firstname,
         PrimaryCustomer: {
           FirstName: priCustomer.FirstName,
           LastName: priCustomer.LastName,
-          FullName: strings.joinTrimmed(' ', priCustomer.Prefix, priCustomer.FirstName, priCustomer.MiddleName, priCustomer.LastName, priCustomer.Postfix),
+          FullName: strings.joinTrimmed(" ", priCustomer.Prefix, priCustomer.FirstName, priCustomer.MiddleName, priCustomer.LastName, priCustomer.Postfix),
           Phone1: premAddress.Phone || priCustomer.PhoneHome || priCustomer.PhoneMobile || priCustomer.PhoneWork, //@REVIEW: PrimaryCustomer.Phone1
           Email: priCustomer.Email,
         },
@@ -199,7 +197,7 @@ define('src/account/security/clist.survey.vm', [
           PremisePhone: premAddress.Phone || priCustomer.PhoneHome || priCustomer.PhoneMobile || priCustomer.PhoneWork, //@REVIEW: PremisePhone????
           PanelType: details.PanelTypeName,
           Password: details.AccountPassword,
-          IsTwoWay: details.SystemTypeId === '2WAY',
+          IsTwoWay: details.SystemTypeId === "2WAY",
           //@TODO: set these values below
           HasExistingEquipment: false,
           Interactive: false,
@@ -233,17 +231,17 @@ define('src/account/security/clist.survey.vm', [
   function convertToBillingMethod(paymentTypeId) {
     var result = 0; // start with Unknown billing method
     switch (paymentTypeId) {
-      case 'ACH':
+      case "ACH":
         result = 2; // Bank account
         break;
-      case 'CC':
+      case "CC":
         result = 1; // Credit card
         break;
-      case 'CHCK':
+      case "CHCK":
         // result = 3; // Pay by Invoice??????
         result = paymentTypeId;
         break;
-      case 'MAN':
+      case "MAN":
         // ????
         result = paymentTypeId;
         break;
@@ -280,7 +278,7 @@ define('src/account/security/clist.survey.vm', [
       _this.getDataContext(function(err, dataContext) {
         if (err) {
           notify.error(err);
-          // don't pass along error, just notify we're done
+          // do not pass along error, just notify we are done
           wrappedCb();
           return;
         }
@@ -314,8 +312,8 @@ define('src/account/security/clist.survey.vm', [
 
   function checkForCurrentSurvey(_this, yesCb, noCb) {
     if (_this.currentSurveyVm) {
-      notify.confirm('Are you sure?', 'Do you want to scrap the current survey?', function(result) {
-        if (result === 'yes') {
+      notify.confirm("Are you sure?", "Do you want to scrap the current survey?", function(result) {
+        if (result === "yes") {
           // scrap current survey
           _this.currentSurveyVm = null;
           _this.activeChild(null);
@@ -342,7 +340,7 @@ define('src/account/security/clist.survey.vm', [
     var cb = join.add();
     dataservice.survey.surveyTypes.read({
       id: surveyTypeId,
-      link: 'currentSurvey',
+      link: "currentSurvey",
     }, setter, cb);
   }
 
@@ -354,7 +352,7 @@ define('src/account/security/clist.survey.vm', [
     // load data
     dataservice.msaccountsetupsrv.accounts.read({
       id: accountid,
-      link: 'surveyresults',
+      link: "surveyresults",
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (resp.Value) {
         // sort descending by date

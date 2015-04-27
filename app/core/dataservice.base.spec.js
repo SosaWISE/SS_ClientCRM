@@ -98,7 +98,7 @@ define('src/core/dataservice.base.spec', [
           responseText: '{"name":"val"}'
         };
 
-        sb.onComplete(responseData, 'textStatus', xhr, context);
+        DataserviceBase.onComplete(responseData, 'textStatus', xhr, context);
       });
 
       it('should call callback', function() {
@@ -144,7 +144,7 @@ define('src/core/dataservice.base.spec', [
           responseText: '{"name":"val"}'
         };
 
-        sb.onError(xhr, 'textStatus', 'errorThrown', context);
+        DataserviceBase.onError(xhr, 'textStatus', 'errorThrown', context);
       });
       afterEach(function() {});
 

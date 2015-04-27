@@ -21,8 +21,19 @@ div(class="contract-wrap")
         a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Save
       li
         a(class="btn",tabindex="0",data-bind="cmd:cmdReset") Reset All
+      li(class="tab under-toggle-btn")
+      li(class="tab under-toggle-btn")
       li
-        a(class="btn",tabindex="0",data-bind="cmd:cmdSaveAndApprove") Save &amp; Approve
+        a(class="btn contract",tabindex="0",data-bind="cmd:cmdSaveAndApprove,cls:status") Approve
+      li(data-bind="with:salesInfoExtras")
+        div(data-bind="if:ApproverID")
+          span(class="label") Approved By:
+          |&nbsp;
+          span(data-bind="text:ApproverID")
+          |&nbsp;
+          span(class="label") at
+          |&nbsp;
+          span(data-bind="datetimetext:ApprovedDate")
 
     div(class="acct-item",data-bind="css:{'may-reload':mayReload}")
 

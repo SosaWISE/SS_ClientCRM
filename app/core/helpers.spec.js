@@ -30,7 +30,7 @@ define('src/core/helpers.spec', [
 
         var callOrder = '',
           once = helpers.onetimer(function(cb) {
-            setTimeout(cb, 1000);
+            window.setTimeout(cb, 1000);
           });
 
         once(function() {

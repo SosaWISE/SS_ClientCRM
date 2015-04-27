@@ -38,7 +38,7 @@ define('src/account/security/account.info.vm', [
 
   AccountInfoViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var cb = join.add();
-    setTimeout(function() {
+    window.setTimeout(function() {
       cb();
       //@TODO: load real account
     }, 0);

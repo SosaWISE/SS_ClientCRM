@@ -1,6 +1,5 @@
 define("src/account/security/equipment.editor.vm", [
-  "src/app",
-  "src/config",
+  "howie",
   "src/core/querystring",
   "src/account/security/securityhelper",
   "src/dataservice",
@@ -13,8 +12,7 @@ define("src/account/security/equipment.editor.vm", [
   "ko",
   "src/ukov",
 ], function(
-  app,
-  config,
+  howie,
   querystring,
   securityhelper,
   dataservice,
@@ -301,7 +299,7 @@ define("src/account/security/equipment.editor.vm", [
         _this.data.ZoneTypeCvm.setList(val);
       }, join.add());
     }
-    load_rep(_this, app.user.peek().GPEmployeeID, join.add());
+    load_rep(_this, howie.fetch("user").GPEmployeeID, join.add());
     load_rep(_this, _this.item.GPEmployeeId, join.add());
     load_equipmentLocation(_this, _this.data.EquipmentLocationCvm, _this.monitoringStationOsId, join.add());
     if (_this.data.EquipmentCvm) {

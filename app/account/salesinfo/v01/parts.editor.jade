@@ -6,7 +6,7 @@ div(class="parts-editor")
     ul(class="edit-form limit-width")
       li(data-bind="if:byPart")
         span(class="label") Part #
-        input(type="text",placeholder="",data-bind="select:focusFirst,ukov:data.ItemSku,value:data.ItemSku,valueUpdate:'keyup'")
+        input(type="text",placeholder="",data-bind="ukov:data.ItemSku,value:data.ItemSku,valueUpdate:'keyup'")
       li(data-bind="if:!byPart")
         span(class="label") Barcode
         input(type="text",placeholder="",data-bind="ukov:data.BarcodeId,value:data.BarcodeId,valueUpdate:'keyup'")

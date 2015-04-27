@@ -35,7 +35,7 @@ define("src/account/salesinfo/v02/contract.model", [
 
     // data.load = function(cb) {
     //   var join = joiner().after(cb);
-    //   accountscache.ensure("contracts/items", join.add());
+    //   mscache.ensure("contracts/items", join.add());
     // };
 
     return data;
