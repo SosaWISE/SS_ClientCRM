@@ -95,7 +95,6 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
     //
     // AccountID: 130532,
     // BillingDay: null,
-    // CellPackageItemId: "CELL_SRV_AC_AI",
     // CellServicePackage: "Advanced Interactive",
     // CellType: "Alarm.com",
     // ContractTemplate: null,

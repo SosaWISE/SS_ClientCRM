@@ -1,0 +1,17 @@
+div(class="contract-cancel")
+  div(data-bind="spinner:cmdSave.busy,spinner-rgb:'white'")
+
+  ul(class="edit-form")
+    li
+      span(class="label") Cancel Date
+        input(type="text",placeholder="",
+          data-bind="ukov:data.CancelDate,datevalue:data.CancelDate,valueUpdate:'keyup',select:focusFirst")
+    li
+      span(class="label") Reason
+      div(data-bind="cvm:data.AccountCancelReasonCvm")
+
+  ul(class="actions")
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:clickClose") Cancel
+    li
+      a(class="btn",tabindex="0",data-bind="cmd:cmdSave") Cancel Account

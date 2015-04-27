@@ -25,7 +25,7 @@ div(class="contract-wrap")
       li(class="tab under-toggle-btn")
       li
         a(class="btn contract",tabindex="0",data-bind="cmd:cmdSaveAndApprove,cls:status") Approve
-      li(data-bind="with:salesInfoExtras")
+      li(data-bind="with:salesinfo")
         div(data-bind="if:ApproverID")
           span(class="label") Approved By:
           |&nbsp;
@@ -34,21 +34,19 @@ div(class="contract-wrap")
           span(class="label") at
           |&nbsp;
           span(data-bind="datetimetext:ApprovedDate")
+      li
+        a(class="btn",tabindex="0",data-bind="cmd:cmdCancel") Cancel Acct
+      li(data-bind="with:salesinfo")
+        div(data-bind="if:CancelDate")
+          span(class="label") Cancel Date:
+          |&nbsp;
+          span(data-bind="datetext:CancelDate")
+          |&nbsp;
+          span(class="label"), Reason:
+          |&nbsp;
+          span(data-bind="cancelReason:AccountCancelReasonId")
 
     div(class="acct-item",data-bind="css:{'may-reload':mayReload}")
-
-      div(class="col",data-bind="with:salesInfoExtras")
-        div(class="section disabled",data-bind="if:ApproverID")
-          span(class="title") Contract Approved
-          div(class="contents")
-            ul(class="edit-form double-wide")
-              li
-                span(class="label") Approved By
-                div(data-bind="text:ApproverID")
-            ul(class="edit-form double-wide")
-              li
-                span(class="label") Approved On
-                div(data-bind="datetimetext:ApprovedDate")
 
       <!-- ko foreach:leads -->
       div(class="col col2")
@@ -110,7 +108,7 @@ div(class="contract-wrap")
 
         div(class="section disabled")
           span(class="title") Contract Terms
-          div(class="contents",data-bind="with:salesInfo")
+          div(class="contents",data-bind="with:invoiceV1")
             //- [Contract Terms]
               Total Value of Contract      (computed: Contract Length * Monthly Fee)
               Contract Length              [AE_Contracts]
@@ -142,9 +140,11 @@ div(class="contract-wrap")
               li
                 span(class="label") Activation Fee Paid Over
                 div(data-bind="cvm:Over3MonthsCvm")
+              <!-- ko with:$parent.salesinfo -->
               li
                 span(class="label") Billing Date
                 div(data-bind="cvm:BillingDayCvm")
+              <!-- /ko -->
 
 
         div(class="section disabled")
@@ -160,7 +160,7 @@ div(class="contract-wrap")
               Service Plan                 [MS_Accounts].CellPackageItemId
               Service Plan Addons          ???
               Email per Cell Provider      [MS_AccountSalesInformations].Email OR [Alarm.com]
-            ul(class="edit-form quad-wide",data-bind="with:salesInfoExtras")
+            ul(class="edit-form quad-wide",data-bind="with:salesinfo")
               li
                 span(class="label") Contract Date
                 input(type="text",
@@ -176,7 +176,7 @@ div(class="contract-wrap")
                 span(class="label") NOC Date
                 input(type="text",
                   data-bind="ukov:NOCDate,datevalue:NOCDate,valueUpdate:'keyup'")
-            ul(class="edit-form quad-wide",data-bind="with:salesInfo")
+            ul(class="edit-form quad-wide",data-bind="with:invoiceV1")
               li
                 span(class="label") Cell Type
                 input(type="text",disabled,data-bind="value:CellularTypeCvm.selectedText()")
@@ -189,10 +189,12 @@ div(class="contract-wrap")
                 span(class="label") Service Plan
                 input(type="text",disabled,data-bind="value:CellPackageItemCvm.selectedText()")
                 //- div(data-bind="cvm:CellPackageItemCvm")
+              <!-- ko with:$parent.salesinfo -->
               li
                 span(class="label") Email
                 input(type="text",
                   data-bind="ukov:Email,value:Email,valueUpdate:'keyup'")
+              <!-- /ko -->
 
             //- [Upgrades]
               Sales Rep Upgrades           [AE_Invoices]
@@ -219,7 +221,7 @@ div(class="contract-wrap")
                   data-bind="ukov:AccountPassword,value:AccountPassword,valueUpdate:'keyup'")
             //-
             ul(class="edit-form quad-wide")
-              <!-- ko with:salesInfoExtras -->
+              <!-- ko with:salesinfo -->
               li
                 span(class="label") Nexsense Confirmation #
                 input(type="text",disabled,data-bind="value:AccountSubmitId")
@@ -263,7 +265,7 @@ div(class="contract-wrap")
               AMA Barcode                  [MS_AccountSalesInformations]
               NOC Barcode                  [MS_AccountSalesInformations]
               SOP Barcode                  [MS_AccountSalesInformations]
-            ul(class="edit-form double-wide",data-bind="with:salesInfoExtras")
+            ul(class="edit-form double-wide",data-bind="with:salesinfo")
               li
                 span(class="label") Sales Rep
                 div(class="contents",style="cursor:pointer",
@@ -274,7 +276,7 @@ div(class="contract-wrap")
                 div(class="contents",style="cursor:pointer",
                   data-bind="ukov:TechId,cmd:clickTek,with:tekModel")
                   div(data-bind="template:'tmpl-acct-default-rep_info'")
-            ul(class="edit-form double-wide",data-bind="with:salesInfoExtras")
+            ul(class="edit-form double-wide",data-bind="with:salesinfo")
               li
                 span(class="label") AMA Barcode
                 input(type="text",

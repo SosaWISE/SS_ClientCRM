@@ -56,9 +56,20 @@ define("src/account/mscache", [
     "types/friendsAndFamily": {
       value: "ID",
       text: "Name",
+      comparer: compareName,
       read: function(cb) {
         dataservice.api_ms.types.read({
           link: "friendsAndFamily",
+        }, null, cb);
+      },
+    },
+    "types/accountCancelReasons": {
+      value: "ID",
+      text: "Name",
+      comparer: compareName,
+      read: function(cb) {
+        dataservice.api_ms.types.read({
+          link: "accountCancelReasons",
         }, null, cb);
       },
     },

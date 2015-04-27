@@ -29,7 +29,12 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     ]);
     var handler = options.handler;
 
-    var data = ukov.wrap({}, schema);
+    var data = ukov.wrap({
+      RequirePkg: !!options.requirePkg,
+      UseRequired: !!options.useRequired,
+    }, schema);
+    data.RequirePkg.ignore(true);
+    data.UseRequired.ignore(true);
 
     data.AccountCreationTypeCvm = new ComboViewModel({
       selectedValue: data.AccountCreationTypeId,
@@ -124,6 +129,8 @@ define("src/account/salesinfo/v02/salesinfo.model", [
   var max256 = ukov.validators.maxLength(256);
   var schema = {
     _model: true,
+    RequirePkg: {},
+    UseRequired: {},
 
     ID: {},
     PaymentTypeId: {}, // Billing method
@@ -135,15 +142,19 @@ define("src/account/salesinfo/v02/salesinfo.model", [
         ukov.validators.isRequired("Package is required"),
       ]
     },
+    // PaymentMethodId: {}, // cannot edit this directly
+    // InitialPaymentMethodId: {}, // cannot edit this directly
     TechId: {},
     SalesRepId: {},
     AccountFundingStatusId: {},
+    AccountPayoutTypeId: {},
     BillingDay: {}, // Billing Day of Month
     Email: {
       converter: nullStrConverter,
       validators: [max256, ukov.validators.isEmail()],
     },
     IsMoni: {},
+    IsTakeOver: {},
     SystemTypeId: {}, // (NEW|UPG|TKO) // IsTakeOver: {},
     IsOwner: {},
     InstallDate: {
@@ -159,9 +170,9 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     },
     ContractSignedDate: {
       converter: dateConverter,
-      // validators: [
-      //   ukov.validators.isRequired("Contract Date is required"),
-      // ]
+      validators: [
+        ukov.validators.maybeRequired("Contract Date is Required", "UseRequired"),
+      ]
     },
     CancelDate: {
       converter: dateConverter,
@@ -175,9 +186,10 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     ApproverID: {},
     NOCDate: {
       converter: dateConverter,
-      // validators: [
-      //   ukov.validators.isRequired("NOC Date is required"),
-      // ]
+      validators: [
+        ukov.validators.maybeRequired("NOC Date is Required", "UseRequired"),
+
+      ]
     },
     OptOutCorporate: {
       converter: boolConverter,
@@ -185,6 +197,8 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     OptOutAffiliate: {
       converter: boolConverter,
     },
+    Waived1stmonth: {},
+    RMRIncreasePoints: {},
     AccountCreationTypeId: {},
     HasPackageUpgrades: {},
     ModifiedOn: {},

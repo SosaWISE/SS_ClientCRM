@@ -1,6 +1,9 @@
 define("src/contracts/contract.vm", [
   "howie",
+  "src/account/default/binding.cancelReason",
+  "src/contracts/cancel.vm",
   "src/account/mscache",
+  "src/account/salesinfo/v02/salesinfo.model",
   "src/account/salesinfo/options",
   "src/account/security/holds.vm",
   "src/account/security/emcontacts.vm",
@@ -23,7 +26,10 @@ define("src/contracts/contract.vm", [
   "src/core/controller.vm",
 ], function(
   howie,
+  binding_cancelReason,
+  CancelViewModel,
   mscache,
+  salesinfo_model,
   salesInfoOptions,
   HoldsViewModel,
   EmContactsViewModel,
@@ -95,8 +101,13 @@ define("src/contracts/contract.vm", [
       _this.leadMap[leadVm.typeId] = leadVm;
     });
 
-    _this.salesInfo = getSalesInfoModel(_this.handler);
-    _this.salesInfoExtras = getSalesInfoExtrasModel(_this.layersVm);
+    _this.invoiceV1 = getInvoiceV1Model(_this.handler);
+    _this.salesinfo = salesinfo_model({
+      useRequired: true,
+      layersVm: _this.layersVm,
+      handler: _this.handler,
+      yesNoOptions: _this.yesNoOptions,
+    });
     _this.systemDetails = getSystemDetailsModel();
 
     _this.systemDetailsExtras = {
@@ -121,12 +132,14 @@ define("src/contracts/contract.vm", [
 
     _this.status = ko.computed(function() {
       var st;
-      if (_this.salesInfoExtras.ApproverID()) {
+      if (_this.salesinfo.CancelDate()) {
+        st = "canceled";
+      } else if (_this.salesinfo.ApproverID()) {
         st = "approved";
       } else if (_this.holdsVm.hasRepFrontEndHolds()) {
         st = "blocked";
       } else {
-        st = "ready";
+        st = "unapproved";
       }
       return st;
     });
@@ -143,9 +156,27 @@ define("src/contracts/contract.vm", [
       var custAcctsCanSave = _this.leads.every(function(vm) {
         return !vm.leadRedo() && !vm.creditRedo();
       });
-      return custAcctsCanSave && !_this.cmdSave.busy() && !_this.cmdSaveAndApprove.busy();
+      return custAcctsCanSave && !_this.cmdCancel.busy() && !_this.cmdSave.busy() && !_this.cmdSaveAndApprove.busy();
     }
 
+    _this.cmdCancel = ko.command(function(cb) {
+      if (!validateModel(_this.salesinfo, false)) {
+        return cb();
+      }
+      if (_this.status.peek() === "canceled") {
+        notify.warn("Canceled", "This account has already been canceled.", 2);
+        return cb();
+      }
+
+      var vm = new CancelViewModel({
+        save: function(model, cb) {
+          saveSalesInfo(_this, false, model, cb);
+        },
+      });
+      _this.layersVm.show(vm, function() {
+        cb();
+      });
+    }, canSave);
     _this.cmdSave = ko.command(function(cb) {
       saveAll(_this, false, cb);
     }, canSave);
@@ -158,8 +189,8 @@ define("src/contracts/contract.vm", [
         resetCustomerAccountData(leadVm);
       });
       //
-      _this.salesInfo.reset();
-      _this.salesInfoExtras.reset();
+      _this.invoiceV1.reset();
+      _this.salesinfo.reset();
       //
       _this.paymentMethod(_this.paymentMethod._original);
       //
@@ -179,7 +210,7 @@ define("src/contracts/contract.vm", [
       }
     };
     _this.clickAddress = function(leadVm) {
-      var repModel = _this.salesInfoExtras.repModel.peek();
+      var repModel = _this.salesinfo.repModel.peek();
       if (!repModel) {
         notify.warn("Please select a Sales Rep first", null, 7);
         return;
@@ -225,7 +256,7 @@ define("src/contracts/contract.vm", [
       });
     };
     _this.clickQualify = function(leadVm) {
-      var repModel = _this.salesInfoExtras.repModel.peek();
+      var repModel = _this.salesinfo.repModel.peek();
       if (!repModel) {
         notify.warn("Please select a Sales Rep first", null, 7);
         return;
@@ -328,90 +359,113 @@ define("src/contracts/contract.vm", [
 
   ContractViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
-    var subjoin = join.create();
 
     _this.masterid = routeData.masterid;
     _this.acctid = routeData.id;
 
-    mscache.ensure("localizations");
+    function step1() {
+      // start next step when done
+      var subjoin = join.create()
+        .after(utils.safeCallback(join.add(), step2, utils.noop));
+      //
+      binding_cancelReason(join.add());
+      // ensure types
+      mscache.ensure("localizations", subjoin.add());
+      mscache.ensure("types/accountCancelReasons", subjoin.add());
+      // ensure types needed by models
+      _this.salesinfo.load(subjoin.add());
+    }
 
-    // load leads for master file
-    _this.leads.forEach(function(leadVm) {
-      // clear incase of reload
-      clearVm(leadVm);
 
-      var customerTypeId = leadVm.typeId;
-      load_customerAccount(_this.acctid, customerTypeId, function(custAcct) {
-        if (!custAcct) {
-          return;
-        }
-
-        // load credit and stuff
-        load_qualifyCustomerInfos(custAcct.Customer.LeadId, function(creditResultAndStuff) {
-          // set original data
-          var mcAddress = custAcct.Address;
-          var customer = custAcct.Customer;
-          leadVm._original = {
-            address: toQlAddress(mcAddress),
-            lead: toLead(customer, mcAddress),
-            creditResult: toCreditResult(creditResultAndStuff),
-          };
-          resetCustomerAccountData(leadVm);
-        }, subjoin.add());
+    function step2() {
+      // start next step when done
+      var subjoin = join.create()
+        .after(utils.safeCallback(join.add(), step3, utils.noop));
+      //
+      load_msAccountSalesInformations(_this.acctid, function(val) {
+        _this.salesinfo.setValue(val);
+        _this.salesinfo.markClean({}, true);
       }, subjoin.add());
-    });
+      //
+      // load leads for master file
+      _this.leads.forEach(function(leadVm) {
+        // clear incase of reload
+        clearVm(leadVm);
 
-    loadSalesInfo(_this, _this.acctid, _this.salesInfo, _this.salesInfoExtras, subjoin);
+        var customerTypeId = leadVm.typeId;
+        load_customerAccount(_this.acctid, customerTypeId, function(custAcct) {
+          if (!custAcct) {
+            return;
+          }
 
-    load_systemDetails(_this.acctid, function(results) {
-      _this.systemDetails.setValue(results);
-      _this.systemDetails.markClean({}, true);
-    }, join.add());
-    load_industryAccountWithReceiverLines(_this.acctid, function(list) {
-      list.some(function(item) {
-        if (item.PrimaryCSID === "Yes") {
-          _this.systemDetailsExtras.industry(item.IndustryAccount);
-          _this.systemDetailsExtras.receiver(item.ReceiverNumber);
-          return true;
-        }
+          // load credit and stuff
+          load_qualifyCustomerInfos(custAcct.Customer.LeadId, function(creditResultAndStuff) {
+            // set original data
+            var mcAddress = custAcct.Address;
+            var customer = custAcct.Customer;
+            leadVm._original = {
+              address: toQlAddress(mcAddress),
+              lead: toLead(customer, mcAddress),
+              creditResult: toCreditResult(creditResultAndStuff),
+            };
+            resetCustomerAccountData(leadVm);
+          }, subjoin.add());
+        }, subjoin.add());
       });
-    }, join.add());
 
-    load_equipment(_this.acctid, _this.equipmentGvm, join.add());
+      loadInvoiceV1(_this, _this.acctid, _this.invoiceV1, subjoin);
 
-    load_acctPaymentMethod(_this.acctid, "PaymentMethod", _this.setPaymentMethod, join.add());
+      load_systemDetails(_this.acctid, function(results) {
+        _this.systemDetails.setValue(results);
+        _this.systemDetails.markClean({}, true);
+      }, join.add());
+      load_industryAccountWithReceiverLines(_this.acctid, function(list) {
+        list.some(function(item) {
+          if (item.PrimaryCSID === "Yes") {
+            _this.systemDetailsExtras.industry(item.IndustryAccount);
+            _this.systemDetailsExtras.receiver(item.ReceiverNumber);
+            return true;
+          }
+        });
+      }, join.add());
 
-    _this.vms.forEach(function(vm) {
-      vm.load(routeData, extraData, join.add());
-    });
+      load_equipment(_this.acctid, _this.equipmentGvm, join.add());
 
-    var cb = join.add();
-    subjoin.when(function(err) {
-      if (!err) {
-        // try to set contract and noc dates
-        var model = _this.salesInfoExtras;
-        var contractDate = model.ContractSignedDate.getValue();
-        if (!contractDate) {
-          // default to credit result createdon
-          var leadVm = _this.leads[0];
-          if (leadVm) {
-            var creditResult = leadVm.creditResult.peek();
-            if (creditResult) {
-              contractDate = creditResult.CreatedOn;
-              model.ContractSignedDate.setValue(contractDate);
-            }
+      load_acctPaymentMethod(_this.acctid, "PaymentMethod", _this.setPaymentMethod, join.add());
+
+      _this.vms.forEach(function(vm) {
+        vm.load(routeData, extraData, join.add());
+      });
+    }
+
+    function step3() {
+      //
+      var subjoin = join;
+      // try to set contract and noc dates
+      var model = _this.salesinfo;
+      var contractDate = model.ContractSignedDate.getValue();
+      if (!contractDate) {
+        // default to credit result createdon
+        var leadVm = _this.leads[0];
+        if (leadVm) {
+          var creditResult = leadVm.creditResult.peek();
+          if (creditResult) {
+            contractDate = creditResult.CreatedOn;
+            model.ContractSignedDate.setValue(contractDate);
           }
         }
-
-        if (!model.NOCDate.getValue() && utils.isDate(contractDate)) {
-          // default to 3 days(excluding weekends and holidays) after contract date
-          load_nocDate(contractDate, function(val) {
-            model.NOCDate.setValue(val.NOCDate);
-          }, join.add());
-        }
       }
-      cb(err);
-    });
+
+      if (!model.NOCDate.getValue() && utils.isDate(contractDate)) {
+        // default to 3 days(excluding weekends and holidays) after contract date
+        load_nocDate(contractDate, function(val) {
+          model.NOCDate.setValue(val.NOCDate);
+        }, subjoin.add());
+      }
+    }
+
+    // start at first step
+    step1();
   };
 
   function showPaymentMethod(_this, paymentMethodObservable, cb) {
@@ -448,6 +502,9 @@ define("src/contracts/contract.vm", [
   function saveAll(_this, approve, cb) {
     if (approve) {
       switch (_this.status.peek()) {
+        case "canceled":
+          notify.warn("Canceled", "This account has been canceled.", 2);
+          return cb();
         case "approved":
           notify.warn("Already Approved", "This account has already been approved.", 2);
           return cb();
@@ -483,8 +540,8 @@ define("src/contracts/contract.vm", [
     }
 
     var useRequired = approve;
-    if (!validateModel(_this.salesInfo, useRequired) ||
-      !validateModel(_this.salesInfoExtras, useRequired) ||
+    if (!validateModel(_this.invoiceV1, useRequired) ||
+      !validateModel(_this.salesinfo, useRequired) ||
       !validateModel(_this.systemDetails, useRequired)
     ) {
       return cb();
@@ -496,12 +553,27 @@ define("src/contracts/contract.vm", [
     }
 
     var join = joiner();
-    refreshInvoice(_this, join.add());
-    saveSalesInfoExtras(_this, approve, join.add());
-    saveSystemDetails(_this, join.add());
-    if (paymentMethod) {
-      savePaymentMethod(_this, paymentMethod, "PaymentMethod", _this.setPaymentMethod, join.add());
+
+    function step1() {
+      // start next step when done
+      var subjoin = join.create()
+        .after(utils.safeCallback(join.add(), step2, utils.noop));
+      //
+      refreshInvoice(_this, subjoin.add());
     }
+    //
+    function step2() {
+      // wait for refreshInvoice modifies sales info data that we may need to overwrite
+      var subjoin = join;
+      //
+      saveSalesInfo(_this, approve, null, subjoin.add());
+      saveSystemDetails(_this, subjoin.add());
+      if (paymentMethod) {
+        savePaymentMethod(_this, paymentMethod, "PaymentMethod", _this.setPaymentMethod, subjoin.add());
+      }
+    }
+    //
+    step1();
 
     // save leads one after the other (don't want to make multiple customers for the same lead)
     var index = 0;
@@ -812,7 +884,7 @@ define("src/contracts/contract.vm", [
     validators: [],
   };
 
-  function getSalesInfoModel(handler) {
+  function getInvoiceV1Model(handler) {
     var schema = _static.ctSchema || (_static.ctSchema = {
       _model: true,
       UseRequired: {},
@@ -1046,132 +1118,6 @@ define("src/contracts/contract.vm", [
     return data;
   }
 
-  function getSalesInfoExtrasModel(layersVm) {
-    var dateConverter = ukov.converters.date();
-    var boolConverter = ukov.converters.bool();
-    var schema = _static.sdSchema || (_static.sdSchema = {
-      _model: true,
-      UseRequired: {},
-
-      // fields from MS_AccountSalesInformations
-      // PaymentTypeId:{},
-      FriendsAndFamilyTypeId: {},
-      AccountSubmitId: {},
-      AccountCancelReasonId: {},
-      TechId: {},
-      SalesRepId: {},
-      // BillingDay:{},
-      // Email:{},
-      // IsMoni:{},
-      // IsTakeOver:{},
-      // IsOwner:{},
-      InstallDate: {
-        converter: dateConverter,
-      },
-      SubmittedToCSDate: {
-        converter: dateConverter,
-      },
-      CsConfirmationNumber: {},
-      CsTwoWayConfNumber: {},
-      SubmittedToGPDate: {
-        converter: dateConverter,
-      },
-      ContractSignedDate: {
-        converter: dateConverter,
-        validators: [
-          ukov.validators.maybeRequired("Contract Date is Required", "UseRequired"),
-        ],
-      },
-      CancelDate: {
-        converter: dateConverter,
-      },
-      // IsActive:{},
-      // IsDeleted:{},
-      // ModifiedOn:{},
-      // ModifiedBy:{},
-      // CreatedOn:{},
-      // CreatedBy:{},
-
-      AMA: {},
-      NOC: {},
-      SOP: {},
-
-      ApprovedDate: {
-        converter: dateConverter,
-      },
-      ApproverID: {},
-      NOCDate: {
-        converter: dateConverter,
-        validators: [
-          ukov.validators.maybeRequired("NOC Date is Required", "UseRequired"),
-        ],
-      },
-
-      OptOutCorporate: {
-        converter: boolConverter,
-      },
-      OptOutAffiliate: {
-        converter: boolConverter,
-      },
-    });
-
-    var data = ukov.wrap({
-      UseRequired: true,
-    }, schema);
-    data.UseRequired.ignore(true);
-
-    data.repModel = ko.observable();
-    data.tekModel = ko.observable();
-
-    function createLoadRepFunc(modelSetter) {
-      var lastid;
-      return function(companyID) {
-        lastid = companyID;
-        if (lastid) {
-          var item = modelSetter.peek();
-          if (item && item.CompanyID === lastid) {
-            // already loaded
-            return;
-          }
-          // clear before loading new
-          modelSetter(null);
-          // load new
-          loadRep(lastid, function(val) {
-            if (val && val.CompanyID === lastid) {
-              modelSetter(val);
-            }
-          });
-        } else {
-          // clear
-          modelSetter(null);
-        }
-      };
-    }
-
-    data.SalesRepId.subscribe(createLoadRepFunc(data.repModel));
-    data.TechId.subscribe(createLoadRepFunc(data.tekModel));
-
-    function createFindFunc(modelSetter, idSetter) {
-      return function() {
-        if (!repFindVm) {
-          repFindVm = new RepFindViewModel({});
-        }
-        layersVm.show(repFindVm, function(val) {
-          if (val) {
-            // set model before setting id so that it doesn't have to be loaded again
-            modelSetter(val);
-            idSetter(val.CompanyID);
-          }
-        });
-      };
-    }
-    var repFindVm;
-    data.clickRep = createFindFunc(data.repModel, data.SalesRepId);
-    data.clickTek = createFindFunc(data.tekModel, data.TechId);
-
-    return data;
-  }
-
   function getSystemDetailsModel() {
     var nullStrConverter = ukov.converters.nullString();
     var schema = _static.systemDetailsSchema || (_static.systemDetailsSchema = {
@@ -1199,7 +1145,7 @@ define("src/contracts/contract.vm", [
     return data;
   }
 
-  function loadSalesInfo(_this, accountid, salesInfoModel, salesInfoExtrasModel, join) {
+  function loadInvoiceV1(_this, accountid, invoiceV1Model, join) {
     var join_types = join.create();
 
     var customerEmail = null;
@@ -1207,9 +1153,9 @@ define("src/contracts/contract.vm", [
     //
     // 1 - load types
     //
-    load_pointSystems(salesInfoModel.pointSystemsCvm, join_types.add());
-    salesInfoModel.CellularTypeCvm.setList([]);
-    load_cellularTypes(salesInfoModel.cellularTypes, join_types.add());
+    load_pointSystems(invoiceV1Model.pointSystemsCvm, join_types.add());
+    invoiceV1Model.CellularTypeCvm.setList([]);
+    load_cellularTypes(invoiceV1Model.cellularTypes, join_types.add());
 
     //
     // 2 - load invoiceMsInstalls
@@ -1224,28 +1170,26 @@ define("src/contracts/contract.vm", [
         if (!invoice) {
           return;
         }
-        load_msAccountSalesInformations(accountid, function(acctSalesInfo) {
+        load_msAccountSalesInformations1(accountid, function(acctSalesInfo) {
           if (acctSalesInfo) {
             // infer Cell Service from Cell Package
             if (acctSalesInfo.CellPackageItemId) {
               //@NOTE: 11 is the current length of the service ids...
-              salesInfoModel.cellServiceCvm.selectedValue(acctSalesInfo.CellPackageItemId.substr(0, 11));
+              invoiceV1Model.cellServiceCvm.selectedValue(acctSalesInfo.CellPackageItemId.substr(0, 11));
             } else {
-              salesInfoModel.cellServiceCvm.selectedValue(null);
+              invoiceV1Model.cellServiceCvm.selectedValue(null);
             }
 
             // set both here instead of after loading invoice so the UI looks more fluid??
             // set invoice data
-            salesInfoModel.setValue(invoice);
+            invoiceV1Model.setValue(invoice);
             // default to customer"s email
             acctSalesInfo.Email = acctSalesInfo.Email || customerEmail;
             // set sales info data
-            salesInfoModel.setValue(acctSalesInfo);
-            salesInfoExtrasModel.setValue(acctSalesInfo);
+            invoiceV1Model.setValue(acctSalesInfo);
             // mark current values as the clean values
             // defaults below may make the invoice dirty
-            salesInfoModel.markClean({}, true);
-            salesInfoExtrasModel.markClean({}, true);
+            invoiceV1Model.markClean({}, true);
 
 
             // set defaults
@@ -1262,20 +1206,13 @@ define("src/contracts/contract.vm", [
               // SetupFee: 199.00, // ?????????????
 
             });
-            salesInfoModel.setValue(acctSalesInfo);
-            salesInfoExtrasModel.setValue(acctSalesInfo);
+            invoiceV1Model.setValue(acctSalesInfo);
           }
         }, join.add());
       }, join.add());
       //
       cb();
     });
-  }
-
-  function loadRep(companyId, setter, cb) {
-    dataservice.qualify.salesrep.read({
-      id: companyId,
-    }, setter, cb);
   }
 
   function load_pointSystems(cvm, cb) {
@@ -1297,9 +1234,16 @@ define("src/contracts/contract.vm", [
     }, setter, cb);
   }
 
-  function load_msAccountSalesInformations(accountid, setter, cb) {
+  function load_msAccountSalesInformations1(accountid, setter, cb) {
     dataservice.monitoringstationsrv.msAccountSalesInformations.read({
       id: accountid,
+    }, setter, cb);
+  }
+
+  function load_msAccountSalesInformations(acctid, setter, cb) {
+    dataservice.api_ms.accounts.read({
+      id: acctid,
+      link: "AccountSalesInformations",
     }, setter, cb);
   }
 
@@ -1333,7 +1277,7 @@ define("src/contracts/contract.vm", [
   }
 
   function refreshInvoice(_this, cb) {
-    var data = _this.salesInfo;
+    var data = _this.invoiceV1;
     if (!utils.isFunc(cb)) {
       cb = utils.noop;
     }
@@ -1376,21 +1320,24 @@ define("src/contracts/contract.vm", [
     }, cb);
   }
 
-  function saveSalesInfoExtras(_this, approve, cb) {
-    var data = _this.salesInfoExtras;
+  function saveSalesInfo(_this, approve, cancelModel, cb) {
+    var data = _this.salesinfo;
     var model = data.getValue();
     if (approve) {
       model.ApprovedDate = new Date();
       model.ApproverID = howie.fetch("user").GPEmployeeID;
     }
-    dataservice.api_contractAdmin.accountSalesInformationExtras.save({
+    if (cancelModel) {
+      model.AccountCancelReasonId = cancelModel.AccountCancelReasonId;
+      model.CancelDate = cancelModel.CancelDate;
+    }
+    dataservice.api_ms.accounts.save({
       id: _this.acctid,
+      link: "AccountSalesInformations",
       data: model,
     }, function(val) {
-      data.setValue(val, true);
-      data.ApprovedDate(model.ApprovedDate);
-      data.ApproverID(model.ApproverID);
-      data.markClean(val, true);
+      data.setValue(val);
+      data.markClean({}, true);
     }, cb);
   }
 

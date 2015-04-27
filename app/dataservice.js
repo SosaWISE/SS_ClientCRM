@@ -36,7 +36,6 @@ define("src/dataservice", [
     ]),
     api_contractAdmin: createService("api/contractAdmin", [
       "accounts",
-      "accountSalesInformationExtras",
       "helpers",
     ]),
     api_ms: createService("api/ms", [

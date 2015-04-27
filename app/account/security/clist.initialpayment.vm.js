@@ -63,10 +63,6 @@ define("src/account/security/clist.initialpayment.vm", [
       handler: _this.handler,
       yesNoOptions: _this.yesNoOptions,
     });
-    //@NOTE: compat with code copied from contract.vm.js...
-    _this.salesInfoExtras = {
-      repModel: _this.salesinfo.repModel,
-    };
 
 
     //
@@ -103,7 +99,7 @@ define("src/account/security/clist.initialpayment.vm", [
       }
     };
     _this.clickAddress = function(leadVm) {
-      var repModel = _this.salesInfoExtras.repModel.peek();
+      var repModel = _this.salesinfo.repModel.peek();
       if (!repModel) {
         notify.warn("Please select a Sales Rep first", null, 7);
         return;
@@ -149,7 +145,7 @@ define("src/account/security/clist.initialpayment.vm", [
       });
     };
     _this.clickQualify = function(leadVm) {
-      var repModel = _this.salesInfoExtras.repModel.peek();
+      var repModel = _this.salesinfo.repModel.peek();
       if (!repModel) {
         notify.warn("Please select a Sales Rep first", null, 7);
         return;
@@ -366,8 +362,8 @@ define("src/account/security/clist.initialpayment.vm", [
     //   notify.warn(_this.salesInfo.errMsg(), null, 7);
     //   return cb();
     // }
-    // if (!_this.salesInfoExtras.isValid.peek()) {
-    //   notify.warn(_this.salesInfoExtras.errMsg(), null, 7);
+    // if (!_this.salesinfo.isValid.peek()) {
+    //   notify.warn(_this.salesinfo.errMsg(), null, 7);
     //   return cb();
     // }
     // if (!_this.systemDetails.isValid.peek()) {

@@ -63,6 +63,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       saveInvoiceItems: saveItems,
     });
     _this.salesinfo = salesinfo_model({
+      requirePkg: true,
       layersVm: _this.layersVm,
       handler: _this.handler,
       yesNoOptions: _this.yesNoOptions,
