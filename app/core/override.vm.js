@@ -1,6 +1,5 @@
 define("src/core/override.vm", [
   "ko",
-  "src/core/handler",
   "src/core/combo.vm",
   "src/core/strings",
   "src/core/harold",
@@ -9,7 +8,6 @@ define("src/core/override.vm", [
   "src/core/base.vm",
 ], function(
   ko,
-  Handler,
   ComboViewModel,
   strings,
   harold,
@@ -33,7 +31,7 @@ define("src/core/override.vm", [
     _this.title = ko.observable(_this.title);
     _this.initFocusFirst();
     _this.mixinLoad();
-    _this.handler = new Handler();
+    _this.initHandler();
 
     var accache = harold.fetch("accache");
 

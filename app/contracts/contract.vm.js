@@ -2,6 +2,8 @@ define("src/contracts/contract.vm", [
   "howie",
   "src/account/default/binding.cancelReason",
   "src/contracts/cancel.vm",
+  "src/account/accthelper",
+  "src/account/acctstore",
   "src/account/mscache",
   "src/account/salesinfo/v02/salesinfo.model",
   "src/account/salesinfo/options",
@@ -16,7 +18,6 @@ define("src/contracts/contract.vm", [
   "src/dataservice",
   "src/ukov",
   "ko",
-  "src/core/handler",
   "src/core/layers.vm",
   "src/core/joiner",
   "src/core/combo.vm",
@@ -28,6 +29,8 @@ define("src/contracts/contract.vm", [
   howie,
   binding_cancelReason,
   CancelViewModel,
+  accthelper,
+  acctstore,
   mscache,
   salesinfo_model,
   salesInfoOptions,
@@ -42,7 +45,6 @@ define("src/contracts/contract.vm", [
   dataservice,
   ukov,
   ko,
-  Handler,
   LayersViewModel,
   joiner,
   ComboViewModel,
@@ -79,7 +81,7 @@ define("src/contracts/contract.vm", [
     // utils.assertProps(_this, [
     // ]);
 
-    _this.handler = new Handler();
+    _this.initHandler();
     _this.layersVm = new LayersViewModel({
       controller: _this,
     });
@@ -131,17 +133,8 @@ define("src/contracts/contract.vm", [
     _this.paymentMethod = ko.observable();
 
     _this.status = ko.computed(function() {
-      var st;
-      if (_this.salesinfo.CancelDate()) {
-        st = "canceled";
-      } else if (_this.salesinfo.ApproverID()) {
-        st = "approved";
-      } else if (_this.holdsVm.hasRepFrontEndHolds()) {
-        st = "blocked";
-      } else {
-        st = "unapproved";
-      }
-      return st;
+      return accthelper.contractStatus(
+        _this.salesinfo.CancelDate(), _this.salesinfo.ApproverID(), _this.holdsVm.hasRepFrontEndHolds());
     });
 
 
@@ -361,7 +354,9 @@ define("src/contracts/contract.vm", [
     var _this = this;
 
     _this.masterid = routeData.masterid;
-    _this.acctid = routeData.id;
+    var acctid = _this.acctid = routeData.id;
+
+    acctStoreSetup(_this, extraData.isReload, join.add());
 
     function step1() {
       // start next step when done
@@ -375,29 +370,22 @@ define("src/contracts/contract.vm", [
       // ensure types needed by models
       _this.salesinfo.load(subjoin.add());
     }
-
-
+    //
     function step2() {
       // start next step when done
       var subjoin = join.create()
         .after(utils.safeCallback(join.add(), step3, utils.noop));
       //
-      load_msAccountSalesInformations(_this.acctid, function(val) {
-        _this.salesinfo.setValue(val);
-        _this.salesinfo.markClean({}, true);
-      }, subjoin.add());
-      //
       // load leads for master file
       _this.leads.forEach(function(leadVm) {
         // clear incase of reload
         clearVm(leadVm);
-
+        //
         var customerTypeId = leadVm.typeId;
-        load_customerAccount(_this.acctid, customerTypeId, function(custAcct) {
+        load_customerAccount(acctid, customerTypeId, function(custAcct) {
           if (!custAcct) {
             return;
           }
-
           // load credit and stuff
           load_qualifyCustomerInfos(custAcct.Customer.LeadId, function(creditResultAndStuff) {
             // set original data
@@ -412,14 +400,14 @@ define("src/contracts/contract.vm", [
           }, subjoin.add());
         }, subjoin.add());
       });
-
-      loadInvoiceV1(_this, _this.acctid, _this.invoiceV1, subjoin);
-
-      load_systemDetails(_this.acctid, function(results) {
+      //
+      loadInvoiceV1(_this, acctid, _this.invoiceV1, subjoin);
+      //
+      load_systemDetails(acctid, function(results) {
         _this.systemDetails.setValue(results);
         _this.systemDetails.markClean({}, true);
       }, join.add());
-      load_industryAccountWithReceiverLines(_this.acctid, function(list) {
+      load_industryAccountWithReceiverLines(acctid, function(list) {
         list.some(function(item) {
           if (item.PrimaryCSID === "Yes") {
             _this.systemDetailsExtras.industry(item.IndustryAccount);
@@ -428,16 +416,16 @@ define("src/contracts/contract.vm", [
           }
         });
       }, join.add());
-
-      load_equipment(_this.acctid, _this.equipmentGvm, join.add());
-
-      load_acctPaymentMethod(_this.acctid, "PaymentMethod", _this.setPaymentMethod, join.add());
-
+      //
+      load_equipment(acctid, _this.equipmentGvm, join.add());
+      //
+      load_acctPaymentMethod(acctid, "PaymentMethod", _this.setPaymentMethod, join.add());
+      //
       _this.vms.forEach(function(vm) {
         vm.load(routeData, extraData, join.add());
       });
     }
-
+    //
     function step3() {
       //
       var subjoin = join;
@@ -455,7 +443,7 @@ define("src/contracts/contract.vm", [
           }
         }
       }
-
+      //
       if (!model.NOCDate.getValue() && utils.isDate(contractDate)) {
         // default to 3 days(excluding weekends and holidays) after contract date
         load_nocDate(contractDate, function(val) {
@@ -463,10 +451,39 @@ define("src/contracts/contract.vm", [
         }, subjoin.add());
       }
     }
-
     // start at first step
     step1();
   };
+
+  function acctStoreSetup(_this, isReload, cb) {
+    function done(err, data) {
+      if (utils.isFunc(cb)) {
+        acctData = (err) ? null : data;
+        cb(err);
+        cb = null;
+      }
+    }
+    if (_this._off && !isReload) {
+      return done();
+    }
+    var acctData;
+    _this.handler.removeOffs().addOff(_this._off = acctstore.on(_this.acctid, [
+      "accountSalesInformations",
+    ], function(err, data) {
+      done(err, data);
+      _this.loader(acctStoreChanged, true);
+    }, isReload));
+
+    //
+    function acctStoreChanged() {
+      var val;
+      val = acctData.accountSalesInformations;
+      if (val) {
+        _this.salesinfo.setValue(val);
+        _this.salesinfo.markClean({}, true);
+      }
+    }
+  }
 
   function showPaymentMethod(_this, paymentMethodObservable, cb) {
     var vm = new PayByViewModel({
@@ -509,7 +526,7 @@ define("src/contracts/contract.vm", [
           notify.warn("Already Approved", "This account has already been approved.", 2);
           return cb();
         case "blocked":
-          notify.warn("Rep Front End Holds", "The account cannot be approved when rep fron end holds exist.", 2);
+          notify.warn("Rep Front End Holds", "The account cannot be approved when rep front end holds exist.", 2);
           return cb();
       }
     }
@@ -1170,7 +1187,7 @@ define("src/contracts/contract.vm", [
         if (!invoice) {
           return;
         }
-        load_msAccountSalesInformations1(accountid, function(acctSalesInfo) {
+        load_msAccountSalesInformationsOld(accountid, function(acctSalesInfo) {
           if (acctSalesInfo) {
             // infer Cell Service from Cell Package
             if (acctSalesInfo.CellPackageItemId) {
@@ -1234,16 +1251,9 @@ define("src/contracts/contract.vm", [
     }, setter, cb);
   }
 
-  function load_msAccountSalesInformations1(accountid, setter, cb) {
+  function load_msAccountSalesInformationsOld(accountid, setter, cb) {
     dataservice.monitoringstationsrv.msAccountSalesInformations.read({
       id: accountid,
-    }, setter, cb);
-  }
-
-  function load_msAccountSalesInformations(acctid, setter, cb) {
-    dataservice.api_ms.accounts.read({
-      id: acctid,
-      link: "AccountSalesInformations",
     }, setter, cb);
   }
 

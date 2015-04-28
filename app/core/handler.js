@@ -4,10 +4,16 @@ define("src/core/handler", [], function() {
   function Handler() {
     var _this = this;
 
+    _this.destroy = function() {
+      _this.disposeAll();
+      _this.offAll();
+      _this.removeOffs();
+      return _this; // allow chaining
+    };
+
     //
     // ko subscriptions
     //
-
     var _subs = [];
     _this.subscribe = function(observable, fn, preventInitialSet) {
       _subs.push({
@@ -19,7 +25,6 @@ define("src/core/handler", [], function() {
       }
       return _this; // allow chaining
     };
-
     _this.dispose = function(fn) {
       var i = _subs.length;
       while (i--) {
@@ -30,7 +35,6 @@ define("src/core/handler", [], function() {
       }
       return _this; // allow chaining
     };
-
     _this.disposeAll = function() {
       var i = _subs.length;
       while (i--) {
@@ -43,7 +47,6 @@ define("src/core/handler", [], function() {
     //
     // heralds/events
     //
-
     var _evts = [];
     _this.on = function(harold, event, fn) {
       _evts.push({
@@ -51,6 +54,7 @@ define("src/core/handler", [], function() {
         fn: fn,
         off: harold.on(event, fn),
       });
+      return _this; // allow chaining
     };
     _this.off = function(event, fn) {
       var i = _evts.length;
@@ -69,6 +73,22 @@ define("src/core/handler", [], function() {
         _evts[i].off();
       }
       _evts = [];
+      return _this; // allow chaining
+    };
+
+    //
+    //
+    //
+    var _offs = [];
+    _this.addOff = function(off) {
+      _offs.push(off);
+    };
+    _this.removeOffs = function() {
+      var i = _offs.length;
+      while (i--) {
+        _offs[i]();
+      }
+      _offs = [];
       return _this; // allow chaining
     };
   }

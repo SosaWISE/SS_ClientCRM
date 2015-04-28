@@ -9,7 +9,6 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
   "src/account/salesinfo/options",
   "src/ukov",
   "src/dataservice",
-  "src/core/handler",
   "src/core/numbers",
   "src/core/strings",
   "src/core/notify",
@@ -28,7 +27,6 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
   salesInfoOptions,
   ukov,
   dataservice,
-  Handler,
   numbers,
   strings,
   notify,
@@ -158,7 +156,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
     utils.assertProps(_this, ["layersVm"]);
 
     _this.mixinLoad();
-    _this.handler = new Handler();
+    _this.initHandler();
 
     _this.title = ko.observable(_this.title);
     _this.data = ukov.wrap({

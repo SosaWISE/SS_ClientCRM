@@ -6,7 +6,6 @@ define("src/account/security/alarmdotcom.vm", [
   "src/account/security/alarmdotcom.editor.vm",
   "src/slick/slickgrid.vm",
   "ko",
-  "src/core/handler",
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
@@ -18,7 +17,6 @@ define("src/account/security/alarmdotcom.vm", [
   AlarmDotComEditorViewModel,
   SlickGridViewModel,
   ko,
-  Handler,
   notify,
   utils,
   ControllerViewModel

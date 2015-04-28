@@ -66,18 +66,14 @@ define("src/core/harold", [
     (_this._callbacks["$" + event] = _this._callbacks["$" + event] || [])
       .push(fn);
     //
-    function off() {
+    return function off() {
       _this.off(event, fn);
-    }
-    return off;
+    };
   };
 
   Harold.prototype.once = function(event, fn) {
     var _this = this;
-
-    function off() {
-      _this.off(event, on);
-    }
+    var off;
 
     function on() {
       off();
@@ -85,8 +81,7 @@ define("src/core/harold", [
     }
 
     on.oncefn = fn; // allow fn to be removed in `off` function
-    _this.on(event, on);
-    return off;
+    return (off = _this.on(event, on));
   };
 
   Harold.prototype.off = function(event, fn) {
@@ -110,7 +105,7 @@ define("src/core/harold", [
     var cb;
     for (var i = 0; i < callbacks.length; i++) {
       cb = callbacks[i];
-      if (cb === fn || cb.fn === fn) {
+      if (cb === fn || cb.oncefn === fn) {
         callbacks.splice(i, 1);
         break;
       }

@@ -3,7 +3,6 @@ define("src/contracts/cancel.vm", [
   "src/dataservice",
   "src/ukov",
   "ko",
-  "src/core/handler",
   "src/core/combo.vm",
   "src/core/notify",
   "src/core/utils",
@@ -13,7 +12,6 @@ define("src/contracts/cancel.vm", [
   dataservice,
   ukov,
   ko,
-  Handler,
   ComboViewModel,
   notify,
   utils,
@@ -46,7 +44,7 @@ define("src/contracts/cancel.vm", [
     ]);
     _this.mixinLoad();
     _this.initFocusFirst();
-    _this.handler = new Handler();
+    _this.initHandler();
 
     _this.data = ukov.wrap({}, schema);
     _this.data.AccountCancelReasonCvm = new ComboViewModel({

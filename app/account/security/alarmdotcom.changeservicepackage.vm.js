@@ -4,7 +4,6 @@ define("src/account/security/alarmdotcom.changeservicepackage.vm", [
   "src/ukov",
   "ko",
   "src/dataservice",
-  "src/core/handler",
   "src/core/strings",
   "src/core/notify",
   "src/core/utils",
@@ -15,7 +14,6 @@ define("src/account/security/alarmdotcom.changeservicepackage.vm", [
   ukov,
   ko,
   dataservice,
-  Handler,
   strings,
   notify,
   utils,
@@ -37,7 +35,7 @@ define("src/account/security/alarmdotcom.changeservicepackage.vm", [
     ]);
 
     _this.mixinLoad();
-    _this.handler = new Handler();
+    _this.initHandler();
 
     _this.initFocusFirst();
     _this.data = ukov.wrap({

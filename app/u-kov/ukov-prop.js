@@ -95,6 +95,10 @@ define('src/u-kov/ukov-prop', [
     var _this = this;
     return _this.model[_this.key];
   };
+  fn.getCleanValue = function() {
+    var _this = this;
+    return _this.cleanVal.peek();
+  };
   fn.setValue = function(val) {
     var _this = this;
     val = convert(_this.doc.converter, val, _this.model);

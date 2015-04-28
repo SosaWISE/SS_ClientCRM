@@ -7,7 +7,6 @@ define("src/account/security/clist.initialpayment.vm", [
   "src/dataservice",
   "ko",
   "src/ukov",
-  "src/core/handler",
   "src/core/combo.vm",
   "src/core/joiner",
   "src/core/strings",
@@ -23,7 +22,6 @@ define("src/account/security/clist.initialpayment.vm", [
   dataservice,
   ko,
   ukov,
-  Handler,
   ComboViewModel,
   joiner,
   strings,
@@ -39,7 +37,7 @@ define("src/account/security/clist.initialpayment.vm", [
     ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
     _this.mayReload = ko.observable(false);
-    _this.handler = new Handler();
+    _this.initHandler();
 
     // _this.breakdown = ko.observable();
     _this.initialPaymentMethod = ko.observable();

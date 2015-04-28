@@ -1,7 +1,6 @@
 define("src/account/default/runcredit.vm", [
   "src/account/mscache",
   "howie",
-  "src/core/handler",
   "src/core/strings",
   "src/core/combo.vm",
   "src/core/notify",
@@ -14,7 +13,6 @@ define("src/account/default/runcredit.vm", [
 ], function(
   mscache,
   howie,
-  Handler,
   strings,
   ComboViewModel,
   notify,
@@ -170,7 +168,7 @@ define("src/account/default/runcredit.vm", [
       showSaveBtn: false,
     });
     _this.mixinLoad();
-    _this.handler = new Handler();
+    _this.initHandler();
 
     if (indexOfLead(_this.otherLeads, _this.item) > -1) {
       removeLead(_this.otherLeads, _this.item);

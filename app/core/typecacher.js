@@ -1,4 +1,4 @@
-define("src/core/cacher", [
+define("src/core/typecacher", [
   "ko",
   "src/core/arrays",
   "src/core/utils",

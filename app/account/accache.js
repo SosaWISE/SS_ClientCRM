@@ -1,9 +1,9 @@
 define("src/account/accache", [
   "src/dataservice",
-  "src/core/cacher",
+  "src/core/typecacher",
 ], function(
   dataservice,
-  cacher
+  typecacher
 ) {
   "use strict";
 
@@ -11,14 +11,14 @@ define("src/account/accache", [
 
   var accache = {
     getList: function(name) {
-      return cacher.getList(prefix, name, metaMap);
+      return typecacher.getList(prefix, name, metaMap);
     },
     getMap: function(name) {
-      return cacher.getMap(prefix, name, metaMap);
+      return typecacher.getMap(prefix, name, metaMap);
     },
     ensure: function(name, cb) {
-      return cacher.ensure(prefix, name, metaMap,
-        hardcodedCache, dataservice.api_ms, cb);
+      return typecacher.ensure(prefix, name, metaMap,
+        hardcodedCache, dataservice.api_ac, cb);
     },
     metadata: function(name) {
       return metaMap[name] || defaultMeta;

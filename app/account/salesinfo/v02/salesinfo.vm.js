@@ -11,7 +11,6 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   "src/account/salesinfo/options",
   "src/dataservice",
   "ko",
-  "src/core/handler",
   "src/core/joiner",
   "src/core/arrays",
   "src/core/strings",
@@ -31,7 +30,6 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   salesInfoOptions,
   dataservice,
   ko,
-  Handler,
   joiner,
   arrays,
   strings,
@@ -47,7 +45,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     utils.assertProps(_this, ["layersVm"]);
 
     _this.mixinLoad();
-    _this.handler = new Handler();
+    _this.initHandler();
 
     _this.creditGroup = ko.observable();
     _this.creditScore = ko.observable();

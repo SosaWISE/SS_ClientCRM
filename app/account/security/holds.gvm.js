@@ -16,7 +16,7 @@ define("src/account/security/holds.gvm", [
   function HoldGridViewModel(options) {
     var _this = this;
 
-    _this.internalList = ko.observableArray();
+    _this.fullList = ko.observableArray();
     _this.includeFixed = ko.observable(false);
 
     HoldGridViewModel.super_.call(_this, {
@@ -27,7 +27,7 @@ define("src/account/security/holds.gvm", [
       },
       // list: ko.observableArray(),
       list: ko.computed(function() {
-        var list = _this.internalList().sort(function(a, b) {
+        var list = _this.fullList().sort(function(a, b) {
           // sort descending by created on
           return b.CreatedOn.valueOf() - a.CreatedOn.valueOf();
         });
@@ -84,11 +84,8 @@ define("src/account/security/holds.gvm", [
       ],
     });
 
-    _this.setList = function(list) {
-      _this.internalList(list);
-    };
-    _this.addItem = function(item) {
-      _this.internalList.splice(0, 0, item);
+    _this.insertItem = function(item) {
+      _this.fullList.splice(0, 0, item);
     };
   }
   utils.inherits(HoldGridViewModel, SlickGridViewModel);
@@ -99,13 +96,7 @@ define("src/account/security/holds.gvm", [
       plugins.push(new RowEvent({
         eventName: "onDblClick",
         fn: function(item) {
-          options.edit(item, function(model) {
-            if (!model) { // nothing changed
-              return;
-            }
-            // update in place
-            _this.internalList.replace(item, model);
-          });
+          options.edit(item);
         },
       }));
     }

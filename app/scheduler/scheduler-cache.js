@@ -1,9 +1,9 @@
 define("src/scheduler/scheduler-cache", [
   "src/dataservice",
-  "src/core/cacher",
+  "src/core/typecacher",
 ], function(
   dataservice,
-  cacher
+  typecacher
 ) {
   "use strict";
 
@@ -11,13 +11,13 @@ define("src/scheduler/scheduler-cache", [
 
   var schedulercache = {
     getList: function(name) {
-      return cacher.getList(prefix, name, metaMap);
+      return typecacher.getList(prefix, name, metaMap);
     },
     getMap: function(name) {
-      return cacher.getMap(prefix, name, metaMap);
+      return typecacher.getMap(prefix, name, metaMap);
     },
     ensure: function(name, cb) {
-      return cacher.ensure(prefix, name, metaMap,
+      return typecacher.ensure(prefix, name, metaMap,
         hardcodedCache, dataservice.ticketsrv, cb);
     },
     metadata: function(name) {

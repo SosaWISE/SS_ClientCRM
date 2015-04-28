@@ -154,6 +154,8 @@ define("src/core/harold.spec", [
         //
         h.off("evt:a", a1);
         //
+        h.send("evt:a", "val");
+        //
         expect(sendValues).toEqual([]);
       });
     });
