@@ -97,13 +97,8 @@ define("src/admin/authcontrol.vm", [
         return;
       }
       _this.gvm.setItems(tmpGroupItems);
-      // _this.gvm.setItems(tmpGroupActions.concat(tmpGroupApplications));
     });
   };
-
-  // function load_admin_list(name, setter, cb) {
-  //   dataservice.api_admin[name].read({}, setter, cb);
-  // }
 
   function load_groupItems(setter, cb) {
     dataservice.api_admin.groupItems.read({}, setter, cb);

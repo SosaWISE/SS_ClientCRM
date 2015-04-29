@@ -8,10 +8,12 @@ div(class="group-editor")
   ul(class="edit-form")
     li
       span(class="label") Actions
-      div(data-bind="template:{name:'tmpl-admin-group',data:actionsMsvm}")
+      div(class="msvm",style="max-height:250px",
+        data-bind="template:{name:'tmpl-admin-group',data:actionsMsvm}")
     li
       span(class="label") Applications
-      div(data-bind="template:{name:'tmpl-admin-group',data:appsMsvm}")
+      div(class="msvm",style="max-height:250px",
+        data-bind="template:{name:'tmpl-admin-group',data:appsMsvm}")
 
   ul(class="actions")
     li

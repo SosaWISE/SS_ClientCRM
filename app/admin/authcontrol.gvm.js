@@ -94,10 +94,6 @@ define("src/admin/authcontrol.gvm", [
     dv.reSort();
     dv.endUpdate();
   };
-  // AuthControlGridViewModel.prototype.addItem = function(item) {
-  //   var dv = this.dv;
-  //   dv.addItem(item);
-  // };
 
   AuthControlGridViewModel.prototype.getGroupItems = function(groupName) {
     var dv = this.dv;

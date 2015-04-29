@@ -54,7 +54,7 @@ define("src/admin/group.editor.vm", [
   }
   utils.inherits(GroupEditorViewModel, BaseViewModel);
   GroupEditorViewModel.prototype.viewTmpl = "tmpl-admin-group_editor";
-  GroupEditorViewModel.prototype.width = 350;
+  GroupEditorViewModel.prototype.width = 800;
   GroupEditorViewModel.prototype.height = "auto";
 
   function closeLayer(_this) {

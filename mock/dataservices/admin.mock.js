@@ -14,17 +14,11 @@ define("mock/dataservices/admin.mock", [
       mockery.send(code, value, setter, cb, timeout || settings.timeout);
     }
 
-    // function notDeleted(list) {
-    //   return list.filter(function(item) {
-    //     return !item.IsDeleted;
-    //   });
-    // }
-
     dataservice.api_admin.actions.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = mockery.findSingleOrAll(actions, "ActionID", id);
+          result = mockery.findSingleOrAll(actions, "ID", id);
           break;
       }
       send(0, result, setter, cb);
@@ -33,7 +27,7 @@ define("mock/dataservices/admin.mock", [
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = mockery.findSingleOrAll(applications, "ApplicationID", id);
+          result = mockery.findSingleOrAll(applications, "ID", id);
           break;
       }
       send(0, result, setter, cb);
@@ -47,24 +41,6 @@ define("mock/dataservices/admin.mock", [
       }
       send(0, result, setter, cb);
     };
-    // dataservice.api_admin.groupActions.read = function(params, setter, cb) {
-    //   var result, id = params.id;
-    //   switch (params.link || null) {
-    //     case null:
-    //       result = mockery.findSingleOrAll(notDeleted(groupActions), "ID", id);
-    //       break;
-    //   }
-    //   send(0, result, setter, cb);
-    // };
-    // dataservice.api_admin.groupApplications.read = function(params, setter, cb) {
-    //   var result, id = params.id;
-    //   switch (params.link || null) {
-    //     case null:
-    //       result = mockery.findSingleOrAll(notDeleted(groupApplications), "ID", id);
-    //       break;
-    //   }
-    //   send(0, result, setter, cb);
-    // };
     dataservice.api_admin.users.read = function(params, setter, cb) {
       var result; //, id = params.id;
       switch (params.link || null) {
@@ -116,52 +92,6 @@ define("mock/dataservices/admin.mock", [
       }
       send(0, result, setter, cb);
     };
-    // function updateGroupList(groupName, newItems, list, tmpl) {
-    //   //
-    //   var itemMap = {};
-    //   mockery.filterListBy(list, "GroupName", groupName).forEach(function(item) {
-    //     // mark all as deleted
-    //     item.IsDeleted = true;
-    //     itemMap[item.RefId] = item;
-    //   });
-    //   //
-    //   newItems.forEach(function(id) {
-    //     var item = itemMap[id];
-    //     if (item) {
-    //       // mark existing as not delete
-    //       item.IsDeleted = false;
-    //     } else {
-    //       // add new
-    //       item = mockery.fromTemplate(tmpl);
-    //       item.GroupName = groupName;
-    //       item.RefId = id;
-    //       list.push(item);
-    //     }
-    //   });
-    //   // return all that are not deleted
-    //   return notDeleted(mockery.filterListBy(list, "GroupName", groupName));
-    // }
-
-    // dataservice.api_admin.groupActions.save = function(params, setter, cb) {
-    //   var result, groupName = params.id;
-    //   switch (params.link || null) {
-    //     case null:
-    //       if (groupName) {
-    //         result = updateGroupList(groupName, params.data, groupActions, groupActionTmpl);
-    //       }
-    //       break;
-    //   }
-    //   send(0, result, setter, cb);
-    // };
-    // dataservice.api_admin.groupApplications.save = function(params, setter, cb) {
-    //   var result, groupName = params.id;
-    //   switch (params.link || null) {
-    //     case null:
-    //       result = updateGroupList(groupName, params.data, groupApplications, groupApplicationTmpl);
-    //       break;
-    //   }
-    //   send(0, result, setter, cb);
-    // };
   }
 
   (function() {

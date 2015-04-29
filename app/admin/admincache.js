@@ -27,20 +27,11 @@ define("src/admin/admincache", [
 
   var defaultMeta = {
     value: "ID",
-    text: "Txt",
+    text: "Name",
   };
   var metaMap = {
-    "actions": {
-      value: "ID",
-      text: "ItemDesc",
-      // comparer: null,
-      // initItem: null,
-      // read: function(cb) {},
-    },
-    "applications": {
-      value: "ID",
-      text: "ItemDesc",
-    },
+    "actions": defaultMeta,
+    "applications": defaultMeta,
   };
 
   var hardcodedCache = {};
