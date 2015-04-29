@@ -35,7 +35,7 @@ define('src/inventory/enter.barcode.vm', [
     _this.title = _this.title || 'Enter Barcodes';
 
     //Set barcode field as first focusable
-    _this.focusFirst = ko.observable(true);
+    _this.initFocusFirst();
 
     //This holds the current barcode count
     _this.barcodeCount = ko.observable();
@@ -134,17 +134,6 @@ define('src/inventory/enter.barcode.vm', [
     _this.clickProcessBarcode = ko.command(function(cb, vm) {
       _this.processBarcodes(vm, cb);
     });
-
-
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the barcode field
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
-    });
-
   }
 
   utils.inherits(EnterBarcodeViewModel, BaseViewModel);
@@ -152,7 +141,7 @@ define('src/inventory/enter.barcode.vm', [
   EnterBarcodeViewModel.prototype.width = 400;
   EnterBarcodeViewModel.prototype.height = 'auto';
 
-  EnterBarcodeViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me    
+  EnterBarcodeViewModel.prototype.onLoad = function(routeData, extraData, join) { // override me
 
     join = join;
 
@@ -174,7 +163,7 @@ define('src/inventory/enter.barcode.vm', [
     var barcodeList = vm.data.productBarcodeIdList(), //list of barcodes from textarea
       barcode, //array that holds the list of barcodes after split by return
       barcodeCount = parseInt(vm.barcodeCount(), 10),
-      rCount = 0, //holds the received count      
+      rCount = 0, //holds the received count
       x,
       listtype = true,
       join = joiner();
@@ -246,7 +235,7 @@ define('src/inventory/enter.barcode.vm', [
 
     }, function(err) {
 
-      //retain bad barcodes on textbox      
+      //retain bad barcodes on textbox
 
       if (listtype) {
 
@@ -285,7 +274,7 @@ define('src/inventory/enter.barcode.vm', [
       }
     }
 
-    //return current barcode count + number of barcodes in the list 
+    //return current barcode count + number of barcodes in the list
     return count + barcodeCount;
   }
 

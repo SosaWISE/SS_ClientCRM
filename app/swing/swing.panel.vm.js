@@ -9,7 +9,6 @@ define('src/swing/swing.panel.vm', [
   'src/core/controller.vm',
   'src/dataservice',
   'src/slick/slickgrid.vm',
-  'src/config',
   'src/slick/rowevent',
   'src/ukov',
 ], function(
@@ -23,7 +22,6 @@ define('src/swing/swing.panel.vm', [
   ControllerViewModel,
   dataservice,
   SlickGridViewModel,
-  config,
   RowEvent,
   ukov
 ) {

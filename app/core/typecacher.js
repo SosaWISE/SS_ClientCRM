@@ -1,4 +1,4 @@
-define("src/core/cacher", [
+define("src/core/typecacher", [
   "ko",
   "src/core/arrays",
   "src/core/utils",
@@ -107,7 +107,7 @@ define("src/core/cacher", [
       ensureLoaded(cb, prefix + name, function(cb) {
         var list = hardcodedCache[name];
         if (list) {
-          setTimeout(function() {
+          window.setTimeout(function() {
             cb(null, {
               Value: list,
             });

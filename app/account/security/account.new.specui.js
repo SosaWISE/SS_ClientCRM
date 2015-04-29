@@ -24,7 +24,7 @@ define('src/account/security/account.new.specui', [
     return browser.div('.panels > .active .accounts .fh-body .layers:last-child .rep-find .repinfo');
   }
 
-  // setTimeout(function() {
+  // window.setTimeout(function() {
   //   debugger;
   // }, 3000);
 

@@ -1,0 +1,23 @@
+div(class="core-override")
+  h2(data-bind="text:title")
+  ul(class="edit-form")
+    li
+      div(data-bind="text:requestUrl")
+    li
+      span(class="label") Application
+      div(data-bind="text:authNeeds.ApplicationId")
+    li
+      span(class="label") Action
+      div(data-bind="text:authNeeds.ActionId")
+    li
+      span(class="label") Reason
+      div(data-bind="cvm:reasonCvm")
+    li
+      span(class="label") Details
+      textarea(rows="10",
+        data-bind="value:reason,valueUpdate:'afterkeydown'")
+
+  div(class="actions")
+    a(class="btn bg",tabindex="0",data-bind="cmd:cmdActionRequest") Request Override
+
+  div(data-bind="spinner:loading()||cmdActionRequest.busy(),spinner-rgb:'white'")

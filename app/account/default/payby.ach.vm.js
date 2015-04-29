@@ -125,7 +125,7 @@ define("src/account/default/payby.ach.vm", [
   PayByEftViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       cb = join.add();
-    setTimeout(function() {
+    window.setTimeout(function() {
       //@TODO: load real data
       _this = _this;
       cb();

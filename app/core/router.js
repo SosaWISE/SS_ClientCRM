@@ -1,9 +1,11 @@
-define('src/core/router', [
-  'jquery',
-  'src/core/route',
-  'src/core/utils',
+define("src/core/router", [
+  "jquery",
+  "src/core/harold",
+  "src/core/route",
+  "src/core/utils",
 ], function(
   jquery,
+  harold,
   Route,
   utils
 ) {
@@ -12,7 +14,6 @@ define('src/core/router', [
   function Router() {
     var _this = this;
     _this._inited = false;
-    _this.getUser = utils.noop;
     _this.routeMap = {};
     _this.routes = [];
     _this.anonRoutes = [];
@@ -24,7 +25,7 @@ define('src/core/router', [
     return new Router();
   };
 
-  Router.prototype.init = function(getUser) {
+  Router.prototype.init = function() {
     var _this = this;
     // ,changeTimeout;
     if (_this._inited) {
@@ -32,24 +33,19 @@ define('src/core/router', [
     }
     _this._inited = true;
 
-    if (utils.isFunc(getUser)) {
-      // set getUser
-      _this.getUser = getUser;
-    }
-
     function changePath() {
       _this.goToPath(_this.getPath(), null, false);
     }
 
     // go to initial route, then listen for the route to change
     changePath();
-    window.addEventListener('hashchange', function() {
+    window.addEventListener("hashchange", function() {
       if (_this._ignoreCount > 0) {
         _this._ignoreCount--;
         return;
       }
-      // clearTimeout(changeTimeout);
-      // changeTimeout = setTimeout(function() {
+      // window.clearTimeout(changeTimeout);
+      // changeTimeout = window.setTimeout(function() {
       changePath();
       // }, 0);
     });
@@ -70,7 +66,7 @@ define('src/core/router', [
   Router.prototype.endSession = function() {
     var _this = this;
     // clear the hash so on login the user is taken to the default page
-    _this.setPath('', false);
+    _this.setPath("", false);
     // prevent hash from being changed again
     _this.setPath = utils.noop;
     // reload page
@@ -78,8 +74,8 @@ define('src/core/router', [
   };
 
   Router.prototype.setPath = function(path, allowHistory) {
-    if (path[0] !== '#') {
-      path = '#' + path;
+    if (path[0] !== "#") {
+      path = "#" + path;
     }
     if (location.hash !== path) {
       // add to _ignoreCount
@@ -102,7 +98,7 @@ define('src/core/router', [
 
   Router.prototype.goToPath = function(path, extraData, allowHistory) {
     var _this = this,
-      user = _this.getUser(),
+      user = harold.fetch("user"),
       routes = user ? _this.routes : _this.anonRoutes,
       route;
 
@@ -116,16 +112,16 @@ define('src/core/router', [
       // first route is the default route
       route = routes[0];
       // make default path for route
-      path = route.toPath(route.fromPath('/' + route.name));
+      path = route.toPath(route.fromPath("/" + route.name));
     }
 
     if (_this.currRouteCtx) {
       //@TODO: store in app data???
       // StateKeys: {
-      //   lastView: 'state.active-hash'
+      //   lastView: "state.active-hash"
       // },
 
-      // deactivate current route if it doesn't match the new route
+      // deactivate current route if it does not match the new route
       _this.currRouteCtx.dispose(_this.currRouteCtx.route !== route);
       _this.currRouteCtx = null;
     }
@@ -146,14 +142,14 @@ define('src/core/router', [
     var _this = this,
       route = _this.routeMap[routeName];
     if (!route) {
-      throw new Error('no route named ' + routeName);
+      throw new Error("no route named " + routeName);
     }
     return _this.goToPath(route.toPath(routeData), extraData, allowHistory);
   };
 
   Router.prototype.findRoute = function(routeName) {
     var _this = this,
-      user = _this.getUser(),
+      user = harold.fetch("user"),
       routes = user ? _this.routes : _this.anonRoutes;
     return findRouteByName(routes, routeName);
   };
@@ -166,7 +162,7 @@ define('src/core/router', [
   function addRoute(router, routes, controller, routeName, routePath, defaultRouteData) {
     var route = Route.create(router, controller, routeName, routePath, defaultRouteData);
     if (router.routeMap[route.name]) {
-      throw new Error('route named `' + route.name + '` already exists');
+      throw new Error("route named `" + route.name + "` already exists");
     }
     router.routeMap[route.name] = route;
     routes.push(route);
@@ -197,19 +193,19 @@ define('src/core/router', [
   }
 
 
-  var bodyEl = jquery('body'),
-    siteLoadingEl = jquery('#siteLoading'),
-    loginEl = jquery('#login-container'),
-    siteEl = jquery('#site-container');
+  var bodyEl = jquery("body"),
+    siteLoadingEl = jquery("#siteLoading"),
+    loginEl = jquery("#login-container"),
+    siteEl = jquery("#site-container");
 
   function showElements(user, cls) {
     siteLoadingEl.remove();
     if (user) {
-      bodyEl.attr('class', cls);
+      bodyEl.attr("class", cls);
       loginEl.hide();
       siteEl.show();
     } else {
-      bodyEl.attr('class', '');
+      bodyEl.attr("class", "");
       loginEl.show();
       siteEl.hide();
     }

@@ -1,14 +1,9 @@
 div(class="acct-item acct-summary",data-bind="toggle:{'may-reload':mayReload}")
-  table(class="fh-wrap")
-    tr
-      td(class="fh-header")
-        div(style="min-height:100px",
-          data-bind="template:{name:systemonlineinfoVm.viewTmpl,data:systemonlineinfoVm}")
-        div(style="height:300px;",
-          data-bind="template:{name:emcontactsVm.viewTmpl,data:emcontactsVm}")
-    tr
-      td(class="fh-body")
-        strong(text="Little Z")
-        div(class="fh-contents")
+  div(data-bind="foreach:statuses")
+    div(class="status-cell status-label",data-bind="text:name,cls:status,attr:{title:title}")
+  div(data-bind="foreach:contractStatuses")
+    div(class="status-cell status-label",data-bind="text:name,cls:status,attr:{title:title}")
+  div(style="margin-top:20px;height:300px;",
+    data-bind="template:{name:emcontactsVm.viewTmpl,data:emcontactsVm}")
 
 div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

@@ -156,7 +156,7 @@ define("src/core/multiselect.vm", [
     selectedValuesChanged(_this.selectedValues.peek());
   }
   utils.inherits(MultiSelectViewModel, BaseViewModel);
-  MultiSelectViewModel.prototype.viewTmpl = "tmpl-multiselect";
+  MultiSelectViewModel.prototype.viewTmpl = "tmpl-core-multiselect";
 
 
   function makeMsvmValueAccessor(valueAccessor) {

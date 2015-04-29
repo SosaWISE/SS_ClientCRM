@@ -50,7 +50,8 @@ html
             <!-- /ko -->
             div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
 
-      div(data-bind="template:{name:'tmpl-notices',data:notify}")
+        div(class="layers dark",data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
+      div(data-bind="template:{name:'tmpl-core-notices',data:notify}")
       div(class="notify-position-toggle",data-bind="cmd:notify.clickToggle")
 
     //- templates

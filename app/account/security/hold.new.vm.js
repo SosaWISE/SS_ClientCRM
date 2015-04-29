@@ -2,6 +2,7 @@ define("src/account/security/hold.new.vm", [
   "src/dataservice",
   "src/ukov",
   "ko",
+  "src/account/acctstore",
   "src/core/combo.vm",
   "src/core/notify",
   "src/core/utils",
@@ -10,6 +11,7 @@ define("src/account/security/hold.new.vm", [
   dataservice,
   ukov,
   ko,
+  acctstore,
   ComboViewModel,
   notify,
   utils,
@@ -29,7 +31,7 @@ define("src/account/security/hold.new.vm", [
     HoldDescription: {
       validators: [
         ukov.validators.isRequired("Note is required"),
-        ukov.validators.maxLength(4000, "Note must be less than {0} characters."),
+        ukov.validators.maxLength(4000, "Note must be {0} characters or less."),
       ],
     },
   };
@@ -75,7 +77,7 @@ define("src/account/security/hold.new.vm", [
     // events
     //
     _this.clickClose = function() {
-      _this.layerResult = null;
+      _this.layerResult = false;
       closeLayer(_this);
     };
     _this.cmdSave = ko.command(function(cb) {
@@ -84,12 +86,8 @@ define("src/account/security/hold.new.vm", [
         return cb();
       }
       var model = _this.data.getValue();
-      dataservice.api_ms.accounts.save({
-        id: _this.acctid,
-        link: "holds",
-        data: model,
-      }, function(val) {
-        _this.layerResult = val;
+      acctstore.create(_this.acctid, "holds", model, function() {
+        _this.layerResult = true;
         closeLayer(_this);
       }, cb);
     });

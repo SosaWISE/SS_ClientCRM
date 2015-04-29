@@ -34,7 +34,7 @@ define("src/hr/user.vm", [
     ]);
 
     _this.mayReload = ko.observable(false);
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.recruits = _this.childs;
 
     _this.showNav = ko.observable(_this.id > 0); // && config.hr.showNav);
@@ -75,15 +75,6 @@ define("src/hr/user.vm", [
         _this.goTo(vm.getRouteData());
       });
     };
-
-    //
-    _this.active.subscribe(function(active) {
-      if (active) {
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
-    });
 
     // test for new recruit
     if (_this.id > 0) {} else {

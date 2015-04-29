@@ -1,58 +1,77 @@
-// conventional paths
-define("src/app", ["src/nimis/app"], function(app) { // alias actual app
-  "use strict";
-  return app;
-});
-define("src/config", ["src/nimis/config"], function(config) { // alias actual config
-  "use strict";
-  return config;
-});
-
-//
-define("src/nimis/bootstrapper", [
-  // load main libs
-  "jquery",
-  "ko",
-  // load plugins
-  "src/core/ko.debug.helpers",
-  "src/core/ko.command",
-  "src/core/ko.bindingHandlers.all",
-
-  "src/core/jsonhelpers",
-  "src/core/dialog.vm",
-  "src/core/layers.vm",
-  "src/core/notify",
-  "src/core/controller.vm",
-  "src/core/dataservice.base",
-  "src/core/joiner",
-  "src/dataservice",
-  "src/nimis/ping",
-  "src/nimis/apilogger",
-  "src/nimis/config", "src/nimis/resources", "src/nimis/errorcodes",
+// nickname harold
+define("howie", [
+  "src/core/harold",
+  "src/nimis/config",
   "src/nimis/app",
 ], function(
-  jquery, ko, // main libs
-  p1, p2, p3, //plugins
-
-  jsonhelpers,
-  DialogViewModel,
-  LayersViewModel,
-  notify,
-  ControllerViewModel,
-  DataserviceBase,
-  joiner,
-  dataservice,
-  ping,
-  apilogger,
-  config, resources, errorcodes,
+  howie,
+  config,
   app
 ) {
   "use strict";
 
-  console.log("Version: ", config.version);
-  console.log("CORS Domain: " + config.serviceDomain);
-  console.log("Log Errors: " + config.logErrors);
-  console.log("OS: " + app.os);
+  // initial setup of fetchers
+  howie.onFetch("app", function() {
+    return app;
+  });
+  howie.onFetch("config", function() {
+    return config;
+  });
+
+  return howie;
+});
+
+define("setup", [
+  // load main libs
+  "jquery", "ko",
+  // load plugins
+  "src/core/ko.debug.helpers",
+  "src/core/ko.command",
+  "src/core/ko.bindingHandlers.all",
+  //
+  "src/account/accache",
+  //
+  "src/nimis/resources",
+  "src/nimis/errorcodes",
+  //
+  "src/core/dialog.vm",
+  "src/core/layers.vm",
+  "src/core/controller.vm",
+  "src/core/dataservice.base",
+  "src/core/jsonhelpers",
+  "src/core/joiner",
+  "src/core/notify",
+  "howie",
+], function(
+  jquery, ko, // main libs
+  p1, p2, p3, //plugins
+  //
+  accache,
+  //
+  resources,
+  errorcodes,
+  //
+  DialogViewModel,
+  LayersViewModel,
+  ControllerViewModel,
+  DataserviceBase,
+  jsonhelpers,
+  joiner,
+  notify,
+  howie
+) {
+  "use strict";
+
+  // add more fetchers
+  howie.onFetch("accache", function() {
+    return accache;
+  });
+
+  var config = howie.fetch("config");
+
+  // set timeouts
+  DataserviceBase.timeout = config.apiTimeout;
+  joiner.Joiner.prototype.timeout = config.joinerTimeout;
 
   ControllerViewModel.titlePrefix = config.titlePrefix;
   ControllerViewModel.titlePostfix = config.titlePostfix;
@@ -63,13 +82,114 @@ define("src/nimis/bootstrapper", [
       "text json": jsonhelpers.parse,
     },
   });
-  // set timeouts
-  DataserviceBase.prototype.timeout = config.apiTimeout;
-  joiner.Joiner.prototype.timeout = config.joinerTimeout;
 
+  ControllerViewModel.addManualReloadListener();
+});
+
+//
+define("src/nimis/bootstrapper", [
+  "setup",
+  "jquery", "ko",
+  "src/nimis/apilogger",
+  "src/dataservice",
+  "src/core/notify",
+  "src/core/authorize",
+  "src/core/storage",
+  "src/core/utils",
+  "howie",
+], function(
+  setup,
+  jquery, ko,
+  apilogger,
+  dataservice,
+  notify,
+  authorize,
+  storage,
+  utils,
+  howie
+) {
+  "use strict";
+
+  var config = howie.fetch("config");
+  var app = howie.fetch("app");
+
+  console.log("Version: ", config.version);
+  console.log("CORS Domain: " + config.serviceDomain);
+  console.log("Log Errors: " + config.logErrors);
+  console.log("OS: " + app.os);
+
+  // user authorization
+  var setUser = (function() {
+    //
+    var user = null;
+    howie.onFetch("user", function() {
+      return user;
+    });
+    // howie.on("user:set", function(val) {
+    //   howie.send("user", user = val);
+    // });
+    function setUser(newUser) {
+      user = newUser;
+      howie.send("user", user);
+    }
+
+    function login(destPath, data, cb) {
+      dataservice.user.auth(data, utils.safeCallback(cb, function(err, resp) {
+        if (err) {
+          console.error(err);
+          return notify.error(err, 10);
+        }
+        var authResult = resp.Value;
+        var newUser = authResult.User;
+        if (user && user.Username !== newUser.Username) {
+          console.warn("attempted to change username");
+          storage.setItem("auth", authResult, true);
+          return;
+        }
+        // silently set user
+        user = newUser;
+        // store session id
+        storage.setItem("auth", authResult);
+        // notify user has changed
+        newUser.destPath = destPath;
+        setUser(newUser);
+        //
+        // once there is a user, destroy the login forms
+        app.login(null);
+        jquery("#login-container").remove();
+        // incase it didn"t get moved before the user was set
+        jquery("#loginform").remove();
+      }));
+    }
+    app.onLogin = authorize.onLogin = login;
+    //
+    function logout(cb) {
+      // logout without caring about response
+      dataservice.user.logout(cb);
+      // let the request start
+      window.setTimeout(function() {
+        // remove session id (effectively logging the user out)
+        storage.setItem("auth", null);
+        // call callback
+        cb();
+      }, 100);
+    }
+    app.onLogout = authorize.onLogout = logout;
+    //
+    function actionRequest(data, setter, cb) {
+      dataservice.api_ac.actionRequests.save({
+        data: data,
+      }, setter, cb);
+    }
+    authorize.onActionRequest = actionRequest;
+
+    return setUser;
+  })();
+
+  // init app
+  app.init();
   // start ko (since notify can"t show anything without it)
   ko.applyBindings(app, document.getElementById("main"));
-
   // overwrite onerror function set in index.js
   window.onerror = function(msg, url, line, column, ex) {
     // overwrite message with message and stack trace
@@ -95,12 +215,7 @@ define("src/nimis/bootstrapper", [
     notify.error(err);
   };
 
-  var deps = [];
-  if (config.useMocks) {
-    deps = ["mock/index"];
-  } else {
-    deps = [];
-  }
+  var deps = (config.useMocks) ? ["mock/index"] : [];
   require(deps, function(mock) {
     if (mock) {
       mock({
@@ -109,26 +224,12 @@ define("src/nimis/bootstrapper", [
       }, config);
     }
 
-    app.user.subscribe(function(user) {
-      if (user) {
-        // once there is a user, destroy the login forms (for security purposes)
-        app.login(null);
-        jquery("#login-container").remove();
-        // incase it didn"t get moved before the user was set
-        jquery("#loginform").remove();
-        // start pinging to keep session alive
-        ping.start("ping");
-      } else {
-        ping.stop();
-      }
-    });
-
     dataservice.session.start("", function(err, resp) {
       if (err) {
         notify.error(err);
       } else {
         // if we are authenticated, this will log us in
-        app.setUser(resp.Value);
+        setUser(resp.Value);
       }
     });
     //
@@ -136,6 +237,4 @@ define("src/nimis/bootstrapper", [
       console.log("sessionData:", JSON.stringify(resp, null, "  "));
     });
   });
-
-  ControllerViewModel.addManualReloadListener();
 });

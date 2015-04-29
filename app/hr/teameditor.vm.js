@@ -1,5 +1,4 @@
 define('src/hr/teameditor.vm', [
-  'src/config',
   'src/hr/hr-cache',
   'src/hr/teamsearch.vm',
   'src/core/combo.vm',
@@ -11,7 +10,6 @@ define('src/hr/teameditor.vm', [
   'src/core/controller.vm',
   'ko'
 ], function(
-  config,
   hrcache,
   TeamSearchViewModel,
   ComboViewModel,
@@ -71,7 +69,7 @@ define('src/hr/teameditor.vm', [
       // 'seasonid',
     ]);
 
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.data = ukov.wrap({
       TeamID: _this.teamid || 0,
     }, schema);
@@ -131,16 +129,6 @@ define('src/hr/teameditor.vm', [
       saveTeam(_this, cb);
     }, function(busy) {
       return !busy && !_this.data.isClean();
-    });
-
-    //
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the field
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
     });
   }
   utils.inherits(TeamEditorViewModel, ControllerViewModel);

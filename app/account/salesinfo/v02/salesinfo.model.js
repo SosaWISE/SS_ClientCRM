@@ -1,7 +1,7 @@
 define("src/account/salesinfo/v02/salesinfo.model", [
   "src/account/default/rep.find.vm",
   "src/account/salesinfo/options",
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "src/dataservice",
   "ko",
   "src/ukov",
@@ -11,7 +11,7 @@ define("src/account/salesinfo/v02/salesinfo.model", [
 ], function(
   RepFindViewModel,
   salesInfoOptions,
-  accountscache,
+  mscache,
   dataservice,
   ko,
   ukov,
@@ -29,20 +29,25 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     ]);
     var handler = options.handler;
 
-    var data = ukov.wrap({}, schema);
+    var data = ukov.wrap({
+      RequirePkg: !!options.requirePkg,
+      UseRequired: !!options.useRequired,
+    }, schema);
+    data.RequirePkg.ignore(true);
+    data.UseRequired.ignore(true);
 
     data.AccountCreationTypeCvm = new ComboViewModel({
       selectedValue: data.AccountCreationTypeId,
-      fields: accountscache.metadata("accountCreationTypes"),
-    }).subscribe(accountscache.getList("accountCreationTypes"), handler);
+      fields: mscache.metadata("accountCreationTypes"),
+    }).subscribe(mscache.getList("accountCreationTypes"), handler);
     data.showExistingEquipment = ko.computed(function() {
       return data.AccountCreationTypeCvm.selectedValue() === "TKO";
     });
 
     data.PaymentTypeCvm = new ComboViewModel({
       selectedValue: data.PaymentTypeId,
-      fields: accountscache.metadata("paymentTypes"),
-    }).subscribe(accountscache.getList("paymentTypes"), handler);
+      fields: mscache.metadata("paymentTypes"),
+    }).subscribe(mscache.getList("paymentTypes"), handler);
 
     data.BillingDayCvm = new ComboViewModel({
       selectedValue: data.BillingDay,
@@ -51,8 +56,8 @@ define("src/account/salesinfo/v02/salesinfo.model", [
 
     data.AccountPackageCvm = new ComboViewModel({
       selectedValue: data.AccountPackageId,
-      fields: accountscache.metadata("packages"),
-    }).subscribe(accountscache.getList("packages"), handler);
+      fields: mscache.metadata("packages"),
+    }).subscribe(mscache.getList("packages"), handler);
     data.HasPackageUpgradesCvm = new ComboViewModel({
       selectedValue: data.HasPackageUpgrades,
       fields: options.yesNoOptions,
@@ -60,9 +65,9 @@ define("src/account/salesinfo/v02/salesinfo.model", [
 
     data.load = function(cb) {
       var join = joiner().after(cb);
-      accountscache.ensure("accountCreationTypes", join.add());
-      accountscache.ensure("paymentTypes", join.add());
-      accountscache.ensure("packages", join.add());
+      mscache.ensure("accountCreationTypes", join.add());
+      mscache.ensure("paymentTypes", join.add());
+      mscache.ensure("packages", join.add());
     };
 
 
@@ -124,6 +129,8 @@ define("src/account/salesinfo/v02/salesinfo.model", [
   var max256 = ukov.validators.maxLength(256);
   var schema = {
     _model: true,
+    RequirePkg: {},
+    UseRequired: {},
 
     ID: {},
     PaymentTypeId: {}, // Billing method
@@ -135,15 +142,19 @@ define("src/account/salesinfo/v02/salesinfo.model", [
         ukov.validators.isRequired("Package is required"),
       ]
     },
+    // PaymentMethodId: {}, // cannot edit this directly
+    // InitialPaymentMethodId: {}, // cannot edit this directly
     TechId: {},
     SalesRepId: {},
     AccountFundingStatusId: {},
+    AccountPayoutTypeId: {},
     BillingDay: {}, // Billing Day of Month
     Email: {
       converter: nullStrConverter,
       validators: [max256, ukov.validators.isEmail()],
     },
     IsMoni: {},
+    IsTakeOver: {},
     SystemTypeId: {}, // (NEW|UPG|TKO) // IsTakeOver: {},
     IsOwner: {},
     InstallDate: {
@@ -159,9 +170,9 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     },
     ContractSignedDate: {
       converter: dateConverter,
-      // validators: [
-      //   ukov.validators.isRequired("Contract Date is required"),
-      // ]
+      validators: [
+        ukov.validators.maybeRequired("Contract Date is Required", "UseRequired"),
+      ]
     },
     CancelDate: {
       converter: dateConverter,
@@ -175,9 +186,10 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     ApproverID: {},
     NOCDate: {
       converter: dateConverter,
-      // validators: [
-      //   ukov.validators.isRequired("NOC Date is required"),
-      // ]
+      validators: [
+        ukov.validators.maybeRequired("NOC Date is Required", "UseRequired"),
+
+      ]
     },
     OptOutCorporate: {
       converter: boolConverter,
@@ -185,6 +197,8 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     OptOutAffiliate: {
       converter: boolConverter,
     },
+    Waived1stmonth: {},
+    RMRIncreasePoints: {},
     AccountCreationTypeId: {},
     HasPackageUpgrades: {},
     ModifiedOn: {},

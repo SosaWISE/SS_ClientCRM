@@ -26,11 +26,11 @@
         var hasVal = ko.unwrap(valueAccessor()),
           el = jquery(element);
         if (hasVal) {
-          // setTimeout(function() { // needed for browser transitions????
+          // window.setTimeout(function() { // needed for browser transitions????
           el.addClass(cls);
           // }, 0);
         } else {
-          // setTimeout(function() {
+          // window.setTimeout(function() {
           el.removeClass(cls);
           // }, 0);
         }
@@ -48,11 +48,11 @@
       Object.keys(obj).forEach(function(cls) {
         var hasVal = ko.unwrap(obj[cls]);
         if (hasVal) {
-          // setTimeout(function() { // needed for browser transitions
+          // window.setTimeout(function() { // needed for browser transitions
           el.addClass(cls);
           // }, 0);
         } else {
-          // setTimeout(function() {
+          // window.setTimeout(function() {
           el.removeClass(cls);
           // }, 0);
         }
@@ -92,7 +92,8 @@
   //---------------------------
   //@NOTE: this only works one time
   ko.bindingHandlers.swapLoginFields = {
-    init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+    init: function(element, valueAccessor) {
+      var viewModel = ko.unwrap(valueAccessor());
       element = jquery(element);
       var loginformEl = document.getElementById("loginform");
       // replace placeholders with the actual fields from hidden form
@@ -104,19 +105,20 @@
   };
 
 
-  // setClass
+  // cls
   //---------------------------
-  ko.bindingHandlers.setClass = {
+  ko.bindingHandlers.cls = {
     update: function(element, valueAccessor) {
       var cls = ko.unwrap(valueAccessor()),
         el = jquery(element);
-      if (valueAccessor._prevCls) {
-        el.removeClass(valueAccessor._prevCls);
+      var prevCls = el.data("prevCls");
+      if (prevCls) {
+        el.removeClass(prevCls);
       }
       if (cls) {
-        valueAccessor._prevCls = cls;
         el.addClass(cls);
       }
+      el.data("prevCls", cls);
     },
   };
 
@@ -239,13 +241,15 @@
   //---------------------------
   ko.bindingHandlers.select = {
     update: function(element, valueAccessor) {
-      var observable = valueAccessor();
-      if (observable()) {
+      var value = valueAccessor();
+      if (ko.unwrap(value)) {
         element.focus();
         if (utils.isFunc(element.select)) {
           element.select();
         }
-        observable(false);
+        if (ko.isObservable(value)) {
+          value(false);
+        }
       }
     },
   };

@@ -1,29 +1,41 @@
-define("src/account/accounts-cache", [
+define("src/account/mscache", [
   "src/dataservice",
-  "src/core/cacher",
+  "src/core/typecacher",
 ], function(
   dataservice,
-  cacher
+  typecacher
 ) {
   "use strict";
 
-  var prefix = "accounts-";
+  var prefix = "ms-";
 
-  var accountscache = {
+  var mscache = {
     getList: function(name) {
-      return cacher.getList(prefix, name, metaMap);
+      return typecacher.getList(prefix, name, metaMap);
     },
     getMap: function(name) {
-      return cacher.getMap(prefix, name, metaMap);
+      return typecacher.getMap(prefix, name, metaMap);
     },
     ensure: function(name, cb) {
-      return cacher.ensure(prefix, name, metaMap,
+      return typecacher.ensure(prefix, name, metaMap,
         hardcodedCache, dataservice.api_ms, cb);
     },
     metadata: function(name) {
       return metaMap[name] || defaultMeta;
     },
   };
+
+  function compareName(a, b) {
+    a = a.Name;
+    b = b.Name;
+    var result = 0;
+    if (a < b) {
+      result = -1;
+    } else if (a > b) {
+      result = 1;
+    }
+    return result;
+  }
 
   var defaultMeta = {
     value: "ID",
@@ -44,9 +56,40 @@ define("src/account/accounts-cache", [
     "types/friendsAndFamily": {
       value: "ID",
       text: "Name",
+      comparer: compareName,
       read: function(cb) {
         dataservice.api_ms.types.read({
           link: "friendsAndFamily",
+        }, null, cb);
+      },
+    },
+    "types/accountCancelReasons": {
+      value: "ID",
+      text: "Name",
+      comparer: compareName,
+      read: function(cb) {
+        dataservice.api_ms.types.read({
+          link: "accountCancelReasons",
+        }, null, cb);
+      },
+    },
+    "holds/catg1s": {
+      value: "ID",
+      text: "Name",
+      comparer: compareName,
+      read: function(cb) {
+        dataservice.api_ms.holds.read({
+          link: "catg1s",
+        }, null, cb);
+      },
+    },
+    "holds/catg2s": {
+      value: "ID",
+      text: "Name",
+      comparer: compareName,
+      read: function(cb) {
+        dataservice.api_ms.holds.read({
+          link: "catg2s",
         }, null, cb);
       },
     },
@@ -136,5 +179,5 @@ define("src/account/accounts-cache", [
     ],
   };
 
-  return accountscache;
+  return mscache;
 });

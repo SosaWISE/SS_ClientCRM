@@ -96,7 +96,7 @@ define("src/account/security/alarmdotcom.swapmodem.vm", [
   // AlarmDotComSwapModemViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
   //   // var _this = this,
   //   var cb = join.add();
-  //   setTimeout(function() {
+  //   window.setTimeout(function() {
   //     //@TODO: load real data
   //     cb();
   //   }, 2000);

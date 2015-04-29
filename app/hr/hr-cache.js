@@ -1,11 +1,11 @@
 define("src/hr/hr-cache", [
   "src/dataservice",
   "ko",
-  "src/core/cacher",
+  "src/core/typecacher",
 ], function(
   dataservice,
   ko,
-  cacher
+  typecacher
 ) {
   "use strict";
 
@@ -13,13 +13,13 @@ define("src/hr/hr-cache", [
 
   var hrcache = {
     getList: function(name) {
-      return cacher.getList(prefix, name, metaMap);
+      return typecacher.getList(prefix, name, metaMap);
     },
     getMap: function(name) {
-      return cacher.getMap(prefix, name, metaMap);
+      return typecacher.getMap(prefix, name, metaMap);
     },
     ensure: function(name, cb) {
-      return cacher.ensure(prefix, name, metaMap,
+      return typecacher.ensure(prefix, name, metaMap,
         hardcodedCache, dataservice.hr, cb);
     },
     metadata: function(name) {

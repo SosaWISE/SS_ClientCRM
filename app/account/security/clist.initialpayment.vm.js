@@ -1,5 +1,5 @@
 define("src/account/security/clist.initialpayment.vm", [
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "src/account/salesinfo/v02/salesinfo.model",
   "src/account/default/payby.vm",
   "src/account/default/address.validate.vm",
@@ -7,7 +7,6 @@ define("src/account/security/clist.initialpayment.vm", [
   "src/dataservice",
   "ko",
   "src/ukov",
-  "src/core/subscriptionhandler",
   "src/core/combo.vm",
   "src/core/joiner",
   "src/core/strings",
@@ -15,7 +14,7 @@ define("src/account/security/clist.initialpayment.vm", [
   "src/core/controller.vm",
   "src/core/utils",
 ], function(
-  accountscache,
+  mscache,
   salesinfo_model,
   PayByViewModel,
   AddressValidateViewModel,
@@ -23,7 +22,6 @@ define("src/account/security/clist.initialpayment.vm", [
   dataservice,
   ko,
   ukov,
-  SubscriptionHandler,
   ComboViewModel,
   joiner,
   strings,
@@ -39,7 +37,7 @@ define("src/account/security/clist.initialpayment.vm", [
     ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
     _this.mayReload = ko.observable(false);
-    _this.handler = new SubscriptionHandler();
+    _this.initHandler();
 
     // _this.breakdown = ko.observable();
     _this.initialPaymentMethod = ko.observable();
@@ -63,10 +61,6 @@ define("src/account/security/clist.initialpayment.vm", [
       handler: _this.handler,
       yesNoOptions: _this.yesNoOptions,
     });
-    //@NOTE: compat with code copied from contract.vm.js...
-    _this.salesInfoExtras = {
-      repModel: _this.salesinfo.repModel,
-    };
 
 
     //
@@ -103,7 +97,7 @@ define("src/account/security/clist.initialpayment.vm", [
       }
     };
     _this.clickAddress = function(leadVm) {
-      var repModel = _this.salesInfoExtras.repModel.peek();
+      var repModel = _this.salesinfo.repModel.peek();
       if (!repModel) {
         notify.warn("Please select a Sales Rep first", null, 7);
         return;
@@ -149,7 +143,7 @@ define("src/account/security/clist.initialpayment.vm", [
       });
     };
     _this.clickQualify = function(leadVm) {
-      var repModel = _this.salesInfoExtras.repModel.peek();
+      var repModel = _this.salesinfo.repModel.peek();
       if (!repModel) {
         notify.warn("Please select a Sales Rep first", null, 7);
         return;
@@ -237,7 +231,7 @@ define("src/account/security/clist.initialpayment.vm", [
           }
         }).after(cb);
       //
-      accountscache.ensure("localizations");
+      mscache.ensure("localizations");
       //
       _this.salesinfo.load(subjoin.add());
       load_acctPaymentMethod(_this.acctid, "InitialPaymentMethod", _this.initialPaymentMethod, subjoin.add());
@@ -366,8 +360,8 @@ define("src/account/security/clist.initialpayment.vm", [
     //   notify.warn(_this.salesInfo.errMsg(), null, 7);
     //   return cb();
     // }
-    // if (!_this.salesInfoExtras.isValid.peek()) {
-    //   notify.warn(_this.salesInfoExtras.errMsg(), null, 7);
+    // if (!_this.salesinfo.isValid.peek()) {
+    //   notify.warn(_this.salesinfo.errMsg(), null, 7);
     //   return cb();
     // }
     // if (!_this.systemDetails.isValid.peek()) {

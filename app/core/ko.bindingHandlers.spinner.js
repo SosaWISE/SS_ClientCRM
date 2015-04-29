@@ -159,7 +159,7 @@ define('src/core/ko.bindingHandlers.spinner', [
     showList.forEach(function(item) {
       drawLines(item.ctx, item.colorRgb);
     });
-    timeoutId = setTimeout(function() {
+    timeoutId = window.setTimeout(function() {
       timeoutId = 0;
       if (showList.length) {
         animate();

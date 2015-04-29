@@ -13,7 +13,7 @@ define('mock/dataservices/user.mock', [
     }
 
     UserDataservice.prototype.auth = function(data, cb) {
-      setTimeout(function() {
+      window.setTimeout(function() {
         var resp = {
           Code: 0,
           Message: '',

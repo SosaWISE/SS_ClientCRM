@@ -1,6 +1,6 @@
-define('src/core/helpers', [
-  'ko',
-  'src/core/utils',
+define("src/core/helpers", [
+  "ko",
+  "src/core/utils",
 ], function(
   ko,
   utils
@@ -16,14 +16,16 @@ define('src/core/helpers', [
         loading = ko.observable(false),
         loadErr = ko.observable(false);
 
-      function once(cb) {
+      function once(cb, ensureOne) {
         if (loaded.peek()) {
           if (utils.isFunc(cb)) {
             cb();
           }
         } else {
           if (utils.isFunc(cb)) {
-            callbacks.push(cb);
+            if (!ensureOne || (callbacks.indexOf(cb) < 0)) {
+              callbacks.push(cb);
+            }
           }
 
           if (!loading.peek()) {
@@ -37,7 +39,7 @@ define('src/core/helpers', [
 
       function loadCb(err, bubbleErr) {
         if (!loading.peek()) {
-          console.log('onetimer: loadCb called but wasn\'t loading');
+          console.log("onetimer: loadCb called but was not loading");
           return;
         }
         loading(false);

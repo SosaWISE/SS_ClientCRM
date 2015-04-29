@@ -1,0 +1,14 @@
+div(class="core-login")
+  h2(data-bind="text:title")
+  ul(class="edit-form")
+    li
+      input(type="text",placeholder="username",
+        data-bind="select:focus1,value:username,valueUpdate:'keyup',attr:{disabled:usernameDisabled}")
+    li
+      input(type="password",placeholder="password",
+        data-bind="select:focus2,value:password,valueUpdate:'keyup'")
+
+  div(class="actions")
+    a(class="btn bg",tabindex="0",data-bind="cmd:cmdLogin") Login
+
+  div(data-bind="spinner:cmdLogin.busy,spinner-rgb:'white'")

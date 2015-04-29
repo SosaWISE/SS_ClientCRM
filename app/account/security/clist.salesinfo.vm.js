@@ -2,7 +2,7 @@ define("src/account/security/clist.salesinfo.vm", [
   "src/account/salesinfo/v02/salesinfo.vm",
   "src/account/salesinfo/v01/salesinfo.vm",
   "ko",
-  "src/config",
+  "howie",
   "src/core/numbers",
   "src/core/utils",
   "src/core/controller.vm",
@@ -10,7 +10,7 @@ define("src/account/security/clist.salesinfo.vm", [
   SalesInfoV02ViewModel,
   SalesInfoV01ViewModel,
   ko,
-  config,
+  howie,
   numbers,
   utils,
   ControllerViewModel
@@ -38,12 +38,12 @@ define("src/account/security/clist.salesinfo.vm", [
     var acctid = routeData.id;
 
     var vm;
-    if (acctid <= config.salesInfosMax.v01) {
+    if (acctid <= howie.fetch("config").salesInfosMax.v01) {
       vm = new SalesInfoV01ViewModel({
         pcontroller: _this,
         layersVm: _this.layersVm,
       });
-    } else if (acctid <= config.salesInfosMax.v02) {
+    } else if (acctid <= howie.fetch("config").salesInfosMax.v02) {
       vm = new SalesInfoV02ViewModel({
         pcontroller: _this,
         layersVm: _this.layersVm,
