@@ -23,6 +23,8 @@ define("src/admin/authcontrol.gvm", [
       groupItemMetadataProvider: new Slick.Data.GroupItemMetadataProvider({
         toggleCollapsedCssClass: "fa fa-caret-right",
         toggleExpandedCssClass: "fa fa-caret-down",
+        // // collapsing has some issues
+        // enableExpandCollapse: false,
       }),
     };
     initDataView(_this, filterFields, dataViewOptions);
@@ -92,10 +94,10 @@ define("src/admin/authcontrol.gvm", [
     dv.reSort();
     dv.endUpdate();
   };
-  AuthControlGridViewModel.prototype.addItem = function(item) {
-    var dv = this.dv;
-    dv.addItem(item);
-  };
+  // AuthControlGridViewModel.prototype.addItem = function(item) {
+  //   var dv = this.dv;
+  //   dv.addItem(item);
+  // };
 
   AuthControlGridViewModel.prototype.getGroupItems = function(groupName) {
     var dv = this.dv;
@@ -131,10 +133,10 @@ define("src/admin/authcontrol.gvm", [
     dv.options = dataViewOptions;
     _this.dv = dv;
 
-    function groupNameFilter(item /*, args*/ ) {
-      return !groupNames.length || groupNames.some(function(groupName) {
+    function filter(item /*, args*/ ) {
+      return !item.IsDeleted && (!groupNames.length || groupNames.some(function(groupName) {
         return item.GroupName === groupName;
-      });
+      }));
     }
     var groupNames = [];
     _this.setGroupNames = function(newGroupNames) {
@@ -145,7 +147,7 @@ define("src/admin/authcontrol.gvm", [
     dv.beginUpdate();
     //
     dv.setItems([], "sid");
-    dv.setFilter(groupNameFilter);
+    dv.setFilter(filter);
 
     // sorting order
     var sortFields = [

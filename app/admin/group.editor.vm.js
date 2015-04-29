@@ -1,21 +1,23 @@
 define("src/admin/group.editor.vm", [
+  "src/admin/admincache",
   "src/core/multiselect.vm",
   "src/core/notify",
   "src/core/utils",
   "src/core/combo.vm",
   "ko",
-  "src/ukov",
+  // "src/ukov",
   "src/dataservice",
   "src/core/strings",
   "src/core/joiner",
   "src/core/base.vm",
 ], function(
+  admincache,
   MultiSelectViewModel,
   notify,
   utils,
   ComboViewModel,
   ko,
-  ukov,
+  // ukov,
   dataservice,
   strings,
   joiner,
@@ -29,65 +31,23 @@ define("src/admin/group.editor.vm", [
     utils.assertProps(_this, [
       "groupName",
       "groupItems",
-      "allActions",
-      "allApplications",
     ]);
+    _this.mixinLoad();
     _this.initFocusFirst();
 
-    _this.data = ukov.wrap({
-      groupActions: [],
-      groupApplications: [],
-    }, {
-      _model: true,
-      groupActions: {},
-      groupApplications: {},
-    });
-
-    _this.actionsMsvm = new MultiSelectViewModel({
-      selectedValues: _this.data.groupActions,
-      list: _this.allActions,
-      fields: {
-        id: "ActionID",
-      }
-    });
-    _this.appsMsvm = new MultiSelectViewModel({
-      selectedValues: _this.data.groupApplications,
-      list: _this.allApplications,
-      fields: {
-        id: "ApplicationID",
-      }
-    });
-
-    _this.layerResult = {
-      groupActions: _this.groupItems.filter(function(item) {
-        return item.RefType === "Actions";
-      }),
-      groupApplications: _this.groupItems.filter(function(item) {
-        return item.RefType === "Applications";
-      }),
-    };
-
-
-    var val;
-    //
-    val = _this.layerResult.groupActions.map(toRefId);
-    _this.actionsMsvm.selectedValues(val);
-    _this.actionsMsvm.selectedValues.markClean(val, true);
-    //
-    val = _this.layerResult.groupApplications.map(toRefId);
-    _this.appsMsvm.selectedValues(val);
-    _this.appsMsvm.selectedValues.markClean(val, true);
-
+    _this.actionsMsvm = new MultiSelectViewModel({});
+    _this.appsMsvm = new MultiSelectViewModel({});
 
     //
     // events
     //
     _this.clickCancel = function() {
+      _this.layerResult = null;
       closeLayer(_this);
     };
 
     _this.cmdSave = ko.command(function(cb) {
-      saveData(_this, _this.groupName, cb);
+      saveGroupItems(_this, cb);
     }, function(busy) {
       return !busy;
     });
@@ -109,63 +69,104 @@ define("src/admin/group.editor.vm", [
   GroupEditorViewModel.prototype.closeMsg = function() { // overrides base
     var _this = this,
       msg;
-    if (_this.cmdSave.busy()) {
+    if (_this.cmdSave.busy() && !_this.layerResult) {
       msg = "Please wait for save to finish.";
     }
     return msg;
   };
+  GroupEditorViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+    var _this = this;
 
-  function saveData(_this, groupName, cb) {
-    if (!_this.data.isValid.peek()) {
-      notify.warn(_this.data.errMsg.peek(), null, 7);
-      return cb();
-    }
-
-    var join = joiner();
-    saveGroupData(_this.actionsMsvm, "groupActions", groupName, function(val) {
-      _this.layerResult.groupActions = GroupEditorViewModel.afterGroupItemsLoaded("act", val);
-    }, join.add());
-    saveGroupData(_this.appsMsvm, "groupApplications", groupName, function(val) {
-      _this.layerResult.groupApplications = GroupEditorViewModel.afterGroupItemsLoaded("app", val);
-    }, join.add());
+    admincache.ensure("actions", join.add());
+    admincache.ensure("applications", join.add());
 
     join.when(function(err) {
       if (err) {
-        return cb(err);
+        return;
       }
-      cb();
-      closeLayer(_this);
+      //
+      _this.actionsMsvm.list(admincache.getList("actions").peek());
+      _this.appsMsvm.list(admincache.getList("applications").peek());
+      //
+      function toRefId(item) {
+        return item.RefId;
+      }
+      _this.actionsMsvm.selectedValues(_this.groupItems.filter(function(item) {
+        return item.RefType === "Actions" && !item.IsDeleted;
+      }).map(toRefId));
+      _this.appsMsvm.selectedValues(_this.groupItems.filter(function(item) {
+        return item.RefType === "Applications" && !item.IsDeleted;
+      }).map(toRefId));
     });
-  }
+  };
 
-  function saveGroupData(msvm, name, groupName, setter, cb) {
-    var data = msvm.selectedValues;
-    // if (data.isClean()) {
-    //   // nothing to save
-    //   return cb();
-    // }
+  function saveGroupItems(_this, cb) {
+    var selectedValues = []
+      .concat(_this.actionsMsvm.selectedValues.peek())
+      .concat(_this.appsMsvm.selectedValues.peek());
+    var selectedMap = {};
+    selectedValues.forEach(function(refId) {
+      selectedMap[refId] = true;
+    });
+    //
+    var itemMap = {};
+    _this.groupItems.forEach(function(item) {
+      itemMap[item.RefId] = item;
+    });
 
-    var list = data.getValue();
-    dataservice.api_admin[name].save({
-      id: groupName,
-      data: list,
-    }, function(val) {
-      // call setter for layerResult
-      setter(val);
-      // set
-      val = val.map(toRefId);
-      data.setValue(val);
-      data.markClean(val, true);
+    // find groups that have changed
+    function tryAddToChangedList(refType, refId) {
+      var isDeleted = !selectedMap[refId];
+      var item = itemMap[refId];
+      if (!item) {
+        if (isDeleted) {
+          // do not create if it is just going to be deleted
+          return;
+        }
+        // add new
+        item = {
+          // ID: 0,
+          GroupName: _this.groupName,
+          RefType: refType,
+          RefId: refId,
+          IsDeleted: false,
+          ModifiedOn: new Date(),
+        };
+      } else if (item.IsDeleted === isDeleted) {
+        // item is not changing
+        return;
+      }
+      // set deleted
+      item.IsDeleted = isDeleted;
+      changedList.push(item);
+    }
+    var changedList = [];
+    _this.actionsMsvm.list.peek().forEach(function(wrapped) {
+      tryAddToChangedList("Actions", wrapped.item.ID);
+    });
+    _this.appsMsvm.list.peek().forEach(function(wrapped) {
+      tryAddToChangedList("Applications", wrapped.item.ID);
+    });
+
+    if (!changedList.length) {
+      // nothing to save
+      cb(); // call callback and then cancel
+      return _this.clickCancel();
+    }
+
+    dataservice.api_admin.groupItems.save({
+      id: _this.groupName,
+      data: changedList,
+    }, function(list) {
+      _this.layerResult = GroupEditorViewModel.afterGroupItemsLoaded(list);
+      closeLayer(_this);
     }, cb);
   }
 
-  function toRefId(item) {
-    return item.RefId;
-  }
-
-  GroupEditorViewModel.afterGroupItemsLoaded = function(prefix, groupItems) {
+  GroupEditorViewModel.afterGroupItemsLoaded = function(groupItems) {
     groupItems.forEach(function(item) {
-      item.sid = prefix + item.ID;
+      item.sid = item.RefType.substr(0, 3) + item.ID;
+      // item.sid = item.RefType + ":" + item.ID;
     });
     return groupItems;
   };

@@ -48,11 +48,10 @@ define("src/dataservice", [
     api_ticket: createService("api/ticket", [
       "teams",
     ]),
-    api_admin: createService("api_admin", [
+    api_admin: createService("api/admin", [
       "actions",
       "applications",
-      "groupActions",
-      "groupApplications",
+      "groupItems",
       "users",
     ]),
 

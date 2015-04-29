@@ -1,4 +1,5 @@
 define("src/admin/authcontrol.vm", [
+  "src/admin/admincache",
   "src/admin/group.editor.vm",
   "src/admin/authcontrol.gvm",
   "src/dataservice",
@@ -8,6 +9,7 @@ define("src/admin/authcontrol.vm", [
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
+  admincache,
   GroupEditorViewModel,
   AuthControlGridViewModel,
   dataservice,
@@ -69,11 +71,9 @@ define("src/admin/authcontrol.vm", [
       _this.layersVm.show(new GroupEditorViewModel({
         groupName: groupName,
         groupItems: _this.gvm.getGroupItems(groupName),
-        allActions: _this.actions,
-        allApplications: _this.applications,
-      }), function(result) {
-        if (result) {
-          _this.gvm.setGroupItems(groupName, result.groupActions.concat(result.groupApplications));
+      }), function(groupItems) {
+        if (groupItems) {
+          _this.gvm.setGroupItems(groupName, groupItems);
         }
       });
     };
@@ -84,29 +84,29 @@ define("src/admin/authcontrol.vm", [
   AuthControlViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
-    load_admin_list("actions", function(val) {
-      _this.actions = val;
-    }, join.add());
-    load_admin_list("applications", function(val) {
-      _this.applications = val;
-    }, join.add());
-    load_admin_list("groupActions", function(val) {
-      _this.groupActions = GroupEditorViewModel.afterGroupItemsLoaded("act", val);
-    }, join.add());
-    load_admin_list("groupApplications", function(val) {
-      _this.groupApplications = GroupEditorViewModel.afterGroupItemsLoaded("app", val);
+    admincache.ensure("actions", join.add());
+    admincache.ensure("applications", join.add());
+
+    var tmpGroupItems;
+    load_groupItems(function(list) {
+      tmpGroupItems = GroupEditorViewModel.afterGroupItemsLoaded(list);
     }, join.add());
 
     join.when(function(err) {
       if (err) {
         return;
       }
-      _this.gvm.setItems(_this.groupActions.concat(_this.groupApplications));
+      _this.gvm.setItems(tmpGroupItems);
+      // _this.gvm.setItems(tmpGroupActions.concat(tmpGroupApplications));
     });
   };
 
-  function load_admin_list(name, setter, cb) {
-    dataservice.api_admin[name].read({}, setter, cb);
+  // function load_admin_list(name, setter, cb) {
+  //   dataservice.api_admin[name].read({}, setter, cb);
+  // }
+
+  function load_groupItems(setter, cb) {
+    dataservice.api_admin.groupItems.read({}, setter, cb);
   }
 
   function load_userGroups(username, setter, cb) {
