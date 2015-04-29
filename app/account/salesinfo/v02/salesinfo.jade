@@ -53,7 +53,7 @@ div(class="acct-item v02-sales-info")
             div(class="line")
               div(class="letter",data-bind="text:num()")
               div(class="question") Activation Fee
-              div(class="answer")
+              div(class="answer credit",data-bind="crg:lockActivationFee()&&creditGroup(),attr:{title:creditGroup()}")
                 input(type="text",class="inputField",
                   data-bind="ukov:invoice.activation.fee,likecurrencyvalue:invoice.activation.fee")
 

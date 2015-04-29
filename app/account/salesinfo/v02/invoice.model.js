@@ -198,31 +198,35 @@ define("src/account/salesinfo/v02/invoice.model", [
 
     return data;
   }
-  // var rangeValidationGroup = {
-  //   keys: ["fee", "range"],
-  //   // no validators needed here, just need this in order to revalidate fee whenever range changes
-  //   validators: [],
-  // };
+  var rangeValidationGroup = {
+    keys: ["fee", "range"],
+    // no validators needed here, just need this in order to revalidate fee whenever range changes
+    validators: [],
+  };
   var computedInvItemSchema = {
     _model: true,
     range: {
-      // validationGroup: rangeValidationGroup,
+      validationGroup: rangeValidationGroup,
     },
     fee: {
       converter: ukov.converters.number(2, "Invalid fee"),
       validators: [
         ukov.validators.isRequired(),
         // ukov.validators.isInRange(0, 999, "Invalid amount"),
-        // function(val, model) {
-        //   var range = model.range || {};
-        //   var min = range.min || 0;
-        //   var max = range.max || 999;
-        //   if (val < min || max < val) {
-        //     return strings.format("Must be between {0:$} and {1:$}", min, max);
-        //   }
-        // }
+        function(val, model) {
+          var range = model.range || {};
+          var min = range.min || 0;
+          var max = range.max || 999;
+          if (val < min || max < val) {
+            if (min !== max) {
+              return strings.format("Must be between {0:$} and {1:$}", min, max);
+            } else {
+              return strings.format("Must be {0:$}", min);
+            }
+          }
+        }
       ],
-      // validationGroup: rangeValidationGroup,
+      validationGroup: rangeValidationGroup,
     },
     over3Months: {
       converter: ukov.converters.bool(),

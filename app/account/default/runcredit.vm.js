@@ -28,7 +28,7 @@ define("src/account/default/runcredit.vm", [
   // -- Credit Score Group
   ko.bindingHandlers.crg = {
     update: function(element, valueAccessor) {
-      var cls, creditGroup = valueAccessor();
+      var cls, creditGroup = ko.unwrap(valueAccessor());
       switch (creditGroup) {
         case "Excellent":
         case "Good":
@@ -40,7 +40,15 @@ define("src/account/default/runcredit.vm", [
           cls = "blank";
           break;
       }
-      jquery(element).addClass(cls);
+      var el = jquery(element);
+      var prevCls = el.data("crgCls");
+      if (prevCls) {
+        el.removeClass(prevCls);
+      }
+      if (cls) {
+        el.addClass(cls);
+      }
+      el.data("crgCls", cls);
     }
   };
   // -- Credit Score Status

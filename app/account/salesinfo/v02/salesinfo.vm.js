@@ -47,8 +47,28 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     _this.mixinLoad();
     _this.initHandler();
 
-    _this.creditGroup = ko.observable();
-    _this.creditScore = ko.observable();
+    _this.creditScore = ko.observable(0);
+    // /////////////////////TESTING/////////////////////
+    // _this.creditScore = function() {
+    //   return 624;
+    // };
+    // _this.creditScore.peek = _this.creditScore;
+    // /////////////////////TESTING/////////////////////
+    _this.lockActivationFee = ko.observable(false);
+    _this.creditGroup = ko.computed(function() {
+      var creditGroup;
+      var score = _this.creditScore();
+      if (score >= 700) {
+        creditGroup = "Excellent";
+      } else if (score >= 625) {
+        creditGroup = "Good";
+      } else if (score >= 600) {
+        creditGroup = "Sub";
+      } else {
+        creditGroup = "Poor";
+      }
+      return creditGroup;
+    });
 
     function saveItems(invItems, cb) {
       saveInvoiceItems(_this, invItems, cb);
@@ -177,16 +197,9 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
         _this.salesinfo.markClean({}, true);
         setPrevPkg(_this, _this.salesinfo.AccountPackageCvm.selectedItem());
       }, subjoin.add());
-      // load credit
-      load_customerAccount(acctid, "PRI", function(custAcct) {
-        if (!custAcct) {
-          return;
-        }
-        load_qualifyCustomerInfos(custAcct.Customer.LeadId, function(creditResultAndStuff) {
-          _this.creditGroup(creditResultAndStuff.CreditGroup);
-          _this.creditScore(creditResultAndStuff.Score);
-        }, subjoin.add());
-      }, subjoin.add());
+      // load credit (max of PRI & SEC
+      loadCreditScore(acctid, "PRI", _this.creditScore, subjoin);
+      loadCreditScore(acctid, "SEC", _this.creditScore, subjoin);
       //
       load_contract(acctid, function(val) {
         _this.contract.setValue(val);
@@ -231,16 +244,21 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       var setupInvItems = _this.invoice.findInvoiceItems(["SETUP_FEE"], []).filter(function(invItem) {
         return !invItem.IsDeleted;
       });
+      var score = _this.creditScore.peek();
+      var activationItemId;
+      var activationFee;
+      if (score >= 625) {
+        activationItemId = "SETUP_FEE_69";
+        activationFee = 69;
+      } else if (score >= 600) {
+        activationItemId = "SETUP_FEE_199";
+        activationFee = 199;
+      } else {
+        activationItemId = "SETUP_FEE_299";
+        activationFee = 299;
+      }
+      _this.lockActivationFee(score < 625);
       if (!setupInvItems.length) {
-        var activationItemId;
-        var score = _this.creditScore.peek();
-        if (score >= 625) { // Good, Excellent ???
-          activationItemId = "SETUP_FEE_69";
-        } else if (score >= 600 && score <= 624) { // Sub ???
-          activationItemId = "SETUP_FEE_199";
-        } else { //if (score < 600) { // Poor ???
-          activationItemId = "SETUP_FEE_299";
-        }
         var invoiceItem = _this.invoice.findInvoiceItems(["SETUP_FEE"], [])[0];
         if (!invoiceItem) {
           invoiceItem = {};
@@ -249,6 +267,20 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
         var item = mustGetItem(activationItemId);
         InvoiceItemsEditorViewModel.copyInvoiceItemFromItem(invoiceItem, item);
         saveInvoiceItems(_this, [invoiceItem]);
+      }
+
+      if (_this.lockActivationFee.peek()) {
+        //@Task 1215: 2. Hard lock the Activation fee of $299 for Poor (Unapproved) credit, and $199 for SUB credit.
+        _this.invoice.activation.range({
+          min: activationFee,
+          max: activationFee,
+        });
+        //@Task 1215: 3. Remove (or give warning message that it's not allowed) Manual Invoice, and Check from the Billing Method.
+        _this.salesinfo.LimitPaymentTypes(true);
+      } else {
+        // incase of reload
+        _this.invoice.activation.range(null);
+        _this.salesinfo.LimitPaymentTypes(false);
       }
     }
 
@@ -594,6 +626,16 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       id: acctid,
       link: strings.format("CustomerAccounts/{0}", customerTypeId),
     }, setter, cb);
+  }
+
+  function loadCreditScore(acctid, customerTypeId, observable, subjoin) {
+    load_customerAccount(acctid, customerTypeId, function(custAcct) {
+      if (custAcct) {
+        load_qualifyCustomerInfos(custAcct.Customer.LeadId, function(creditResultAndStuff) {
+          observable(Math.max(observable.peek(), creditResultAndStuff.Score));
+        }, subjoin.add());
+      }
+    }, subjoin.add());
   }
 
   function load_qualifyCustomerInfos(leadID, setter, cb) {

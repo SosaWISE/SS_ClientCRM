@@ -32,6 +32,7 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     var data = ukov.wrap({
       RequirePkg: !!options.requirePkg,
       UseRequired: !!options.useRequired,
+      LimitPaymentTypes: !!options.limitPaymentTypes,
     }, schema);
     data.RequirePkg.ignore(true);
     data.UseRequired.ignore(true);
@@ -127,13 +128,32 @@ define("src/account/salesinfo/v02/salesinfo.model", [
   var boolConverter = ukov.converters.bool();
   var nullStrConverter = ukov.converters.nullString();
   var max256 = ukov.validators.maxLength(256);
+  var achValidationGroup = {
+    keys: ["LimitPaymentTypes", "PaymentTypeId"],
+    validators: [],
+  };
   var schema = {
     _model: true,
     RequirePkg: {},
     UseRequired: {},
+    LimitPaymentTypes: {
+      validationGroup: achValidationGroup,
+    },
 
     ID: {},
-    PaymentTypeId: {}, // Billing method
+    PaymentTypeId: {
+      validationGroup: achValidationGroup,
+      validators: [
+        ukov.validators.isRequired(),
+        // ukov.validators.isInRange(0, 999, "Invalid amount"),
+        function(val, model) {
+          if (model.LimitPaymentTypes &&
+            (val === "CHCK" || val === "MAN")) {
+            return "Billing method not allowed for poor and sub credit scores";
+          }
+        }
+      ],
+    }, // Billing method
     FriendsAndFamilyTypeId: {},
     AccountSubmitId: {},
     AccountCancelReasonId: {},
