@@ -1,22 +1,24 @@
 define("src/account/security/alarmdotcom.vm", [
   "src/dataservice",
-  "src/account/security/clist.salesinfo.vm",
+  "src/account/accounts-cache",
   "src/account/security/alarmdotcom.changeservicepackage.vm",
   "src/account/security/alarmdotcom.swapmodem.vm",
   "src/account/security/alarmdotcom.editor.vm",
   "src/slick/slickgrid.vm",
   "ko",
+  "src/core/subscriptionhandler",
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
   dataservice,
-  CListSalesInfoViewModel,
+  accountscache,
   AlarmDotComChangeServicePackageViewModel,
   AlarmDotComSwapModemViewModel,
   AlarmDotComEditorViewModel,
   SlickGridViewModel,
   ko,
+  SubscriptionHandler,
   notify,
   utils,
   ControllerViewModel
@@ -147,52 +149,64 @@ define("src/account/security/alarmdotcom.vm", [
 
     _this.accountid = routeData.id;
 
-    load_vendorAlarmComPackages(function(result) {
-      _this.alarmComPackages = result;
-    }, join.add());
+    function step1() {
+      // start next step when done
+      var subjoin = join.create()
+        .after(utils.safeCallback(join.add(), step2, utils.noop));
+      // ensure types
+      accountscache.ensure("localizations", subjoin.add());
+      accountscache.ensure("cellPackageItems", subjoin.add());
+    }
 
-    load_industryAccounts(_this.accountid, utils.safeCallback(join.add(), function(err, resp) {
-      var first = resp.Value[0];
-      _this.receiverData({
-        AccountNumber: first.AccountId,
-        IndustryNumber: first.IndustryAccount,
-        ReceiverNumber: first.ReceiverNumber,
-      });
-    }, utils.noop));
+    function step2() {
+      // start next step when done
+      var subjoin = join.create()
+        .after(utils.safeCallback(join.add(), step3, utils.noop));
 
-    load_alarmcom(_this.accountid, "accountStatus", null, utils.safeCallback(join.add(), function(err, resp) {
-      var result = resp.Value || {};
+      load_vendorAlarmComPackages(function(result) {
+        _this.alarmComPackages = result;
+      }, subjoin.add());
 
-      _this.isRegistered(result.RegistrationStatus === 1);
-      var servicePlan;
-      CListSalesInfoViewModel.prototype.cellPackageItemOptions.some(function(item) {
-        if (item.value === result.CellPackageItemId) {
-          servicePlan = item.text;
-          return true;
-        }
-      });
-      detailsData = {
-        SerialNumber: result.ModemSerial,
-        AlarmDotComCustomerNumber: result.CustomerId,
-        // AlarmPackageId: result.ServicePlanPackageId,
-        // AlarmPackage: result.ServicePlanType,
-        CellPackageItemId: result.CellPackageItemId,
-        ServicePlan: servicePlan,
-        EnableTwoWay: result.EnableTwoWay,
-        IsDemo: result.IsDemo,
-      };
+      load_industryAccounts(_this.accountid, utils.safeCallback(subjoin.add(), function(err, resp) {
+        var first = resp.Value[0];
+        _this.receiverData({
+          AccountNumber: first.AccountId,
+          IndustryNumber: first.IndustryAccount,
+          ReceiverNumber: first.ReceiverNumber,
+        });
+      }, utils.noop));
 
-      // if (!_this.isRegistered.peek()) {
-      //   load_invoice(_this.accountid, function(val) {
-      //     invoice = val;
-      //   }, join.add());
-      // }
-    }, utils.noop));
+      load_alarmcom(_this.accountid, "accountStatus", null, utils.safeCallback(subjoin.add(), function(err, resp) {
+        var result = resp.Value || {};
 
-    join.when(function(err) {
-      if (err) {
-        return;
-      }
+        _this.isRegistered(result.RegistrationStatus === 1);
+        var servicePlan;
+        accountscache.getList("cellPackageItems").peek().some(function(item) {
+          if (item.ID === result.CellPackageItemId) {
+            servicePlan = item.Txt;
+            return true;
+          }
+        });
+        detailsData = {
+          SerialNumber: result.ModemSerial,
+          AlarmDotComCustomerNumber: result.CustomerId,
+          // AlarmPackageId: result.ServicePlanPackageId,
+          // AlarmPackage: result.ServicePlanType,
+          CellPackageItemId: result.CellPackageItemId,
+          ServicePlan: servicePlan,
+          EnableTwoWay: result.EnableTwoWay,
+          IsDemo: result.IsDemo,
+        };
+
+        // if (!_this.isRegistered.peek()) {
+        //   load_invoice(_this.accountid, function(val) {
+        //     invoice = val;
+        //   }, subjoin.add());
+        // }
+      }, utils.noop));
+    }
+
+    function step3() {
       // if (invoice) {
       //   detailsData.AlarmPackageId = invoice.AlarmComPackageId;
       //   _this.alarmComPackages.some(function(item) {
@@ -203,7 +217,9 @@ define("src/account/security/alarmdotcom.vm", [
       //   });
       // }
       _this.detailsData(detailsData);
-    });
+    }
+
+    step1();
   };
 
 

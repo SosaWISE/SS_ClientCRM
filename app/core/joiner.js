@@ -4,6 +4,7 @@ define('src/core/joiner', [
   arrays
 ) {
   "use strict";
+  var _totalCount = 0;
 
   function Joiner() {
     var _this = this,
@@ -37,6 +38,7 @@ define('src/core/joiner', [
       // all further adds are ignored
       return no_op;
     }
+    var c = ++_totalCount;
 
     waiting = _this._waiting;
     results = _this._results;
@@ -74,7 +76,7 @@ define('src/core/joiner', [
       }
       cb({
         Code: 1, // ???,
-        Message: 'Joiner timed out - ' + (name || '[unnamed]'),
+        Message: 'Joiner.add(' + c + ') timed out - ' + (name || '[unnamed]'),
       });
     }, _this.timeout * (timeoutMultiplier || 1));
 
@@ -84,6 +86,7 @@ define('src/core/joiner', [
     var _this = this;
     _this._callbacks.push(cb);
     tryWhen(_this);
+    return _this; // allow chaining
   };
   Joiner.prototype.after = function(cb) {
     var _this = this;
@@ -92,6 +95,7 @@ define('src/core/joiner', [
     if (_this._err) {
       tryWhen(_this);
     }
+    return _this; // allow chaining
   };
 
   Joiner.prototype.results = function() {

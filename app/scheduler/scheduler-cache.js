@@ -7,47 +7,42 @@ define("src/scheduler/scheduler-cache", [
 ) {
   "use strict";
 
-  var prefix = "scheduler-",
-    schedulercache, hardcodedCache;
+  var prefix = "scheduler-";
 
-  schedulercache = {
+  var schedulercache = {
     getList: function(name) {
-      return hardcodedCache[name] || cacher.getList(prefix + name);
+      return cacher.getList(prefix, name, metaMap);
     },
     getMap: function(name) {
-      return cacher.getMap(prefix + name);
+      return cacher.getMap(prefix, name, metaMap);
     },
     ensure: function(name, cb) {
-      if (hardcodedCache[name]) {
-        setTimeout(function() {
-          cb();
-        }, 0);
-        return;
-      }
-      switch (name) {
-        case "serviceTypes":
-        case "skills":
-        case "statusCodes":
-          ensureType(name, "ID", cb);
-          break;
-        case "techs":
-          ensureType(name, "RecruitId", cb);
-          break;
-        default:
-          throw new Error(name + " not implemented");
-      }
+      return cacher.ensure(prefix, name, metaMap,
+        hardcodedCache, dataservice.ticketsrv, cb);
+    },
+    metadata: function(name) {
+      return metaMap[name] || defaultMeta;
     },
   };
 
-  function ensureType(type, idName, cb) {
-    cacher.ensure(cb, prefix + type, idName, function(cb) {
-      dataservice.ticketsrv[type].read({}, null, cb);
-    });
-  }
-
-  hardcodedCache = {
-
+  var defaultMeta = {
+    value: "ID",
+    text: "Txt", // ???
   };
+  var metaMap = {
+    techs: {
+      value: "RecruitId",
+      // text: null,
+      // comparer: null,
+      // initItem: null,
+      // read: function(cb) {},
+    },
+    serviceTypes: defaultMeta,
+    skills: defaultMeta,
+    statusCodes: defaultMeta,
+  };
+
+  var hardcodedCache = {};
 
   return schedulercache;
 });

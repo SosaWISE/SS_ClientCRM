@@ -38,6 +38,9 @@ define("src/dataservice", [
     api_ms: createService("api/ms", [
       "accounts",
       "holds",
+      "invoices",
+      "packages",
+      "types",
     ]),
     api_qualify: createService("api/qualify", [
       "customerMasterFiles",

@@ -1,16 +1,19 @@
 define("src/contracts/contract.vm", [
   "src/app",
+  "src/account/accounts-cache",
+  "src/account/salesinfo/options",
   "src/account/security/holds.vm",
   "src/account/security/emcontacts.vm",
   "src/account/security/equipment.gvm",
   "src/account/default/rep.find.vm",
-  "src/account/security/clist.salesinfo.vm",
+  "src/account/default/payby.vm",
   "src/account/default/address.validate.vm",
   "src/account/default/runcredit.vm",
   "src/account/default/search.vm",
   "src/dataservice",
   "src/ukov",
   "ko",
+  "src/core/subscriptionhandler",
   "src/core/layers.vm",
   "src/core/joiner",
   "src/core/combo.vm",
@@ -20,17 +23,20 @@ define("src/contracts/contract.vm", [
   "src/core/controller.vm",
 ], function(
   app,
+  accountscache,
+  salesInfoOptions,
   HoldsViewModel,
   EmContactsViewModel,
   EquipmentGridViewModel,
   RepFindViewModel,
-  CListSalesInfoViewModel,
+  PayByViewModel,
   AddressValidateViewModel,
   RunCreditViewModel,
   SearchViewModel,
   dataservice,
   ukov,
   ko,
+  SubscriptionHandler,
   LayersViewModel,
   joiner,
   ComboViewModel,
@@ -66,6 +72,7 @@ define("src/contracts/contract.vm", [
     // utils.assertProps(_this, [
     // ]);
 
+    _this.handler = new SubscriptionHandler();
     _this.layersVm = new LayersViewModel({
       controller: _this,
     });
@@ -87,7 +94,7 @@ define("src/contracts/contract.vm", [
       _this.leadMap[leadVm.typeId] = leadVm;
     });
 
-    _this.salesInfo = getSalesInfoModel();
+    _this.salesInfo = getSalesInfoModel(_this.handler);
     _this.salesInfoExtras = getSalesInfoExtrasModel(_this.layersVm);
     _this.systemDetails = getSystemDetailsModel();
 
@@ -109,21 +116,14 @@ define("src/contracts/contract.vm", [
       layersVm: _this.layersVm,
     });
 
+    _this.paymentMethod = ko.observable();
+
+
     //
     // events
     //
     _this.clickItem = function(vm) {
       _this.selectChild(vm);
-    };
-
-    _this.repModel = {
-      CompanyID: "SOSA001",
-      TeamLocationId: 1,
-      Seasons: [ //
-        {
-          SeasonID: 3,
-        },
-      ],
     };
 
     function canSave( /*busy*/ ) {
@@ -148,6 +148,8 @@ define("src/contracts/contract.vm", [
       _this.salesInfo.reset();
       _this.salesInfoExtras.reset();
       //
+      _this.paymentMethod(_this.paymentMethod._original);
+      //
       cb();
     }, function(busy) {
       return !busy && !_this.cmdSave.busy() && !_this.cmdSaveAndApprove.busy();
@@ -164,6 +166,11 @@ define("src/contracts/contract.vm", [
       }
     };
     _this.clickAddress = function(leadVm) {
+      var repModel = _this.salesInfoExtras.repModel.peek();
+      if (!repModel) {
+        notify.warn("Please select a Sales Rep first", null, 7);
+        return;
+      }
       var address = utils.clone(leadVm.address.peek());
       var uniqueMap = {};
       var otherAddresses = _this.leads
@@ -194,7 +201,7 @@ define("src/contracts/contract.vm", [
       var vm = new AddressValidateViewModel({
         name: leadVm.addressTypeName,
         otherAddresses: otherAddresses,
-        repModel: _this.repModel,
+        repModel: repModel,
         item: address,
       });
       _this.layersVm.show(vm, function(address) {
@@ -205,6 +212,11 @@ define("src/contracts/contract.vm", [
       });
     };
     _this.clickQualify = function(leadVm) {
+      var repModel = _this.salesInfoExtras.repModel.peek();
+      if (!repModel) {
+        notify.warn("Please select a Sales Rep first", null, 7);
+        return;
+      }
       var lead = utils.clone(leadVm.lead.peek());
       var addressId = leadVm.address.peek().AddressID;
       if (!addressId) {
@@ -249,8 +261,7 @@ define("src/contracts/contract.vm", [
         createMasterLead: false,
         showSaveBtn: true,
         otherLeads: otherLeads,
-        cache: _this.cache,
-        repModel: _this.repModel,
+        repModel: repModel,
         addressId: addressId,
         customerTypeId: leadVm.typeId,
         customerTypeName: leadVm.typeName,
@@ -287,6 +298,17 @@ define("src/contracts/contract.vm", [
         id: _this.acctid,
       });
     };
+
+    _this.clickPaymentMethod = function() {
+      showPaymentMethod(_this, _this.paymentMethod);
+    };
+
+    _this.setPaymentMethod = setPaymentMethod.bind(_this);
+
+    _this.vms = [ // nested view models
+      _this.emcontactsVm,
+      _this.holdsVm,
+    ];
   }
   utils.inherits(ContractViewModel, ControllerViewModel);
   ContractViewModel.prototype.viewTmpl = "tmpl-contracts-contract";
@@ -298,7 +320,7 @@ define("src/contracts/contract.vm", [
     _this.masterid = routeData.masterid;
     _this.acctid = routeData.id;
 
-    load_localizations(_this, join.add());
+    accountscache.ensure("localizations");
 
     // load leads for master file
     _this.leads.forEach(function(leadVm) {
@@ -344,11 +366,11 @@ define("src/contracts/contract.vm", [
 
     load_equipment(_this.acctid, _this.equipmentGvm, join.add());
 
-    _this.emcontactsVm.loader.reset(); //incase of reload
-    _this.emcontactsVm.load(routeData, extraData, join.add());
+    load_acctPaymentMethod(_this.acctid, "PaymentMethod", _this.setPaymentMethod, join.add());
 
-    _this.holdsVm.loader.reset(); //incase of reload
-    _this.holdsVm.load(routeData, extraData, join.add());
+    _this.vms.forEach(function(vm) {
+      vm.load(routeData, extraData, join.add());
+    });
 
     var cb = join.add();
     subjoin.when(function(err) {
@@ -378,6 +400,27 @@ define("src/contracts/contract.vm", [
       cb(err);
     });
   };
+
+  function showPaymentMethod(_this, paymentMethodObservable, cb) {
+    var vm = new PayByViewModel({
+      item: utils.clone(paymentMethodObservable.peek()),
+    });
+    _this.layersVm.show(vm, function(result) {
+      if (result) {
+        paymentMethodObservable(result);
+      }
+      if (utils.isFunc(cb)) {
+        cb();
+      }
+    });
+  }
+
+  function setPaymentMethod(paymentMethod) {
+    /* jshint validthis:true */
+    var _this = this;
+    _this.paymentMethod(paymentMethod);
+    _this.paymentMethod._original = paymentMethod;
+  }
 
   function move(_this, leadVm, direction) {
     var index = _this.leads.indexOf(leadVm);
@@ -427,11 +470,16 @@ define("src/contracts/contract.vm", [
       notify.warn(_this.systemDetails.errMsg(), null, 7);
       return cb();
     }
+    if (!_this.paymentMethod.peek()) {
+      notify.warn("Please enter a payment method", null, 7);
+      return cb();
+    }
 
     var join = joiner();
     refreshInvoice(_this, join.add());
     saveSalesInfoExtras(_this, approve, join.add());
     saveSystemDetails(_this, join.add());
+    savePaymentMethod(_this, _this.paymentMethod.peek(), "PaymentMethod", _this.setPaymentMethod, join.add());
 
     // save leads one after the other (don't want to make multiple customers for the same lead)
     var index = 0;
@@ -461,14 +509,6 @@ define("src/contracts/contract.vm", [
     join.when(cb);
   }
 
-  function load_localizations(_this, cb) {
-    _this.cache = _this.cache || {};
-    _this.cache.localizations = [];
-    dataservice.maincore.localizations.read({}, function(val) {
-      _this.cache.localizations = val;
-    }, cb);
-  }
-
   function load_customerAccount(acctid, customerTypeId, setter, cb) {
     dataservice.api_contractAdmin.accounts.read({
       id: acctid,
@@ -491,6 +531,13 @@ define("src/contracts/contract.vm", [
       }
       cb(err, resp);
     });
+  }
+
+  function load_acctPaymentMethod(acctid, link, setter, cb) {
+    dataservice.api_ms.accounts.read({
+      id: acctid,
+      link: link,
+    }, setter, cb);
   }
 
   function addLeadVm(leads, typeId) {
@@ -728,7 +775,7 @@ define("src/contracts/contract.vm", [
     validators: [],
   };
 
-  function getSalesInfoModel() {
+  function getSalesInfoModel(handler) {
     var schema = _static.ctSchema || (_static.ctSchema = {
       _model: true,
       DealerId: {},
@@ -840,41 +887,44 @@ define("src/contracts/contract.vm", [
     data.CellularTypeCvm = new ComboViewModel({
       selectedValue: data.CellularTypeId,
       fields: {
-        text: "CellularTypeName",
         value: "CellularTypeID",
+        text: "CellularTypeName",
       }
     });
 
     data.Over3MonthsCvm = new ComboViewModel({
       selectedValue: data.Over3Months,
-      list: CListSalesInfoViewModel.prototype.over3MonthsOptions,
+      list: salesInfoOptions.over3Months,
     });
 
     data.BillingDayCvm = new ComboViewModel({
       selectedValue: data.BillingDay,
-      list: CListSalesInfoViewModel.prototype.billingDayOptions,
+      list: salesInfoOptions.billingDays,
     });
 
     data.cellServiceCvm = new ComboViewModel({
       selectedValue: ko.observable(null),
-      list: CListSalesInfoViewModel.prototype.cellServiceOptions,
-    });
+      fields: accountscache.metadata("cellServiceTypes"),
+    }).subscribe(accountscache.getList("cellServiceTypes"), handler);
     data.CellPackageItemCvm = new ComboViewModel({
       selectedValue: data.CellPackageItemId,
-      list: CListSalesInfoViewModel.prototype.cellPackageItemOptions,
+      fields: accountscache.metadata("cellPackageItems"),
+    });
+    handler.subscribe(accountscache.getList("cellPackageItems"), function() {
+      updateCellPackageItemCvm(data);
     });
 
     data.pointSystemsCvm = new ComboViewModel({
       fields: {
-        text: "TemplateName",
         value: "InvoiceTemplateID",
+        text: "TemplateName",
       }
     });
     data.ContractTemplatesCvm = new ComboViewModel({
       selectedValue: data.ContractTemplateId,
       fields: {
-        text: "ContractName",
         value: "ContractTemplateID",
+        text: "ContractName",
       }
     });
 
@@ -916,9 +966,10 @@ define("src/contracts/contract.vm", [
       }
 
       // filter Cell Packages by the selected Cell Service
-      data.CellPackageItemCvm.setList(CListSalesInfoViewModel.prototype.cellPackageItemOptions.filter(function(item) {
-        return cellService && strings.startsWith(item.value, cellService);
-      }));
+      // data.CellPackageItemCvm.setList(salesInfoOptions.cellPackageItem.filter(function(item) {
+      //   return cellService && strings.startsWith(item.value, cellService);
+      // }));
+      updateCellPackageItemCvm(data);
       if (!data.CellPackageItemCvm.selectedValue.peek()) {
         // select first item if one is not selected
         data.CellPackageItemCvm.selectFirst();
@@ -1299,6 +1350,18 @@ define("src/contracts/contract.vm", [
     }, cb);
   }
 
+  function savePaymentMethod(_this, model, link, setter, cb) {
+    //
+    model.ID = model.ID || 0;
+    model.ModifiedOn = model.ModifiedOn || new Date();
+    //
+    dataservice.api_ms.accounts.save({
+      id: _this.acctid,
+      link: link,
+      data: model,
+    }, setter, cb);
+  }
+
   function updateCustomerAccount(acctid, customerTypeId, leadid, setter, cb) {
     if (leadid) {
       saveCustomerAccount(acctid, customerTypeId, leadid, setter, cb);
@@ -1322,6 +1385,14 @@ define("src/contracts/contract.vm", [
       id: acctid,
       link: strings.format("CustomerAccounts/{0}", customerTypeId),
     }, setter, cb);
+  }
+
+  function updateCellPackageItemCvm(data) {
+    var cellService = data.cellServiceCvm.selectedValue.peek();
+    var list = accountscache.getList("cellPackageItems").peek();
+    data.CellPackageItemCvm.setList(list.filter(function(item) {
+      return cellService && strings.startsWith(item.value, cellService);
+    }));
   }
 
 

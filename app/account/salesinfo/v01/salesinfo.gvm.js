@@ -1,9 +1,9 @@
-define('src/account/security/clist.salesinfo.gvm', [
-  'ko',
-  'src/slick/buttonscolumn',
-  // 'src/slick/rowevent',
-  'src/slick/slickgrid.vm',
-  'src/core/utils',
+define("src/account/salesinfo/v01/salesinfo.gvm", [
+  "ko",
+  "src/slick/buttonscolumn",
+  // "src/slick/rowevent",
+  "src/slick/slickgrid.vm",
+  "src/core/utils",
 ], function(
   ko,
   ButtonsColumn,
@@ -13,10 +13,10 @@ define('src/account/security/clist.salesinfo.gvm', [
 ) {
   "use strict";
 
-  function CListSalesInfoGridViewModel(options) {
+  function SalesInfoV01GridViewModel(options) {
     var _this = this;
-    SlickGridViewModel.ensureProps(options, ['deletePart']);
-    CListSalesInfoGridViewModel.super_.call(_this, {
+    SlickGridViewModel.ensureProps(options, ["deletePart"]);
+    SalesInfoV01GridViewModel.super_.call(_this, {
       gridOptions: {
         enableColumnReorder: false,
         forceFitColumns: true,
@@ -24,40 +24,40 @@ define('src/account/security/clist.salesinfo.gvm', [
       },
       // plugins: [
       //   new RowEvent({
-      //     eventName: 'onDblClick',
+      //     eventName: "onDblClick",
       //     fn: function() {
-      //       alert('double clicked');
+      //       alert("double clicked");
       //     },
       //   }),
       // ],
       columns: [ //
         {
-          id: 'description',
-          name: 'Description',
-          field: 'ItemDesc',
+          id: "description",
+          name: "Description",
+          field: "ItemDesc",
           width: 200,
         }, {
-          id: 'price',
-          name: 'Price',
-          field: 'RetailPrice',
+          id: "price",
+          name: "Price",
+          field: "RetailPrice",
           formatter: SlickGridViewModel.formatters.currency,
         }, {
-          id: 'points',
-          name: 'Points',
-          field: 'SystemPoints',
+          id: "points",
+          name: "Points",
+          field: "SystemPoints",
           formatter: SlickGridViewModel.formatters.likecurrency,
         }, {
-          id: 'total',
-          name: 'Total',
-          field: 'RetailPrice',
+          id: "total",
+          name: "Total",
+          field: "RetailPrice",
           formatter: SlickGridViewModel.formatters.currency,
         },
         new ButtonsColumn({
-          id: 'actions',
-          name: 'Actions',
+          id: "actions",
+          name: "Actions",
           buttons: [ //
             {
-              text: 'Delete',
+              text: "Delete",
               fn: options.deletePart,
             },
           ]
@@ -96,7 +96,7 @@ define('src/account/security/clist.salesinfo.gvm', [
       _this.estimateTotal(pointsTotal + retailTotal);
     });
   }
-  utils.inherits(CListSalesInfoGridViewModel, SlickGridViewModel);
+  utils.inherits(SalesInfoV01GridViewModel, SlickGridViewModel);
 
-  return CListSalesInfoGridViewModel;
+  return SalesInfoV01GridViewModel;
 });

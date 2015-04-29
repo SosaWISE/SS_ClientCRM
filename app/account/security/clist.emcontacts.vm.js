@@ -29,14 +29,19 @@ define('src/account/security/clist.emcontacts.vm', [
     //
     // events
     //
+
+    _this.vms = [ // nested view models
+      _this.emcontactsVm,
+    ];
   }
   utils.inherits(CListEmcontactsViewModel, ControllerViewModel);
   CListEmcontactsViewModel.prototype.viewTmpl = 'tmpl-security-clist_emcontacts';
 
   CListEmcontactsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
-    _this.emcontactsVm.loader.reset(); // incase of reload
-    _this.emcontactsVm.load(routeData, extraData, join.add());
+    _this.vms.forEach(function(vm) {
+      vm.load(routeData, extraData, join.add());
+    });
   };
 
   return CListEmcontactsViewModel;

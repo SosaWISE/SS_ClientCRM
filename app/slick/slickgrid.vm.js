@@ -1,12 +1,12 @@
-define('src/slick/slickgrid.vm', [
-  'moment',
-  'slick',
-  'jquery',
-  'ko',
-  'src/core/onresize',
-  'src/core/strings',
-  'src/core/utils',
-  'src/core/base.vm',
+define("src/slick/slickgrid.vm", [
+  "moment",
+  "slick",
+  "jquery",
+  "ko",
+  "src/core/onresize",
+  "src/core/strings",
+  "src/core/utils",
+  "src/core/base.vm",
 ], function(
   moment,
   Slick,
@@ -35,11 +35,11 @@ define('src/slick/slickgrid.vm', [
   function SlickGridViewModel(options) {
     var _this = this;
     SlickGridViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, ['columns']);
+    BaseViewModel.ensureProps(_this, ["columns"]);
     // columns: [{
-    //   id: 'col1',
-    //   name: 'Column Title',
-    //   field: 'Column1',
+    //   id: "col1",
+    //   name: "Column Title",
+    //   field: "Column1",
     // }]
 
     _this.plugins = _this.plugins || [];
@@ -91,7 +91,7 @@ define('src/slick/slickgrid.vm', [
       _this.list.subscribe(function(list) {
         var grid = _this.grid;
         if (grid) {
-          grid.setData(list, _this.scrollToTop); // false - don't scroll to top
+          grid.setData(list, _this.scrollToTop); // false - do not scroll to top
           _this.updateGrid();
           if (_this.handleSelectedRowsChanged) {
             _this.handleSelectedRowsChanged(null, {
@@ -153,7 +153,7 @@ define('src/slick/slickgrid.vm', [
     // create a new grid everytime this view model is bound/rebound
     var _this = this;
     if (_this.grid) {
-      console.warn('grid is already bound');
+      console.warn("grid is already bound");
       _this.unBound();
     }
     _this.bindTimeout = setTimeout(function() {
@@ -196,14 +196,14 @@ define('src/slick/slickgrid.vm', [
     var _this = this,
       container;
 
-    // make sure we don't bind
+    // make sure we do not bind
     clearTimeout(_this.bindTimeout);
     _this.bindTimeout = null;
 
     if (_this.grid) {
       container = _this.grid.getContainerNode();
       if (element && element !== container) {
-        console.warn('unBound element doesn\'t match grid container', container, element);
+        console.warn("unBound element does not match grid container", container, element);
       }
       if (!_this.noSelection) {
         // store selected rows
@@ -271,10 +271,10 @@ define('src/slick/slickgrid.vm', [
       return strings.formatters.likecurrency(value);
     },
     yesNoFormatter: function(row, cell, value) {
-      return value ? 'yes' : 'no';
+      return value ? "yes" : "no";
     },
     xFormatter: function(row, cell, value) {
-      return value ? 'X' : '';
+      return value ? "X" : "";
     },
     date: function(row, cell, value) {
       return strings.formatters.date(value);

@@ -46,5 +46,15 @@ define("src/core/arrays", [
       return result;
     },
 
+    first: function(list, fn) {
+      var len = list.length;
+      for (var i = 0; i < len; i++) {
+        var val = list[i];
+        if (fn(val, i, list)) {
+          return val;
+        }
+      }
+    },
+
   };
 });

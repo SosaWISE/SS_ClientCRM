@@ -4,6 +4,7 @@ define("src/account/security/clist.qualify.vm", [
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
+  "src/account/accounts-cache",
   "src/account/default/rep.find.vm",
   "src/account/default/address.validate.vm",
   "src/account/default/runcredit.vm",
@@ -14,6 +15,7 @@ define("src/account/security/clist.qualify.vm", [
   notify,
   utils,
   ControllerViewModel,
+  accountscache,
   RepFindViewModel,
   AddressValidateViewModel,
   RunCreditViewModel,
@@ -58,6 +60,15 @@ define("src/account/security/clist.qualify.vm", [
     //
     // events
     //
+    var isHomeOwner = ko.observable(false);
+    _this.isHomeOwner = isHomeOwner;
+    _this.toggleIsHomeOwner = function() {
+      // can only be changed before the rep is found???
+      if (!_this.repModel.peek()) {
+        isHomeOwner(!isHomeOwner.peek());
+      }
+    };
+
     _this.cmdFindRep = ko.command(function(cb) {
       var vm = new RepFindViewModel({});
       _this.layersVm.show(vm, function(val) {
@@ -65,7 +76,7 @@ define("src/account/security/clist.qualify.vm", [
         _this.repModel(val);
       });
     }, function(busy) {
-      return !busy && !_this.hasCustomer() && !_this.repModel();
+      return isHomeOwner() && !busy && !_this.hasCustomer() && !_this.repModel();
     });
     _this.cmdAddress = ko.command(function(cb, leadVm) {
       if (isLeadReadOnly(leadVm)) {
@@ -102,7 +113,7 @@ define("src/account/security/clist.qualify.vm", [
         }
       });
     }, function(busy) {
-      return !busy && !_this.hasCustomer() && _this.repModel();
+      return isHomeOwner() && !busy && !_this.hasCustomer() && _this.repModel();
     });
     _this.cmdQualify = ko.command(function(cb, leadVm) {
       if (isLeadReadOnly(leadVm)) {
@@ -153,7 +164,7 @@ define("src/account/security/clist.qualify.vm", [
         }
       });
     }, function(busy) {
-      return !busy && !_this.hasCustomer() && _this.repModel();
+      return isHomeOwner() && !busy && !_this.hasCustomer() && _this.repModel();
     });
     _this.cmdSendToIS = ko.command(function(cb, leadVm) {
       if (!leadVm.creditResult()) {
@@ -193,7 +204,7 @@ define("src/account/security/clist.qualify.vm", [
       }, cb);
     }, function(busy) {
       var primary = _this.leadMap.PRI;
-      return !busy && !_this.hasCustomer() && primary.lead() && primary.creditResult();
+      return isHomeOwner() && !busy && !_this.hasCustomer() && primary.lead() && primary.creditResult();
     });
 
     _this.clickRemoveAddress = function(leadVm) {
@@ -215,12 +226,16 @@ define("src/account/security/clist.qualify.vm", [
     var _this = this,
       id = routeData.masterid;
 
+    accountscache.ensure("types/friendsAndFamily", join.add());
     load_localizations(_this, join.add());
 
     if (id <= 0) {
       // lead not saved yet
       return;
     }
+
+    // assume that if an id exists the customer is the home owner
+    _this.isHomeOwner(true);
 
     // load leads for master file
     _this.leads.forEach(function(leadVm) {

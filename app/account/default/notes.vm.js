@@ -1,14 +1,14 @@
-define('src/account/default/notes.vm', [
-  'moment',
-  'src/slick/rowevent',
-  'src/slick/slickgrid.vm',
-  'src/ukov',
-  'ko',
-  'src/core/combo.vm',
-  'src/dataservice',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
+define("src/account/default/notes.vm", [
+  "moment",
+  "src/slick/rowevent",
+  "src/slick/slickgrid.vm",
+  "src/ukov",
+  "ko",
+  "src/core/combo.vm",
+  "src/dataservice",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/base.vm",
 ], function(
   moment,
   RowEvent,
@@ -36,7 +36,7 @@ define('src/account/default/notes.vm', [
     LeadId: {},
     NoteCategory1Id: {
       validators: [
-        ukov.validators.isRequired('Please select a primary reason'),
+        ukov.validators.isRequired("Please select a primary reason"),
       ],
     },
     NoteCategory2Id: {
@@ -44,59 +44,62 @@ define('src/account/default/notes.vm', [
         // function(val, model) {
         //   return null;
         // },
-        ukov.validators.isRequired('Please select a secondary reason'),
+        ukov.validators.isRequired("Please select a secondary reason"),
       ],
     },
     Note: {
       converter: strConverter,
       // validators: [
-      //   ukov.validators.isRequired('Note is required'),
+      //   ukov.validators.isRequired("Note is required"),
       // ],
     },
   };
   schemaNote = {
     converter: strConverter,
     validators: [
-      ukov.validators.isRequired('Please enter a note'),
+      ukov.validators.isRequired("Please enter a note"),
     ],
   };
 
   function NotesViewModel(options) {
     var _this = this;
     NotesViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, ['id', 'vm']);
+    utils.assertProps(_this, [
+      "id",
+      "ownerVm",
+    ]);
 
     _this.mixinLoad();
 
-    _this.note = ukov.wrap('', schemaNote);
+    _this.note = ukov.wrap("", schemaNote);
     _this.data = ukov.wrap({
       // NoteID: 0,
-      NoteTypeId: 'AUTO_GEN',
+      NoteTypeId: "AUTO_GEN",
       CustomerMasterFileId: _this.id,
-      Note: '',
+      Note: "",
     }, schema);
     _this.data.NoteCategory1IdCvm = new ComboViewModel({
       selectedValue: _this.data.NoteCategory1Id,
-      noItemSelectedText: '[Primary Reason]',
+      noItemSelectedText: "[Primary Reason]",
       fields: {
-        value: 'NoteCategory1ID',
-        text: 'Category',
+        value: "NoteCategory1ID",
+        text: "Category",
       },
     });
     _this.data.NoteCategory2IdCvm = new ComboViewModel({
       selectedValue: _this.data.NoteCategory2Id,
-      noItemSelectedText: '[Secondary Reason]',
+      noItemSelectedText: "[Secondary Reason]",
       fields: {
-        value: 'NoteCategory2ID',
-        text: 'Category',
+        value: "NoteCategory2ID",
+        text: "Category",
       },
     });
 
     _this.departmentsCvm = new ComboViewModel({
-      noItemSelectedText: '[Department]',
+      noItemSelectedText: "[Department]",
       fields: {
-        value: 'DepartmentID',
-        text: 'DepartmentName',
+        value: "DepartmentID",
+        text: "DepartmentName",
       },
     });
 
@@ -109,53 +112,53 @@ define('src/account/default/notes.vm', [
       },
       plugins: [
         new RowEvent({
-          eventName: 'onDblClick',
+          eventName: "onDblClick",
           fn: function(item) {
-            notify.info('Note Details', item.Note, 5, null, true);
+            notify.info("Note Details", item.Note, 5, null, true);
           },
         }),
       ],
       columns: [ //
         {
-          id: 'CreatedOn',
-          name: 'Date',
-          field: 'CreatedOn',
+          id: "CreatedOn",
+          name: "Date",
+          field: "CreatedOn",
           width: 20,
-          cssClass: 'wrap-cell',
+          cssClass: "wrap-cell",
           formatter: SlickGridViewModel.formatters.datetime,
         }, {
-          id: 'CreatedBy',
-          name: 'User',
-          field: 'CreatedBy',
+          id: "CreatedBy",
+          name: "User",
+          field: "CreatedBy",
           width: 35,
         }, {
-          //   id: 'NoteCategory1Id',
-          //   name: 'Primary Reason',
-          //   // field: 'NoteCategory1Id',
-          //   field: 'Category1',
+          //   id: "NoteCategory1Id",
+          //   name: "Primary Reason",
+          //   // field: "NoteCategory1Id",
+          //   field: "Category1",
           //   width: 30,
           // }, {
-          //   id: 'NoteCategory2Id',
-          //   name: 'Secondary Reason',
-          //   // field: 'NoteCategory2Id',
-          //   field: 'Category2',
+          //   id: "NoteCategory2Id",
+          //   name: "Secondary Reason",
+          //   // field: "NoteCategory2Id",
+          //   field: "Category2",
           //   width: 30,
           // }, {
-          id: 'reason',
-          name: 'Reason',
+          id: "reason",
+          name: "Reason",
           // width: 30,
           formatter: function(row, cell, value, columnDef, dataCtx) {
             //@NOTE: for this to work we need a list of all category1 and category2.
             //       currently we only have filtered lists
-            return dataCtx.Category1 + ':<br />' + dataCtx.Category2;
+            return dataCtx.Category1 + ":<br />" + dataCtx.Category2;
           },
         }, {
-          id: 'Note',
-          name: 'Note',
-          field: 'Note',
+          id: "Note",
+          name: "Note",
+          field: "Note",
           width: 300,
-          cssClass: 'wrap-cell',
-          title: 'Note',
+          cssClass: "wrap-cell",
+          title: "Note",
         },
       ],
     });
@@ -169,7 +172,7 @@ define('src/account/default/notes.vm', [
     _this.cmdAppendClose = ko.command(function(cb) {
       _this.cmdAppend.execute(function(err) {
         if (!err) {
-          _this.vm.close();
+          _this.ownerVm.close();
         }
         cb();
       });
@@ -185,9 +188,9 @@ define('src/account/default/notes.vm', [
       }
       dataservice.maincore.notecategory1.read({
         id: selectedValue,
-        link: 'departmentid',
+        link: "departmentid",
       }, null, utils.safeCallback(null, function(err, resp) {
-        // make sure selectedValue hasn't changed
+        // make sure selectedValue hasn"t changed
         if (_this.departmentsCvm.selectedValue() === selectedValue) {
           _this.data.NoteCategory1IdCvm.setList(resp.Value.sort(byCategory));
         }
@@ -202,9 +205,9 @@ define('src/account/default/notes.vm', [
       }
       dataservice.maincore.notecategory2.read({
         id: selectedValue,
-        link: 'category1id',
+        link: "category1id",
       }, null, utils.safeCallback(null, function(err, resp) {
-        // make sure selectedValue hasn't changed
+        // make sure selectedValue hasn"t changed
         if (_this.data.NoteCategory1IdCvm.selectedValue() === selectedValue) {
           _this.data.NoteCategory2IdCvm.setList(resp.Value.sort(byCategory));
           if (!_this.data.NoteCategory2IdCvm.selectedValue.peek()) {
@@ -217,7 +220,7 @@ define('src/account/default/notes.vm', [
     });
   }
   utils.inherits(NotesViewModel, BaseViewModel);
-  NotesViewModel.prototype.viewTmpl = 'tmpl-acct-default-notes';
+  NotesViewModel.prototype.viewTmpl = "tmpl-acct-default-notes";
 
   NotesViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
@@ -229,9 +232,9 @@ define('src/account/default/notes.vm', [
     var _this = this,
       msg;
     if (!_this.note._saved) {
-      msg = 'An an account note has not been entered.';
+      msg = "An an account note has not been entered.";
     } else if (!_this.data.isClean() || !_this.note.isClean()) {
-      msg = 'Pending changes for the current note need to be saved.';
+      msg = "Pending changes for the current note need to be saved.";
     }
     return msg;
   };
@@ -260,10 +263,10 @@ define('src/account/default/notes.vm', [
     }
 
     var model = ukovData.getValue();
-    model.Note = (model.Note) ? model.Note + '\n' : '';
+    model.Note = (model.Note) ? model.Note + "\n" : "";
     model.Note += note();
 
-    note('');
+    note("");
 
     dataservice.maincore.notes.save({
       data: model,
@@ -278,7 +281,7 @@ define('src/account/default/notes.vm', [
     dataservice.maincore.departments.read({}, null, utils.safeCallback(cb, function(err, resp) {
       cvm.setList(resp.Value);
       // try to select Data Entry
-      cvm.selectedValue('DENTRY');
+      cvm.selectedValue("DENTRY");
       // select the first if nothing is selected
       if (!cvm.selectedValue()) {
         cvm.selectItem(cvm.list()[0]);
@@ -290,7 +293,7 @@ define('src/account/default/notes.vm', [
     gvm.list([]);
     dataservice.maincore.notes.read({
       id: id,
-      link: 'cmfid',
+      link: "cmfid",
     }, null, utils.safeCallback(cb, function(err, resp) {
       gvm.list(resp.Value || []);
     }));

@@ -196,6 +196,7 @@ define('src/core/dataservice.base', [
     } catch (ex) {
       console.error(ex);
       responseData = {
+        ex: null, // don't want this exception logged
         Code: 990001,
         Message: ex.stack,
         Value: null,

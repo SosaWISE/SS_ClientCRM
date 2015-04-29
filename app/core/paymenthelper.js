@@ -1,5 +1,5 @@
-define('src/core/paymenthelper', [
-  'moment',
+define("src/core/paymenthelper", [
+  "moment",
 ], function(
   moment
 ) {
@@ -25,7 +25,7 @@ define('src/core/paymenthelper', [
 
   function luhnSum(str) {
     // convert string to array
-    var nums = str.split('').map(Number);
+    var nums = str.split("").map(Number);
     // reverse the list
     nums.reverse();
     // sum list of numbers using luhn algorithm
@@ -76,22 +76,22 @@ define('src/core/paymenthelper', [
     var data = ccData[name];
     return data && data.regx.test(str) && luhnTest(str);
   }
-  // Regular expressions obtained from RegexBuddy's library
+  // Regular expressions obtained from RegexBuddys library
   ccData = {
     amex: {
-      name: 'American Express',
+      name: "American Express",
       regx: /^3[47][0-9]{13}$/,
     },
     visa: {
-      name: 'Visa',
+      name: "Visa",
       regx: /^4[0-9]{12}(?:[0-9]{3})?$/,
     },
     mastercard: {
-      name: 'MasterCard',
+      name: "MasterCard",
       regx: /^5[1-5][0-9]{14}$/,
     },
     discover: {
-      name: 'Discover',
+      name: "Discover",
       regx: /^6(?:011|5[0-9][0-9])[0-9]{12}$/,
     },
   };
@@ -108,10 +108,10 @@ define('src/core/paymenthelper', [
       expirationMonths = new Array(length);
       for (i = 0; i < length; i++) {
         expirationMonths[i] = {
-          value: i,
-          text: day.format('MM-MMMM'),
+          value: i + 1,
+          text: day.format("MM-MMMM"),
         };
-        day.add('months', 1);
+        day.add("months", 1);
       }
     }
     return expirationMonths;
@@ -119,12 +119,12 @@ define('src/core/paymenthelper', [
 
   function getExpirationYears(length, year) {
     length = length || 15;
-    year = year || moment().get('year');
+    year = year || moment().get("year");
     var i, result = new Array(length);
     for (i = 0; i < length; i++) {
       result[i] = {
         value: year,
-        text: year + '',
+        text: year + "",
       };
       year++;
     }
@@ -132,7 +132,7 @@ define('src/core/paymenthelper', [
   }
 
   function isValidExpiration(year, month, now) {
-    var dt = moment([year, month]).endOf('month');
+    var dt = moment([year, month]).endOf("month");
     now = moment(now);
     return now.isBefore(dt);
   }
@@ -142,7 +142,7 @@ define('src/core/paymenthelper', [
   //
   function isValidRoutingNum(str) {
     // convert string to array
-    var d = str.split('').map(Number),
+    var d = str.split("").map(Number),
       checksum,
       result = false;
     if (d.length === 9) {

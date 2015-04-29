@@ -1,15 +1,15 @@
-define('src/hr/user.vm', [
-  'src/hr/hr-cache',
-  'src/hr/recruiteditor.vm',
-  'src/hr/recruitseason.vm',
-  'src/hr/usereditor.vm',
-  'ko',
-  'src/dataservice',
-  'src/core/strings',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
-  'src/core/controller.vm',
+define("src/hr/user.vm", [
+  "src/hr/hr-cache",
+  "src/hr/recruiteditor.vm",
+  "src/hr/recruitseason.vm",
+  "src/hr/usereditor.vm",
+  "ko",
+  "src/dataservice",
+  "src/core/strings",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/base.vm",
+  "src/core/controller.vm",
 ], function(
   hrcache,
   RecruitEditorViewModel,
@@ -30,7 +30,7 @@ define('src/hr/user.vm', [
     var _this = this;
     UserViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
-      'layersVm',
+      "layersVm",
     ]);
 
     _this.mayReload = ko.observable(false);
@@ -44,14 +44,14 @@ define('src/hr/user.vm', [
     _this.defaultChild = _this.editorVm = new UserEditorViewModel({
       userid: _this.id,
       pcontroller: _this,
-      id: 'info',
+      id: "info",
       layersVm: _this.layersVm,
     });
 
 
     _this.title = ko.computed(function() {
       var data = _this.editorVm.data;
-      return strings.format('{0} ({1}, U{2})', data.FullName(), data.GPEmployeeID(), data.UserID());
+      return strings.format("{0} ({1}, U{2})", data.FullName(), data.GPEmployeeID(), data.UserID());
     });
 
     //
@@ -63,7 +63,7 @@ define('src/hr/user.vm', [
     _this.clickNewRecruit = function() {
       var vm = new RecruitSeasonViewModel({
         userid: _this.editorVm.data.UserID.peek(),
-        seasons: hrcache.getList('seasons').peek(),
+        seasons: hrcache.getList("seasons").peek(),
         recruitVms: _this.childs.peek(),
       });
       _this.layersVm.show(vm, function(recruit) {
@@ -92,29 +92,46 @@ define('src/hr/user.vm', [
     }
   }
   utils.inherits(UserViewModel, ControllerViewModel);
-  UserViewModel.prototype.viewTmpl = 'tmpl-hr-user';
+  UserViewModel.prototype.viewTmpl = "tmpl-hr-user";
 
   UserViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this,
-      userid = _this.routePartId(routeData);
+    var _this = this;
 
-    hrcache.ensure('seasons', join.add());
-
-    if (userid > 0) {
-      load_user(userid, function(val) {
-        _this.editorVm.setItem(val);
-      }, join.add('u'));
-
-      load_recruits(userid, function(recruits) {
-        // map recruits to view models
-        var vms = recruits.map(function(r) {
-          return createRecruitEditorViewModel(_this, r);
-        });
-        _this.childs(vms);
-      }, join.add('r'));
-    } else {
-
+    function step1(cb) {
+      // when done, start step2, then call callback
+      var subjoin = join.create()
+        .after(function(err) {
+          if (!err) {
+            step2(join.add());
+          }
+        }).after(cb);
+      // load types
+      hrcache.ensure("seasons", subjoin.add());
     }
+
+    function step2(cb) {
+      var userid = _this.routePartId(routeData);
+      if (userid > 0) {
+        // when done, call callback
+        var subjoin = join.create().after(cb);
+        load_user(userid, function(val) {
+          _this.editorVm.setItem(val);
+        }, subjoin.add("u"));
+
+        load_recruits(userid, function(recruits) {
+          // map recruits to view models
+          var vms = recruits.map(function(r) {
+            return createRecruitEditorViewModel(_this, r);
+          });
+          _this.childs(vms);
+        }, subjoin.add("r"));
+      } else {
+        cb();
+      }
+    }
+
+    // start at first step
+    step1(join.add());
   };
   UserViewModel.prototype.findChild = function(routeData) {
     var _this = this,
@@ -132,7 +149,6 @@ define('src/hr/user.vm', [
       pcontroller: _this,
       id: r.RecruitID,
       layersVm: _this.layersVm,
-      seasons: hrcache.getList('seasons').peek(),
     });
     vm.setItem(r);
     return vm;
@@ -206,7 +222,7 @@ define('src/hr/user.vm', [
   function load_recruits(userid, setter, cb) {
     dataservice.hr.users.read({
       id: userid,
-      link: 'recruits',
+      link: "recruits",
     }, setter, cb);
   }
 

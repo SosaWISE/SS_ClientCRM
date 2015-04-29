@@ -1,11 +1,11 @@
-define('src/account/default/payby.eft.vm', [
-  'src/core/paymenthelper',
-  'ko',
-  'src/ukov',
-  'src/core/combo.vm',
-  'src/core/notify',
-  'src/core/base.vm',
-  'src/core/utils',
+define("src/account/default/payby.ach.vm", [
+  "src/core/paymenthelper",
+  "ko",
+  "src/ukov",
+  "src/core/combo.vm",
+  "src/core/notify",
+  "src/core/base.vm",
+  "src/core/utils",
 ], function(
   paymenthelper,
   ko,
@@ -46,27 +46,33 @@ define('src/account/default/payby.eft.vm', [
 
   schema = {
     _model: true,
+
+    //
+    ID: {},
+    ModifiedOn: {},
+    //
+
     AccountTypeId: {
       // converter: ukov.converters.toUpper(),
       validators: [
-        ukov.validators.isRequired('Account type is required'),
+        ukov.validators.isRequired("Account type is required"),
       ],
     },
     AccountNumber: {
       converter: ukov.converters.string(),
       // converter: ukov.converters.numText(),
       validators: [
-        ukov.validators.isRequired('Account number is required'),
-        // ukov.validators.isInLengthRange(4, 17, 'Account number must be between {0} and {1} characters long'),
+        ukov.validators.isRequired("Account number is required"),
+        ukov.validators.isInLengthRange(1, 20, "Invalid account number"),
       ],
     },
     RoutingNumber: {
       converter: ukov.converters.numText(),
       validators: [
-        ukov.validators.isRequired('Routing number is required'),
+        ukov.validators.isRequired("Routing number is required"),
         function(val) {
           if (!paymenthelper.isValidRoutingNum(val)) {
-            return 'Invalid routing number';
+            return "Invalid routing number";
           }
         },
       ],
@@ -74,7 +80,7 @@ define('src/account/default/payby.eft.vm', [
     NameOnAccount: {
       // converter: ukov.converters.toUpper(),
       validators: [
-        ukov.validators.isRequired('Name on account is required'),
+        ukov.validators.isRequired("Name on account is required"),
       ],
     },
   };
@@ -83,20 +89,20 @@ define('src/account/default/payby.eft.vm', [
     var _this = this;
     PayByEftViewModel.super_.call(_this, options);
 
-    _this.title = 'Bank Account';
+    _this.title = "Bank Account";
 
-    _this.data = ukov.wrap({
+    _this.data = ukov.wrap(_this.item || {
       AccountTypeId: null,
-      AccountNumber: '',
-      RoutingNumber: '',
-      NameOnAccount: '',
+      AccountNumber: "",
+      RoutingNumber: "",
+      NameOnAccount: "",
     }, schema);
     _this.data.AccountTypeCvm = new ComboViewModel({
       selectedValue: _this.data.AccountTypeId,
       list: accountTypeOptions,
       fields: {
-        value: 'BankAccountTypeID',
-        text: 'AccountType',
+        value: "BankAccountTypeID",
+        text: "AccountType",
       }
     });
 
@@ -108,7 +114,7 @@ define('src/account/default/payby.eft.vm', [
     //
   }
   utils.inherits(PayByEftViewModel, BaseViewModel);
-  PayByEftViewModel.prototype.viewTmpl = 'tmpl-acct-default-payby_eft';
+  PayByEftViewModel.prototype.viewTmpl = "tmpl-acct-default-payby_ach";
 
   PayByEftViewModel.prototype.setSelected = function(selected) {
     var _this = this;
@@ -129,10 +135,10 @@ define('src/account/default/payby.eft.vm', [
   accountTypeOptions = [ //
     {
       BankAccountTypeID: 1,
-      AccountType: 'Checking',
+      AccountType: "Checking",
     }, {
       BankAccountTypeID: 2,
-      AccountType: 'Savings',
+      AccountType: "Savings",
     },
   ];
 

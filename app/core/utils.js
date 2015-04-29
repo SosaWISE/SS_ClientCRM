@@ -1,5 +1,5 @@
-define('src/core/utils', [
-  'src/core/jsonhelpers',
+define("src/core/utils", [
+  "src/core/jsonhelpers",
 ], function(
   jsonhelpers
 ) {
@@ -22,9 +22,22 @@ define('src/core/utils', [
     assertProps: function(obj, propNames) {
       propNames.forEach(function(name) {
         if (obj[name] == null) {
-          throw new Error('missing ' + name);
+          throw new Error("missing " + name);
         }
       });
+    },
+
+    tryThrowHandledErr: function(err) {
+      //
+      if (!err || !(err.ex instanceof Error) || err.ex.handledErr) {
+        return;
+      }
+      // attempt to log error by throwing an unhandled exception
+      err.Code = err.Code || -21; // handled exception
+      err.ex.handledErr = err;
+      setTimeout(function() {
+        throw err.ex;
+      }, 0);
     },
 
     safeCallback: function(cb, successFn, errorFn) {
@@ -32,10 +45,10 @@ define('src/core/utils', [
         cb = utils.noop;
       }
       if (!utils.isFunc(successFn)) {
-        throw new Error('successFn must be a function');
+        throw new Error("successFn must be a function");
       }
       if (errorFn && !utils.isFunc(errorFn)) {
-        throw new Error('errorFn must be a function or falsey');
+        throw new Error("errorFn must be a function or falsey");
       }
       // return a function to be called when the async operation is complete
       return function(err, resp, ctx) {
@@ -48,8 +61,11 @@ define('src/core/utils', [
         } catch (ex) {
           console.error(ex.stack);
           err = {
+            ex: ex,
             Message: ex.stack,
           };
+          //
+          utils.tryThrowHandledErr(err);
         } finally {
           cb(err, resp);
         }
@@ -65,13 +81,13 @@ define('src/core/utils', [
     },
 
     isFunc: function(obj) {
-      return typeof(obj) === 'function' || (obj instanceof Function);
+      return typeof(obj) === "function" || (obj instanceof Function);
     },
     isStr: function(obj) {
-      return typeof(obj) === 'string' || (obj instanceof String);
+      return typeof(obj) === "string" || (obj instanceof String);
     },
     isNum: function(obj) {
-      return typeof(obj) === 'number' || (obj instanceof Number);
+      return typeof(obj) === "number" || (obj instanceof Number);
     },
     isDate: function(obj) {
       return (obj instanceof Date);
@@ -84,7 +100,7 @@ define('src/core/utils', [
       return d.setHours(d.getHours() + h);
     },
     isObject: function(obj) {
-      return typeof(obj) === 'object' || (obj instanceof Object);
+      return typeof(obj) === "object" || (obj instanceof Object);
     },
 
     // actually sets if null or undefined...

@@ -71,25 +71,28 @@ define("src/nimis/bootstrapper", [
   ko.applyBindings(app, document.getElementById("main"));
 
   // overwrite onerror function set in index.js
-  window.onerror = function(msg, url, line, column, err) {
+  window.onerror = function(msg, url, line, column, ex) {
     // overwrite message with message and stack trace
-    msg = err.stack;
+    msg = ex.stack;
     // append line and column (same as first line of stack trace)
     url += ":" + line + ":" + column;
     // save error
     apilogger.error({
-      Header: "Unhandled exception",
+      Header: ex.handledErr ? "Handled exception" : "Unhandled exception",
       Message: msg,
       Version: config.version,
       // ComputerName: "",
       SourceView: url,
     });
     // show error
-    notify.error({
-      Code: -2,
+    var err = ex.handledErr || {
+      ex: ex,
+      Code: -20,
       Message: msg,
       Url: url,
-    }, 0);
+    };
+    ex.handledErr = err;
+    notify.error(err);
   };
 
   var deps = [];

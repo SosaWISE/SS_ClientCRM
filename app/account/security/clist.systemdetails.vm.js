@@ -1,19 +1,21 @@
 define("src/account/security/clist.systemdetails.vm", [
   "src/account/default/rep.find.vm",
   "src/account/security/systemdetails.editor.vm",
-  "src/account/security/clist.equipment.vm",
+  "src/account/security/equipment.vm",
   "src/core/notify",
   "src/dataservice",
   "ko",
+  "src/core/strings",
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
   RepFindViewModel,
   SystemDetailsEditorViewModel,
-  CListEquipmentViewModel,
+  EquipmentViewModel,
   notify,
   dataservice,
   ko,
+  strings,
   utils,
   ControllerViewModel
 ) {
@@ -21,15 +23,15 @@ define("src/account/security/clist.systemdetails.vm", [
 
   function CListSystemDetailsViewModel(options) {
     var _this = this;
-
     CListSystemDetailsViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
     _this.mayReload = ko.observable(false);
     _this.repData = ko.observable();
     _this.systemData = ko.observable();
+    _this.premiseAddress = ko.observable();
 
-    _this.equipmentVm = new CListEquipmentViewModel({
+    _this.equipmentVm = new EquipmentViewModel({
       pcontroller: _this,
       layersVm: _this.layersVm,
     });
@@ -95,6 +97,10 @@ define("src/account/security/clist.systemdetails.vm", [
     }, function(busy) {
       return !busy;
     });
+
+    _this.vms = [ // nested view models
+      _this.equipmentVm,
+    ];
   }
   utils.inherits(CListSystemDetailsViewModel, ControllerViewModel);
   CListSystemDetailsViewModel.prototype.viewTmpl = "tmpl-security-clist_systemdetails";
@@ -104,8 +110,9 @@ define("src/account/security/clist.systemdetails.vm", [
 
     _this.accountId = routeData.id;
 
-    _this.equipmentVm.loader.reset(); //incase of reload
-    _this.equipmentVm.load(routeData, extraData, join.add());
+    _this.vms.forEach(function(vm) {
+      vm.load(routeData, extraData, join.add());
+    });
 
     load_types("panelTypes", function(results) {
       _this.panelTypes = results;
@@ -127,6 +134,11 @@ define("src/account/security/clist.systemdetails.vm", [
     load_technicianDetails(routeData.id, function(result) {
       _this.repData(result);
     }, join);
+
+    // load credit
+    load_customerAccount(_this.accountId, "MONI", function(custAcct) {
+      _this.premiseAddress(custAcct ? custAcct.Address : null);
+    }, join.add());
 
     join.when(function(err) {
       if (err) {
@@ -196,6 +208,13 @@ define("src/account/security/clist.systemdetails.vm", [
         setter(resp.Value);
       }
     }));
+  }
+
+  function load_customerAccount(acctid, customerTypeId, setter, cb) {
+    dataservice.api_contractAdmin.accounts.read({
+      id: acctid,
+      link: strings.format("CustomerAccounts/{0}", customerTypeId),
+    }, setter, cb);
   }
 
   return CListSystemDetailsViewModel;

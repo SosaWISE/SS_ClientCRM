@@ -219,7 +219,7 @@ define("src/core/combo.vm", [
 
     // init
     if (options && options.list) {
-      _this.setList(options.list);
+      _this.setList(ko.unwrap(options.list));
     } else {
       // start with nothing selected
       _this.setSelectedValue(null);
@@ -228,6 +228,12 @@ define("src/core/combo.vm", [
   utils.inherits(ComboViewModel, BaseViewModel);
   ComboViewModel.prototype.viewTmpl = "tmpl-combo";
   ComboViewModel.prototype.nullable = false;
+
+  ComboViewModel.prototype.subscribe = function(observable, subscriptionHandler, fn) {
+    var _this = this;
+    subscriptionHandler.subscribe(observable, fn || _this.setList);
+    return _this; // allow chaining
+  };
 
   ComboViewModel.prototype.selectFirst = function() {
     var _this = this;
@@ -316,7 +322,7 @@ define("src/core/combo.vm", [
   };
   ComboViewModel.prototype.resetActive = function() {
     var _this = this,
-      selected = _this.selected();
+      selected = _this.selected.peek();
     _this.deactivateCurrent();
     if (selected) {
       selected.active(true);

@@ -20,7 +20,7 @@ define('src/core/controller.vm', [
     ControllerViewModel.super_.call(_this, options);
 
     _this.mixinLoad();
-    _this.childs = ko.observableArray();
+    _this.childs = ko.observableArray(); // sub controller view models
     _this.activeChild = ko.observable(null);
     _this.updateRouting();
   }
@@ -269,8 +269,8 @@ define('src/core/controller.vm', [
       if (index > -1) {
         // remove from list
         _this.childs.splice(index, 1);
-        // deactivate vm
-        vm.deactivate();
+        // destroy vm
+        vm.destroy();
         // check if a sibling needs to be activated
         if (_this.activeChild.peek() === vm) {
           // null out previous child
@@ -408,7 +408,7 @@ define('src/core/controller.vm', [
         }
       }
       if (vm) {
-        vm.attemptReload();
+        vm.showReload();
       }
     }, true); // useCapture - this event is called before all other clicks
   };

@@ -124,9 +124,9 @@ define('src/core/layers.vm', [
         if (prevCtx) {
           prevCtx.dispose();
         }
-        if (vm && utils.isFunc(vm.dispose)) {
-          vm.dispose();
-        }
+        // destroy vm
+        vm.destroy();
+        //
         if (utils.isFunc(onClose)) {
           results = utils.isFunc(vm.getResults) ? vm.getResults() : [];
           if (results.length > 1) {

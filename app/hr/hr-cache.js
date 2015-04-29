@@ -9,65 +9,82 @@ define("src/hr/hr-cache", [
 ) {
   "use strict";
 
-  var prefix = "hr-",
-    hrcache, hardcodedCache;
+  var prefix = "hr-";
 
-  hrcache = {
+  var hrcache = {
     getList: function(name) {
-      return hardcodedCache[name] || cacher.getList(prefix + name);
+      return cacher.getList(prefix, name, metaMap);
     },
     getMap: function(name) {
-      return cacher.getMap(prefix + name);
+      return cacher.getMap(prefix, name, metaMap);
     },
     ensure: function(name, cb) {
-      if (hardcodedCache[name]) {
-        setTimeout(function() {
-          cb();
-        }, 0);
-        return;
-      }
-      switch (name) {
-        case "payscales":
-          ensureType(name, "PayscaleID", cb);
-          break;
-        case "phoneCellCarriers":
-          ensureType(name, "PhoneCellCarrierID", cb);
-          break;
-        case "roleLocations":
-          ensureType(name, "RoleLocationID", cb);
-          break;
-        case "schools":
-          ensureType(name, "SchoolID", cb);
-          break;
-        case "seasons":
-          ensureType(name, "SeasonID", cb);
-          break;
-        case "teams":
-          ensureType(name, "TeamID", cb);
-          break;
-        case "teamLocations":
-          ensureType(name, "TeamLocationID", cb);
-          break;
-        case "userEmployeeTypes":
-          ensureType(name, "UserEmployeeTypeID", cb);
-          break;
-        case "userTypes":
-          ensureType(name, "UserTypeID", cb);
-          break;
-        default:
-          throw new Error(name + " not implemented");
-      }
+      return cacher.ensure(prefix, name, metaMap,
+        hardcodedCache, dataservice.hr, cb);
+    },
+    metadata: function(name) {
+      return metaMap[name] || defaultMeta;
     },
   };
 
-  function ensureType(type, idName, cb) {
-    cacher.ensure(cb, prefix + type, idName, function(cb) {
-      dataservice.hr[type].read({}, null, cb);
-    });
-  }
+  var defaultMeta = {
+    value: "ID",
+    text: "Txt",
+  };
+  var metaMap = {
+    payscales: {
+      value: "PayscaleID",
+      text: "Name",
+      // comparer: null,
+      // initItem: null,
+      // read: function(cb) {},
+    },
+    phoneCellCarriers: {
+      value: "PhoneCellCarrierID",
+      text: "Description",
+    },
+    roleLocations: {
+      value: "RoleLocationID",
+      text: "Role",
+    },
+    schools: {
+      value: "SchoolID",
+      text: "SchoolName",
+    },
+    seasons: {
+      value: "SeasonID",
+      text: "SeasonName",
+    },
+    teams: {
+      value: "TeamID",
+      text: "Description",
+    },
+    teamLocations: {
+      value: "TeamLocationID",
+      text: "Description",
+    },
+    userEmployeeTypes: {
+      value: "UserEmployeeTypeID",
+      text: "UserEmployeeTypeName",
+    },
+    userTypes: {
+      value: "UserTypeID",
+      text: "Description",
+    },
 
-  hardcodedCache = {
-    shirtSizes: ko.observableArray([ //
+    shirtSizes: defaultMeta,
+    hatSizes: defaultMeta,
+    sexs: defaultMeta,
+    maritalStatuses: defaultMeta,
+    docStatuses: defaultMeta,
+    countrys: defaultMeta,
+    recruitCohabbitTypes: defaultMeta,
+    eyeColors: defaultMeta,
+    hairColors: defaultMeta,
+  };
+
+  var hardcodedCache = {
+    shirtSizes: [ //
       {
         ID: 1,
         Txt: "XXS"
@@ -93,8 +110,8 @@ define("src/hr/hr-cache", [
         ID: 8,
         Txt: "XXXL"
       },
-    ]),
-    hatSizes: ko.observableArray([ //
+    ],
+    hatSizes: [ //
       {
         ID: 1,
         Txt: "S"
@@ -105,8 +122,8 @@ define("src/hr/hr-cache", [
         ID: 3,
         Txt: "L"
       },
-    ]),
-    sexs: ko.observableArray([ //
+    ],
+    sexs: [ //
       {
         ID: 1,
         Txt: "Male"
@@ -114,8 +131,8 @@ define("src/hr/hr-cache", [
         ID: 2,
         Txt: "Female"
       },
-    ]),
-    maritalStatuses: ko.observableArray([ //
+    ],
+    maritalStatuses: [ //
       {
         ID: false,
         Txt: "Single"
@@ -123,9 +140,9 @@ define("src/hr/hr-cache", [
         ID: true,
         Txt: "Married"
       },
-    ]),
+    ],
 
-    docStatuses: ko.observableArray([ //
+    docStatuses: [ //
       {
         ID: 1,
         Txt: "Not Received",
@@ -136,8 +153,8 @@ define("src/hr/hr-cache", [
         ID: 3,
         Txt: "Complete",
       },
-    ]),
-    countrys: ko.observableArray([ //
+    ],
+    countrys: [ //
       // {
       //   ID: "CAN",
       //   Txt: "Canada",
@@ -146,8 +163,8 @@ define("src/hr/hr-cache", [
         ID: "USA",
         Txt: "United States of America",
       },
-    ]),
-    recruitCohabbitTypes: ko.observableArray([ //
+    ],
+    recruitCohabbitTypes: [ //
       {
         ID: 1,
         Txt: "Single",
@@ -158,12 +175,12 @@ define("src/hr/hr-cache", [
         ID: 3,
         Txt: "Off Site",
       },
-    ]),
+    ],
 
 
 
     // colors from pages 37 & 38 of http://www.fbi.gov/about-us/cjis/fingerprints_biometrics/guidelines-for-preparation-of-fingerprint-cards-and-association-criminal-history-information
-    eyeColors: ko.observableArray([ //
+    eyeColors: [ //
       {
         ID: "BLK",
         Txt: "Black",
@@ -189,8 +206,8 @@ define("src/hr/hr-cache", [
         ID: "DIC",
         Txt: "Dichromatic (two different colors)",
       },
-    ]),
-    hairColors: ko.observableArray([ //
+    ],
+    hairColors: [ //
       {
         ID: "BLD",
         Txt: "Bald",
@@ -231,7 +248,7 @@ define("src/hr/hr-cache", [
         ID: "WHI",
         Txt: "White",
       },
-    ]),
+    ],
   };
 
   return hrcache;

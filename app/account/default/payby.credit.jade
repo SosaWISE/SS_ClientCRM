@@ -1,4 +1,4 @@
-div(class="payby-eft")
+div(class="payby-ach")
   ul(class="edit-form")
     li
       span(class="label") Card Type
@@ -12,7 +12,7 @@ div(class="payby-eft")
       div(class="month",data-bind="cvm:data.ExpirationMonthCvm")
       div(class="year",data-bind="cvm:data.ExpirationYearCvm")
     li
-      span(class="label") Security Code (CSC/CCV/CVV)
+      span(class="label") Security Code (CSC/CCV/CVV/etc.)
       //- (CSC/CCV/CVV/CVC/etc) ??? https://en.wikipedia.org/wiki/Card_security_code
       input(class="csc",type="text", placeholder="",
         data-bind="ukov:data.VerificationValue,value:data.VerificationValue,valueUpdate:'keyup'")

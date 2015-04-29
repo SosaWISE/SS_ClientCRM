@@ -1,6 +1,6 @@
-div(class="combo",data-bind="toggle:{'open':isOpen}")
+div(class="combo",data-bind="toggle:{'open':isOpen},ukov:selectedValue")
   div(class="cover",data-bind="click:clickClose,ukov:selectedValue")
-    span(data-bind="text:selected().text")
+    span(data-bind="text:selectedText()")
     span(class="arrow")
   div(class="combo-list")
     input(type="text",

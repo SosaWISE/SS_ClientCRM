@@ -202,18 +202,12 @@ define("src/hr/recruiteditor.vm", [
     ModifiedOn: {},
   };
 
-  var hardCodedFields = {
-    value: "ID",
-    text: "Txt",
-  };
-
   // ctor
   function RecruitEditorViewModel(options) {
     var _this = this;
     RecruitEditorViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
       "layersVm",
-      "seasons",
     ]);
 
     _this.initFocusFirst();
@@ -227,10 +221,7 @@ define("src/hr/recruiteditor.vm", [
     }, schema);
     _this.data.UserTypeCvm = new ComboViewModel({
       selectedValue: _this.data.UserTypeId,
-      fields: {
-        value: "UserTypeID",
-        text: "Description",
-      },
+      fields: hrcache.metadata("userTypes"),
     });
     _this.data.ReportsToCvm = new ComboViewModel({
       selectedValue: _this.data.ReportsToID,
@@ -239,10 +230,7 @@ define("src/hr/recruiteditor.vm", [
     _this.data.TeamCvm = new ComboViewModel({
       selectedValue: _this.data.TeamID,
       nullable: true,
-      fields: {
-        value: "TeamID",
-        text: "Description",
-      },
+      fields: hrcache.metadata("teams"),
     });
     _this.data.PayScaleCvm = new ComboViewModel({
       selectedValue: _this.data.PayScaleID,
@@ -258,24 +246,24 @@ define("src/hr/recruiteditor.vm", [
     });
     _this.data.DriversLicenseStatusCvm = new ComboViewModel({
       selectedValue: _this.data.DriversLicenseStatusID,
-      fields: hardCodedFields,
+      fields: hrcache.metadata("docStatuses"),
     });
     _this.data.I9StatusCvm = new ComboViewModel({
       selectedValue: _this.data.I9StatusID,
-      fields: hardCodedFields,
+      fields: hrcache.metadata("docStatuses"),
     });
     _this.data.W9StatusCvm = new ComboViewModel({
       selectedValue: _this.data.W9StatusID,
-      fields: hardCodedFields,
+      fields: hrcache.metadata("docStatuses"),
     });
     _this.data.W4StatusCvm = new ComboViewModel({
       selectedValue: _this.data.W4StatusID,
-      fields: hardCodedFields,
+      fields: hrcache.metadata("docStatuses"),
     });
     _this.data.CountryCvm = new ComboViewModel({
       selectedValue: _this.data.CountryId,
       nullable: true,
-      fields: hardCodedFields,
+      fields: hrcache.metadata("countrys"),
     });
     _this.data.StateCvm = new ComboViewModel({
       selectedValue: _this.data.StateId,
@@ -290,7 +278,7 @@ define("src/hr/recruiteditor.vm", [
     _this.data.RecruitCohabbitTypeCvm = new ComboViewModel({
       selectedValue: _this.data.RecruitCohabbitTypeId,
       nullable: true,
-      fields: hardCodedFields,
+      fields: hrcache.metadata("recruitCohabbitTypes"),
     });
 
     _this.seasonName = ko.observable("unknown season");
@@ -449,7 +437,7 @@ define("src/hr/recruiteditor.vm", [
   RecruitEditorViewModel.prototype.setItem = function(item) {
     var _this = this;
     // set seasonName and SeasonID
-    _this.seasons.some(function(s) {
+    hrcache.getList("seasons").peek().some(function(s) {
       if (item.SeasonID === s.SeasonID) {
         _this.seasonName(s.SeasonName);
         return true;

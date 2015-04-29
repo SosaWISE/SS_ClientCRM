@@ -1,6 +1,6 @@
 define('src/account/default/payby.vm', [
   'src/account/default/payby.credit.vm',
-  'src/account/default/payby.eft.vm',
+  'src/account/default/payby.ach.vm',
   'src/account/default/payby.invoice.vm',
   'src/dataservice',
   'ko',
@@ -26,9 +26,18 @@ define('src/account/default/payby.vm', [
     PayByViewModel.super_.call(_this, options);
 
     _this.list = [
-      new PayByCreditViewModel(),
-      new PayByEftViewModel(),
-      new PayByInvoiceViewModel(),
+      new PayByEftViewModel({
+        item: _this.item,
+        paymentTypeId: "ACH",
+      }),
+      new PayByCreditViewModel({
+        item: _this.item,
+        paymentTypeId: "CC",
+      }),
+      new PayByInvoiceViewModel({
+        item: _this.item,
+        paymentTypeId: "CHCK",
+      }),
     ];
     _this.selectedVm = ko.observable();
 
@@ -43,7 +52,6 @@ define('src/account/default/payby.vm', [
       vm.setSelected(true);
       _this.selectedVm(vm);
     };
-    _this.clickMethod(_this.list[0]); // select first in list
     _this.cmdSave = ko.command(function(cb) {
       var selectedVm = _this.selectedVm();
       if (!selectedVm.data.isValid()) {
@@ -52,10 +60,28 @@ define('src/account/default/payby.vm', [
         return;
       }
 
-      _this.layerResult = selectedVm.data.getValue();
+      var model = selectedVm.data.getValue();
+      model.PaymentTypeId = selectedVm.paymentTypeId;
+      model.AccountTypeId = model.AccountTypeId || null;
+      model.CardTypeId = model.CardTypeId || null;
+      model.CheckNumber = model.CheckNumber || null;
+      _this.layerResult = model;
       closeLayer(_this);
       cb();
     });
+
+    //
+    var selectIndex = 0;
+    if (_this.item) {
+      if (_this.item.AccountTypeId) {
+        selectIndex = 0;
+      } else if (_this.item.CardTypeId) {
+        selectIndex = 1;
+      } else if (_this.item.CheckNumber) {
+        selectIndex = 2;
+      }
+    }
+    _this.clickMethod(_this.list[selectIndex]);
   }
   utils.inherits(PayByViewModel, BaseViewModel);
   PayByViewModel.prototype.viewTmpl = 'tmpl-acct-default-payby';

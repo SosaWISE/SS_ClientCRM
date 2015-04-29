@@ -1,7 +1,7 @@
 {
   "strict": true,
-  "node": true,
-  "browser": true,
+  "node": false,
+  "browser": false,
 
   "onevar": false,
   "laxcomma": true,
@@ -19,9 +19,30 @@
 
   "predef": [
     "Intl",
-
+    "require",
     "define",
+    "alert",
+    "console",
 
-    "alert"
+    "FileReader",
+    "HTMLInputElement",
+    "HTMLAnchorElement",
+    "HTMLDivElement",
+    "MouseEvent",
+    "ArrayBuffer",
+    "Uint8Array",
+    "Blob",
+    "FormData",
+    "atob",
+    "localStorage",
+    "navigator",
+    "clearInterval",
+    "setInterval",
+    "clearTimeout",
+    "setTimeout",
+    "location",
+    "screen",
+    "document",
+    "window"
   ]
 }

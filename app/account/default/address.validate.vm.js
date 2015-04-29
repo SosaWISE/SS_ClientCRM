@@ -178,6 +178,7 @@ define("src/account/default/address.validate.vm", [
     AddressValidateViewModel.super_.call(_this, options);
     utils.ensureProps(_this, [
       "name",
+      "repModel",
     ]);
     utils.setIfNull(_this, {
       otherAddresses: [],

@@ -1,15 +1,13 @@
-define('src/account/security/alarmdotcom.editor.vm', [
-  "src/account/security/clist.salesinfo.vm",
-  'src/core/combo.vm',
-  'src/ukov',
-  'ko',
-  'src/dataservice',
+define("src/account/security/alarmdotcom.editor.vm", [
+  "src/core/combo.vm",
+  "src/ukov",
+  "ko",
+  "src/dataservice",
   "src/core/strings",
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/base.vm",
 ], function(
-  CListSalesInfoViewModel,
   ComboViewModel,
   ukov,
   ko,
@@ -33,11 +31,11 @@ define('src/account/security/alarmdotcom.editor.vm', [
   function AlarmDotComEditorViewModel(options) {
     var _this = this;
     AlarmDotComEditorViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, [
-      'accountid',
-      'isRegistered',
-      'alarmComPackages',
-      'alarmComPackageFields',
+    utils.assertProps(_this, [
+      "accountid",
+      "isRegistered",
+      "alarmComPackages",
+      "alarmComPackageFields",
     ]);
 
     _this.focusFirst = ko.observable(false);
@@ -64,7 +62,7 @@ define('src/account/security/alarmdotcom.editor.vm', [
       _this.data.markClean(model, true);
       dataservice.msaccountsetupsrv.alarmcom.save({
         id: _this.accountid,
-        link: 'register',
+        link: "register",
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
         _this.layerResult = resp.Value;
@@ -85,9 +83,9 @@ define('src/account/security/alarmdotcom.editor.vm', [
     });
   }
   utils.inherits(AlarmDotComEditorViewModel, BaseViewModel);
-  AlarmDotComEditorViewModel.prototype.viewTmpl = 'tmpl-security-alarmdotcom_editor';
+  AlarmDotComEditorViewModel.prototype.viewTmpl = "tmpl-security-alarmdotcom_editor";
   AlarmDotComEditorViewModel.prototype.width = 450;
-  AlarmDotComEditorViewModel.prototype.height = 'auto';
+  AlarmDotComEditorViewModel.prototype.height = "auto";
 
   function closeLayer(_this) {
     if (_this.layer) {
@@ -102,7 +100,7 @@ define('src/account/security/alarmdotcom.editor.vm', [
     var _this = this,
       msg;
     if (_this.cmdRegister.busy() && !_this.layerResult) {
-      msg = 'Please wait for registration to finish.';
+      msg = "Please wait for registration to finish.";
     }
     return msg;
   };

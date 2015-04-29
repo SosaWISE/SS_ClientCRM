@@ -919,6 +919,10 @@ table.fh-wrap {
     left: 300px;
   }
 
+  .checkbox.home-owner {
+    font-size: 1.3em;
+  }
+
   // color: #6c6c6c;
 
   .details {
@@ -1073,19 +1077,18 @@ table.fh-wrap {
       border-bottom: 4px double @account-bg;
     }
   }
-
-  ul.payment-method {
-    .name,
-    .value {
-      display: inline-block;
-    }
-    .name {
-      width: 120px;
-      text-align: right;
-    }
-    .value {
-      margin-left: 10px;
-    }
+}
+ul.payment-method {
+  .name,
+  .value {
+    display: inline-block;
+  }
+  .name {
+    width: 120px;
+    text-align: right;
+  }
+  .value {
+    margin-left: 10px;
   }
 }
 .payby {
@@ -1128,7 +1131,7 @@ table.fh-wrap {
       }
     }
   }
-  .payby-eft {
+  .payby-ach {
     .month {
       width: 64%;
       display: inline-block;

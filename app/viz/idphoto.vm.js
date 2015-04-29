@@ -309,8 +309,9 @@ define('src/viz/idphoto.vm', [
     }
     return msg;
   };
-  IdPhotoViewModel.prototype.dispose = function() {
+  IdPhotoViewModel.prototype.onDestroy = function() { // overrides base
     var _this = this;
+    //
     _this._disposed = true;
     _this.disposePhoto();
   };
@@ -484,7 +485,7 @@ define('src/viz/idphoto.vm', [
       fitPosition(item, boxWidth, boxHeight);
     };
 
-    item.mouseup = parent.mouseupoutside = function( /*moveDate*/ ) {
+    item.mouseup = item.mouseupoutside = function( /*moveDate*/ ) {
       this.alpha = 1;
       isDragging = false;
     };

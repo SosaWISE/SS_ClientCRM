@@ -9,6 +9,11 @@ div(class="acct-item acct-clist-qualify load-err", data-bind="if:loadErr,toggle:
 
 div(data-bind="if:!loadErr()&&!loading()")
   div(class="acct-item acct-clist-qualify",data-bind="toggle:{'may-reload':mayReload}")
+    div(class="actions")
+      div(class="checkbox home-owner",data-bind="cmd:toggleIsHomeOwner")
+        a(class="btn small",data-bind="active:isHomeOwner")
+        span Is the customer the Home Owner?
+
     div(class="col")
       div(class="section",data-bind="cmd:cmdFindRep,toggle:{empty:!repModel()}")
         span(class="title") Sales Rep

@@ -1,19 +1,21 @@
 define("src/account/security/alarmdotcom.changeservicepackage.vm", [
-  "src/account/security/clist.salesinfo.vm",
+  "src/account/accounts-cache",
   "src/core/combo.vm",
   "src/ukov",
   "ko",
   "src/dataservice",
+  "src/core/subscriptionhandler",
   "src/core/strings",
   "src/core/notify",
   "src/core/utils",
   "src/core/base.vm",
 ], function(
-  CListSalesInfoViewModel,
+  accountscache,
   ComboViewModel,
   ukov,
   ko,
   dataservice,
+  SubscriptionHandler,
   strings,
   notify,
   utils,
@@ -29,10 +31,13 @@ define("src/account/security/alarmdotcom.changeservicepackage.vm", [
   function AlarmDotComChangeServicePackageViewModel(options) {
     var _this = this;
     AlarmDotComChangeServicePackageViewModel.super_.call(_this, options);
-    BaseViewModel.ensureProps(_this, [
+    utils.assertProps(_this, [
       "accountid",
       "CellPackageItemId",
     ]);
+
+    _this.mixinLoad();
+    _this.handler = new SubscriptionHandler();
 
     _this.focusFirst = ko.observable(false);
     _this.data = ukov.wrap({
@@ -41,9 +46,12 @@ define("src/account/security/alarmdotcom.changeservicepackage.vm", [
 
     _this.data.CellPackageItemCvm = new ComboViewModel({
       selectedValue: _this.data.CellPackageItemId,
-      list: CListSalesInfoViewModel.prototype.cellPackageItemOptions.filter(function(item) {
-        return strings.startsWith(item.value, "CELL_SRV_AC");
-      }),
+      fields: accountscache.metadata("cellPackageItems"),
+    });
+    _this.handler.subscribe(accountscache.getList("cellPackageItems"), function(list) {
+      _this.data.CellPackageItemCvm.setList(list.filter(function(item) {
+        return strings.startsWith(item.ID, "CELL_SRV_AC");
+      }));
     });
 
     //
@@ -104,15 +112,9 @@ define("src/account/security/alarmdotcom.changeservicepackage.vm", [
     return msg;
   };
 
-  // AlarmDotComChangeServicePackageViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-  //   // var _this = this,
-  //   var cb = join.add();
-  //   setTimeout(function() {
-  //     //@TODO: load real data
-  //
-  //     cb();
-  //   }, 2000);
-  // };
+  AlarmDotComChangeServicePackageViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+    accountscache.ensure("cellPackageItems", join.add());
+  };
 
   return AlarmDotComChangeServicePackageViewModel;
 });
