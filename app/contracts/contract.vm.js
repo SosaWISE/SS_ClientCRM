@@ -525,9 +525,9 @@ define("src/contracts/contract.vm", [
         case "approved":
           notify.warn("Already Approved", "This account has already been approved.", 2);
           return cb();
-        case "blocked":
-          notify.warn("Rep Front End Holds", "The account cannot be approved when rep front end holds exist.", 2);
-          return cb();
+          // case "blocked":
+          //   notify.warn("Rep Front End Holds", "The account cannot be approved when rep front end holds exist.", 2);
+          //   return cb();
       }
     }
 
