@@ -232,7 +232,7 @@ define("src/core/app.vm", [
     if (apps) {
       apps.forEach(function(app) {
         if (app) {
-          map[app.toLowerCase()] = true;
+          map[app] = true;
         }
       });
     }

@@ -1,5 +1,5 @@
 define("src/admin/authcontrol.vm", [
-  // "howie",
+  "howie",
   "src/admin/admincache",
   "src/admin/group.editor.vm",
   "src/admin/authcontrol.gvm",
@@ -10,7 +10,7 @@ define("src/admin/authcontrol.vm", [
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
-  // howie,
+  howie,
   admincache,
   GroupEditorViewModel,
   AuthControlGridViewModel,
@@ -42,7 +42,7 @@ define("src/admin/authcontrol.vm", [
     _this.mayReload = ko.observable(false);
 
     _this.data = ukov.wrap({
-      // Username: howie.fetch("user").Username,
+      Username: howie.fetch("user").Username,
     }, schema);
     _this.gvm = new AuthControlGridViewModel({
       edit: function(groupName) {

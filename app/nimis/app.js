@@ -48,7 +48,7 @@ define("src/nimis/app", [
           },
         ],
       }, {
-        appid: "sse_cms_cors",
+        appid: "SSE_CMS_CORS",
         path: "src/account/accounts.panel.vm",
         options: {
           id: "crm",
@@ -67,7 +67,7 @@ define("src/nimis/app", [
           },
         ],
       }, {
-        appid: "survey_man",
+        appid: "SURVEY_MAN",
         path: "src/survey/surveys.panel.vm",
         options: {
           id: "surveys",
@@ -85,7 +85,7 @@ define("src/nimis/app", [
           },
         ],
       }, {
-        appid: "sse_cms_cors",
+        appid: "SWING",
         path: "src/swing/swing.panel.vm",
         options: {
           id: "swing",
@@ -100,7 +100,7 @@ define("src/nimis/app", [
           },
         ],
       }, {
-        appid: "sse_cms_cors",
+        appid: "INV",
         path: "src/inventory/inventory.panel.vm",
         options: {
           id: "inventory",
@@ -115,7 +115,7 @@ define("src/nimis/app", [
           },
         ],
       }, {
-        appid: "sse_cms_cors",
+        appid: "SCHED_MAN",
         path: "src/scheduler/scheduler.panel.vm",
         options: {
           id: "scheduler",
@@ -130,7 +130,7 @@ define("src/nimis/app", [
           },
         ],
       }, {
-        appid: "hr_man",
+        appid: "HR_MAN",
         path: "src/hr/hr.panel.vm",
         options: {
           id: "hr",
@@ -145,7 +145,7 @@ define("src/nimis/app", [
           },
         ],
       }, {
-        appid: "contract_admin",
+        appid: "CONTRACT_ADMIN",
         path: "src/contracts/contracts.panel.vm",
         options: {
           id: "contracts",
@@ -160,7 +160,7 @@ define("src/nimis/app", [
           },
         ],
       }, {
-        appid: "funding_admin",
+        appid: "FUNDING_ADMIN",
         path: "src/funding/funding.panel.vm",
         options: {
           id: "funding",
@@ -175,8 +175,7 @@ define("src/nimis/app", [
           },
         ],
       }, {
-        appid: "hr_man",
-        // appid: "admin",
+        appid: "ADMIN",
         path: "src/admin/admin.panel.vm",
         options: {
           id: "admin",
