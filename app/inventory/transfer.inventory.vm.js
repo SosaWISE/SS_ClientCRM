@@ -44,7 +44,7 @@ define('src/inventory/transfer.inventory.vm', [
     TransferInventoryViewModel.super_.call(_this, options);
 
     //Set barcode field as first focusable
-    _this.focusFirst = ko.observable(true);
+    _this.initFocusFirst();
 
     _this.data = ukov.wrap(_this.item || {
       LocationType: null,
@@ -98,7 +98,7 @@ define('src/inventory/transfer.inventory.vm', [
       //empty the list box to display the invalid barcodes
       _this.data.productBarcodeIdList(null);
 
-      //Transfer barcode only if transfer location is not empty.      
+      //Transfer barcode only if transfer location is not empty.
       if (_this.data.TransferLocation()) {
 
         tList = tList.split('\n');
@@ -147,10 +147,10 @@ define('src/inventory/transfer.inventory.vm', [
     //This block executes when enter/tab key is hit and barcode field is not empty
     _this.processBarcode = function(data, event) {
 
-      //Process barcode only if transfer location is not empty.      
+      //Process barcode only if transfer location is not empty.
       if (_this.data.TransferLocation()) {
 
-        //when enter key is hit and barcode is not empty, call the APIs for adding barcode        
+        //when enter key is hit and barcode is not empty, call the APIs for adding barcode
         if (_this.data.productBarcodeID() !== null && _this.data.productBarcodeID().trim() !== "") {
 
           if (event.keyCode === 13 || event.keyCode === 9) {
@@ -204,7 +204,7 @@ define('src/inventory/transfer.inventory.vm', [
         _this.prevLocation('NA');
         _this.newLocation('NA');
 
-        //Populate transfer to location here        
+        //Populate transfer to location here
         dataservice.inventoryenginesrv.Locations.read({
           id: locationType
         }, null, utils.safeCallback(cb, function(err, resp) {
@@ -218,16 +218,6 @@ define('src/inventory/transfer.inventory.vm', [
 
       }
     });
-
-    _this.active.subscribe(function(active) {
-      if (active) {
-        // this timeout makes it possible to focus the barcode field
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
-    });
-
   }
 
   utils.inherits(TransferInventoryViewModel, ControllerViewModel);

@@ -496,7 +496,7 @@ define('src/core/mockery', [
       };
     }
 
-    setTimeout(function() {
+    window.setTimeout(function() {
       if (!err && result && utils.isFunc(setter)) {
         setter(result.Value);
       }

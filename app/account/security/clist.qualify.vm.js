@@ -4,7 +4,7 @@ define("src/account/security/clist.qualify.vm", [
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "src/account/default/rep.find.vm",
   "src/account/default/address.validate.vm",
   "src/account/default/runcredit.vm",
@@ -15,7 +15,7 @@ define("src/account/security/clist.qualify.vm", [
   notify,
   utils,
   ControllerViewModel,
-  accountscache,
+  mscache,
   RepFindViewModel,
   AddressValidateViewModel,
   RunCreditViewModel,
@@ -139,7 +139,6 @@ define("src/account/security/clist.qualify.vm", [
       var masterid = routeData.masterid;
       var vm = new RunCreditViewModel({
         otherLeads: otherLeads,
-        cache: _this.cache,
         repModel: _this.repModel(),
         addressId: addressID,
         customerTypeId: leadVm.typeId,
@@ -226,8 +225,8 @@ define("src/account/security/clist.qualify.vm", [
     var _this = this,
       id = routeData.masterid;
 
-    accountscache.ensure("types/friendsAndFamily", join.add());
-    load_localizations(_this, join.add());
+    mscache.ensure("types/friendsAndFamily", join.add());
+    mscache.ensure("localizations", join.add());
 
     if (id <= 0) {
       // lead not saved yet
@@ -269,14 +268,6 @@ define("src/account/security/clist.qualify.vm", [
       }, join.add());
     });
   };
-
-  function load_localizations(_this, cb) {
-    _this.cache = _this.cache || {};
-    _this.cache.localizations = [];
-    dataservice.maincore.localizations.read({}, function(val) {
-      _this.cache.localizations = val;
-    }, cb);
-  }
 
   function load_leadInfo(masterid, customerTypeId, setter, cb) {
     dataservice.api_qualify.customerMasterFiles.read({

@@ -138,6 +138,17 @@ define('src/u-kov/validators', [
       }
     };
   };
+  validators.maybeRequired = function(message, maybeProp) {
+    message = message || valRequired;
+    return function(val, model) {
+      if (!model[maybeProp]) {
+        return;
+      }
+      if (!val && val !== 0 && val !== false) {
+        return message;
+      }
+    };
+  };
 
   validators.isPassword = function(minLength, message) {
     // ensure min length is 6 or greater
@@ -228,7 +239,7 @@ define('src/u-kov/validators', [
   //
   //
   validators.isCompanyID = function(msg) {
-    return validators.isPattern(/^[a-z]{2,5}[0-9]{3}$/i, msg || 'Invalid Company ID. Expected format: AAAA000');
+    return validators.isPattern(/^[a-z]{2,5}[0-9]{3,4}$/i, msg || 'Invalid Company ID. Expected format: AAAA000');
   };
 
   //

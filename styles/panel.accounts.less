@@ -102,6 +102,39 @@
   }
 }
 
+.status-cell {
+  display: inline-block;
+  width: ~"calc(25% - 5px)";
+  margin-top: 10px;
+  margin-right: 5px;
+  padding: 5px;
+  text-align: center;
+  font-weight: bold;
+  .border-radius(5px);
+  .box-shadow(0px 0px 2px rgba(0, 0, 0, 0.6));
+}
+.status-label {
+  color: white;
+  &.unknown {
+    background-color: rgba(0,0,0,0.1) !important;
+    color: #aaa;
+  }
+  &.good,
+  &.approved {
+    background-color: green !important;
+  }
+  &.warning,
+  &.unapproved {
+    background-color: yellow !important;
+    color: black;
+  }
+  &.critical,
+  &.canceled,
+  &.blocked {
+    background-color: red !important;
+  }
+}
+
 div.tab {
   overflow: hidden;
   position: absolute;
@@ -180,6 +213,26 @@ table.fh-wrap {
 }
 
 
+.credit {
+  &.excellent {
+    background-color: green;
+  }
+  &.good {
+    background-color: yellow;
+    color: #707070;
+  }
+  &.pass {
+    background-color: orange;
+  }
+  &.sub {
+    background-color: maroon;
+  }
+  &.poor{
+    background-color: red;
+  }
+}
+
+
 #contracts-panel,
 #crm-panel > .accounts {
   height: 100%;
@@ -203,7 +256,6 @@ table.fh-wrap {
     }
   }
 
-
   .credit-result {
     display:table;
     width:100%;
@@ -219,23 +271,6 @@ table.fh-wrap {
     }
     .title {
       font-weight: 500;
-    }
-
-    &.excellent {
-      background-color: green;
-    }
-    &.good {
-      background-color: yellow;
-      color: #707070;
-    }
-    &.pass {
-      background-color: orange;
-    }
-    &.sub {
-      background-color: maroon;
-    }
-    &.poor{
-      background-color: red;
     }
   }
 
@@ -1227,39 +1262,6 @@ ul.payment-method {
   &.pers { .mixinAcctIco(0); }
   &.skplt { .mixinAcctIco(1); }
   &.wnfil { .mixinAcctIco(2); }
-}
-.acct-systemonlineinfo {
-  .soli-row {
-    margin-top:10px;
-    .soli-cell {
-      padding: 5px;
-      display: inline-block;
-      width: 25%;
-      // margin: 5px;
-      text-align: center;
-      font-weight: bold;
-      border-radius: 5px;
-      box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.6);
-      &.green {
-        background-color: green;
-        color: white;
-      }
-      &.yellow {
-        background-color: yellow;
-        color: black;
-      }
-      &.red {
-        background-color: red;
-        color: white;
-      }
-      // &:first-child {
-      //   margin-left: 0;
-      // }
-      // &:last-child {
-      //   margin-right: 0;
-      // }
-    }
-  }
 }
 
 

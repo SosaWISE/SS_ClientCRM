@@ -1,37 +1,26 @@
 define("src/nimis/app", [
   "ko",
-  "src/dataservice",
   "src/login/login.panel.vm",
-  "src/core/sessionstore",
   "src/core/app.vm",
+  "src/core/utils",
 ], function(
   ko,
-  dataservice,
-  LoginViewModel,
-  sessionstore,
-  AppViewModel
+  LoginPanelViewModel,
+  AppViewModel,
+  utils
 ) {
   "use strict";
 
   var app = new AppViewModel({
-    doLogout: function(cb) {
-      // logout without caring about response
-      dataservice.user.logout();
-      // let the request start
-      setTimeout(function() {
-        // remove session id (effectively logging the user out)
-        sessionstore.setItem("token", null);
-        // call callback
-        cb();
-      }, 100);
-    },
-    createLogin: function(setUser, routePart) {
-      return new LoginViewModel({
-        setUser: setUser,
+    onLogin: utils.noop,
+    onLogout: utils.noop,
+    createLogin: function(routePart) {
+      return new LoginPanelViewModel({
         routePart: routePart,
         id: "login",
         title: "Secure Login",
         icoClass: null,
+        onLogin: app.onLogin,
       });
     },
     addAnonRoutes: function(router, loginVm) {

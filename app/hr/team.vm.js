@@ -30,7 +30,7 @@ define('src/hr/team.vm', [
     ]);
 
     _this.mayReload = ko.observable(false);
-    _this.focusFirst = ko.observable(false);
+    _this.initFocusFirst();
     _this.recruits = _this.childs;
 
     _this.showNav = ko.observable(false);
@@ -57,15 +57,6 @@ define('src/hr/team.vm', [
     _this.clickItem = function(vm) {
       _this.selectChild(vm);
     };
-
-    //
-    _this.active.subscribe(function(active) {
-      if (active) {
-        setTimeout(function() {
-          _this.focusFirst(true);
-        }, 100);
-      }
-    });
 
     // test for new recruit
     if (_this.id > 0) {} else {

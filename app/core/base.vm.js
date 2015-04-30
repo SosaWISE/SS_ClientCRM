@@ -1,4 +1,5 @@
 define("src/core/base.vm", [
+  "src/core/handler",
   "src/core/strings",
   "src/core/helpers",
   "src/core/joiner",
@@ -6,6 +7,7 @@ define("src/core/base.vm", [
   "src/core/utils",
   "ko"
 ], function(
+  Handler,
   strings,
   helpers,
   joiner,
@@ -54,20 +56,33 @@ define("src/core/base.vm", [
 
   BaseViewModel.prototype.initFocusFirst = function() {
     var _this = this;
-    if (_this.focusFirst) {
+    _this.initActiveFocus("focusFirst");
+  };
+  BaseViewModel.prototype.initActiveFocus = function(name) {
+    var _this = this;
+    if (_this[name]) {
       // do nothing duplicate calls
       return;
     }
-    _this.focusFirst = ko.observable(true);
+    var obs = ko.observable(true);
+    _this[name] = obs;
     _this.active.subscribe(function(active) {
       if (active) {
         // this timeout makes it possible to focus the input field
-        setTimeout(function() {
-          _this.focusFirst(true);
+        window.setTimeout(function() {
+          obs(true);
         }, 100);
       }
     });
   };
+  BaseViewModel.prototype.initHandler = function() {
+    var _this = this;
+    if (_this.handler) {
+      return;
+    }
+    _this.handler = new Handler();
+  };
+
   BaseViewModel.prototype.mixinLoad = function() {
     var _this = this;
     _this.load = load;
@@ -98,7 +113,9 @@ define("src/core/base.vm", [
     var _this = this;
     _this.reset();
     var routeData = _this.getRouteData();
-    _this.load(routeData, {}, cb);
+    _this.load(routeData, {
+      isReload: true,
+    }, cb);
     if (utils.isFunc(_this.goTo)) { // this is more controller.vm territory... but so is getRouteData...
       _this.goTo(routeData);
     }
@@ -167,7 +184,7 @@ define("src/core/base.vm", [
     _this.deactivate();
     // remove handlers
     if (_this.handler) {
-      _this.handler.unsubscribeAll();
+      _this.handler.destroy();
     }
     // reset loader (but prevent resetting nested view models, since destroy will reset them)
     _this.reset(true);

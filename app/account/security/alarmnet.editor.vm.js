@@ -27,7 +27,7 @@ define('src/account/security/alarmnet.editor.vm', [
   AlarmNetEditorViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     // var _this = this,
     var cb = join.add();
-    setTimeout(function() {
+    window.window.setTimeout(function() {
       //@TODO: load real data
 
       cb();

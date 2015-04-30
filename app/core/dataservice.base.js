@@ -1,73 +1,70 @@
-define('src/core/dataservice.base', [
-  'jquery',
-  'src/core/sessionstore',
-  'src/core/jsonhelpers',
-  'src/core/querystring',
-  'src/core/utils',
+define("src/core/dataservice.base", [
+  "jquery",
+  "src/core/storage",
+  "src/core/jsonhelpers",
+  "src/core/querystring",
+  "src/core/authorize",
+  "src/core/utils",
+  "src/core/harold",
 ], function(
   jquery,
-  sessionstore,
+  storage,
   jsonhelpers,
   querystring,
+  authorize,
   utils
 ) {
   "use strict";
 
   var _requestCounter = 0,
-    _sessionId = null,
     _history = [];
 
   function DataserviceBase(collectionName, domain) {
     this.collectionName = collectionName;
-    this.baseUrl = (domain ? ('//' + domain) : '') + frontSlash(collectionName);
+    this.baseUrl = (domain ? ("//" + domain) : "") + frontSlash(collectionName);
   }
-  DataserviceBase.prototype.timeout = 1000 * 30;
-  // DataserviceBase.prototype.timeout = 1000 * 6;
-  // DataserviceBase.prototype.timeout = 1000 * 60 * 3;
 
   //@NOTE: the webservice only supports POST, GET and DELETE (which is why update and replace are commented out)
 
   // raw post/get (difficult to mock)
   DataserviceBase.prototype.post = function(path, data, setter, callback) {
-    this.ajax('POST', null, path, null, data, setter, callback);
+    this.ajax("POST", null, path, null, data, setter, callback);
   };
   DataserviceBase.prototype.get = function(path, queryObj, setter, callback) {
-    this.ajax('GET', null, path, queryObj, null, setter, callback);
+    this.ajax("GET", null, path, queryObj, null, setter, callback);
   };
 
   // post/get with params object (easy to mock)
   DataserviceBase.prototype.save = function(params, setter, callback) {
-    this.ajax('POST', getId(params), getLink(params), params.query, params.data, setter, callback);
+    this.ajax("POST", getId(params), getLink(params), params.query, params.data, setter, callback);
   };
   DataserviceBase.prototype.read = function(params, setter, callback) {
-    this.ajax('GET', getId(params), getLink(params), params.query, params.data, setter, callback);
+    this.ajax("GET", getId(params), getLink(params), params.query, params.data, setter, callback);
   };
   // DataserviceBase.prototype.update = function(id, data, setter, callback) {
-  //   this.ajax('PATCH', id, null, null, data, setter, callback);
+  //   this.ajax("PATCH", id, null, null, data, setter, callback);
   // };
   DataserviceBase.prototype.del = DataserviceBase.prototype.delete = function(params, setter, callback) {
     if (utils.isObject(params)) {
-      this.ajax('DELETE', getId(params), getLink(params), params.query, params.data, setter, callback);
+      this.ajax("DELETE", getId(params), getLink(params), params.query, params.data, setter, callback);
     } else {
-      this.ajax('DELETE', params, null, null, null, setter, callback);
+      this.ajax("DELETE", params, null, null, null, setter, callback);
     }
   };
   // DataserviceBase.prototype.replace = function(id, data, setter, callback) {
-  //   this.ajax('PUT', id, null, null, data, setter, callback);
+  //   this.ajax("PUT", id, null, null, data, setter, callback);
   // };
 
 
 
   DataserviceBase.prototype.createRequestUrl = function(id, link, queryObj /*, httpVerb*/ ) {
     var query = querystring.toQuerystring(queryObj);
-    return this.baseUrl + frontSlash(id) + frontSlash(link) + (query ? ('?' + query) : '');
+    return this.baseUrl + frontSlash(id) + frontSlash(link) + (query ? ("?" + query) : "");
   };
   DataserviceBase.prototype.ajax = function(httpVerb, id, link, queryObj, data, setter, callback) {
     queryObj = (queryObj || {});
-    // if (!queryObj.SessionId) {
-    //   queryObj.SessionId = _sessionId;
-    // }
-    var contentType = 'application/json';
+
+    var contentType = "application/json";
     if (data) {
       if (data instanceof FormData) {
         contentType = false;
@@ -95,7 +92,7 @@ define('src/core/dataservice.base', [
       data: data,
 
       contentType: contentType,
-      dataType: 'json',
+      dataType: "json",
 
       callback: callback,
       setter: setter,
@@ -108,24 +105,39 @@ define('src/core/dataservice.base', [
       _history.shift();
     }
 
-    return this.execute(context);
+    authorize.execute(context, execute);
   };
 
-  DataserviceBase.prototype.execute = function(context) {
-    var _this = this;
+  //
+  // static
+  //
+
+  DataserviceBase.maxHistory = 20;
+  DataserviceBase._history = _history;
+
+  DataserviceBase.timeout = 1000 * 30;
+  // DataserviceBase.timeout = 1000 * 6;
+  // DataserviceBase.timeout = 1000 * 60 * 3;
+
+  function getToken() {
+    var auth = storage.getItem("auth");
+    return auth ? auth.Token : null;
+  }
+
+  function execute(context) {
     var headers = {};
-    var token = sessionstore.getItem("token");
+    var token = context.token || getToken();
     if (token) {
       headers.Authorization = "Token" + token;
     }
 
     // make request
-    return jquery.ajax({
+    jquery.ajax({
       url: context.requestUrl,
       type: context.httpVerb,
       data: context.data,
 
-      timeout: _this.timeout,
+      timeout: DataserviceBase.timeout,
 
       contentType: context.contentType,
       dataType: context.dataType,
@@ -133,7 +145,7 @@ define('src/core/dataservice.base', [
       headers: headers,
       crossDomain: true,
       /** This needs to be enabled once we are in production.
-       * The header property Access-Control-Allow-Origin also needs to be changed from '*' wildcard to where the client is
+       * The header property Access-Control-Allow-Origin also needs to be changed from "*" wildcard to where the client is
        * hosted. */
       xhrFields: {
         withCredentials: true,
@@ -143,17 +155,17 @@ define('src/core/dataservice.base', [
       cache: false,
 
       error: function(xhr, textStatus, errorThrown) {
-        _this.onError(xhr, textStatus, errorThrown, context);
+        onError(xhr, textStatus, errorThrown, context);
       },
       success: function(responseData, textStatus, xhr) {
-        _this.onComplete(responseData, textStatus, xhr, context);
+        authorize.handleResponse(responseData, textStatus, xhr, context, onComplete, execute);
       },
     });
-  };
+  }
 
-  DataserviceBase.prototype.onError = function(xhr, textStatus, errorThrown, context) {
+  function onError(xhr, textStatus, errorThrown, context) {
     xhr = xhr || {};
-    // if (xhr.readyState === 0 && textStatus === 'error') {
+    // if (xhr.readyState === 0 && textStatus === "error") {
     //   // ignore the error if readyState is UNSENT.
     //   // page is probably refreshing or closing
     //   return;
@@ -169,15 +181,15 @@ define('src/core/dataservice.base', [
         value = xhr.responseText;
       }
 
-      if (textStatus === 'timeout') {
+      if (textStatus === "timeout") {
         code = 990003;
-        msg = 'Request timed out';
+        msg = "Request timed out";
       } else if (xhr.readyState === 0) {
         code = 990000;
-        msg = 'Unable to connect to server';
+        msg = "Unable to connect to server";
       } else {
         code = 990002;
-        msg = 'Error making request';
+        msg = "Error making request";
       }
       msgParts.push(msg);
 
@@ -190,22 +202,22 @@ define('src/core/dataservice.base', [
 
       responseData = {
         Code: code,
-        Message: msgParts.join(': '),
+        Message: msgParts.join(": "),
         Value: value,
       };
     } catch (ex) {
       console.error(ex);
       responseData = {
-        ex: null, // don't want this exception logged
+        ex: null, // do not want this exception logged
         Code: 990001,
         Message: ex.stack,
         Value: null,
       };
     }
-    this.onComplete(responseData, textStatus, xhr, context);
-  };
+    onComplete(responseData, textStatus, xhr, context);
+  }
 
-  DataserviceBase.prototype.onComplete = function(responseData, textStatus, xhr, context) {
+  function onComplete(responseData, textStatus, xhr, context) {
     xhr = xhr || {};
     context.response = {
       time: new Date(),
@@ -217,9 +229,6 @@ define('src/core/dataservice.base', [
 
     // set request url
     responseData.Url = context.requestUrl;
-
-    // try to update session id
-    DataserviceBase.sessionID(responseData.SessionId);
 
     var err;
     // check if there was an error
@@ -240,35 +249,17 @@ define('src/core/dataservice.base', [
     } else {
       err = responseData;
       // // prepend requestUrl
-      // err.Message = context.requestUrl + '\n' + (err.Message || '');
+      // err.Message = context.requestUrl + "\n" + (err.Message || "");
     }
     if (utils.isFunc(context.callback)) {
       // call callback function
       context.callback(err, responseData, context);
     }
-  };
-
-  DataserviceBase.prototype.sessionID = function() {
-    return DataserviceBase.sessionID();
-  };
-
-  //
-  // static
-  //
-  DataserviceBase.sessionID = function(id) {
-    // only set session id if it has a value and it has changed
-    if (id && _sessionId !== id) {
-      //@REVIEW: store sessionId by domain??
-      _sessionId = id;
-    }
-    return _sessionId;
-  };
-  DataserviceBase.maxHistory = 20;
-  DataserviceBase._history = _history;
+  }
 
 
   function frontSlash(text) {
-    return (text || text === 0) ? ('/' + text) : '';
+    return (text || text === 0) ? ("/" + text) : "";
   }
 
   function getStringValue(params, name) {
@@ -291,6 +282,10 @@ define('src/core/dataservice.base', [
   function getLink(params) {
     return getStringValue(params, "link");
   }
+
+  // export for specs
+  DataserviceBase.onError = onError;
+  DataserviceBase.onComplete = onComplete;
 
   return DataserviceBase;
 });

@@ -158,6 +158,13 @@ define('src/u-kov/ukov-prop-array', [
     }, this);
     return result;
   };
+  fn.getCleanValue = function() {
+    var result = [];
+    this.peek().forEach(function(item) {
+      result.push(item.getCleanValue());
+    }, this);
+    return result;
+  };
   fn.reset = function(allowParentUpdate) {
     //@NOTE: this does not work when items have been removed/added
     this.peek().forEach(function(item) {

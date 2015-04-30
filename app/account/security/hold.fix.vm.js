@@ -2,6 +2,7 @@ define("src/account/security/hold.fix.vm", [
   "src/dataservice",
   "src/ukov",
   "ko",
+  "src/account/acctstore",
   "src/core/notify",
   "src/core/utils",
   "src/core/base.vm",
@@ -9,6 +10,7 @@ define("src/account/security/hold.fix.vm", [
   dataservice,
   ukov,
   ko,
+  acctstore,
   notify,
   utils,
   BaseViewModel
@@ -44,7 +46,7 @@ define("src/account/security/hold.fix.vm", [
     // events
     //
     _this.clickClose = function() {
-      _this.layerResult = null;
+      _this.layerResult = false;
       closeLayer(_this);
     };
 
@@ -54,11 +56,8 @@ define("src/account/security/hold.fix.vm", [
         return cb();
       }
       var model = _this.data.getValue();
-      dataservice.api_ms.holds.save({
-        id: _this.item.AccountHoldID,
-        data: model,
-      }, function(val) {
-        _this.layerResult = val;
+      acctstore.update(_this.item.AccountId, "holds", _this.item.AccountHoldID, model, function() {
+        _this.layerResult = true;
         closeLayer(_this);
       }, cb);
     }, function(busy) {

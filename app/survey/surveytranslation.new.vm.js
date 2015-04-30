@@ -40,7 +40,7 @@ define('src/survey/surveytranslation.new.vm', [
     NewSurveyTranslationViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, ['surveyVM']);
 
-    _this.focus = ko.observable(false);
+    _this.initActiveFocus("focus");
     _this.stData = ukov.wrap({
       // SurveyTranslationID: 0,
       SurveyId: _this.surveyVM.model.SurveyID,
@@ -100,13 +100,5 @@ define('src/survey/surveytranslation.new.vm', [
     return msg;
   };
 
-  NewSurveyTranslationViewModel.prototype.onActivate = function( /*routeData*/ ) { // overrides base
-    var _this = this;
-
-    // this timeout makes it possible to focus the input
-    setTimeout(function() {
-      _this.focus(true);
-    }, 100);
-  };
   return NewSurveyTranslationViewModel;
 });

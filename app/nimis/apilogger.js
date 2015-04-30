@@ -1,11 +1,11 @@
 define("src/nimis/apilogger", [
-  "src/nimis/config",
   "src/dataservice",
   "src/core/notify",
+  "howie",
 ], function(
-  config,
   dataservice,
-  notify
+  notify,
+  howie
 ) {
   "use strict";
 
@@ -20,9 +20,8 @@ define("src/nimis/apilogger", [
   //   [EnumMember()] Exception = 6,
   // }
 
-
   function saveLog(typeId, msgObj) {
-    if (!config.logErrors || !msgObj) {
+    if (!howie.fetch("config").logErrors || !msgObj) {
       notify.warn("Error NOT logged. Error logging is disabled.", null, 15);
       return false;
     }

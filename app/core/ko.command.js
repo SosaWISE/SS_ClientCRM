@@ -11,63 +11,58 @@
 ) {
   "use strict";
 
-  //
-  // extend ko with command
-  //
+  function Command(execute, canExecute, extensions) {
+    var _this = this;
+    _this._execute = execute;
 
-  ko.isCommand = function(obj) {
-    return obj && utils.isFunc(obj.execute) && ko.isObservable(obj.canExecute);
-  };
-  ko.command = function(execute, canExecute, extensions) {
-    var _cmd = ko.observable(),
-      canExecuteWrapper;
-
-    _cmd.toggle = null;
     if (extensions && utils.isObject(extensions)) {
       if (extensions.toggle) {
         if (!isToggle(extensions.toggle)) {
           throw new Error("invalid toggle command extension");
         }
-        _cmd.toggle = extensions.toggle;
-        _cmd.toggle.text = ko.computed(function() {
-          return (_cmd.toggle.isDown() ? _cmd.toggle.down : _cmd.toggle.up).text;
+        _this.toggle = extensions.toggle;
+        _this.toggle.text = ko.computed(function() {
+          return (_this.toggle.isDown() ? _this.toggle.down : _this.toggle.up).text;
         });
-        _cmd.toggle.title = ko.computed(function() {
-          return (_cmd.toggle.isDown() ? _cmd.toggle.down : _cmd.toggle.up).title;
+        _this.toggle.title = ko.computed(function() {
+          return (_this.toggle.isDown() ? _this.toggle.down : _this.toggle.up).title;
         });
       }
     }
-    _cmd.busy = ko.observable();
+    _this.busy = ko.observable();
 
-    _cmd.execute = function(cb) {
-      if (!_cmd.canExecute.peek()) {
+    _this.execute = function(cb) {
+      if (!_this.canExecute.peek()) {
         if (utils.isFunc(cb)) {
           cb();
         }
         return;
       }
-      _cmd.busy(true);
-      var called = false;
+      _this.busy(true);
+      var ctx = {
+        called: false,
+      };
       try {
-        return execute.call(this, function(err) {
-          if (called) {
+        return _this._execute.call(this, function(err) {
+          if (ctx.called) {
             return;
           }
-          called = true;
+          ctx.called = true;
 
           // show error if there is one
           if (err && err.Code != null) {
             notify.error(err);
           }
 
-          _cmd.busy(false);
+          _this.busy(false);
           if (utils.isFunc(cb)) {
             cb.apply(null, ko.utils.makeArray(arguments));
           }
         }, this, ko.utils.makeArray(arguments)); // pass view model as second argument and arguments as the third
+
       } catch (ex) {
-        called = true;
-        _cmd.busy(false);
+        ctx.called = true;
+        _this.busy(false);
         if (utils.isFunc(cb)) {
           cb();
         }
@@ -75,37 +70,47 @@
       }
     };
 
-    if (canExecute) {
-      canExecuteWrapper = function() {
-        return canExecute(_cmd.busy());
+    var canExecuteWrapper = canExecute ?
+      function() {
+        return canExecute(_this.busy());
+      } :
+      function() {
+        return !_this.busy();
       };
-    } else {
-      canExecuteWrapper = function() {
-        return !_cmd.busy();
-      };
-    }
-    _cmd.canExecute = ko.computed({
+    _this.canExecute = ko.computed({
       deferEvaluation: true,
       read: canExecuteWrapper,
       write: canExecuteWrapper, // ignores passed in value, basically forces a recompute
     });
-    _cmd.recompute = function() {
-      _cmd.canExecute(1);
+    _this.recompute = function() {
+      _this.canExecute(1);
     };
+  }
+  Command.prototype.toggle = null;
 
-    return _cmd;
-  };
+  // Command.prototype.onExecute = function(ctx, cb) {
+  //   var _this = this;
+  // };
 
   function isToggle(toggle) {
     return toggle && ko.isObservable(toggle.isDown) &&
       toggle.up && utils.isObject(toggle.up) &&
       toggle.down && utils.isObject(toggle.down);
   }
-
   // function isToggleCommand(value) {
   //   return ko.isCommand(value) && isToggle(value.toggle);
   // }
 
+  //
+  // extend ko with command
+  //
+
+  ko.isCommand = function(obj) {
+    return obj instanceof Command;
+  };
+  ko.command = function(execute, canExecute, extensions) {
+    return new Command(execute, canExecute, extensions);
+  };
 
   //
   // binding handler for command

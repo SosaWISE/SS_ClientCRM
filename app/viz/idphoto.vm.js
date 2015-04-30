@@ -1,16 +1,14 @@
-define('src/viz/idphoto.vm', [
-  'src/core/numbers',
-  'src/config',
-  'src/dataservice',
-  'jquery',
-  'ko',
-  'pixi',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
+define("src/viz/idphoto.vm", [
+  "src/core/numbers",
+  "src/dataservice",
+  "jquery",
+  "ko",
+  "pixi",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/base.vm",
 ], function(
   numbers,
-  config,
   dataservice,
   jquery,
   ko,
@@ -58,7 +56,7 @@ define('src/viz/idphoto.vm', [
   var canvasHelper = {
     toBlob: function(canvas, quality) {
       // take apart data URL
-      var parts = canvas.toDataURL('image/jpeg', quality).match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+      var parts = canvas.toDataURL("image/jpeg", quality).match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
       // assume base64 encoding
       var binStr = atob(parts[3]);
       // convert to binary in ArrayBuffer
@@ -69,7 +67,7 @@ define('src/viz/idphoto.vm', [
       }
       //
       var blob = new Blob([view], {
-        'type': parts[1],
+        "type": parts[1],
       });
       // // create url handle
       // var url = window.URL.createObjectURL(blob);
@@ -80,30 +78,30 @@ define('src/viz/idphoto.vm', [
 
   // function uploadFormData(url, fd, name, cb) {
   //   var xhr = new XMLHttpRequest();
-  //   xhr.upload.addEventListener('progress', function(evt) {
+  //   xhr.upload.addEventListener("progress", function(evt) {
   //     if (evt.lengthComputable) {
   //       var percentComplete = Math.round(evt.loaded * 100 / evt.total);
-  //       console.log('upload:', percentComplete.toString() + '%');
+  //       console.log("upload:", percentComplete.toString() + "%");
   //     } else {
-  //       console.log('upload: unable to compute');
+  //       console.log("upload: unable to compute");
   //     }
   //   }, false);
-  //   xhr.addEventListener('load', function(evt) {
+  //   xhr.addEventListener("load", function(evt) {
   //     /* This event is raised when the server send back a response */
   //     notify.info(evt.target.responseText, null, 5);
   //     cb(null, evt.target.responseText);
   //   }, false);
-  //   xhr.addEventListener('error', function( /*evt*/ ) {
-  //     var msg = 'There was an error attempting to upload the file.';
+  //   xhr.addEventListener("error", function( /*evt*/ ) {
+  //     var msg = "There was an error attempting to upload the file.";
   //     notify.warn(msg, null, 5);
   //     cb(msg);
   //   }, false);
-  //   xhr.addEventListener('abort', function uploadCanceled( /*evt*/ ) {
-  //     var msg = 'The upload has been canceled by the user or the browser dropped the connection.';
+  //   xhr.addEventListener("abort", function uploadCanceled( /*evt*/ ) {
+  //     var msg = "The upload has been canceled by the user or the browser dropped the connection.";
   //     notify.warn(msg, null, 5);
   //     cb(msg);
   //   }, false);
-  //   xhr.open('POST', url);
+  //   xhr.open("POST", url);
   //   xhr.send(fd);
   // }
 
@@ -113,10 +111,10 @@ define('src/viz/idphoto.vm', [
       canSave = ko.observable(false);
     IdPhotoViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
-      'userid',
+      "userid",
     ]);
 
-    _this.title = 'Id Photo';
+    _this.title = "Id Photo";
 
     _this.videoData = ko.observable(null);
 
@@ -146,15 +144,15 @@ define('src/viz/idphoto.vm', [
 
       var quality = 0.95,
         fd = new FormData();
-      fd.append('file', canvasHelper.toBlob(renderer.view, quality), quality + 'photo.jpg');
+      fd.append("file", canvasHelper.toBlob(renderer.view, quality), quality + "photo.jpg");
 
-      // uploadFormData('//' + config.serviceDomain + '/humanresourcesrv/users/' + _this.userid + '/upload', fd, function(err, resp) {
+      // uploadFormData("//" + config.serviceDomain + "/humanresourcesrv/users/" + _this.userid + "/upload", fd, function(err, resp) {
       //   resp = resp;
       //   cb();
       // });
       dataservice.hr.users.save({
         id: _this.userid,
-        link: 'upload',
+        link: "upload",
         data: fd,
       }, null, utils.safeCallback(cb, function(err, resp) {
         if (resp.Value) {
@@ -165,12 +163,12 @@ define('src/viz/idphoto.vm', [
 
           }
         } else {
-          notify.warn('Bad response value: ' + resp.Value, null, 10);
+          notify.warn("Bad response value: " + resp.Value, null, 10);
         }
       }, notify.iferror));
 
       // var win = window.open();
-      // win.document.write("<img src='" + data + "'/>");
+      // win.document.write("<img src=\"" + data + "\"/>");
 
       // reshow overlays
       overlay.visible = true;
@@ -210,7 +208,7 @@ define('src/viz/idphoto.vm', [
       canSave(false);
       _this.disposePhoto();
       if (imgUrl) {
-        currPhoto = new PIXI.Sprite.fromImage(imgUrl, crossOrigin || 'use-credentials');
+        currPhoto = new PIXI.Sprite.fromImage(imgUrl, crossOrigin || "use-credentials");
         //
         currPhoto.anchor.x = 0.5;
         currPhoto.anchor.y = 0.5;
@@ -221,13 +219,13 @@ define('src/viz/idphoto.vm', [
         if (currPhoto.texture.baseTexture.hasLoaded) {
           onImageLoaded();
         } else {
-          currPhoto.texture.baseTexture.once('loaded', onImageLoaded);
+          currPhoto.texture.baseTexture.once("loaded", onImageLoaded);
         }
       }
     };
     _this.disposePhoto = function() {
       if (currPhoto) {
-        currPhoto.texture.baseTexture.off('loaded', onImageLoaded);
+        currPhoto.texture.baseTexture.off("loaded", onImageLoaded);
         currPhoto.texture.destroy(true); // destroy it and remove it from the cache
         if (group) {
           group.removeChild(currPhoto);
@@ -288,9 +286,9 @@ define('src/viz/idphoto.vm', [
     stage.addChild(overlay);
   }
   utils.inherits(IdPhotoViewModel, BaseViewModel);
-  IdPhotoViewModel.prototype.viewTmpl = 'tmpl-viz-idphoto';
+  IdPhotoViewModel.prototype.viewTmpl = "tmpl-viz-idphoto";
   IdPhotoViewModel.prototype.width = 640;
-  IdPhotoViewModel.prototype.height = 'auto';
+  IdPhotoViewModel.prototype.height = "auto";
 
   function closeLayer(_this) {
     if (_this.layer) {
@@ -305,7 +303,7 @@ define('src/viz/idphoto.vm', [
     var _this = this,
       msg;
     if (_this.cmdSave.busy() && !_this.layerResult) {
-      msg = 'Please wait for save to finish.';
+      msg = "Please wait for save to finish.";
     }
     return msg;
   };
@@ -317,16 +315,16 @@ define('src/viz/idphoto.vm', [
   };
 
   // function takePicture(ctx, canvas, video) {
-  //   //document.createElement('canvas');
+  //   //document.createElement("canvas");
   //   ctx.drawImage(video, 0, 0);
-  //   return canvas.toDataURL('image/webp');
+  //   return canvas.toDataURL("image/webp");
   // }
   navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
   window.URL = window.URL || window.webkitURL;
 
   function startCamera(_this, cb) {
     if (!navigator.getUserMedia) {
-      notify.warn('Sorry. `navigator.getUserMedia()` is not available.', null, 5);
+      notify.warn("Sorry. `navigator.getUserMedia()` is not available.", null, 5);
       return;
     }
     // if (_this.videoData.peek()) {
@@ -354,15 +352,15 @@ define('src/viz/idphoto.vm', [
         _this.videoData(null);
       };
       // video.onloadedmetadata = function( /*e*/ ) {
-      //   notify.info('onloadedmetadata', null, 5);
+      //   notify.info("onloadedmetadata", null, 5);
       // };
       _this.videoData(video);
     }, function(e) {
       cb();
       if (e.name === "PermissionDeniedError") {
-        notify.warn('User denied access to use camera.', null, 5);
+        notify.warn("User denied access to use camera.", null, 5);
       } else {
-        notify.warn('No camera available.', null, 5);
+        notify.warn("No camera available.", null, 5);
       }
     });
   }
@@ -413,7 +411,7 @@ define('src/viz/idphoto.vm', [
     if (
       // one side is shorter than bounding box
       (item.width < boxWidth || item.height < boxHeight) ||
-      // both sides are longer than bounding box and we're allowed to zoom out
+      // both sides are longer than bounding box and we are allowed to zoom out
       (item.width > boxWidth && item.height > boxHeight && canZoomOut)
     ) {
       var factor = scaleFactorToBounds(item.width, item.height, boxWidth, boxHeight);
@@ -538,7 +536,7 @@ define('src/viz/idphoto.vm', [
     // detect available wheel event
     // 1. Modern browsers support "wheel"
     // 2. Webkit and IE support at least "mousewheel"
-    // 3. let's assume that remaining browsers are older Firefox
+    // 3. let"s assume that remaining browsers are older Firefox
     support = "onwheel" in document.createElement("div") ? "wheel" : document.onmousewheel !== undefined ? "mousewheel" : "DOMMouseScroll";
 
     function _addWheelListener(elem, eventName, callback, useCapture) {
@@ -576,7 +574,7 @@ define('src/viz/idphoto.vm', [
           event.deltaY = originalEvent.detail;
         }
 
-        // it's time to fire the callback
+        // it is time to fire the callback
         return callback(event);
 
       }, useCapture || false);

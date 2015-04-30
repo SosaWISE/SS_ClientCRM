@@ -73,13 +73,7 @@ define("src/core/notify", [
   Notifier.prototype.init = function(LayersViewModel, DialogViewModel, resources, errorCodeMap) {
     var _this = this;
     // default layers view model for dialogs
-    _this.layersVm = new LayersViewModel({
-      controller: {
-        getRouteData: function() {
-          return {};
-        },
-      },
-    });
+    _this.layersVm = new LayersViewModel();
     _this.DialogViewModel = DialogViewModel;
     _this.resources = resources;
     _this.errorCodeMap = errorCodeMap;
@@ -200,7 +194,7 @@ define("src/core/notify", [
         return false;
       }
 
-      clearInterval(intervalId);
+      window.clearInterval(intervalId);
       intervalId = null;
       if (n.seconds() > 0 && n.seconds() < delay) {
         n.seconds(delay);
@@ -212,7 +206,7 @@ define("src/core/notify", [
       if (intervalId || s <= 0) {
         return;
       }
-      intervalId = setInterval(function() {
+      intervalId = window.setInterval(function() {
         // decrement seconds remaining
         var s = n.seconds() - 1;
         n.seconds(s);
@@ -220,7 +214,7 @@ define("src/core/notify", [
           // remove from list
           n.onRemove();
           // make sure the interval stops
-          clearInterval(intervalId);
+          window.clearInterval(intervalId);
         }
       }, s < 1 ? (s * 1000) : 1000);
     };
@@ -258,22 +252,24 @@ define("src/core/notify", [
   // });
 
 
-  Notifier.prototype.alert = function(title, msg, cb, layersVm) {
+  Notifier.prototype.alert = function(title, msg, cb, layersVm, options) {
     var _this = this;
-    show(_this, title, msg, cb, layersVm, ["ok"]);
+    return show(_this, title, msg, cb, layersVm, ["ok"], options);
   };
-  Notifier.prototype.confirm = function(title, msg, cb, layersVm) {
+  Notifier.prototype.confirm = function(title, msg, cb, layersVm, options) {
     var _this = this;
-    show(_this, title, msg, cb, layersVm, ["yes", "no"]);
+    return show(_this, title, msg, cb, layersVm, ["yes", "no"], options);
   };
 
-  function show(_this, title, msg, cb, layersVm, actionNames) {
-    var vm = new _this.DialogViewModel({
+  function show(_this, title, msg, cb, layersVm, actionNames, options) {
+    options = ko.utils.extend({
       title: title || "",
       msg: msg || "",
       actionNames: actionNames,
-    });
+    }, options);
+    var vm = new _this.DialogViewModel(options);
     (layersVm || _this.layersVm).alert(vm, cb);
+    return vm;
   }
 
 

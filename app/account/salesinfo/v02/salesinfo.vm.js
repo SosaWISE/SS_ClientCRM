@@ -1,6 +1,6 @@
 define("src/account/salesinfo/v02/salesinfo.vm", [
   "underscore",
-  "src/account/accounts-cache",
+  "src/account/mscache",
   "src/account/salesinfo/v02/contract.model",
   "src/account/salesinfo/v02/invoiceitems.editor.vm",
   "src/account/salesinfo/v02/invoice.model",
@@ -11,7 +11,6 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   "src/account/salesinfo/options",
   "src/dataservice",
   "ko",
-  "src/core/subscriptionhandler",
   "src/core/joiner",
   "src/core/arrays",
   "src/core/strings",
@@ -20,7 +19,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   "src/core/base.vm",
 ], function(
   underscore,
-  accountscache,
+  mscache,
   contract_model,
   InvoiceItemsEditorViewModel,
   invoice_model,
@@ -31,7 +30,6 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   salesInfoOptions,
   dataservice,
   ko,
-  SubscriptionHandler,
   joiner,
   arrays,
   strings,
@@ -47,10 +45,30 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     utils.assertProps(_this, ["layersVm"]);
 
     _this.mixinLoad();
-    _this.handler = new SubscriptionHandler();
+    _this.initHandler();
 
-    _this.creditGroup = ko.observable();
-    _this.creditScore = ko.observable();
+    _this.creditScore = ko.observable(0);
+    // /////////////////////TESTING/////////////////////
+    // _this.creditScore = function() {
+    //   return 624;
+    // };
+    // _this.creditScore.peek = _this.creditScore;
+    // /////////////////////TESTING/////////////////////
+    _this.lockActivationFee = ko.observable(false);
+    _this.creditGroup = ko.computed(function() {
+      var creditGroup;
+      var score = _this.creditScore();
+      if (score >= 700) {
+        creditGroup = "Excellent";
+      } else if (score >= 625) {
+        creditGroup = "Good";
+      } else if (score >= 600) {
+        creditGroup = "Sub";
+      } else {
+        creditGroup = "Poor";
+      }
+      return creditGroup;
+    });
 
     function saveItems(invItems, cb) {
       saveInvoiceItems(_this, invItems, cb);
@@ -63,6 +81,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       saveInvoiceItems: saveItems,
     });
     _this.salesinfo = salesinfo_model({
+      requirePkg: true,
       layersVm: _this.layersVm,
       handler: _this.handler,
       yesNoOptions: _this.yesNoOptions,
@@ -150,8 +169,8 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       var subjoin = join.create()
         .after(utils.safeCallback(join.add(), step2, utils.noop));
       // ensure types
-      accountscache.ensure("invoices/items", subjoin.add());
-      accountscache.ensure("packages", subjoin.add());
+      mscache.ensure("invoices/items", subjoin.add());
+      mscache.ensure("packages", subjoin.add());
       // ensure types needed by models
       _this.invoice.load(subjoin.add());
       _this.salesinfo.load(subjoin.add());
@@ -178,16 +197,9 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
         _this.salesinfo.markClean({}, true);
         setPrevPkg(_this, _this.salesinfo.AccountPackageCvm.selectedItem());
       }, subjoin.add());
-      // load credit
-      load_customerAccount(acctid, "PRI", function(custAcct) {
-        if (!custAcct) {
-          return;
-        }
-        load_qualifyCustomerInfos(custAcct.Customer.LeadId, function(creditResultAndStuff) {
-          _this.creditGroup(creditResultAndStuff.CreditGroup);
-          _this.creditScore(creditResultAndStuff.Score);
-        }, subjoin.add());
-      }, subjoin.add());
+      // load credit (max of PRI & SEC
+      loadCreditScore(acctid, "PRI", _this.creditScore, subjoin);
+      loadCreditScore(acctid, "SEC", _this.creditScore, subjoin);
       //
       load_contract(acctid, function(val) {
         _this.contract.setValue(val);
@@ -197,9 +209,9 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
 
     // remove old subscriptions
     _this.handler
-      .unsubscribe(_this.updateInvoiceGvm)
-      .unsubscribe(_this.packageChanged)
-      .unsubscribe(_this.saveData);
+      .dispose(_this.updateInvoiceGvm)
+      .dispose(_this.packageChanged)
+      .dispose(_this.saveData);
     //
     function step3() {
       // set defaults
@@ -232,16 +244,21 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       var setupInvItems = _this.invoice.findInvoiceItems(["SETUP_FEE"], []).filter(function(invItem) {
         return !invItem.IsDeleted;
       });
+      var score = _this.creditScore.peek();
+      var activationItemId;
+      var activationFee;
+      if (score >= 625) {
+        activationItemId = "SETUP_FEE_69";
+        activationFee = 69;
+      } else if (score >= 600) {
+        activationItemId = "SETUP_FEE_199";
+        activationFee = 199;
+      } else {
+        activationItemId = "SETUP_FEE_299";
+        activationFee = 299;
+      }
+      _this.lockActivationFee(score < 625);
       if (!setupInvItems.length) {
-        var activationItemId;
-        var score = _this.creditScore.peek();
-        if (score >= 625) { // Good, Excellent ???
-          activationItemId = "SETUP_FEE_69";
-        } else if (score >= 600 && score <= 624) { // Sub ???
-          activationItemId = "SETUP_FEE_199";
-        } else { //if (score < 600) { // Poor ???
-          activationItemId = "SETUP_FEE_299";
-        }
         var invoiceItem = _this.invoice.findInvoiceItems(["SETUP_FEE"], [])[0];
         if (!invoiceItem) {
           invoiceItem = {};
@@ -250,6 +267,20 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
         var item = mustGetItem(activationItemId);
         InvoiceItemsEditorViewModel.copyInvoiceItemFromItem(invoiceItem, item);
         saveInvoiceItems(_this, [invoiceItem]);
+      }
+
+      if (_this.lockActivationFee.peek()) {
+        //@Task 1215: 2. Hard lock the Activation fee of $299 for Poor (Unapproved) credit, and $199 for SUB credit.
+        _this.invoice.activation.range({
+          min: activationFee,
+          max: activationFee,
+        });
+        //@Task 1215: 3. Remove (or give warning message that it's not allowed) Manual Invoice, and Check from the Billing Method.
+        _this.salesinfo.LimitPaymentTypes(true);
+      } else {
+        // incase of reload
+        _this.invoice.activation.range(null);
+        _this.salesinfo.LimitPaymentTypes(false);
       }
     }
 
@@ -317,7 +348,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   }
 
   function mustGetItem(itemId) {
-    var item = accountscache.getMap("invoices/items")[itemId];
+    var item = mscache.getMap("invoices/items")[itemId];
     if (!item) {
       throw new Error("Failed to find item: `" + itemId + "`");
     }
@@ -329,7 +360,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     var _this = this;
     // var invoice = _this.invoice();
     var invoiceItems = _this.invoice.invoiceItems.peek();
-    var items = accountscache.getList("invoices/items").peek();
+    var items = mscache.getList("invoices/items").peek();
 
     var invItemsToSave = [];
     var pkg = _this._prevpkg;
@@ -595,6 +626,16 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       id: acctid,
       link: strings.format("CustomerAccounts/{0}", customerTypeId),
     }, setter, cb);
+  }
+
+  function loadCreditScore(acctid, customerTypeId, observable, subjoin) {
+    load_customerAccount(acctid, customerTypeId, function(custAcct) {
+      if (custAcct) {
+        load_qualifyCustomerInfos(custAcct.Customer.LeadId, function(creditResultAndStuff) {
+          observable(Math.max(observable.peek(), creditResultAndStuff.Score));
+        }, subjoin.add());
+      }
+    }, subjoin.add());
   }
 
   function load_qualifyCustomerInfos(leadID, setter, cb) {
