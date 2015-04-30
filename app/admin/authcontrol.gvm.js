@@ -1,10 +1,12 @@
 define("src/admin/authcontrol.gvm", [
+  "src/admin/admincache",
   "slick",
   "src/slick/cellbutton",
   "src/slick/slickgrid.vm",
   "src/core/strings",
   "src/core/utils",
 ], function(
+  admincache,
   Slick,
   CellButton,
   SlickGridViewModel,
@@ -67,8 +69,9 @@ define("src/admin/authcontrol.gvm", [
           id: "RefId",
           name: "",
           field: "RefId",
-          formatter: function(row, cell, value) {
-            return "<span style='margin-left:45px;'>" + value + "</span>";
+          formatter: function(row, cell, value, columnDef, dataItem) {
+            var item = admincache.getMap(dataItem.RefType.toLowerCase())[value];
+            return "<span style='margin-left:45px;'>" + (item ? item.Name : value) + "</span>";
           },
         },
       ],
@@ -95,18 +98,18 @@ define("src/admin/authcontrol.gvm", [
     dv.endUpdate();
   };
 
-  AuthControlGridViewModel.prototype.getGroupItems = function(groupName) {
+  AuthControlGridViewModel.prototype.getGroupActionItems = function(groupName) {
     var dv = this.dv;
     return dv.getItems().filter(function(item) {
       return item.GroupName === groupName;
     });
   };
-  AuthControlGridViewModel.prototype.setGroupItems = function(groupName, items) {
+  AuthControlGridViewModel.prototype.setGroupActionItems = function(groupName, items) {
     var _this = this;
     var dv = _this.dv;
     dv.beginUpdate();
     // remove items with groupName
-    _this.getGroupItems(groupName).forEach(function(item) {
+    _this.getGroupActionItems(groupName).forEach(function(item) {
       dv.deleteItem(item.sid);
     });
     // add new items

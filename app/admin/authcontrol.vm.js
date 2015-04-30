@@ -1,4 +1,5 @@
 define("src/admin/authcontrol.vm", [
+  // "howie",
   "src/admin/admincache",
   "src/admin/group.editor.vm",
   "src/admin/authcontrol.gvm",
@@ -9,6 +10,7 @@ define("src/admin/authcontrol.vm", [
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
+  // howie,
   admincache,
   GroupEditorViewModel,
   AuthControlGridViewModel,
@@ -37,8 +39,11 @@ define("src/admin/authcontrol.vm", [
       "layersVm",
     ]);
     _this.initFocusFirst();
+    _this.mayReload = ko.observable(false);
 
-    _this.data = ukov.wrap({}, schema);
+    _this.data = ukov.wrap({
+      // Username: howie.fetch("user").Username,
+    }, schema);
     _this.gvm = new AuthControlGridViewModel({
       edit: function(groupName) {
         _this.clickEditGroup(groupName);
@@ -63,20 +68,36 @@ define("src/admin/authcontrol.vm", [
       var val = _this.data.Username.getValue();
       load_userGroups(val, function(groups) {
         _this.data.Username.markClean(val);
-        _this.userGroups(groups);
+        _this.userGroups((groups || []).sort());
         updateFilter(_this.filter.peek());
-      }, cb);
+      }, utils.safeCallback(cb, function(err, resp) {
+        if (resp.Message) {
+          notify.error(resp, 4);
+        }
+      }, utils.noop));
     });
     _this.clickEditGroup = function(groupName) {
       _this.layersVm.show(new GroupEditorViewModel({
         groupName: groupName,
-        groupItems: _this.gvm.getGroupItems(groupName),
-      }), function(groupItems) {
-        if (groupItems) {
-          _this.gvm.setGroupItems(groupName, groupItems);
+        groupActionItems: _this.gvm.getGroupActionItems(groupName),
+      }), function(groupActionItems) {
+        if (groupActionItems) {
+          _this.gvm.setGroupActionItems(groupName, groupActionItems);
         }
       });
     };
+    _this.cmdReloadGroupActionItems = ko.command(function(cb) {
+      notify.confirm("Reload Auth Groups?", "Click YES to reload.", function(result) {
+        if (result !== "yes") {
+          return cb();
+        }
+        dataservice.api_admin.users.save({
+          id: "ReloadGroupActionItems",
+        }, function() {
+          notify.info("Auth Groups Reloaded", null, 4);
+        }, cb);
+      });
+    });
   }
   utils.inherits(AuthControlViewModel, ControllerViewModel);
   AuthControlViewModel.prototype.viewTmpl = "tmpl-admin-authcontrol";
@@ -87,27 +108,30 @@ define("src/admin/authcontrol.vm", [
     admincache.ensure("actions", join.add());
     admincache.ensure("applications", join.add());
 
-    var tmpGroupItems;
-    load_groupItems(function(list) {
-      tmpGroupItems = GroupEditorViewModel.afterGroupItemsLoaded(list);
+    var tmpGroupActionItems;
+    load_groupActionItems(function(list) {
+      tmpGroupActionItems = GroupEditorViewModel.afterGroupActionItemsLoaded(list);
     }, join.add());
 
     join.when(function(err) {
       if (err) {
         return;
       }
-      _this.gvm.setItems(tmpGroupItems);
+      _this.gvm.setItems(tmpGroupActionItems);
     });
   };
 
-  function load_groupItems(setter, cb) {
-    dataservice.api_admin.groupItems.read({}, setter, cb);
+  function load_groupActionItems(setter, cb) {
+    dataservice.api_admin.groupActionItems.read({}, setter, cb);
   }
 
   function load_userGroups(username, setter, cb) {
     dataservice.api_admin.users.read({
       id: username,
       link: "groups",
+      query: {
+        clear: true,
+      }
     }, setter, cb);
   }
 

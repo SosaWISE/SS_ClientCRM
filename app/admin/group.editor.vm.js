@@ -30,7 +30,7 @@ define("src/admin/group.editor.vm", [
     GroupEditorViewModel.super_.call(_this, options);
     utils.assertProps(_this, [
       "groupName",
-      "groupItems",
+      "groupActionItems",
     ]);
     _this.mixinLoad();
     _this.initFocusFirst();
@@ -47,7 +47,7 @@ define("src/admin/group.editor.vm", [
     };
 
     _this.cmdSave = ko.command(function(cb) {
-      saveGroupItems(_this, cb);
+      saveGroupActionItems(_this, cb);
     }, function(busy) {
       return !busy;
     });
@@ -91,16 +91,16 @@ define("src/admin/group.editor.vm", [
       function toRefId(item) {
         return item.RefId;
       }
-      _this.actionsMsvm.selectedValues(_this.groupItems.filter(function(item) {
+      _this.actionsMsvm.selectedValues(_this.groupActionItems.filter(function(item) {
         return item.RefType === "Actions" && !item.IsDeleted;
       }).map(toRefId));
-      _this.appsMsvm.selectedValues(_this.groupItems.filter(function(item) {
+      _this.appsMsvm.selectedValues(_this.groupActionItems.filter(function(item) {
         return item.RefType === "Applications" && !item.IsDeleted;
       }).map(toRefId));
     });
   };
 
-  function saveGroupItems(_this, cb) {
+  function saveGroupActionItems(_this, cb) {
     var selectedValues = []
       .concat(_this.actionsMsvm.selectedValues.peek())
       .concat(_this.appsMsvm.selectedValues.peek());
@@ -110,7 +110,7 @@ define("src/admin/group.editor.vm", [
     });
     //
     var itemMap = {};
-    _this.groupItems.forEach(function(item) {
+    _this.groupActionItems.forEach(function(item) {
       itemMap[item.RefId] = item;
     });
 
@@ -154,21 +154,21 @@ define("src/admin/group.editor.vm", [
       return _this.clickCancel();
     }
 
-    dataservice.api_admin.groupItems.save({
+    dataservice.api_admin.groupActionItems.save({
       id: _this.groupName,
       data: changedList,
     }, function(list) {
-      _this.layerResult = GroupEditorViewModel.afterGroupItemsLoaded(list);
+      _this.layerResult = GroupEditorViewModel.afterGroupActionItemsLoaded(list);
       closeLayer(_this);
     }, cb);
   }
 
-  GroupEditorViewModel.afterGroupItemsLoaded = function(groupItems) {
-    groupItems.forEach(function(item) {
+  GroupEditorViewModel.afterGroupActionItemsLoaded = function(groupActionItems) {
+    groupActionItems.forEach(function(item) {
       item.sid = item.RefType.substr(0, 3) + item.ID;
       // item.sid = item.RefType + ":" + item.ID;
     });
-    return groupItems;
+    return groupActionItems;
   };
 
   return GroupEditorViewModel;

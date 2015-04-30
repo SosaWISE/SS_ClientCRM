@@ -51,7 +51,7 @@ define("src/dataservice", [
     api_admin: createService("api/admin", [
       "actions",
       "applications",
-      "groupItems",
+      "groupActionItems",
       "users",
     ]),
 

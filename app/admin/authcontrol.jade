@@ -1,9 +1,13 @@
-div(class="authcontrol")
-  //- ,data-bind="toggle:{'may-reload':mayReload}")
+div(class="authcontrol",data-bind="toggle:{'may-reload':mayReload}")
+  div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")
 
   table(class="fh-wrap")
     tr
       td(class="fh-header")
+        ul(class="actions",style="float:right;margin:8px 8px 0px 0px;")
+          li
+            a(class="btn small",tabindex="0",data-bind="cmd:cmdReloadGroupActionItems") Reload Auth Groups
+
         ul(class="actions")
           li
             input(type="text",placeholder="Username",

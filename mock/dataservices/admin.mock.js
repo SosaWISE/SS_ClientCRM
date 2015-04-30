@@ -32,11 +32,11 @@ define("mock/dataservices/admin.mock", [
       }
       send(0, result, setter, cb);
     };
-    dataservice.api_admin.groupItems.read = function(params, setter, cb) {
+    dataservice.api_admin.groupActionItems.read = function(params, setter, cb) {
       var result, id = params.id;
       switch (params.link || null) {
         case null:
-          result = mockery.findSingleOrAll(groupItems, "ID", id);
+          result = mockery.findSingleOrAll(groupActionItems, "ID", id);
           break;
       }
       send(0, result, setter, cb);
@@ -55,12 +55,12 @@ define("mock/dataservices/admin.mock", [
       send(0, result, setter, cb);
     };
 
-    dataservice.api_admin.groupItems.save = function(params, setter, cb) {
+    dataservice.api_admin.groupActionItems.save = function(params, setter, cb) {
       var result, groupName = params.id;
       switch (params.link || null) {
         case null:
           if (groupName) {
-            var items = mockery.filterListBy(groupItems, "GroupName", groupName);
+            var items = mockery.filterListBy(groupActionItems, "GroupName", groupName);
             var itemMap = {};
             items.forEach(function(item) {
               itemMap[item.RefType + item.ID] = item;
@@ -82,11 +82,11 @@ define("mock/dataservices/admin.mock", [
                   throw new Error("item already exists");
                 }
                 savedItem.ModifiedOn = new Date();
-                groupItems.push(savedItem);
+                groupActionItems.push(savedItem);
               }
             });
             // return all group name items
-            result = mockery.filterListBy(groupItems, "GroupName", groupName);
+            result = mockery.filterListBy(groupActionItems, "GroupName", groupName);
           }
           break;
       }
@@ -131,7 +131,7 @@ define("mock/dataservices/admin.mock", [
   // data used in mock function
   var actions,
     applications,
-    groupItems = [],
+    groupActionItems = [],
     groupActionTmpl, //groupActions,
     groupApplicationTmpl; //, groupApplications;
 
@@ -160,11 +160,11 @@ define("mock/dataservices/admin.mock", [
     IsDeleted: false,
   };
   groupActionTmpl.GroupName = "Developers";
-  groupItems = groupItems.concat(mockery.fromTemplate({
+  groupActionItems = groupActionItems.concat(mockery.fromTemplate({
     "list|2-2": [groupActionTmpl],
   }).list);
   groupActionTmpl.GroupName = "Call Center";
-  groupItems = groupItems.concat(mockery.fromTemplate({
+  groupActionItems = groupActionItems.concat(mockery.fromTemplate({
     "list|2-2": [groupActionTmpl],
   }).list);
 
@@ -176,11 +176,11 @@ define("mock/dataservices/admin.mock", [
     IsDeleted: false,
   };
   groupApplicationTmpl.GroupName = "Developers";
-  groupItems = groupItems.concat(mockery.fromTemplate({
+  groupActionItems = groupActionItems.concat(mockery.fromTemplate({
     "list|4-4": [groupApplicationTmpl],
   }).list);
   groupApplicationTmpl.GroupName = "Call Center";
-  groupItems = groupItems.concat(mockery.fromTemplate({
+  groupActionItems = groupActionItems.concat(mockery.fromTemplate({
     "list|4-4": [groupApplicationTmpl],
   }).list);
 
