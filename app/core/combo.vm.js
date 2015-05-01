@@ -78,11 +78,7 @@ define("src/core/combo.vm", [
           }
         }
 
-        ko.utils.arrayRemoveItem(_this.selectionHistory, selectedValue);
-        _this.selectionHistory.push(selectedValue);
-        while (_this.selectionHistory.length > 10) {
-          _this.selectionHistory.shift(); // remove first item
-        }
+        updateSelectionHistory(_this, selectedValue);
       } else if (selectedValue !== null) { // in this case, undefined is not null
         // console.log("selectedValue not in list:", selectedValue);
         //@NOTE: this will call this function again
@@ -90,6 +86,11 @@ define("src/core/combo.vm", [
         _this.selectedValue(null);
         // } else if (!_this.nullable && _this.list.peek().length) {
         //   _this.selectFirst();
+
+        if (selectedValue != null) {
+          // update selectionHistory even if the value wasn't found in the list
+          updateSelectionHistory(_this, selectedValue);
+        }
       } else {
         _this.selected(_this.noItemSelected);
         _this.deactivateCurrent();
@@ -341,6 +342,14 @@ define("src/core/combo.vm", [
       list = _this.list.peek();
     return !!findWrappedItemByValue(list, value);
   };
+
+  function updateSelectionHistory(_this, selectedValue) {
+    ko.utils.arrayRemoveItem(_this.selectionHistory, selectedValue);
+    _this.selectionHistory.push(selectedValue);
+    while (_this.selectionHistory.length > 10) {
+      _this.selectionHistory.shift(); // remove first item
+    }
+  }
 
   function wrapItem(item, fields, afterWrap) {
     if (!(fields.value in item)) {

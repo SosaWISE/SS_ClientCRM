@@ -57,6 +57,9 @@ define("src/dataservice", [
       "groupActionItems",
       "users",
     ]),
+    api_hr: createService("api/hr", [
+      "recruits",
+    ]),
 
     //
     // no /api
