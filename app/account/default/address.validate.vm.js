@@ -375,7 +375,7 @@ define("src/account/default/address.validate.vm", [
       switch (lic.LockTypeName) {
         case "Hard Lock":
           notify.warn("HARD LOCK: " + lic.CallCenterMessage, null, 0);
-          blockProcess = false;
+          blockProcess = true;
           break;
         case "Soft Lock":
           notify.warn("SOFT LOCK: " + lic.CallCenterMessage, null, 0);
