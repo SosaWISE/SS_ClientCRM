@@ -286,7 +286,7 @@ define("src/account/security/clist.qualify.vm", [
         err = null;
         resp.Code = 0;
         resp.Message = "";
-        // setter wouldn't have been called so call it now
+        // setter would not have been called so call it now
         setter(null);
       }
       cb(err, resp);
@@ -322,7 +322,7 @@ define("src/account/security/clist.qualify.vm", [
       addressSameAsText: ko.computed({
         deferEvaluation: true,
         read: function() {
-          // default to what the lead says, since it's possible for the
+          // default to what the lead says, since it is possible for the
           // same address to be used multiple times and a lead can only
           // be used if the address is also being used
           // var typeId = vm.leadSameAs() || vm.addressSameAs();

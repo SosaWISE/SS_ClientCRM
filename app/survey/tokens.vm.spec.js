@@ -38,7 +38,7 @@ define('src/survey/tokens.vm.spec', [
       expect(typeof vm.parseContext).toBe('function');
     });
     it('should have an `createTokenValueFunc` function', function() {
-      // this function could be static but it's easier to have it a member function
+      // this function could be static but it is easier to have it a member function
       expect(typeof vm.createTokenValueFunc).toBe('function');
     });
 

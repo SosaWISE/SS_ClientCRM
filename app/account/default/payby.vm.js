@@ -1,13 +1,13 @@
-define('src/account/default/payby.vm', [
-  'src/account/default/payby.credit.vm',
-  'src/account/default/payby.ach.vm',
-  'src/account/default/payby.invoice.vm',
-  'src/dataservice',
-  'ko',
-  'src/ukov',
-  'src/core/notify',
-  'src/core/base.vm',
-  'src/core/utils',
+define("src/account/default/payby.vm", [
+  "src/account/default/payby.credit.vm",
+  "src/account/default/payby.ach.vm",
+  "src/account/default/payby.invoice.vm",
+  "src/dataservice",
+  "ko",
+  "src/ukov",
+  "src/core/notify",
+  "src/core/base.vm",
+  "src/core/utils",
 ], function(
   PayByCreditViewModel,
   PayByEftViewModel,
@@ -84,9 +84,9 @@ define('src/account/default/payby.vm', [
     _this.clickMethod(_this.list[selectIndex]);
   }
   utils.inherits(PayByViewModel, BaseViewModel);
-  PayByViewModel.prototype.viewTmpl = 'tmpl-acct-default-payby';
+  PayByViewModel.prototype.viewTmpl = "tmpl-acct-default-payby";
   PayByViewModel.prototype.width = 800;
-  PayByViewModel.prototype.height = 'auto';
+  PayByViewModel.prototype.height = "auto";
 
   function closeLayer(_this) {
     if (_this.layer) {

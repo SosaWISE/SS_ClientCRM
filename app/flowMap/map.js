@@ -1,7 +1,7 @@
-﻿define('src/flowMap/map', [
-  'gmaps',
-  './marker',
-  './rectangle'
+﻿define("src/flowMap/map", [
+  "gmaps",
+  "./marker",
+  "./rectangle"
 ], function(gmaps, Marker, Rectangle) {
   "use strict";
 
@@ -51,7 +51,7 @@
   function extend(options /*, defaultOptions... */ ) {
     var args = Array.prototype.slice.call(arguments, 1);
     // foreach default options argument
-    // add the property if it doesn't exist
+    // add the property if it does not exist
     // on the options argument
     args.forEach(function(defaultOptions) {
       // make sure defaultOptions is defined

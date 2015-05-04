@@ -1,9 +1,9 @@
-define('src/account/security/clist.survey.gvm', [
-  'moment',
-  'src/core/notify',
-  'ko',
-  'src/slick/slickgrid.vm',
-  'src/core/utils',
+define("src/account/security/clist.survey.gvm", [
+  "moment",
+  "src/core/notify",
+  "ko",
+  "src/slick/slickgrid.vm",
+  "src/core/utils",
 ], function(
   moment,
   notify,
@@ -30,44 +30,44 @@ define('src/account/security/clist.survey.gvm', [
       },
       columns: [ //
         {
-          id: 'CreatedBy',
-          name: 'Given By',
-          field: 'CreatedBy',
+          id: "CreatedBy",
+          name: "Given By",
+          field: "CreatedBy",
           width: 50,
         }, {
-          id: 'CreatedOn',
-          name: 'Survey Date',
-          field: 'CreatedOn',
+          id: "CreatedOn",
+          name: "Survey Date",
+          field: "CreatedOn",
           formatter: SlickGridViewModel.formatters.datetime,
         }, {
-          id: 'Caller',
-          name: 'Caller',
-          field: 'Caller',
+          id: "Caller",
+          name: "Caller",
+          field: "Caller",
           width: 50,
         }, {
-          id: 'Version',
-          name: 'Version',
-          field: 'Version',
+          id: "Version",
+          name: "Version",
+          field: "Version",
           width: 30,
         }, {
-          id: 'LocalizationCode',
-          name: 'Localization',
-          field: 'LocalizationCode',
+          id: "LocalizationCode",
+          name: "Localization",
+          field: "LocalizationCode",
           width: 30,
         }, {
-          id: 'Status',
-          name: 'Status',
-          field: 'IsComplete',
+          id: "Status",
+          name: "Status",
+          field: "IsComplete",
           formatter: function(row, cell, value) {
-            return value ? 'Complete' : 'Incomplete';
+            return value ? "Complete" : "Incomplete";
           },
           width: 30,
         }, {
-          id: 'Result',
-          name: 'Result',
-          field: 'Passed',
+          id: "Result",
+          name: "Result",
+          field: "Passed",
           formatter: function(row, cell, value) {
-            return value ? 'Passed' : 'Failed';
+            return value ? "Passed" : "Failed";
           },
           width: 30,
         },

@@ -144,7 +144,7 @@ define('src/survey/tokens.vm', [
     function func(tokenName, valueToSet) {
       var tokenObj = tokenNameMap[tokenName];
       if (!tokenObj) {
-        // only do something if it's a valid token
+        // only do something if it is a valid token
         return;
       }
       if (isFlat) {
@@ -206,7 +206,7 @@ define('src/survey/tokens.vm', [
           // set result to the default value
           result = undefined;
         }
-        // break if part wasn't found in result
+        // break if part was not found in result
         return !result;
       });
     }

@@ -30,7 +30,7 @@ define("src/core/harold", [
 
     this._fetchers = this._fetchers || {};
     if (this._fetchers[event]) {
-      throw new Error("duplicate fetcher: '" + event + "'");
+      throw new Error("duplicate fetcher: `" + event + "`");
     }
     this._fetchers[event] = {
       cb: callback,

@@ -1,15 +1,15 @@
 // the mock factory
-define('src/core/mockery', [
-  'src/core/utils',
+define("src/core/mockery", [
+  "src/core/utils",
 ], function(
   utils
 ) {
-  'use strict';
+  "use strict";
 
   var mockery = {},
     identitySeed = 1, //1000,
     tokenRegx = /@([A-Z_0-9]+(:?\([^\(\)]*\))?)/g,
-    loremIpsum = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum',
+    loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
     incMap = {};
 
   mockery.fn = {
@@ -44,7 +44,7 @@ define('src/core/mockery', [
       if (cache.__funcs.random() >= 0.8) {
         return null; // top level
       } else {
-        return mockery.fn.INC(cache, key + 'NULLABLE');
+        return mockery.fn.INC(cache, key + "NULLABLE");
       }
     },
     REF_INC: function(cache, key) {
@@ -52,13 +52,13 @@ define('src/core/mockery', [
       return mockery.fn.NUMBER(cache, identitySeed, obj ? obj.val : identitySeed);
     },
     FK: function(cache, key) {
-      return incModulus(cache, key, key + '_FK_');
+      return incModulus(cache, key, key + "_FK_");
       // var count = incMap[key] - identitySeed + 1,
-      //   fkCount = mockery.fn.INC(cache, key + '_FK_') - identitySeed;
+      //   fkCount = mockery.fn.INC(cache, key + "_FK_") - identitySeed;
       // return (fkCount % count) + identitySeed;
     },
     IMG: function(cache, width, height, category) {
-      return '//lorempixel.com/' + width + '/' + height + '/' + (category || '');
+      return "//lorempixel.com/" + width + "/" + height + "/" + (category || "");
     },
     TEXT: function(cache, min, max) {
       var results = [],
@@ -78,72 +78,72 @@ define('src/core/mockery', [
         results.push(tmpStr);
         length += tmpStr.length + 2; // includes join string length
       }
-      return results.join('. ');
+      return results.join(". ");
     },
     PHONE: function(cache, busterKey) {
       // prepend comma
-      busterKey = (busterKey) ? ',' + busterKey : '';
-      // return fromTemplate('(@NUMBER(200,999)) @NUMBER(100,999)-@NUMBER(1000,9999)', cache);
-      return fromTemplate('@NUMBER(200,999' + busterKey + ')@NUMBER(100,999' + busterKey + ')@NUMBER(1000,9999' + busterKey + ')', cache);
+      busterKey = (busterKey) ? "," + busterKey : "";
+      // return fromTemplate("(@NUMBER(200,999)) @NUMBER(100,999)-@NUMBER(1000,9999)", cache);
+      return fromTemplate("@NUMBER(200,999" + busterKey + ")@NUMBER(100,999" + busterKey + ")@NUMBER(1000,9999" + busterKey + ")", cache);
     },
     EMAIL: function(cache) {
-      return fromTemplate('@NAME.@LASTNAME@@LASTNAME(cb)inc.com', cache).toLowerCase();
+      return fromTemplate("@NAME.@LASTNAME@@LASTNAME(cb)inc.com", cache).toLowerCase();
     },
     FULLNAME: function(cache) {
-      return fromTemplate('@NAME @LASTNAME', cache);
+      return fromTemplate("@NAME @LASTNAME", cache);
     },
-    CHAR_UPPER: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
-    CHAR_LOWER: 'abcdefghijklmnopqrstuvwxyz'.split(''),
-    MNAME: ['James', 'John', 'Robert', 'Michael', 'William', 'David',
-      'Richard', 'Charles', 'Joseph', 'Thomas', 'Christopher', 'Daniel',
-      'Paul', 'Mark', 'Donald', 'George', 'Kenneth', 'Steven', 'Edward',
-      'Brian', 'Ronald', 'Anthony', 'Kevin', 'Jason', 'Matthew', 'Gary',
-      'Timothy', 'Jose', 'Larry', 'Jeffrey', 'Frank', 'Scott', 'Eric',
+    CHAR_UPPER: "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""),
+    CHAR_LOWER: "abcdefghijklmnopqrstuvwxyz".split(""),
+    MNAME: ["James", "John", "Robert", "Michael", "William", "David",
+      "Richard", "Charles", "Joseph", "Thomas", "Christopher", "Daniel",
+      "Paul", "Mark", "Donald", "George", "Kenneth", "Steven", "Edward",
+      "Brian", "Ronald", "Anthony", "Kevin", "Jason", "Matthew", "Gary",
+      "Timothy", "Jose", "Larry", "Jeffrey", "Frank", "Scott", "Eric",
     ],
-    FEMNAME: ['Mary', 'Patricia', 'Linda', 'Barbara', 'Elizabeth',
-      'Jennifer', 'Maria', 'Susan', 'Margaret', 'Dorothy', 'Lisa', 'Nancy',
-      'Karen', 'Betty', 'Helen', 'Sandra', 'Donna', 'Carol', 'Ruth', 'Sharon',
-      'Michelle', 'Laura', 'Sarah', 'Kimberly', 'Deborah', 'Jessica',
-      'Shirley', 'Cynthia', 'Angela', 'Melissa', 'Brenda', 'Amy', 'Anna',
+    FEMNAME: ["Mary", "Patricia", "Linda", "Barbara", "Elizabeth",
+      "Jennifer", "Maria", "Susan", "Margaret", "Dorothy", "Lisa", "Nancy",
+      "Karen", "Betty", "Helen", "Sandra", "Donna", "Carol", "Ruth", "Sharon",
+      "Michelle", "Laura", "Sarah", "Kimberly", "Deborah", "Jessica",
+      "Shirley", "Cynthia", "Angela", "Melissa", "Brenda", "Amy", "Anna",
     ],
-    LASTNAME: ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller',
-      'Davis', 'Garcia', 'Rodriguez', 'Wilson', 'Martinez', 'Anderson',
-      'Taylor', 'Thomas', 'Hernandez', 'Moore', 'Martin', 'Jackson',
-      'Thompson', 'White', 'Lopez', 'Lee', 'Gonzalez', 'Harris', 'Clark',
-      'Lewis', 'Robinson', 'Walker', 'Perez', 'Hall', 'Young', 'Allen',
+    LASTNAME: ["Smith", "Johnson", "Williams", "Brown", "Jones", "Miller",
+      "Davis", "Garcia", "Rodriguez", "Wilson", "Martinez", "Anderson",
+      "Taylor", "Thomas", "Hernandez", "Moore", "Martin", "Jackson",
+      "Thompson", "White", "Lopez", "Lee", "Gonzalez", "Harris", "Clark",
+      "Lewis", "Robinson", "Walker", "Perez", "Hall", "Young", "Allen",
     ],
-    SEASON: ['Spring', 'Summer', 'Fall', 'Winter'],
+    SEASON: ["Spring", "Summer", "Fall", "Winter"],
 
     NOW: function() {
       return new Date();
     },
     DATE: function(cache) {
       var dt = randomDate(cache);
-      return padLeft(dt.getFullYear(), '0', 4) + '-' + padLeft(dt.getMonth() + 1, '0', 2) + '-' + padLeft(dt.getDate(), '0', 2) + 'T00:00:00.000Z';
+      return padLeft(dt.getFullYear(), "0", 4) + "-" + padLeft(dt.getMonth() + 1, "0", 2) + "-" + padLeft(dt.getDate(), "0", 2) + "T00:00:00.000Z";
     },
     DATETIME: function(cache, startDaysFromNow, endDaysFromNow) {
       return randomDate(cache, startDaysFromNow, endDaysFromNow).toISOString();
     },
 
     ADDRESS: function(cache) {
-      return fromTemplate('@NUMBER(100,1999,North) North @NUMBER(100,1999,East) East', cache);
+      return fromTemplate("@NUMBER(100,1999,North) North @NUMBER(100,1999,East) East", cache);
     },
     CITY: function(cache) {
-      return fromTemplate('@LASTNAME(City)ton', cache);
+      return fromTemplate("@LASTNAME(City)ton", cache);
     },
     // STATEAB: function(cache) {
-    //   return fromTemplate('@CHAR_UPPER(StateA)@CHAR_UPPER(StateB)', cache);
+    //   return fromTemplate("@CHAR_UPPER(StateA)@CHAR_UPPER(StateB)", cache);
     // },
-    STATEAB: ['AK', 'AL', 'AR', 'AS', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'FM', 'GA', 'GU',
-      'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME', 'MH', 'MI', 'MN', 'MO',
-      'MP', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM', 'NV', 'NY', 'OH', 'OK', 'OR', 'PA',
-      'PR', 'PW', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VA', 'VI', 'VT', 'WA', 'WI', 'WV', 'WY',
+    STATEAB: ["AK", "AL", "AR", "AS", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "FM", "GA", "GU",
+      "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MH", "MI", "MN", "MO",
+      "MP", "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA",
+      "PR", "PW", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VI", "VT", "WA", "WI", "WV", "WY",
     ],
     ZIP: function(cache) {
-      return fromTemplate('8@NUMBER(1000,9999)', cache);
+      return fromTemplate("8@NUMBER(1000,9999)", cache);
     },
     COUNTY: function(cache) {
-      return fromTemplate('@LASTNAME(County) County', cache);
+      return fromTemplate("@LASTNAME(County) County", cache);
     },
   };
   mockery.fn.NAME = [].concat(mockery.fn.MNAME).concat(mockery.fn.FEMNAME);
@@ -155,10 +155,10 @@ define('src/core/mockery', [
 
     var func;
     switch (typeof(template)) {
-      case 'string':
+      case "string":
         func = fromStringTemplate;
         break;
-      case 'object':
+      case "object":
         if (utils.isDate(template)) {
           // just return a copy of the date
           return new Date(template.valueOf());
@@ -213,7 +213,7 @@ define('src/core/mockery', [
         result = getData(template.substr(1), cache);
       } else {
         // result is a string
-        result = '';
+        result = "";
         matches.forEach(function(key) {
           template = template.replace(key, getData(key.substr(1), cache));
         });
@@ -232,7 +232,7 @@ define('src/core/mockery', [
 
   function getRangeValue(cache, range, defaultMin, defaultMax) {
     var result,
-      matches = (range || '').match(/(\d+)-(\d+)/);
+      matches = (range || "").match(/(\d+)-(\d+)/);
 
     if (matches) {
       result = randomFromRange(cache, matches[1], matches[2], defaultMin, defaultMax);
@@ -243,17 +243,17 @@ define('src/core/mockery', [
   }
 
   function getRange(name) {
-    var index = name.indexOf('|');
+    var index = name.indexOf("|");
     if (index > -1) {
       name = name.substr(index);
     } else {
-      name = '';
+      name = "";
     }
     return name;
   }
 
   function removeRange(name) {
-    var index = name.indexOf('|');
+    var index = name.indexOf("|");
     if (index > -1) {
       name = name.substr(0, index);
     }
@@ -261,7 +261,7 @@ define('src/core/mockery', [
   }
 
   function getData(text, cache) {
-    var parenIndex = text.indexOf('('),
+    var parenIndex = text.indexOf("("),
       fnName,
       params,
       fnValue,
@@ -312,7 +312,7 @@ define('src/core/mockery', [
     var obj = incMap[refKey],
       count, refCount;
     if (!obj) {
-      throw new Error('invalid refKey \'' + refKey + '\'');
+      throw new Error("invalid refKey `" + refKey + "`");
     }
     count = obj.val - obj.idSeed + 1;
     refCount = mockery.fn.INC(cache, key) - obj.idSeed;
@@ -321,9 +321,9 @@ define('src/core/mockery', [
 
   function pad(isLeft, txt, letter, minLength) {
     if (!txt && txt !== 0) {
-      txt = '';
+      txt = "";
     }
-    txt += '';
+    txt += "";
     if (isLeft) {
       while (txt.length < minLength) {
         txt = letter + txt;
@@ -392,7 +392,7 @@ define('src/core/mockery', [
   mockery.incModulus = incModulus;
   mockery.addModulusValueFunc = function(name, values) {
     if (mockery.fn[name]) {
-      throw new Error(name + ' already exists on mockery.fn');
+      throw new Error(name + " already exists on mockery.fn");
     }
     var count = 0;
     mockery.fn[name] = function() {
@@ -432,7 +432,7 @@ define('src/core/mockery', [
     }
     if (id > 0) {
       if (!list.some(findById)) {
-        throw new Error('invalid id. id not in list.');
+        throw new Error("invalid id. id not in list.");
       }
 
       // replace old value with new value
@@ -479,19 +479,19 @@ define('src/core/mockery', [
     if (code) {
       err = {
         Code: code,
-        Message: 'Error Code ' + code,
+        Message: "Error Code " + code,
         Value: value,
       };
       // } else if (!value) {
       //   err = {
       //     Code: 12345,
-      //     Message: 'No value',
+      //     Message: "No value",
       //     Value: null,
       //   };
     } else {
       result = {
         Code: 0,
-        Message: 'Success',
+        Message: "Success",
         Value: value,
       };
     }

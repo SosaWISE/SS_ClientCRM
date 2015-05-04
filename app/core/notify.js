@@ -131,7 +131,7 @@ define("src/core/notify", [
     }
     delay = (delay > 0) ? Math.max(1.5, delay) : 0;
     if (delay === 3) {
-      // delay of 3 doesn't work correctly. it hides before sliding.
+      // delay of 3 does not work correctly. it hides before sliding.
       delay = 3.1;
     }
 

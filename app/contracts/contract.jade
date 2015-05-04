@@ -162,6 +162,9 @@ div(class="contract-wrap")
               Email per Cell Provider      [MS_AccountSalesInformations].Email OR [Alarm.com]
             ul(class="edit-form quad-wide",data-bind="with:salesinfo")
               li
+                span(class="label") Account Type
+                div(data-bind="cvm:FriendsAndFamilyTypeCvm")
+              li
                 span(class="label") Contract Date
                 input(type="text",
                   data-bind="ukov:ContractSignedDate,datevalue:ContractSignedDate,valueUpdate:'keyup'")

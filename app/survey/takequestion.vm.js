@@ -125,7 +125,7 @@ define('src/survey/takequestion.vm', [
     }
 
     if (_this.readonly) {
-      // can't edit
+      // ca not edit
       _this.answerMode = "answered";
       _this.answer = createChildProp(_this);
     } else {
@@ -159,7 +159,7 @@ define('src/survey/takequestion.vm', [
       _this.fails(paMap && paMap.Fails);
 
       // recursively update child questions to make ukovModel match showSubs and isComplete
-      // ukovModel questions are flat so ignoring just this question's questions won't work
+      // ukovModel questions are flat so ignoring just this question's questions wo not work
       treehelper.walkTree(_this, 'questions', function(vm) {
         vm.answer.ignore(!expands);
       });
@@ -212,7 +212,7 @@ define('src/survey/takequestion.vm', [
 
     child = _this.ukovModel.createChild(key); // value will default to null
 
-    //@REVIEW: why is it named questionanswer? couldn't think of anything better...
+    //@REVIEW: why is it named questionanswer? could not think of anything better...
     //- by tokenName, then by answerMode since one should always exist for the answerMode
     child.questionanswer = questionanswers[tokenName] || questionanswers[_this.answerMode];
 

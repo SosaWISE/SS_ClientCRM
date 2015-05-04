@@ -1,12 +1,12 @@
-define('src/account/default/rep.find.vm', [
+define("src/account/default/rep.find.vm", [
   "howie",
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
-  'ko',
-  'src/ukov',
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/base.vm",
+  "ko",
+  "src/ukov",
   "src/core/strings",
-  'src/dataservice',
+  "src/dataservice",
 ], function(
   howie,
   notify,
@@ -24,7 +24,7 @@ define('src/account/default/rep.find.vm', [
     CompanyID: {
       converter: ukov.converters.toUpper(),
       validators: [
-        ukov.validators.isRequired('Company ID is required'),
+        ukov.validators.isRequired("Company ID is required"),
         ukov.validators.isCompanyID(),
       ],
     },
@@ -36,16 +36,16 @@ define('src/account/default/rep.find.vm', [
     var _this = this;
     RepFindViewModel.super_.call(_this, options);
 
-    _this.title = _this.title || 'Sales Rep';
+    _this.title = _this.title || "Sales Rep";
     _this.initFocusFirst();
     _this.focusOk = ko.observable(false);
     _this.repData = ukov.wrap({
-      CompanyID: _this.text || '',
+      CompanyID: _this.text || "",
     }, schema);
     _this.rep = ko.observable();
 
     // /////TESTING//////////////////////
-    // _this.repData.CompanyID('sosa001');
+    // _this.repData.CompanyID("sosa001");
     // /////TESTING//////////////////////
 
     //
@@ -85,9 +85,9 @@ define('src/account/default/rep.find.vm', [
     });
   }
   utils.inherits(RepFindViewModel, BaseViewModel);
-  RepFindViewModel.prototype.viewTmpl = 'tmpl-acct-default-rep_find';
+  RepFindViewModel.prototype.viewTmpl = "tmpl-acct-default-rep_find";
   RepFindViewModel.prototype.width = 400;
-  RepFindViewModel.prototype.height = 'auto';
+  RepFindViewModel.prototype.height = "auto";
 
   function closeLayer(_this) {
     if (_this.layer) {

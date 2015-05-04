@@ -373,7 +373,7 @@ define("src/viz/idphoto.vm", [
     var upright = numbers.roundTo(sprite.rotation / Math.PI, 10) % 1 === 0;
     var hwidth = sprite.width / 2;
     var hheight = sprite.height / 2;
-    // move the sprite position depending on it's orientation
+    // move the sprite position depending on it is orientation
     sprite.position.x = (upright) ? hwidth : hheight;
     sprite.position.y = (upright) ? hheight : hwidth;
   }

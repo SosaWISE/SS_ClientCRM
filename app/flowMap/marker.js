@@ -1,6 +1,6 @@
-﻿define('src/flowMap/marker', [
-  './flowUtil',
-  'gmaps'
+﻿define("src/flowMap/marker", [
+  "./flowUtil",
+  "gmaps"
 ], function(flowUtil, gmaps) {
   "use strict";
 
@@ -30,7 +30,7 @@
   };
 
   // pre-load marker images
-  var defaultImg = new Image();
+  var defaultImg = new window.Image();
 
   Marker.defaultIcon = new gmaps.MarkerImage(
     defaultImg.src = "/img/marker-default.png",

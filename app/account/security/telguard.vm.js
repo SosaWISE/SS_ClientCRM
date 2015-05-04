@@ -1,7 +1,7 @@
-define('src/account/security/telguard.vm', [
-  'ko',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/account/security/telguard.vm", [
+  "ko",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   ko,
   utils,
@@ -12,7 +12,7 @@ define('src/account/security/telguard.vm', [
   function TelguardViewModel(options) {
     var _this = this;
     TelguardViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['layersVm']);
+    ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
     //
     // events
@@ -22,7 +22,7 @@ define('src/account/security/telguard.vm', [
     });
   }
   utils.inherits(TelguardViewModel, ControllerViewModel);
-  TelguardViewModel.prototype.viewTmpl = 'tmpl-security-telguard';
+  TelguardViewModel.prototype.viewTmpl = "tmpl-security-telguard";
 
   TelguardViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     // var _this = this,

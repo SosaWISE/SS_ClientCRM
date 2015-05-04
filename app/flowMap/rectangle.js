@@ -1,6 +1,6 @@
-﻿define('src/flowMap/rectangle', [
-  './flowUtil',
-  'gmaps'
+﻿define("src/flowMap/rectangle", [
+  "./flowUtil",
+  "gmaps"
 ], function(flowUtil, gmaps) {
   "use strict";
 

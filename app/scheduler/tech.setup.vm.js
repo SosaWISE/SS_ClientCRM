@@ -129,7 +129,7 @@ define("src/scheduler/tech.setup.vm", [
   //   var extraData = {};
   //   _this.vmList.forEach(function(vm) {
   //     if (vm === _this) {
-  //       // don't reload this vm since it's already loading
+  //       // do not reload this vm since it is already loading
   //       return;
   //     }
   //     vm.load(routeData, extraData, join.add());

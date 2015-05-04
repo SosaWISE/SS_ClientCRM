@@ -287,7 +287,7 @@ define("src/hr/recruiteditor.vm", [
     });
     _this.data.UserTypeId.subscribe(function(userTypeID) {
       load_possibleReportTos(_this.data.SeasonID.getValue(), userTypeID, function(list) {
-        // check that it hasn't since changed
+        // check that it has not since changed
         if (_this.data.UserTypeId.getValue() === userTypeID) {
           _this.data.ReportsToCvm.setList(list);
         }

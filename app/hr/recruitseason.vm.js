@@ -73,14 +73,14 @@ define('src/hr/recruitseason.vm', [
       if (model.CopyRecruit) {
         recruit = model.CopyRecruit;
 
-        // reset team since we don't know the id in the new season
+        // reset team since we do not know the id in the new season
         recruit.TeamID = null;
         // ReportsToID
         if (recruit.ReportsToID != null) {
           notify.warn('Manager not copied', null, 4);
           // get manager's id for new recruit's season
           managerId = recruit.ReportsToID;
-          recruit.ReportsToID = null; // reset incase the manager isn't found in the season
+          recruit.ReportsToID = null; // reset incase the manager is not found in the season
 
           //@TODO: get manager recruit /recruits/{managerId}
           //@TODO: find manager in selected season by UserID, SeasonID, and manager's UserTypeId

@@ -1,5 +1,5 @@
-define('src/core/jsonhelpers', [
-  'moment',
+define("src/core/jsonhelpers", [
+  "moment",
 ], function(
   moment
 ) {
@@ -19,7 +19,7 @@ define('src/core/jsonhelpers', [
       var tmp;
       /* jshint validthis:true */
       if (isDateFieldRegx.test(key)) {
-        // since the webservice wants the date string, don't do anything...
+        // since the webservice wants the date string, do not do anything...
         // tmp = this[key];
         // if (tmp instanceof Date) {
         //   value = tmp.getTime();
@@ -33,16 +33,16 @@ define('src/core/jsonhelpers', [
     reviver: function jsonReviver(key, value) {
       // from timestamp to date
       if (isDateFieldRegx.test(key)) {
-        // make sure it's a real date value. this is a problem for dates in 1970, but that shouldn't ever happen... right?
+        // make sure it is a real date value. this is a problem for dates in 1970, but that should not ever happen... right?
         // this was added because there was BillingDate field added that is the day of the month (1-31).  it should be named BillingDay...
-        if (typeof(value) === 'number' && value > 10000000000) {
+        if (typeof(value) === "number" && value > 10000000000) {
           value = new Date(value);
-        } else if (typeof(value) === 'string' && dateTimeRegx.test(value)) {
+        } else if (typeof(value) === "string" && dateTimeRegx.test(value)) {
           // parse datetime string
           value = moment.utc(value).toDate(); // all dates from server should be UTC
         }
       } else if (isJSONStringRegx.test(key)) {
-        if (typeof(value) === 'string') {
+        if (typeof(value) === "string") {
           value = jsonhelpers.parse(value);
         }
       }

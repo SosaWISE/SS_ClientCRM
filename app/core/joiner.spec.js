@@ -1,37 +1,37 @@
 /* global describe, it, expect, beforeEach, jasmine */
-define('src/core/joiner.spec', [
-  'src/core/joiner'
+define("src/core/joiner.spec", [
+  "src/core/joiner"
 ], function(joiner) {
   "use strict";
 
-  describe('joiner', function() {
+  describe("joiner", function() {
     var join;
     beforeEach(function() {
       join = joiner();
     });
 
-    it('should be a function', function() {
-      expect(typeof(joiner)).toBe('function');
+    it("should be a function", function() {
+      expect(typeof(joiner)).toBe("function");
     });
 
-    describe('instance', function() {
-      it('should have an `add` function that returns a function', function() {
-        expect(typeof(join.add)).toBe('function');
-        expect(typeof(join.add())).toBe('function');
+    describe("instance", function() {
+      it("should have an `add` function that returns a function", function() {
+        expect(typeof(join.add)).toBe("function");
+        expect(typeof(join.add())).toBe("function");
       });
-      it('should have a `when` function', function() {
-        expect(typeof(join.when)).toBe('function');
+      it("should have a `when` function", function() {
+        expect(typeof(join.when)).toBe("function");
       });
-      it('should have a `after` function', function() {
-        expect(typeof(join.after)).toBe('function');
+      it("should have a `after` function", function() {
+        expect(typeof(join.after)).toBe("function");
       });
-      it('should have a `create` function', function() {
-        expect(typeof(join.create)).toBe('function');
+      it("should have a `create` function", function() {
+        expect(typeof(join.create)).toBe("function");
       });
     });
 
-    describe('`when`', function() {
-      it('should be called immediately when there are no `add` callbacks', function() {
+    describe("`when`", function() {
+      it("should be called immediately when there are no `add` callbacks", function() {
         var called = false;
         join.when(function() {
           called = true;
@@ -39,7 +39,7 @@ define('src/core/joiner.spec', [
         expect(called).toBe(true);
       });
 
-      it('should be called when all `add` callbacks have been called', function() {
+      it("should be called when all `add` callbacks have been called", function() {
         var add1 = join.add(),
           add2 = join.add(),
           called = false;
@@ -57,7 +57,7 @@ define('src/core/joiner.spec', [
         expect(called).toBe(true);
       });
 
-      it('should be called with an array of callback results in order of `add` creation', function() {
+      it("should be called with an array of callback results in order of `add` creation", function() {
         var add1 = join.add(),
           add2 = join.add(),
           callbackResults;
@@ -71,7 +71,7 @@ define('src/core/joiner.spec', [
         expect(callbackResults).toEqual([1, 2]);
       });
 
-      it('should be called with an array of callback result array if more than one argument was passed to `add`', function() {
+      it("should be called with an array of callback result array if more than one argument was passed to `add`", function() {
         var add1 = join.add(),
           add2 = join.add(),
           add3 = join.add(),
@@ -89,7 +89,7 @@ define('src/core/joiner.spec', [
         ]);
       });
 
-      it('callbacks should be called only one time', function() {
+      it("callbacks should be called only one time", function() {
         var count = 0;
         join.when(function() {
           count++;
@@ -99,7 +99,7 @@ define('src/core/joiner.spec', [
         expect(count).toBe(1);
       });
 
-      it('calling `add` after when should work as normal', function() {
+      it("calling `add` after when should work as normal", function() {
         var add1, add2,
           called = false;
 
@@ -119,14 +119,14 @@ define('src/core/joiner.spec', [
       });
     });
 
-    describe('`after`', function() {
-      it('should be called immediately when there are no `add` callbacks if there was an err', function() {
+    describe("`after`", function() {
+      it("should be called immediately when there are no `add` callbacks if there was an err", function() {
         var called = false;
         join.after(function() {
           called = true;
         });
         expect(called).toBe(false);
-        join.add()('error', 'resp');
+        join.add()("error", "resp");
         expect(called).toBe(true);
 
         called = false;
@@ -135,13 +135,13 @@ define('src/core/joiner.spec', [
         });
         expect(called).toBe(true);
       });
-      it('should NOT be called immediately if no `add` callbacks have been created', function() {
+      it("should NOT be called immediately if no `add` callbacks have been created", function() {
         var called = false;
         join.after(function() {
           called = true;
         });
         expect(called).toBe(false);
-        join.add()(null, 'resp');
+        join.add()(null, "resp");
         expect(called).toBe(true);
 
         called = false;
@@ -152,40 +152,40 @@ define('src/core/joiner.spec', [
       });
     });
 
-    describe('with an error', function() {
-      it('should always return an error', function() {
+    describe("with an error", function() {
+      it("should always return an error", function() {
         var callbackErr, callbackResults;
-        join.add()('error', 'has error');
-        join.add()(null, 'no error');
+        join.add()("error", "has error");
+        join.add()(null, "no error");
         join.when(function(err, results) {
           callbackErr = err;
           callbackResults = results;
         });
-        expect(callbackErr).toEqual('error');
-        expect(callbackResults).toEqual(['has error']);
+        expect(callbackErr).toEqual("error");
+        expect(callbackResults).toEqual(["has error"]);
       });
 
-      it('should clear waiting `add` callbacks and ignore any new `add` callbacks', function() {
+      it("should clear waiting `add` callbacks and ignore any new `add` callbacks", function() {
         var add1 = join.add(),
           add2 = join.add(),
           add3 = join.add(),
           callbackErr, callbackResults;
-        add2('error', 'has error');
-        add1(null, 'ignored1');
-        add3(null, 'ignored2');
-        join.add()(null, 'ignored3');
+        add2("error", "has error");
+        add1(null, "ignored1");
+        add3(null, "ignored2");
+        join.add()(null, "ignored3");
         join.when(function(err, results) {
           callbackErr = err;
           callbackResults = results;
         });
-        expect(callbackErr).toEqual('error');
-        expect(callbackResults).toEqual([undefined, 'has error']);
+        expect(callbackErr).toEqual("error");
+        expect(callbackResults).toEqual([undefined, "has error"]);
       });
     });
 
-    describe('an `add` timeout', function() {
+    describe("an `add` timeout", function() {
 
-      it('should occur after 30 seconds (by default)', function() {
+      it("should occur after 30 seconds (by default)", function() {
         jasmine.Clock.useMock();
 
         var called = false;
@@ -198,7 +198,7 @@ define('src/core/joiner.spec', [
         expect(called).toBe(true);
       });
 
-      it('should be treated as an error', function() {
+      it("should be treated as an error", function() {
         jasmine.Clock.useMock();
 
         var callbackErr;
@@ -208,60 +208,60 @@ define('src/core/joiner.spec', [
         });
         jasmine.Clock.tick(1000 * 30);
 
-        expect(typeof(callbackErr)).toBe('object');
+        expect(typeof(callbackErr)).toBe("object");
         expect(callbackErr.Code).toBeDefined();
         expect(callbackErr.Message).toBeDefined();
       });
     });
 
-    describe('after `when` has been called', function() {
+    describe("after `when` has been called", function() {
       beforeEach(function() {
-        join.add()(null, 'add1');
+        join.add()(null, "add1");
         join.when(function() {});
       });
 
-      it('calling `add` and `when` should work as normal', function() {
+      it("calling `add` and `when` should work as normal", function() {
         var called = false;
-        join.add()('add2');
+        join.add()("add2");
         join.when(function() {
           called = true;
         });
         expect(called).toBe(true);
       });
 
-      it('`results` should not be cleared', function() {
+      it("`results` should not be cleared", function() {
         var callbackResults;
-        join.add()(null, 'add2');
+        join.add()(null, "add2");
         join.when(function(err, results) {
           callbackResults = results;
         });
-        expect(callbackResults).toEqual(['add1', 'add2']);
+        expect(callbackResults).toEqual(["add1", "add2"]);
       });
     });
 
-    describe('calling `dispose`', function() {
+    describe("calling `dispose`", function() {
       beforeEach(function() {
-        join.add()(null, 'add1');
+        join.add()(null, "add1");
       });
 
-      it('then calling `add` should throw an error', function() {
+      it("then calling `add` should throw an error", function() {
         join.dispose();
         expect(function add() {
           return join.add();
         }).toThrow();
       });
 
-      it('should ignore `add` callbacks', function() {
+      it("should ignore `add` callbacks", function() {
         var add2 = join.add(),
           add3 = join.add();
-        expect(join.results()).toEqual(['add1']);
-        add3(null, 'add3');
+        expect(join.results()).toEqual(["add1"]);
+        add3(null, "add3");
         join.dispose();
-        add2(null, 'add2');
-        expect(join.results()).toEqual(['add1', undefined, 'add3']);
+        add2(null, "add2");
+        expect(join.results()).toEqual(["add1", undefined, "add3"]);
       });
 
-      it('should still call `when` callbacks', function() {
+      it("should still call `when` callbacks", function() {
         var called = false;
         join.dispose();
         join.when(function() {

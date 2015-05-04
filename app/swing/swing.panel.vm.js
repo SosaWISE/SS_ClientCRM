@@ -529,7 +529,7 @@ define('src/swing/swing.panel.vm', [
 
     //Check if Phone Number is null
     if (cPhoneNumber == null) {
-      notify.warn('Phone Number can\'t be empty.');
+      notify.warn('Phone Number cannot be empty.');
       cb();
       //If Phone number is invalid, it will return an object. Not sure how to return specifically the error
     } else if (typeof(cPhoneNumber) === 'object') {

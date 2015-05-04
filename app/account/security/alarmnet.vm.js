@@ -1,7 +1,7 @@
-define('src/account/security/alarmnet.vm', [
-  'ko',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/account/security/alarmnet.vm", [
+  "ko",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   ko,
   utils,
@@ -12,7 +12,7 @@ define('src/account/security/alarmnet.vm', [
   function AlarmNetViewModel(options) {
     var _this = this;
     AlarmNetViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['layersVm']);
+    ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
     //
     // events
@@ -22,7 +22,7 @@ define('src/account/security/alarmnet.vm', [
     });
   }
   utils.inherits(AlarmNetViewModel, ControllerViewModel);
-  AlarmNetViewModel.prototype.viewTmpl = 'tmpl-security-alarmnet';
+  AlarmNetViewModel.prototype.viewTmpl = "tmpl-security-alarmnet";
 
   AlarmNetViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     // var _this = this,

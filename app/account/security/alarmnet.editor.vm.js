@@ -1,7 +1,7 @@
-define('src/account/security/alarmnet.editor.vm', [
-  'ko',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/account/security/alarmnet.editor.vm", [
+  "ko",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   ko,
   utils,
@@ -12,7 +12,7 @@ define('src/account/security/alarmnet.editor.vm', [
   function AlarmNetEditorViewModel(options) {
     var _this = this;
     AlarmNetEditorViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['layersVm']);
+    ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
     //
     // events
@@ -22,7 +22,7 @@ define('src/account/security/alarmnet.editor.vm', [
     });
   }
   utils.inherits(AlarmNetEditorViewModel, ControllerViewModel);
-  AlarmNetEditorViewModel.prototype.viewTmpl = 'tmpl-security-alarmnet_editor';
+  AlarmNetEditorViewModel.prototype.viewTmpl = "tmpl-security-alarmnet_editor";
 
   AlarmNetEditorViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     // var _this = this,

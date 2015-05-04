@@ -100,7 +100,7 @@ define("src/account/security/checklist.vm", [
         new CListIndustryViewModel({
           pcontroller: _this,
           id: "industrynums",
-          title: "Industry #'s",
+          title: "Industry #s",
         }),
         new CListEmcontactsViewModel({
           pcontroller: _this,

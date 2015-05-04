@@ -169,7 +169,7 @@ define('src/hr/usersearch.vm', [
       cb();
       // } else if (_this.data.isClean()) {
       //   // only search if something has changed
-      //   notify.warn('Search criteria hasn\'t changed. No search made.', null, 3);
+      //   notify.warn('Search criteria has not changed. No search made.', null, 3);
       //   cb();
     } else {
       model = _this.data.getValue();

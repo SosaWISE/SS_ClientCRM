@@ -291,7 +291,7 @@ define("src/scheduler/ticket.editor.vm", [
 
     model.TravelTime = 0; //@TODO: implement TravelTime
 
-    delete model.Notes; // don't send Notes since AppendNotes is the value that will be used
+    delete model.Notes; // do not send Notes since AppendNotes is the value that will be used
     schedulerhelper.beforeTicketSaved(model);
     dataservice.ticketsrv.serviceTickets.save({
       id: model.ID || "", // if no value create, else update

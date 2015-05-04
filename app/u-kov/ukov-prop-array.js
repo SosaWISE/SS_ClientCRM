@@ -10,7 +10,7 @@ define('src/u-kov/ukov-prop-array', [
         return true;
       },
       // setting a value would throw an error if
-      // this empty write fucntion weren't here
+      // this empty write fucntion were not here
       write: function() {},
     });
 

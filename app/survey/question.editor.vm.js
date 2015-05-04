@@ -113,7 +113,7 @@ define('src/survey/question.editor.vm', [
       _this.data.ConditionJson.ignore(!use, true);
     });
     if (_this.item.QuestionID && !_this.item.ConditionJson.TokenId) {
-      // don't use if editing and the editing item didn't have it checked
+      // do not use if editing and the editing item did not have it checked
       _this.data.ConditionJson.Use(false);
     }
 

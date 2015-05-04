@@ -67,7 +67,7 @@
     ko.bindingHandlers[name] = {
       init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
         var func = valueAccessor();
-        // if it's a command we need the execute function
+        // if it is a command we need the execute function
         if (ko.isCommand(func)) {
           func = func.execute;
         }
@@ -139,7 +139,7 @@
       var url = ko.unwrap(valueAccessor());
       if (url) {
         element.onerror = function() {
-          element.onerror = null; // incase nophoto doesn't exist
+          element.onerror = null; // incase nophoto does not exist
           element.src = "/stuff/img/nophoto.jpg";
         };
         element.src = url;
@@ -301,7 +301,7 @@
   ko.bindingHandlers.getInitValue = {
     init: function(element, valueAccessor) {
       var observable = valueAccessor();
-      // set if it's an observable and doesn't have a value
+      // set if it is an observable and does not have a value
       if (ko.isObservable(observable) && !observable.peek()) {
         // pass value of element to observable
         observable(jquery(element).val());

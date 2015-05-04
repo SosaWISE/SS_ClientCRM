@@ -1,6 +1,6 @@
 /* global jasmine */
 (function() {
-  'use strict';
+  "use strict";
 
   var jasmineEnv = jasmine.getEnv(),
     htmlReporter;

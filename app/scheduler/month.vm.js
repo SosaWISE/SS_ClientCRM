@@ -199,7 +199,7 @@ define("src/scheduler/month.vm", [
       month,
       date || dt.getDate()
     );
-    // ensure date doesn't overflow month
+    // ensure date does not overflow month
     if (date !== dt.getDate()) {
       // e.g.: going from Jan 31 to Feb 31 should be Feb 28 instead of Mar 3
       dt.setDate(0);

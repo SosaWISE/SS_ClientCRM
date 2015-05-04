@@ -1,12 +1,12 @@
-define('src/account/security/clist.registercell.vm', [
-  'src/account/security/telguard.vm',
-  'src/account/security/alarmdotcom.vm',
-  'src/account/security/alarmnet.vm',
-  'ko',
-  'src/dataservice',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/account/security/clist.registercell.vm", [
+  "src/account/security/telguard.vm",
+  "src/account/security/alarmdotcom.vm",
+  "src/account/security/alarmnet.vm",
+  "ko",
+  "src/dataservice",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   TelguardViewModel,
   AlarmDotComViewModel,
@@ -22,7 +22,7 @@ define('src/account/security/clist.registercell.vm', [
   function CListRegisterCellViewModel(options) {
     var _this = this;
     CListRegisterCellViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['layersVm']);
+    ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
     _this.mayReload = ko.observable(false);
     _this.cellErrMsg = ko.observable();
@@ -35,7 +35,7 @@ define('src/account/security/clist.registercell.vm', [
     });
   }
   utils.inherits(CListRegisterCellViewModel, ControllerViewModel);
-  CListRegisterCellViewModel.prototype.viewTmpl = 'tmpl-security-clist_registercell';
+  CListRegisterCellViewModel.prototype.viewTmpl = "tmpl-security-clist_registercell";
 
   CListRegisterCellViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
@@ -45,14 +45,14 @@ define('src/account/security/clist.registercell.vm', [
     load_msAccountSalesInformations(_this.accountId, utils.safeCallback(join.add(), function(err, resp) {
       var Ctor, vm;
       switch (resp.Value.CellularVendor) {
-        case 'Alarm.net':
+        case "Alarm.net":
           Ctor = AlarmNetViewModel;
           break;
-        case 'Telguard':
+        case "Telguard":
           Ctor = TelguardViewModel;
           break;
         default:
-        case 'Alarm.com':
+        case "Alarm.com":
           Ctor = AlarmDotComViewModel;
           break;
       }
@@ -67,7 +67,7 @@ define('src/account/security/clist.registercell.vm', [
         // vm.load will be called in controller.vm.js
         // vm.load(routeData, extraData, join.add());
       } else {
-        notify.warn('Invalid CellType: ' + resp.Value.CellType);
+        notify.warn("Invalid CellType: " + resp.Value.CellType);
       }
     }, utils.noop));
   };

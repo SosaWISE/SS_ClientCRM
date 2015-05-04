@@ -1,9 +1,9 @@
-define('src/account/security/clist.emcontacts.vm', [
-  'src/account/default/rep.find.vm',
-  'src/account/security/emcontacts.vm',
-  'ko',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/account/security/clist.emcontacts.vm", [
+  "src/account/default/rep.find.vm",
+  "src/account/security/emcontacts.vm",
+  "ko",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   RepFindViewModel,
   EmContactsViewModel,
@@ -16,7 +16,7 @@ define('src/account/security/clist.emcontacts.vm', [
   function CListEmcontactsViewModel(options) {
     var _this = this;
     CListEmcontactsViewModel.super_.call(_this, options);
-    ControllerViewModel.ensureProps(_this, ['layersVm']);
+    ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
     _this.mayReload = ko.observable(false);
     _this.data = ko.observable();
@@ -35,7 +35,7 @@ define('src/account/security/clist.emcontacts.vm', [
     ];
   }
   utils.inherits(CListEmcontactsViewModel, ControllerViewModel);
-  CListEmcontactsViewModel.prototype.viewTmpl = 'tmpl-security-clist_emcontacts';
+  CListEmcontactsViewModel.prototype.viewTmpl = "tmpl-security-clist_emcontacts";
 
   CListEmcontactsViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;

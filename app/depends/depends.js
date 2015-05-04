@@ -10,10 +10,10 @@
   // ensure certain properties exist
   config.paths = config.paths || {
     // default app namespacing
-    src: '/app',
-    spec: '/spec',
-    specui: '/specui',
-    mock: '/mock',
+    src: "/app",
+    spec: "/spec",
+    specui: "/specui",
+    mock: "/mock",
   };
   config.global = config.global || {};
 
@@ -37,17 +37,17 @@
   }
 
   // window.setTimeout(function() {
-  //   console.log('dependantsMap', JSON.stringify(dependantsMap, null, '  '));
+  //   console.log("dependantsMap", JSON.stringify(dependantsMap, null, "  "));
   // }, 1100);
 
   function define(name, deps, value) {
     var mod, pending, valueType = typeof(value);
 
-    if (valueType === 'undefined') {
-      throw new Error('missing value');
+    if (valueType === "undefined") {
+      throw new Error("missing value");
     }
     if (definedMap[name]) {
-      throw new Error(name + ' module redifined');
+      throw new Error(name + " module redifined");
     }
 
     mod = {
@@ -55,7 +55,7 @@
       deps: deps,
     };
 
-    if (valueType === 'function') {
+    if (valueType === "function") {
       mod.func = value;
     } else {
       mod.value = value;
@@ -72,22 +72,22 @@
     if (pkg) {
       if (!pkg.loaded && requireCalled) {
         // only warn if `require` has been called since modules can be defined before loading scripts
-        console.warn('UNEXPECTED package module defined:', name);
+        console.warn("UNEXPECTED package module defined:", name);
       } else {
-        // console.log('package module defined:', name);
+        // console.log("package module defined:", name);
       }
     } else if (!pending && requireCalled) {
       // only warn if `require` has been called since modules can be defined before loading scripts
-      console.warn('UNEXPECTED module defined:', name);
+      console.warn("UNEXPECTED module defined:", name);
     } else {
-      // console.log('module defined:', name);
+      // console.log("module defined:", name);
     }
   }
 
   function getModule(name) {
-    if (name === 'exports') {
+    if (name === "exports") {
       return {
-        name: 'exports',
+        name: "exports",
         deps: [],
         value: {},
       };
@@ -104,7 +104,7 @@
       deps = [deps];
     }
     deps = requireDeps(null, deps, function(deps) {
-      if (typeof(cb) === 'function') {
+      if (typeof(cb) === "function") {
         cb.apply(window, deps);
       }
     });
@@ -157,7 +157,7 @@
     }
     deps.forEach(function(name, index) {
       if (index !== expectedIndex) {
-        throw new Error('DEPENDS: index doesn\'t match expectedIndex. deps array contains undefined indexes.');
+        throw new Error("DEPENDS: index does not match expectedIndex. deps array contains undefined indexes.");
       }
       // increment expected index
       expectedIndex++;
@@ -251,7 +251,7 @@
       // notify cb when done resolving
       resolving.push(cb);
     } else {
-      // mark that we're resolving it and notify cb when done resolving
+      // mark that we are resolving it and notify cb when done resolving
       mod.resolving = [cb];
       requireDeps(mod.name, mod.deps, function(resolvedDeps) {
         try {
@@ -259,17 +259,17 @@
           mod.value = mod.func.apply(window, resolvedDeps);
           if (mod.value == null) {
             mod.deps.some(function(depName, index) {
-              if (depName === 'exports') {
+              if (depName === "exports") {
                 mod.value = resolvedDeps[index];
                 return true;
               }
             });
           }
         } catch (ex) {
-          // console.error('DEPENDS ERROR: failed to define `' + mod.name + '` - ' + ex);
+          // console.error("DEPENDS ERROR: failed to define `" + mod.name + "` - " + ex);
           // throw error in a different context
           window.setTimeout(function() {
-            throw new Error('DEPENDS: failed to define `' + mod.name + '` - ' + ex.stack.toString());
+            throw new Error("DEPENDS: failed to define `" + mod.name + "` - " + ex.stack.toString());
           }, 0);
         }
 
@@ -289,7 +289,7 @@
   }
 
   function pathParts(name) {
-    return name.split('/');
+    return name.split("/");
   }
 
   function toUrl(name) {
@@ -297,14 +297,14 @@
       pathPart = config.paths[parts[0]];
     if (pathPart) {
       parts[0] = pathPart;
-      name = parts.join('/');
+      name = parts.join("/");
     }
-    return name + '.js';
+    return name + ".js";
   }
 
   function loadScript(url, async, cb) {
     onReady(function() {
-      var script = document.createElement('script');
+      var script = document.createElement("script");
       if (cb) {
         script.onload = cb;
       }
@@ -313,7 +313,7 @@
         if (cb) {
           cb();
         }
-        throw new Error('Failed to load script: ' + url);
+        throw new Error("Failed to load script: " + url);
       };
       script.async = async || false;
       script.src = url;
@@ -331,7 +331,7 @@
   function loadModule(name, cb) {
     var url, async, parts;
 
-    parts = name.split('!');
+    parts = name.split("!");
     if (parts.length === 1) {
       url = toUrl(name);
       async = false;
@@ -353,9 +353,9 @@
   }
 
   function jsonp(url, cb) {
-    var id = '__jsonp' + (jsonpCount++) + '__';
-    url += (url.indexOf('?') < 0) ? '?' : '&';
-    url += 'callback=' + id;
+    var id = "__jsonp" + (jsonpCount++) + "__";
+    url += (url.indexOf("?") < 0) ? "?" : "&";
+    url += "callback=" + id;
     window[id] = function() {
       cb();
     };

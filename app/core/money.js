@@ -84,13 +84,13 @@ define("src/core/money", [
 
   function assertType(other) {
     if (!(other instanceof Money)) {
-      throw new TypeError('Instance of Money required');
+      throw new TypeError("Instance of Money required");
     }
   }
 
   function assertNumber(operand) {
     if (isNaN(parseFloat(operand)) && !isFinite(operand)) {
-      throw new TypeError('Operand must be a number');
+      throw new TypeError("Operand must be a number");
     }
   }
 

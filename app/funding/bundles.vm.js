@@ -1,23 +1,23 @@
-define('src/funding/bundles.vm', [
-  'src/dataservice',
-  'src/funding/bundlesearch.vm',
-  'ko',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/funding/bundles.vm", [
+  "src/dataservice",
+  "src/funding/bundlesearch.vm",
+  "ko",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   dataservice,
   BundleSearchViewModel,
   ko,
   utils,
   ControllerViewModel) {
-  'use strict';
+  "use strict";
 
   function BundlesViewModel(options) {
     // ** Initialize
     var _this = this;
     BundlesViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
-      'layersVm'
+      "layersVm"
     ]);
 
     _this.searchVm = ko.observable();
@@ -39,15 +39,15 @@ define('src/funding/bundles.vm', [
 
   // ** Inherits
   utils.inherits(BundlesViewModel, ControllerViewModel);
-  BundlesViewModel.prototype.viewTmpl = 'tmpl-funding-bundles';
+  BundlesViewModel.prototype.viewTmpl = "tmpl-funding-bundles";
 
   BundlesViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
     _this.searchVm(new BundleSearchViewModel({
       pcontroller: _this,
-      id: 'search',
-      title: 'Search',
+      id: "search",
+      title: "Search",
     }));
     _this.defaultChild = _this.searchVm.peek();
 
