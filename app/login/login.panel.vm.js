@@ -43,6 +43,8 @@ define("src/login/login.panel.vm", [
     if (!_this.getRouter().anonRouteFromPath(destPath)) {
       routeCtx.routeData.destPath = destPath;
     }
+    // activate inner vm
+    _this.vm.activate(routeCtx);
   };
 
   return LoginPanelViewModel;
