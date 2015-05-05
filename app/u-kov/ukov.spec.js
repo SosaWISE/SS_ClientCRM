@@ -183,16 +183,16 @@ define('src/u-kov/ukov.spec', [
         expect(ukovModel.isValid()).toBe(true);
       });
 
-      it('should create models that don\'t exist', function() {
+      it('should create models that do not exist', function() {
         expect(ukovModel.shouldCreateModel).toBeDefined();
         expect(ukovModel.shouldCreateModel instanceof UkovModel).toBe(true);
         expect(typeof(ukovModel.shouldCreateModel.model)).toBe('object');
       });
-      it('should create prop arrays that don\'t exist', function() {
+      it('should create prop arrays that do not exist', function() {
         expect(ukovModel.shouldCreateModel.shouldCreatePropArray).toBeDefined();
         expect(Array.isArray(ukovModel.shouldCreateModel.shouldCreatePropArray())).toBe(true);
       });
-      it('should create props that don\'t exist', function() {
+      it('should create props that do not exist', function() {
         expect(ukovModel.shouldCreateModel.shouldCreateProp).toBeDefined();
         expect(ukovModel.shouldCreateModel.shouldCreateProp()).toBeNull();
       });

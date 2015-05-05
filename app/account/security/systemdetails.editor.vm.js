@@ -1,11 +1,11 @@
-define('src/account/security/systemdetails.editor.vm', [
-  'src/dataservice',
-  'src/core/combo.vm',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
-  'ko',
-  'src/ukov',
+define("src/account/security/systemdetails.editor.vm", [
+  "src/dataservice",
+  "src/core/combo.vm",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/base.vm",
+  "ko",
+  "src/ukov",
 ], function(
   dataservice,
   ComboViewModel,
@@ -34,11 +34,11 @@ define('src/account/security/systemdetails.editor.vm', [
     var _this = this;
     SystemDetailsEditorViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
-      'item',
-      'panelTypes', 'panelTypeFields',
-      'systemTypes', 'systemTypeFields',
-      'cellularTypes', 'cellularTypeFields',
-      'dslSeizureTypes', 'dslSeizureTypeFields',
+      "item",
+      "panelTypes", "panelTypeFields",
+      "systemTypes", "systemTypeFields",
+      "cellularTypes", "cellularTypeFields",
+      "dslSeizureTypes", "dslSeizureTypeFields",
     ]);
     _this.mixinLoad();
 
@@ -95,9 +95,9 @@ define('src/account/security/systemdetails.editor.vm', [
     });
   }
   utils.inherits(SystemDetailsEditorViewModel, BaseViewModel);
-  SystemDetailsEditorViewModel.prototype.viewTmpl = 'tmpl-security-systemdetails_editor';
+  SystemDetailsEditorViewModel.prototype.viewTmpl = "tmpl-security-systemdetails_editor";
   SystemDetailsEditorViewModel.prototype.width = 290;
-  SystemDetailsEditorViewModel.prototype.height = 'auto';
+  SystemDetailsEditorViewModel.prototype.height = "auto";
 
   function closeLayer(_this) {
     if (_this.layer) {
@@ -112,7 +112,7 @@ define('src/account/security/systemdetails.editor.vm', [
     var _this = this,
       msg;
     if (_this.cmdSave.busy() && !_this.layerResult) {
-      msg = 'Please wait for save to finish.';
+      msg = "Please wait for save to finish.";
     }
     return msg;
   };

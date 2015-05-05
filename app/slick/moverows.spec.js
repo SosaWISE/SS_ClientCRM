@@ -100,7 +100,7 @@ define('src/slick/moverows.spec', [
     });
 
     describe('updateSortOrder', function() {
-      it('should start after prev item\'s sort order', function() {
+      it('should start after sort order of prev item', function() {
         var newList, changedRows;
         newList = [ //
           {
@@ -133,7 +133,7 @@ define('src/slick/moverows.spec', [
         expect(changedRows[2].SortOrder).toBe(8);
         expect(changedRows[3].SortOrder).toBe(9);
       });
-      it('should modify rows who\'s position has changed', function() {
+      it('should modify rows with a position that has changed', function() {
         var newList, changedRows;
         newList = [ //
           {

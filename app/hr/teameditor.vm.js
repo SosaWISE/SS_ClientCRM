@@ -151,7 +151,7 @@ define('src/hr/teameditor.vm', [
     var _this = this;
     // set item now in order to show title even if onLoad is never called
     _this.data.setValue(item);
-    // set item once we're loaded
+    // set item once we are loaded
     _this.loader.onLoad(function() {
       _this.data.setValue(item);
       _this.data.markClean(item);

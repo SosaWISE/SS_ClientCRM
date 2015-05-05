@@ -1,5 +1,5 @@
-﻿define('src/core/ko.debug.helpers', [
-  'ko'
+﻿define("src/core/ko.debug.helpers", [
+  "ko"
 ], function(ko) {
   "use strict";
 

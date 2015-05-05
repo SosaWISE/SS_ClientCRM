@@ -42,7 +42,7 @@ div(class="contract-wrap")
           |&nbsp;
           span(data-bind="datetext:CancelDate")
           |&nbsp;
-          span(class="label"), Reason:
+          span(class="label") , Reason:
           |&nbsp;
           span(data-bind="cancelReason:AccountCancelReasonId")
 
@@ -161,6 +161,9 @@ div(class="contract-wrap")
               Service Plan Addons          ???
               Email per Cell Provider      [MS_AccountSalesInformations].Email OR [Alarm.com]
             ul(class="edit-form quad-wide",data-bind="with:salesinfo")
+              li
+                span(class="label") Account Type
+                div(data-bind="cvm:FriendsAndFamilyTypeCvm")
               li
                 span(class="label") Contract Date
                 input(type="text",

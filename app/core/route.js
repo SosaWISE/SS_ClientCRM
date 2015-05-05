@@ -1,4 +1,4 @@
-define('src/core/route', [], function() {
+define("src/core/route", [], function() {
   "use strict";
 
   function Route(router, topController, name, regx, parts, defaultRouteData) {
@@ -32,32 +32,32 @@ define('src/core/route', [], function() {
       parts = [];
 
     // anchor match to start of string
-    regxParts.push('^');
+    regxParts.push("^");
 
     // literally match route name
-    regxParts.push('(\/' + name + ')');
-    parts.push('route');
+    regxParts.push("(\/" + name + ")");
+    parts.push("route");
 
-    routePath.split('/').forEach(function(name) {
+    routePath.split("/").forEach(function(name) {
       if (!name) {
         // starting slash or empty routePath can make an empty name
         return;
       }
-      if (name[0] !== ':') {
-        throw new Error('name must start with a colon');
+      if (name[0] !== ":") {
+        throw new Error("name must start with a colon");
       }
 
-      regxParts.push('(\/[^\/]*)?');
+      regxParts.push("(\/[^\/]*)?");
       parts.push(name.substr(1)); // remove colon
     });
 
     // match anything after
-    regxParts.push('(.*)');
-    parts.push('_glob');
+    regxParts.push("(.*)");
+    parts.push("_glob");
     // anchor match to end of string
-    regxParts.push('$');
+    regxParts.push("$");
 
-    return new Route(router, topController, name, new RegExp(regxParts.join('')), parts, defaultRouteData);
+    return new Route(router, topController, name, new RegExp(regxParts.join("")), parts, defaultRouteData);
   };
 
 
@@ -98,11 +98,11 @@ define('src/core/route', [], function() {
     var pathParts = [],
       routeName = this.name;
     // add an empty string to prefix the path with a slash
-    pathParts.push('');
+    pathParts.push("");
     this.parts.some(function(part) {
       var value = routeData[part];
       if (isNullOrEmpty(value)) {
-        if (part === 'route') {
+        if (part === "route") {
           value = routeName;
         } else {
           // break out of loop when no value is found
@@ -113,7 +113,7 @@ define('src/core/route', [], function() {
       pathParts.push(window.encodeURIComponent(value));
     });
     // merge parts into path
-    return pathParts.join('/');
+    return pathParts.join("/");
   };
   Route.prototype.activate = function(path, extraData, cb) {
     var _this = this,
@@ -129,7 +129,7 @@ define('src/core/route', [], function() {
   Route.prototype.createContext = function(pathOrRouteData, extraData, cb) {
     var _this = this,
       disposed,
-      routeData = typeof(pathOrRouteData) === 'string' ? _this.fromPath(pathOrRouteData) : pathOrRouteData,
+      routeData = typeof(pathOrRouteData) === "string" ? _this.fromPath(pathOrRouteData) : pathOrRouteData,
       routeCtx;
     if (routeData) {
       routeCtx = {
@@ -199,7 +199,7 @@ define('src/core/route', [], function() {
     if (index) {
       return _this.parts[index];
     } else {
-      console.warn('invalid routePart:', routePart);
+      console.warn("invalid routePart:", routePart);
     }
   };
 

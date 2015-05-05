@@ -72,7 +72,7 @@ define("src/contracts/contracts.panel.vm", [
         id = routeData[_this.getChildRoutePart(routeData.route)];
         if (id > 0) {
           // add child
-          result = createMasterVM(_this, id, id + '');
+          result = createMasterVM(_this, id, id + "");
           _this.list.push(result);
         }
       }

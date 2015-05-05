@@ -226,6 +226,11 @@ define("src/hr/recruiteditor.vm", [
     _this.data.ReportsToCvm = new ComboViewModel({
       selectedValue: _this.data.ReportsToID,
       nullable: true,
+      fields: {
+        value: "RecruitID",
+        // text: "FullName",
+        text: "FullDescription",
+      },
     });
     _this.data.TeamCvm = new ComboViewModel({
       selectedValue: _this.data.TeamID,
@@ -279,6 +284,14 @@ define("src/hr/recruiteditor.vm", [
       selectedValue: _this.data.RecruitCohabbitTypeId,
       nullable: true,
       fields: hrcache.metadata("recruitCohabbitTypes"),
+    });
+    _this.data.UserTypeId.subscribe(function(userTypeID) {
+      load_possibleReportTos(_this.data.SeasonID.getValue(), userTypeID, function(list) {
+        // check that it has not since changed
+        if (_this.data.UserTypeId.getValue() === userTypeID) {
+          _this.data.ReportsToCvm.setList(list);
+        }
+      }, notify.iferror);
     });
 
     _this.seasonName = ko.observable("unknown season");
@@ -547,6 +560,16 @@ define("src/hr/recruiteditor.vm", [
   //     vm.setData(val);
   //   }, cb);
   // }
+
+  function load_possibleReportTos(seasonID, userTypeID, setter, cb) {
+    dataservice.api_hr.recruits.read({
+      link: "PossibleReportTos",
+      query: {
+        seasonID: seasonID || 0,
+        userTypeID: userTypeID || 0,
+      },
+    }, setter, cb);
+  }
 
   return RecruitEditorViewModel;
 });

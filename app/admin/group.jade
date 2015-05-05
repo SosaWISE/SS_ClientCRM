@@ -1,0 +1,5 @@
+ul(class="",data-bind="foreach:list")
+  li
+    div(class="checkbox",data-bind="cmd:$parent.toggleChecked")
+      a(class="btn small",tabindex="0",data-bind="active:checked")
+      span(data-bind="text:text")

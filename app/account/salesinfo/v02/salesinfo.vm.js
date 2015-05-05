@@ -275,7 +275,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
           min: activationFee,
           max: activationFee,
         });
-        //@Task 1215: 3. Remove (or give warning message that it's not allowed) Manual Invoice, and Check from the Billing Method.
+        //@Task 1215: 3. Remove (or give warning message that it is not allowed) Manual Invoice, and Check from the Billing Method.
         _this.salesinfo.LimitPaymentTypes(true);
       } else {
         // incase of reload

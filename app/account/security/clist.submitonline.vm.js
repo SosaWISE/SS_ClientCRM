@@ -93,7 +93,7 @@ define("src/account/security/clist.submitonline.vm", [
 
     load_dispatchAgencys(_this.accountId, _this.gvm, join.add());
     load_accountDetails(_this.accountId, function(val) {
-      var msOsId = (val || {}).MonitoringStationOsId || 'AG_ALARMSYS'; //@HACK: for null value
+      var msOsId = (val || {}).MonitoringStationOsId || "AG_ALARMSYS"; //@HACK: for null value
       load_dispatchAgencyTypes(msOsId, function(val) {
         _this.dispatchAgencyTypes = val;
       }, join.add());
@@ -113,7 +113,7 @@ define("src/account/security/clist.submitonline.vm", [
   function load_accountDetails(accountId, setter, cb) {
     dataservice.monitoringstationsrv.accounts.read({
       id: accountId,
-      link: 'details'
+      link: "details"
     }, setter, cb);
   }
 

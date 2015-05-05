@@ -8,6 +8,9 @@ define("src/nimis/errorcodes", [], function() {
 
     "0": "Info",
 
+    "401": "Not Authorized",
+    "404": "Url Not Found",
+
     "60100": "Unverified Address",
 
     "70110": "Item was not found",

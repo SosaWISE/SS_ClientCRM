@@ -10,7 +10,7 @@ define('src/u-kov/ukov-model', [
       return true;
     },
     // setting a value would throw an error if
-    // this empty write fucntion weren't here
+    // this empty write fucntion were not here
     write: function() {},
   });
 
@@ -25,7 +25,7 @@ define('src/u-kov/ukov-model', [
     delete doc._model;
     Object.defineProperty(doc, '_model', {
       value: true,
-      configurable: true, // makes it so `delete doc._model` doesn't throw
+      configurable: true, // makes it so `delete doc._model` does not throw
     });
 
     _this.__ignore_updates__ = false;
@@ -51,7 +51,7 @@ define('src/u-kov/ukov-model', [
     }, _this);
 
     if (!_this.parentModel) {
-      // start clean if we're the top model
+      // start clean if we are the top model
       _this.markClean();
     }
   }

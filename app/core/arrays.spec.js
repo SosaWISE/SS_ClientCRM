@@ -1,18 +1,18 @@
 /* global describe, it, expect */
-define('src/core/arrays.spec', [
-  'src/core/arrays'
+define("src/core/arrays.spec", [
+  "src/core/arrays"
 ], function(arrays) {
   "use strict";
 
-  describe('arrays', function() {
+  describe("arrays", function() {
     // var vm;
     // beforeEach(function() {});
 
-    it('should have an `insertOrdered` property', function() {
-      expect(typeof arrays.insertOrdered).toBe('function');
+    it("should have an `insertOrdered` property", function() {
+      expect(typeof arrays.insertOrdered).toBe("function");
     });
 
-    it('`insertOrdered` should insert in correct order', function() {
+    it("`insertOrdered` should insert in correct order", function() {
       var list = [2, 4, 6, 8],
         comparer = function(a, b) {
           return a - b;

@@ -219,7 +219,7 @@
       // call base
       ko.bindingHandlers.cmd.init.call(this, element, makeValueAccessor(tcmd), allBindingsAccessor, viewModel, bindingContext);
 
-      // tell ko to not data-bind descendant nodes (more info in ko.bindingHandlers['text']
+      // tell ko to not data-bind descendant nodes (more info in ko.bindingHandlers["text"]
       return {
         "controlsDescendantBindings": true,
       };

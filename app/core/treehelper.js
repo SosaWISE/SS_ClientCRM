@@ -1,11 +1,11 @@
-define('src/core/treehelper', [
-  'ko',
-  'src/core/utils',
+define("src/core/treehelper", [
+  "ko",
+  "src/core/utils",
 ], function(
   ko,
   utils
 ) {
-  'use strict';
+  "use strict";
 
   function walkTree_Helper(item, listName, fn, parent) {
     if (!item) {
@@ -44,12 +44,12 @@ define('src/core/treehelper', [
         id = item[idKey],
         tempChilds;
       if (!id) {
-        console.log('item has no id:', item);
+        console.log("item has no id:", item);
         return;
       }
 
       if (!mapFn) {
-        // set childs when there's not a mapping function
+        // set childs when there"s not a mapping function
         item.childs = [];
       }
 
@@ -74,7 +74,7 @@ define('src/core/treehelper', [
       var id = item[idKey],
         mappedItem, tempChilds;
       if (!toVisitMap[id]) {
-        console.log('already visited:', id);
+        console.log("already visited:", id);
         return;
       }
       delete toVisitMap[id];
@@ -105,9 +105,9 @@ define('src/core/treehelper', [
       buildBranch(item, treeTrunk, null, null);
     });
 
-    // show which items aren't connected to the tree trunk
+    // show which items are not connected to the tree trunk
     Object.keys(toVisitMap).forEach(function(id) {
-      console.log('disconnected id:', id);
+      console.log("disconnected id:", id);
     });
 
     return treeTrunk;

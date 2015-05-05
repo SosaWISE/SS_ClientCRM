@@ -45,6 +45,9 @@ define('src/hr/usersearch.gvm', [
           id: 'FullName',
           name: 'Full Name',
           field: 'FullName',
+          formatter: function(row, cell, value, columnDef, dataItem) {
+            return value + (dataItem.IsActive ? "" : " (I)");
+          },
         }, {
           id: 'Email',
           name: 'Email',

@@ -39,10 +39,12 @@ define("src/login/login.panel.vm", [
     var _this = this,
       destPath = routeCtx.extraData.destPath;
     routeCtx.routeData.type = "user";
-    // set destination path if it doesn't match an anonymous route
+    // set destination path if it does not match an anonymous route
     if (!_this.getRouter().anonRouteFromPath(destPath)) {
       routeCtx.routeData.destPath = destPath;
     }
+    // activate inner vm
+    _this.vm.activate(routeCtx);
   };
 
   return LoginPanelViewModel;

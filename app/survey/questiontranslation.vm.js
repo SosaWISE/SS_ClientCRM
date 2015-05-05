@@ -41,7 +41,7 @@ define('src/survey/questiontranslation.vm', [
     _this.editorVM = ko.observable(null);
     // computed observables
     _this.show = ko.computed({
-      // don't evaluate until someone requests the value,
+      // do not evaluate until someone requests the value,
       // since this vm is created inside of another computed
       deferEvaluation: true,
       read: function() {

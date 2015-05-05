@@ -50,6 +50,11 @@ define("src/account/salesinfo/v02/salesinfo.model", [
       fields: mscache.metadata("paymentTypes"),
     }).subscribe(mscache.getList("paymentTypes"), handler);
 
+    data.FriendsAndFamilyTypeCvm = new ComboViewModel({
+      selectedValue: data.FriendsAndFamilyTypeId,
+      fields: mscache.metadata("types/friendsAndFamily"),
+    }).subscribe(mscache.getList("types/friendsAndFamily"), handler);
+
     data.BillingDayCvm = new ComboViewModel({
       selectedValue: data.BillingDay,
       list: salesInfoOptions.billingDays,
@@ -68,6 +73,7 @@ define("src/account/salesinfo/v02/salesinfo.model", [
       var join = joiner().after(cb);
       mscache.ensure("accountCreationTypes", join.add());
       mscache.ensure("paymentTypes", join.add());
+      mscache.ensure("types/friendsAndFamily", join.add());
       mscache.ensure("packages", join.add());
     };
 

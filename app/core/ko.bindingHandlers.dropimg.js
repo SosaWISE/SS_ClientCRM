@@ -1,8 +1,8 @@
-define('src/core/ko.bindingHandlers.dropimg', [
-  'src/core/notify',
-  'src/core/utils',
-  'jquery',
-  'ko'
+define("src/core/ko.bindingHandlers.dropimg", [
+  "src/core/notify",
+  "src/core/utils",
+  "jquery",
+  "ko"
 ], function(
   notify,
   utils,
@@ -14,7 +14,7 @@ define('src/core/ko.bindingHandlers.dropimg', [
     init: function(element, valueAccessor) {
       var fn = ko.unwrap(valueAccessor());
       if (!utils.isFunc(fn)) {
-        throw new Error('expected function');
+        throw new Error("expected function");
       }
 
       element.addEventListener("dragover", function(e) {
@@ -30,7 +30,7 @@ define('src/core/ko.bindingHandlers.dropimg', [
         e.preventDefault();
         //  Prevent any non-image file type from being read.
         if (!src.type.match(/image.*/)) {
-          notify.warn('The dropped file is not an image: ' + src.type, null, 7);
+          notify.warn("The dropped file is not an image: " + src.type, null, 7);
           return;
         }
         // clear current image

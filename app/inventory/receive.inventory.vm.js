@@ -101,7 +101,7 @@ define('src/inventory/receive.inventory.vm', [
           id: vendorType,
           link: 20,
         }, null, utils.safeCallback(cb, function(err, resp) {
-          // only set if it hasn't changed again
+          // only set if it has not changed again
           if (_this.data.vendorTypeCvm.selectedValue.peek() === vendorType) {
             _this.data.purchaseOrderListCvm.setList(resp.Value);
           }

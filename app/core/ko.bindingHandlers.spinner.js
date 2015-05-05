@@ -1,11 +1,11 @@
-define('src/core/ko.bindingHandlers.spinner', [
-  'jquery',
-  'ko'
+define("src/core/ko.bindingHandlers.spinner", [
+  "jquery",
+  "ko"
 ], function(
   jquery,
   ko
 ) {
-  'use strict';
+  "use strict";
 
   var map = {},
     showList = [],
@@ -23,24 +23,24 @@ define('src/core/ko.bindingHandlers.spinner', [
       var id = ++count,
         wrap, spinner, canvas, colorRgb, color;
 
-      // colorRgb = allBindings.get('spinner-rgb') || 'white';
+      // colorRgb = allBindings.get("spinner-rgb") || "white";
       // switch (colorRgb) {
-      //   case 'white':
-      //     color = 'white';
-      //     colorRgb = '255,255,255';
+      //   case "white":
+      //     color = "white";
+      //     colorRgb = "255,255,255";
       //     break;
-      //   case 'black':
-      //     color = 'black';
-      //     colorRgb = '0,0,0';
+      //   case "black":
+      //     color = "black";
+      //     colorRgb = "0,0,0";
       //     break;
       //   default:
-      //     color = 'black';
-      //     // assume it's actually an rgb value
-      //     // colorRgb = '0,0,0';
+      //     color = "black";
+      //     // assume it is actually an rgb value
+      //     // colorRgb = "0,0,0";
       //     break;
       // }
-      color = 'white'; // not sure if i like the black spinner, so everything is white for now
-      colorRgb = '255,255,255';
+      color = "white"; // not sure if i like the black spinner, so everything is white for now
+      colorRgb = "255,255,255";
 
       //
       // setup
@@ -50,18 +50,18 @@ define('src/core/ko.bindingHandlers.spinner', [
       ko.utils.emptyDomNode(element);
 
       // add wrap
-      wrap = document.createElement('div');
-      wrap.setAttribute('class', 'spinner-wrap ' + color);
+      wrap = document.createElement("div");
+      wrap.setAttribute("class", "spinner-wrap " + color);
       element.appendChild(wrap);
       // add spinner
-      spinner = document.createElement('div');
-      spinner.setAttribute('class', 'spinner');
+      spinner = document.createElement("div");
+      spinner.setAttribute("class", "spinner");
       wrap.appendChild(spinner);
       // add canvas
-      canvas = document.createElement('canvas');
-      // setting the width and height in css doesn't have the same affect
-      canvas.setAttribute('width', width);
-      canvas.setAttribute('height', width);
+      canvas = document.createElement("canvas");
+      // setting the width and height in css does not have the same affect
+      canvas.setAttribute("width", width);
+      canvas.setAttribute("height", width);
       spinner.appendChild(canvas);
 
 
@@ -69,12 +69,12 @@ define('src/core/ko.bindingHandlers.spinner', [
       // ???
       //
 
-      ko.utils.domData.set(element, 'spinnerID', id);
+      ko.utils.domData.set(element, "spinnerID", id);
       // add to map
       map[id] = {
         id: id,
         element: element,
-        ctx: canvas.getContext('2d'),
+        ctx: canvas.getContext("2d"),
         colorRgb: colorRgb,
         show: false,
       };
@@ -85,11 +85,11 @@ define('src/core/ko.bindingHandlers.spinner', [
 
       // tell knockout to not do any child bindings
       return {
-        'controlsDescendantBindings': true,
+        "controlsDescendantBindings": true,
       };
     },
     update: function(element, valueAccessor) {
-      var id = ko.utils.domData.get(element, 'spinnerID'),
+      var id = ko.utils.domData.get(element, "spinnerID"),
         value = ko.unwrap(valueAccessor());
       updateShowList(id, value);
     },
@@ -136,13 +136,13 @@ define('src/core/ko.bindingHandlers.spinner', [
   }
 
   function log(verbose) {
-    console.log('spinners -');
+    console.log("spinners -");
     if (!verbose) {
-      console.log('     total:', Object.keys(map).length);
-      console.log('  spinning:', showList.length);
+      console.log("     total:", Object.keys(map).length);
+      console.log("  spinning:", showList.length);
     } else {
-      console.log('     total:', Object.keys(map).length, map);
-      console.log('  spinning:', showList.length, showList);
+      console.log("     total:", Object.keys(map).length, map);
+      console.log("  spinning:", showList.length, showList);
     }
   }
 
@@ -171,7 +171,7 @@ define('src/core/ko.bindingHandlers.spinner', [
     ctx.clearRect(0, 0, width, width);
     opacityList.forEach(function(opacity) {
       rotate(ctx);
-      drawLine(ctx, 'rgba(' + colorRgb + ',' + opacity + ')');
+      drawLine(ctx, "rgba(" + colorRgb + "," + opacity + ")");
     });
     // move ahead one position
     rotate(ctx);
@@ -180,7 +180,7 @@ define('src/core/ko.bindingHandlers.spinner', [
   function drawLine(ctx, color) {
     ctx.beginPath();
     ctx.strokeStyle = color;
-    ctx.lineCap = 'round';
+    ctx.lineCap = "round";
     ctx.lineWidth = lineWidth;
     ctx.moveTo(hwidth, startY);
     ctx.lineTo(hwidth, lineWidth);

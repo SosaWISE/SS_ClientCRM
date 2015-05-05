@@ -87,6 +87,10 @@ module.exports = function(grunt) {
         src: ["app/account/**/*.js", "!app/account/**/*.spec.js", ],
         dest: "<%= www %>/account.debug.js",
       },
+      admin_pkg: {
+        src: ["app/admin/**/*.js", "!app/admin/**/*.spec.js", ],
+        dest: "<%= www %>/admin.debug.js",
+      },
       contracts_pkg: {
         src: ["app/contracts/**/*.js", "!app/contracts/**/*.spec.js", ],
         dest: "<%= www %>/contracts.debug.js",
@@ -111,6 +115,7 @@ module.exports = function(grunt) {
           "app/slick/tparty/slick.rowselectionmodel.js",
           "app/slick/tparty/slick.editors.js",
           "app/slick/tparty/slick.dataview.js",
+          "app/slick/tparty/slick.groupitemmetadataprovider.js",
           "app/slick/tparty/slick-production.js",
           // actual package
           "app/slick/*.js",
@@ -179,6 +184,7 @@ module.exports = function(grunt) {
         },
         files: {
           "<%= www %>/account.js": ["<%= www %>/account.debug.js"],
+          "<%= www %>/admin.js": ["<%= www %>/admin.debug.js"],
           "<%= www %>/contracts.js": ["<%= www %>/contracts.debug.js"],
           "<%= www %>/survey.js": ["<%= www %>/survey.debug.js"],
           "<%= www %>/funding.js": ["<%= www %>/funding.debug.js"],

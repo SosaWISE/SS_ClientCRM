@@ -257,7 +257,7 @@ define("src/account/security/alarmdotcom.vm", [
         notify.error(err);
         cb();
       } else if (!resp.Value) {
-        notify.warn("Failed to unregister, but there wasn't an error...");
+        notify.warn("Failed to unregister, but there was not an error...");
         cb();
       } else {
         _this.reload(cb);

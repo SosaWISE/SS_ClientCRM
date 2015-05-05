@@ -12,7 +12,7 @@ define('src/u-kov/ukov-prop', [
         return true;
       },
       // setting a value would throw an error if
-      // this empty write function weren't here
+      // this empty write function were not here
       write: function() {},
     });
 

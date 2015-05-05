@@ -79,7 +79,7 @@ define('src/survey/qmtokenmap.new.vm', [
     });
 
     tokens.forEach(function(token) {
-      // don't add used tokens
+      // do not add used tokens
       if (map[token.TokenID]) {
         return;
       }

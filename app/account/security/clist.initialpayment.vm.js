@@ -392,7 +392,7 @@ define("src/account/security/clist.initialpayment.vm", [
     }
     savePaymentMethod(_this, paymentMethod, "PaymentMethod", _this.paymentMethod, join.add());
 
-    // save leads one after the other (don't want to make multiple customers for the same lead)
+    // save leads one after the other (do not want to make multiple customers for the same lead)
     var index = 0;
     (function tryNextLead() {
       var leadVm = _this.leads[index++];

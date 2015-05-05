@@ -1,12 +1,12 @@
-define('src/account/security/emcontacteditor.vm', [
-  'src/dataservice',
-  'src/core/combo.vm',
-  'src/core/strings',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
-  'ko',
-  'src/ukov',
+define("src/account/security/emcontacteditor.vm", [
+  "src/dataservice",
+  "src/core/combo.vm",
+  "src/core/strings",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/base.vm",
+  "ko",
+  "src/ukov",
 ], function(
   dataservice,
   ComboViewModel,
@@ -44,14 +44,14 @@ define('src/account/security/emcontacteditor.vm', [
           }
 
           errMsgObj = {};
-          errMsgObj[errName] = 'Both phone and type must be set.';
+          errMsgObj[errName] = "Both phone and type must be set.";
           return errMsgObj;
         },
       ],
     };
   }
-  phone2ValidationGroup = createPhoneAndTypeValidationGroup('Phone2', 'Phone2TypeId');
-  phone3ValidationGroup = createPhoneAndTypeValidationGroup('Phone3', 'Phone3TypeId');
+  phone2ValidationGroup = createPhoneAndTypeValidationGroup("Phone2", "Phone2TypeId");
+  phone3ValidationGroup = createPhoneAndTypeValidationGroup("Phone3", "Phone3TypeId");
 
   function uniquePhoneValidator(val, model, ukovModel, prop) {
     if (!val) {
@@ -61,7 +61,7 @@ define('src/account/security/emcontacteditor.vm', [
     var errMsg, dependents = prop.doc.dependents;
     dependents.some(function(key) {
       if (val === ukovModel[key].getValue()) {
-        errMsg = 'Duplicate Phone# ' + strings.formatters.phone(val);
+        errMsg = "Duplicate Phone# " + strings.formatters.phone(val);
         return true;
       }
     });
@@ -82,7 +82,7 @@ define('src/account/security/emcontacteditor.vm', [
     FirstName: {
       converter: strConverter,
       validators: [
-        ukov.validators.isRequired('First name is required'),
+        ukov.validators.isRequired("First name is required"),
       ],
     },
     MiddleName: {
@@ -91,7 +91,7 @@ define('src/account/security/emcontacteditor.vm', [
     LastName: {
       converter: strConverter,
       validators: [
-        ukov.validators.isRequired('Last name is required'),
+        ukov.validators.isRequired("Last name is required"),
       ],
     },
     Postfix: {
@@ -100,12 +100,12 @@ define('src/account/security/emcontacteditor.vm', [
 
     RelationshipId: {
       validators: [
-        ukov.validators.isRequired('Relationship is required'),
+        ukov.validators.isRequired("Relationship is required"),
       ],
     },
     OrderNumber: {
       validators: [
-        ukov.validators.isRequired('OrderNumber is required'),
+        ukov.validators.isRequired("OrderNumber is required"),
       ],
     },
 
@@ -120,20 +120,20 @@ define('src/account/security/emcontacteditor.vm', [
 
     Phone1: {
       converter: phoneConverter,
-      dependents: ['Phone2', 'Phone3'],
+      dependents: ["Phone2", "Phone3"],
       validators: [
-        ukov.validators.isRequired('Primary phone is required'),
+        ukov.validators.isRequired("Primary phone is required"),
         uniquePhoneValidator,
       ],
     },
     Phone1TypeId: {
       validators: [
-        ukov.validators.isRequired('Primary phone type is required'),
+        ukov.validators.isRequired("Primary phone type is required"),
       ],
     },
     Phone2: {
       converter: phoneConverter,
-      dependents: ['Phone1', 'Phone3'],
+      dependents: ["Phone1", "Phone3"],
       validators: [uniquePhoneValidator],
       validationGroup: phone2ValidationGroup,
     },
@@ -142,7 +142,7 @@ define('src/account/security/emcontacteditor.vm', [
     },
     Phone3: {
       converter: phoneConverter,
-      dependents: ['Phone1', 'Phone2'],
+      dependents: ["Phone1", "Phone2"],
       validators: [uniquePhoneValidator],
       validationGroup: phone3ValidationGroup,
     },
@@ -157,45 +157,45 @@ define('src/account/security/emcontacteditor.vm', [
     var _this = this;
     EmContactEditorViewModel.super_.call(_this, options);
     BaseViewModel.ensureProps(_this, [
-      // 'customerId',
-      'accountId',
-      'phoneTypes',
-      'phoneTypeFields',
-      'contactTypes',
-      'contactTypeFields',
-      'contactAuthorityTypes',
-      'contactAuthorityTypeFields',
-      'relationshipTypes',
-      'relationshipTypeFields',
+      // "customerId",
+      "accountId",
+      "phoneTypes",
+      "phoneTypeFields",
+      "contactTypes",
+      "contactTypeFields",
+      "contactAuthorityTypes",
+      "contactAuthorityTypeFields",
+      "relationshipTypes",
+      "relationshipTypeFields",
     ]);
 
     _this.width = ko.observable(550);
-    _this.height = ko.observable('auto');
+    _this.height = ko.observable("auto");
 
     _this.item = _this.item || {
-      // EmergencyContactID: '',
+      // EmergencyContactID: "",
       CustomerId: _this.customerId,
       AccountId: _this.accountId,
       RelationshipId: null,
       OrderNumber: _this.orderNumber || 999,
-      Allergies: '',
-      MedicalConditions: '',
+      Allergies: "",
+      MedicalConditions: "",
       HasKey: false,
-      DOB: '',
-      Prefix: '',
-      FirstName: '',
-      MiddleName: '',
-      LastName: '',
-      Postfix: '',
-      Email: '',
-      Password: '',
-      Phone1: '',
+      DOB: "",
+      Prefix: "",
+      FirstName: "",
+      MiddleName: "",
+      LastName: "",
+      Postfix: "",
+      Email: "",
+      Password: "",
+      Phone1: "",
       Phone1TypeId: null,
-      Phone2: '',
+      Phone2: "",
       Phone2TypeId: null,
-      Phone3: '',
+      Phone3: "",
       Phone3TypeId: null,
-      Comment1: '',
+      Comment1: "",
     };
     _this.data = ukov.wrap(utils.clone(_this.item), schema);
 
@@ -257,8 +257,8 @@ define('src/account/security/emcontacteditor.vm', [
         id: model.EmergencyContactID || "",
         data: model,
       }, null, utils.safeCallback(cb, function(err, resp) {
-        notify.info('Saved ' + formatFullname(model), '', 3);
-        if (resp.Message && resp.Message !== 'Success') {
+        notify.info("Saved " + formatFullname(model), "", 3);
+        if (resp.Message && resp.Message !== "Success") {
           notify.error(resp, 3);
         }
         //
@@ -274,15 +274,15 @@ define('src/account/security/emcontacteditor.vm', [
       return !busy && !_this.cmdDelete.busy();
     });
     _this.cmdDelete = ko.command(function(cb) {
-      notify.confirm('Delete?', 'Are you sure you want to delete this emergency contact?', function(result) {
-        if (result !== 'yes') {
+      notify.confirm("Delete?", "Are you sure you want to delete this emergency contact?", function(result) {
+        if (result !== "yes") {
           cb();
           return;
         }
         var model = _this.data.getValue();
         dataservice.msaccountsetupsrv.emergencyContacts.del(_this.item.EmergencyContactID, null, utils.safeCallback(cb, function(err, resp) {
-          notify.info('Deleted ' + formatFullname(model), '', 3);
-          if (resp.Message && resp.Message !== 'Success') {
+          notify.info("Deleted " + formatFullname(model), "", 3);
+          if (resp.Message && resp.Message !== "Success") {
             notify.error(resp, 3);
           }
           //
@@ -298,7 +298,7 @@ define('src/account/security/emcontacteditor.vm', [
     });
   }
   utils.inherits(EmContactEditorViewModel, BaseViewModel);
-  EmContactEditorViewModel.prototype.viewTmpl = 'tmpl-security-emcontacteditor';
+  EmContactEditorViewModel.prototype.viewTmpl = "tmpl-security-emcontacteditor";
 
   function closeLayer(_this) {
     if (_this.layer) {
@@ -313,15 +313,15 @@ define('src/account/security/emcontacteditor.vm', [
     var _this = this,
       msg;
     if (_this.cmdSave.busy() && !_this.layerResult) {
-      msg = 'Please wait for save to finish.';
+      msg = "Please wait for save to finish.";
     } else if (_this.cmdDelete.busy() && !_this.layerResult) {
-      msg = 'Please wait for delete to finish.';
+      msg = "Please wait for delete to finish.";
     }
     return msg;
   };
 
   function formatFullname(d) {
-    return strings.joinTrimmed(' ', d.Prefix, d.FirstName, d.MiddleName, d.LastName, d.Postfix);
+    return strings.joinTrimmed(" ", d.Prefix, d.FirstName, d.MiddleName, d.LastName, d.Postfix);
   }
 
   return EmContactEditorViewModel;

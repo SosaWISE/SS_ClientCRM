@@ -1,6 +1,6 @@
-define('src/core/ko.bindingHandlers.mover', [
-  'jquery',
-  'ko'
+define("src/core/ko.bindingHandlers.mover", [
+  "jquery",
+  "ko"
 ], function(
   jquery,
   ko
@@ -29,14 +29,14 @@ define('src/core/ko.bindingHandlers.mover', [
           return;
         }
 
-        el.addClass('dragging');
+        el.addClass("dragging");
         var parent = moveEl.parent(),
           height = moveEl.height(),
           width = moveEl.width(),
           pheight = parent.height(),
           pwidth = parent.width(),
-          top = parseInt(moveEl.css('top'), 10) || 0,
-          left = parseInt(moveEl.css('left'), 10) || 0;
+          top = parseInt(moveEl.css("top"), 10) || 0,
+          left = parseInt(moveEl.css("left"), 10) || 0;
         info = {
           // stop 10px before layer leaves page
           maxY: (pheight - height - 10) / 2, // bottom
@@ -51,7 +51,7 @@ define('src/core/ko.bindingHandlers.mover', [
 
       jquery(document)
         .mouseup(function() {
-          el.removeClass('dragging');
+          el.removeClass("dragging");
           info = null;
         })
         .mousemove(function(evt) {
@@ -66,8 +66,8 @@ define('src/core/ko.bindingHandlers.mover', [
           left = Math.min(Math.max(left, info.minX), info.maxX);
 
           moveEl.css({
-            top: top + 'px',
-            left: left + 'px',
+            top: top + "px",
+            left: left + "px",
           });
         });
     }

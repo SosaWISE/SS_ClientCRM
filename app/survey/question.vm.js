@@ -1,12 +1,12 @@
-define('src/survey/question.vm', [
-  'src/survey/question.editor.vm',
-  'src/survey/qpossibleanswermap.vm',
-  'src/dataservice',
-  'ko',
-  'src/core/strings',
-  'src/core/notify',
-  'src/core/utils',
-  'src/survey/questions.parent.vm', //'src/core/controller.vm',
+define("src/survey/question.vm", [
+  "src/survey/question.editor.vm",
+  "src/survey/qpossibleanswermap.vm",
+  "src/dataservice",
+  "ko",
+  "src/core/strings",
+  "src/core/notify",
+  "src/core/utils",
+  "src/survey/questions.parent.vm", //"src/core/controller.vm",
 ], function(
   QuestionEditorViewModel,
   QPossibleAnswerMapViewModel,
@@ -17,13 +17,13 @@ define('src/survey/question.vm', [
   utils,
   QuestionsParentViewModel
 ) {
-  'use strict';
+  "use strict";
 
   function QuestionViewModel(options) {
     var _this = this;
     QuestionViewModel.super_.call(_this, options);
     _this.surveyVM = _this.topVm;
-    QuestionsParentViewModel.ensureProps(_this, ['topVm', 'possibleAnswersVM', 'questionMeaningVM']);
+    QuestionsParentViewModel.ensureProps(_this, ["topVm", "possibleAnswersVM", "questionMeaningVM"]);
 
     _this.id = _this.model.QuestionID;
     _this.possibleAnswerMaps = _this.childs;
@@ -59,7 +59,7 @@ define('src/survey/question.vm', [
     });
   }
   utils.inherits(QuestionViewModel, QuestionsParentViewModel);
-  QuestionViewModel.prototype.viewTmpl = 'tmpl-question';
+  QuestionViewModel.prototype.viewTmpl = "tmpl-question";
   QuestionViewModel.prototype.show = true;
 
   function move(_this, amount, cb) {
@@ -75,7 +75,7 @@ define('src/survey/question.vm', [
 
     dataservice.survey.questions.save({
       id: _this.model.QuestionID,
-      link: 'swap/' + sib.model.QuestionID,
+      link: "swap/" + sib.model.QuestionID,
       data: data,
     }, null, utils.safeCallback(cb, function( /*err, resp*/ ) {
       // remove in front of sibling
@@ -109,7 +109,7 @@ define('src/survey/question.vm', [
 
     dataservice.survey.questions.read({
       id: _this.id,
-      link: 'questionPossibleAnswerMaps',
+      link: "questionPossibleAnswerMaps",
     }, null, function(err, resp) {
       if (err) {
         return cb(err);
@@ -174,8 +174,8 @@ define('src/survey/question.vm', [
   };
 
   // function getName(parent, index) {
-  //   var pName = parent ? parent.name() : '';
-  //   return pName + index + '.';
+  //   var pName = parent ? parent.name() : "";
+  //   return pName + index + ".";
   // }
 
   function createPossibleAnswerMap(_this, model) {
@@ -190,16 +190,16 @@ define('src/survey/question.vm', [
   function calcConditionText(_this) {
     var json = _this.model.ConditionJson;
     if (!json || !json.TokenId || !json.Comparison) {
-      return 'none';
+      return "none";
     } else {
-      return strings.format('({0} {1} \'{2}\')', _this.topVm.tokensVM.getToken(json.TokenId).Token, json.Comparison, json.Value);
+      return strings.format("({0} {1} `{2}`)", _this.topVm.tokensVM.getToken(json.TokenId).Token, json.Comparison, json.Value);
     }
   }
 
   function getMapToTokenName(_this) {
     var tokenId = _this.model.MapToTokenId;
     if (!tokenId) {
-      return 'none';
+      return "none";
     } else {
       return _this.topVm.tokensVM.getToken(tokenId).Token;
     }

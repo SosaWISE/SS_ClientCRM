@@ -1,10 +1,10 @@
-define('src/account/security/clist.industrynums.vm', [
-  'src/dataservice',
-  'ko',
-  'src/slick/slickgrid.vm',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/account/security/clist.industrynums.vm", [
+  "src/dataservice",
+  "ko",
+  "src/slick/slickgrid.vm",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   dataservice,
   ko,
@@ -31,29 +31,29 @@ define('src/account/security/clist.industrynums.vm', [
       },
       columns: [ //
         {
-          id: 'IndustryAccount',
-          name: 'CSID',
-          field: 'IndustryAccount',
+          id: "IndustryAccount",
+          name: "CSID",
+          field: "IndustryAccount",
         }, {
-          id: 'ReceiverNumber',
-          name: 'Receiver',
-          field: 'ReceiverNumber',
+          id: "ReceiverNumber",
+          name: "Receiver",
+          field: "ReceiverNumber",
         }, {
-          id: 'OSDescription',
-          name: 'CS OS',
-          field: 'OSDescription',
+          id: "OSDescription",
+          name: "CS OS",
+          field: "OSDescription",
         }, {
-          id: 'MonitoringStationName',
-          name: 'Central Station',
-          field: 'MonitoringStationName',
+          id: "MonitoringStationName",
+          name: "Central Station",
+          field: "MonitoringStationName",
         }, {
-          id: 'PrimaryCSID',
-          name: 'Is Primary',
-          field: 'PrimaryCSID',
+          id: "PrimaryCSID",
+          name: "Is Primary",
+          field: "PrimaryCSID",
         }, {
-          id: 'SecondaryCSID',
-          name: 'Is Secondary',
-          field: 'SecondaryCSID',
+          id: "SecondaryCSID",
+          name: "Is Secondary",
+          field: "SecondaryCSID",
         },
       ],
       onSelectedRowsChanged: function(rows) {
@@ -70,7 +70,7 @@ define('src/account/security/clist.industrynums.vm', [
     _this.cmdGenerate = ko.command(function(cb) {
       dataservice.monitoringstationsrv.msAccounts.save({
         id: _this.accountId,
-        link: 'GenerateIndustryAccount',
+        link: "GenerateIndustryAccount",
       }, null, function(genErr /*, resp*/ ) {
         // always reload industry accounts since after an industry number is generated there can be errors
         load_industryAccounts(_this, utils.safeCallback(cb, function() {
@@ -84,7 +84,7 @@ define('src/account/security/clist.industrynums.vm', [
     _this.cmdAssignPri = ko.command(function(cb) {
       dataservice.monitoringstationsrv.msIndustryAccounts.save({
         id: _this.selectedIndAcct.IndustryAccountID,
-        link: 'Primary',
+        link: "Primary",
       }, null, function(genErr /*, resp*/ ) {
         // always reload industry accounts since after an industry number is generated there can be errors
         load_industryAccounts2(_this, _this.industryAccountGvm, utils.safeCallback(cb, function() {
@@ -101,7 +101,7 @@ define('src/account/security/clist.industrynums.vm', [
     _this.cmdAssignSec = ko.command(function(cb) {
       dataservice.monitoringstationsrv.msIndustryAccounts.save({
         id: _this.selectedIndAcct.IndustryAccountID,
-        link: 'Secondary',
+        link: "Secondary",
       }, null, function(genErr /*, resp*/ ) {
         // always reload industry accounts since after an industry number is generated there can be errors
         load_industryAccounts2(_this, _this.industryAccountGvm, utils.safeCallback(cb, function() {
@@ -118,7 +118,7 @@ define('src/account/security/clist.industrynums.vm', [
   }
 
   utils.inherits(CListIndustryViewModel, ControllerViewModel);
-  CListIndustryViewModel.prototype.viewTmpl = 'tmpl-security-clist_industrynums';
+  CListIndustryViewModel.prototype.viewTmpl = "tmpl-security-clist_industrynums";
 
   CListIndustryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
@@ -128,10 +128,10 @@ define('src/account/security/clist.industrynums.vm', [
   };
 
   function load_industryAccounts(_this, cb) {
-    // _this.industryAccounts([]); // don't reset
+    // _this.industryAccounts([]); // do not reset
     dataservice.monitoringstationsrv.msAccounts.read({
       id: _this.accountId,
-      link: 'IndustryAccounts',
+      link: "IndustryAccounts",
     }, null, utils.safeCallback(cb, function(err, resp) {
       if (!err) {
         _this.industryAccounts(resp.Value);
@@ -142,7 +142,7 @@ define('src/account/security/clist.industrynums.vm', [
   function load_industryAccounts2(_this, gvm, cb) {
     dataservice.monitoringstationsrv.msAccounts.read({
       id: _this.accountId,
-      link: 'IndustryAccountWithReceiverLines',
+      link: "IndustryAccountWithReceiverLines",
     }, gvm.list, utils.safeCallback(cb, function(err) {
       if (!err) {
         gvm.setSelectedRows([]);

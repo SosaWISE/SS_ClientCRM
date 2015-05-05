@@ -1,14 +1,14 @@
-define('src/account/security/signalhistory.vm', [
-  'src/account/security/securityhelper',
-  'src/dataservice',
-  'moment',
-  'ko',
-  'src/slick/slickgrid.vm',
-  'src/core/layers.vm',
-  'src/core/strings',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/account/security/signalhistory.vm", [
+  "src/account/security/securityhelper",
+  "src/dataservice",
+  "moment",
+  "ko",
+  "src/slick/slickgrid.vm",
+  "src/core/layers.vm",
+  "src/core/strings",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   securityhelper,
   dataservice,
@@ -40,25 +40,25 @@ define('src/account/security/signalhistory.vm', [
       },
       columns: [ //
         {
-          id: 'Zone',
-          name: 'Zone',
-          field: 'Zone',
+          id: "Zone",
+          name: "Zone",
+          field: "Zone",
         }, {
-          id: 'Equipment',
-          name: 'Equipment',
-          field: 'ItemDesc',
+          id: "Equipment",
+          name: "Equipment",
+          field: "ItemDesc",
         }, {
-          id: 'ZoneType',
-          name: 'Zone Type',
-          field: 'AccountZoneType',
+          id: "ZoneType",
+          name: "Zone Type",
+          field: "AccountZoneType",
         }, {
-          id: 'Location',
-          name: 'Location',
-          field: 'EquipmentLocationDesc',
+          id: "Location",
+          name: "Location",
+          field: "EquipmentLocationDesc",
         }, {
-          id: 'Barcode',
-          name: 'Barcode',
-          field: 'BarcodeId',
+          id: "Barcode",
+          name: "Barcode",
+          field: "BarcodeId",
         },
       ],
     });
@@ -72,132 +72,132 @@ define('src/account/security/signalhistory.vm', [
       },
       // columns: [ //
       //   {
-      //     id: 'SignalType',
-      //     name: 'SignalType',
-      //     field: 'SignalType',
+      //     id: "SignalType",
+      //     name: "SignalType",
+      //     field: "SignalType",
       //   }, {
-      //     id: 'EventDate',
-      //     name: 'EventDate',
-      //     field: 'EventDate',
+      //     id: "EventDate",
+      //     name: "EventDate",
+      //     field: "EventDate",
       //   }, {
-      //     id: 'TwoWayTest',
-      //     name: 'TwoWayTest',
-      //     field: 'TwoWayTest',
+      //     id: "TwoWayTest",
+      //     name: "TwoWayTest",
+      //     field: "TwoWayTest",
       //   }, {
-      //     id: 'IndustryNumber',
-      //     name: 'IndustryNumber',
-      //     field: 'IndustryNumber',
+      //     id: "IndustryNumber",
+      //     name: "IndustryNumber",
+      //     field: "IndustryNumber",
       //   }, {
-      //     id: 'ZoneNumber',
-      //     name: 'ZoneNumber',
-      //     field: 'ZoneNumber',
+      //     id: "ZoneNumber",
+      //     name: "ZoneNumber",
+      //     field: "ZoneNumber",
       //   }, {
-      //     id: 'EventCode',
-      //     name: 'EventCode',
-      //     field: 'EventCode',
+      //     id: "EventCode",
+      //     name: "EventCode",
+      //     field: "EventCode",
       //   }, {
-      //     id: 'EventDetails',
-      //     name: 'EventDetails',
-      //     field: 'EventDetails',
+      //     id: "EventDetails",
+      //     name: "EventDetails",
+      //     field: "EventDetails",
       //   }, {
-      //     id: 'Computed',
-      //     name: 'Computed',
-      //     field: 'Computed',
+      //     id: "Computed",
+      //     name: "Computed",
+      //     field: "Computed",
       //   },
       // ],
       columns: [ //
         {
-          id: 'UTCDate',
-          name: 'Date',
-          field: 'UTCDate',
+          id: "UTCDate",
+          name: "Date",
+          field: "UTCDate",
           formatter: SlickGridViewModel.formatters.datetime,
         }, {
-          id: 'Point',
-          name: 'Zone',
-          field: 'Point',
+          id: "Point",
+          name: "Zone",
+          field: "Point",
           width: 30,
           formatter: function(row, cell, value) {
             return securityhelper.zoneString(value);
           },
         }, {
-          id: 'TransmitterCode',
-          name: 'Csid',
-          field: 'TransmitterCode',
+          id: "TransmitterCode",
+          name: "Csid",
+          field: "TransmitterCode",
           width: 30,
         }, {
-          id: 'SiteName',
-          name: 'Site Name',
-          field: 'SiteName',
+          id: "SiteName",
+          name: "Site Name",
+          field: "SiteName",
         }, {
-          id: 'SignalCode',
-          name: 'SignalCode',
-          field: 'SignalCode',
+          id: "SignalCode",
+          name: "SignalCode",
+          field: "SignalCode",
         }, {
-          id: 'EventCode',
-          name: 'Event',
+          id: "EventCode",
+          name: "Event",
           formatter: function(row, cell, value, columnDef, dataCtx) {
-            return strings.format('{0} - {1}', dataCtx.EventCode, dataCtx.EventCodeDescription);
+            return strings.format("{0} - {1}", dataCtx.EventCode, dataCtx.EventCodeDescription);
           },
         }, {
-          id: 'OpAct',
-          name: 'OpAct',
+          id: "OpAct",
+          name: "OpAct",
           formatter: function(row, cell, value, columnDef, dataCtx) {
-            return strings.format('{0} - {1}', dataCtx.OpAct, dataCtx.OpActDescription);
+            return strings.format("{0} - {1}", dataCtx.OpAct, dataCtx.OpActDescription);
           },
         }, {
-          id: 'PointDescription',
-          name: 'PointDescription',
-          field: 'PointDescription',
+          id: "PointDescription",
+          name: "PointDescription",
+          field: "PointDescription",
         }, {
-          id: 'Comment',
-          name: 'Comment',
-          field: 'Comment',
+          id: "Comment",
+          name: "Comment",
+          field: "Comment",
         }, {
-          id: 'AlarmNum',
-          name: 'AlarmNum',
-          field: 'AlarmNum',
+          id: "AlarmNum",
+          name: "AlarmNum",
+          field: "AlarmNum",
           width: 60,
         }, {
-          id: 'TestNum',
-          name: 'TestNum',
-          field: 'TestNum',
+          id: "TestNum",
+          name: "TestNum",
+          field: "TestNum",
           width: 30,
         }, {
-          id: 'Phone',
-          name: 'Phone',
-          field: 'Phone',
+          id: "Phone",
+          name: "Phone",
+          field: "Phone",
           width: 60,
           formatter: SlickGridViewModel.formatters.phone,
         }, {
-          id: 'FullClearFlag',
-          name: 'Full Clear',
-          field: 'FullClearFlag',
+          id: "FullClearFlag",
+          name: "Full Clear",
+          field: "FullClearFlag",
           width: 30,
         }, {
-          id: 'UserId',
-          name: 'UserId',
-          field: 'UserId',
+          id: "UserId",
+          name: "UserId",
+          field: "UserId",
           width: 30,
         },
         // {
-        //   id: 'UserName',
-        //   name: 'UserName',
-        //   field: 'UserName',
+        //   id: "UserName",
+        //   name: "UserName",
+        //   field: "UserName",
         // },
         {
-          id: 'RawMessage',
-          name: 'RawMessage',
-          field: 'RawMessage',
+          id: "RawMessage",
+          name: "RawMessage",
+          field: "RawMessage",
           width: 30,
         },
         // {
-        //   id: 'Latitude',
-        //   name: 'Latitude',
-        //   field: 'Latitude',
+        //   id: "Latitude",
+        //   name: "Latitude",
+        //   field: "Latitude",
         // }, {
-        //   id: 'Longitude',
-        //   name: 'Longitude',
-        //   field: 'Longitude',
+        //   id: "Longitude",
+        //   name: "Longitude",
+        //   field: "Longitude",
         // },
       ],
     });
@@ -229,7 +229,7 @@ define('src/account/security/signalhistory.vm', [
     //   LoadSignalHistory(new DateTime(2007, 1, 1));
   }
   utils.inherits(SignalHistoryViewModel, ControllerViewModel);
-  SignalHistoryViewModel.prototype.viewTmpl = 'tmpl-security-signalhistory';
+  SignalHistoryViewModel.prototype.viewTmpl = "tmpl-security-signalhistory";
 
   SignalHistoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
@@ -257,7 +257,7 @@ define('src/account/security/signalhistory.vm', [
     gvm.list([]);
     dataservice.msaccountsetupsrv.accounts.read({
       id: accountId,
-      link: 'equipment',
+      link: "equipment",
     }, gvm.list, cb);
   }
 
@@ -265,7 +265,7 @@ define('src/account/security/signalhistory.vm', [
     gvm.list([]);
     dataservice.monitoringstationsrv.msAccounts.read({
       id: id,
-      link: 'signalhistory',
+      link: "signalhistory",
       query: {
         days: days,
       },
@@ -335,7 +335,7 @@ define('src/account/security/signalhistory.vm', [
   //   // Build a list of missing zones
   //   foreach (DictionaryEntry signal in signalHistoryZonesMap) {
   //     if (!equipmentZonesMap.ContainsKey(signal.Key)) {
-  //       //If State is in TX then don't add the missing Zone
+  //       //If State is in TX then do not add the missing Zone
   //       if ((int)AccountModel.Account.PremiseAddress.StateID != 132) {
   //         MissingZones.Add(signal.Key.ToString());
   //       }

@@ -156,7 +156,7 @@ define('src/survey/qpossibleanswermap.new.vm', [
       });
 
       possibleAnswers.forEach(function(pa) {
-        // don't add used possibleAnswers
+        // do not add used possibleAnswers
         if (map[pa.PossibleAnswerID]) {
           return;
         }

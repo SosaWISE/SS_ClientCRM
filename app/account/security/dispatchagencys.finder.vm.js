@@ -142,7 +142,7 @@ define("src/account/security/dispatchagencys.finder.vm", [
       }
       dataservice.monitoringstationsrv.msAccounts.save({
         id: _this.accountId,
-        link: 'DispatchAgencyAssignments',
+        link: "DispatchAgencyAssignments",
         data: _this.selectedAgencies,
       }, null, utils.safeCallback(cb, function(err, resp) {
         _this.layerResult = resp.Value;

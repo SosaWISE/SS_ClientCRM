@@ -1,7 +1,7 @@
-define('src/core/ko.bindingHandlers.value', [
-  'src/core/utils',
-  'jquery',
-  'ko'
+define("src/core/ko.bindingHandlers.value", [
+  "src/core/utils",
+  "jquery",
+  "ko"
 ], function(
   utils,
   jquery,
@@ -22,8 +22,8 @@ define('src/core/ko.bindingHandlers.value', [
     //
     // Select all input text when text input is clicked
     //
-    if (ko.utils.tagNameLower(element) === 'input' &&
-      (element.type === 'text' || element.type === 'password')) {
+    if (ko.utils.tagNameLower(element) === "input" &&
+      (element.type === "text" || element.type === "password")) {
       //@NOTE: click is used instead of focus because focus will select the
       //       text and then a click event will happen and unselect the text
       jquery(element)
@@ -34,7 +34,7 @@ define('src/core/ko.bindingHandlers.value', [
           //  - selecting all the text when the user clicks at the beginning
           //  - selecting all the text when the user clicks at the end
 
-          // if already focused don't "help" the user
+          // if already focused do not "help" the user
           if (hasFocus) {
             return;
           }
@@ -45,7 +45,7 @@ define('src/core/ko.bindingHandlers.value', [
             return;
           }
 
-          // return if the user didn't click the text
+          // return if the user did not click the text
           if (element.selectionEnd === 0 ||
             element.selectionEnd === element.value.length) {
             return;

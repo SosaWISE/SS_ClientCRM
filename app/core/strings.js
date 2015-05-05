@@ -27,11 +27,11 @@ define("src/core/strings", [
     //           -with larger integers, say the number 2000, this method gets slower (~3070ms, still faster than slice.call),
     //            but the integers should be at most double digits
     //           -actually, with larger numbers this one is the fastest. i think manually making an array is slower
-    //            only because of a failed lookup for the key "2000", but in reality there shouldn't that many args
+    //            only because of a failed lookup for the key "2000", but in reality there should not that many args
     // (~2590ms) manually making arguments into an array adds about 5% to the total time (slice.call(arguments, 1)) (zero-based)
-    //           -with more arguments, this would also get slower, but, again, there shouldn't be very many args
+    //           -with more arguments, this would also get slower, but, again, there should not be very many args
 
-    // since we want zero-based indexes and speed we'll choose the last one
+    // since we want zero-based indexes and speed we will choose the last one
     return strings.aformat(format, arrays.argsToArray(arguments, 1));
   };
   strings.aformat = function(format, argsArray, missingParamFormat) {
@@ -183,7 +183,7 @@ define("src/core/strings", [
       return strings.formatters.time(val, true);
     },
     space: function(val) {
-      val = (val || "") + ""; // make sure it's not null, undefined, or something other than a string
+      val = (val || "") + ""; // make sure it is not null, undefined, or something other than a string
       return val.split("").join("&nbsp;");
     },
     phone: function(val) {

@@ -169,6 +169,9 @@ define("src/slick/slickgrid.vm", [
           _this.grid.onSelectedRowsChanged.subscribe(_this.handleSelectedRowsChanged);
         }
       }
+      if (_this.dataView && _this.dataView.options && _this.dataView.options.groupItemMetadataProvider) {
+        _this.grid.registerPlugin(_this.dataView.options.groupItemMetadataProvider);
+      }
       _this.plugins.forEach(function(plugin) {
         _this.grid.registerPlugin(plugin);
       });
@@ -202,8 +205,10 @@ define("src/slick/slickgrid.vm", [
       if (element && element !== container) {
         console.warn("unBound element does not match grid container", container, element);
       }
-      // store selected rows
-      _this._prevSelectedRows = _this.grid.getSelectedRows();
+      if (!_this.noSelection) {
+        // store selected rows
+        _this._prevSelectedRows = _this.grid.getSelectedRows();
+      }
       //
       _this.grid.onSelectedRowsChanged.unsubscribe(_this.handleSelectedRowsChanged);
       _this.grid.destroy(); // also unregisters all plugins

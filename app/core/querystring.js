@@ -1,5 +1,5 @@
-define('src/core/querystring', [
-  'underscore'
+define("src/core/querystring", [
+  "underscore"
 ], function(
   _und
 ) {
@@ -37,7 +37,7 @@ define('src/core/querystring', [
           switch (type) {
             case "array":
               if (result) {
-                // it could already be an array so check if it's a string
+                // it could already be an array so check if it is a string
                 if (typeof items[name] === "string") {
                   result = [result];
                 }
@@ -74,18 +74,18 @@ define('src/core/querystring', [
 
   function decodeComponent(s) {
     // replace "+" with encoded space, then decode
-    return _decode((s + "").replace(/\+/g, '%20'));
+    return _decode((s + "").replace(/\+/g, "%20"));
   }
 
   function getQuery(uri) {
     var query, pos;
 
-    pos = uri.indexOf('#');
+    pos = uri.indexOf("#");
     if (pos > -1) {
       uri = uri.substring(0, pos);
     }
 
-    pos = uri.indexOf('?');
+    pos = uri.indexOf("?");
     if (pos > -1) {
       // escaping?
       query = uri.substring(pos + 1) || null;
@@ -105,23 +105,23 @@ define('src/core/querystring', [
 
     // replace multiple &&&... with &
     // remove starting and trailing ? and &
-    text = text.replace(/&+/g, '&').replace(/^\?*&*|&+$/g, '');
+    text = text.replace(/&+/g, "&").replace(/^\?*&*|&+$/g, "");
 
     if (!text) {
       return items;
     }
 
-    splits = text.split('&');
+    splits = text.split("&");
     length = splits.length;
 
     for (i = 0; i < length; i++) {
-      v = splits[i].split('=');
+      v = splits[i].split("=");
       name = decodeComponent(v.shift());
-      value = v.length ? decodeComponent(v.join('=')) : null; // when no "=" value is null as per spec
+      value = v.length ? decodeComponent(v.join("=")) : null; // when no "=" value is null as per spec
 
       // make comma separated values into an array
       if (value) {
-        v = value.split(',');
+        v = value.split(",");
         if (v.length > 1) {
           value = v;
         }
@@ -130,7 +130,7 @@ define('src/core/querystring', [
       if (items[name] != null) {
         // item already exists, change the value into an array of strings
 
-        // null shouldn't be include in array
+        // null should not be include in array
         if (value != null) {
           if (typeof items[name] === "string") {
             items[name] = [items[name]];
@@ -153,7 +153,7 @@ define('src/core/querystring', [
   function getFragment(uri) {
     var frag, pos;
 
-    pos = uri.indexOf('#');
+    pos = uri.indexOf("#");
     if (pos > -1) {
       // escaping?
       frag = uri.substring(pos + 1) || null;
@@ -169,19 +169,19 @@ define('src/core/querystring', [
     }
 
     // ensure the value is a string
-    value = value == null ? '' : value + "";
+    value = value == null ? "" : value + "";
 
     // normalize newlines as \r\n. as per HTML spec.
-    value = value.replace(/(\r)?\n/g, '\r\n');
+    value = value.replace(/(\r)?\n/g, "\r\n");
 
     // encode value
     value = encodeURIComponent(value);
 
-    // replace '%20' with '+'. as per HTML spec.
-    value = value.replace(/%20/g, '+');
+    // replace "%20" with "+". as per HTML spec.
+    value = value.replace(/%20/g, "+");
 
     //
-    return key + '=' + value;
+    return key + "=" + value;
   }
 
   function toQuerystring(obj) {
@@ -191,7 +191,7 @@ define('src/core/querystring', [
       // encode key
       key = encodeURIComponent(key);
 
-      if (value && typeof(value) === 'object') {
+      if (value && typeof(value) === "object") {
         if (_und.isArray(value)) {
           // add each value of the array
           _und.each(value, function(value) {
@@ -208,7 +208,7 @@ define('src/core/querystring', [
       }
     });
 
-    return results.join('&');
+    return results.join("&");
   }
 
   Querystring.decodeComponent = decodeComponent;

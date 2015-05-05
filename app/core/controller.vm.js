@@ -1,10 +1,10 @@
-define('src/core/controller.vm', [
-  'src/core/helpers',
-  'src/core/notify',
-  'jquery',
-  'src/core/utils',
-  'ko',
-  'src/core/base.vm',
+define("src/core/controller.vm", [
+  "src/core/helpers",
+  "src/core/notify",
+  "jquery",
+  "src/core/utils",
+  "ko",
+  "src/core/base.vm",
 ], function(
   helpers,
   notify,
@@ -26,7 +26,7 @@ define('src/core/controller.vm', [
   }
   utils.inherits(ControllerViewModel, BaseViewModel);
   ControllerViewModel.ensureProps = BaseViewModel.ensureProps;
-  // ControllerViewModel.prototype.routePart = 'route';
+  // ControllerViewModel.prototype.routePart = "route";
   // ControllerViewModel.prototype.defaultChild = null;
 
   ControllerViewModel.prototype.updateRouting = function(pcontroller) {
@@ -42,7 +42,7 @@ define('src/core/controller.vm', [
     }
     if (_this.pcontroller) {
       if (_this.routesMap) {
-        throw new Error('cannot switch from controller to sub controller');
+        throw new Error("cannot switch from controller to sub controller");
       }
       // cache route
       _this.route = _this.pcontroller.getRoute(_this.routeName);
@@ -64,15 +64,15 @@ define('src/core/controller.vm', [
   ControllerViewModel.prototype.addRoute = function(route) {
     var _this = this;
     if (_this.pcontroller) {
-      throw new Error('routes cannot be added to sub controllers');
+      throw new Error("routes cannot be added to sub controllers");
     }
     if (_this.routesMap[route.name]) {
-      throw new Error(route.name + ' route already set');
+      throw new Error(route.name + " route already set");
     }
     if (!_this.router) {
       _this.router = route.router;
     } else if (_this.router !== route.router) {
-      throw new Error('routers are different');
+      throw new Error("routers are different");
     }
     _this.routesMap[route.name] = route;
     if (!_this.routeName) {
@@ -138,7 +138,7 @@ define('src/core/controller.vm', [
     _this._lastRouteData = routeCtx.routeData;
     // load self
     _this.load(routeCtx.routeData, routeCtx.extraData, function() {
-      // console.log(_this.constructor.name, 'loaded!');
+      // console.log(_this.constructor.name, "loaded!");
       // check if routeCtx is still active
       if (!routeCtx.active()) {
         return;
@@ -151,7 +151,7 @@ define('src/core/controller.vm', [
       }
       if (!_this.activeChild.peek()) {
         _this.setTitle();
-        // we're done with activating
+        // we"re done with activating
         routeCtx.done();
       }
     });
@@ -164,10 +164,10 @@ define('src/core/controller.vm', [
       // no child found
       _this.resetRouteData(routeData);
       // check for a previous child and ...
-      if (_this._prevChild && typeof(routeData[_this._prevChild.routePart]) === 'undefined') {
+      if (_this._prevChild && typeof(routeData[_this._prevChild.routePart]) === "undefined") {
         //
         child = _this._prevChild;
-        //@REVIEW: do i need to copy child's last route data to routeCtx.routeData???
+        //@REVIEW: do i need to copy child"s last route data to routeCtx.routeData???
       } else {
         // try to use the default child
         child = _this.defaultChild || _this.childs.peek()[0];
@@ -195,7 +195,7 @@ define('src/core/controller.vm', [
       var routePart = item.routePart;
       if (routePart) {
         /* jshint eqeqeq:false */
-        // 10001 == '10001'
+        // 10001 == "10001"
         if (item.id == routeData[routePart]) {
           result = item;
           return result;
@@ -206,7 +206,7 @@ define('src/core/controller.vm', [
   };
   ControllerViewModel.prototype.resetRouteData = function(routeData) {
     var _this = this;
-    // use _this.routeName instead of routeData.route because we're overriding values in routeData
+    // use _this.routeName instead of routeData.route because we"re overriding values in routeData
     return _this.getRoute(_this.routeName).resetRouteData(routeData, _this.routePart);
   };
 
@@ -259,7 +259,7 @@ define('src/core/controller.vm', [
       msg = vm.closeMsg();
     // check if can close
     if (msg) {
-      // if can't close navigate to vm
+      // if ca not close navigate to vm
       _this.goTo(vm.getRouteData(), {
         closeFailed: true,
       });
@@ -311,10 +311,10 @@ define('src/core/controller.vm', [
   ControllerViewModel.prototype.applyRouteData = function(routeData) {
     var _this = this;
     if (!_this.routePart) {
-      throw new Error('no routePart');
+      throw new Error("no routePart");
     }
     if (!_this.id) {
-      throw new Error('no id');
+      throw new Error("no id");
     }
 
     if (_this.pcontroller) {
@@ -332,9 +332,9 @@ define('src/core/controller.vm', [
     var _this = this,
       routeData;
     if (_this._lastRouteData) {
-      // clone it since we don't want anyone to modify it.
+      // clone it since we do not want anyone to modify it.
       // it can be stored by multiple controllers and changing
-      // one controller shouldn't change all the others
+      // one controller should not change all the others
       routeData = utils.clone(_this._lastRouteData);
     } else {
       routeData = {
@@ -380,7 +380,7 @@ define('src/core/controller.vm', [
       parts.push(ControllerViewModel.titlePostfix);
     }
 
-    jquery('title').text(parts.join(' < '));
+    jquery("title").text(parts.join(" < "));
   };
 
 

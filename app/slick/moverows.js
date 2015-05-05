@@ -113,12 +113,12 @@ define('src/slick/moverows', [
       // this only works with one row or sequential rows.
       for (i = 0; i < length; i++) {
         index = rowIndices[i];
-        // can't move under self
+        // ca not move under self
         if (index === data.insertUnder) {
           e.stopPropagation();
           return false;
         }
-        //@TODO: need to ask the row value it's self if the data can be a child of it
+        //@TODO: need to ask the row value it is self if the data can be a child of it
       }
       return true;
     }

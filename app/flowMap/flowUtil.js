@@ -1,5 +1,5 @@
-﻿define('src/flowMap/flowUtil', [
-  'gmaps'
+﻿define("src/flowMap/flowUtil", [
+  "gmaps"
 ], function(gmaps) {
   "use strict";
 
@@ -101,7 +101,7 @@
       length += 1;
     }
 
-    //index 0 doesn't move
+    //index 0 does not move
     //swap first(index 1) with last, second with second to last, etc.,
     //	until all have been swapped once
     for (i = 1; i < length; i += 1, iEnd -= 1) {
@@ -144,7 +144,8 @@
 
 
 
-  var flowUtil = {}, expectIntersect = false;
+  var flowUtil = {},
+    expectIntersect = false;
 
   flowUtil.isDebug = function() {
     return true;
@@ -204,15 +205,15 @@
   //--------------------------------------------------------
   flowUtil.getLineIntersectType = function(a1, a2, b1, b2, adx, ady, bdx, bdy) {
     var result = {
-      intersect: false,
-      pointIntersect: false,
-      coincident: false,
-      parallel: false
-    },
+        intersect: false,
+        pointIntersect: false,
+        coincident: false,
+        parallel: false
+      },
       ua_t, ub_t, u_b, ua, ub, nDigits = 5,
       isOnLine;
 
-    //if they're all not passed in calculate them
+    //if they are all not passed in calculate them
     if (bdy === undefined) {
       adx = (a2.x - a1.x);
       ady = (a2.y - a1.y);
@@ -306,10 +307,10 @@
   };
   flowUtil.getLatLngLineIntersectType = function(latLngA1, latLngA2, latLngB1, latLngB2) {
     var
-    a1 = {
-      y: latLngA1.lat(),
-      x: latLngA1.lng()
-    },
+      a1 = {
+        y: latLngA1.lat(),
+        x: latLngA1.lng()
+      },
       a2 = {
         y: latLngA2.lat(),
         x: latLngA2.lng()

@@ -38,7 +38,7 @@ define('src/u-kov/ukov', [
 
     if (!model.hasOwnProperty(key)) {
       // console.log('property `' + key + '` not on model. adding...');
-      // add property since it doesn't exist
+      // add property since it does not exist
       if (doc._model) {
         model[key] = {};
       } else if (Array.isArray(doc)) {

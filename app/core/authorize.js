@@ -50,7 +50,13 @@ define("src/core/authorize", [
       var val = resp.Value;
       if (!_this._out && val && (val.ApplicationId || val.ActionId)) {
         // not authorized for action
-        showActionRequest(_this, retryExecute, ctx, val);
+        showActionRequest(_this, retryExecute, ctx, val, function() {
+          if (utils.isFunc(onComplete)) {
+            onComplete(resp, p2, p3, ctx);
+          } else {
+            console.log("onComplete is not a function");
+          }
+        });
       } else {
         // logged out
         // remove invalid auth
@@ -154,7 +160,7 @@ define("src/core/authorize", [
     });
   }
 
-  function showActionRequest(_this, execute, ctx, authNeeds) {
+  function showActionRequest(_this, execute, ctx, authNeeds, cancelRequest) {
     if (_this._out) {
       addNoAuth(_this, ctx, execute, true);
       return;
@@ -175,10 +181,13 @@ define("src/core/authorize", [
         ctx.token = token;
         // make request
         execute(ctx);
-      } else { // if (_this._out) {
+      } else if (_this._out) {
         // force closed
         // try to re-execute
         _this.execute(ctx, execute);
+      } else {
+        // do nothing, the user cancelled
+        cancelRequest();
       }
     });
   }

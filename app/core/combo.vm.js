@@ -78,11 +78,7 @@ define("src/core/combo.vm", [
           }
         }
 
-        ko.utils.arrayRemoveItem(_this.selectionHistory, selectedValue);
-        _this.selectionHistory.push(selectedValue);
-        while (_this.selectionHistory.length > 10) {
-          _this.selectionHistory.shift(); // remove first item
-        }
+        updateSelectionHistory(_this, selectedValue);
       } else if (selectedValue !== null) { // in this case, undefined is not null
         // console.log("selectedValue not in list:", selectedValue);
         //@NOTE: this will call this function again
@@ -90,6 +86,11 @@ define("src/core/combo.vm", [
         _this.selectedValue(null);
         // } else if (!_this.nullable && _this.list.peek().length) {
         //   _this.selectFirst();
+
+        if (selectedValue != null) {
+          // update selectionHistory even if the value was not found in the list
+          updateSelectionHistory(_this, selectedValue);
+        }
       } else {
         _this.selected(_this.noItemSelected);
         _this.deactivateCurrent();
@@ -137,12 +138,12 @@ define("src/core/combo.vm", [
         }, 0);
       }
     };
-    // must use keydown since keypress doesn't fire for arrow and enter keys and probably other as well
+    // must use keydown since keypress does not fire for arrow and enter keys and probably other as well
     _this.inputKeydown = function(vm, evt) {
       var keyCode = evt.keyCode;
       switch (keyCode) {
         // composition keycode for chrome, it is sent when user either hit a key or hit a selection. (https://code.google.com/p/chromium/issues/detail?id=118639#c7)
-        // we don't want anything to do with it since it messes up what the actual key does
+        // we do not want anything to do with it since it messes up what the actual key does
         //  e.g.: when closed, pressing the enter key will open then immediately close the combo box
         case 229:
           return true; // do default action
@@ -165,7 +166,7 @@ define("src/core/combo.vm", [
         _this.focusInput(true);
         _this.selectInput(true);
 
-        // only open and don't do other actions below
+        // only open and do not do other actions below
         switch (keyCode) {
           case 13: // enter
             // case 38: // up arrow
@@ -342,6 +343,14 @@ define("src/core/combo.vm", [
     return !!findWrappedItemByValue(list, value);
   };
 
+  function updateSelectionHistory(_this, selectedValue) {
+    ko.utils.arrayRemoveItem(_this.selectionHistory, selectedValue);
+    _this.selectionHistory.push(selectedValue);
+    while (_this.selectionHistory.length > 10) {
+      _this.selectionHistory.shift(); // remove first item
+    }
+  }
+
   function wrapItem(item, fields, afterWrap) {
     if (!(fields.value in item)) {
       throw new Error("no " + fields.value + " field: " + jsonhelpers.stringify(item));
@@ -417,7 +426,7 @@ define("src/core/combo.vm", [
 
   function filterList(list, filterText) {
     var matches = getMatches(filterText);
-    //@NOTE: this is a ghetto matching algorithm, but i currently don't feel
+    //@NOTE: this is a ghetto matching algorithm, but i currently do not feel
     //       like putting in the effort to rank and reorder the matching items
     // attempt to match at the start
     if (!doFilter(list, matches, true)) {

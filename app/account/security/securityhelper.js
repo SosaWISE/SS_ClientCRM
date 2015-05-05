@@ -1,6 +1,6 @@
-define('src/account/security/securityhelper', [
-  'src/core/strings',
-  'src/core/utils',
+define("src/account/security/securityhelper", [
+  "src/core/strings",
+  "src/core/utils",
 ], function(
   strings,
   utils
@@ -16,16 +16,16 @@ define('src/account/security/securityhelper', [
         return null;
       } else if (utils.isStr(zoneVal) || utils.isNum(zoneVal)) {
         // ensure correct zone format
-        return strings.padLeft(zoneVal, '0', 3);
+        return strings.padLeft(zoneVal, "0", 3);
       } else {
-        throw new Error('invalid zone `' + zoneVal + '`');
+        throw new Error("invalid zone `" + zoneVal + "`");
       }
     },
     zoneStringConverter: function(val) {
       // remove non-numeric characters
-      val = parseInt(val.replace(/[^0-9]/g, ''));
+      val = parseInt(val.replace(/[^0-9]/g, ""));
       if (isNaN(val)) {
-        return new Error('Invalid Zone');
+        return new Error("Invalid Zone");
       } else {
         // format
         return securityhelper.zoneString(val);
