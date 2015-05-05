@@ -19,6 +19,11 @@ div(class="acct-item v02-sales-info")
             //-     div(data-bind="cvm:data.IsTakeOverCvm")
             div(class="line")
               div(class="letter",data-bind="text:num(1)")
+              div(class="question") Account Type
+              div(class="answer")
+                div(data-bind="cvm:salesinfo.FriendsAndFamilyTypeCvm")
+            div(class="line")
+              div(class="letter",data-bind="text:num()")
               div(class="question") System Type
               div(class="answer")
                 div(data-bind="cvm:salesinfo.AccountCreationTypeCvm")
