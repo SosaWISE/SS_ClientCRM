@@ -341,6 +341,7 @@ define("src/account/default/runcredit.vm", [
       creditResult = _this.creditResult.peek();
     if (creditResult && creditResult.IsHit) {
       // layersVm should be defined since this view model is a layer
+      creditResult.IsTakeOver = creditResult.TakeOverFromCompanyName !== null;
       _this.layersVm.show(new BaseViewModel({
         lead: lead,
         result: creditResult,
