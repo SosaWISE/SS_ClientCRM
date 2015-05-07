@@ -203,8 +203,15 @@ define("src/core/app.vm", [
         panels.push(panelVm);
       });
       // sort routes by precedence then add to router
+      tmpRoutes.forEach(function(item, index) {
+        item._index = index;
+      });
       tmpRoutes.sort(function(a, b) {
-        return a.precedence - b.precedence;
+        var compare = a.precedence - b.precedence;
+        if (compare === 0) {
+          compare = a._index - b._index;
+        }
+        return compare;
       });
       tmpRoutes.forEach(function(rdata) {
         _this.router.addRoute(rdata.panelVm, rdata.name, rdata.path, rdata.defaultRouteData || {});
