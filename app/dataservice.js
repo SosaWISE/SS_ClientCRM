@@ -60,6 +60,9 @@ define("src/dataservice", [
     api_hr: createService("api/hr", [
       "recruits",
     ]),
+    api_inv: createService("api/inv", [
+      "locationTypes",
+    ]),
 
     //
     // no /api
