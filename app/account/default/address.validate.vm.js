@@ -200,7 +200,7 @@ define("src/account/default/address.validate.vm", [
     }
 
     _this.data = ukov.wrap(_this.item || {
-      DealerId: 5000, // ?????
+      DealerId: _this.repModel.Seasons[0].DealerId, // TODO: Andres fixed this.
       ValidationVendorId: "NOVENDOR",
       AddressValidationStateId: "MAN",
       AddressTypeId: "N",
