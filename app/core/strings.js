@@ -210,7 +210,7 @@ define("src/core/strings", [
     if (text) {
       text = (text + "").replace(/^\s+|\s+$/g, "");
     } else if (text !== "") {
-      text = null;
+      text = ""; // trim should always return a value, not null
     }
     return text;
   };
