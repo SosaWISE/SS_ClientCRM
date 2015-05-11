@@ -505,7 +505,7 @@ define("src/account/security/equipment.editor.vm", [
           AccountZoneTypeId: item.AccountZoneTypeId,
           ItemSKU: item.GPItemNmbr,
           ItemDesc: item.ItemDescription,
-          Comments: item.ItemDescription,
+          Comments: strings.trim(item.ShortName),
           // local data
           BarcodeId: barcodeId,
           AccountId: _this.accountId,
