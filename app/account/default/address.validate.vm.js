@@ -200,7 +200,7 @@ define("src/account/default/address.validate.vm", [
     }
 
     _this.data = ukov.wrap(_this.item || {
-      DealerId: _this.repModel.Seasons[0].DealerId, // TODO:  Andres completed this.  Had to refactor CORS.
+      DealerId: _this.repModel.Seasons[0].DealerId, // TODO: Andres fixed this.
       ValidationVendorId: "NOVENDOR",
       AddressValidationStateId: "MAN",
       AddressTypeId: "N",
