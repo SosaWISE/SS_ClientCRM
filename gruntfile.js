@@ -262,6 +262,14 @@ module.exports = function(grunt) {
           "nimis/index.css": "nimis/index.less",
         },
       },
+      core: {
+        options: {
+          cleancss: true,
+        },
+        files: {
+          "<%= www %>/nimis/core.css": "nimis/core.less",
+        },
+      },
     },
 
     jsbeautifier: {
@@ -303,6 +311,7 @@ module.exports = function(grunt) {
     "jade:prod",
     "jade:prod_debug",
     "less:prod",
+    "less:core",
   ]);
   grunt.registerTask("build-dev", [
     "jade:dev",
