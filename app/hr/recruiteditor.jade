@@ -27,6 +27,9 @@ div(class="item-data")
               span(class="label") PayScale
               div(data-bind="cvm:data.PayScaleCvm")
             li
+                span(class="label") Personal Multiple
+                input(type="text",placeholder="0",data-bind="ukov:data.PersonalMultiple,value:data.PersonalMultiple,valueUpdate:'keyup'")
+            li
               span(class="label") Previous Company
               input(type="text",placeholder="",data-bind="ukov:data.PreviousSummer,value:data.PreviousSummer,valueUpdate:'keyup'")
             li
