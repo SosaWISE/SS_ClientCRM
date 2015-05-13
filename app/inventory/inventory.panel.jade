@@ -1,4 +1,4 @@
-div(class="inventory", data-bind="if:loaded")
+//- div(class="inventory", data-bind="if:loaded")
   table(class="fh-wrap")
     tr
       td(class="fh-header")
@@ -11,3 +11,23 @@ div(class="inventory", data-bind="if:loaded")
           <!-- ko if:active -->
           div(class="tab", data-bind="template:viewTmpl,active:active")
           <!-- /ko -->
+
+div(class="inv-panel dock l3-160",data-bind="toggle:{'l-show':showNav}")
+
+  <!-- ko with:activeChild -->
+  div(class="dock-content",data-bind="css:{phil:phil}",style="height:100%")
+    div(data-bind="template:{name:viewTmpl}",style="height:100%")
+  <!-- /ko -->
+
+  div(class="dock-left")
+    div(class="btn-dock",data-bind="click:function(){showNav(!showNav())},toggle:{'closed':!showNav()}")
+      div(class="close")
+      div(class="open")
+
+    h2 Inventory
+    ul(class="nav",data-bind="foreach:childs")
+      li
+        a(data-bind="active:active,click:$parent.clickItem")
+          span(data-bind="text:title")
+
+  div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

@@ -1,11 +1,11 @@
-define('src/hr/hr.panel.vm', [
-  'src/hr/teams.vm',
-  'src/hr/users.vm',
-  'ko',
-  'src/core/layers.vm',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/hr/hr.panel.vm", [
+  "src/hr/teams.vm",
+  "src/hr/users.vm",
+  "ko",
+  "src/core/layers.vm",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   TeamsViewModel,
   UsersViewModel,
@@ -15,7 +15,7 @@ define('src/hr/hr.panel.vm', [
   utils,
   ControllerViewModel
 ) {
-  'use strict';
+  "use strict";
 
   function HrPanelViewModel(options) {
     var _this = this;
@@ -42,14 +42,14 @@ define('src/hr/hr.panel.vm', [
     _this.childs([ //
       new TeamsViewModel({
         pcontroller: _this,
-        id: 'teams',
-        title: 'Teams',
+        id: "teams",
+        title: "Teams",
         layersVm: _this.layersVm,
       }),
       _this.defaultChild = new UsersViewModel({
         pcontroller: _this,
-        id: 'users',
-        title: 'Users',
+        id: "users",
+        title: "Users",
         layersVm: _this.layersVm,
       }),
     ]);
