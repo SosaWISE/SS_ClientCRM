@@ -1,0 +1,42 @@
+div(class="audit",data-bind="css:{'may-reload':mayReload}")
+  div(data-bind="spinner:cmdSaveAudit.busy,spinner-rgb:'white'")
+  div(class="audit-header")
+    div(class="form")
+      ul(class="edit-form")
+        li
+          span(class="label") Location Type
+          div(data-bind="cvm:data.LocationTypeCvm")
+        li
+          span(class="label") Location
+          div(data-bind="cvm:data.LocationCvm")
+        li
+          span(class="label") Enter Barcode
+          //-input(type="text")
+          input(type="text",
+            data-bind="ukov:barcode,value:barcode,valueUpdate:'keyup',enter:enterBarcode,tab:enterBarcode")
+    div(class="btns")
+      div(class="actions")
+        a(class="btn bg",tabindex="0",data-bind="cmd:cmdNewAudit") New Audit
+        a(class="btn bg",tabindex="0",data-bind="cmd:cmdLoadAudit") Load Audit
+        a(class="btn bg",tabindex="0",data-bind="cmd:cmdSaveAudit") Submit Audit
+        a(class="btn bg",tabindex="0",data-bind="cmd:clickPrint")
+          span(class="fa fa-print fa-lg",style="margin-right:5px;")
+          |Print Inventory
+    div(class="audits relative")
+      div(class="slickgrid",data-bind="slickgrid:auditsGvm")
+  div(class="audit-body")
+    div(class="grid-wrap onhand")
+      span(class="title") Items that are in inventory but not scanned
+      div(class="slickgrid",data-bind="slickgrid:onhandGvm")
+    div(class="grid-wrap excess")
+      span(class="title") Items that are scanned but not shown in the inventory
+      div(class="slickgrid",data-bind="slickgrid:excessGvm")
+
+          //- div(class="slickgrid", style="background:white;margin:10px;color:black;", data-bind="slickgrid:unScannedListGvm")
+      //- td(class="fh-body" style="width: 50%;")
+        div(class="fh-contents")
+          div(class="slickgrid", style="background:white;margin:10px;color:black;", data-bind="slickgrid:scannedListGvm")
+    //- tr
+      td(class="fh-contents")
+        button(type="button" class="btn-bg" style="margin: 10px; width: 50%;" data-bind="cmd: cmdPrintReport") Print
+  //- div(id="printDiv" style="display: none;")

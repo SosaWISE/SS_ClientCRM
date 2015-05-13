@@ -1,21 +1,21 @@
 ul(class="edit-form")
-  li(style="margin: 10px;")
+  li(style="margin:0px 20px;padding-top:10px;")
     div(class="header_left")
       ul(class="header_ul" style="color: white;")
         li
           span(class="label") Transfer to Location Type
-          div(data-bind="cvm:data.LocationTypeCvm")        
+          div(data-bind="cvm:data.LocationTypeCvm")
         li
           span(class="label") Transfer To Location
-          div(data-bind="cvm:data.TransferLocationCvm")         
+          div(data-bind="cvm:data.TransferLocationCvm")
         li
-          span(class="label") Enter Barcode           
+          span(class="label") Enter Barcode
           input(type="text" placeholder="" data-bind="ukov:data.productBarcodeID, value:data.productBarcodeID,valueUpdate:'afterkeydown',select:focusFirst, event: { keydown: processBarcode}")
         li
           span(class="label") Enter list of Barcodes
-          textarea(rows="5" data-bind="ukov:data.productBarcodeIdList, value:data.productBarcodeIdList,valueUpdate:'afterkeydown', event: { keydown: updateBarcodeList}")            
+          textarea(rows="5" data-bind="ukov:data.productBarcodeIdList, value:data.productBarcodeIdList,valueUpdate:'afterkeydown', event: { keydown: updateBarcodeList}")
         li
-          span(class="btn-bg", tabindex="0", data-bind="cmd:clickTransferBarcode") Submit List          
+          span(class="btn-bg", tabindex="0", data-bind="cmd:clickTransferBarcode") Submit List
         li
           span(class="label") Previous Location
           span(class="label" data-bind="text: prevLocation") XXXXX

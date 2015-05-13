@@ -63,7 +63,7 @@
   // key handlers
   //---------------------------
 
-  function createKeyHandler(name, keyCode, forceBlur) {
+  function createKeyupHandler(name, keyCode, forceBlur) {
     ko.bindingHandlers[name] = {
       init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
         var func = valueAccessor();
@@ -84,8 +84,31 @@
       },
     };
   }
-  createKeyHandler("escape", 27); // <ESC>
-  createKeyHandler("enter", 13, true);
+  createKeyupHandler("escape", 27); // <ESC>
+  createKeyupHandler("enter", 13, true);
+
+  function createKeydownHandler(name, keyCode, forceBlur) {
+    ko.bindingHandlers[name] = {
+      init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+        var func = valueAccessor();
+        // if it is a command we need the execute function
+        if (ko.isCommand(func)) {
+          func = func.execute;
+        }
+
+        jquery(element).keydown(function(event) {
+          if (event.keyCode === keyCode) {
+            if (forceBlur) {
+              jquery(element).blur();
+              jquery(element).focus();
+            }
+            func.call(viewModel, viewModel, event);
+          }
+        });
+      },
+    };
+  }
+  createKeydownHandler("tab", 9, true);
 
 
   // swapLoginFields
