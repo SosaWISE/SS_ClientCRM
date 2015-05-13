@@ -1,4 +1,4 @@
-define("src/inventory/tekaudit.gvm", [
+define("src/inventory/audit.gvm", [
   "slick",
   "src/slick/slickgrid.vm",
   "src/core/utils",
@@ -9,56 +9,70 @@ define("src/inventory/tekaudit.gvm", [
 ) {
   "use strict";
 
-  function TekAuditGridViewModel(options) {
+  function AuditGridViewModel(options) {
     var _this = this;
     initDataView(_this);
-    TekAuditGridViewModel.super_.call(_this, {
+    AuditGridViewModel.super_.call(_this, {
       gridOptions: {
+        multiSelect: false,
         enableColumnReorder: false,
         forceFitColumns: true,
         rowHeight: 27,
         editable: true,
       },
+      dataView: _this.dv,
       columns: getColumns(options),
+      onSelectedRowsChanged: options.onSelectedRowsChanged,
     });
   }
-  utils.inherits(TekAuditGridViewModel, SlickGridViewModel);
+  utils.inherits(AuditGridViewModel, SlickGridViewModel);
 
-  TekAuditGridViewModel.prototype.setItems = function(items) {
-    var dv = this.dv;
+  AuditGridViewModel.prototype.setItems = function(items) {
+    var _this = this;
+    var dv = _this.dv;
     dv.beginUpdate();
     dv.setItems(items);
     dv.reSort();
     dv.endUpdate();
+    _this.setSelectedRows([]);
+    _this.resetActiveCell();
+    _this.updateGrid(true);
+  };
+  AuditGridViewModel.prototype.setItem = function(newItem) {
+    var _this = this;
+    var dv = _this.dv;
+    var id = newItem.ID;
+    var item = dv.getItemById(id);
+    if (!item) {
+      dv.addItem(newItem);
+    } else {
+      dv.updateItem(id, newItem);
+    }
   };
 
   function getColumns(options) {
     var columns = [ //
-      // Audit ID
-      // Auditor
-      // Audit Date
-      // IsClosed (bit)
       {
         id: "ID",
         name: "ID",
         field: "ID",
         width: 50,
       }, {
-        id: "Auditor",
+        id: "CreatedBy",
         name: "Auditor",
-        field: "Auditor",
+        field: "CreatedBy",
       }, {
         id: "CreatedOn",
         name: "Audit Date",
         field: "CreatedOn",
+        formatter: SlickGridViewModel.formatters.datetime,
       }, {
         id: "IsClosed",
-        name: "Closed",
-        // field: "IsClosed",
-        formatter: function(row, cell, value, columnDef, dataItem) {
-          //@TODO: calculate using CreatedOn and current time???
-          return dataItem.IsClosed;
-        }
+        name: "Status",
+        field: "IsClosed",
+        formatter: function(row, cell, value) {
+          return value ? "Closed" : "Pending";
+        },
       },
     ];
     if (options) {
@@ -100,5 +114,5 @@ define("src/inventory/tekaudit.gvm", [
     dv.endUpdate();
   }
 
-  return TekAuditGridViewModel;
+  return AuditGridViewModel;
 });

@@ -37,16 +37,23 @@ body.inventory {
     color: #fff;
   }
 
-  .tekaudit {
+  .audit {
     margin: 0px 20px;
     height: 100%;
 
     .slickgrid {
       background-color: #FFF;
       color: #000;
+
+      .scanned {
+        text-align: center;
+        > span {
+          margin-top: 5px;
+        }
+      }
     }
 
-    .tek-header {
+    .audit-header {
       position: absolute;
       top: 20px;
       right: 20px;
@@ -76,7 +83,7 @@ body.inventory {
         width: ~"calc(50% - 10px)";
       }
     }
-    .tek-body {
+    .audit-body {
       position: absolute;
       top: 220px;
       right: 20px;

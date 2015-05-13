@@ -1,5 +1,5 @@
 define("src/inventory/inventory.panel.vm", [
-  "src/inventory/tekaudit.vm",
+  "src/inventory/audit.vm",
   "src/inventory/receive.inventory.vm",
   "src/inventory/transfer.inventory.vm",
   "src/inventory/report.inventory.vm",
@@ -8,7 +8,7 @@ define("src/inventory/inventory.panel.vm", [
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
-  TekAuditViewModel,
+  AuditViewModel,
   ReceiveInventoryViewModel,
   TransferInventoryViewModel,
   ReportInventoryViewModel,
@@ -58,7 +58,7 @@ define("src/inventory/inventory.panel.vm", [
         id: "transfer",
         title: "Transfer",
       }),
-      new TekAuditViewModel({
+      new AuditViewModel({
         phil: false,
         pcontroller: _this,
         id: "audit",
