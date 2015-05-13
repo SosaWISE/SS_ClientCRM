@@ -65,6 +65,7 @@ define("src/hr/recruiteditor.vm", [
     ReportsToID: {}, //          [int]
     TeamID: {}, //               [int]
     PayScaleID: {}, //           [int]
+    PersonalMultiple: {},
     PreviousSummer: {
       converter: nullStrConverter,
       validators: [max200],
