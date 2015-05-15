@@ -1,3 +1,0 @@
-used to build slimmed version of jquery
-- http://projects.jga.me/jquery-builder/
-- curl https://raw.githubusercontent.com/jgallen23/jquery-builder/0.7.0/dist/1.10.2/jquery-deprecated-effects-wrap.js > tparty/jquery-1.10.2.js

@@ -46,6 +46,10 @@ define("src/inventory/audit-inventory.gvm", [
     _this.resetActiveCell();
     _this.updateGrid(true);
   };
+  AuditInventoryGridViewModel.prototype.getItems = function() {
+    var _this = this;
+    return _this.dv.getItems();
+  };
   AuditInventoryGridViewModel.prototype.setItem = function(newItem) {
     var _this = this;
     var dv = _this.dv;
@@ -56,6 +60,8 @@ define("src/inventory/audit-inventory.gvm", [
     } else {
       dv.updateItem(barcode, newItem);
     }
+    dv.reSort();
+    _this.setSelectedRows(_this.getSelectedRows());
   };
   AuditInventoryGridViewModel.prototype.scanItem = function(barcode) {
     var _this = this;
@@ -76,6 +82,9 @@ define("src/inventory/audit-inventory.gvm", [
   };
   AuditInventoryGridViewModel.prototype.getBarcodeIDs = function() {
     var _this = this;
+    // return _this.getItems().map(function(item) {
+    //   return item.ProductBarcodeID;
+    // });
     var results = [];
     _this.dv.getItems().forEach(function(item) {
       if (item.AuditId === _this._auditId &&

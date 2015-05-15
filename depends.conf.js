@@ -23,5 +23,5 @@ window.require = {
   global: {
     underscore: "_",
     markdown: "markdown",
-  }
+  },
 };
