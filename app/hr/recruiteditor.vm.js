@@ -241,6 +241,10 @@ define("src/hr/recruiteditor.vm", [
     _this.data.PayScaleCvm = new ComboViewModel({
       selectedValue: _this.data.PayScaleID,
       nullable: true,
+      fields: {
+        value: "PayscaleID",
+        text: "Name",
+      },
     });
     _this.data.OwnerApprovalCvm = new ComboViewModel({
       selectedValue: _this.data.OwnerApprovalId,
