@@ -19,6 +19,7 @@ div(class="audit",data-bind="css:{'may-reload':mayReload}")
         a(class="btn bg",tabindex="0",data-bind="cmd:cmdNewAudit") New Audit
         a(class="btn bg",tabindex="0",data-bind="cmd:cmdLoadAudit") Load Audit
         a(class="btn bg",tabindex="0",data-bind="cmd:cmdSaveAudit") Submit Audit
+        a(class="btn bg",tabindex="0",data-bind="cmd:cmdReconcile") Reconcile
         a(class="btn bg",tabindex="0",data-bind="cmd:clickPrint")
           span(class="fa fa-print fa-lg",style="margin-right:5px;")
           |Print Inventory
@@ -31,12 +32,3 @@ div(class="audit",data-bind="css:{'may-reload':mayReload}")
     div(class="grid-wrap excess")
       span(class="title") Items that are scanned but not shown in the inventory
       div(class="slickgrid",data-bind="slickgrid:excessGvm")
-
-          //- div(class="slickgrid", style="background:white;margin:10px;color:black;", data-bind="slickgrid:unScannedListGvm")
-      //- td(class="fh-body" style="width: 50%;")
-        div(class="fh-contents")
-          div(class="slickgrid", style="background:white;margin:10px;color:black;", data-bind="slickgrid:scannedListGvm")
-    //- tr
-      td(class="fh-contents")
-        button(type="button" class="btn-bg" style="margin: 10px; width: 50%;" data-bind="cmd: cmdPrintReport") Print
-  //- div(id="printDiv" style="display: none;")

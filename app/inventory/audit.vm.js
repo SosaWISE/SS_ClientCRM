@@ -5,6 +5,7 @@ define("src/inventory/audit.vm", [
   "src/dataservice",
   "src/ukov",
   "ko",
+  "src/core/printer",
   "src/core/joiner",
   "src/core/combo.vm",
   "src/core/strings",
@@ -18,6 +19,7 @@ define("src/inventory/audit.vm", [
   dataservice,
   ukov,
   ko,
+  printer,
   joiner,
   ComboViewModel,
   strings,
@@ -77,6 +79,7 @@ define("src/inventory/audit.vm", [
 
     _this.data.LocationTypeId.subscribe(function(id) {
       _this.data.LocationCvm.setList([]);
+      _this.data.LocationId(null);
       if (!id) {
         return;
       }
@@ -87,35 +90,18 @@ define("src/inventory/audit.vm", [
         }
       }, notify.iferror);
     });
-    _this.data.LocationId.subscribe(function(id) {
+    _this.data.LocationId.subscribe(function() {
+      _this.canReconcile(false);
       _this._loadedAudit = null;
       _this.auditsGvm.setItems([]);
       _this.onhandGvm.setItems([]);
       _this.excessGvm.setItems([]);
-      if (!id) {
+      if (!_this.data.isValid.peek()) {
         return;
       }
-      var join = joiner();
-      var productBarcodes, audits;
-      load_audits(id, function(list) {
-        audits = list;
-      }, join.add());
-      load_productBarcodes(id, function(list) {
-        productBarcodes = list;
-      }, join.add());
-
-      join.when(function(err) {
-        notify.iferror(err);
-        // check that it has not since changed
-        if (_this.data.LocationId.getValue() === id) {
-          // store data for location
-          _this.locationData({
-            audits: audits || [],
-            productBarcodes: productBarcodes || [],
-          });
-        } else {
-          _this.locationData(null);
-        }
+      var model = _this.data.getValue();
+      loadLocationData(_this, model.LocationId, model.LocationTypeId, function() {
+        // immediately start a new audit
         _this.cmdNewAudit.execute();
       });
     });
@@ -135,6 +121,7 @@ define("src/inventory/audit.vm", [
     // events
     //
     _this.cmdNewAudit = ko.command(function(cb) {
+      _this.canReconcile(false);
       // set data for location
       var locData = _this.locationData.peek();
       _this._loadedAudit = null;
@@ -150,48 +137,78 @@ define("src/inventory/audit.vm", [
       return !busy && !!_this.locationData();
     });
     _this.cmdLoadAudit = ko.command(function(cb) {
-      // set data for location
-      var locData = _this.locationData.peek();
-      var audit = _this.selectedAudit.peek();
-      _this._loadedAudit = audit;
-      // _this.auditsGvm.setItems(utils.clone(locData.audits));
-      _this.onhandGvm.setItems(utils.clone(locData.productBarcodes), audit.ID);
-      // remove all from excess grid
-      _this.excessGvm.setItems([]);
-      // // deselect audit
-      // _this.auditsGvm.setSelectedRows([]);
-      //
+      _this.canReconcile(false);
+      setAudit(_this);
       cb();
     }, function(busy) {
-      return !busy && !!_this.locationData() && !!_this.selectedAudit();
+      var selectedAudit = _this.selectedAudit();
+      return !busy && !!_this.locationData() && (selectedAudit && !selectedAudit.IsClosed);
     });
     _this.cmdSaveAudit = ko.command(function(cb) {
-      var audit = _this._loadedAudit;
-      if (!audit) {
+      var model = _this._loadedAudit;
+      if (!model) {
         if (!_this.data.isValid.peek()) {
           notify.warn(_this.data.errMsg.peek(), null, 7);
-          return;
+          return cb();
         }
-        audit = _this.data.getValue();
-        audit.ModifiedOn = new Date();
+        model = _this.data.getValue();
+        model.ModifiedOn = new Date();
       }
       var barcodes = _this.onhandGvm.getBarcodeIDs();
-      if (!barcodes.length) {
-        notify.warn("No scanned barcodes", null, 2);
-        return cb();
-      }
-      audit.Barcodes = barcodes;
-      save_audit(audit, function(val) {
+      // if (!barcodes.length) {
+      //   notify.warn("No scanned barcodes", null, 2);
+      //   return cb();
+      // }
+      model.Barcodes = barcodes;
+      var join = joiner();
+      save_audit(model, function(val) {
         if (val) {
+          _this.canReconcile(true);
           _this.auditsGvm.setItem(val);
-          _this._loadedAudit = val;
+          _this.selectedAudit(val);
+          loadLocationData(_this, model.LocationId, model.LocationTypeId, utils.safeCallback(join.add(), function() {
+            setAudit(_this);
+          }, utils.noop));
         }
-      }, cb);
+      }, join.add());
+      join.when(cb);
     }, function(busy) {
       return !busy && !!_this.locationData();
     });
+    _this.canReconcile = ko.observable(false);
+    _this.cmdReconcile = ko.command(function(cb) {
+      if (!_this.data.isValid.peek()) {
+        notify.warn(_this.data.errMsg.peek(), null, 7);
+        return cb();
+      }
+      var model = _this.data.getValue();
+      var join = joiner();
+      reconcileEquipment(model.LocationId, model.LocationTypeId, function(reconciledBarcodes) {
+        if (!reconciledBarcodes || !reconciledBarcodes.length) {
+          notify.info("No barcodes were reconciled", null, 7);
+        } else {
+          loadLocationData(_this, model.LocationId, model.LocationTypeId, join.add());
+          notify.info("Barcodes Reconciled", reconciledBarcodes.join(", "), 0);
+        }
+      }, join.add());
+      join.when(cb);
+    }, function(busy) {
+      return !busy && _this.canReconcile();
+    });
     _this.clickPrint = function() {
-      //
+      var vm = {
+        viewTmpl: "tmpl-inventory-print_inventory",
+        groups: [ //
+          {
+            title: "Items that are in inventory but not scanned",
+            items: _this.onhandGvm.getItems(),
+          }, {
+            title: "Items that are scanned but not in the inventory",
+            items: _this.excessGvm.getItems(),
+          },
+        ],
+      };
+      printer.print("Audit Report", vm, false);
     };
     _this.enterBarcode = function() {
       if (!_this.barcode.isValid.peek()) {
@@ -224,6 +241,44 @@ define("src/inventory/audit.vm", [
     };
   }
 
+  function setAudit(_this) {
+    // set data for location
+    var locData = _this.locationData.peek();
+    var audit = _this.selectedAudit.peek();
+    _this._loadedAudit = audit;
+    // _this.auditsGvm.setItems(utils.clone(locData.audits));
+    _this.onhandGvm.setItems(utils.clone(locData.productBarcodes), audit.ID);
+    // remove all from excess grid
+    _this.excessGvm.setItems([]);
+    // // deselect audit
+    // _this.auditsGvm.setSelectedRows([]);
+    //
+  }
+
+  function loadLocationData(_this, locationId, locationTypeId, cb) {
+    var join = joiner();
+    var productBarcodes, audits;
+    load_audits(locationId, locationTypeId, function(list) {
+      audits = list;
+    }, join.add());
+    load_productBarcodes(locationId, locationTypeId, function(list) {
+      productBarcodes = list;
+    }, join.add());
+
+    _this.locationData(null);
+    join.when(function(err) {
+      notify.iferror(err);
+      // check that it has not since changed
+      if (_this.data.LocationId.getValue() === locationId) {
+        // store data for location
+        _this.locationData({
+          audits: audits || [],
+          productBarcodes: productBarcodes || [],
+        });
+      }
+    }).when(cb);
+  }
+
   utils.inherits(AuditViewModel, ControllerViewModel);
   AuditViewModel.prototype.viewTmpl = "tmpl-inventory-audit";
 
@@ -246,17 +301,25 @@ define("src/inventory/audit.vm", [
     }, setter, cb);
   }
 
-  function load_audits(locationId, setter, cb) {
-    dataservice.api_inv.locations.read({
-      id: locationId,
-      link: "Audits",
+  function load_audits(locationId, locationTypeId, setter, cb) {
+    load_locationTypeLink(locationId, locationTypeId, "Audits", setter, cb);
+  }
+
+  function load_productBarcodes(locationId, locationTypeId, setter, cb) {
+    load_locationTypeLink(locationId, locationTypeId, "ProductBarcodes", setter, cb);
+  }
+
+  function load_locationTypeLink(locationId, locationTypeId, link, setter, cb) {
+    dataservice.api_inv.locationTypes.read({
+      id: locationTypeId,
+      link: strings.format("Locations/{0}/{1}", locationId, link),
     }, setter, cb);
   }
 
-  function load_productBarcodes(locationId, setter, cb) {
-    dataservice.api_inv.locations.read({
-      id: locationId,
-      link: "ProductBarcodes",
+  function reconcileEquipment(locationId, locationTypeId, setter, cb) {
+    dataservice.api_inv.locationTypes.save({
+      id: locationTypeId,
+      link: strings.format("Locations/{0}/Reconcile", locationId),
     }, setter, cb);
   }
 

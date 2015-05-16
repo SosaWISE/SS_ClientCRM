@@ -48,6 +48,8 @@ define("src/inventory/audit.gvm", [
     } else {
       dv.updateItem(id, newItem);
     }
+    dv.reSort();
+    _this.setSelectedRows(_this.getSelectedRows());
   };
 
   function getColumns(options) {
@@ -65,6 +67,11 @@ define("src/inventory/audit.gvm", [
         id: "CreatedOn",
         name: "Audit Date",
         field: "CreatedOn",
+        formatter: SlickGridViewModel.formatters.datetime,
+      }, {
+        id: "ModifiedOn",
+        name: "Last Audit Date",
+        field: "ModifiedOn",
         formatter: SlickGridViewModel.formatters.datetime,
       }, {
         id: "IsClosed",
@@ -95,22 +102,12 @@ define("src/inventory/audit.gvm", [
     //
     dv.setItems([], "ID");
 
-    // function myComparer(a, b) {
-    //   var result = a.Scanned - b.Scanned;
-    //   if (result === 0) {
-    //     a = a.Barcode;
-    //     b = b.Barcode;
-    //     if (a < b) {
-    //       result = -1;
-    //     } else if (b < a) {
-    //       result = 1;
-    //     }
-    //   }
-    //   return result;
-    // }
-    // var preventReverse = true; // ??ascending??
-    // dv.sort(myComparer, preventReverse);
-    //
+    function myComparer(a, b) {
+      return b.ModifiedOn - a.ModifiedOn;
+    }
+    var preventReverse = true; // ??ascending??
+    dv.sort(myComparer, preventReverse);
+
     dv.endUpdate();
   }
 
