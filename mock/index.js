@@ -1,16 +1,15 @@
-define('mock/index', [
-  'mock/dataservices/accountingengine.mock',
-  'mock/dataservices/admin.mock',
-  'mock/dataservices/hr.mock',
-  'mock/dataservices/maincore.mock',
-  'mock/dataservices/monitoringstationsrv.mock',
-  'mock/dataservices/msaccountsetupsrv.mock',
-  'mock/dataservices/qualify.mock',
-  'mock/dataservices/salessummary.mock',
-  'mock/dataservices/session.mock',
-  'mock/dataservices/survey.mock',
-  'mock/dataservices/swingaccountsrv.mock',
-  'mock/dataservices/user.mock',
+define("mock/index", [
+  "mock/dataservices/accountingengine.mock",
+  "mock/dataservices/admin.mock",
+  "mock/dataservices/auth.mock",
+  "mock/dataservices/hr.mock",
+  "mock/dataservices/maincore.mock",
+  "mock/dataservices/monitoringstationsrv.mock",
+  "mock/dataservices/msaccountsetupsrv.mock",
+  "mock/dataservices/qualify.mock",
+  "mock/dataservices/salessummary.mock",
+  "mock/dataservices/survey.mock",
+  "mock/dataservices/swingaccountsrv.mock",
 ], function() {
   "use strict";
 
