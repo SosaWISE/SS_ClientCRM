@@ -2,10 +2,7 @@
 module.exports = function(grunt) {
   "use strict";
 
-  var path = require("path"),
-    jsfiles;
-
-  jsfiles = [
+  var jsfiles = [
     "**/*.js",
     // exclude files
     "!www/**", // exclude output directory
@@ -28,35 +25,52 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
 
-    www: "www",
-
     clean: {
       app: {
-        options: {
-          force: true, // force delete files outside the current working directory
-        },
+        // options: {
+        //   force: true, // force delete files outside the current working directory
+        // },
         src: [
-          // delete everything in build folder except webconfig.js
-          "<%= www %>/**/*", "!<%= www %>/webconfig.js",
+          // delete everything in build folder
+          "www/**/*",
+          // except webconfig.js files and their parent folders
+          "!www/nimis", "!www/nimis/webconfig.js",
+          "!www/sales", "!www/sales/webconfig.js",
         ]
       }
     },
 
     copy: {
       webconfig: {
-        src: "webconfig-example.js",
-        dest: "webconfig.js",
-        filter: function() { // only copy if webconfig.js doesn"t exist
-          return !grunt.file.exists("webconfig.js");
-        },
+        files: [ //
+          {
+            src: "nimis/webconfig-example.js",
+            dest: "nimis/webconfig.js",
+            filter: function() { // only copy if webconfig.js doesn"t exist
+              return !grunt.file.exists("nimis/webconfig.js");
+            },
+          }, {
+            src: "sales/webconfig-example.js",
+            dest: "sales/webconfig.js",
+            filter: function() { // only copy if webconfig.js doesn"t exist
+              return !grunt.file.exists("sales/webconfig.js");
+            },
+          },
+        ],
       },
       prod: {
         files: [ //
           {
-            src: "webconfig-example.js",
-            dest: "<%= www %>/webconfig.js",
+            src: "nimis/webconfig-example.js",
+            dest: "www/nimis/webconfig.js",
             filter: function() { // only copy if webconfig.js doesn"t exist in output dir
-              return !grunt.file.exists(path.join(grunt.config("www"), "webconfig.js"));
+              return !grunt.file.exists("www/nimis/webconfig.js");
+            },
+          }, {
+            src: "sales/webconfig-example.js",
+            dest: "www/sales/webconfig.js",
+            filter: function() { // only copy if webconfig.js doesn"t exist in output dir
+              return !grunt.file.exists("www/sales/webconfig.js");
             },
           }, {
             src: [
@@ -66,16 +80,16 @@ module.exports = function(grunt) {
               "tparty/jasmine/**/*",
               "app/depends/depends.js",
             ],
-            dest: "<%= www %>/"
+            dest: "www/"
           }, {
             src: "depends-production.conf.js",
-            dest: "<%= www %>/depends.conf.js",
+            dest: "www/depends.conf.js",
           }, {
             src: "depends-production.debug.conf.js",
-            dest: "<%= www %>/depends.debug.conf.js",
+            dest: "www/depends.debug.conf.js",
           }, {
             src: "tparty/pixi.dev.js",
-            dest: "<%= www %>/pixi.debug.js",
+            dest: "www/pixi.debug.js",
           },
         ],
       },
@@ -85,27 +99,27 @@ module.exports = function(grunt) {
       // packages - include package folder js files but not specs
       account_pkg: {
         src: ["app/account/**/*.js", "!app/account/**/*.spec.js", ],
-        dest: "<%= www %>/account.debug.js",
+        dest: "www/account.debug.js",
       },
       admin_pkg: {
         src: ["app/admin/**/*.js", "!app/admin/**/*.spec.js", ],
-        dest: "<%= www %>/admin.debug.js",
+        dest: "www/admin.debug.js",
       },
       contracts_pkg: {
         src: ["app/contracts/**/*.js", "!app/contracts/**/*.spec.js", ],
-        dest: "<%= www %>/contracts.debug.js",
+        dest: "www/contracts.debug.js",
       },
       survey_pkg: {
         src: ["app/survey/**/*.js", "!app/survey/**/*.spec.js", ],
-        dest: "<%= www %>/survey.debug.js",
+        dest: "www/survey.debug.js",
       },
       funding_pkg: {
         src: ["app/funding/**/*.js", "!app/funding/**/*.spec.js", ],
-        dest: "<%= www %>/funding.debug.js",
+        dest: "www/funding.debug.js",
       },
       core_pkg: {
         src: ["app/core/**/*.js", "!app/core/**/*.spec.js", ],
-        dest: "<%= www %>/core.debug.js",
+        dest: "www/core.debug.js",
       },
       slick_pkg: {
         src: [
@@ -123,15 +137,15 @@ module.exports = function(grunt) {
           "!app/slick/slick-dev.js",
           "!app/slick/*.spec.js",
         ],
-        dest: "<%= www %>/slick.debug.js",
+        dest: "www/slick.debug.js",
       },
       ukov_pkg: {
         src: ["app/u-kov/**/*.js", "!app/u-kov/**/*.spec.js", ],
-        dest: "<%= www %>/ukov.debug.js",
+        dest: "www/ukov.debug.js",
       },
       mock_pkg: {
         src: ["mock/**/*.js", "!app/**/*.spec.js", ],
-        dest: "<%= www %>/mock.debug.js",
+        dest: "www/mock.debug.js",
       },
       // app without packages
       app: {
@@ -149,7 +163,19 @@ module.exports = function(grunt) {
           // exclude specs
           "!app/**/*.spec.js",
         ],
-        dest: "<%= www %>/app.debug.js",
+        dest: "www/app.debug.js",
+      },
+      salesapp: {
+        src: [
+          // include app files
+          "app/sales/*.js",
+          "app/salesmap/*.js",
+          "app/ukov.js",
+          "app/login/*.js",
+          // exclude specs
+          "!app/**/*.spec.js",
+        ],
+        dest: "www/sales/app.debug.js",
       },
       // third party libs
       tparty: {
@@ -165,7 +191,22 @@ module.exports = function(grunt) {
           "tparty/markdown.js",
           "tparty/definelibs.js",
         ],
-        dest: "<%= www %>/lib.debug.js",
+        dest: "www/lib.debug.js",
+      },
+      saleslib: {
+        src: [
+          "app/depends/depends.js",
+
+          "tparty/jquery-1.10.2.js",
+          // "tparty/jquery-ui-1.10.4.custom.js",
+          // "tparty/jquery.event.drag-*.js",
+          "tparty/knockout.js",
+          "tparty/moment.js",
+          "tparty/underscore.js",
+          // "tparty/markdown.js",
+          "tparty/definelibs.js",
+        ],
+        dest: "www/sales/lib.debug.js",
       },
       // specs
       spec: {
@@ -174,7 +215,7 @@ module.exports = function(grunt) {
           "spec/runner.js",
           "spec/index.js",
         ],
-        dest: "<%= www %>/spec.js",
+        dest: "www/spec.js",
       },
     },
     uglify: {
@@ -183,26 +224,29 @@ module.exports = function(grunt) {
           mangle: true,
         },
         files: {
-          "<%= www %>/account.js": ["<%= www %>/account.debug.js"],
-          "<%= www %>/admin.js": ["<%= www %>/admin.debug.js"],
-          "<%= www %>/contracts.js": ["<%= www %>/contracts.debug.js"],
-          "<%= www %>/survey.js": ["<%= www %>/survey.debug.js"],
-          "<%= www %>/funding.js": ["<%= www %>/funding.debug.js"],
-          "<%= www %>/core.js": ["<%= www %>/core.debug.js"],
-          "<%= www %>/slick.js": ["<%= www %>/slick.debug.js"],
-          "<%= www %>/pixi.js": ["<%= www %>/pixi.debug.js"],
-          "<%= www %>/ukov.js": ["<%= www %>/ukov.debug.js"],
-          "<%= www %>/mock.js": ["<%= www %>/mock.debug.js"],
+          "www/account.js": ["www/account.debug.js"],
+          "www/admin.js": ["www/admin.debug.js"],
+          "www/contracts.js": ["www/contracts.debug.js"],
+          "www/survey.js": ["www/survey.debug.js"],
+          "www/funding.js": ["www/funding.debug.js"],
+          "www/core.js": ["www/core.debug.js"],
+          "www/slick.js": ["www/slick.debug.js"],
+          "www/pixi.js": ["www/pixi.debug.js"],
+          "www/ukov.js": ["www/ukov.debug.js"],
+          "www/mock.js": ["www/mock.debug.js"],
 
-          "<%= www %>/app.js": ["<%= www %>/app.debug.js"],
-          "<%= www %>/lib.js": ["<%= www %>/lib.debug.js"],
+          "www/app.js": ["www/app.debug.js"],
+          "www/lib.js": ["www/lib.debug.js"],
+
+          "www/sales/app.js": ["www/sales/app.debug.js"],
+          "www/sales/lib.js": ["www/sales/lib.debug.js"],
         }
       }
     },
     jade: {
       index: {
         files: {
-          "<%= www %>/index.html": "index.jade",
+          "www/index.html": "index.jade",
         },
       },
       prod: {
@@ -214,10 +258,11 @@ module.exports = function(grunt) {
           },
         },
         files: {
-          "<%= www %>/crm/index.html": "crm/index.jade",
-          "<%= www %>/nimis/index.html": "nimis/index.jade",
-          "<%= www %>/spec/index.html": "spec/index.jade",
-          "<%= www %>/core.html": "app/core/_all.jade",
+          "www/crm/index.html": "crm/index.jade",
+          "www/nimis/index.html": "nimis/index.jade",
+          "www/sales/index.html": "sales/index.jade",
+          "www/spec/index.html": "spec/index.jade",
+          "www/core.html": "app/core/_all.jade",
         },
       },
       prod_debug: {
@@ -228,9 +273,10 @@ module.exports = function(grunt) {
           },
         },
         files: {
-          "<%= www %>/crm/index.debug.html": "crm/index.jade",
-          "<%= www %>/nimis/index.debug.html": "nimis/index.jade",
-          "<%= www %>/spec/index.debug.html": "spec/index.jade",
+          "www/crm/index.debug.html": "crm/index.jade",
+          "www/nimis/index.debug.html": "nimis/index.jade",
+          "www/sales/index.debug.html": "sales/index.jade",
+          "www/spec/index.debug.html": "spec/index.jade",
         },
       },
       dev: {
@@ -242,12 +288,13 @@ module.exports = function(grunt) {
         files: {
           "crm/index.html": "crm/index.jade",
           "nimis/index.html": "nimis/index.jade",
+          "sales/index.html": "sales/index.jade",
           "spec/index.html": "spec/index.jade",
         },
       },
       packaged: {
         files: {
-          "<%= www %>/core.html": "app/core/_all.jade",
+          "www/core.html": "app/core/_all.jade",
         },
       },
     },
@@ -257,7 +304,8 @@ module.exports = function(grunt) {
           cleancss: true,
         },
         files: {
-          "<%= www %>/nimis/index.css": "nimis/index.less",
+          "www/nimis/index.css": "nimis/index.less",
+          "www/sales/index.css": "sales/index.less",
         },
       },
       dev: {
@@ -266,6 +314,7 @@ module.exports = function(grunt) {
         },
         files: {
           "nimis/index.css": "nimis/index.less",
+          "sales/index.css": "sales/index.less",
         },
       },
       packaged: {
@@ -273,7 +322,7 @@ module.exports = function(grunt) {
           cleancss: true,
         },
         files: {
-          "<%= www %>/core.css": "app/core/_all.less",
+          "www/core.css": "app/core/_all.less",
         },
       },
     },

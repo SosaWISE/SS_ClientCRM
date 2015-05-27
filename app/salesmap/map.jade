@@ -1,0 +1,283 @@
+//- <!DOCTYPE html>
+//- <html>
+    <head>
+        <meta charset="utf-8",/>
+        <meta,name="viewport",content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui",/>
+
+        <script language="javascript",type="text/javascript",src="view/js/BarGraph.js">
+        <script language="javascript",type="text/javascript",src="view/js/angular/angular.min.js">
+        <script language="javascript",type="text/javascript",src="view/js/common-2.0.js">
+        <script language="javascript",type="text/javascript",src="view/js/global_vars.js">
+        <script language="javascript",type="text/javascript",src="view/js/standard.js">
+        <link rel="stylesheet",type="text/css",href="view/css/standard.css",/>
+
+        //- Editable head
+
+        <title>Sales map
+        <meta,name="description",content="",/>
+    <script type="text/javascript",src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCITeswJw6LmEelMuW6OVAniLTG-K_3NcU">
+        <script language="javascript",type="text/javascript",src="view/js/map/contactVmService.js">
+        <script language="javascript",type="text/javascript",src="view/js/map/SalesAreaService.js">
+        <script language="javascript",type="text/javascript",src="view/js/map/contactVmTimelineService.js">
+        <script language="javascript",type="text/javascript",src="view/js/map/map-vars.js">
+        <script language="javascript",type="text/javascript",src="view/js/map/map.js">
+        <link rel="stylesheet",type="text/css",href="view/css/map.css",/>
+
+        //- END Editable head
+    <body,ng-app="MySite">
+
+
+div(class="salesmap dock r3-40p",data-bind="css:{'r-show':contactVm}")
+  //- div(id="loading-screen",ng-show="isLoading")
+    div(id="loading-logo")
+
+  //- div(id="map-canvas")
+  div(class="map-canvas",data-bind="gmap:gmapVm")
+
+  //- div(id="settings-button",ng-click="displaySettings()")
+  //- div(id="tools-button",ng-click="displayTools()",ng-show="$site.hasPermission(['OFFICE_STATS','COMPANY_STATS'])")
+
+
+  //- Settings/Filters panel
+  //- div(id="settings-panel",ng-class="{open:settingsAreDisplayed,close:!settingsAreDisplayed}")
+    div(class="panel-close",ng-click="hideSettings()")
+
+    //- Filter contacts already on the map
+    div(id="map-filters")
+      h2 Filters
+      div
+        |Show contacts made in
+        select(ng-model="officeId",ng-options="o.id as (o.id == 0 ? o.officeCity : (o.officeCity + ', ' + o.officeState)) for o in offices",ng-change="contactVm.filterVisibleContacts(this)")
+        span(ng-show="officeId")
+          | by
+          select(ng-model="salesRepId",ng-options="r.id as (r.firstName + ' ' + r.lastName) for r in salesReps | salesRepFilterByOffice:officeId",ng-change="contactVm.filterVisibleContacts(this)")
+
+      div(class="categories-filter")
+        h3
+          | Categories
+          div(class="pill left lighter",ng-click="selectAllCategories()") Select all
+          div(class="pill right",ng-click="selectNoneCategories()") none
+          div(class="pill float-right",ng-click="displayEditCategoriesDialog()") Edit
+
+        div(class="filter-container")
+          div(class="columns")
+            div(ng-repeat="c in categories")
+              input(type="checkbox",ng-model="c.visible",ng-change="contactVm.filterVisibleContacts(this)",id="ct{{$index}}")
+              label(for="ct{{$index}}") {{c.name}}
+
+
+
+      div(class="current-systems-filter")
+        h3
+          | Current Systems
+          div(class="pill left lighter",ng-click="selectAllSystemTypes()") Select all
+          div(class="pill right",ng-click="selectNoneSystemTypes()") none
+
+        div(class="filter-container")
+          div(class="columns")
+            div(ng-repeat="s in systemTypes")
+              input(type="checkbox",ng-model="s.visible",ng-change="contactVm.filterVisibleContacts(this)",id="st{{$index}}")
+              label(for="st{{$index}}")
+                div
+                | {{s.companyName}}
+
+
+      div(class="iconmode-filter")
+        h3 Map icons
+        div(class="filter-container")
+          div
+            input(type="radio",ng-model="iconmode",name="iconmode",value="category",id="iconmode-ct")
+            label(for="iconmode-ct") Use category icons on map
+          div
+            input(type="radio",ng-model="iconmode",name="iconmode",value="system",id="iconmode-st")
+            label(for="iconmode-st") Use system logos on map
+
+
+  //- div(id="tools-panel",ng-class="{open:toolsAreDisplayed,close:!toolsAreDisplayed}",ng-show="$site.hasPermission(['OFFICE_STATS','COMPANY_STATS'])")
+    div(class="panel-close",ng-click="hideTools()")
+
+    //- Manager tools
+    div(id="option-icons")
+      h2 Tools
+      div(class="inline-icon",ng-click="setMapMode('areas')")
+        div(class="icon",id="edit-areas-icon")
+        div(class="label") View/edit sales areas
+
+      div(class="inline-icon",ng-click="displayContactTimeline()")
+        div(class="icon",id="contact-timeline-icon")
+        div(class="label") View contacts on timeline
+
+
+  //- Timeline view
+  //- div(id="contact-timeline-panel",ng-class="{open:timelineIsDisplayed,close:!timelineIsDisplayed}")
+    div(class="panel-close",ng-click="hideContactTimeline()")
+
+    h2 Contacting Timeline
+    div
+      | From
+      input(type="date",ng-model="ContactTimeline.startTimestamp")
+      | to
+      input(type="date",ng-model="ContactTimeline.endTimestamp")
+      button(ng-click="ContactTimeline.refreshTimeline(this)",class="small") Go
+
+
+    //- Filters
+    div(id="contact-timeline-filter-summary")
+      div(ng-click="ContactTimeline.displayFilters(this)") Filters
+      div(ng-click="ContactTimeline.displayFilters(this)") {{ContactTimeline.getFiltersAsString(this)}}
+
+      div(id="contact-timeline-filters-popup",ng-show="ContactTimeline.timelineFiltersAreDisplayed")
+        h2 Filters
+        div
+          | Show contacts made in
+          select(ng-model="officeId",ng-options="o.id as (o.id == 0 ? o.officeCity : (o.officeCity + ', ' + o.officeState)) for o in offices")
+          span(ng-show="officeId")
+            | by
+            select(ng-model="salesRepId",ng-options="r.id as (r.firstName + ' ' + r.lastName) for r in salesReps | salesRepFilterByOffice:officeId")
+        div(class="categories-filter")
+          h3
+            | Categories
+            div(class="select-all",ng-click="selectAllCategories()") Select all
+            div(class="select-none",ng-click="selectNoneCategories()") none
+          div(class="filter-container")
+            div(class="columns")
+              div(ng-repeat="c in categories")
+                input(type="checkbox",ng-model="c.visible",id="ct{{$index}}_2")
+                label(for="ct{{$index}}_2") {{c.name}}
+
+
+        div(class="current-systems-filter")
+          h3
+            | Current Systems
+            div(class="select-all",ng-click="selectAllSystemTypes()") Select all
+            div(class="select-none",ng-click="selectNoneSystemTypes()") none
+          div(class="filter-container")
+            div(class="columns")
+              div(ng-repeat="s in systemTypes")
+                input(type="checkbox",ng-model="s.visible",id="st{{$index}}_2")
+                label(for="st{{$index}}_2") {{s.companyName}}
+
+
+        div(class="button-container")
+          button(ng-click="ContactTimeline.applyFilters(this)") Done
+
+
+    //- Graph
+    div(id="contact-timeline-container",graph-id="'contact-timeline'",graph-data="[]",graph-options="ContactTimeline.options",bar-graph)
+
+
+  //- Edit areas main menu
+  //- div(id="edit-areas-select-panel",ng-class="{open:(mapMode=='areas' && SalesArea.mode=='select'),close:!(mapMode=='areas' && SalesArea.mode=='select')}")
+    button(ng-click="SalesArea.setSalesAreaMode(this, 'new')") New area
+    button(ng-click="SalesArea.saveSalesAreas(this)") Save
+    button(ng-click="SalesArea.cancelSalesAreaMode(this)",class="cancel") Exit edit mode
+
+
+  //- Create/edit area panel
+  //- div(id="edit-areas-new-panel",ng-class="{open:(mapMode=='areas'&&(SalesArea.mode=='new' || SalesArea.mode=='edit')),close:!(mapMode=='areas'&&(SalesArea.mode=='new' || SalesArea.mode=='edit'))}")
+    form(name="newSalesAreaForm")
+      div(class="form-element")
+        label Office:
+        select(name="officeId",ng-model="SalesArea.currentArea.officeId",ng-options="o.id as (o.officeCity + ', ' + o.officeState) for o in offices")
+      div(class="form-element",ng-show="SalesArea.currentArea && SalesArea.currentArea.officeId")
+        label Assigned to:
+        select(name="salesRepId",ng-model="SalesArea.currentArea.salesRepId",ng-options="r.id as (r.firstName + ' ' + r.lastName) for r in salesReps | filter:{officeId:(SalesArea.currentArea && SalesArea.currentArea.officeId)}")
+      div(class="form-element")
+        label Start assignment on:
+        input(type="datetime-local",name="startTimestamp",ng-model="SalesArea.currentArea.startTimestamp")
+      div(class="footer-button-group")
+        button(ng-click="SalesArea.saveCurrentSalesArea(this)") Save
+        button(ng-click="SalesArea.cancelCurrentSalesArea(this)",class="cancel") Cancel
+        button(ng-click="SalesArea.deleteCurrentSalesArea(this)",class="secondary") Delete
+
+
+  //- Create/edit contact panel
+
+  div(class="dock-right")
+    //- div(class="btn-dock",data-bind="click:function(){showContact(!showContact())},toggle:{closed:!showContact()}")
+      div(class="close")
+      div(class="open")
+    div(class="new-contact",data-bind="with:contactVm")
+      h2 Homeowner notes
+      form(name="contactForm")
+        div(class="field")
+          input(type="text",name="firstName",placeholder="First name",
+            data-bind="ukov:data.FirstName,value:data.FirstName,valueUpdate:'keyup'")
+        div(class="field")
+          input(type="text",name="lastName",placeholder="Last name",
+            data-bind="ukov:data.LastName,value:data.LastName,valueUpdate:'keyup'")
+        div(class="field")
+          input(type="text",name="fullAddress",placeholder="Address",
+            data-bind="value:fullAddress,valueUpdate:'keyup'",readonly)
+        div(class="field")
+          label Category
+          select(data-bind="options:$parent.categorys,optionsValue:'ID',optionsText:'Name',value:data.CategoryId")
+          //- select(name="category",data-bind="data.CategoryId",ng-change="categoryChanged()",required)
+            option(ng-repeat="c in categories",value="{{c.id}}",ng-selected="c.id==0") {{c.name}}
+            option(value="new") Create a new category...
+          div(class="fine-print right link inverted",data-bind="cmd:cmdEditCategories") Edit categories
+        div(class="field")
+          label Current system
+          select(data-bind="options:$parent.systemTypes,optionsValue:'ID',optionsText:'CompanyName',value:data.SystemId")
+        div(class="field")
+          label Notes
+          textarea(name="note",data-bind="ukov:data.Note,value:data.Note,valueUpdate:'input'")
+        div(class="field")
+          label Follow up
+          input(type="text",name="followup",placeholder="mm/dd/yyyy --:-- --",
+            data-bind="ukov:data.FollowupOn,datetimevalue:data.FollowupOn,valueUpdate:'keyup'")
+          //- input(type="datetime-local",name="followup",
+            data-bind="ukov:data.FollowupOn,datepickervalue:data.FollowupOn")
+          //- onchange="alert('asfd')")
+        div(class="button-container")
+          button(data-bind="cmd:cmdSave") Save
+          button(class="cancel",data-bind="cmd:clickCancel") Cancel
+
+
+  //- Modal dialog boxes
+  //- div(class="modal-shadow",ng-show="isDialogDisplayed()")
+
+  //- New category dialog box
+  //- div(id="new-category-dialog",class="modal-container",ng-show="isDialogDisplayed('newCategoryDialog')")
+    div(class="panel-close",ng-click="hideNewCategoryDialog()")
+
+    div(class="modal-content")
+      h2 New Category
+      div
+        input(type="text",id="newCategoryName",ng-model="contactVm.newCategory.name")
+      div(id="icon-container")
+        div Choose an icon for this new category
+        div(ng-repeat="ico in categoryIcons",class="categoryIcon",ng-class="{selected:ico==contactVm.newCategory.filename}",ng-click="contactVm.selectNewCategory(ico)")
+          div(class="img",ng-style="{'background-image':'url('+getCategoryIconPath(ico)+')'}")
+
+      div(class="button-container")
+        button(ng-click="contactVm.saveCategory(this)") Save
+        button(class="cancel",ng-click="hideNewCategoryDialog()") Cancel
+        button(class="secondary",ng-show="contactVm.newContacType.id") Delete
+
+  //- Edit categories dialog box
+  //- div(id="edit-categories-dialog",class="modal-container",ng-show="isDialogDisplayed('editCategoriesDialog')")
+    div(class="panel-close",ng-click="hideEditCategoriesDialog()")
+
+    div(class="modal-content")
+      h2 Edit Categories
+
+      div(id="category-list")
+        div(ng-repeat="ct in categories",class="category")
+          div(class="categoryIcon",ng-click="displayNewCategoryDialog(ct.id)")
+            div(class="img",ng-style="{'background-image':'url('+getCategoryIconPath(ct.filename)+')'}")
+          span(ng-click="displayNewCategoryDialog(ct.id)") {{ct.name}}
+
+          div(class="float-right",ng-hide="categoryIdToDelete==ct.id")
+            div(class="pill subtle",ng-click="categoryIdToDelete=ct.id") Delete
+
+          div(class="float-right",ng-show="categoryIdToDelete==ct.id")
+            div(class="pill left warning",ng-click="contactVm.deleteCategory(this, ct)") Delete
+            div(class="pill right",ng-click="categoryIdToDelete=null") Cancel
+
+      div(class="new-category")
+        button(class="small tertiary",ng-click="displayNewCategoryDialog()") New category
+      div(class="button-container")
+        button(class="cancel",ng-click="hideEditCategoriesDialog()") Close
+
+  div(class="layers",data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

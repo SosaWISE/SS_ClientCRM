@@ -10,7 +10,7 @@ define("src/scheduler/ticket.editor.vm", [
   "src/core/combo.vm",
   "ko",
   "src/ukov",
-  "src/dataservice",
+  "dataservice",
   "src/core/strings",
   "src/core/joiner",
   "src/core/base.vm",

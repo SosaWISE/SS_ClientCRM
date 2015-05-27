@@ -1,6 +1,6 @@
 define("src/viz/idphoto.vm", [
   "src/core/numbers",
-  "src/dataservice",
+  "dataservice",
   "jquery",
   "ko",
   "pixi",

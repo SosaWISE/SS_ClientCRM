@@ -1,5 +1,5 @@
 define("src/nimis/apilogger", [
-  "src/dataservice",
+  "dataservice",
   "src/core/notify",
   "howie",
 ], function(

@@ -1,3 +1,9 @@
+// dataservice alias
+define("dataservice", ["src/dataservice"], function(dataservice) {
+  "use strict";
+  return dataservice;
+});
+
 // nickname harold
 define("howie", [
   "src/core/harold",
@@ -91,7 +97,7 @@ define("src/nimis/bootstrapper", [
   "setup",
   "jquery", "ko",
   "src/nimis/apilogger",
-  "src/dataservice",
+  "dataservice",
   "src/core/notify",
   "src/core/authorize",
   "src/core/storage",
@@ -134,7 +140,10 @@ define("src/nimis/bootstrapper", [
     }
 
     function login(destPath, data, cb) {
-      dataservice.user.auth(data, utils.safeCallback(cb, function(err, resp) {
+      dataservice.api_auth.user.save({
+        link: "SignIn",
+        data: data,
+      }, null, utils.safeCallback(cb, function(err, resp) {
         if (err) {
           console.error(err);
           return notify.error(err, 10);
@@ -165,7 +174,9 @@ define("src/nimis/bootstrapper", [
     //
     function logout(cb) {
       // logout without caring about response
-      dataservice.user.logout(cb);
+      dataservice.api_auth.user.save({
+        link: "SignOut",
+      }, null, cb);
       // let the request start
       window.setTimeout(function() {
         // remove session id (effectively logging the user out)
@@ -227,7 +238,9 @@ define("src/nimis/bootstrapper", [
       }, config);
     }
 
-    dataservice.session.start("", function(err, resp) {
+    dataservice.api_auth.user.save({
+      link: "SessionStart",
+    }, null, function(err, resp) {
       if (err) {
         notify.error(err);
       } else {
@@ -236,7 +249,9 @@ define("src/nimis/bootstrapper", [
       }
     });
     //
-    dataservice.session.sessionData(function(err, resp) {
+    dataservice.api_auth.user.read({
+      link: "SessionData",
+    }, null, function(err, resp) {
       console.log("sessionData:", JSON.stringify(resp, null, "  "));
     });
   });

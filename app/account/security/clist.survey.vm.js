@@ -1,7 +1,7 @@
 define("src/account/security/clist.survey.vm", [
   "howie",
   "ko",
-  "src/dataservice",
+  "dataservice",
   "src/survey/takesurvey.vm",
   "src/account/security/clist.survey.gvm",
   "src/core/strings",

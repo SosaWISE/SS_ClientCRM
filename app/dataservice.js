@@ -1,13 +1,9 @@
 define("src/dataservice", [
   "src/core/dataservice.base",
   "howie",
-  "src/dataservices/user",
-  "src/dataservices/session",
 ], function(
   DataserviceBase,
-  howie,
-  UserDataservice,
-  SessionDataservice
+  howie
 ) {
   "use strict";
 
@@ -24,12 +20,15 @@ define("src/dataservice", [
 
   return {
     base: new DataserviceBase(null, howie.fetch("config").serviceDomain),
-    user: new UserDataservice(),
-    session: new SessionDataservice(),
+    // user: new UserDataservice(),
+    // session: new SessionDataservice(),
 
     //
     // with /api
     //
+    api_auth: createService("api/auth", [
+      "user",
+    ]),
     api_ac: createService("api/ac", [
       "actionRequests",
       "types",

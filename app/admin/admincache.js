@@ -1,5 +1,5 @@
 define("src/admin/admincache", [
-  "src/dataservice",
+  "dataservice",
   "src/core/typecacher",
 ], function(
   dataservice,

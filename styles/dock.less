@@ -164,6 +164,9 @@
   &.r3-160 {
     .make-right-dock(160px);
   }
+  &.r3-40p {
+    .make-right-dock(40%);
+  }
   //
   //
   //
@@ -184,6 +187,24 @@
   }
   &.t3-40 {
     .make-top-dock(40px);
+  }
+  //
+  //
+  //
+  .make-bottom-dock(@dockHeight) {
+    > .dock-bottom {
+      bottom: -@dockHeight;
+      height: @dockHeight;
+    }
+    &.t-show {
+      > .dock-bottom {
+        bottom: 0px;
+      }
+      > .dock-content,
+      > .dock-left {
+        bottom: @dockHeight;
+      }
+    }
   }
 
 

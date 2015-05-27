@@ -1,5 +1,7 @@
+//- this one needs to be included in order to work as the login form
 #tmpl-loginform
- include ./loginform.jade
+  //- script(id="tmpl-loginform",type="text/html")
+  include ./loginform.jade
 
-#tmpl-login-panel
+script(id="tmpl-login-panel",type="text/html")
   include ./login.panel.jade

@@ -1,5 +1,5 @@
 define("src/account/security/systemdetails.editor.vm", [
-  "src/dataservice",
+  "dataservice",
   "src/core/combo.vm",
   "src/core/notify",
   "src/core/utils",

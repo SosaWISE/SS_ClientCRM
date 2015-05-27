@@ -1,5 +1,5 @@
 define("src/account/acctstore", [
-  "src/dataservice",
+  "dataservice",
   "src/core/utils",
 ], function(
   dataservice,

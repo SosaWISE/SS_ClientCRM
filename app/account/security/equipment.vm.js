@@ -1,7 +1,7 @@
 define("src/account/security/equipment.vm", [
   "src/account/security/securityhelper",
   "ko",
-  "src/dataservice",
+  "dataservice",
   "src/account/security/equipment.editor.vm",
   "src/account/security/equipment.gvm",
   "src/core/strings",

@@ -1,6 +1,6 @@
 define("mock/dataservices/monitoringstationsrv.mock", [
   "src/core/strings",
-  "src/dataservice",
+  "dataservice",
   "src/core/mockery",
 ], function(
   strings,

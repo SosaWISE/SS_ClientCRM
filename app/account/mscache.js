@@ -1,5 +1,5 @@
 define("src/account/mscache", [
-  "src/dataservice",
+  "dataservice",
   "src/core/typecacher",
 ], function(
   dataservice,

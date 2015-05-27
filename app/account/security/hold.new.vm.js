@@ -1,5 +1,5 @@
 define("src/account/security/hold.new.vm", [
-  "src/dataservice",
+  "dataservice",
   "src/ukov",
   "ko",
   "src/account/acctstore",

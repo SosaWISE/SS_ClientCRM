@@ -2,7 +2,7 @@ define("src/inventory/audit.vm", [
   "src/inventory/audit.gvm",
   "src/inventory/audit-inventory.gvm",
   "src/inventory/invcache",
-  "src/dataservice",
+  "dataservice",
   "src/ukov",
   "ko",
   "src/core/printer",

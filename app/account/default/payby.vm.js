@@ -2,7 +2,7 @@ define("src/account/default/payby.vm", [
   "src/account/default/payby.credit.vm",
   "src/account/default/payby.ach.vm",
   "src/account/default/payby.invoice.vm",
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/ukov",
   "src/core/notify",

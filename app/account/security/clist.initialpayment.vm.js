@@ -4,7 +4,7 @@ define("src/account/security/clist.initialpayment.vm", [
   "src/account/default/payby.vm",
   "src/account/default/address.validate.vm",
   "src/account/default/runcredit.vm",
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/ukov",
   "src/core/combo.vm",

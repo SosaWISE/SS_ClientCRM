@@ -3,7 +3,7 @@ define("src/scheduler/techs.vm", [
   "src/scheduler/tech.vm",
   "jquery",
   "ko",
-  "src/dataservice",
+  "dataservice",
   "src/ukov",
   "src/core/joiner",
   "src/core/combo.vm",

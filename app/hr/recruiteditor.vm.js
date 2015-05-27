@@ -3,7 +3,7 @@ define("src/hr/recruiteditor.vm", [
   "src/account/default/address.validate.vm",
   "src/hr/usersearch.vm",
   "src/core/combo.vm",
-  "src/dataservice",
+  "dataservice",
   "src/ukov",
   "src/core/joiner",
   "src/core/strings",

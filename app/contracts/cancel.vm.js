@@ -1,6 +1,6 @@
 define("src/contracts/cancel.vm", [
   "src/account/mscache",
-  "src/dataservice",
+  "dataservice",
   "src/ukov",
   "ko",
   "src/core/combo.vm",

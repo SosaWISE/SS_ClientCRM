@@ -1,5 +1,5 @@
 define("src/account/security/emcontacteditor.vm", [
-  "src/dataservice",
+  "dataservice",
   "src/core/combo.vm",
   "src/core/strings",
   "src/core/notify",

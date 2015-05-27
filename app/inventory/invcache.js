@@ -1,5 +1,5 @@
 define("src/inventory/invcache", [
-  "src/dataservice",
+  "dataservice",
   "src/core/typecacher",
 ], function(
   dataservice,

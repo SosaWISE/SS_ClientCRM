@@ -1,7 +1,7 @@
 define("src/account/security/dispatchagencys.finder.vm", [
   "src/account/default/address.validate.vm",
   "src/core/combo.vm",
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/slick/rowevent",
   "src/slick/slickgrid.vm",

@@ -1,5 +1,5 @@
 define("src/account/security/clist.industrynums.vm", [
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/slick/slickgrid.vm",
   "src/core/notify",

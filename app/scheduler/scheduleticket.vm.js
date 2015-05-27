@@ -1,6 +1,6 @@
 define("src/scheduler/scheduleticket.vm", [
   "moment",
-  "src/dataservice",
+  "dataservice",
   "src/scheduler/scheduler-helper",
   "src/scheduler/month.vm",
   "src/scheduler/calcol",

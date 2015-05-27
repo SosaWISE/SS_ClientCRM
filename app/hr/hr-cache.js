@@ -1,5 +1,5 @@
 define("src/hr/hr-cache", [
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/core/typecacher",
 ], function(

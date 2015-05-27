@@ -5,7 +5,7 @@ define("src/account/default/address.validate.vm", [
   "src/core/base.vm",
   "ko",
   "src/ukov",
-  "src/dataservice"
+  "dataservice"
 ], function(
   ComboViewModel,
   notify,

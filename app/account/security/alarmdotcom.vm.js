@@ -1,5 +1,5 @@
 define("src/account/security/alarmdotcom.vm", [
-  "src/dataservice",
+  "dataservice",
   "src/account/mscache",
   "src/account/security/alarmdotcom.changeservicepackage.vm",
   "src/account/security/alarmdotcom.swapmodem.vm",

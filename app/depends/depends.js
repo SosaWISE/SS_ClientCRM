@@ -162,6 +162,17 @@
       // increment expected index
       expectedIndex++;
 
+      if (typeof(name) === "function" || (name instanceof Function)) {
+        name(function(value) {
+          moduleResolved({
+            // name: "func",
+            deps: [],
+            value: value,
+          }, index);
+        });
+        return;
+      }
+
       if (dependant) {
         if (walkUp(dependant, name)) {
           // circular dependency, use undefined as the dependency value

@@ -4,7 +4,7 @@ define("src/hr/user.vm", [
   "src/hr/recruitseason.vm",
   "src/hr/usereditor.vm",
   "ko",
-  "src/dataservice",
+  "dataservice",
   "src/core/strings",
   "src/core/notify",
   "src/core/utils",

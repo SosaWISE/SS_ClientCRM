@@ -1,6 +1,6 @@
 define("src/account/security/emcontacts.vm", [
   "ko",
-  "src/dataservice",
+  "dataservice",
   "src/account/security/emcontacteditor.vm",
   "src/account/security/emcontacts.gvm",
   "src/core/strings",
