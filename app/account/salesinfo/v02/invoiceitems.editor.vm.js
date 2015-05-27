@@ -1,7 +1,7 @@
 define("src/account/salesinfo/v02/invoiceitems.editor.vm", [
   "src/account/mscache",
   "src/account/default/rep.find.vm",
-  "src/dataservice",
+  "dataservice",
   "src/core/combo.vm",
   "src/core/arrays",
   "src/core/strings",

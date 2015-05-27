@@ -1,6 +1,6 @@
 define("src/scheduler/techskills.vm", [
   "src/scheduler/scheduler-cache",
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/ukov",
   "src/core/utils",

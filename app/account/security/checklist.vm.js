@@ -1,5 +1,5 @@
 define("src/account/security/checklist.vm", [
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/account/security/clist.qualify.vm",
   "src/account/security/clist.salesinfo.vm",

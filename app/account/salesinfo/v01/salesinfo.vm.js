@@ -8,7 +8,7 @@ define("src/account/salesinfo/v01/salesinfo.vm", [
   "src/account/salesinfo/v01/salesinfo.gvm",
   "src/account/salesinfo/options",
   "src/ukov",
-  "src/dataservice",
+  "dataservice",
   "src/core/numbers",
   "src/core/strings",
   "src/core/notify",

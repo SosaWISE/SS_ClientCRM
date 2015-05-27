@@ -3,7 +3,7 @@ define("src/scheduler/service.tickets.vm", [
   "src/scheduler/scheduler-cache",
   "src/scheduler/service.tickets.gvm",
   "src/scheduler/ticket.editor.vm",
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/core/utils",
   "src/core/controller.vm",

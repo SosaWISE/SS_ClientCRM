@@ -1,6 +1,6 @@
 define("src/account/security/holds.vm", [
   "ko",
-  "src/dataservice",
+  "dataservice",
   "src/account/accthelper",
   "src/account/acctstore",
   "src/account/mscache",

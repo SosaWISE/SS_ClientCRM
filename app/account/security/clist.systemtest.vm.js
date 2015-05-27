@@ -1,6 +1,6 @@
 define("src/account/security/clist.systemtest.vm", [
   "src/account/security/devicetests.gvm",
-  "src/dataservice",
+  "dataservice",
   "src/account/security/signalhistory.vm",
   "src/ukov",
   "ko",

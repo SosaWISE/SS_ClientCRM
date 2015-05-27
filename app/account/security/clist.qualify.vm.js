@@ -1,5 +1,5 @@
 define("src/account/security/clist.qualify.vm", [
-  "src/dataservice",
+  "dataservice",
   "src/core/strings",
   "src/core/notify",
   "src/core/utils",

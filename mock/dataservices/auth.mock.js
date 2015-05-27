@@ -1,5 +1,5 @@
 define("mock/dataservices/auth.mock", [
-  "src/dataservice",
+  "dataservice",
   "src/core/mockery",
 ], function(
   dataservice,

@@ -3,7 +3,7 @@ define("src/account/security/clist.systemdetails.vm", [
   "src/account/security/systemdetails.editor.vm",
   "src/account/security/equipment.vm",
   "src/core/notify",
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/core/strings",
   "src/core/utils",

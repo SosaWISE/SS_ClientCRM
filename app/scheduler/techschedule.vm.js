@@ -1,7 +1,7 @@
 define("src/scheduler/techschedule.vm", [
   "src/scheduler/scheduler-helper",
   "moment",
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/ukov",
   "src/core/notify",

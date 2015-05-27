@@ -1,6 +1,6 @@
 define("src/account/security/signalhistory.vm", [
   "src/account/security/securityhelper",
-  "src/dataservice",
+  "dataservice",
   "moment",
   "ko",
   "src/slick/slickgrid.vm",

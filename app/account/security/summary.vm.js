@@ -1,5 +1,5 @@
 define("src/account/security/summary.vm", [
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/account/accthelper",
   "src/account/acctstore",

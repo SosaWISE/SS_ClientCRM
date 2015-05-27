@@ -1,6 +1,6 @@
 define("src/nimis/ping", [
   "src/core/bigticker",
-  "src/dataservice",
+  "dataservice",
   "src/config"
 ], function(
   bigticker,

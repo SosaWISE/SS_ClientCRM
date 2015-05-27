@@ -38,8 +38,8 @@ html
               span(data-bind="attr:{class:icoClass}")
               span(class="txt", data-bind="text:title")
           <!-- /ko -->
-          a(class="logout",data-bind="cmd:cmdLogout")
-            span(class="txt") Logout
+          a(class="logout",data-bind="cmd:cmdLogout",title="Logout")
+            span(class="ico fa fa-2x fa-sign-out")
 
         div(class="wrap")
           div(class="panels", data-bind="foreach:panels")
@@ -70,12 +70,12 @@ html
     //- js
     if release
       script(src="/depends.conf.js")
-      script(src="/lib.js")
-      script(src="/app.js")
+      script(src="lib.js")
+      script(src="app.js")
     else if debug
       script(src="/depends.debug.conf.js")
-      script(src="/lib.debug.js")
-      script(src="/app.debug.js")
+      script(src="lib.debug.js")
+      script(src="app.debug.js")
     else
       script(src="/depends.conf.js")
       script(src="/app/depends/depends.js")

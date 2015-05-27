@@ -1,5 +1,5 @@
 define("src/scheduler/appt.editor.vm", [
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/ukov",
   "src/core/strings",

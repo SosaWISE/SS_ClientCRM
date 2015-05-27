@@ -8,7 +8,7 @@ define("src/sales/dataservice", [
   "use strict";
 
   function createService(name, subPaths, domain) {
-    domain = domain || howie.fetch("config").salesDomain + "/" + name;
+    domain = (domain || howie.fetch("config").salesDomain) + "/" + name;
 
     var result = {};
     subPaths.forEach(function(collectionName) {

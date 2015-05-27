@@ -1,6 +1,6 @@
 define("src/account/default/masteraccount.vm", [
   "src/account/default/notes.vm",
-  "src/dataservice",
+  "dataservice",
   "src/account/security/account.vm",
   "ko",
   "howie",

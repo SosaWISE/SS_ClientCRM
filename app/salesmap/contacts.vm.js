@@ -7,7 +7,7 @@ define("src/salesmap/contacts.vm", [
 
   "src/salesmap/maphelper",
   "ko",
-  "src/sales/dataservice",
+  "dataservice",
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",

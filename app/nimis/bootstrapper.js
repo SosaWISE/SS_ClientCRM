@@ -1,3 +1,9 @@
+// dataservice alias
+define("dataservice", ["src/dataservice"], function(dataservice) {
+  "use strict";
+  return dataservice;
+});
+
 // nickname harold
 define("howie", [
   "src/core/harold",
@@ -91,7 +97,7 @@ define("src/nimis/bootstrapper", [
   "setup",
   "jquery", "ko",
   "src/nimis/apilogger",
-  "src/dataservice",
+  "dataservice",
   "src/core/notify",
   "src/core/authorize",
   "src/core/storage",

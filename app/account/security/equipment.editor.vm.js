@@ -2,7 +2,7 @@ define("src/account/security/equipment.editor.vm", [
   "howie",
   "src/core/querystring",
   "src/account/security/securityhelper",
-  "src/dataservice",
+  "dataservice",
   "src/core/joiner",
   "src/core/strings",
   "src/core/combo.vm",

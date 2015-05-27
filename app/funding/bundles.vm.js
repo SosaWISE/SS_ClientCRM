@@ -1,5 +1,5 @@
 define("src/funding/bundles.vm", [
-  "src/dataservice",
+  "dataservice",
   "src/funding/bundlesearch.vm",
   "ko",
   "src/core/utils",

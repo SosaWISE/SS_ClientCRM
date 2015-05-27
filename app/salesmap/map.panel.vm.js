@@ -2,7 +2,7 @@ define("src/salesmap/map.panel.vm", [
   "src/salesmap/contact.editor.vm",
   "src/salesmap/maphelper",
   "src/salesmap/gmap.vm",
-  "src/sales/dataservice",
+  "dataservice",
   "gmaps",
   "ko",
   "src/core/layers.vm",

@@ -1,6 +1,6 @@
 define("src/account/security/dispatchagency.editor.vm", [
   "src/core/combo.vm",
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/ukov",
   "src/core/notify",

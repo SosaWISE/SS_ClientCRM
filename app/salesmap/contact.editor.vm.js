@@ -1,6 +1,6 @@
 define("src/salesmap/contact.editor.vm", [
   "src/salesmap/maphelper",
-  "src/sales/dataservice",
+  "dataservice",
   "ko",
   "src/ukov",
   "src/core/strings",
@@ -51,7 +51,7 @@ define("src/salesmap/contact.editor.vm", [
     Zip: {},
 
     // Followup
-    Followup: {
+    FollowupOn: {
       converter: ukov.converters.datetime("Invalid date and time for follow up"),
     },
   };

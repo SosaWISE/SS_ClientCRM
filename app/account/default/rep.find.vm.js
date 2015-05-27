@@ -6,7 +6,7 @@ define("src/account/default/rep.find.vm", [
   "ko",
   "src/ukov",
   "src/core/strings",
-  "src/dataservice",
+  "dataservice",
 ], function(
   howie,
   notify,

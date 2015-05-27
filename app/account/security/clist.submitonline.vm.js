@@ -2,7 +2,7 @@ define("src/account/security/clist.submitonline.vm", [
   "src/account/security/dispatchagencys.finder.vm",
   "src/account/security/dispatchagency.editor.vm",
   "src/account/security/dispatchagencys.gvm",
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/core/notify",
   "src/core/utils",

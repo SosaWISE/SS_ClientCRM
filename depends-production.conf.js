@@ -1,7 +1,7 @@
 /* Production depends configuration file */
 window.require = {
   paths: {
-    webconfig: "/webconfig",
+
   },
   pkgs: {
     "/account.js": "src/account",

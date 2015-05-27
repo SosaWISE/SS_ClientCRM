@@ -39,8 +39,8 @@ html
               span(data-bind="attr:{class:icoClass}")
               span(class="txt", data-bind="text:title")
           <!-- /ko -->
-          a(class="logout",data-bind="cmd:cmdLogout")
-            span(class="txt") Logout
+          a(class="logout",data-bind="cmd:cmdLogout",title="Logout")
+            span(class="ico fa fa-3x fa-sign-out")
 
         div(class="wrap")
           div(class="panels", data-bind="foreach:panels")

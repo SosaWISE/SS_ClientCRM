@@ -2,7 +2,7 @@ define("src/account/salesinfo/v02/salesinfo.model", [
   "src/account/default/rep.find.vm",
   "src/account/salesinfo/options",
   "src/account/mscache",
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/ukov",
   "src/core/combo.vm",

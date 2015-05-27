@@ -4,6 +4,12 @@ define("gmaps", [], function() {
   return window.google.maps;
 });
 
+// dataservice alias
+define("dataservice", ["src/sales/dataservice"], function(dataservice) {
+  "use strict";
+  return dataservice;
+});
+
 // nickname harold
 define("howie", [
   "src/core/harold",
@@ -35,8 +41,6 @@ define("setup", [
   "src/core/ko.command",
   "src/core/ko.bindingHandlers.all",
   //
-  "src/account/accache",
-  //
   "src/sales/resources",
   "src/sales/errorcodes",
   //
@@ -52,8 +56,6 @@ define("setup", [
   jquery, ko, // main libs
   p1, p2, p3, //plugins
   //
-  accache,
-  //
   resources,
   errorcodes,
   //
@@ -67,11 +69,6 @@ define("setup", [
   howie
 ) {
   "use strict";
-
-  // add more fetchers
-  howie.onFetch("accache", function() {
-    return accache;
-  });
 
   var config = howie.fetch("config");
 
@@ -97,7 +94,7 @@ define("src/sales/bootstrapper", [
   "setup",
   "jquery", "ko",
   "src/sales/apilogger",
-  "src/dataservice",
+  "dataservice",
   "src/core/notify",
   "src/core/authorize",
   "src/core/storage",

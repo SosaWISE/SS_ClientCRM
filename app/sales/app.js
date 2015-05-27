@@ -38,7 +38,7 @@ define("src/sales/app", [
         options: {
           id: "map",
           title: "Map",
-          icoClass: "ico fa fa-3x fa-shield",
+          icoClass: "ico fa fa-2x fa-map-marker",
         },
         routes: [ //
           {

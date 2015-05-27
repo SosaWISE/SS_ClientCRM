@@ -23,5 +23,6 @@ www
 /testing/
 /zzz/
 /webconfig.js
+*/webconfig.js
 
 node_modules/less/dist

@@ -1,7 +1,7 @@
 define("src/contracts/master.vm", [
   "jquery",
   "src/contracts/contract.vm",
-  "src/dataservice",
+  "dataservice",
   "ko",
   "howie",
   "src/core/notify",

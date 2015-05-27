@@ -34,8 +34,8 @@ div(class="salesmap dock r3-40p",data-bind="css:{'r-show':contactVm}")
   //- div(id="map-canvas")
   div(class="map-canvas",data-bind="gmap:gmapVm")
 
-  div(id="settings-button",ng-click="displaySettings()")
-  div(id="tools-button",ng-click="displayTools()",ng-show="$site.hasPermission(['OFFICE_STATS','COMPANY_STATS'])")
+  //- div(id="settings-button",ng-click="displaySettings()")
+  //- div(id="tools-button",ng-click="displayTools()",ng-show="$site.hasPermission(['OFFICE_STATS','COMPANY_STATS'])")
 
 
   //- Settings/Filters panel
@@ -211,23 +211,23 @@ div(class="salesmap dock r3-40p",data-bind="css:{'r-show':contactVm}")
             data-bind="value:fullAddress,valueUpdate:'keyup'",readonly)
         div(class="field")
           label Category
-          select(data-bind="options:$parent.categorys,optionsValue:'id',optionsText:'name',value:data.CategoryId")
+          select(data-bind="options:$parent.categorys,optionsValue:'ID',optionsText:'Name',value:data.CategoryId")
           //- select(name="category",data-bind="data.CategoryId",ng-change="categoryChanged()",required)
             option(ng-repeat="c in categories",value="{{c.id}}",ng-selected="c.id==0") {{c.name}}
             option(value="new") Create a new category...
           div(class="fine-print right link inverted",data-bind="cmd:cmdEditCategories") Edit categories
         div(class="field")
           label Current system
-          select(data-bind="options:$parent.systemTypes,optionsValue:'id',optionsText:'companyName',value:data.SystemId")
+          select(data-bind="options:$parent.systemTypes,optionsValue:'ID',optionsText:'CompanyName',value:data.SystemId")
         div(class="field")
           label Notes
           textarea(name="note",data-bind="ukov:data.Note,value:data.Note,valueUpdate:'input'")
         div(class="field")
           label Follow up
           input(type="text",name="followup",placeholder="mm/dd/yyyy --:-- --",
-            data-bind="ukov:data.Followup,datetimevalue:data.Followup,valueUpdate:'keyup'")
+            data-bind="ukov:data.FollowupOn,datetimevalue:data.FollowupOn,valueUpdate:'keyup'")
           //- input(type="datetime-local",name="followup",
-            data-bind="ukov:data.Followup,datepickervalue:data.Followup")
+            data-bind="ukov:data.FollowupOn,datepickervalue:data.FollowupOn")
           //- onchange="alert('asfd')")
         div(class="button-container")
           button(data-bind="cmd:cmdSave") Save

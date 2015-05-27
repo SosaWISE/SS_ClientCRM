@@ -1,6 +1,6 @@
 define("src/account/salesinfo/v01/parts.editor.vm", [
   "src/account/default/rep.find.vm",
-  "src/dataservice",
+  "dataservice",
   "src/core/combo.vm",
   "src/core/strings",
   "src/core/notify",

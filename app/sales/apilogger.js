@@ -1,5 +1,5 @@
 define("src/sales/apilogger", [
-  "src/dataservice",
+  "dataservice",
   "src/core/notify",
   "howie",
 ], function(

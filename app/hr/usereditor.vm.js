@@ -4,7 +4,7 @@ define("src/hr/usereditor.vm", [
   "src/hr/hr-cache",
   "src/hr/usersearch.vm",
   "src/core/combo.vm",
-  "src/dataservice",
+  "dataservice",
   "src/ukov",
   "src/core/strings",
   "src/core/notify",

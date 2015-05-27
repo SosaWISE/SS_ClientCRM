@@ -9,7 +9,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
   "src/account/security/equipment.vm",
   "src/account/security/frequent.gvm",
   "src/account/salesinfo/options",
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/core/joiner",
   "src/core/arrays",

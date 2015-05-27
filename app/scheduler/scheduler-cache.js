@@ -1,5 +1,5 @@
 define("src/scheduler/scheduler-cache", [
-  "src/dataservice",
+  "dataservice",
   "src/core/typecacher",
 ], function(
   dataservice,

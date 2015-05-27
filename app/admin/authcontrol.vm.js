@@ -3,7 +3,7 @@ define("src/admin/authcontrol.vm", [
   "src/admin/admincache",
   "src/admin/group.editor.vm",
   "src/admin/authcontrol.gvm",
-  "src/dataservice",
+  "dataservice",
   "src/ukov",
   "ko",
   "src/core/notify",

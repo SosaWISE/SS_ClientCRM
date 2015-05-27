@@ -9,7 +9,7 @@ define("src/account/default/runcredit.vm", [
   "jquery",
   "ko",
   "src/ukov",
-  "src/dataservice"
+  "dataservice"
 ], function(
   mscache,
   howie,

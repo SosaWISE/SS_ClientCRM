@@ -15,7 +15,7 @@ define("src/contracts/contract.vm", [
   "src/account/default/address.validate.vm",
   "src/account/default/runcredit.vm",
   "src/account/default/search.vm",
-  "src/dataservice",
+  "dataservice",
   "src/ukov",
   "ko",
   "src/core/layers.vm",

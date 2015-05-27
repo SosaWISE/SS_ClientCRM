@@ -1,7 +1,7 @@
 define("src/account/default/search.vm", [
   "src/account/default/address.validate.vm",
   "src/core/combo.vm",
-  "src/dataservice",
+  "dataservice",
   "src/slick/rowevent",
   "src/slick/slickgrid.vm",
   "src/ukov",

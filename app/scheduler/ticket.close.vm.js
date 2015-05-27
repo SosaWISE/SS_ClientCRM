@@ -1,6 +1,6 @@
 define("src/scheduler/ticket.close.vm", [
   "src/scheduler/scheduler-helper",
-  "src/dataservice",
+  "dataservice",
   "src/ukov",
   "ko",
   "src/core/notify",

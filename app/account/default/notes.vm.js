@@ -5,7 +5,7 @@ define("src/account/default/notes.vm", [
   "src/ukov",
   "ko",
   "src/core/combo.vm",
-  "src/dataservice",
+  "dataservice",
   "src/core/notify",
   "src/core/utils",
   "src/core/base.vm",

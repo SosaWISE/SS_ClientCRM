@@ -3,7 +3,7 @@ define("src/account/security/clist.registercell.vm", [
   "src/account/security/alarmdotcom.vm",
   "src/account/security/alarmnet.vm",
   "ko",
-  "src/dataservice",
+  "dataservice",
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",

@@ -2,7 +2,6 @@
 window.require = {
   paths: {
     // app namespacing
-    webconfig: "/webconfig",
     src: "/app",
     lib: "/tparty",
     spec: "/spec",

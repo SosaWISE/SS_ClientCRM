@@ -2,7 +2,7 @@ define("src/hr/team.vm", [
   "src/hr/hr-cache",
   "src/hr/teameditor.vm",
   "ko",
-  "src/dataservice",
+  "dataservice",
   "src/core/strings",
   "src/core/notify",
   "src/core/utils",

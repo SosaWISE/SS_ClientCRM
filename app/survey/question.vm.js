@@ -1,7 +1,7 @@
 define("src/survey/question.vm", [
   "src/survey/question.editor.vm",
   "src/survey/qpossibleanswermap.vm",
-  "src/dataservice",
+  "dataservice",
   "ko",
   "src/core/strings",
   "src/core/notify",
