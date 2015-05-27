@@ -1,29 +1,17 @@
 define("src/scheduler/month.vm", [
   "moment",
-  "jquery",
   "ko",
   "src/core/notify",
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
   moment,
-  jquery,
   ko,
   notify,
   utils,
   ControllerViewModel
 ) {
   "use strict";
-
-  //
-  // ui bindings
-  //
-  ko.bindingHandlers.fadein = {
-    update: function(element, valueAccessor) {
-      ko.unwrap(valueAccessor()); // subscribe to changes
-      jquery(element).hide().fadeIn();
-    },
-  };
 
   var _totalDays = 42; // 7 wide, 6 tall
 

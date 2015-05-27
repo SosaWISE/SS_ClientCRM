@@ -134,6 +134,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     // bind scope and do not rapid fire requests
     _this.updateInvoiceGvm = updateInvoiceGvm.bind(_this);
     _this.packageChanged = packageChanged.bind(_this);
+    _this.ffTypeChanged = ffTypeChanged.bind(_this);
     _this.refreshInvoice = underscore.debounce(_this.refreshInvoice.bind(_this), 100);
 
 
@@ -195,7 +196,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       load_msAccountSalesInformations(acctid, function(val) {
         _this.salesinfo.setValue(val);
         _this.salesinfo.markClean({}, true);
-        setPrevPkg(_this, _this.salesinfo.AccountPackageCvm.selectedItem());
+        setPkgValidation(_this);
       }, subjoin.add());
       // load credit (max of PRI & SEC
       loadCreditScore(acctid, "PRI", _this.creditScore, subjoin);
@@ -211,6 +212,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     _this.handler
       .dispose(_this.updateInvoiceGvm)
       .dispose(_this.packageChanged)
+      .dispose(_this.ffTypeChanged)
       .dispose(_this.saveData);
     //
     function step3() {
@@ -231,7 +233,8 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       // add subscriptions
       _this.handler
         .subscribe(_this.invoice.invoiceItems, _this.updateInvoiceGvm, false)
-        .subscribe(_this.salesinfo.AccountPackageCvm.selectedValue, _this.packageChanged, true);
+        .subscribe(_this.salesinfo.PaymentTypeId, _this.packageChanged, true)
+        .subscribe(_this.salesinfo.FriendsAndFamilyTypeId, _this.ffTypeChanged, true);
       //
       Object.keys(_this.salesinfo.doc).forEach(function(key) {
         _this.handler.subscribe(_this.salesinfo[key], _this.saveData, true);
@@ -391,11 +394,11 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
 
     pkg = _this.salesinfo.AccountPackageCvm.selectedItem();
     if (pkg) {
-      _this.invoiceGvm.basePoints(pkg.BasePoints);
-      _this.invoice.rmr.range({
-        min: pkg.MinRMR,
-        max: pkg.MaxRMR,
-      });
+      // _this.invoiceGvm.basePoints(pkg.BasePoints);
+      // _this.invoice.rmr.range({
+      //   min: pkg.MinRMR,
+      //   max: pkg.MaxRMR,
+      // });
 
       // add package items
       pkg.PackageItems.forEach(function(pkgItem) {
@@ -447,15 +450,26 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       });
     }
 
-    setPrevPkg(_this, pkg);
+    setPkgValidation(_this);
 
     //
     saveInvoiceItems(_this, invItemsToSave);
   }
 
-  function setPrevPkg(_this, pkg) {
+  function ffTypeChanged() {
+    /* jshint validthis:true */
+    var _this = this;
+    setPkgValidation(_this);
+  }
+
+  function setPkgValidation(_this) {
+    var pkg = _this.salesinfo.AccountPackageCvm.selectedItem();
+    var ffTypeId = _this.salesinfo.FriendsAndFamilyTypeId.peek();
+
     _this._prevpkg = pkg;
-    if (pkg) {
+    //We need to remove the RMR Validation when the Account Type is Friends & Family or Employee.
+    var validateRange = !(ffTypeId === "FNFAM" || ffTypeId === "EMP");
+    if (pkg && validateRange) {
       _this.invoiceGvm.basePoints(pkg.BasePoints);
       _this.invoice.rmr.range({
         min: pkg.MinRMR,

@@ -78,7 +78,9 @@
               jquery(element).blur();
               jquery(element).focus();
             }
-            func.call(viewModel, viewModel, event);
+            if (func.call(viewModel, viewModel, event)) {
+              event.preventDefault();
+            }
           }
         });
       },
@@ -102,7 +104,9 @@
               jquery(element).blur();
               jquery(element).focus();
             }
-            func.call(viewModel, viewModel, event);
+            if (func.call(viewModel, viewModel, event)) {
+              event.preventDefault();
+            }
           }
         });
       },
