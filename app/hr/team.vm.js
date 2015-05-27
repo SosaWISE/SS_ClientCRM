@@ -1,13 +1,12 @@
-define('src/hr/team.vm', [
-  'src/hr/hr-cache',
-  'src/hr/teameditor.vm',
-  'ko',
-  'src/dataservice',
-  'src/core/strings',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/base.vm',
-  'src/core/controller.vm',
+define("src/hr/team.vm", [
+  "src/hr/hr-cache",
+  "src/hr/teameditor.vm",
+  "ko",
+  "src/dataservice",
+  "src/core/strings",
+  "src/core/notify",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
   hrcache,
   TeamEditorViewModel,
@@ -16,7 +15,6 @@ define('src/hr/team.vm', [
   strings,
   notify,
   utils,
-  BaseViewModel,
   ControllerViewModel
 ) {
   "use strict";
@@ -26,7 +24,7 @@ define('src/hr/team.vm', [
     var _this = this;
     TeamViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, [
-      'layersVm',
+      "layersVm",
     ]);
 
     _this.mayReload = ko.observable(false);
@@ -41,14 +39,14 @@ define('src/hr/team.vm', [
       seasonid: _this.seasonid,
       teamid: _this.id,
       pcontroller: _this,
-      id: 'info',
+      id: "info",
       layersVm: _this.layersVm,
     });
 
 
     _this.title = ko.computed(function() {
       var data = _this.editorVm.data;
-      return strings.format('{0} (T{1})', data.Description(), data.TeamID());
+      return strings.format("{0} (T{1})", data.Description(), data.TeamID());
     });
 
     //
@@ -65,18 +63,18 @@ define('src/hr/team.vm', [
     }
   }
   utils.inherits(TeamViewModel, ControllerViewModel);
-  TeamViewModel.prototype.viewTmpl = 'tmpl-hr-team';
+  TeamViewModel.prototype.viewTmpl = "tmpl-hr-team";
 
   TeamViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this,
       teamid = _this.routePartId(routeData);
 
-    hrcache.ensure('seasons', join.add());
+    hrcache.ensure("seasons", join.add());
 
     if (teamid > 0) {
       load_team(teamid, function(val) {
         _this.editorVm.setItem(val);
-      }, join.add('u'));
+      }, join.add("u"));
     }
   };
   TeamViewModel.prototype.findChild = function(routeData) {

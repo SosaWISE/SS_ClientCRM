@@ -9,7 +9,7 @@ html
     link(rel="shortcut icon",href="/stuff/img/favicon.ico",type="image/x-icon")
     //- include contents of index.js
     script
-      include index.js
+      include ../index.js
     //- script(src="index.js")
   body
     div(id="siteLoading",style="background-color:#772E6D;color:#fff;height:100%;width:100%;display:table;text-align:center;")
@@ -58,7 +58,7 @@ html
     div(style="display:none")
       div(id="printer",data-bind="with:vm")
         div(data-bind="template:viewTmpl")
-      #tmpl-temptitle
+      script(id="tmpl-temptitle",type="text/html")
         div(data-bind="text:title")
       include ../login/_all.jade
       include ../account/_all.jade
@@ -73,6 +73,7 @@ html
       include ../viz/_all.jade
       include ../contracts/_all.jade
       include ../funding/_all.jade
+      include ../sales/_all.jade
 
     //- testing
     script parent.browser && parent.browser.init(window);

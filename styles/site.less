@@ -150,3 +150,18 @@ h6 { font-size: .75em; }
   // .box-shadow(inset 0 0 5px 2px #FF0000); // doesn't always show
   border: solid 3px #FF0000; // resizes contents, but always shows
 }
+
+
+.mixin-edit-btn(@content, @top, @left, @fontSize:28px) {
+  content: @content;
+  display: block;
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  top: @top;
+  left: @left;
+  color: white;
+  font-family: 'Nexsense';
+  font-size: @fontSize;
+  text-align: center;
+}
