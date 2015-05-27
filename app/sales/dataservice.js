@@ -8,7 +8,7 @@ define("src/sales/dataservice", [
   "use strict";
 
   function createService(name, subPaths, domain) {
-    domain = (domain || howie.fetch("config").salesDomain) + "/" + name;
+    domain = (domain || howie.fetch("config").serviceDomain) + "/" + name;
 
     var result = {};
     subPaths.forEach(function(collectionName) {
@@ -18,7 +18,7 @@ define("src/sales/dataservice", [
   }
 
   return {
-    base: new DataserviceBase(null, howie.fetch("config").salesDomain),
+    base: new DataserviceBase(null, howie.fetch("config").serviceDomain),
 
     //
     // crm service

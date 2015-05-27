@@ -211,11 +211,12 @@ div(class="salesmap dock r3-40p",data-bind="css:{'r-show':contactVm}")
             data-bind="value:fullAddress,valueUpdate:'keyup'",readonly)
         div(class="field")
           label Category
+            //- |&nbsp;
+            //- span(class="fine-print link inverted",style="text-transform:initial;font-weight: 300;font-family:'Open Sans',sans-serif;",data-bind="cmd:cmdEditCategories") Edit categories
           select(data-bind="options:$parent.categorys,optionsValue:'ID',optionsText:'Name',value:data.CategoryId")
           //- select(name="category",data-bind="data.CategoryId",ng-change="categoryChanged()",required)
             option(ng-repeat="c in categories",value="{{c.id}}",ng-selected="c.id==0") {{c.name}}
             option(value="new") Create a new category...
-          div(class="fine-print right link inverted",data-bind="cmd:cmdEditCategories") Edit categories
         div(class="field")
           label Current system
           select(data-bind="options:$parent.systemTypes,optionsValue:'ID',optionsText:'CompanyName',value:data.SystemId")
