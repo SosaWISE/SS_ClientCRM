@@ -213,12 +213,12 @@ define("src/inventory/audit.vm", [
     _this.enterBarcode = function() {
       if (!_this.barcode.isValid.peek()) {
         // notify.warn(_this.barcode.errMsg.peek(), null, 7);
-        return;
+        return true;
       }
       if (!_this.data.isValid.peek()) {
         notify.warn(_this.data.errMsg.peek(), null, 7);
         // _this.barcode(null);
-        return;
+        return true;
       }
       //
       var barcode = _this.barcode.getValue();
@@ -238,6 +238,8 @@ define("src/inventory/audit.vm", [
           }
         }, notify.iferror);
       }
+
+      return true; // prevent default browser action
     };
   }
 
@@ -286,12 +288,12 @@ define("src/inventory/audit.vm", [
     // var _this = this;
     invcache.ensure("locationTypes", join.add());
 
-    ///////////////TESTING/////////////////////////////
-    var _this = this;
-    _this.data.LocationTypeCvm.selectedValue("Technician");
-    _this.data.LocationCvm.selectedValue("1159");
-    _this.barcode("714134610");
-    ///////////////TESTING/////////////////////////////
+    // ///////////////TESTING/////////////////////////////
+    // var _this = this;
+    // _this.data.LocationTypeCvm.selectedValue("Technician");
+    // _this.data.LocationCvm.selectedValue("1159");
+    // _this.barcode("714134610");
+    // ///////////////TESTING/////////////////////////////
   };
 
   function load_locations(locationTypeId, setter, cb) {
