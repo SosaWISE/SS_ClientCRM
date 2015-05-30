@@ -79,12 +79,16 @@ define("src/slick/slickgrid.vm", [
     } else if (!_this.list || !ko.isObservable(_this.list)) {
       _this.list = ko.observableArray(_this.list);
     }
-    _this.updateGrid = function() { // ensure correct scope
+    _this.updateGrid = function(invalidate) { // ensure correct scope
       var grid = _this.grid;
       if (grid) {
         // update grid layout
         grid.resizeCanvas();
-        grid.render();
+        if (invalidate) {
+          grid.invalidate();
+        } else {
+          grid.render();
+        }
       }
     };
     if (_this.list) {

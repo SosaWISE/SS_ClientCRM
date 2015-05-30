@@ -1,21 +1,19 @@
-define('src/inventory/inventory.panel.vm', [
-  'src/inventory/receive.inventory.vm',
-  'src/inventory/transfer.inventory.vm',
-  'src/inventory/report.inventory.vm',
-  'ko',
-  'src/core/helpers',
-  'src/core/strings',
-  'src/core/notify',
-  'src/core/utils',
-  'src/core/controller.vm',
+define("src/inventory/inventory.panel.vm", [
+  "src/inventory/audit.vm",
+  "src/inventory/receive.inventory.vm",
+  "src/inventory/transfer.inventory.vm",
+  "src/inventory/report.inventory.vm",
+  "ko",
+  "src/core/layers.vm",
+  "src/core/utils",
+  "src/core/controller.vm",
 ], function(
+  AuditViewModel,
   ReceiveInventoryViewModel,
   TransferInventoryViewModel,
   ReportInventoryViewModel,
   ko,
-  helpers,
-  strings,
-  notify,
+  LayersViewModel,
   utils,
   ControllerViewModel
 ) {
@@ -24,9 +22,13 @@ define('src/inventory/inventory.panel.vm', [
   function InventoryViewModel(options) {
     var _this = this;
     InventoryViewModel.super_.call(_this, options);
+    // _this.title = "Inventory";
 
-    _this.title = 'Inventory';
-    _this.list = _this.childs;
+    _this.showNav = ko.observable(true); // && config.hr.showNav);
+
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
+    });
 
     //
     //events
@@ -43,25 +45,30 @@ define('src/inventory/inventory.panel.vm', [
 
   InventoryViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
-
-    _this.list([
+    _this.childs([
       new ReceiveInventoryViewModel({
-        routeName: 'inventory',
+        phil: true,
         pcontroller: _this,
-        id: 'receive',
-        title: 'Receive'
+        id: "receive",
+        title: "Receive",
       }),
       new TransferInventoryViewModel({
-        routeName: 'inventory',
+        phil: true,
         pcontroller: _this,
-        id: 'transfer',
-        title: 'Transfer'
+        id: "transfer",
+        title: "Transfer",
+      }),
+      new AuditViewModel({
+        phil: false,
+        pcontroller: _this,
+        id: "audit",
+        title: "Audit",
       }),
       new ReportInventoryViewModel({
-        routeName: 'inventory',
+        phil: true,
         pcontroller: _this,
-        id: 'audit',
-        title: 'Audit'
+        id: "oldaudit",
+        title: "Old Audit",
       }),
     ]);
     join.add()();

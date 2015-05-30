@@ -1,0 +1,12 @@
+div(data-bind="foreach:groups")
+  b
+    u
+      div(data-bind="text:title")
+  br
+  <!-- ko foreach:items -->
+  div
+    span(data-bind="text:ProductBarcodeID")
+    span &nbsp;|&nbsp;
+    span(data-bind="text:ItemDesc")
+  <!-- /ko -->
+  br

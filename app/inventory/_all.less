@@ -1,0 +1,134 @@
+@inv-bg: @site-orange;
+body.inventory {
+  .mixin-body-color(@inv-bg);
+  .mixin-content-active(@inv-bg);
+}
+
+#inventory-panel .inv-panel {
+  @tranSec: .25s;
+
+  .btn {
+    .make-color-btn(@inv-bg);
+  }
+  .btn-dock {
+    background-color: @inv-bg;
+  }
+  > .dock-left {
+    padding: 10px;
+
+    ul.nav {
+      margin: 10px;
+      a {
+        display: block;
+        padding: 5px 10px;
+        font-size: 1.2em;
+        color: #FFF;
+        &.active {
+          .border-radius(5px);
+          font-weight: bold;
+          background-color: #FFF;
+          color: @inv-bg;
+        }
+      }
+    }
+  }
+  > .dock-content:not(.phil) {
+    // background-color: #fff;
+    color: #fff;
+  }
+
+  .audit {
+    margin: 0px 20px;
+    height: 100%;
+
+    .slickgrid {
+      background-color: #FFF;
+      color: #000;
+
+      .scanned {
+        text-align: center;
+        > span {
+          margin-top: 5px;
+        }
+      }
+    }
+
+    .audit-header {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      height: 190px;
+      left: 20px;
+
+      .form,
+      .btns,
+      .audits {
+        display: inline-block;
+        height: 100%;
+        vertical-align: top;
+      }
+
+      .form {
+        width: 30%;
+      }
+      .btns {
+        margin-left: 10px;
+        width: ~"calc(20% - 10px)";
+        a {
+          margin-bottom: 10px;
+        }
+      }
+      .audits {
+        margin-left: 10px;
+        width: ~"calc(50% - 10px)";
+      }
+    }
+    .audit-body {
+      position: absolute;
+      top: 230px;
+      right: 20px;
+      bottom: 20px;
+      left: 20px;
+
+      .grid-wrap {
+        position: absolute;
+        top:0;right:0;bottom:0;left:0;
+        .title {
+          font-weight: 500;
+          text-align: center;
+          display: block;
+        }
+        .slickgrid {
+          top: 20px;
+        }
+      }
+      .grid-wrap.onhand {
+        right: 50%;
+      }
+      .grid-wrap.excess {
+        left: ~"calc(50% + 10px)";
+      }
+    }
+    // .tek-form,
+    // .tek-btns,
+    // .tek-audits {
+    //   display: inline-block;
+    //   height: 100%;
+    //   padding-top: 20px;
+    //   vertical-align: top;
+    // }
+    //
+    // .tek-form {
+    //   width: 40%;
+    //   background-color: red;
+    // }
+    // .tek-btns {
+    //   width: 20%;
+    //   background-color: #FFF;
+    // }
+    // .tek-audits {
+    //   width: 40%;
+    //   background-color: blue;
+    // }
+  }
+}

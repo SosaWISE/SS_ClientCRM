@@ -192,6 +192,9 @@ define("src/nimis/bootstrapper", [
   ko.applyBindings(app, document.getElementById("main"));
   // overwrite onerror function set in index.js
   window.onerror = function(msg, url, line, column, ex) {
+    if (utils.isStr(ex)) {
+      ex = new Error("WRAPPED ERR: " + ex);
+    }
     // overwrite message with message and stack trace
     msg = ex.stack;
     // append line and column (same as first line of stack trace)

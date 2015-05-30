@@ -217,6 +217,7 @@ module.exports = function(grunt) {
           "<%= www %>/crm/index.html": "crm/index.jade",
           "<%= www %>/nimis/index.html": "nimis/index.jade",
           "<%= www %>/spec/index.html": "spec/index.jade",
+          "<%= www %>/core.html": "app/core/_all.jade",
         },
       },
       prod_debug: {
@@ -244,6 +245,11 @@ module.exports = function(grunt) {
           "spec/index.html": "spec/index.jade",
         },
       },
+      packaged: {
+        files: {
+          "<%= www %>/core.html": "app/core/_all.jade",
+        },
+      },
     },
     less: {
       prod: {
@@ -262,12 +268,12 @@ module.exports = function(grunt) {
           "nimis/index.css": "nimis/index.less",
         },
       },
-      core: {
+      packaged: {
         options: {
           cleancss: true,
         },
         files: {
-          "<%= www %>/nimis/core.css": "nimis/core.less",
+          "<%= www %>/core.css": "app/core/_all.less",
         },
       },
     },
@@ -311,7 +317,9 @@ module.exports = function(grunt) {
     "jade:prod",
     "jade:prod_debug",
     "less:prod",
-    "less:core",
+    //
+    "jade:packaged",
+    "less:packaged",
   ]);
   grunt.registerTask("build-dev", [
     "jade:dev",
