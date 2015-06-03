@@ -4,6 +4,111 @@ body.map {
   .mixin-content-active(@map-bg);
 }
 
+.salesmap {
+  h1, h2, h3 {
+    font-family: 'Montserrat', sans-serif;
+  }
+  h1 {
+    font-size: 30px;
+    margin: 10px 0 2px 0;
+    color: #62259d;
+  }
+  h2 {
+    font-size: 20px;
+    margin: 6px 0 2px 0;
+    color: #62259d;
+  }
+  h3 {
+    font-size: 18px;
+    margin: 4px 0 2px 0;
+    color: #707170;
+  }
+
+  //
+  // dock
+  //
+  @dockWidth: 40%;
+  > .dock-right {
+    right: -@dockWidth;
+    width: @dockWidth;
+  }
+  &.r-show {
+    > .dock-right,
+    > .dock-content,
+    > .dock-top,
+    > .dock-bottom {
+      right: 0px;
+    }
+  }
+  > .dock-bottom.settings-wrap,
+  > .dock-bottom.tools-wrap {
+    bottom: -100%;
+    height: auto;
+    color: @fg-color;
+  }
+  &.settings-show {
+    > .dock-bottom.settings-wrap {
+      bottom: 0px;
+    }
+  }
+  &.tools-show {
+    > .dock-bottom.tools-wrap {
+      bottom: 0px;
+    }
+  }
+
+
+
+
+
+  > .settings-btn,
+  > .tools-btn {
+    width: 90px;
+    height: 90px;
+    position: absolute;
+    left: 1px;
+    bottom: 1px;
+    z-index: 50;
+    background-image: url(/stuff/img/map/settings.png);
+    background-size: contain;
+    background-position: center center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+  }
+  > .tools-btn {
+    left: 93px;
+    background-image: url(/stuff/img/map/tools.png);
+  }
+
+  > .settings-wrap,
+  > .tools-wrap {
+    z-index: 51;
+    margin: 0;
+
+    position: absolute;
+    // top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+
+    background-color: rgba(255,255,255,0.9);
+    padding: 40px 40px 25px 40px;
+
+    input,
+    select,
+    option,
+    textarea {
+      width: auto;
+    }
+  }
+  > .tools-wrap {
+    height: 270px;
+  }
+}
+
 .map-canvas { height: 100%; margin: 0; padding: 0;}
 
 div.new-contact {
@@ -48,129 +153,6 @@ div.new-contact {
   label {
     color: rgba(255,255,255,0.5);
   }
-}
-
-div#settings-button {
-  width: 90px;
-  height: 90px;
-  position: absolute;
-  left: 1px;
-  bottom: 1px;
-  z-index: 50;
-  background-image: url(/stuff/img/map/settings.png);
-  background-size: contain;
-  background-position: center center;
-  background-repeat: no-repeat;
-  cursor: pointer;
-}
-
-div#settings-panel {
-  position: fixed;
-  width: 100%;
-  z-index: 51;
-  left: 0;
-  bottom: 0;
-  margin: 0;
-
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-
-  background-color: rgba(255,255,255,0.9);
-  padding: 40px 40px 25px 40px;
-}
-div#settings-panel.open {
-  animation: settings-panel-open 1s ease;
-  -webkit-animation: settings-panel-open 1s ease;
-  -moz-animation: settings-panel-open 1s ease;
-  animation-fill-mode: forwards;
-  -webkit-animation-fill-mode: forwards;
-  -moz-animation-fill-mode: forwards;
-}
-div#settings-panel.close {
-  animation: settings-panel-close 1s ease;
-  -webkit-animation: settings-panel-close 1s ease;
-  -moz-animation: settings-panel-close 1s ease;
-  animation-fill-mode: forwards;
-  -webkit-animation-fill-mode: forwards;
-  -moz-animation-fill-mode: forwards;
-}
-@-webkit-keyframes settings-panel-open {
-    from {bottom: -100%;}
-    to {bottom: 0;}
-}
-@keyframes settings-panel-open {
-    from {bottom: -100%;}
-    to {bottom: 0;}
-}
-@-webkit-keyframes settings-panel-close {
-    from {bottom: 0;}
-    to {bottom: -100%;}
-}
-@keyframes settings-panel-close {
-    from {bottom: 0;}
-    to {bottom: -100%;}
-}
-
-div#tools-button {
-  width: 90px;
-  height: 90px;
-  position: absolute;
-  left: 93px;
-  bottom: 1px;
-  z-index: 50;
-  background-image: url(/stuff/img/map/tools.png);
-  background-size: contain;
-  background-position: center center;
-  background-repeat: no-repeat;
-  cursor: pointer;
-}
-
-div#tools-panel {
-  position: fixed;
-  width: 100%;
-  z-index: 51;
-  left: 0;
-  bottom: 0;
-  margin: 0;
-  height: 270px;
-
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-
-  background-color: rgba(255,255,255,0.9);
-  padding: 40px 40px 25px 40px;
-}
-div#tools-panel.open {
-  animation: tools-panel-open 0.75s ease;
-  -webkit-animation: tools-panel-open 0.75s ease;
-  -moz-animation: tools-panel-open 0.75s ease;
-  animation-fill-mode: forwards;
-  -webkit-animation-fill-mode: forwards;
-  -moz-animation-fill-mode: forwards;
-}
-div#tools-panel.close {
-  animation: tools-panel-close 0.75s ease;
-  -webkit-animation: tools-panel-close 0.75s ease;
-  -moz-animation: tools-panel-close 0.75s ease;
-  animation-fill-mode: forwards;
-  -webkit-animation-fill-mode: forwards;
-  -moz-animation-fill-mode: forwards;
-}
-@-webkit-keyframes tools-panel-open {
-    from {bottom: -270px;}
-    to {bottom: 0;}
-}
-@keyframes tools-panel-open {
-    from {bottom: -270px;}
-    to {bottom: 0;}
-}
-@-webkit-keyframes tools-panel-close {
-    from {bottom: 0;}
-    to {bottom: -270px;}
-}
-@keyframes tools-panel-close {
-    from {bottom: 0;}
-    to {bottom: -270px;}
 }
 
 div#contact-timeline-panel {

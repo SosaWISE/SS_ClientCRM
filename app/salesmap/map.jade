@@ -27,7 +27,8 @@
     <body,ng-app="MySite">
 
 
-div(class="salesmap dock r3-40p",data-bind="css:{'r-show':contactVm}")
+div(class="salesmap dock",
+  data-bind="css:{'r-show':contactVm,'settings-show':showSettings,'tools-show':showTools}")
   //- div(id="loading-screen",ng-show="isLoading")
     div(id="loading-logo")
 
@@ -36,65 +37,71 @@ div(class="salesmap dock r3-40p",data-bind="css:{'r-show':contactVm}")
 
   //- div(id="settings-button",ng-click="displaySettings()")
   //- div(id="tools-button",ng-click="displayTools()",ng-show="$site.hasPermission(['OFFICE_STATS','COMPANY_STATS'])")
-
+  div(class="settings-btn",data-bind="cmd:toggleSettings")
+  div(class="tools-btn",data-bind="cmd:toggleTools,visible:canTools")
 
   //- Settings/Filters panel
-  //- div(id="settings-panel",ng-class="{open:settingsAreDisplayed,close:!settingsAreDisplayed}")
-    div(class="panel-close",ng-click="hideSettings()")
+  div(class="dock-bottom settings-wrap")
+    div(class="panel-close",data-bind="cmd:toggleSettings")
 
     //- Filter contacts already on the map
     div(id="map-filters")
       h2 Filters
-      div
-        |Show contacts made in
-        select(ng-model="officeId",ng-options="o.id as (o.id == 0 ? o.officeCity : (o.officeCity + ', ' + o.officeState)) for o in offices",ng-change="contactVm.filterVisibleContacts(this)")
-        span(ng-show="officeId")
-          | by
-          select(ng-model="salesRepId",ng-options="r.id as (r.firstName + ' ' + r.lastName) for r in salesReps | salesRepFilterByOffice:officeId",ng-change="contactVm.filterVisibleContacts(this)")
+      div Show contacts made in
+        select(data-bind="options:teams,optionsText:'Name',value:selTeam")
+        //- <!-- ko if:selTeam -->
+        | by
+        select(data-bind="options:teamReps,optionsText:'FullName',value:selRep")
+        //- <!-- /ko -->
 
       div(class="categories-filter")
-        h3
-          | Categories
-          div(class="pill left lighter",ng-click="selectAllCategories()") Select all
-          div(class="pill right",ng-click="selectNoneCategories()") none
-          div(class="pill float-right",ng-click="displayEditCategoriesDialog()") Edit
+        h3 Categories
+          div(class="pill left lighter",data-bind="cmd:checkAllCategorys") Select all
+          div(class="pill right",data-bind="cmd:checkNoCategorys") None
+          div(class="pill float-right",data-bind="cmd:cmdEditCategorys") Edit
 
         div(class="filter-container")
           div(class="columns")
-            div(ng-repeat="c in categories")
-              input(type="checkbox",ng-model="c.visible",ng-change="contactVm.filterVisibleContacts(this)",id="ct{{$index}}")
-              label(for="ct{{$index}}") {{c.name}}
-
-
+            div(data-bind="foreach:categorys")
+              input(type="checkbox",data-bind="attr:{id:'c'+ID},checked:checked")
+              label(data-bind="attr:{for:'c'+ID}")
+                //- div needed for check mark
+                div
+                span(data-bind="text:Name")
 
       div(class="current-systems-filter")
-        h3
-          | Current Systems
-          div(class="pill left lighter",ng-click="selectAllSystemTypes()") Select all
-          div(class="pill right",ng-click="selectNoneSystemTypes()") none
+        h3 Current Systems
+          div(class="pill left lighter",data-bind="cmd:checkAllSystemTypes") Select all
+          div(class="pill right",data-bind="cmd:checkNoSystemTypes") None
 
         div(class="filter-container")
           div(class="columns")
-            div(ng-repeat="s in systemTypes")
-              input(type="checkbox",ng-model="s.visible",ng-change="contactVm.filterVisibleContacts(this)",id="st{{$index}}")
-              label(for="st{{$index}}")
+            div(data-bind="foreach:systemTypes")
+              input(type="checkbox",data-bind="attr:{id:'st'+ID},checked:checked")
+              label(data-bind="attr:{for:'st'+ID}")
+                //- div needed for check mark
                 div
-                | {{s.companyName}}
+                span(data-bind="text:CompanyName")
 
 
       div(class="iconmode-filter")
         h3 Map icons
         div(class="filter-container")
           div
-            input(type="radio",ng-model="iconmode",name="iconmode",value="category",id="iconmode-ct")
-            label(for="iconmode-ct") Use category icons on map
+            input(type="radio",name="iconmode",value="category",id="iconmode-ct",data-bind="checked:iconMode")
+            label(for="iconmode-ct")
+              //- div needed for check mark
+              div
+              | Use category icons on map
           div
-            input(type="radio",ng-model="iconmode",name="iconmode",value="system",id="iconmode-st")
-            label(for="iconmode-st") Use system logos on map
+            input(type="radio",name="iconmode",value="system",id="iconmode-st",data-bind="checked:iconMode")
+            label(for="iconmode-st")
+              //- div needed for check mark
+              div
+              | Use system logos on map
 
-
-  //- div(id="tools-panel",ng-class="{open:toolsAreDisplayed,close:!toolsAreDisplayed}",ng-show="$site.hasPermission(['OFFICE_STATS','COMPANY_STATS'])")
-    div(class="panel-close",ng-click="hideTools()")
+  div(class="dock-bottom tools-wrap")
+    div(class="panel-close",data-bind="cmd:toggleTools")
 
     //- Manager tools
     div(id="option-icons")

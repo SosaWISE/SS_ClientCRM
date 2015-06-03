@@ -35,5 +35,13 @@ define("src/sales/dataservice", [
       "categorys",
       "systemTypes",
     ]),
+
+    //
+    // hr service
+    //
+    api_hr: createService("api/hr", [
+      "teams",
+      "users",
+    ]),
   };
 });

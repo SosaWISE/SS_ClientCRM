@@ -42,6 +42,7 @@ define("src/salesmap/map.panel.vm", [
   function MapPanelViewModel(options) {
     var _this = this;
     MapPanelViewModel.super_.call(_this, options);
+    _this.initHandler();
 
     _this.layersVm = new LayersViewModel({
       controller: _this,
@@ -54,16 +55,36 @@ define("src/salesmap/map.panel.vm", [
     _this.gmapVm = new GmapViewModel();
     _this.mapMode = ko.observable("knocking");
 
+    _this.teams = ko.observableArray([]);
+    _this.selTeam = ko.observable();
+    _this.salesUsers = ko.observableArray([]);
+    _this.selRep = ko.observable();
+
+    _this.teamReps = ko.computed(function() {
+      var selTeam = _this.selTeam();
+      var list = _this.salesUsers();
+      if (!selTeam || !selTeam.ID) {
+        return list;
+      }
+      var teamId = selTeam.ID;
+      return list.filter(function(item) {
+        return item.ID === 0 || item.Recruits.some(function(item) {
+          return item.TeamId === teamId;
+        });
+      });
+    });
+
+    _this.showSettings = ko.observable();
+    _this.showTools = ko.observable();
+
+    _this.iconMode = ko.observable("category");
+    // _this.iconMode("system");
+
     //
     // events
     //
-    // function bindEvent(name) {
-    //   ...
-    // }
-    // bindEvent("click"); //handleClick(evt, evt.latLng);
     // bindEvent("dblclick"); //handleDoubleClick(evt, evt.latLng);
     // bindEvent("mousemove"); //handleMouseMove(evt, evt.latLng);
-    // bindEvent("idle");
     // bindEvent("drag");
 
     _this.gmapVm.on("click", function(evt) {
@@ -87,16 +108,201 @@ define("src/salesmap/map.panel.vm", [
           break;
       }
     });
+
+    _this.toggleSettings = function() {
+      _this.showSettings(!_this.showSettings.peek());
+    };
+    _this.toggleTools = function() {
+      _this.showTools(!_this.showTools.peek());
+    };
+    _this.canTools = ko.computed(function() {
+      return false;
+    });
+
+    function setAllChecked(list, checked) {
+      list.forEach(function(item) {
+        item.checked(checked);
+      });
+      filterContactMap(_this);
+    }
+    _this.checkAllCategorys = function() {
+      setAllChecked(_this.categorys.peek(), true);
+    };
+    _this.checkNoCategorys = function() {
+      setAllChecked(_this.categorys.peek(), false);
+    };
+    _this.cmdEditCategorys = ko.command(function(cb) {
+      cb();
+    });
+    _this.checkAllSystemTypes = function() {
+      setAllChecked(_this.systemTypes.peek(), true);
+    };
+    _this.checkNoSystemTypes = function() {
+      setAllChecked(_this.systemTypes.peek(), false);
+    };
   }
   utils.inherits(MapPanelViewModel, ControllerViewModel);
 
   MapPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
+    //
+    function onCheckedChanged() {
+      filterContactMap(_this);
+    } //
+    function addProps(list, iconDir) {
+      list.forEach(function(item) {
+        item.checked = ko.observable(true);
+        _this.handler.subscribe(item.checked, onCheckedChanged, true);
+        // add icon to each item
+        item.icon = {
+          url: IMG_PATH + "map/markers/" + iconDir + "/" + item.Filename,
+          scaledSize: new gmaps.Size(24, 24),
+          origin: new gmaps.Point(0, 0),
+          anchor: new gmaps.Point(12, 12),
+        };
+      });
+      return list;
+    } //
+    function sortByProp(list, prop) {
+      list.sort(function(a, b) {
+        a = a[prop];
+        b = b[prop];
+        if (a < b) {
+          return -1;
+        } else if (b < a) {
+          return 1;
+        }
+        return 0;
+      });
+      return list;
+    }
+    //
     _this.categorys([]);
+    load_categorys(_this, function(list) {
+      sortByProp(list, "Name");
+      _this.categorys(addProps(list, "categories"));
+    }, join.add());
+    //
     _this.systemTypes([]);
-    load_categorys(_this, _this.categorys, join.add());
-    load_systemTypes(_this, _this.systemTypes, join.add());
+    load_systemTypes(_this, function(list) {
+      sortByProp(list, "CompanyName");
+      _this.systemTypes(addProps(list, "systems"));
+    }, join.add());
+    //
+    _this.teams([]);
+    _this.handler.subscribe(_this.selTeam, onCheckedChanged, true);
+    load_teams(_this, function(list) {
+      list = list.map(function(item) {
+        return {
+          ID: item.TeamId,
+          Name: item.Team.Description,
+        };
+      });
+      sortByProp(list, "Name");
+      list.unshift({
+        ID: 0,
+        Name: "All offices",
+      });
+      _this.teams(list);
+    }, join.add());
+    //
+    _this.salesUsers([]);
+    _this.handler.subscribe(_this.selRep, onCheckedChanged, true);
+    load_salesUsers(_this, function(list) {
+      sortByProp(list, "FullName");
+      list.unshift({
+        ID: 0,
+        FullName: "All reps",
+        Recruits: [],
+      });
+      _this.salesUsers(list);
+    }, join.add());
+
+    //
+    function onIconModeChanged() {
+      setContactIcons(_this);
+    } //
+    _this.handler.subscribe(_this.iconMode, onIconModeChanged, true);
   };
+
+  function filterContactMap(_this, tmpContactMap) {
+    var salesUsers = _this.salesUsers.peek();
+    var selTeam = _this.selTeam.peek();
+    // var teamReps = _this.teamReps.peek();
+    var selRep = _this.selRep.peek();
+    var categorys = _this.categorys.peek();
+    var systemTypes = _this.systemTypes.peek();
+    var gmap = _this.gmapVm.gmap;
+    loopMap(tmpContactMap || _this.contactMap, function(contactId, obj) {
+      var contact = obj.contact;
+      var show = (
+        // no rep is selected or the selected rep matches the contact's rep
+        ((!selRep || !selRep.ID) || contact.RepCompanyID === selRep.CompanyID) &&
+        // no team is selected or the selected team matches the contact's team
+        ((!selTeam || !selTeam.ID) || repHasTeamId(contact.RepCompanyID, selTeam.ID)) &&
+        // category is checked or not found
+        (idChecked(categorys, contact.CategoryId)) &&
+        // systemType is checked or not found
+        (idChecked(systemTypes, contact.SystemId))
+      );
+      var map = (show ? gmap : null);
+      if (map !== obj.marker.getMap()) {
+        // only set the map if different, or else the marker will flicker
+        obj.marker.setMap(map);
+      }
+    });
+
+    function repHasTeamId(repCompanyID, teamId) {
+      return salesUsers.some(function(item) {
+        return item.CompanyID === repCompanyID && item.Recruits.some(function(item) {
+          return item.TeamId === teamId;
+        });
+      });
+    } //
+    function idChecked(list, id) {
+      var found = byID(list, id);
+      if (!found) {
+        // @NOTE: when the id is not found in the list it is impossible for
+        //        it to checked. we should always show those types of items.
+        return true;
+      }
+      return found.checked.peek();
+    } //
+  } //
+  function setContactIcons(_this, tmpContactMap) {
+    var list, idName;
+    switch (_this.iconMode.peek()) {
+      case "category":
+        list = _this.categorys.peek();
+        idName = "CategoryId";
+        break;
+      case "system":
+        list = _this.systemTypes.peek();
+        idName = "SystemId";
+        break;
+      default:
+        list = [];
+        idName = "";
+        break;
+    }
+
+    loopMap(tmpContactMap || _this.contactMap, function(contactId, obj) {
+      var item = byID(list, obj.contact[idName]);
+      var icon = (item) ? item.icon : null;
+      obj.marker.setIcon(icon);
+    });
+  } //
+
+  function byID(list, id) {
+    var result;
+    list.some(function(item) {
+      if (item.ID === id) {
+        result = item;
+        return true;
+      }
+    });
+    return result;
+  } //
 
   function reloadContactsInBounds(_this) {
     var contactMap = _this.contactMap;
@@ -114,7 +320,7 @@ define("src/salesmap/map.panel.vm", [
           // store in map
           contactMap[contactId] = item = {
             contact: contact,
-            marker: createContactMark(_this, contact.ID, position),
+            marker: createContactMarker(_this, contact.ID, position),
             lastPosition: position,
           };
         } else {
@@ -133,15 +339,17 @@ define("src/salesmap/map.panel.vm", [
       });
 
       // remove deleted
-      for (var contactId in contactMap) {
-        if (!updatedMap[contactId] && bounds.contains(contactMap[contactId].lastPosition)) {
+      loopMap(contactMap, function(contactId, obj) {
+        if (!updatedMap[contactId] && bounds.contains(obj.lastPosition)) {
           // remove from contactMap
-          var item = contactMap[contactId];
           delete contactMap[contactId];
           // remove from gmap
-          removeMarker(item.marker);
+          removeMarker(obj.marker);
         }
-      }
+      });
+
+      filterContactMap(_this);
+      setContactIcons(_this);
     }, notify.iferror);
   } //
   function load_contactsInBounds(bounds, setter, cb) {
@@ -151,20 +359,20 @@ define("src/salesmap/map.panel.vm", [
 
     // // check permissions and request the right amount of data.
     // var userId = $site.user.userId;
-    // var officeId = $site.user.officeId;
+    // var teamId = $site.user.teamId;
     // if ($site.hasPermission(['OFFICE_STATS', 'COMPANY_STATS'])) {
     //   userId = 0;
     // }
     // if ($site.hasPermission(['COMPANY_STATS'])) {
-    //   officeId = 0;
+    //   teamId = 0;
     // }
 
     dataservice.api_sales.contacts.read({
       // id: ????
       link: "InBounds",
       query: {
-        // salesRepId: 0,
-        // officeId: 0,
+        // salescompanyId: 0,
+        // teamId: 0,
         minlat: sw.lat(),
         minlng: sw.lng(),
         maxlat: ne.lat(),
@@ -178,12 +386,22 @@ define("src/salesmap/map.panel.vm", [
   } //
   function load_systemTypes(_this, setter, cb) {
     dataservice.api_sales.systemTypes.read({}, setter, cb);
-  }
+  } //
+  function load_teams(_this, setter, cb) {
+    dataservice.api_hr.teams.read({
+      link: "Sales",
+    }, setter, cb);
+  } //
+  function load_salesUsers(_this, setter, cb) {
+    dataservice.api_hr.users.read({
+      link: "Sales",
+    }, setter, cb);
+  } //
 
 
   var IMG_PATH = "/stuff/img/";
 
-  function createContactMark(_this, contactId, position) {
+  function createContactMarker(_this, contactId, position) {
     var marker = new gmaps.Marker({
       _contactId: contactId,
       position: position,
@@ -212,7 +430,7 @@ define("src/salesmap/map.panel.vm", [
     var contactVm = _this.contactVm.peek();
     if (!contactVm) {
       contactVm = new ContactEditorViewModel();
-      contactVm.marker = createContactMark(_this, -1, position);
+      contactVm.marker = createContactMarker(_this, -1, position);
       _this.contactVm(contactVm);
       showSideLayer(contactVm, function(val) {
         onContactSaved(_this, val);
@@ -232,10 +450,11 @@ define("src/salesmap/map.panel.vm", [
     _this.contactVm(null);
 
     //
+    var item;
     var marker = contactVm.marker;
     if (!contact) {
       // reset to before edit
-      var item = _this.contactMap[marker._contactId];
+      item = _this.contactMap[marker._contactId];
       if (item) {
         // was editing existing. reset to before edit
         marker.setPosition(item.lastPosition);
@@ -252,6 +471,19 @@ define("src/salesmap/map.panel.vm", [
         marker: marker,
         lastPosition: marker.getPosition(),
       };
+    }
+
+    item = _this.contactMap[marker._contactId];
+    if (item) {
+      // only update this marker
+      var tmpContactMap = {};
+      tmpContactMap[marker._contactId] = _this.contactMap[marker._contactId];
+      filterContactMap(_this, tmpContactMap);
+      setContactIcons(_this, tmpContactMap);
+      // check if marker is visible on the map
+      if (!item.marker.getMap()) {
+        notify.warn("Saved contact does not match the current filters and is no longer visible on the map.", null, 5);
+      }
     }
   } //
   function onMarkerClicked(_this, marker /*, position*/ ) {
@@ -291,7 +523,11 @@ define("src/salesmap/map.panel.vm", [
     });
   }
 
-
+  function loopMap(map, fn) {
+    for (var key in map) {
+      fn(key, map[key]); //, map);
+    }
+  }
 
   function showSideLayer(vm, onClose) {
     var layer = {
