@@ -29,6 +29,9 @@
 
 div(class="salesmap dock",
   data-bind="css:{'r-show':contactVm,'settings-show':showSettings,'tools-show':showTools}")
+
+  div(class="layers",data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
+
   //- div(id="loading-screen",ng-show="isLoading")
     div(id="loading-logo")
 
@@ -47,10 +50,10 @@ div(class="salesmap dock",
     //- Filter contacts already on the map
     div(id="map-filters")
       h2 Filters
-      div Show contacts made in
+      div Show contacts made in&nbsp;
         select(data-bind="options:teams,optionsText:'Name',value:selTeam")
         //- <!-- ko if:selTeam -->
-        | by
+        |&nbsp;by&nbsp;
         select(data-bind="options:teamReps,optionsText:'FullName',value:selRep")
         //- <!-- /ko -->
 
@@ -218,8 +221,8 @@ div(class="salesmap dock",
             data-bind="value:fullAddress,valueUpdate:'keyup'",readonly)
         div(class="field")
           label Category
-            //- |&nbsp;
-            //- span(class="fine-print link inverted",style="text-transform:initial;font-weight: 300;font-family:'Open Sans',sans-serif;",data-bind="cmd:cmdEditCategories") Edit categories
+            |&nbsp;
+            span(class="fine-print link inverted",style="text-transform:initial;font-weight: 300;font-family:'Open Sans',sans-serif;",data-bind="cmd:$parent.cmdEditCategorys") Edit categories
           select(data-bind="options:$parent.categorys,optionsValue:'ID',optionsText:'Name',value:data.CategoryId")
           //- select(name="category",data-bind="data.CategoryId",ng-change="categoryChanged()",required)
             option(ng-repeat="c in categories",value="{{c.id}}",ng-selected="c.id==0") {{c.name}}
@@ -240,52 +243,3 @@ div(class="salesmap dock",
         div(class="button-container")
           button(data-bind="cmd:cmdSave") Save
           button(class="cancel",data-bind="cmd:clickCancel") Cancel
-
-
-  //- Modal dialog boxes
-  //- div(class="modal-shadow",ng-show="isDialogDisplayed()")
-
-  //- New category dialog box
-  //- div(id="new-category-dialog",class="modal-container",ng-show="isDialogDisplayed('newCategoryDialog')")
-    div(class="panel-close",ng-click="hideNewCategoryDialog()")
-
-    div(class="modal-content")
-      h2 New Category
-      div
-        input(type="text",id="newCategoryName",ng-model="contactVm.newCategory.name")
-      div(id="icon-container")
-        div Choose an icon for this new category
-        div(ng-repeat="ico in categoryIcons",class="categoryIcon",ng-class="{selected:ico==contactVm.newCategory.filename}",ng-click="contactVm.selectNewCategory(ico)")
-          div(class="img",ng-style="{'background-image':'url('+getCategoryIconPath(ico)+')'}")
-
-      div(class="button-container")
-        button(ng-click="contactVm.saveCategory(this)") Save
-        button(class="cancel",ng-click="hideNewCategoryDialog()") Cancel
-        button(class="secondary",ng-show="contactVm.newContacType.id") Delete
-
-  //- Edit categories dialog box
-  //- div(id="edit-categories-dialog",class="modal-container",ng-show="isDialogDisplayed('editCategoriesDialog')")
-    div(class="panel-close",ng-click="hideEditCategoriesDialog()")
-
-    div(class="modal-content")
-      h2 Edit Categories
-
-      div(id="category-list")
-        div(ng-repeat="ct in categories",class="category")
-          div(class="categoryIcon",ng-click="displayNewCategoryDialog(ct.id)")
-            div(class="img",ng-style="{'background-image':'url('+getCategoryIconPath(ct.filename)+')'}")
-          span(ng-click="displayNewCategoryDialog(ct.id)") {{ct.name}}
-
-          div(class="float-right",ng-hide="categoryIdToDelete==ct.id")
-            div(class="pill subtle",ng-click="categoryIdToDelete=ct.id") Delete
-
-          div(class="float-right",ng-show="categoryIdToDelete==ct.id")
-            div(class="pill left warning",ng-click="contactVm.deleteCategory(this, ct)") Delete
-            div(class="pill right",ng-click="categoryIdToDelete=null") Cancel
-
-      div(class="new-category")
-        button(class="small tertiary",ng-click="displayNewCategoryDialog()") New category
-      div(class="button-container")
-        button(class="cancel",ng-click="hideEditCategoriesDialog()") Close
-
-  div(class="layers",data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

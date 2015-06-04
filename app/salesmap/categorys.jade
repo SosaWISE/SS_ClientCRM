@@ -1,0 +1,23 @@
+div(class="modal-content")
+  h2 Categories
+
+  div(id="category-list")
+    <!-- ko foreach:categorys -->
+    div(class="category")
+      div(class="categoryIcon",
+        data-bind="cmd:$parent.cmdEditCategory")
+        div(class="img",data-bind="bgimg:icon.url")
+      span(data-bind="cmd:$parent.cmdEditCategory,text:Name")
+
+      div(class="float-right",data-bind="visible:ID!==$parent.idToDelete()")
+        div(class="pill subtle",data-bind="cmd:$parent.startDelete") Delete
+
+      div(class="float-right",data-bind="visible:ID===$parent.idToDelete()")
+        div(class="pill left warning",data-bind="cmd:$parent.deleteCategory") Delete
+        div(class="pill right",data-bind="cmd:$parent.cancelDelete") Cancel
+    <!-- /ko -->
+
+  div(class="new-category")
+    button(class="small tertiary",data-bind="cmd:cmdNewCategory") New category
+  div(class="button-container")
+    button(class="cancel",data-bind="cmd:clickCancel") Close

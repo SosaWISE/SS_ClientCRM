@@ -1,4 +1,5 @@
 define("src/salesmap/map.panel.vm", [
+  "src/salesmap/categorys.vm",
   "src/salesmap/contact.editor.vm",
   "src/salesmap/maphelper",
   "src/salesmap/gmap.vm",
@@ -10,6 +11,7 @@ define("src/salesmap/map.panel.vm", [
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
+  CategorysViewModel,
   ContactEditorViewModel,
   maphelper,
   GmapViewModel,
@@ -48,8 +50,9 @@ define("src/salesmap/map.panel.vm", [
       controller: _this,
     });
 
-    _this.categorys = ko.observableArray([]);
-    _this.systemTypes = ko.observableArray([]);
+    _this.categorys = createIconArray(_this, "categories", "Name");
+    _this.systemTypes = createIconArray(_this, "systems", "CompanyName");
+
     _this.contactMap = {};
     _this.contactVm = ko.observable(null);
     _this.gmapVm = new GmapViewModel();
@@ -132,7 +135,12 @@ define("src/salesmap/map.panel.vm", [
       setAllChecked(_this.categorys.peek(), false);
     };
     _this.cmdEditCategorys = ko.command(function(cb) {
-      cb();
+      var vm = new CategorysViewModel({
+        layersVm: _this.layersVm,
+        categoryIcons: _this.categoryIcons,
+        categorys: _this.categorys,
+      });
+      _this.layersVm.show(vm, cb);
     });
     _this.checkAllSystemTypes = function() {
       setAllChecked(_this.systemTypes.peek(), true);
@@ -143,52 +151,95 @@ define("src/salesmap/map.panel.vm", [
   }
   utils.inherits(MapPanelViewModel, ControllerViewModel);
 
-  MapPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this;
-    //
-    function onCheckedChanged() {
+  function iconPath(iconDir, filename) {
+    return IMG_PATH + "map/markers/" + iconDir + "/" + filename;
+  }
+
+  function createIconArray(_this, iconDir, sortProp) {
+    var ray = ko.observableArray([]);
+
+    function reFilterContacts() {
       filterContactMap(_this);
     } //
-    function addProps(list, iconDir) {
-      list.forEach(function(item) {
+    function addProps(item) {
+      if (!item.checked) {
         item.checked = ko.observable(true);
-        _this.handler.subscribe(item.checked, onCheckedChanged, true);
+        _this.handler.subscribe(item.checked, reFilterContacts, true);
+      }
+      if (!item.icon) {
         // add icon to each item
         item.icon = {
-          url: IMG_PATH + "map/markers/" + iconDir + "/" + item.Filename,
+          url: iconPath(iconDir, item.Filename),
           scaledSize: new gmaps.Size(24, 24),
           origin: new gmaps.Point(0, 0),
           anchor: new gmaps.Point(12, 12),
         };
-      });
-      return list;
+      }
     } //
-    function sortByProp(list, prop) {
-      list.sort(function(a, b) {
-        a = a[prop];
-        b = b[prop];
-        if (a < b) {
-          return -1;
-        } else if (b < a) {
-          return 1;
+
+    var sorter = createSortByProp(sortProp);
+
+    ray.replaceItem = function(id, newItem) {
+      var list = ray.peek();
+      var found = list.some(function(item, index) {
+        if (item.ID === id) {
+          if (newItem) {
+            // resuse checked observable
+            newItem.checked = item.checked;
+            addProps(newItem);
+            list.splice(index, 1, newItem);
+          } else {
+            ray.splice(index, 1);
+          }
+          return true;
         }
-        return 0;
       });
-      return list;
-    }
+      if (newItem) {
+        if (!found) {
+          addProps(newItem);
+          list.push(newItem);
+        }
+        ray.sort(sorter);
+      }
+    };
+    ray.removeById = function(id) {
+      ray.replaceItem(id);
+    };
+    ray.updateItem = function(item) {
+      ray.replaceItem(item.ID, item);
+    };
+    ray.setList = function(list) {
+      list.forEach(addProps);
+      list.sort(sorter);
+      ray(list);
+    };
+
+    // re-set icons on any change
+    ray.subscribe(function() {
+      setContactIcons(_this);
+    });
+
+    //
+    return ray;
+  }
+
+  MapPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
+    var _this = this;
     //
     _this.categorys([]);
     load_categorys(_this, function(list) {
-      sortByProp(list, "Name");
-      _this.categorys(addProps(list, "categories"));
+      _this.categorys.setList(list);
     }, join.add());
     //
     _this.systemTypes([]);
     load_systemTypes(_this, function(list) {
-      sortByProp(list, "CompanyName");
-      _this.systemTypes(addProps(list, "systems"));
+      _this.systemTypes.setList(list);
     }, join.add());
+
     //
+    function onCheckedChanged() {
+      filterContactMap(_this);
+    } //
     _this.teams([]);
     _this.handler.subscribe(_this.selTeam, onCheckedChanged, true);
     load_teams(_this, function(list) {
@@ -198,23 +249,23 @@ define("src/salesmap/map.panel.vm", [
           Name: item.Team.Description,
         };
       });
-      sortByProp(list, "Name");
-      list.unshift({
+      list.push({
         ID: 0,
         Name: "All offices",
       });
+      list.sort(createSortByProp("Name"));
       _this.teams(list);
     }, join.add());
     //
     _this.salesUsers([]);
     _this.handler.subscribe(_this.selRep, onCheckedChanged, true);
     load_salesUsers(_this, function(list) {
-      sortByProp(list, "FullName");
-      list.unshift({
+      list.push({
         ID: 0,
         FullName: "All reps",
         Recruits: [],
       });
+      list.sort(createSortByProp("FullName"));
       _this.salesUsers(list);
     }, join.add());
 
@@ -223,7 +274,35 @@ define("src/salesmap/map.panel.vm", [
       setContactIcons(_this);
     } //
     _this.handler.subscribe(_this.iconMode, onIconModeChanged, true);
+
+    //
+    _this.categoryIcons = [];
+    load_categoryIcons(_this, function(list) {
+      _this.categoryIcons = list;
+    }, join.add());
   };
+
+  function createSortByProp(prop) {
+    return function(a, b) {
+      if (a.ID !== b.ID) {
+        // item with ID of zero goes first
+        if (a.ID === 0) {
+          return -1;
+        }
+        if (b.ID === 0) {
+          return 1;
+        }
+      }
+      // case insensitive
+      a = a[prop].toUpperCase();
+      b = b[prop].toUpperCase();
+      if (a === b) {
+        return 0;
+      } else {
+        return (a < b) ? -1 : 1;
+      }
+    };
+  }
 
   function filterContactMap(_this, tmpContactMap) {
     var salesUsers = _this.salesUsers.peek();
@@ -396,6 +475,18 @@ define("src/salesmap/map.panel.vm", [
     dataservice.api_hr.users.read({
       link: "Sales",
     }, setter, cb);
+  } //
+  function load_categoryIcons(_this, setter, cb) {
+    dataservice.api_sales.categorys.read({
+      link: "icons",
+    }, function(filenames) {
+      setter(filenames.map(function(filename) {
+        return {
+          ID: filename,
+          Name: iconPath("categories", filename),
+        };
+      }));
+    }, cb);
   } //
 
 

@@ -69,7 +69,7 @@ textarea {
   padding: 6px 12px;
   width: 100%;
   .border-radius(3px);
-  margin: 2px;
+  // margin: 2px;
   font-family: 'Open Sans', sans-serif;
   font-weight: 300;
   font-size: 16px;
@@ -135,7 +135,11 @@ a:active { color: #62259d; }
 
 a.standalone, .link.standalone { font-family: 'Montserrat', sans-serif; text-transform: uppercase; font-size: 12px; }
 
-button, input[type=button], input[type=submit], a.button:link {
+button,
+input[type=button],
+input[type=submit],
+a.button:link,
+a.btn {
   border: none;
   outline: none;
   border-radius: 4px;
@@ -148,6 +152,23 @@ button, input[type=button], input[type=submit], a.button:link {
   text-align: center;
   cursor: pointer;
   text-decoration: none;
+
+  &:hover {
+    background-color: #FFC52F;
+    color: #5B2D82;
+  }
+  &.secondary:hover {
+    background-color: #5B2D82;
+    color: #fff;
+  }
+  &.tertiary:hover {
+    background-color: #FFC52F;
+    color: #5B2D82;
+  }
+  &.cancel:hover {
+    background-color: #707170;
+    color: #fff;
+  }
 }
 a.button:visited { color: #FFC627; text-decoration: none; }
 a.button:active { color: #FFC627; text-decoration: none; }
@@ -173,22 +194,6 @@ button.small, input[type=button].small, input[type=submit].small {
   font-weight: 300;
   font-size: 11px;
   padding: 5px 10px;
-}
-button:hover, input[type=button]:hover, input[type=submit]:hover, a.button:hover {
-  background-color: #FFC52F;
-  color: #5B2D82;
-}
-button.secondary:hover, input[type=button].secondary:hover, input[type=submit].secondary:hover, a.button.secondary:hover {
-  background-color: #5B2D82;
-  color: #fff;
-}
-button.tertiary:hover, input[type=button].tertiary:hover, input[type=submit].tertiary:hover, a.button.tertiary:hover {
-  background-color: #FFC52F;
-  color: #5B2D82;
-}
-button.cancel:hover, input[type=button].cancel:hover, a.button.cancel:link:hover {
-  background-color: #707170;
-  color: #fff;
 }
 
 
@@ -252,228 +257,229 @@ div.inline {
 }
 
 
-div.modal-container {
-  position: absolute;
-  top: 10%;
-  left: 6%;
-  right: 6%;
-  bottom: 10%;
+.layers .layer-table .layer-cell .layer {
+  &:not(.nowhite) {
+    color: @site-purple;
+  }
+  color: @site-purple;
   background-color: #fff;
-  z-index: 91;
-  border-radius: 30px;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  -ms-box-sizing: border-box;
+  .border-radius(30px);
   padding: 40px;
+
+  a.close {
+    font-size: 40px;
+    cursor: pointer;
+    color: #707170;
+    top: 10px;
+    left: initial;
+    right: 10px;
+    padding: 0px 5px;
+    .border-radius(22px);
+    &:hover,
+    &:active {
+      // color: #fff;
+      background-color: #fff;
+    }
+
+    // put all on right side
+    left: initial;
+    right: 10px;
+    .os-win & {
+      left: initial;
+      right: 10px;
+    }
+  }
 }
+
 div.modal-content {
   width: 100%;
   height: 100%;
-  overflow-y: scroll;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  -ms-box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-div.modal-shadow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.7);
-  z-index: 90;
+  // overflow-x: hidden;
+  overflow-y: auto;
 }
 
 
-
-
-
-
-/* sign in dialog box */
-
-div.signin-shadow {
-  background-color: rgba(112,113,112,0.8);
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 899;
-}
-
-div.signin-container {
-  position: absolute;
-  top: 10%;
-  left: 15%;
-  right: 15%;
-  bottom: 10%;
-  z-index: 900;
-
-  background-color: rgba(255,255,255,0.9);
-  border-radius: 30px;
-  padding: 30px;
-
-  box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -ms-box-sizing: border-box;
-}
-
-div.signin-form {
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -ms-box-sizing: border-box;
-}
-
-div.signin-form input[type=text], div.signin-form input[type=password] {
-  width: 100%;
-  box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -ms-box-sizing: border-box;
-}
-
-div.signin-form label {
-  display: block;
-  margin: 20px 0 3px 0;
-  padding: 0;
-}
-
-
-button.PIN {
-  height: 100px;
-  width: 100px;
-  text-align: center;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  padding: 0;
-  font-size: 56px;
-  margin: 10px 20px;
-}
-
-
-div.sign-in-profile {
-}
-div.sign-in-profile > img {
-  width: 100%;
-}
-
-div.number-pad {
-  text-align: center;
-}
-
-div.number-pad > div {
-  text-align: center;
-}
-
-div#signin-wait {
-  text-align: right;
-  width: 50px;
-  height: 25px;
-  margin: 0 30px 0 auto;
-  padding: 0;
-}
-
-
-
-
-
-
-
-
-/*** common.js elements ***/
-div#_shadowOverlay_ {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.9);
-  z-index: 999;
-}
-
-div#_shadowMessageOverlay_ {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.9);
-  z-index: 1000;
-}
-
-div#_messageBox_ {
-  position: absolute;
-  top: 5%;
-  left: 50%;
-  width: 600px;
-  margin-left: -300px;
-  background-color: #5B2D82;
-  border: none;
-  z-index: 1001;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  padding: 20px 30px 10px 30px;
-}
-div#_messageBox_.warning {
-  background-color: #FFC52F;
-  border: none;
-}
-
-div#_messageContainer_ {
-  font-family: 'Open Sans', sans-serif;
-  font-weight: 400;
-  font-size: 15px;
-  color: #fff;
-  text-align: center;
-}
-div#_messageBox.warning div#_messageContainer_ {
-  color: #5B2D82;
-}
-
-div#_messageButtonContainer_ {
-  text-align: center;
-  padding: 8px;
-  margin: 30px 0px 0px 0px;
-  border-top: 1px solid #fff;
-}
-div#_messageBox.warning div#_messageButtonContainer_ {
-  border-top: 1px solid #5B2D82;
-}
-
-div#__notificationElement__ {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  width: 400px;
-  padding: 12px 16px;
-  font-size: 14px;
-  font-family: 'Open Sans', sans-serif;
-  z-index: 2000;
-  margin-left: -200px;
-  border-radius: 4px;
-  background-color: #5B2D82;
-  border: 2px solid #fff;
-  color: #fff;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-    -webkit-box-shadow: 0 0 10px 2px rgba(0,0,0,0.3);
-    -moz-box-shadow: 0 0 10px 2px rgba(0,0,0,0.3);
-    -ms-box-shadow: 0 0 10px 2px rgba(0,0,0,0.3);
-    box-shadow: 0 0 10px 2px rgba(0,0,0,0.3);
-}
-
-div._messageBox_ok_div_ {
-    text-align: center;
-    padding: 4px;
-    margin: 8px 0px 8px 0px;
-    border-top: 1px solid rgba(255,255,255,0.3);
-}
+// old
+  // /* sign in dialog box */
+  //
+  // div.signin-shadow {
+  //   background-color: rgba(112,113,112,0.8);
+  //   position: absolute;
+  //   left: 0;
+  //   top: 0;
+  //   right: 0;
+  //   bottom: 0;
+  //   z-index: 899;
+  // }
+  //
+  // div.signin-container {
+  //   position: absolute;
+  //   top: 10%;
+  //   left: 15%;
+  //   right: 15%;
+  //   bottom: 10%;
+  //   z-index: 900;
+  //
+  //   background-color: rgba(255,255,255,0.9);
+  //   border-radius: 30px;
+  //   padding: 30px;
+  //
+  //   box-sizing: border-box;
+  //   -webkit-box-sizing: border-box;
+  //   -moz-box-sizing: border-box;
+  //   -ms-box-sizing: border-box;
+  // }
+  //
+  // div.signin-form {
+  //   width: 100%;
+  //   height: 100%;
+  //   box-sizing: border-box;
+  //   -webkit-box-sizing: border-box;
+  //   -moz-box-sizing: border-box;
+  //   -ms-box-sizing: border-box;
+  // }
+  //
+  // div.signin-form input[type=text], div.signin-form input[type=password] {
+  //   width: 100%;
+  //   box-sizing: border-box;
+  //   -webkit-box-sizing: border-box;
+  //   -moz-box-sizing: border-box;
+  //   -ms-box-sizing: border-box;
+  // }
+  //
+  // div.signin-form label {
+  //   display: block;
+  //   margin: 20px 0 3px 0;
+  //   padding: 0;
+  // }
+  //
+  //
+  // button.PIN {
+  //   height: 100px;
+  //   width: 100px;
+  //   text-align: center;
+  //   border-radius: 50%;
+  //   border: 2px solid #fff;
+  //   padding: 0;
+  //   font-size: 56px;
+  //   margin: 10px 20px;
+  // }
+  //
+  //
+  // div.sign-in-profile {
+  // }
+  // div.sign-in-profile > img {
+  //   width: 100%;
+  // }
+  //
+  // div.number-pad {
+  //   text-align: center;
+  // }
+  //
+  // div.number-pad > div {
+  //   text-align: center;
+  // }
+  //
+  // div#signin-wait {
+  //   text-align: right;
+  //   width: 50px;
+  //   height: 25px;
+  //   margin: 0 30px 0 auto;
+  //   padding: 0;
+  // }
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  // /*** common.js elements ***/
+  // div#_shadowOverlay_ {
+  //   position: absolute;
+  //   top: 0;
+  //   left: 0;
+  //   width: 100%;
+  //   height: 100%;
+  //   background-color: rgba(0,0,0,0.9);
+  //   z-index: 999;
+  // }
+  //
+  // div#_shadowMessageOverlay_ {
+  //   position: absolute;
+  //   top: 0;
+  //   left: 0;
+  //   width: 100%;
+  //   height: 100%;
+  //   background-color: rgba(0,0,0,0.9);
+  //   z-index: 1000;
+  // }
+  //
+  // div#_messageBox_ {
+  //   position: absolute;
+  //   top: 5%;
+  //   left: 50%;
+  //   width: 600px;
+  //   margin-left: -300px;
+  //   background-color: #5B2D82;
+  //   border: none;
+  //   z-index: 1001;
+  //   box-sizing: border-box;
+  //   -moz-box-sizing: border-box;
+  //   padding: 20px 30px 10px 30px;
+  // }
+  // div#_messageBox_.warning {
+  //   background-color: #FFC52F;
+  //   border: none;
+  // }
+  //
+  // div#_messageContainer_ {
+  //   font-family: 'Open Sans', sans-serif;
+  //   font-weight: 400;
+  //   font-size: 15px;
+  //   color: #fff;
+  //   text-align: center;
+  // }
+  // div#_messageBox.warning div#_messageContainer_ {
+  //   color: #5B2D82;
+  // }
+  //
+  // div#_messageButtonContainer_ {
+  //   text-align: center;
+  //   padding: 8px;
+  //   margin: 30px 0px 0px 0px;
+  //   border-top: 1px solid #fff;
+  // }
+  // div#_messageBox.warning div#_messageButtonContainer_ {
+  //   border-top: 1px solid #5B2D82;
+  // }
+  //
+  // div#__notificationElement__ {
+  //   position: absolute;
+  //   top: 10px;
+  //   left: 50%;
+  //   width: 400px;
+  //   padding: 12px 16px;
+  //   font-size: 14px;
+  //   font-family: 'Open Sans', sans-serif;
+  //   z-index: 2000;
+  //   margin-left: -200px;
+  //   border-radius: 4px;
+  //   background-color: #5B2D82;
+  //   border: 2px solid #fff;
+  //   color: #fff;
+  //   box-sizing: border-box;
+  //   -moz-box-sizing: border-box;
+  //     -webkit-box-shadow: 0 0 10px 2px rgba(0,0,0,0.3);
+  //     -moz-box-shadow: 0 0 10px 2px rgba(0,0,0,0.3);
+  //     -ms-box-shadow: 0 0 10px 2px rgba(0,0,0,0.3);
+  //     box-shadow: 0 0 10px 2px rgba(0,0,0,0.3);
+  // }
+  //
+  // div._messageBox_ok_div_ {
+  //     text-align: center;
+  //     padding: 4px;
+  //     margin: 8px 0px 8px 0px;
+  //     border-top: 1px solid rgba(255,255,255,0.3);
+  // }

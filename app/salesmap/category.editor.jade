@@ -1,0 +1,15 @@
+div(class="modal-content")
+  h2 Edit Category
+  div
+    input(type="text",data-bind="ukov:data.Name,value:data.Name,valueUpdate:'keyup',select:focusFirst")
+  div(class="icon-container")
+    div Choose an icon for this category
+    <!-- ko foreach:categoryIcons -->
+    div(class="categoryIcon",
+      data-bind="css:{selected:ID===$parent.data.Filename()},cmd:$parent.clickIcon")
+      div(class="img",data-bind="bgimg:Name")
+    <!-- /ko -->
+
+  div(class="button-container")
+    button(data-bind="cmd:cmdSave") Save
+    button(class="cancel",data-bind="cmd:clickCancel") Cancel
