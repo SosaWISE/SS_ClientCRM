@@ -233,7 +233,7 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
       // add subscriptions
       _this.handler
         .subscribe(_this.invoice.invoiceItems, _this.updateInvoiceGvm, false)
-        .subscribe(_this.salesinfo.PaymentTypeId, _this.packageChanged, true)
+        .subscribe(_this.salesinfo.AccountPackageCvm.selectedValue, _this.packageChanged, true)
         .subscribe(_this.salesinfo.FriendsAndFamilyTypeId, _this.ffTypeChanged, true);
       //
       Object.keys(_this.salesinfo.doc).forEach(function(key) {
