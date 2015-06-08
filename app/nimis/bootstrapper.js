@@ -206,6 +206,9 @@ define("src/nimis/bootstrapper", [
     if (utils.isStr(ex)) {
       ex = new Error("WRAPPED ERR: " + ex);
     }
+    if (!ex) {
+      ex = new Error(msg);
+    }
     // overwrite message with message and stack trace
     msg = ex.stack;
     // append line and column (same as first line of stack trace)

@@ -1,34 +1,5 @@
-//- <!DOCTYPE html>
-//- <html>
-    <head>
-        <meta charset="utf-8",/>
-        <meta,name="viewport",content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui",/>
-
-        <script language="javascript",type="text/javascript",src="view/js/BarGraph.js">
-        <script language="javascript",type="text/javascript",src="view/js/angular/angular.min.js">
-        <script language="javascript",type="text/javascript",src="view/js/common-2.0.js">
-        <script language="javascript",type="text/javascript",src="view/js/global_vars.js">
-        <script language="javascript",type="text/javascript",src="view/js/standard.js">
-        <link rel="stylesheet",type="text/css",href="view/css/standard.css",/>
-
-        //- Editable head
-
-        <title>Sales map
-        <meta,name="description",content="",/>
-    <script type="text/javascript",src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCITeswJw6LmEelMuW6OVAniLTG-K_3NcU">
-        <script language="javascript",type="text/javascript",src="view/js/map/contactVmService.js">
-        <script language="javascript",type="text/javascript",src="view/js/map/SalesAreaService.js">
-        <script language="javascript",type="text/javascript",src="view/js/map/contactVmTimelineService.js">
-        <script language="javascript",type="text/javascript",src="view/js/map/map-vars.js">
-        <script language="javascript",type="text/javascript",src="view/js/map/map.js">
-        <link rel="stylesheet",type="text/css",href="view/css/map.css",/>
-
-        //- END Editable head
-    <body,ng-app="MySite">
-
-
 div(class="salesmap dock",
-  data-bind="css:{'r-show':contactVm,'settings-show':showSettings,'tools-show':showTools}")
+  data-bind="css:{'r-show':contactVm,'settings-show':showSettings,'tools-show':showTools,'areas-show':showAreas,'new-area-show':showNewArea}")
 
   div(class="layers",data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")
 
@@ -52,10 +23,8 @@ div(class="salesmap dock",
       h2 Filters
       div Show contacts made in&nbsp;
         select(data-bind="options:teams,optionsText:'Name',value:selTeam")
-        //- <!-- ko if:selTeam -->
         |&nbsp;by&nbsp;
         select(data-bind="options:teamReps,optionsText:'FullName',value:selRep")
-        //- <!-- /ko -->
 
       div(class="categories-filter")
         h3 Categories
@@ -105,17 +74,43 @@ div(class="salesmap dock",
 
   div(class="dock-bottom tools-wrap")
     div(class="panel-close",data-bind="cmd:toggleTools")
-
     //- Manager tools
     div(id="option-icons")
       h2 Tools
-      div(class="inline-icon",ng-click="setMapMode('areas')")
+      div(class="inline-icon",data-bind="cmd:editAreas")
         div(class="icon",id="edit-areas-icon")
         div(class="label") View/edit sales areas
-
-      div(class="inline-icon",ng-click="displayContactTimeline()")
+      //- div(class="inline-icon",data-bind="cmd:displayContactTimeline()")
         div(class="icon",id="contact-timeline-icon")
         div(class="label") View contacts on timeline
+
+  //- Edit areas main menu
+  div(class="dock-bottom edit-areas-wrap")
+    div(class="panel-close",data-bind="cmd:stopEditAreas")
+    button(data-bind="cmd:newSalesArea") New area
+    //- button(data-bind="cmd:saveSalesAreas(this)") Save
+    //- button(data-bind="cmd:stopEditAreas",class="cancel") Exit edit mode
+
+
+  //- Create/edit area panel
+  div(class="dock-bottom new-area-wrap",data-bind="with:areasVm")
+    //- div(id="edit-areas-new-panel",ng-class="{open:(mapMode=='areas'&&(SalesArea.mode=='new' || SalesArea.mode=='edit')),close:!(mapMode=='areas'&&(SalesArea.mode=='new' || SalesArea.mode=='edit'))}")
+    form(name="newSalesAreaForm",data-bind="with:currArea")
+      div(class="form-element")
+        label Name:
+        input(type="text",data-bind="ukov:data.Name,value:data.Name,valueUpdate:'keyup'")
+        label Office:
+        select(data-bind="options:$parent.teams,optionsText:'Name',value:$parent.selTeam")
+        |&nbsp;Assigned to:&nbsp;
+        select(data-bind="options:$parent.teamReps,optionsText:'FullName',value:$parent.selRep")
+        |&nbsp;Start assignment on:&nbsp;
+        input(type="text",placeholder="mm/dd/yyyy --:-- --",
+          data-bind="ukov:data.StartTime,datetimevalue:data.StartTime,valueUpdate:'keyup'")
+      div(class="footer-button-group")
+        button(data-bind="cmd:$parent.saveCurrentSalesArea") Save
+        button(data-bind="cmd:$parent.cancelCurrentSalesArea",class="cancel") Cancel
+        button(data-bind="cmd:$parent.deleteCurrentSalesArea,visible:$parent.deleteCurrentSalesArea.canExecute",class="secondary") Delete
+
 
 
   //- Timeline view
@@ -176,32 +171,6 @@ div(class="salesmap dock",
     div(id="contact-timeline-container",graph-id="'contact-timeline'",graph-data="[]",graph-options="ContactTimeline.options",bar-graph)
 
 
-  //- Edit areas main menu
-  //- div(id="edit-areas-select-panel",ng-class="{open:(mapMode=='areas' && SalesArea.mode=='select'),close:!(mapMode=='areas' && SalesArea.mode=='select')}")
-    button(ng-click="SalesArea.setSalesAreaMode(this, 'new')") New area
-    button(ng-click="SalesArea.saveSalesAreas(this)") Save
-    button(ng-click="SalesArea.cancelSalesAreaMode(this)",class="cancel") Exit edit mode
-
-
-  //- Create/edit area panel
-  //- div(id="edit-areas-new-panel",ng-class="{open:(mapMode=='areas'&&(SalesArea.mode=='new' || SalesArea.mode=='edit')),close:!(mapMode=='areas'&&(SalesArea.mode=='new' || SalesArea.mode=='edit'))}")
-    form(name="newSalesAreaForm")
-      div(class="form-element")
-        label Office:
-        select(name="officeId",ng-model="SalesArea.currentArea.officeId",ng-options="o.id as (o.officeCity + ', ' + o.officeState) for o in offices")
-      div(class="form-element",ng-show="SalesArea.currentArea && SalesArea.currentArea.officeId")
-        label Assigned to:
-        select(name="salesRepId",ng-model="SalesArea.currentArea.salesRepId",ng-options="r.id as (r.firstName + ' ' + r.lastName) for r in salesReps | filter:{officeId:(SalesArea.currentArea && SalesArea.currentArea.officeId)}")
-      div(class="form-element")
-        label Start assignment on:
-        input(type="datetime-local",name="startTimestamp",ng-model="SalesArea.currentArea.startTimestamp")
-      div(class="footer-button-group")
-        button(ng-click="SalesArea.saveCurrentSalesArea(this)") Save
-        button(ng-click="SalesArea.cancelCurrentSalesArea(this)",class="cancel") Cancel
-        button(ng-click="SalesArea.deleteCurrentSalesArea(this)",class="secondary") Delete
-
-
-  //- Create/edit contact panel
 
   div(class="dock-right")
     //- div(class="btn-dock",data-bind="click:function(){showContact(!showContact())},toggle:{closed:!showContact()}")

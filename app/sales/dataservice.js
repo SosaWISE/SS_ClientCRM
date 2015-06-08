@@ -31,6 +31,7 @@ define("src/sales/dataservice", [
     // sales service
     //
     api_sales: createService("api/sales", [
+      "areas",
       "contacts",
       "categorys",
       "systemTypes",

@@ -1,4 +1,5 @@
 define("src/salesmap/map.panel.vm", [
+  "src/salesmap/areas.vm",
   "src/salesmap/categorys.vm",
   "src/salesmap/contact.editor.vm",
   "src/salesmap/maphelper",
@@ -11,6 +12,7 @@ define("src/salesmap/map.panel.vm", [
   "src/core/utils",
   "src/core/controller.vm",
 ], function(
+  AreasViewModel,
   CategorysViewModel,
   ContactEditorViewModel,
   maphelper,
@@ -77,8 +79,21 @@ define("src/salesmap/map.panel.vm", [
       });
     });
 
+    _this.areasVm = new AreasViewModel({
+      mapMode: _this.mapMode,
+      gmapVm: _this.gmapVm,
+      teams: _this.teams,
+      salesUsers: _this.salesUsers,
+    });
+
     _this.showSettings = ko.observable();
     _this.showTools = ko.observable();
+    _this.showAreas = ko.computed(function() {
+      return _this.mapMode() === "areas" && !_this.areasVm.currArea();
+    });
+    _this.showNewArea = ko.computed(function() {
+      return _this.mapMode() === "areas" && _this.areasVm.currArea();
+    });
 
     _this.iconMode = ko.observable("category");
     // _this.iconMode("system");
@@ -87,17 +102,36 @@ define("src/salesmap/map.panel.vm", [
     // events
     //
     // bindEvent("dblclick"); //handleDoubleClick(evt, evt.latLng);
-    // bindEvent("mousemove"); //handleMouseMove(evt, evt.latLng);
     // bindEvent("drag");
 
     _this.gmapVm.on("click", function(evt) {
       var mode = _this.mapMode.peek();
       switch (mode) {
         case "areas":
-          // SalesArea.handleMapEvent(mode, name, evt, evt.latLng);
+          _this.areasVm.handleClick(mode, evt);
           break;
         case "knocking":
           contactMarker(_this, evt.latLng);
+          break;
+      }
+    });
+    _this.gmapVm.on("dblclick", function(evt) {
+      var mode = _this.mapMode.peek();
+      switch (mode) {
+        case "areas":
+          _this.areasVm.handleDoubleClick(mode, evt);
+          break;
+        case "knocking":
+          break;
+      }
+    });
+    _this.gmapVm.on("mousemove", function(evt) {
+      var mode = _this.mapMode.peek();
+      switch (mode) {
+        case "areas":
+          _this.areasVm.handleMouseMove(mode, evt);
+          break;
+        case "knocking":
           break;
       }
     });
@@ -105,11 +139,24 @@ define("src/salesmap/map.panel.vm", [
       var mode = _this.mapMode.peek();
       switch (mode) {
         case "areas":
+          // _this.areasVm.reloadAreasInBounds();
           break;
         case "knocking":
           reloadContactsInBounds(_this);
           break;
       }
+      _this.areasVm.reloadAreasInBounds();
+    });
+    _this.gmapVm.on("center_changed", function(evt) {
+      var mode = _this.mapMode.peek();
+      switch (mode) {
+        case "areas":
+          // _this.areasVm.handleCenterChanged(mode, evt);
+          break;
+        case "knocking":
+          break;
+      }
+      _this.areasVm.handleCenterChanged(mode, evt);
     });
 
     _this.toggleSettings = function() {
@@ -119,8 +166,18 @@ define("src/salesmap/map.panel.vm", [
       _this.showTools(!_this.showTools.peek());
     };
     _this.canTools = ko.computed(function() {
-      return false;
+      return 1;
     });
+    _this.editAreas = function() {
+      _this.showTools(false);
+      _this.mapMode("areas");
+    };
+    _this.stopEditAreas = function() {
+      _this.mapMode("knocking");
+    };
+    _this.newSalesArea = function() {
+      _this.areasVm.mode("new");
+    };
 
     function setAllChecked(list, checked) {
       list.forEach(function(item) {
@@ -225,6 +282,8 @@ define("src/salesmap/map.panel.vm", [
 
   MapPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
+    //
+    _this.areasVm.load(routeData, extraData, join.add());
     //
     _this.categorys([]);
     load_categorys(_this, function(list) {
