@@ -6,11 +6,8 @@ div(class="salesmap dock",
   //- div(id="loading-screen",ng-show="isLoading")
     div(id="loading-logo")
 
-  //- div(id="map-canvas")
   div(class="map-canvas",data-bind="gmap:gmapVm")
 
-  //- div(id="settings-button",ng-click="displaySettings()")
-  //- div(id="tools-button",ng-click="displayTools()",ng-show="$site.hasPermission(['OFFICE_STATS','COMPANY_STATS'])")
   div(class="settings-btn",data-bind="cmd:toggleSettings")
   div(class="tools-btn",data-bind="cmd:toggleTools,visible:canTools")
 
@@ -88,13 +85,9 @@ div(class="salesmap dock",
   div(class="dock-bottom edit-areas-wrap")
     div(class="panel-close",data-bind="cmd:stopEditAreas")
     button(data-bind="cmd:newSalesArea") New area
-    //- button(data-bind="cmd:saveSalesAreas(this)") Save
-    //- button(data-bind="cmd:stopEditAreas",class="cancel") Exit edit mode
-
 
   //- Create/edit area panel
   div(class="dock-bottom new-area-wrap",data-bind="with:areasVm")
-    //- div(id="edit-areas-new-panel",ng-class="{open:(mapMode=='areas'&&(SalesArea.mode=='new' || SalesArea.mode=='edit')),close:!(mapMode=='areas'&&(SalesArea.mode=='new' || SalesArea.mode=='edit'))}")
     form(name="newSalesAreaForm",data-bind="with:currArea")
       div(class="form-element")
         label Name:
@@ -173,9 +166,6 @@ div(class="salesmap dock",
 
 
   div(class="dock-right")
-    //- div(class="btn-dock",data-bind="click:function(){showContact(!showContact())},toggle:{closed:!showContact()}")
-      div(class="close")
-      div(class="open")
     div(class="new-contact",data-bind="with:contactVm")
       h2 Homeowner notes
       form(name="contactForm")
@@ -193,9 +183,6 @@ div(class="salesmap dock",
             |&nbsp;
             span(class="fine-print link inverted",style="text-transform:initial;font-weight: 300;font-family:'Open Sans',sans-serif;",data-bind="cmd:$parent.cmdEditCategorys") Edit categories
           select(data-bind="options:$parent.categorys,optionsValue:'ID',optionsText:'Name',value:data.CategoryId")
-          //- select(name="category",data-bind="data.CategoryId",ng-change="categoryChanged()",required)
-            option(ng-repeat="c in categories",value="{{c.id}}",ng-selected="c.id==0") {{c.name}}
-            option(value="new") Create a new category...
         div(class="field")
           label Current system
           select(data-bind="options:$parent.systemTypes,optionsValue:'ID',optionsText:'CompanyName',value:data.SystemId")
@@ -206,9 +193,6 @@ div(class="salesmap dock",
           label Follow up
           input(type="text",name="followup",placeholder="mm/dd/yyyy --:-- --",
             data-bind="ukov:data.FollowupOn,datetimevalue:data.FollowupOn,valueUpdate:'keyup'")
-          //- input(type="datetime-local",name="followup",
-            data-bind="ukov:data.FollowupOn,datepickervalue:data.FollowupOn")
-          //- onchange="alert('asfd')")
         div(class="button-container")
           button(data-bind="cmd:cmdSave") Save
           button(class="cancel",data-bind="cmd:clickCancel") Cancel
