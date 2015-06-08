@@ -156,6 +156,23 @@ define("src/salesmap/polygon", [
     var _this = this;
     _this._polyline.setMap(_this._map);
   };
+  Polygon.prototype.hide = function() {
+    var _this = this;
+    _this._hidden = true;
+    _this._polygon.setMap(null);
+    hideLabel(_this);
+    _this.hideOutline();
+  };
+  Polygon.prototype.show = function() {
+    var _this = this;
+    _this._hidden = false;
+    var map = _this._polygon.getMap();
+    if (_this._map !== map) {
+      _this._polygon.setMap(_this._map);
+    }
+    showLabel(_this);
+    // _this.showOutline();
+  };
   Polygon.prototype.destroy = function() {
     var _this = this;
     _this._polygon.setMap(null);
@@ -267,14 +284,29 @@ define("src/salesmap/polygon", [
     return div;
   }
 
+  function hideLabel(_this) {
+    var style = _this._labelDiv.style;
+    if (style.display !== "none") {
+      style.display = "none";
+    }
+  } //
+  function showLabel(_this) {
+    var style = _this._labelDiv.style;
+    if (style.display !== "") {
+      style.display = "";
+    }
+  } //
+
   function centerLabel(_this) {
     var div = _this._labelDiv;
     var centroid = _this.getCentroid();
     if (!centroid) {
-      div.style.display = "none";
+      hideLabel(_this);
       return;
     }
-    div.style.display = "";
+    if (!_this._hidden) {
+      showLabel(_this);
+    }
     // set position
     var xy = convertLatLngToXY(_this._map, centroid);
     div.style.left = xy.x + "px"; // this only works in the Western Hemisphere

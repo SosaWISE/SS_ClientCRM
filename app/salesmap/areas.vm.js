@@ -374,7 +374,10 @@ define("src/salesmap/areas.vm", [
       loopMap(areasMap, function(areaId, area) {
         area.hide();
       });
-      return cb();
+      if (utils.isFunc(cb)) {
+        cb();
+      }
+      return;
     }
 
     var bounds = map.getBounds();
@@ -400,15 +403,18 @@ define("src/salesmap/areas.vm", [
         }
       });
 
-      // remove deleted
       loopMap(areasMap, function(areaId, area) {
+        // remove deleted
         //@TODO: don't remove area's outside of bounds
         if (!updatedMap[areaId]) { // && bounds.contains(obj.lastPosition)) {
           // remove from areasMap
           delete areasMap[areaId];
           // remove from gmap
           area.destroy();
+          return;
         }
+        // ensure showing
+        area.show();
       });
 
       //
