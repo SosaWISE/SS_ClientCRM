@@ -125,14 +125,18 @@ define("src/salesmap/areas.vm", [
       }
       var model = area.data.getValue();
       model.Paths = paths;
+      model.TeamId = model.TeamId || 0;
       dataservice.api_sales.areas.save({
         id: model.ID || "", // create or update
         data: model,
       }, function(data) {
-        updateArea(area, data);
+        // area.data.setValue(data);
         // ensure area is in the hash map
         _this.areasMap[data.ID] = area;
-        //
+        // remove current area so that it isn't reverted
+        _this._prevMode = "edit";
+        area._cleanVal = data;
+        // deselect map
         _this.mode("none");
       }, cb);
     }, function(busy) {
@@ -151,24 +155,26 @@ define("src/salesmap/areas.vm", [
       return !busy && _this.currArea();
     });
     _this.deleteCurrentSalesArea = ko.command(function(cb) {
-      var area = _this.currArea.peek();
-      var id = area.data.ID.getValue();
-      if (!id) {
-        notify.warn("Missing map areas", null, 5);
-        return cb();
-      }
-      dataservice.api_sales.areas.del({
-        id: id,
-      }, function() {
-        // remove from areasMap
-        delete _this.areasMap[id];
-        // remove from gmap
-        area.destroy();
-        //
-        _this.mode("none");
-      }, cb);
+      notify.confirm("Delete sales area?", "Are you sure you want to delete the highlighted sales area?", function(result) {
+        if (result !== "yes") {
+          return cb();
+        }
+        var area = _this.currArea.peek();
+        var id = area.data.ID.getValue();
+        dataservice.api_sales.areas.del({
+          id: id,
+        }, function() {
+          // remove from areasMap
+          delete _this.areasMap[id];
+          // remove from gmap
+          area.destroy();
+          //
+          _this.mode("none");
+        }, cb);
+      });
     }, function(busy) {
-      return !busy && _this.currArea();
+      var area = _this.currArea();
+      return !busy && area && area.data.ID();
     });
   }
   utils.inherits(AreasViewModel, BaseViewModel);
@@ -303,6 +309,8 @@ define("src/salesmap/areas.vm", [
     return area;
   } //
   function updateArea(area, item) {
+    area.data.setValue(item);
+    area.data.markClean(item);
     area.setPaths(item.Paths);
     area.setLabel(item.Name);
   } //
@@ -369,16 +377,16 @@ define("src/salesmap/areas.vm", [
     var _this = this;
     var map = _this.gmapVm.gmap;
     var areasMap = _this.areasMap;
-    var zm = map.getZoom();
-    if (zm < 13) {
-      loopMap(areasMap, function(areaId, area) {
-        area.hide();
-      });
-      if (utils.isFunc(cb)) {
-        cb();
-      }
-      return;
-    }
+    // var zm = map.getZoom();
+    // if (zm < 13) {
+    //   loopMap(areasMap, function(areaId, area) {
+    //     area.hide();
+    //   });
+    //   if (utils.isFunc(cb)) {
+    //     cb();
+    //   }
+    //   return;
+    // }
 
     var bounds = map.getBounds();
     load_areasInBounds(bounds, function(list) {
@@ -413,8 +421,8 @@ define("src/salesmap/areas.vm", [
           area.destroy();
           return;
         }
-        // ensure showing
-        area.show();
+        // // ensure showing
+        // area.show();
       });
 
       //

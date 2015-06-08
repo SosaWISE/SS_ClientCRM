@@ -101,6 +101,59 @@ define("src/salesmap/map.panel.vm", [
     //
     // events
     //
+
+    _this.toggleSettings = function() {
+      _this.showSettings(!_this.showSettings.peek());
+    };
+    _this.toggleTools = function() {
+      _this.showTools(!_this.showTools.peek());
+    };
+    _this.canTools = ko.computed(function() {
+      return 1;
+    });
+    _this.editAreas = function() {
+      _this.showTools(false);
+      _this.mapMode("areas");
+    };
+    _this.stopEditAreas = function() {
+      _this.mapMode("knocking");
+    };
+    _this.newSalesArea = function() {
+      _this.areasVm.mode("new");
+    };
+
+    function setAllChecked(list, checked) {
+      list.forEach(function(item) {
+        item.checked(checked);
+      });
+      filterContactMap(_this);
+    }
+    _this.checkAllCategorys = function() {
+      setAllChecked(_this.categorys.peek(), true);
+    };
+    _this.checkNoCategorys = function() {
+      setAllChecked(_this.categorys.peek(), false);
+    };
+    _this.cmdEditCategorys = ko.command(function(cb) {
+      var vm = new CategorysViewModel({
+        layersVm: _this.layersVm,
+        categoryIcons: _this.categoryIcons,
+        categorys: _this.categorys,
+      });
+      _this.layersVm.show(vm, cb);
+    });
+    _this.checkAllSystemTypes = function() {
+      setAllChecked(_this.systemTypes.peek(), true);
+    };
+    _this.checkNoSystemTypes = function() {
+      setAllChecked(_this.systemTypes.peek(), false);
+    };
+
+
+    if (!maphelper.coordsEnabled()) {
+      notify.warn("You can't use the app without location services enabled", null, 0);
+      return;
+    }
     // bindEvent("dblclick"); //handleDoubleClick(evt, evt.latLng);
     // bindEvent("drag");
 
@@ -158,53 +211,6 @@ define("src/salesmap/map.panel.vm", [
       }
       _this.areasVm.handleCenterChanged(mode, evt);
     });
-
-    _this.toggleSettings = function() {
-      _this.showSettings(!_this.showSettings.peek());
-    };
-    _this.toggleTools = function() {
-      _this.showTools(!_this.showTools.peek());
-    };
-    _this.canTools = ko.computed(function() {
-      return 1;
-    });
-    _this.editAreas = function() {
-      _this.showTools(false);
-      _this.mapMode("areas");
-    };
-    _this.stopEditAreas = function() {
-      _this.mapMode("knocking");
-    };
-    _this.newSalesArea = function() {
-      _this.areasVm.mode("new");
-    };
-
-    function setAllChecked(list, checked) {
-      list.forEach(function(item) {
-        item.checked(checked);
-      });
-      filterContactMap(_this);
-    }
-    _this.checkAllCategorys = function() {
-      setAllChecked(_this.categorys.peek(), true);
-    };
-    _this.checkNoCategorys = function() {
-      setAllChecked(_this.categorys.peek(), false);
-    };
-    _this.cmdEditCategorys = ko.command(function(cb) {
-      var vm = new CategorysViewModel({
-        layersVm: _this.layersVm,
-        categoryIcons: _this.categoryIcons,
-        categorys: _this.categorys,
-      });
-      _this.layersVm.show(vm, cb);
-    });
-    _this.checkAllSystemTypes = function() {
-      setAllChecked(_this.systemTypes.peek(), true);
-    };
-    _this.checkNoSystemTypes = function() {
-      setAllChecked(_this.systemTypes.peek(), false);
-    };
   }
   utils.inherits(MapPanelViewModel, ControllerViewModel);
 
@@ -280,8 +286,45 @@ define("src/salesmap/map.panel.vm", [
     return ray;
   }
 
+  function updateSalesRepMarker(_this, coords) {
+    var marker = _this.salesRepMarker || (_this.salesRepMarker = new gmaps.Marker({
+      // position: window.defaultLocation,
+      map: _this.gmapVm.gmap,
+      icon: {
+        url: IMG_PATH + "map/salesRep.png",
+        scaledSize: new gmaps.Size(50, 50),
+        origin: new gmaps.Point(0, 0),
+        anchor: new gmaps.Point(25, 25),
+      },
+      zIndex: 110,
+    }));
+    if (coords) {
+      marker.setPosition(coords);
+    }
+  }
+
   MapPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
+
+    if (!maphelper.coordsEnabled()) {
+      return;
+    }
+
+    var firstTime = true; //
+    function updateMarkerPostion() {
+      maphelper.getCoords(function(coords) {
+        updateSalesRepMarker(_this, coords);
+        // center the map the first time
+        if (coords && firstTime) {
+          firstTime = false;
+          _this.gmapVm.gmap.setCenter(coords);
+        }
+      });
+    }
+    window.clearInterval(_this._coordsIntervalId);
+    _this._coordsIntervalId = window.setInterval(updateMarkerPostion, 12000);
+    updateMarkerPostion();
+
     //
     _this.areasVm.load(routeData, extraData, join.add());
     //
@@ -498,10 +541,10 @@ define("src/salesmap/map.panel.vm", [
     // // check permissions and request the right amount of data.
     // var userId = $site.user.userId;
     // var teamId = $site.user.teamId;
-    // if ($site.hasPermission(['OFFICE_STATS', 'COMPANY_STATS'])) {
+    // if ($site.hasPermission(["OFFICE_STATS", "COMPANY_STATS"])) {
     //   userId = 0;
     // }
-    // if ($site.hasPermission(['COMPANY_STATS'])) {
+    // if ($site.hasPermission(["COMPANY_STATS"])) {
     //   teamId = 0;
     // }
 
@@ -527,12 +570,12 @@ define("src/salesmap/map.panel.vm", [
   } //
   function load_teams(_this, setter, cb) {
     dataservice.api_hr.teams.read({
-      link: "Sales",
+      link: "sales",
     }, setter, cb);
   } //
   function load_salesUsers(_this, setter, cb) {
     dataservice.api_hr.users.read({
-      link: "Sales",
+      link: "sales",
     }, setter, cb);
   } //
   function load_categoryIcons(_this, setter, cb) {

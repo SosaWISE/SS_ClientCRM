@@ -41,6 +41,9 @@ define("src/salesmap/polygon", [
   Polygon.prototype.setLabel = function(txt) {
     var _this = this;
     _this._labelDiv.innerHTML = txt;
+    if (!_this._hidden) {
+      showLabel(_this);
+    }
   };
   Polygon.prototype.getPaths = function() {
     var _this = this;
@@ -119,6 +122,8 @@ define("src/salesmap/polygon", [
     if (currentPath_amended) {
       _this._polyline.setPath(currentPath_amended);
     }
+
+    centerLabel(_this);
   };
 
   Polygon.prototype.endPath = function() {

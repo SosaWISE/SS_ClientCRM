@@ -125,8 +125,8 @@ define("src/salesmap/contact.editor.vm", [
       model.CategoryId = model.CategoryId || 0;
       model.SystemId = model.SystemId || 0;
       // used for tracking
-      model.SalesRepLatitude = (coords) ? coords.latitude : null;
-      model.SalesRepLongitude = (coords) ? coords.longitude : null;
+      model.SalesRepLatitude = (coords) ? coords.lat : null;
+      model.SalesRepLongitude = (coords) ? coords.lng : null;
       dataservice.api_sales.contacts.save({
         // id: model.ID || "", // update if there is an id
         data: model,
