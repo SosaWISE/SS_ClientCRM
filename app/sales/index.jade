@@ -44,7 +44,7 @@ html
         div(class="wrap")
           div(class="panels", data-bind="foreach:panels")
             <!-- ko if:!lazy -->
-            div(data-bind="active:active,if:active",style="height:100%")
+            div(data-bind="active:active,visible:active",style="height:100%")
               div(data-bind="template:viewTmpl,attr:{id:id+'-panel'}",style="height:100%")
             <!-- /ko -->
             div(data-bind="spinner:active()&&!loaded(),spinner-rgb:'black'")

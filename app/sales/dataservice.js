@@ -41,6 +41,7 @@ define("src/sales/dataservice", [
     // hr service
     //
     api_hr: createService("api/hr", [
+      "reports",
       "teams",
       "users",
     ]),

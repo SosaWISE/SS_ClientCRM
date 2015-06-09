@@ -1,0 +1,50 @@
+h1 Credits and installations
+div(class="filters")
+  div
+    |Show report for&nbsp;
+    input(type="text",data-bind="ukov:data.startDate,datevalue:data.startDate,valueUpdate:'keyup'")
+    |&nbsp;to&nbsp;
+    input(type="text",data-bind="ukov:data.endDate,datevalue:data.endDate,valueUpdate:'keyup'")
+    div(class="inline")
+      button(data-bind="cmd:cmdGo") Go
+
+    div(class="separated")
+      input(id="groupByOffice",type="checkbox",data-bind="checked:groupByOffice")
+      label(for="groupByOffice")
+        //- div needed for check mark
+        div
+        |Group by office
+
+div(class="report-data",data-bind="if:salesReps()&&!groupByOffice()")
+  table
+    thead
+      tr
+        th Sales rep
+        th Office
+        th(class="number") Credits run
+        th(class="number") Installations
+    tbody(data-bind="foreach:salesReps")
+        td(data-bind="text:SalesRepName")
+        td(data-bind="text:TeamLocation")
+        td(class="number",data-bind="text:NumCredits")
+        td(class="number",data-bind="text:NumInstalls")
+
+div(class="report-data",data-bind="if:officeData()&&groupByOffice()")
+  table
+    thead
+      tr
+        th Office
+        th(class="number") Credits run
+        th(class="number") Installations
+    <!-- ko foreach:officeData -->
+    tbody
+      tr(data-bind="cmd:function(){expanded(!expanded.peek());}")
+        td(class="groupHeading",data-bind="text:TeamLocation")
+        td(class="groupHeading number",data-bind="text:NumCredits")
+        td(class="groupHeading number",data-bind="text:NumInstalls")
+    tbody(data-bind="visible:expanded,foreach:salesReps")
+      tr
+        td(class="groupie",data-bind="text:SalesRepName")
+        td(class="groupie number",data-bind="text:NumCredits")
+        td(class="groupie number",data-bind="text:NumInstalls")
+    <!-- /ko -->

@@ -47,6 +47,21 @@ define("src/sales/app", [
             path: ":id/:tab/:p1",
           },
         ],
+      }, {
+        appid: -1,
+        path: "src/salesreports/salesreports.panel.vm",
+        options: {
+          id: "reports",
+          title: "Reports",
+          icoClass: "ico fa fa-2x fa-list-alt",
+        },
+        routes: [ //
+          {
+            precedence: 1,
+            name: "reports",
+            path: ":id/:tab/:p1",
+          },
+        ],
       },
     ],
   });
