@@ -26,3 +26,5 @@ www
 */webconfig.js
 
 node_modules/less/dist
+
+nimis/webconfig.js
