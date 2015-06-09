@@ -14,6 +14,9 @@ define("src/salesmap/maphelper", [
   }
 
   var maphelper = {
+    coordsEnabled: function() {
+      return !!navigator.geolocation;
+    },
     // try to get lat lon
     getCoords: function(cb) {
       if (!navigator.geolocation) {
@@ -21,15 +24,10 @@ define("src/salesmap/maphelper", [
         return;
       }
       navigator.geolocation.getCurrentPosition(function(position) {
-        // cb(new gmaps.LatLng(position.coords.latitude, position.coords.longitude));
-        cb(position.coords);
-        // re-center map to current location
-        // $scope.map.setCenter({
-        //   lat: position.coords.latitude,
-        //   lng: position.coords.longitude
-        // });
-        // $scope.salesRepMarker.setPosition(new gmaps.LatLng(position.coords.latitude, position.coords.longitude));
-        // $scope.map.setZoom(16);
+        cb({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
       }, function(positionError) {
         console.log("Error getting coords: " + positionError.message);
         cb(null);

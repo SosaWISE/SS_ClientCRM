@@ -73,7 +73,8 @@ define("src/account/security/clist.industrynums.vm", [
         link: "GenerateIndustryAccount",
       }, null, function(genErr /*, resp*/ ) {
         // always reload industry accounts since after an industry number is generated there can be errors
-        load_industryAccounts(_this, utils.safeCallback(cb, function() {
+        // load_industryAccounts(_this, utils.safeCallback(cb, function() {
+        load_industryAccounts2(_this, _this.industryAccountGvm, utils.safeCallback(cb, function() {
           // show generation error if there was one
           if (genErr) {
             notify.error(genErr);

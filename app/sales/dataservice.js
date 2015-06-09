@@ -31,9 +31,19 @@ define("src/sales/dataservice", [
     // sales service
     //
     api_sales: createService("api/sales", [
+      "areas",
       "contacts",
       "categorys",
       "systemTypes",
+    ]),
+
+    //
+    // hr service
+    //
+    api_hr: createService("api/hr", [
+      "reports",
+      "teams",
+      "users",
     ]),
   };
 });

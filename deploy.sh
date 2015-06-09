@@ -8,5 +8,5 @@ echo "rsync to ${DEST}"
 # ensure dest exists
 mkdir -p "${DEST}"
 # copy/delete
-rsync -av --delete --exclude /webconfig.js ./www/ "${DEST}"
+rsync -av --delete --exclude webconfig.js ./www/ "${DEST}"
 echo "...done"

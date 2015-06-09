@@ -197,6 +197,8 @@ define("src/core/querystring", [
           _und.each(value, function(value) {
             results.push(toQueryPair(key, value));
           });
+        } else if (value instanceof Date) {
+          results.push(toQueryPair(key, value.toISOString()));
         }
       } else {
         if (_und.isBoolean(value) && !value) {
