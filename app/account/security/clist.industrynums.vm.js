@@ -126,19 +126,20 @@ define("src/account/security/clist.industrynums.vm", [
     _this.accountId = routeData.id;
     // load_industryAccounts(_this, join.add());
     load_industryAccounts2(_this, _this.industryAccountGvm, join.add());
+    console.log("WE BE HERE");
   };
 
-  function load_industryAccounts(_this, cb) {
-    // _this.industryAccounts([]); // do not reset
-    dataservice.monitoringstationsrv.msAccounts.read({
-      id: _this.accountId,
-      link: "IndustryAccounts",
-    }, null, utils.safeCallback(cb, function(err, resp) {
-      if (!err) {
-        _this.industryAccounts(resp.Value);
-      }
-    }));
-  }
+  // function load_industryAccounts(_this, cb) {
+  //   // _this.industryAccounts([]); // do not reset
+  //   dataservice.monitoringstationsrv.msAccounts.read({
+  //     id: _this.accountId,
+  //     link: "IndustryAccounts",
+  //   }, null, utils.safeCallback(cb, function(err, resp) {
+  //     if (!err) {
+  //       _this.industryAccounts(resp.Value);
+  //     }
+  //   }));
+  // }
 
   function load_industryAccounts2(_this, gvm, cb) {
     dataservice.monitoringstationsrv.msAccounts.read({
