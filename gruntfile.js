@@ -170,6 +170,7 @@ module.exports = function(grunt) {
           // include app files
           "app/sales/*.js",
           "app/salesmap/*.js",
+          "app/salesreports/*.js",
           "app/ukov.js",
           "app/login/*.js",
           // exclude specs
