@@ -79,7 +79,7 @@ define("src/account/security/checklist.vm", [
         pcontroller: _this,
         id: "qualify",
         title: "Qualify Customer",
-        isDone: true,
+        isDone: ko.observable(false),
         layersVm: _this.layersVm,
         hasCustomer: hasCustomer,
       });
