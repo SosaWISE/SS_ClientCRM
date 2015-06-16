@@ -79,6 +79,7 @@ define("src/account/security/checklist.vm", [
         pcontroller: _this,
         id: "qualify",
         title: "Qualify Customer",
+        isDone: true,
         layersVm: _this.layersVm,
         hasCustomer: hasCustomer,
       });

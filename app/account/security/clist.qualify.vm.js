@@ -45,6 +45,9 @@ define("src/account/security/clist.qualify.vm", [
 
     _this.mayReload = ko.observable(false);
     _this.title = ko.observable(_this.title);
+    _this.done = ko.computed(function() {
+      return this.isDone ? 'done' : '';
+    }, _this);
 
     _this.hasCustomer = ko.observable(!!_this.hasCustomer);
     _this.repModel = ko.observable();
