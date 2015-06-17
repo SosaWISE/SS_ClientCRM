@@ -253,5 +253,9 @@ define("src/dataservice", [
       "statusCodes",
       "techs",
     ]),
+
+    checklistsrv: createService("checklistsrv", [
+      "checklist",
+    ]),
   };
 });

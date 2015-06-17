@@ -28,6 +28,10 @@ define("src/account/security/clist.survey.vm", [
     CListSurveyViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ["surveyTypeId"]);
 
+    _this.done = ko.computed(function() {
+      return this.isDone() ? 'done' : '';
+    }, _this);
+
     _this.mayReload = ko.observable(false);
     _this.loadingSurvey = ko.observable();
 

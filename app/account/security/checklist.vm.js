@@ -90,41 +90,48 @@ define("src/account/security/checklist.vm", [
           pcontroller: _this,
           id: "salesinfo",
           title: "Sales Info",
+          isDone: ko.observable(true),
           layersVm: _this.layersVm,
         }),
         new CListSurveyViewModel({
           pcontroller: _this,
           id: "presurvey",
           title: "Pre Survey",
+          isDone: ko.observable(true),
           surveyTypeId: 1000, //@HACK: need better way of knowing the id of the survey type
         }),
         new CListIndustryViewModel({
           pcontroller: _this,
           id: "industrynums",
           title: "Industry #s",
+          isDone: ko.observable(true),
         }),
         new CListEmcontactsViewModel({
           pcontroller: _this,
           id: "emcontacts",
           title: "Emergency Contacts",
+          isDone: ko.observable(true),
           layersVm: _this.layersVm,
         }),
         new CListSystemDetailsViewModel({
           pcontroller: _this,
           id: "systemdetails",
           title: "System Details",
+          isDone: ko.observable(true),
           layersVm: _this.layersVm,
         }),
         new CListRegisterCellViewModel({
           pcontroller: _this,
           id: "registercell",
           title: "Register Cell",
+          isDone: ko.observable(true),
           layersVm: _this.layersVm,
         }),
         new CListSystemTestViewModel({
           pcontroller: _this,
           id: "systemtest",
           title: "System Test",
+          isDone: ko.observable(true),
           layersVm: _this.layersVm,
         }),
         // for now we are not doing Tech inspections
@@ -137,18 +144,21 @@ define("src/account/security/checklist.vm", [
           pcontroller: _this,
           id: "postsurvey",
           title: "Post Survey",
+          isDone: ko.observable(true),
           surveyTypeId: 1001, //@HACK: need better way of knowing the id of the survey type
         }),
         new CListInitialPaymentViewModel({
           pcontroller: _this,
           id: "initialpayment",
           title: "Initial Payment",
+          isDone: ko.observable(true),
           layersVm: _this.layersVm,
         }),
         new CListSubmitOnlineViewModel({
           pcontroller: _this,
           id: "submitonline",
           title: "Submit Account Online",
+          isDone: ko.observable(true),
           layersVm: _this.layersVm,
         }),
       ]);

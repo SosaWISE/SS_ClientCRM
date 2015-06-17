@@ -18,6 +18,14 @@ define("src/account/security/clist.emcontacts.vm", [
     CListEmcontactsViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
+    _this.done = ko.computed(function() {
+      return this.isDone() ? 'done' : '';
+    }, _this);
+
+    _this.done = ko.computed(function() {
+      return this.isDone() ? 'done' : '';
+    }, _this);
+
     _this.mayReload = ko.observable(false);
     _this.data = ko.observable();
     _this.repModel = ko.observable();
