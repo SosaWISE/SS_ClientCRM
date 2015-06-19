@@ -38,6 +38,9 @@ define("src/core/dataservice.base", [
   DataserviceBase.prototype.save = function(params, setter, callback) {
     this.ajax("POST", getId(params), getLink(params), params.query, params.data, setter, callback);
   };
+  DataserviceBase.prototype.update = function(params, setter, callback) {
+    this.ajax("PUT", getId(params), getLink(params), params.query, params.data, setter, callback);
+  };
   DataserviceBase.prototype.read = function(params, setter, callback) {
     this.ajax("GET", getId(params), getLink(params), params.query, params.data, setter, callback);
   };
