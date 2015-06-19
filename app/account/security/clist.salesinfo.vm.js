@@ -22,6 +22,10 @@ define("src/account/security/clist.salesinfo.vm", [
     CListSalesInfoViewModel.super_.call(_this, options);
     utils.assertProps(_this, ["layersVm"]);
 
+    _this.done = ko.computed(function() {
+      return this.isDone() ? 'done' : '';
+    }, _this);
+
     _this.mayReload = ko.observable(false);
     _this.vm = ko.observable();
 

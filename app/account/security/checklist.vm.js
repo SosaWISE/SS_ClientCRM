@@ -75,82 +75,105 @@ define("src/account/security/checklist.vm", [
         return;
       }
 
-      _this.qualifyVm = new CListQualifyViewModel({
-        pcontroller: _this,
-        id: "qualify",
-        title: "Qualify Customer",
-        layersVm: _this.layersVm,
-        hasCustomer: hasCustomer,
-      });
+      dataservice.checklistsrv.checklist.read({
+        id: routeData.id || 0,
+        link: 'MsAccount',
+      }, null, utils.safeCallback(join.add(), function(err, resp) {
+        if (resp.Code === 0) {
+          _this.pulledCheckList = resp.Value;
 
-      _this.checklist([
-        _this.qualifyVm,
-        new CListSalesInfoViewModel({
-          pcontroller: _this,
-          id: "salesinfo",
-          title: "Sales Info",
-          layersVm: _this.layersVm,
-        }),
-        new CListSurveyViewModel({
-          pcontroller: _this,
-          id: "presurvey",
-          title: "Pre Survey",
-          surveyTypeId: 1000, //@HACK: need better way of knowing the id of the survey type
-        }),
-        new CListIndustryViewModel({
-          pcontroller: _this,
-          id: "industrynums",
-          title: "Industry #s",
-        }),
-        new CListEmcontactsViewModel({
-          pcontroller: _this,
-          id: "emcontacts",
-          title: "Emergency Contacts",
-          layersVm: _this.layersVm,
-        }),
-        new CListSystemDetailsViewModel({
-          pcontroller: _this,
-          id: "systemdetails",
-          title: "System Details",
-          layersVm: _this.layersVm,
-        }),
-        new CListRegisterCellViewModel({
-          pcontroller: _this,
-          id: "registercell",
-          title: "Register Cell",
-          layersVm: _this.layersVm,
-        }),
-        new CListSystemTestViewModel({
-          pcontroller: _this,
-          id: "systemtest",
-          title: "System Test",
-          layersVm: _this.layersVm,
-        }),
-        // for now we are not doing Tech inspections
-        // new CListSurveyViewModel({
-        //   pcontroller: _this,
-        //   id: "techinspection",
-        //   title: "Tech Inspection",
-        // }),
-        new CListSurveyViewModel({
-          pcontroller: _this,
-          id: "postsurvey",
-          title: "Post Survey",
-          surveyTypeId: 1001, //@HACK: need better way of knowing the id of the survey type
-        }),
-        new CListInitialPaymentViewModel({
-          pcontroller: _this,
-          id: "initialpayment",
-          title: "Initial Payment",
-          layersVm: _this.layersVm,
-        }),
-        new CListSubmitOnlineViewModel({
-          pcontroller: _this,
-          id: "submitonline",
-          title: "Submit Account Online",
-          layersVm: _this.layersVm,
-        }),
-      ]);
+          _this.qualifyVm = new CListQualifyViewModel({
+            pcontroller: _this,
+            id: "qualify",
+            title: "Qualify Customer",
+            isDone: ko.observable(_this.pulledCheckList.Qualify),
+            layersVm: _this.layersVm,
+            hasCustomer: hasCustomer,
+          });
+          var checkListArray = [
+            _this.qualifyVm,
+            new CListSalesInfoViewModel({
+              pcontroller: _this,
+              id: "salesinfo",
+              title: "Sales Info",
+              isDone: ko.observable(_this.pulledCheckList.SalesInfo),
+              layersVm: _this.layersVm,
+            }),
+            new CListSurveyViewModel({
+              pcontroller: _this,
+              id: "presurvey",
+              title: "Pre Survey",
+              isDone: ko.observable(_this.pulledCheckList.PreSurvey),
+              surveyTypeId: 1000, //@HACK: need better way of knowing the id of the survey type
+            }),
+            new CListIndustryViewModel({
+              pcontroller: _this,
+              id: "industrynums",
+              title: "Industry #s",
+              isDone: ko.observable(_this.pulledCheckList.IndustryNumbers),
+            }),
+            new CListEmcontactsViewModel({
+              pcontroller: _this,
+              id: "emcontacts",
+              title: "Emergency Contacts",
+              isDone: ko.observable(_this.pulledCheckList.EmergencyContacts),
+              layersVm: _this.layersVm,
+            }),
+            new CListSystemDetailsViewModel({
+              pcontroller: _this,
+              id: "systemdetails",
+              title: "System Details",
+              isDone: ko.observable(_this.pulledCheckList.SystemDetails),
+              layersVm: _this.layersVm,
+            }),
+            new CListRegisterCellViewModel({
+              pcontroller: _this,
+              id: "registercell",
+              title: "Register Cell",
+              isDone: ko.observable(_this.pulledCheckList.RegisterCell),
+              layersVm: _this.layersVm,
+            }),
+            new CListSystemTestViewModel({
+              pcontroller: _this,
+              id: "systemtest",
+              title: "System Test",
+              isDone: ko.observable(_this.pulledCheckList.SystemTest),
+              layersVm: _this.layersVm,
+            }),
+            // for now we are not doing Tech inspections
+            // new CListSurveyViewModel({
+            //   pcontroller: _this,
+            //   id: "techinspection",
+            //   title: "Tech Inspection",
+            //   isDone: ko.observable(_this.pulledCheckList.TechInspection),
+            // }),
+            new CListSurveyViewModel({
+              pcontroller: _this,
+              id: "postsurvey",
+              title: "Post Survey",
+              isDone: ko.observable(_this.pulledCheckList.PostSurvey),
+              surveyTypeId: 1001, //@HACK: need better way of knowing the id of the survey type
+            }),
+            new CListInitialPaymentViewModel({
+              pcontroller: _this,
+              id: "initialpayment",
+              title: "Initial Payment",
+              isDone: ko.observable(_this.pulledCheckList.InitialPayment),
+              layersVm: _this.layersVm,
+            }),
+            new CListSubmitOnlineViewModel({
+              pcontroller: _this,
+              id: "submitonline",
+              title: "Submit Account Online",
+              isDone: ko.observable(_this.pulledCheckList.SubmitAccountOnline),
+              layersVm: _this.layersVm,
+            }),
+          ];
+          _this.checklist(checkListArray);
+        } else {
+          notify.warn(resp.Message, null, 3);
+        }
+      }));
 
     }, join.add());
   };

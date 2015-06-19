@@ -3,7 +3,7 @@ div(class="acct-checklist panel scrollable")
     h2 Account Setup Checklist
     ul(data-bind="foreach:checklist")
       li
-        a(data-bind="click:$parent.clickItem,active:active")
+        a(data-bind="click:$parent.clickItem,active:active,css:done")
           span(data-bind="text:title")
   div(class="p-module",data-bind="with:activeChild")
     div(data-bind="template:viewTmpl")

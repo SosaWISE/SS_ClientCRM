@@ -26,6 +26,10 @@ define("src/account/security/clist.systemdetails.vm", [
     CListSystemDetailsViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
+    _this.done = ko.computed(function() {
+      return this.isDone() ? 'done' : '';
+    }, _this);
+
     _this.mayReload = ko.observable(false);
     _this.repData = ko.observable();
     _this.systemData = ko.observable();

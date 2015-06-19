@@ -19,6 +19,10 @@ define("src/account/security/clist.industrynums.vm", [
     var _this = this;
     CListIndustryViewModel.super_.call(_this, options);
 
+    _this.done = ko.computed(function() {
+      return this.isDone() ? 'done' : '';
+    }, _this);
+
     _this.selectedIndustry = ko.observableArray();
     _this.mayReload = ko.observable(false);
     _this.industryAccounts = ko.observableArray();
@@ -74,7 +78,7 @@ define("src/account/security/clist.industrynums.vm", [
       }, null, function(genErr /*, resp*/ ) {
         // always reload industry accounts since after an industry number is generated there can be errors
         // load_industryAccounts(_this, utils.safeCallback(cb, function() {
-        load_industryAccounts2(_this, _this.industryAccountGvm, utils.safeCallback(cb, function() {
+        load_industryAccounts(_this, _this.industryAccountGvm, utils.safeCallback(cb, function() {
           // show generation error if there was one
           if (genErr) {
             notify.error(genErr);
@@ -88,7 +92,7 @@ define("src/account/security/clist.industrynums.vm", [
         link: "Primary",
       }, null, function(genErr /*, resp*/ ) {
         // always reload industry accounts since after an industry number is generated there can be errors
-        load_industryAccounts2(_this, _this.industryAccountGvm, utils.safeCallback(cb, function() {
+        load_industryAccounts(_this, _this.industryAccountGvm, utils.safeCallback(cb, function() {
           // show generation error if there was one
           if (genErr) {
             notify.error(genErr);
@@ -105,7 +109,7 @@ define("src/account/security/clist.industrynums.vm", [
         link: "Secondary",
       }, null, function(genErr /*, resp*/ ) {
         // always reload industry accounts since after an industry number is generated there can be errors
-        load_industryAccounts2(_this, _this.industryAccountGvm, utils.safeCallback(cb, function() {
+        load_industryAccounts(_this, _this.industryAccountGvm, utils.safeCallback(cb, function() {
           // show generation error if there was one
           if (genErr) {
             notify.error(genErr);
@@ -125,11 +129,11 @@ define("src/account/security/clist.industrynums.vm", [
     var _this = this;
     _this.accountId = routeData.id;
     // load_industryAccounts(_this, join.add());
-    load_industryAccounts2(_this, _this.industryAccountGvm, join.add());
+    load_industryAccounts(_this, _this.industryAccountGvm, join.add());
     console.log("WE BE HERE");
   };
 
-  // function load_industryAccounts(_this, cb) {
+  // function load_industryAccountsOLD(_this, cb) {
   //   // _this.industryAccounts([]); // do not reset
   //   dataservice.monitoringstationsrv.msAccounts.read({
   //     id: _this.accountId,
@@ -141,7 +145,7 @@ define("src/account/security/clist.industrynums.vm", [
   //   }));
   // }
 
-  function load_industryAccounts2(_this, gvm, cb) {
+  function load_industryAccounts(_this, gvm, cb) {
     dataservice.monitoringstationsrv.msAccounts.read({
       id: _this.accountId,
       link: "IndustryAccountWithReceiverLines",

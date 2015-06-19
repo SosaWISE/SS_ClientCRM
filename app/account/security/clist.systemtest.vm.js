@@ -26,6 +26,10 @@ define("src/account/security/clist.systemtest.vm", [
       "layersVm",
     ]);
 
+    _this.done = ko.computed(function() {
+      return this.isDone() ? 'done' : '';
+    }, _this);
+
     _this.mayReload = ko.observable(false);
     _this.signalHistoryVm = new SignalHistoryViewModel({
       layersVm: _this.layersVm,

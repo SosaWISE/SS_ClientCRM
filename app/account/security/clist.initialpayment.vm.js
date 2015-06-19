@@ -36,6 +36,10 @@ define("src/account/security/clist.initialpayment.vm", [
     CListInitialPaymentViewModel.super_.call(_this, options);
     ControllerViewModel.ensureProps(_this, ["layersVm"]);
 
+    _this.done = ko.computed(function() {
+      return this.isDone() ? 'done' : '';
+    }, _this);
+
     _this.mayReload = ko.observable(false);
     _this.initHandler();
 

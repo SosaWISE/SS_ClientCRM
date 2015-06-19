@@ -26,6 +26,10 @@ define("src/account/security/clist.submitonline.vm", [
       "layersVm",
     ]);
 
+    _this.done = ko.computed(function() {
+      return this.isDone() ? 'done' : '';
+    }, _this);
+
     _this.mayReload = ko.observable(false);
     _this.gvm = new DispatchAgencysGridViewModel({
       edit: function(agency, cb) {
