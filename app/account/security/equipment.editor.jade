@@ -53,6 +53,9 @@ div(class="equipment-editor")
         li
           span(class="label") Main Panel
           div(data-bind="cvm:data.MainPanelCvm")
+        li(data-bind="visible:showIsExisting")
+          span(class="label") Existing Equipment
+          div(data-bind="cvm:data.ExistingEquipmentCvm")
 
     div(class="line-top")
       ul(class="actions")

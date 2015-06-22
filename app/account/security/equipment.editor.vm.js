@@ -133,6 +133,17 @@ define("src/account/security/equipment.editor.vm", [
       Comments: null,
     };
 
+    /** Figure out if we need to show the IsExisting Field. */
+    _this.showIsExisting = ko.observable(false);
+
+    if (_this.item.BarcodeId === null || _this.item.BarcodeId === undefined) {
+      _this.showIsExisting(true);
+    }
+    if (options.item.EquipmentId.length > 10 && options.item.EquipmentId.substr(0, 10) === 'EQPM_EXST_') {
+      _this.showIsExisting(false);
+    }
+
+
     _this.data = ukov.wrap(utils.clone(_this.item), schema);
     _this.hasItem = ko.computed(function() {
       return !!_this.data.EquipmentId();
@@ -183,6 +194,10 @@ define("src/account/security/equipment.editor.vm", [
     _this.data.MainPanelCvm = new ComboViewModel({
       selectedValue: _this.data.IsMainPanel,
       // nullable: true,
+      list: _this.yesNoOptions,
+    });
+    _this.data.ExistingEquipmentCvm = new ComboViewModel({
+      selectedValue: _this.data.IsExisting,
       list: _this.yesNoOptions,
     });
 
