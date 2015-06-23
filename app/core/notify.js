@@ -83,7 +83,8 @@ define("src/core/notify", [
   };
   // for displaying errors or warning messages returned from web server
   Notifier.prototype.error = function(err, delay, options) {
-    var _this = this;
+    var _this = this,
+      msgType = 'error';
     if (!err || err._notified) {
       return false;
     }
@@ -91,7 +92,24 @@ define("src/core/notify", [
     err._notified = true;
     // default to no delay
     delay = delay || 0;
-    notify(_this, (err.Code === 0 ? "info" : "error"), err.Url, err.Code,
+
+    switch (err.Code) {
+      case 0:
+        msgType = "info";
+        break;
+      case 20200: // Unhandled exception
+      case 80400: // MSAccountOOSCatNotImplemented
+        msgType = "warn";
+        break;
+      case 80300: // MSAccountOnboardSuccessful
+      case 80220: // MSAccountInitTwoWayAlreadySet
+        msgType = "success";
+        break;
+      default:
+        msgType = "error";
+        break;
+    }
+    notify(_this, msgType, err.Url, err.Code,
       _this.errorCodeMap[err.Code] || "Error (code not recognized)", err.Message, delay, options);
     //
     utils.tryThrowHandledErr(err);

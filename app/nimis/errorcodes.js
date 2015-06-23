@@ -11,6 +11,8 @@ define("src/nimis/errorcodes", [], function() {
     "401": "Not Authorized",
     "404": "Url Not Found",
 
+    "20200": "Unhandled Exception",
+
     "60100": "Unverified Address",
 
     "70110": "Item was not found",
@@ -21,6 +23,7 @@ define("src/nimis/errorcodes", [], function() {
 
     "80100": "Account Onboarding Failed",
     "80200": "Signal History not Found",
+    "80220": "System Already in Two-Way Test Mode",
     "80300": "Account Onboarding SUCCESSFUL!!!!!",
 
     "90300": "Monitronics Dispatch Agency Not Found in Their System",
