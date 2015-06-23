@@ -142,7 +142,7 @@ define("src/account/security/dispatchagency.editor.vm", [
   }
   utils.inherits(DispatchAgencyEditorViewModel, BaseViewModel);
   DispatchAgencyEditorViewModel.prototype.viewTmpl = "tmpl-security-dispatchagency_editor";
-  DispatchAgencyEditorViewModel.prototype.width = 600;
+  DispatchAgencyEditorViewModel.prototype.width = 800;
   DispatchAgencyEditorViewModel.prototype.height = "auto";
   DispatchAgencyEditorViewModel.prototype.onLoad = function() {
     var _this = this;

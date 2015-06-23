@@ -156,7 +156,7 @@ define("src/account/security/dispatchagencys.finder.vm", [
   }
   utils.inherits(DispatchAgencysFinderViewModel, BaseViewModel);
   DispatchAgencysFinderViewModel.prototype.viewTmpl = "tmpl-security-dispatchagencys_finder";
-  DispatchAgencysFinderViewModel.prototype.width = 600;
+  DispatchAgencysFinderViewModel.prototype.width = 800;
   DispatchAgencysFinderViewModel.prototype.height = "auto";
   DispatchAgencysFinderViewModel.prototype.onLoad = function() {
     var _this = this;
