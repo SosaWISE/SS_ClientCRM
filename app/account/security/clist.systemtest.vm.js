@@ -115,11 +115,17 @@ define("src/account/security/clist.systemtest.vm", [
         !_this.clearingTest();
     });
     _this.tcmdServiceState = ko.command(function(cb) {
-      var toggle = _this.tcmdServiceState.toggle,
-        inService = !toggle.isDown();
-      setServiceStatus(_this, inService, function(oosCat) {
-        toggle.isDown(oosCat.InService);
-      }, cb);
+      notify.confirm("WHAT?  ARE YOU KIDDING ME?", "OK.  You asked for it.  You are about to pull the system and loose all signal history and information.  Go ahead make my day", function(result) {
+        if (result !== "yes") {
+          cb();
+          return;
+        }
+        var toggle = _this.tcmdServiceState.toggle,
+          inService = !toggle.isDown();
+        setServiceStatus(_this, inService, function(oosCat) {
+          toggle.isDown(oosCat.InService);
+        }, cb);
+      });
     }, null, {
       toggle: {
         isDown: ko.observable(false),
