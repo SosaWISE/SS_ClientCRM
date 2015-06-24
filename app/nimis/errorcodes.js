@@ -25,6 +25,7 @@ define("src/nimis/errorcodes", [], function() {
     "80200": "Signal History not Found",
     "80220": "System Already in Two-Way Test Mode",
     "80300": "Account Onboarding SUCCESSFUL!!!!!",
+    "80510": "Alarm.Com Account Missing Email",
 
     "90300": "Monitronics Dispatch Agency Not Found in Their System",
 
