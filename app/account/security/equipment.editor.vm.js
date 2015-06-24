@@ -136,10 +136,14 @@ define("src/account/security/equipment.editor.vm", [
     /** Figure out if we need to show the IsExisting Field. */
     _this.showIsExisting = ko.observable(false);
 
-    if (_this.item.BarcodeId === null || _this.item.BarcodeId === undefined) {
-      _this.showIsExisting(true);
-    }
-    if (options.item.EquipmentId.length > 10 && options.item.EquipmentId.substr(0, 10) === 'EQPM_EXST_') {
+    if (_this.item && _this.item.EquipmentId !== null) {
+      if (_this.item.BarcodeId === null || _this.item.BarcodeId === undefined) {
+        _this.showIsExisting(true);
+      }
+      if (options.item.EquipmentId.length > 10 && options.item.EquipmentId.substr(0, 10) === 'EQPM_EXST_') {
+        _this.showIsExisting(false);
+      }
+    } else if (options.addBy === 'barcode') {
       _this.showIsExisting(false);
     }
 
