@@ -62,7 +62,15 @@ define("src/sales/app", [
             path: ":id/:tab/:p1",
           },
         ],
-      },
+        // }, {
+        //   appid: -1,
+        //   path: "src/salesreports/myaccounts.panel.vm",
+        //   options: {
+        //     id: "myaccounts",
+        //     title: "My Accounts",
+        //     icoClass: "ico fa fa-2x fa-list-alt",
+        //   },
+      }
     ],
   });
 

@@ -1,14 +1,18 @@
 define("src/salesreports/salesreports.panel.vm", [
   "src/salesreports/credits.and.installs.report.vm",
+  "src/salesreports/myaccounts.report.vm",
   "ko",
   "src/core/notify",
   "src/core/utils",
+  "src/core/layers.vm",
   "src/core/controller.vm",
 ], function(
   CreditsAndInstallsReportViewModel,
+  MyAccountsReportViewModel,
   ko,
   notify,
   utils,
+  LayersViewModel,
   ControllerViewModel
 ) {
   "use strict";
@@ -16,6 +20,13 @@ define("src/salesreports/salesreports.panel.vm", [
   function SalesReportsPanelViewModel(options) {
     var _this = this;
     SalesReportsPanelViewModel.super_.call(_this, options);
+
+    _this.reportsList = _this.childs;
+    _this.showNav = ko.observable(true);
+
+    _this.layersVm = new LayersViewModel({
+      controller: _this,
+    });
 
     //
     // events
@@ -26,16 +37,25 @@ define("src/salesreports/salesreports.panel.vm", [
   }
   utils.inherits(SalesReportsPanelViewModel, ControllerViewModel);
 
-  SalesReportsPanelViewModel.prototype.onLoad = function( /*routeData, extraData, join*/ ) { // overrides base
+  SalesReportsPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
 
-    _this.childs([ //
+    var arrayCheckList = [ //
       new CreditsAndInstallsReportViewModel({
         pcontroller: _this,
         id: "creditsandinstalls",
         title: "Credits and Installations",
       }),
-    ]);
+      new MyAccountsReportViewModel({
+        pcontroller: _this,
+        id: "myaccounts",
+        title: "My Accounts",
+      }),
+    ];
+
+    _this.reportsList(arrayCheckList);
+
+    join.add()();
   };
 
   return SalesReportsPanelViewModel;

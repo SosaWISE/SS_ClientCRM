@@ -9,6 +9,42 @@ body.reports {
     overflow: auto;
   }
 
+  div.salesRep-panel {
+    .btn-dock {
+      background-color: @reports-bg;
+    }
+    .dock-content {
+      height: 100%;
+      padding: 20px 35px;
+    }
+    > .dock-left {
+      padding: 10px;
+      width: 170px;
+
+      ul.nav {
+        margin: 10px;
+        a {
+          display: block;
+          padding: 5px 10px;
+          font-size: 1.2em;
+          color: gray;
+          font-weight: 500;
+          &.active {
+            .border-radius(5px);
+            font-weight: bold;
+            background-color: white;
+            color: @reports-bg;
+          }
+        }
+      }
+      h2.dock-left-title {
+        color: purple;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+    }
+  }
+
   input {
     width: initial;
   }
@@ -22,6 +58,11 @@ body.reports {
     border-radius: 20px;
     padding: 20px;
     display: inline-block;
+
+    label.filter-chkbx {
+      display: inline-block;
+      padding: 0 20px;
+    }
   }
 
   td.groupHeading {
@@ -77,4 +118,5 @@ body.reports {
   td.number, td.date {
     text-align: right;
   }
+
 }

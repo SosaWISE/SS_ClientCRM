@@ -1,2 +1,27 @@
-div(data-bind="with:activeChild")
-  div(data-bind="template:viewTmpl")
+//- div(class="acct-checklist panel scrollable")
+//-   div(class="p-nav checklist")
+//-     h2 Reports List
+//-     ul(data-bind="foreach:reportsList")
+//-       li
+//-         a(data-bind="click:$parent.clickItem,active:active")
+//-           span(data-bind="text:title")
+
+//- div(data-bind="with:activeChild")
+//-   div(data-bind="template:viewTmpl")
+div(class="salesRep-panel dock l3-160",data-bind="toggle:{'l-show':showNav}")
+
+  div(class="dock-content",data-bind="with:activeChild")
+    div(data-bind="template:{name:viewTmpl}",style="height:100%")
+
+  div(class="dock-left")
+    div(class="btn-dock",data-bind="click:function(){showNav(!showNav())},toggle:{'closed':!showNav()}")
+      div(class="close")
+      div(class="open")
+
+    h2(class="dock-left-title") My Reports
+    ul(class="nav",data-bind="foreach:childs")
+      li
+        a(data-bind="active:active,click:$parent.clickItem")
+          span(data-bind="text:title")
+
+  div(class="layers", data-bind="template:{name:layersVm.viewTmpl,data:layersVm}")

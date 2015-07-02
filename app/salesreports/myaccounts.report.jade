@@ -1,0 +1,51 @@
+h1 My Accounts
+div(class="filters")
+  div
+    |Show report for&nbsp;
+    input(type="text",data-bind="ukov:data.startDate,datevalue:data.startDate,valueUpdate:'keyup'")
+    |&nbsp;to&nbsp;
+    input(type="text",data-bind="ukov:data.endDate,datevalue:data.endDate,valueUpdate:'keyup'")
+    div(class="inline")
+      button(data-bind="cmd:cmdGo") Go
+
+    div(class="separated")
+      input(id="filterThisWeek",type="radio", value="thisWeek", data-bind="checked:filterRange")
+      label(for="filterThisWeek",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |This Week
+      input(id="filterToday",type="radio", value="today", data-bind="checked:filterRange")
+      label(for="filterToday",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |Today
+      input(id="filterThisMonth",type="radio", value="thisMonth", data-bind="checked:filterRange")
+      label(for="filterThisMonth",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |This Month
+      input(id="filterAllTime",type="radio", value="allTime", data-bind="checked:filterRange")
+      label(for="filterAllTime",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |All Time
+
+div(class="report-data")
+  table
+    thead
+      tr
+        th Customer #
+        th Name
+        th Address
+        th Status
+        th Qualify
+        th(class="number") Holds
+        th(class="number") Setup Fee
+        th(class="number") MMR
+    tbody(data-bind="foreach:accounts")
+        td(data-bind="text:CMFID")
+        td(data-bind="text:CustomerName")
+        td(data-bind="text:Status")
+        td(data-bind="text:Qualify")
+        td(class="number",data-bind="text:SetupFee")
+        td(class="number",data-bind="text:MMR")

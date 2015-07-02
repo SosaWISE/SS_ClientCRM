@@ -57,6 +57,9 @@ define("src/salesreports/credits.and.installs.report.vm", [
 
   CreditsAndInstallsReportViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
     var _this = this;
+
+
+
     _this.cmdGo.execute(join.add());
   };
 
