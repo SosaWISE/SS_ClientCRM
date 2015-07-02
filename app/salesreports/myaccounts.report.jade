@@ -2,7 +2,7 @@ h1 My Accounts
 div(class="filters")
   div
     |Show report for&nbsp;
-    input(type="text",data-bind="ukov:data.startDate,datevalue:data.startDate,valueUpdate:'keyup'")
+    input(type="text",data-bind="ukov:data.startDate,datevalue:data.startDate,valueUpdate:'blur'")
     |&nbsp;to&nbsp;
     input(type="text",data-bind="ukov:data.endDate,datevalue:data.endDate,valueUpdate:'keyup'")
     div(class="inline")
@@ -45,7 +45,9 @@ div(class="report-data")
     tbody(data-bind="foreach:accounts")
         td(data-bind="text:CMFID")
         td(data-bind="text:CustomerName")
+        td(data-bind="text:StreetAddress")
         td(data-bind="text:Status")
         td(data-bind="text:Qualify")
-        td(class="number",data-bind="text:SetupFee")
-        td(class="number",data-bind="text:MMR")
+        td(class="number",data-bind="text:Holds")
+        td(class="number",data-bind="likecurrencytext:SetupFee")
+        td(class="number",data-bind="likecurrencytext:MMR")

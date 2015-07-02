@@ -72,8 +72,34 @@ define("src/salesreports/myaccounts.report.vm", [
       notify.warn(_this.data.errMsg.peek(), null, 5);
       return cb();
     }
+    // request data
+    var query = _this.data.getValue();
+    query.endDate.setHours(23, 59, 59, 997); // end of day (.997 is sql server datetime friendly)
+    query.startDate = toSqlDateTime(query.startDate);
+    query.endDate = toSqlDateTime(query.endDate);
+    load_report("MyAccounts", query, function(resp) {
+      console.log("MyAccounts Resp: ", resp);
+      _this.accounts(resp);
+    }, cb);
 
     return cb();
   }
+
+  function load_report(name, queryData, setter, cb) {
+    dataservice.api_hr.reports.save({
+      link: name,
+      query: queryData,
+    }, setter, cb);
+  } //
+
+  function toSqlDateTime(dt) {
+    return dt.getUTCFullYear() + '-' +
+      ('00' + (dt.getUTCMonth() + 1)).slice(-2) + '-' +
+      ('00' + dt.getUTCDate()).slice(-2) + ' ' +
+      ('00' + dt.getUTCHours()).slice(-2) + ':' +
+      ('00' + dt.getUTCMinutes()).slice(-2) + ':' +
+      ('00' + dt.getUTCSeconds()).slice(-2);
+  }
+
   return MyAccountsReportViewModel;
 });
