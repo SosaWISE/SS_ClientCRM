@@ -4,7 +4,7 @@ div(class="filters")
     |Show report for&nbsp;
     input(type="text",data-bind="ukov:data.startDate,datevalue:data.startDate,valueUpdate:'blur'")
     |&nbsp;to&nbsp;
-    input(type="text",data-bind="ukov:data.endDate,datevalue:data.endDate,valueUpdate:'keyup'")
+    input(type="text",data-bind="ukov:data.endDate,datevalue:data.endDate,valueUpdate:'blur'")
     div(class="inline")
       button(data-bind="cmd:cmdGo") Go
 
@@ -38,16 +38,19 @@ div(class="report-data")
         th Name
         th Address
         th Status
+        th Date
         th Qualify
         th(class="number") Holds
         th(class="number") Setup Fee
         th(class="number") MMR
     tbody(data-bind="foreach:accounts")
-        td(data-bind="text:CMFID")
-        td(data-bind="text:CustomerName")
-        td(data-bind="text:StreetAddress")
-        td(data-bind="text:Status")
-        td(data-bind="text:Qualify")
-        td(class="number",data-bind="text:Holds")
-        td(class="number",data-bind="likecurrencytext:SetupFee")
-        td(class="number",data-bind="likecurrencytext:MMR")
+      tr
+        td(class="groupie" data-bind="text:CMFID")
+        td(class="groupie" data-bind="text:CustomerName")
+        td(class="groupie" data-bind="text:StreetAddress")
+        td(class="groupie" data-bind="text:Status")
+        td(class="groupie" data-bind="datetext:Date")
+        td(class="groupie" data-bind="text:Qualify")
+        td(class="groupie number",data-bind="text:Holds")
+        td(class="groupie number",data-bind="likecurrencytext:SetupFee")
+        td(class="groupie number",data-bind="likecurrencytext:MMR")
