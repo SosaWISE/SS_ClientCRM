@@ -1,10 +1,14 @@
 h1 My Accounts
 div(class="filters")
   div
+    div(data-bind="cvm:data.SalesRepsCvm",style="width: 433px;display:inline-block;margin-bottom: 7px;")
+    div(style="display: inline-block;height: 31px;padding-top: 7px;float: left;padding-right: 39px;") Sales Rep&nbsp;
+    br
     |Show report for&nbsp;
     input(type="text",data-bind="ukov:data.startDate,datevalue:data.startDate,valueUpdate:'blur'")
     |&nbsp;to&nbsp;
     input(type="text",data-bind="ukov:data.endDate,datevalue:data.endDate,valueUpdate:'blur'")
+
     div(class="inline")
       button(data-bind="cmd:cmdGo") Go
 

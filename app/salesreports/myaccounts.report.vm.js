@@ -1,6 +1,7 @@
 define("src/salesreports/myaccounts.report.vm", [
   "src/ukov",
   "dataservice",
+  "src/core/combo.vm",
   "ko",
   "src/core/notify",
   "src/core/utils",
@@ -8,6 +9,7 @@ define("src/salesreports/myaccounts.report.vm", [
 ], function(
   ukov,
   dataservice,
+  ComboViewModel,
   ko,
   notify,
   utils,
@@ -37,14 +39,13 @@ define("src/salesreports/myaccounts.report.vm", [
         case "allTime":
           setAllTime(_this);
           break;
-
       }
-
     });
 
     var today = new Date();
     _this.data = ukov.wrap({
       officeId: 0,
+      SalesRepID: 'ASOSAA001',
       startDate: new Date(today.getFullYear(), today.getMonth(), 1),
       endDate: today,
     }, {
@@ -61,6 +62,21 @@ define("src/salesreports/myaccounts.report.vm", [
         validators: [
           ukov.validators.isRequired("End date is required"),
         ],
+      },
+    });
+
+    _this.data.SalesRepsCvm = new ComboViewModel({
+      selectedValue: _this.data.SalesRepID,
+      list: [{
+        SalesRepID: 'ASOSAA001',
+        FullName: 'Andres Sosa'
+      }, {
+        SalesRepID: 'DARG0001',
+        FullName: "Chris d'argy"
+      }],
+      fields: {
+        value: "SalesRepID",
+        text: "FullName",
       },
     });
 

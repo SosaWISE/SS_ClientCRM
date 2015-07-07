@@ -2,9 +2,9 @@ h1 Credits and installations
 div(class="filters")
   div
     |Show report for&nbsp;
-    input(type="text",data-bind="ukov:data.startDate,datevalue:data.startDate,valueUpdate:'keyup'")
+    input(type="text",data-bind="ukov:data.startDate,datevalue:data.startDate,valueUpdate:'blur'")
     |&nbsp;to&nbsp;
-    input(type="text",data-bind="ukov:data.endDate,datevalue:data.endDate,valueUpdate:'keyup'")
+    input(type="text",data-bind="ukov:data.endDate,datevalue:data.endDate,valueUpdate:'blur'")
     div(class="inline")
       button(data-bind="cmd:cmdGo") Go
 
