@@ -100,6 +100,7 @@ define("src/core/notify", [
       case 20200: // Unhandled exception
       case 80510: // Alarm.com Email missing
       case 80400: // MSAccountOOSCatNotImplemented
+      case 80405: // MSAccountCheckListFailed
         msgType = "warn";
         break;
       case 80300: // MSAccountOnboardSuccessful
