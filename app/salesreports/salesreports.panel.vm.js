@@ -51,6 +51,11 @@ define("src/salesreports/salesreports.panel.vm", [
         id: "myaccounts",
         title: "My Accounts",
       }),
+      new MyAccountsReportViewModel({
+        pcontroller: _this,
+        id: "mystats",
+        title: "My Stats",
+      }),
     ];
 
     _this.reportsList(arrayCheckList);

@@ -21,11 +21,13 @@ div(class="report-data",data-bind="if:salesReps()&&!groupByOffice()")
       tr
         th Sales rep
         th Office
+        th(class="number") Contacts made
         th(class="number") Credits run
         th(class="number") Installations
     tbody(data-bind="foreach:salesReps")
         td(data-bind="text:SalesRepName")
         td(data-bind="text:TeamLocation")
+        td(class="number",data-bind="text:NumContacts")
         td(class="number",data-bind="text:NumCredits")
         td(class="number",data-bind="text:NumInstalls")
 
@@ -34,17 +36,20 @@ div(class="report-data",data-bind="if:officeData()&&groupByOffice()")
     thead
       tr
         th Office
+        th(class="number") Contacts made
         th(class="number") Credits run
         th(class="number") Installations
     <!-- ko foreach:officeData -->
     tbody
       tr(data-bind="cmd:function(){expanded(!expanded.peek());}")
         td(class="groupHeading",data-bind="text:TeamLocation")
+        td(class="groupHeading number",data-bind="text:NumContacts")
         td(class="groupHeading number",data-bind="text:NumCredits")
         td(class="groupHeading number",data-bind="text:NumInstalls")
     tbody(data-bind="visible:expanded,foreach:salesReps")
       tr
         td(class="groupie",data-bind="text:SalesRepName")
+        td(class="groupie number",data-bind="text:NumContacts")
         td(class="groupie number",data-bind="text:NumCredits")
         td(class="groupie number",data-bind="text:NumInstalls")
     <!-- /ko -->

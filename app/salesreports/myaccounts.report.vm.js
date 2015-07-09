@@ -66,6 +66,7 @@ define("src/salesreports/myaccounts.report.vm", [
     });
 
     _this.data.SalesRepsCvm = new ComboViewModel({
+      noItemSelectedText: '[Choose a Sales Rep]',
       selectedValue: _this.data.SalesRepID,
       list: [{
         SalesRepID: 'ASOSAA001',

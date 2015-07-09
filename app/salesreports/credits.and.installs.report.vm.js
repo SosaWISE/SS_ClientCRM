@@ -89,12 +89,14 @@ define("src/salesreports/credits.and.installs.report.vm", [
             TeamLocationID: id,
             TeamLocation: rep.TeamLocation,
             expanded: ko.observable(false),
+            NumContacts: 0,
             NumCredits: 0,
             NumInstalls: 0,
             salesReps: [],
           };
           officeData.push(grp);
         }
+        grp.NumContacts += rep.NumContacts;
         grp.NumCredits += rep.NumCredits;
         grp.NumInstalls += rep.NumInstalls;
         grp.salesReps.push(rep);
