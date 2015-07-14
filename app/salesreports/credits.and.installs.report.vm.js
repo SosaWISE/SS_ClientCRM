@@ -99,7 +99,27 @@ define("src/salesreports/credits.and.installs.report.vm", [
         grp.NumContacts += rep.NumContacts;
         grp.NumCredits += rep.NumCredits;
         grp.NumInstalls += rep.NumInstalls;
+        rep.Accounts = ko.observableArray([]);
+        rep.expanded = ko.observable(false);
+        rep.cmdFindAccounts = ko.command(function(cb) {
+          rep.expanded(true);
+
+          var newQuery = {
+            startDate: query.startDate,
+            endDate: query.endDate,
+            salesRepId: rep.SalesRepID,
+            officeId: id,
+          };
+
+          load_report("MyAccounts", newQuery, function(allAccts) {
+            allAccts.forEach(function(acct) {
+              rep.Accounts.push(acct);
+            });
+          }, cb);
+        });
+
         grp.salesReps.push(rep);
+
       });
 
       // set all data

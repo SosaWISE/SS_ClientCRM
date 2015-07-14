@@ -47,9 +47,34 @@ div(class="report-data",data-bind="if:officeData()&&groupByOffice()")
         td(class="groupHeading number",data-bind="text:NumCredits")
         td(class="groupHeading number",data-bind="text:NumInstalls")
     tbody(data-bind="visible:expanded,foreach:salesReps")
-      tr
+      tr(data-bind="cmd:cmdFindAccounts")
         td(class="groupie",data-bind="text:SalesRepName")
         td(class="groupie number",data-bind="text:NumContacts")
         td(class="groupie number",data-bind="text:NumCredits")
         td(class="groupie number",data-bind="text:NumInstalls")
+      tr(data-bind="visible:expanded")
+        td(span="4")
+          table
+            thead
+              tr
+                th Customer #
+                th Name
+                th(class="number") Holds
+                th(class="number") Setup Fee
+                th(class="number") MMR
+                th C Score
+                th Account Status
+                th Street Address
+            tbody
+              <!-- ko foreach:Accounts -->
+              tr
+                td(class="groupHeading number",data-bind="text:CMFID")
+                td(class="groupHeading",data-bind="text:CustomerName")
+                td(class="groupHeading number",data-bind="text:Holds")
+                td(class="groupHeading number",data-bind="text:SetupFee")
+                td(class="groupHeading number",data-bind="text:MMR")
+                td(class="groupHeading",data-bind="text:Qualify")
+                td(class="groupHeading",data-bind="text:Status")
+                td(class="groupHeading",data-bind="text:StreetAddress")
+              <!-- /ko -->
     <!-- /ko -->

@@ -14,6 +14,7 @@ define('src/u-kov/validators', [
     notBool = 'Value is not a boolean',
     notInt = 'Value is not an int',
     notFloat = 'Value is not a float',
+    notGreaterThanZero = 'Value has to be greater than zero',
     // , notDate = 'Value is not a date',
     notInRange = 'Value is not between {0} and {1}',
     maxLength = 'Value is more than {0} letters',
@@ -84,6 +85,17 @@ define('src/u-kov/validators', [
     };
   };
 
+  validators.isGreaterThanZero = function(message) {
+    message = message || notGreaterThanZero;
+    return function(val) {
+      if (val == null) {
+        return;
+      }
+      if (val <= 0) {
+        return strings.format(message, val);
+      }
+    };
+  };
   validators.isInRange = function(min, max, message) {
     message = message || notInRange;
     return function(val /*, model*/ ) {
