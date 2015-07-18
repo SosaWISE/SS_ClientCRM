@@ -1,6 +1,7 @@
 define("src/salesreports/salesreports.panel.vm", [
   "src/salesreports/credits.and.installs.report.vm",
   "src/salesreports/myaccounts.report.vm",
+  "src/salesreports/performance.report.vm",
   "ko",
   "src/core/notify",
   "src/core/utils",
@@ -9,6 +10,7 @@ define("src/salesreports/salesreports.panel.vm", [
 ], function(
   CreditsAndInstallsReportViewModel,
   MyAccountsReportViewModel,
+  PerformanceReportViewModel,
   ko,
   notify,
   utils,
@@ -55,6 +57,11 @@ define("src/salesreports/salesreports.panel.vm", [
         pcontroller: _this,
         id: "mystats",
         title: "My Stats",
+      }),
+      new PerformanceReportViewModel({
+        pcontroller: _this,
+        id: "performance",
+        title: "Performance",
       }),
     ];
 

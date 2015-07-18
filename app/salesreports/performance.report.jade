@@ -1,0 +1,55 @@
+h1 Performance Report
+div(class="filters")
+  div
+    //- div(data-bind="cvm:data.SalesRepsCvm",style="width: 433px;display:inline-block;margin-bottom: 7px;")
+    //- div(style="display: inline-block;height: 31px;padding-top: 7px;float: left;padding-right: 39px;") Sales Rep&nbsp;
+    //- br
+    |Show report for&nbsp;
+    input(type="text",data-bind="ukov:data.startDate,datevalue:data.startDate,valueUpdate:'blur'")
+    |&nbsp;to&nbsp;
+    input(type="text",data-bind="ukov:data.endDate,datevalue:data.endDate,valueUpdate:'blur'")
+
+    div(class="inline")
+      button(data-bind="cmd:cmdGo") Go
+
+    div(class="separated")
+      input(id="filterThisWeek",type="radio", value="thisWeek", data-bind="checked:filterRange")
+      label(for="filterThisWeek",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |This Week
+      input(id="filterToday",type="radio", value="today", data-bind="checked:filterRange")
+      label(for="filterToday",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |Today
+      input(id="filterThisMonth",type="radio", value="thisMonth", data-bind="checked:filterRange")
+      label(for="filterThisMonth",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |This Month
+      input(id="filterAllTime",type="radio", value="allTime", data-bind="checked:filterRange")
+      label(for="filterAllTime",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |All Time
+div(class="report-data")
+  table
+    thead
+      tr
+        th Office
+        th(class="number") Contacts made
+        th(class="number") Credits run
+        th(class="number") Installations
+        th(class="number") Sale Price
+        th(class="number") Term
+        th(class="number") Ez Pay
+        th(class="number") No Sales
+        th(class="number") Close Rate
+        th(class="number") Setup Fee
+        th(class="number") 1st Month
+        th(class="number") Over 3 Months
+        th(class="number") Referrals
+        th Package Sold
+        th(class="number") Margins
+
