@@ -106,6 +106,13 @@ define("src/account/security/checklist.vm", [
               isDone: ko.observable(_this.pulledCheckList.PreSurvey),
               surveyTypeId: 1000, //@HACK: need better way of knowing the id of the survey type
             }),
+            new CListInitialPaymentViewModel({
+              pcontroller: _this,
+              id: "initialpayment",
+              title: "Initial Payment",
+              isDone: ko.observable(_this.pulledCheckList.InitialPayment),
+              layersVm: _this.layersVm,
+            }),
             new CListIndustryViewModel({
               pcontroller: _this,
               id: "industrynums",
@@ -153,13 +160,6 @@ define("src/account/security/checklist.vm", [
               title: "Post Survey",
               isDone: ko.observable(_this.pulledCheckList.PostSurvey),
               surveyTypeId: 1001, //@HACK: need better way of knowing the id of the survey type
-            }),
-            new CListInitialPaymentViewModel({
-              pcontroller: _this,
-              id: "initialpayment",
-              title: "Initial Payment",
-              isDone: ko.observable(_this.pulledCheckList.InitialPayment),
-              layersVm: _this.layersVm,
             }),
             new CListSubmitOnlineViewModel({
               pcontroller: _this,
