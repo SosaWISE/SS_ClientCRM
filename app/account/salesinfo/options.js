@@ -55,5 +55,23 @@ define("src/account/salesinfo/options", [
         text: "Other",
       },
     ],
+    isRMRPaidInFull: [ //
+      {
+        value: true,
+        text: "Paid by Month",
+      }, {
+        value: false,
+        text: "Paid in Full",
+      }, {
+        value: false,
+        text: "Paid Quarterly",
+      }, {
+        value: false,
+        text: "Paid Semi-Anually",
+      }, {
+        value: false,
+        text: "Paid Anually",
+      }
+    ],
   };
 });

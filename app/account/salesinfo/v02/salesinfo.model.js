@@ -55,6 +55,11 @@ define("src/account/salesinfo/v02/salesinfo.model", [
       fields: mscache.metadata("types/friendsAndFamily"),
     }).subscribe(mscache.getList("types/friendsAndFamily"), handler);
 
+    data.RmrPaidInFullCvm = new ComboViewModel({
+      selectedValue: data.RmrPaidInFullId,
+      list: salesInfoOptions.billingDays,
+    });
+
     data.BillingDayCvm = new ComboViewModel({
       selectedValue: data.BillingDay,
       list: salesInfoOptions.billingDays,
