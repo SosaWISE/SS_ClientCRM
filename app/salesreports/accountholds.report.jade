@@ -1,4 +1,4 @@
-h1 Performance Report
+h1 Account Holds
 div(class="filters")
   div
     //- div(data-bind="cvm:data.SalesRepsCvm",style="width: 433px;display:inline-block;margin-bottom: 7px;")
@@ -37,34 +37,17 @@ div(class="report-data")
   table
     thead
       tr
-        th Office
-        th(class="number") Contacts made
-        th(class="number") No Sales
-        th(class="number") Installations
-        th(class="number") Sale Price
-        th(class="number") Term
-        th(class="number") Ez Pay
-        th(class="number") Close Rate
-        th(class="number") Setup Fee
-        th(class="number") 1st Month
-        th(class="number") Over 3 Months
-        th(class="number") Referrals
-        th Package Sold
-        th(class="number") Margins
-    tbody(data-bind="foreach:offices")
+        th(class="number") Customer Number
+        th(class="number") System Number
+        th Customer Name
+        th Address
+        th Hold Description
+    tbody(data-bind="foreach:accounts")
       tr
-        td(class="groupie number" data-bind="text:OfficeName")
-        td(class="groupie number" data-bind="text:ContactsMade")
-        td(class="groupie number" data-bind="text:CreditsRun")
-        td(class="groupie number" data-bind="text:Installations")
-        td(class="groupie number" data-bind="likecurrencytext:SalesPrice")
-        td(class="groupie number" data-bind="text:Term")
-        td(class="groupie number" data-bind="text:EzPay")
-        td(class="groupie number",data-bind="text:CloseRate")
-        td(class="groupie number",data-bind="likecurrencytext:SetupFee")
-        td(class="groupie number",data-bind="likecurrencytext:FirstMonth")
-        td(class="groupie number",data-bind="likecurrencytext:Over3Months")
-        td(class="groupie number" data-bind="text:Referrals")
-        td(class="groupie number",data-bind="text:PackageSold")
-        td(class="groupie number",data-bind="text:Margins")
+        td(class="groupie number" data-bind="text:CustomerNumber")
+        td(class="groupie number" data-bind="text:AccountId")
+        td(class="groupie" data-bind="text:CustomerName")
+        td(class="groupie" data-bind="text:StreetAddress")
+        td(class="groupie" data-bind="text:HoldDescription")
+
 

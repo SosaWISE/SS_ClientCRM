@@ -2,18 +2,22 @@ define("src/salesreports/salesreports.panel.vm", [
   "src/salesreports/credits.and.installs.report.vm",
   "src/salesreports/myaccounts.report.vm",
   "src/salesreports/performance.report.vm",
+  "src/salesreports/accountholds.report.vm",
   "ko",
   "src/core/notify",
   "src/core/utils",
+  "howie",
   "src/core/layers.vm",
   "src/core/controller.vm",
 ], function(
   CreditsAndInstallsReportViewModel,
   MyAccountsReportViewModel,
   PerformanceReportViewModel,
+  AccountHoldsReportViewModel,
   ko,
   notify,
   utils,
+  howie,
   LayersViewModel,
   ControllerViewModel
 ) {
@@ -40,7 +44,8 @@ define("src/salesreports/salesreports.panel.vm", [
   utils.inherits(SalesReportsPanelViewModel, ControllerViewModel);
 
   SalesReportsPanelViewModel.prototype.onLoad = function(routeData, extraData, join) { // overrides base
-    var _this = this;
+    var _this = this,
+      user = howie.fetch("user");
 
     var arrayCheckList = [ //
       new CreditsAndInstallsReportViewModel({
@@ -52,16 +57,25 @@ define("src/salesreports/salesreports.panel.vm", [
         pcontroller: _this,
         id: "myaccounts",
         title: "My Accounts",
+        user: user,
       }),
       new MyAccountsReportViewModel({
         pcontroller: _this,
         id: "mystats",
         title: "My Stats",
+        user: user,
       }),
       new PerformanceReportViewModel({
         pcontroller: _this,
         id: "performance",
         title: "Performance",
+        user: user,
+      }),
+      new AccountHoldsReportViewModel({
+        pcontroller: _this,
+        id: "accountholds",
+        title: "My Holds",
+        user: user,
       }),
     ];
 
