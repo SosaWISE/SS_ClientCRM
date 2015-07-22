@@ -50,10 +50,16 @@ div(class="acct-item v02-sales-info")
 
             div(class="line")
               div(class="letter",data-bind="text:num()")
-              div(class="question") RMR
+              div(class="question") MMR
               div(class="answer")
                 input(type="text",class="inputField",
                   data-bind="ukov:invoice.rmr.fee,likecurrencyvalue:invoice.rmr.fee")
+
+            div(class="line")
+              div(class="letter",data-bind="text:num()")
+              div(class="question") MMR Paid Over
+              div(class="answer")
+                div(data-bind="cvm:invoice.activation.rmrPaidInFullCvm")
 
             div(class="line")
               div(class="letter",data-bind="text:num()")
