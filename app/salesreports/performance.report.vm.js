@@ -37,6 +37,7 @@ define("src/salesreports/performance.report.vm", [
     var _this = this;
     PerformanceReportViewModel.super_.call(_this, options);
 
+    _this.offices = ko.observableArray([]);
     _this.filterRange = ko.observable("thisWeek");
     _this.filterRange.subscribe(function(newValue) {
       console.log("New Value: ", newValue);
@@ -140,9 +141,9 @@ define("src/salesreports/performance.report.vm", [
     query.endDate.setHours(23, 59, 59, 997); // end of day (.997 is sql server datetime friendly)
     query.startDate = toSqlDateTime(query.startDate);
     query.endDate = toSqlDateTime(query.endDate);
-    load_report("Performance", query, function(resp) {
-      console.log("MyAccounts Resp: ", resp);
-      _this.accounts(resp);
+    load_report("Performance", query, function(list) {
+      console.log("MyAccounts Resp: ", list);
+      _this.offices(list);
     }, cb);
 
     return cb();

@@ -52,4 +52,17 @@ div(class="report-data")
         th(class="number") Referrals
         th Package Sold
         th(class="number") Margins
+    tbody(data-bind="foreach:offices")
+      tr
+        td(class="groupie number" data-bind="text:Office")
+        td(class="groupie number" data-bind="text:ContactsMade")
+        td(class="groupie number" data-bind="text:CreditsRun")
+        td(class="groupie number" data-bind="text:Installations")
+        td(class="groupie number" data-bind="likecurrencytext:SalesPrice")
+        td(class="groupie number" data-bind="text:Term")
+        td(class="groupie number",data-bind="text:CloseRate")
+        td(class="groupie number",data-bind="likecurrencytext:SetupFee")
+        td(class="groupie number",data-bind="likecurrencytext:1stMonth")
+        td(class="groupie number",data-bind="likecurrencytext:Over3Months")
+        td(class="groupie number",data-bind="text:PackageSold")
 
