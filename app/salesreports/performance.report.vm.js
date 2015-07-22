@@ -17,6 +17,8 @@ define("src/salesreports/performance.report.vm", [
   var schema = {
     _model: true,
     officeId: {},
+    salesRepId: {},
+    DealerId: {},
     startDate: {
       converter: ukov.converters.datetime("Invalid start date"),
       validators: [
@@ -67,7 +69,7 @@ define("src/salesreports/performance.report.vm", [
     // events
     //
     _this.cmdGo = ko.command(function(cb) {
-      load_report(_this, cb);
+      load_performance_report(_this, cb);
     });
 
   }
@@ -128,12 +130,38 @@ define("src/salesreports/performance.report.vm", [
     _this.data.endDate(endDate);
   }
 
-  function load_report(_this, cb) {
+  function load_performance_report(_this, cb) {
     if (!_this.data.isValid.peek()) {
       notify.warn(_this.data.errMsg.peek(), null, 5);
       return cb();
     }
+    // request data
+    var query = _this.data.getValue();
+    query.endDate.setHours(23, 59, 59, 997); // end of day (.997 is sql server datetime friendly)
+    query.startDate = toSqlDateTime(query.startDate);
+    query.endDate = toSqlDateTime(query.endDate);
+    load_report("Performance", query, function(resp) {
+      console.log("MyAccounts Resp: ", resp);
+      _this.accounts(resp);
+    }, cb);
+
     return cb();
+  }
+
+  function load_report(name, queryData, setter, cb) {
+    dataservice.api_hr.reports.save({
+      link: name,
+      query: queryData,
+    }, setter, cb);
+  } //
+
+  function toSqlDateTime(dt) {
+    return dt.getUTCFullYear() + '-' +
+      ('00' + (dt.getUTCMonth() + 1)).slice(-2) + '-' +
+      ('00' + dt.getUTCDate()).slice(-2) + ' ' +
+      ('00' + dt.getUTCHours()).slice(-2) + ':' +
+      ('00' + dt.getUTCMinutes()).slice(-2) + ':' +
+      ('00' + dt.getUTCSeconds()).slice(-2);
   }
 
   return PerformanceReportViewModel;
