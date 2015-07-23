@@ -3,6 +3,7 @@ define("src/salesreports/salesreports.panel.vm", [
   "src/salesreports/myaccounts.report.vm",
   "src/salesreports/performance.report.vm",
   "src/salesreports/accountholds.report.vm",
+  "src/salesreports/pendinginstalls.report.vm",
   "ko",
   "src/core/notify",
   "src/core/utils",
@@ -14,6 +15,7 @@ define("src/salesreports/salesreports.panel.vm", [
   MyAccountsReportViewModel,
   PerformanceReportViewModel,
   AccountHoldsReportViewModel,
+  PendingInstallsReportViewModel,
   ko,
   notify,
   utils,
@@ -75,6 +77,12 @@ define("src/salesreports/salesreports.panel.vm", [
         pcontroller: _this,
         id: "accountholds",
         title: "My Holds",
+        user: user,
+      }),
+      new PendingInstallsReportViewModel({
+        pcontroller: _this,
+        id: "pendinginstalls",
+        title: "Pending Installs",
         user: user,
       }),
     ];
