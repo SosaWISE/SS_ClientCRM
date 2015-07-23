@@ -33,7 +33,7 @@ define("src/account/salesinfo/v02/salesinfo.model", [
       RequirePkg: !!options.requirePkg,
       UseRequired: !!options.useRequired,
       LimitPaymentTypes: !!options.limitPaymentTypes,
-      RmrPaidInFullId: options.RmrPaidInFullId || 'PM',
+      RMRPaidInFullId: options.RMRPaidInFullId || 'PM',
     }, schema);
     data.RequirePkg.ignore(true);
     data.UseRequired.ignore(true);
@@ -57,7 +57,7 @@ define("src/account/salesinfo/v02/salesinfo.model", [
     }).subscribe(mscache.getList("types/friendsAndFamily"), handler);
 
     data.RmrPaidInFullCvm = new ComboViewModel({
-      selectedValue: data.RmrPaidInFullId,
+      selectedValue: data.RMRPaidInFullId,
       list: salesInfoOptions.isRMRPaidInFull,
     });
 
@@ -167,7 +167,7 @@ define("src/account/salesinfo/v02/salesinfo.model", [
       ],
     }, // Billing method
     FriendsAndFamilyTypeId: {},
-    RmrPaidInFullId: {
+    RMRPaidInFullId: {
       validators: [
         ukov.validators.isRequired("MMR Paid Over is required."),
       ]
