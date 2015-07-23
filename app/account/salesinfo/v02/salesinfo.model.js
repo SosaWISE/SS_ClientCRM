@@ -33,6 +33,7 @@ define("src/account/salesinfo/v02/salesinfo.model", [
       RequirePkg: !!options.requirePkg,
       UseRequired: !!options.useRequired,
       LimitPaymentTypes: !!options.limitPaymentTypes,
+      RmrPaidInFullId: options.RmrPaidInFullId || 'PM',
     }, schema);
     data.RequirePkg.ignore(true);
     data.UseRequired.ignore(true);
@@ -57,7 +58,7 @@ define("src/account/salesinfo/v02/salesinfo.model", [
 
     data.RmrPaidInFullCvm = new ComboViewModel({
       selectedValue: data.RmrPaidInFullId,
-      list: salesInfoOptions.billingDays,
+      list: salesInfoOptions.isRMRPaidInFull,
     });
 
     data.BillingDayCvm = new ComboViewModel({
@@ -166,6 +167,11 @@ define("src/account/salesinfo/v02/salesinfo.model", [
       ],
     }, // Billing method
     FriendsAndFamilyTypeId: {},
+    RmrPaidInFullId: {
+      validators: [
+        ukov.validators.isRequired("MMR Paid Over is required."),
+      ]
+    },
     AccountSubmitId: {},
     AccountCancelReasonId: {},
     AccountPackageId: {
