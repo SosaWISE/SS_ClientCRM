@@ -56,6 +56,14 @@ define("src/salesreports/performance.report.vm", [
           setAllTime(_this);
           break;
       }
+      load_performance_report(_this, function() {});
+    });
+
+    _this.dataLoaded = ko.observable(true);
+    _this.showSpinner = ko.computed(function() {
+      // var vm = _this.vm();
+      // return _this.active() && (!vm || !vm.loaded());
+      return _this.active() && !_this.dataLoaded();
     });
 
 
@@ -141,9 +149,12 @@ define("src/salesreports/performance.report.vm", [
     query.endDate.setHours(23, 59, 59, 997); // end of day (.997 is sql server datetime friendly)
     query.startDate = toSqlDateTime(query.startDate);
     query.endDate = toSqlDateTime(query.endDate);
+
+    _this.dataLoaded(false);
     load_report("Performance", query, function(list) {
       console.log("MyAccounts Resp: ", list);
       _this.offices(list);
+      _this.dataLoaded(true);
     }, cb);
 
     return cb();
