@@ -161,6 +161,13 @@ define("src/core/strings", [
         return val;
       }
     },
+    percentage: function(val) {
+      if (!val) {
+        return '0%';
+      }
+      var pptg = (val * 100);
+      return pptg.toFixed(0) + '%';
+    },
   };
   strings.decorators = {
     // wrap formatters in case they are modified outside of this file

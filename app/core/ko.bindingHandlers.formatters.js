@@ -156,5 +156,15 @@ define("src/core/ko.bindingHandlers.formatters", [
   ko.bindingHandlers.feet = createFormatter("text", makeFeetValueAccessor);
   ko.bindingHandlers.feetvalue = createFormatter("value", makeFeetValueAccessor);
 
+  // 
+  // Percentage binding
+  // 
+  function makePercentageValueAccessor(valueAccessor) {
+    return function() {
+      return strings.formatters.percentage(ko.unwrap(valueAccessor()));
+    };
+  }
+  ko.bindingHandlers.percentage = createFormatter("text", makePercentageValueAccessor);
+  ko.bindingHandlers.percentagevalue = createFormatter("value", makePercentageValueAccessor);
 
 });
