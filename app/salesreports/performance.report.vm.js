@@ -152,7 +152,7 @@ define("src/salesreports/performance.report.vm", [
     query.endDate = toSqlDateTime(query.endDate);
 
     _this.dataLoaded(false);
-    load_report("Performance", query, function(list) {
+    load_report(_this, "Performance", query, function(list) {
       console.log("MyAccounts Resp: ", list);
       _this.offices(list);
       _this.dataLoaded(true);
@@ -168,7 +168,7 @@ define("src/salesreports/performance.report.vm", [
   //   }, setter, cb);
   // } //
 
-  function load_report(name, queryData, setter, cb) {
+  function load_report(_this, name, queryData, setter, cb) {
     dataservice.api_hr.reports.save({
       link: name,
       query: queryData,
@@ -177,7 +177,10 @@ define("src/salesreports/performance.report.vm", [
         notify.error(resp, 3);
       }
       setter(resp.Value);
-    }, notify.iferror));
+    }, function(err) {
+      _this.dataLoaded(true);
+      notify.iferror(err);
+    }));
   } //
 
 
