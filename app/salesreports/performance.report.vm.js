@@ -42,6 +42,7 @@ define("src/salesreports/performance.report.vm", [
     _this.filterRange.subscribe(function(newValue) {
       console.log("New Value: ", newValue);
       /** Figure out the date ranges. */
+      _this.dataLoaded(false);
       switch (newValue) {
         case "thisWeek":
           setThisWeek(_this);
@@ -160,12 +161,25 @@ define("src/salesreports/performance.report.vm", [
     return cb();
   }
 
+  // function load_report(name, queryData, setter, cb) {
+  //   dataservice.api_hr.reports.save({
+  //     link: name,
+  //     query: queryData,
+  //   }, setter, cb);
+  // } //
+
   function load_report(name, queryData, setter, cb) {
     dataservice.api_hr.reports.save({
       link: name,
       query: queryData,
-    }, setter, cb);
+    }, null, utils.safeCallback(cb, function(err, resp) {
+      if (resp.Message && resp.Message !== "Success") {
+        notify.error(resp, 3);
+      }
+      setter(resp.Value);
+    }, notify.iferror));
   } //
+
 
   function toSqlDateTime(dt) {
     return dt.getUTCFullYear() + '-' +
