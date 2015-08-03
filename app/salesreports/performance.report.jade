@@ -52,22 +52,65 @@ div(class="report-data")
         th(class="number") Referrals
         th Package Sold
         th(class="number") Margins
-    tbody(data-bind="foreach:offices")
+    <!-- ko foreach:offices -->
+    //- tbody(data-bind="foreach:offices")
+    tbody
+      tr(data-bind="cmd:cmdFindReps")
+        td(class="groupHeading number" data-bind="text:OfficeName")
+        td(class="groupHeading number" data-bind="text:ContactsMade")
+        td(class="groupHeading number" data-bind="text:CreditsRun")
+        td(class="groupHeading number" data-bind="text:NoSales")
+        td(class="groupHeading number" data-bind="text:Installations")
+        td(class="groupHeading number" data-bind="currencyHtml:SalesPrice")
+        td(class="groupHeading number" data-bind="text:Term")
+        td(class="groupHeading number" data-bind="text:EzPay")
+        td(class="groupHeading number",data-bind="percentage:CloseRate")
+        td(class="groupHeading number",data-bind="currencyHtml:SetupFee")
+        td(class="groupHeading number",data-bind="currencyHtml:FirstMonth")
+        td(class="groupHeading number",data-bind="currencyHtml:Over3Months")
+        td(class="groupHeading number" data-bind="text:Referrals")
+        td(class="groupHeading number",data-bind="text:PackageSold")
+        td(class="groupHeading number",data-bind="text:Margins")
+    tbody(data-bind="visible:expanded")
       tr
-        td(class="groupie number" data-bind="text:OfficeName")
-        td(class="groupie number" data-bind="text:ContactsMade")
-        td(class="groupie number" data-bind="text:CreditsRun")
-        td(class="groupie number" data-bind="text:NoSales")
-        td(class="groupie number" data-bind="text:Installations")
-        td(class="groupie number" data-bind="currencyHtml:SalesPrice")
-        td(class="groupie number" data-bind="text:Term")
-        td(class="groupie number" data-bind="text:EzPay")
-        td(class="groupie number",data-bind="percentage:CloseRate")
-        td(class="groupie number",data-bind="currencyHtml:SetupFee")
-        td(class="groupie number",data-bind="currencyHtml:FirstMonth")
-        td(class="groupie number",data-bind="currencyHtml:Over3Months")
-        td(class="groupie number" data-bind="text:Referrals")
-        td(class="groupie number",data-bind="text:PackageSold")
-        td(class="groupie number",data-bind="text:Margins")
+        td(colspan="15")
+          table
+            thead
+              tr
+                th Rep Name
+                th(class="number") Contacts made
+                th(class="number") Credits Ran
+                th(class="number") No Sales
+                th(class="number") Installations
+                th(class="number") Sale Price
+                th(class="number") Term
+                th(class="number") Ez Pay
+                th(class="number") Close Rate
+                th(class="number") Setup Fee
+                th(class="number") 1st Month
+                th(class="number") Over 3 Months
+                th(class="number") Referrals
+                th Package Sold
+                th(class="number") Margins
+            tbody
+              <!-- ko foreach:salesReps -->
+              tr
+                td(class="groupHeading", data-bind="text:RepName")
+                td(class="groupHeading number" data-bind="text:ContactsMade")
+                td(class="groupHeading number" data-bind="text:CreditsRun")
+                td(class="groupHeading number" data-bind="text:NoSales")
+                td(class="groupHeading number" data-bind="text:Installations")
+                td(class="groupHeading number" data-bind="currencyHtml:SalesPrice")
+                td(class="groupHeading number" data-bind="text:Term")
+                td(class="groupHeading number" data-bind="text:EzPay")
+                td(class="groupHeading number",data-bind="percentage:CloseRate")
+                td(class="groupHeading number",data-bind="currencyHtml:SetupFee")
+                td(class="groupHeading number",data-bind="currencyHtml:FirstMonth")
+                td(class="groupHeading number",data-bind="currencyHtml:Over3Months")
+                td(class="groupHeading number" data-bind="text:Referrals")
+                td(class="groupHeading number",data-bind="text:PackageSold")
+                td(class="groupHeading number",data-bind="text:Margins")
+              <!-- /ko -->
+    <!-- /ko -->
 
 div(data-bind="spinner:showSpinner,spinner-rgb:'black'")

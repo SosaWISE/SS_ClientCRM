@@ -154,7 +154,44 @@ define("src/salesreports/performance.report.vm", [
     _this.dataLoaded(false);
     load_report(_this, "Performance", query, function(list) {
       console.log("MyAccounts Resp: ", list);
-      _this.offices(list);
+
+      var officeList = [];
+      list.forEach(function(office) {
+        var grp = {
+          OfficeID: office.OfficeID,
+          OfficeName: office.OfficeName,
+          ContactsMade: office.ContactsMade,
+          CreditsRun: office.CreditsRun,
+          NoSales: office.NoSales,
+          Installations: office.Installations,
+          SalesPrice: office.SalesPrice,
+          Term: office.Term,
+          EzPay: office.EzPay,
+          CloseRate: office.CloseRate,
+          SetupFee: office.SetupFee,
+          FirstMonth: office.FirstMonth,
+          Over3Months: office.Over3Months,
+          Referrals: office.Referrals,
+          PackageSold: office.PackageSold,
+          Margins: office.Margins,
+          // cmdFindReps: ko.command(),
+          salesReps: ko.observableArray([]),
+          expanded: ko.observable(false),
+        };
+        grp.cmdFindReps = ko.command(function(cb1) {
+          grp.expanded(true);
+          var qry1 = query;
+          qry1.officeId = office.OfficeID;
+
+          load_report(_this, "PerformanceOfficeBreakDown", qry1, function(officebdlist) {
+            grp.salesReps(officebdlist);
+          }, cb1);
+        });
+
+
+        officeList.push(grp);
+      });
+      _this.offices(officeList);
       _this.dataLoaded(true);
     }, cb);
 
