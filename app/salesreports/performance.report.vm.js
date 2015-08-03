@@ -179,15 +179,56 @@ define("src/salesreports/performance.report.vm", [
           expanded: ko.observable(false),
         };
         grp.cmdFindReps = ko.command(function(cb1) {
-          grp.expanded(true);
           var qry1 = query;
           qry1.officeId = office.OfficeID;
 
           load_report(_this, "PerformanceOfficeBreakDown", qry1, function(officebdlist) {
-            grp.salesReps(officebdlist);
+            if (officebdlist.length > 0) {
+              grp.expanded(true);
+              //grp.salesReps(officebdlist);
+              /** Get the Sales Rep Details. */
+              var repList = [];
+              officebdlist.forEach(function(repStats) {
+                var stats = {
+                  SalesRepID: repStats.SalesRepID,
+                  RepName: repStats.RepName,
+                  ContactsMade: repStats.ContactsMade,
+                  CreditsRun: repStats.CreditsRun,
+                  NoSales: repStats.NoSales,
+                  Installations: repStats.Installations,
+                  SalesPrice: repStats.SalesPrice,
+                  Term: repStats.Term,
+                  EzPay: repStats.EzPay,
+                  CloseRate: repStats.CloseRate,
+                  SetupFee: repStats.SetupFee,
+                  FirstMonth: repStats.FirstMonth,
+                  Over3Months: repStats.Over3Months,
+                  Referrals: repStats.Referrals,
+                  PackageSold: repStats.PackageSold,
+                  Margins: repStats.Margins,
+                  // cmdFindReps: ko.command(),
+                  accounts: ko.observableArray([]),
+                  acctExpanded: ko.observable(false),
+                };
+                stats.cmdShowAccounts = ko.command(function(cb2) {
+                  var qry2 = qry1;
+                  qry2.salesRepId = repStats.SalesRepID;
+                  /** Get the account details. */
+                  load_report(_this, "PerformanceSalesRepBreakDown", qry2, function(accountdblist) {
+                    stats.acctExpanded(true);
+                    stats.accounts(accountdblist);
+                  }, cb2);
+                });
+
+                repList.push(stats);
+              });
+
+              grp.salesReps(repList);
+            } else {
+              notify.warn("Sorry but the " + office.OfficeName + " office has no records to show for this query.");
+            }
           }, cb1);
         });
-
 
         officeList.push(grp);
       });

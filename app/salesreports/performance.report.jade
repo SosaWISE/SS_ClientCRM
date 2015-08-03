@@ -77,6 +77,10 @@ div(class="report-data")
           table
             thead
               tr
+                th(colspan="15", style="text-align: center;border-bottom: 1px solid white")
+                  span Stats for 
+                  span(data-bind="text:OfficeName")
+              tr
                 th Rep Name
                 th(class="number") Contacts made
                 th(class="number") Credits Ran
@@ -92,9 +96,9 @@ div(class="report-data")
                 th(class="number") Referrals
                 th Package Sold
                 th(class="number") Margins
+            <!-- ko foreach:salesReps -->
             tbody
-              <!-- ko foreach:salesReps -->
-              tr
+              tr(data-bind="cmd:cmdShowAccounts")
                 td(class="groupHeading", data-bind="text:RepName")
                 td(class="groupHeading number" data-bind="text:ContactsMade")
                 td(class="groupHeading number" data-bind="text:CreditsRun")
@@ -110,7 +114,51 @@ div(class="report-data")
                 td(class="groupHeading number" data-bind="text:Referrals")
                 td(class="groupHeading number",data-bind="text:PackageSold")
                 td(class="groupHeading number",data-bind="text:Margins")
-              <!-- /ko -->
+            tbody(data-bind="visible:acctExpanded")
+              tr
+                td(colspan="15")
+                  table
+                    thead
+                      tr
+                        th(colspan="15", style="text-align:center;border-bottom: 1px solid white")
+                          span Stats for 
+                          span(data-bind="text:RepName")
+                      tr
+                        th Customer Name
+                        th(class="number") Contacts made
+                        th(class="number") Credits Ran
+                        th(class="number") No Sales
+                        th(class="number") Installations
+                        th(class="number") Sale Price
+                        th(class="number") Term
+                        th(class="number") Ez Pay
+                        th(class="number") Close Rate
+                        th(class="number") Setup Fee
+                        th(class="number") 1st Month
+                        th(class="number") Over 3 Months
+                        th(class="number") Referrals
+                        th Package Sold
+                        th(class="number") Margins
+                    tbody
+                      <!-- ko foreach:accounts -->
+                      tr
+                        td(class="groupie", data-bind="text:CustomerName")
+                        td(class="groupie number" data-bind="text:ContactsMade")
+                        td(class="groupie number" data-bind="text:CreditsRun")
+                        td(class="groupie number" data-bind="text:NoSales")
+                        td(class="groupie number" data-bind="text:Installations")
+                        td(class="groupie number" data-bind="currencyHtml:SalesPrice")
+                        td(class="groupie number" data-bind="text:Term")
+                        td(class="groupie number" data-bind="text:EzPay")
+                        td(class="groupie number",data-bind="percentage:CloseRate")
+                        td(class="groupie number",data-bind="currencyHtml:SetupFee")
+                        td(class="groupie number",data-bind="currencyHtml:FirstMonth")
+                        td(class="groupie number",data-bind="currencyHtml:Over3Months")
+                        td(class="groupie number" data-bind="text:Referrals")
+                        td(class="groupie number",data-bind="text:PackageSold")
+                        td(class="groupie number",data-bind="text:Margins")
+                      <!-- /ko -->
+            <!-- /ko -->
     <!-- /ko -->
 
 div(data-bind="spinner:showSpinner,spinner-rgb:'black'")
