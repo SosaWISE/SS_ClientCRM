@@ -23,6 +23,11 @@ div(class="filters")
         //- div needed for check mark
         div
         |Today
+      input(id="filterlast30Days",type="radio", value="last30Days", data-bind="checked:filterRange")
+      label(for="filterlast30Days",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |Last 30 Days
       input(id="filterThisMonth",type="radio", value="thisMonth", data-bind="checked:filterRange")
       label(for="filterThisMonth",class="filter-chkbx")
         //- div needed for check mark
@@ -67,7 +72,7 @@ div(class="report-data")
         td(class="groupHeading number",data-bind="percentage:CloseRate")
         td(class="groupHeading number",data-bind="currencyHtml:SetupFee")
         td(class="groupHeading number",data-bind="currencyHtml:FirstMonth")
-        td(class="groupHeading number",data-bind="currencyHtml:Over3Months")
+        td(class="groupHeading number",data-bind="text:Over3Months")
         td(class="groupHeading number" data-bind="text:Referrals")
         td(class="groupHeading number",data-bind="text:PackageSold")
         td(class="groupHeading number",data-bind="text:Margins")
@@ -110,7 +115,7 @@ div(class="report-data")
                 td(class="groupHeading number",data-bind="percentage:CloseRate")
                 td(class="groupHeading number",data-bind="currencyHtml:SetupFee")
                 td(class="groupHeading number",data-bind="currencyHtml:FirstMonth")
-                td(class="groupHeading number",data-bind="currencyHtml:Over3Months")
+                td(class="groupHeading number",data-bind="text:Over3Months")
                 td(class="groupHeading number" data-bind="text:Referrals")
                 td(class="groupHeading number",data-bind="text:PackageSold")
                 td(class="groupHeading number",data-bind="text:Margins")
@@ -153,7 +158,7 @@ div(class="report-data")
                         td(class="groupie number",data-bind="percentage:CloseRate")
                         td(class="groupie number",data-bind="currencyHtml:SetupFee")
                         td(class="groupie number",data-bind="currencyHtml:FirstMonth")
-                        td(class="groupie number",data-bind="currencyHtml:Over3Months")
+                        td(class="groupie number",data-bind="text:Over3Months")
                         td(class="groupie number" data-bind="text:Referrals")
                         td(class="groupie number",data-bind="text:PackageSold")
                         td(class="groupie number",data-bind="text:Margins")

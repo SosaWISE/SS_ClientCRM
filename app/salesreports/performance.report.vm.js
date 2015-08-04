@@ -50,6 +50,9 @@ define("src/salesreports/performance.report.vm", [
         case "today":
           setToday(_this);
           break;
+        case "last30Days":
+          setLast30Days(_this);
+          break;
         case "thisMonth":
           setThisMonth(_this);
           break;
@@ -129,6 +132,17 @@ define("src/salesreports/performance.report.vm", [
     _this.data.startDate(startDate);
     endDate = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0);
     _this.data.endDate(endDate);
+  }
+
+  function setLast30Days(_this) {
+    var startDate = new Date(),
+      endDate = new Date();
+
+    // startDate = new Date((startDate.getMonth() + 1) + '/' + '1/' + startDate.getFullYear());
+    startDate.setDate(startDate.getDate() - 30);
+    _this.data.startDate(startDate);
+    _this.data.endDate(endDate);
+
   }
 
   function setAllTime(_this) {
@@ -215,8 +229,12 @@ define("src/salesreports/performance.report.vm", [
                   qry2.salesRepId = repStats.SalesRepID;
                   /** Get the account details. */
                   load_report(_this, "PerformanceSalesRepBreakDown", qry2, function(accountdblist) {
-                    stats.acctExpanded(true);
-                    stats.accounts(accountdblist);
+                    if (accountdblist.length > 0) {
+                      stats.acctExpanded(true);
+                      stats.accounts(accountdblist);
+                    } else {
+                      notify.warn("Sorry but '" + repStats.RepName + "' has not accounts to show.");
+                    }
                   }, cb2);
                 });
 
