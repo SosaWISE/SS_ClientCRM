@@ -44,6 +44,7 @@ define("src/salesreports/myaccounts.report.vm", [
           setAllTime(_this);
           break;
       }
+      loadMyAccountsReport(_this, function() {});
     });
 
     var today = new Date();
