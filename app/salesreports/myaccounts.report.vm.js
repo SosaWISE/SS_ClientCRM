@@ -21,6 +21,7 @@ define("src/salesreports/myaccounts.report.vm", [
     var _this = this;
     MyAccountsReportViewModel.super_.call(_this, options);
 
+    _this.salesRepsList = options.salesRepList;
     _this.accounts = ko.observableArray([]);
     _this.filterRange = ko.observable("thisWeek");
     _this.filterRange.subscribe(function(newValue) {
@@ -32,6 +33,9 @@ define("src/salesreports/myaccounts.report.vm", [
           break;
         case "today":
           setToday(_this);
+          break;
+        case "last30Days":
+          setLast30Days(_this);
           break;
         case "thisMonth":
           setThisMonth(_this);
@@ -45,40 +49,40 @@ define("src/salesreports/myaccounts.report.vm", [
     var today = new Date();
     _this.data = ukov.wrap({
       officeId: 0,
-      SalesRepID: 'ASOSAA001',
+      salesRepId: options.user.GPEmployeeID,
       startDate: new Date(today.getFullYear(), today.getMonth(), 1),
       endDate: today,
     }, {
       _model: true,
       officeId: {},
       startDate: {
-        converter: ukov.converters.datetime("Invalid start date"),
+        converter: ukov.converters.datetime("Invalid start date."),
         validators: [
-          ukov.validators.isRequired("Start date is required"),
+          ukov.validators.isRequired("Start date is required."),
         ],
       },
       endDate: {
-        converter: ukov.converters.datetime("Invalid end date"),
+        converter: ukov.converters.datetime("Invalid end date."),
         validators: [
-          ukov.validators.isRequired("End date is required"),
+          ukov.validators.isRequired("End date is required."),
         ],
       },
+      salesRepId: {
+        validators: [
+          ukov.validators.isRequired("Sales Rep is a required field."),
+        ],
+      }
     });
 
     _this.data.SalesRepsCvm = new ComboViewModel({
       noItemSelectedText: '[Choose a Sales Rep]',
-      selectedValue: _this.data.SalesRepID,
-      list: [{
-        SalesRepID: 'ASOSAA001',
-        FullName: 'Andres Sosa'
-      }, {
-        SalesRepID: 'DARG0001',
-        FullName: "Chris d'argy"
-      }],
+      selectedValue: _this.data.salesRepId,
+      list: _this.salesRepsList,
       fields: {
-        value: "SalesRepID",
+        value: "SalesRepId",
         text: "FullName",
       },
+      nullable: true,
     });
 
     //
@@ -119,6 +123,17 @@ define("src/salesreports/myaccounts.report.vm", [
     var startDate = new Date(),
       endDate = new Date();
 
+    _this.data.startDate(startDate);
+    _this.data.endDate(endDate);
+
+  }
+
+  function setLast30Days(_this) {
+    var startDate = new Date(),
+      endDate = new Date();
+
+    // startDate = new Date((startDate.getMonth() + 1) + '/' + '1/' + startDate.getFullYear());
+    startDate.setDate(startDate.getDate() - 30);
     _this.data.startDate(startDate);
     _this.data.endDate(endDate);
 

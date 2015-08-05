@@ -5,6 +5,7 @@ define("src/salesreports/salesreports.panel.vm", [
   "src/salesreports/accountholds.report.vm",
   "src/salesreports/pendinginstalls.report.vm",
   "ko",
+  "dataservice",
   "src/core/notify",
   "src/core/utils",
   "howie",
@@ -17,6 +18,7 @@ define("src/salesreports/salesreports.panel.vm", [
   AccountHoldsReportViewModel,
   PendingInstallsReportViewModel,
   ko,
+  dataservice,
   notify,
   utils,
   howie,
@@ -49,48 +51,67 @@ define("src/salesreports/salesreports.panel.vm", [
     var _this = this,
       user = howie.fetch("user");
 
-    var arrayCheckList = [ //
-      new CreditsAndInstallsReportViewModel({
-        pcontroller: _this,
-        id: "creditsandinstalls",
-        title: "Credits and Installations",
-      }),
-      new MyAccountsReportViewModel({
-        pcontroller: _this,
-        id: "myaccounts",
-        title: "My Accounts",
-        user: user,
-      }),
-      new MyAccountsReportViewModel({
-        pcontroller: _this,
-        id: "mystats",
-        title: "My Stats",
-        user: user,
-      }),
-      new PerformanceReportViewModel({
-        pcontroller: _this,
-        id: "performance",
-        title: "Performance",
-        user: user,
-      }),
-      new AccountHoldsReportViewModel({
-        pcontroller: _this,
-        id: "accountholds",
-        title: "My Holds",
-        user: user,
-      }),
-      new PendingInstallsReportViewModel({
-        pcontroller: _this,
-        id: "pendinginstalls",
-        title: "Pending Installs",
-        user: user,
-      }),
-    ];
 
-    _this.reportsList(arrayCheckList);
+    load_salesReps(_this, join.add());
 
-    join.add()();
+    join.when(function(err) {
+      if (err) {
+        return;
+      }
+      var arrayCheckList = [ //
+        new CreditsAndInstallsReportViewModel({
+          pcontroller: _this,
+          id: "creditsandinstalls",
+          title: "Credits and Installations",
+        }),
+        new MyAccountsReportViewModel({
+          pcontroller: _this,
+          id: "myaccounts",
+          title: "My Accounts",
+          salesRepList: _this.salesRepsForReports,
+          user: user,
+        }),
+        new MyAccountsReportViewModel({
+          pcontroller: _this,
+          id: "mystats",
+          title: "My Stats",
+          salesRepList: _this.salesRepsForReports,
+          user: user,
+        }),
+        new PerformanceReportViewModel({
+          pcontroller: _this,
+          id: "performance",
+          title: "Performance",
+          user: user,
+        }),
+        new AccountHoldsReportViewModel({
+          pcontroller: _this,
+          id: "accountholds",
+          title: "My Holds",
+          salesRepList: _this.salesRepsForReports,
+          user: user,
+        }),
+        new PendingInstallsReportViewModel({
+          pcontroller: _this,
+          id: "pendinginstalls",
+          title: "Pending Installs",
+          salesRepList: _this.salesRepsForReports,
+          user: user,
+        }),
+      ];
+
+      _this.reportsList(arrayCheckList);
+
+    });
+
   };
+
+  function load_salesReps(_this, cb) {
+    _this.salesRepsForReports = null;
+    dataservice.humanresourcesrv.RuSalesRepList.read({}, null, utils.safeCallback(cb, function(err, resp) {
+      _this.salesRepsForReports = resp.Value;
+    }, utils.no_op));
+  }
 
   return SalesReportsPanelViewModel;
 });

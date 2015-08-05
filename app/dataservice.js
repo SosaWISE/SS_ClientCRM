@@ -93,6 +93,7 @@ define("src/dataservice", [
       "RuTeamLocationList",
       "RuTechnician",
       "RuTechnicianList",
+      "RuSalesRepList",
     ]),
     hr: createService("humanresourcesrv", [
       "RuTechnicianList",

@@ -45,5 +45,13 @@ define("src/sales/dataservice", [
       "teams",
       "users",
     ]),
+
+    humanresourcesrv: createService("humanresourcesrv", [
+      "RuTeamLocationList",
+      "RuTechnician",
+      "RuTechnicianList",
+      "RuSalesRepList",
+    ]),
+
   };
 });

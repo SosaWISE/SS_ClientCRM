@@ -23,6 +23,11 @@ div(class="filters")
         //- div needed for check mark
         div
         |Today
+      input(id="filterlast30Days",type="radio", value="last30Days", data-bind="checked:filterRange")
+      label(for="filterlast30Days",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |Last 30 Days
       input(id="filterThisMonth",type="radio", value="thisMonth", data-bind="checked:filterRange")
       label(for="filterThisMonth",class="filter-chkbx")
         //- div needed for check mark
@@ -39,6 +44,7 @@ div(class="report-data")
     thead
       tr
         th Customer #
+        th Office
         th Name
         th Address
         th Status
@@ -50,6 +56,7 @@ div(class="report-data")
     tbody(data-bind="foreach:accounts")
       tr
         td(class="groupie" data-bind="text:CMFID")
+        td(class="groupie" data-bind="text:OfficeName")
         td(class="groupie" data-bind="text:CustomerName")
         td(class="groupie" data-bind="text:StreetAddress")
         td(class="groupie" data-bind="text:Status")
