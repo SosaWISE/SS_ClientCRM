@@ -81,9 +81,9 @@ div(class="report-data")
         td(colspan="15")
           table
             thead
-              tr
+              tr(data-bind="cmd:cmdHideRepStats")
                 th(colspan="15", style="text-align: center;border-bottom: 1px solid white")
-                  span Stats for 
+                  span Office Stats for 
                   span(data-bind="text:OfficeName")
               tr
                 th Rep Name
@@ -124,9 +124,9 @@ div(class="report-data")
                 td(colspan="15")
                   table
                     thead
-                      tr
+                      tr(data-bind="cmd:cmdHideAccounts")
                         th(colspan="15", style="text-align:center;border-bottom: 1px solid white")
-                          span Stats for 
+                          span Rep Stats for 
                           span(data-bind="text:RepName")
                       tr
                         th Customer Name

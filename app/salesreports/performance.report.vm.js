@@ -237,6 +237,10 @@ define("src/salesreports/performance.report.vm", [
                     }
                   }, cb2);
                 });
+                stats.cmdHideAccounts = ko.command(function(cb3) {
+                  stats.acctExpanded(false);
+                  cb3();
+                });
 
                 repList.push(stats);
               });
@@ -246,6 +250,10 @@ define("src/salesreports/performance.report.vm", [
               notify.warn("Sorry but the " + office.OfficeName + " office has no records to show for this query.");
             }
           }, cb1);
+        });
+        grp.cmdHideRepStats = ko.command(function(cb4) {
+          grp.expanded(false);
+          cb4();
         });
 
         officeList.push(grp);
