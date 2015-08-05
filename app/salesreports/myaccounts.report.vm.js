@@ -27,6 +27,7 @@ define("src/salesreports/myaccounts.report.vm", [
     _this.filterRange.subscribe(function(newValue) {
       console.log("New Value: ", newValue);
       /** Figure out the date ranges. */
+      _this.dataLoaded(false);
       switch (newValue) {
         case "thisWeek":
           setThisWeek(_this);
@@ -45,6 +46,13 @@ define("src/salesreports/myaccounts.report.vm", [
           break;
       }
       loadMyAccountsReport(_this, function() {});
+    });
+
+    _this.dataLoaded = ko.observable(true);
+    _this.showSpinner = ko.computed(function() {
+      // var vm = _this.vm();
+      // return _this.active() && (!vm || !vm.loaded());
+      return _this.active() && !_this.dataLoaded();
     });
 
     var today = new Date();
@@ -170,9 +178,12 @@ define("src/salesreports/myaccounts.report.vm", [
     query.endDate.setHours(23, 59, 59, 997); // end of day (.997 is sql server datetime friendly)
     query.startDate = toSqlDateTime(query.startDate);
     query.endDate = toSqlDateTime(query.endDate);
+
+    _this.dataLoaded(false);
     load_report("MyAccounts", query, function(resp) {
       console.log("MyAccounts Resp: ", resp);
       _this.accounts(resp);
+      _this.dataLoaded(true);
     }, cb);
 
     return cb();
