@@ -31,6 +31,7 @@ define("src/salesreports/pendinginstalls.report.vm", [
         ukov.validators.isRequired("End date is required"),
       ],
     },
+    preSurvey: {}
   };
 
   function PendingInstallsReportViewModel(options) {
@@ -40,9 +41,29 @@ define("src/salesreports/pendinginstalls.report.vm", [
     _this.accounts = ko.observableArray([]);
     _this.filterRange = ko.observable("thisWeek");
     _this.filterRange.subscribe(function(newValue) {
-      console.log("New Value: ", newValue);
       /** Figure out the date ranges. */
       switch (newValue) {
+        case "thisWeek":
+          setThisWeek(_this);
+          break;
+        case "today":
+          setToday(_this);
+          break;
+        case "thisMonth":
+          setThisMonth(_this);
+          break;
+        case "allTime":
+          setAllTime(_this);
+          break;
+      }
+    });
+    _this.filterSurvey = ko.observable("");
+    _this.filterSurvey.subscribe(function(newValue) {
+      console.log("PreSurvey: ", newValue);
+      console.log("thisWeek: ", _this.filterRange());
+
+      _this.data.preSurvey(newValue);
+      switch (_this.filterRange()) {
         case "thisWeek":
           setThisWeek(_this);
           break;

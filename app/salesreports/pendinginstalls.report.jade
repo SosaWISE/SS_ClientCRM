@@ -33,6 +33,11 @@ div(class="filters")
         //- div needed for check mark
         div
         |All Time
+      input(id="filterPreSurvey",type="checkbox", value="allTime", data-bind="checked:filterSurvey")
+      label(for="filterPreSurvey",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |Show Pre Survey
 div(class="report-data")
   table
     thead
