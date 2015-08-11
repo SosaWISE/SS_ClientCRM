@@ -40,15 +40,15 @@ div(class="report-data")
   table
     thead
       tr
-        th(class="number") Ranking
+        th(class="numberctr") Ranking
         th Rep ID
         th Sales Rep Name
-        th(class="number") Number of Sales
+        th(class="numberctr") Number of Sales
     tbody(data-bind="foreach:accounts")
       tr
-        td(class="groupie number",data-bind="text:Ranking")
+        td(class="groupie numberctr",data-bind="text:Ranking")
         td(class="groupie" data-bind="text:SalesRepId")
         td(class="groupie" data-bind="text:SalesRepName")
-        td(class="groupie number",data-bind="text:NumOfSales")
+        td(class="groupie numberctr",data-bind="text:NumOfSales")
 
 div(data-bind="spinner:showSpinner,spinner-rgb:'black'")
