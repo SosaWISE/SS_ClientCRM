@@ -1,6 +1,7 @@
 define("src/salesreports/salesreports.panel.vm", [
   "src/salesreports/credits.and.installs.report.vm",
   "src/salesreports/myaccounts.report.vm",
+  "src/salesreports/rankings.report.vm",
   "src/salesreports/performance.report.vm",
   "src/salesreports/accountholds.report.vm",
   "src/salesreports/pendinginstalls.report.vm",
@@ -14,6 +15,7 @@ define("src/salesreports/salesreports.panel.vm", [
 ], function(
   CreditsAndInstallsReportViewModel,
   MyAccountsReportViewModel,
+  RankingsReportViewModel,
   PerformanceReportViewModel,
   AccountHoldsReportViewModel,
   PendingInstallsReportViewModel,
@@ -71,10 +73,10 @@ define("src/salesreports/salesreports.panel.vm", [
           salesRepList: _this.salesRepsForReports,
           user: user,
         }),
-        new MyAccountsReportViewModel({
+        new RankingsReportViewModel({
           pcontroller: _this,
-          id: "mystats",
-          title: "My Stats",
+          id: "rankings",
+          title: "Rankings",
           salesRepList: _this.salesRepsForReports,
           user: user,
         }),

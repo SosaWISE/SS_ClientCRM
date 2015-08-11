@@ -1,0 +1,54 @@
+h1 Rankings
+div(class="filters")
+  div
+    |Show report for&nbsp;
+    input(type="text",data-bind="ukov:data.startDate,datevalue:data.startDate,valueUpdate:'blur'")
+    |&nbsp;to&nbsp;
+    input(type="text",data-bind="ukov:data.endDate,datevalue:data.endDate,valueUpdate:'blur'")
+
+    div(class="inline")
+      button(data-bind="cmd:cmdGo") Go
+
+    div(class="separated")
+      input(id="filterThisWeek",type="radio", value="thisWeek", data-bind="checked:filterRange")
+      label(for="filterThisWeek",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |This Week
+      input(id="filterToday",type="radio", value="today", data-bind="checked:filterRange")
+      label(for="filterToday",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |Today
+      input(id="filterlast30Days",type="radio", value="last30Days", data-bind="checked:filterRange")
+      label(for="filterlast30Days",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |Last 30 Days
+      input(id="filterThisMonth",type="radio", value="thisMonth", data-bind="checked:filterRange")
+      label(for="filterThisMonth",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |This Month
+      input(id="filterAllTime",type="radio", value="allTime", data-bind="checked:filterRange")
+      label(for="filterAllTime",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |All Time
+
+div(class="report-data")
+  table
+    thead
+      tr
+        th(class="number") Ranking
+        th Rep ID
+        th Sales Rep Name
+        th(class="number") Number of Sales
+    tbody(data-bind="foreach:accounts")
+      tr
+        td(class="groupie number",data-bind="text:Ranking")
+        td(class="groupie" data-bind="text:SalesRepId")
+        td(class="groupie" data-bind="text:SalesRepName")
+        td(class="groupie number",data-bind="text:NumOfSales")
+
+div(data-bind="spinner:showSpinner,spinner-rgb:'black'")
