@@ -49,6 +49,9 @@ define("src/salesreports/pendinginstalls.report.vm", [
         case "today":
           setToday(_this);
           break;
+        case "last30Days":
+          setLast30Days(_this);
+          break;
         case "thisMonth":
           setThisMonth(_this);
           break;
@@ -69,6 +72,9 @@ define("src/salesreports/pendinginstalls.report.vm", [
           break;
         case "today":
           setToday(_this);
+          break;
+        case "last30Days":
+          setLast30Days(_this);
           break;
         case "thisMonth":
           setThisMonth(_this);
@@ -127,6 +133,17 @@ define("src/salesreports/pendinginstalls.report.vm", [
     var startDate = new Date(),
       endDate = new Date();
 
+    _this.data.startDate(startDate);
+    _this.data.endDate(endDate);
+
+  }
+
+  function setLast30Days(_this) {
+    var startDate = new Date(),
+      endDate = new Date();
+
+    // startDate = new Date((startDate.getMonth() + 1) + '/' + '1/' + startDate.getFullYear());
+    startDate.setDate(startDate.getDate() - 30);
     _this.data.startDate(startDate);
     _this.data.endDate(endDate);
 

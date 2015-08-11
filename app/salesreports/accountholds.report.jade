@@ -1,9 +1,9 @@
 h1 Account Holds
 div(class="filters")
   div
-    //- div(data-bind="cvm:data.SalesRepsCvm",style="width: 433px;display:inline-block;margin-bottom: 7px;")
-    //- div(style="display: inline-block;height: 31px;padding-top: 7px;float: left;padding-right: 39px;") Sales Rep&nbsp;
-    //- br
+    div(data-bind="cvm:data.SalesRepsCvm",style="width: 433px;display:inline-block;margin-bottom: 7px;")
+    div(style="display: inline-block;height: 31px;padding-top: 7px;float: left;padding-right: 39px;") Sales Rep&nbsp;
+    br
     |Show report for&nbsp;
     input(type="text",data-bind="ukov:data.startDate,datevalue:data.startDate,valueUpdate:'blur'")
     |&nbsp;to&nbsp;
@@ -23,6 +23,11 @@ div(class="filters")
         //- div needed for check mark
         div
         |Today
+      input(id="filterlast30Days",type="radio", value="last30Days", data-bind="checked:filterRange")
+      label(for="filterlast30Days",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |Last 30 Days
       input(id="filterThisMonth",type="radio", value="thisMonth", data-bind="checked:filterRange")
       label(for="filterThisMonth",class="filter-chkbx")
         //- div needed for check mark

@@ -1,6 +1,7 @@
 define("src/salesreports/accountholds.report.vm", [
   "src/ukov",
   "dataservice",
+  "src/core/combo.vm",
   "ko",
   "src/core/notify",
   "src/core/utils",
@@ -8,6 +9,7 @@ define("src/salesreports/accountholds.report.vm", [
 ], function(
   ukov,
   dataservice,
+  ComboViewModel,
   ko,
   notify,
   utils,
@@ -36,8 +38,9 @@ define("src/salesreports/accountholds.report.vm", [
     var _this = this;
     AccountHoldsReportViewModel.super_.call(_this, options);
 
+    _this.salesRepsList = options.salesRepList;
     _this.accounts = ko.observableArray([]);
-    _this.filterRange = ko.observable("allTime");
+    _this.filterRange = ko.observable("thisWeek");
     _this.filterRange.subscribe(function(newValue) {
       console.log("New Value: ", newValue);
       /** Figure out the date ranges. */
@@ -47,6 +50,9 @@ define("src/salesreports/accountholds.report.vm", [
           break;
         case "today":
           setToday(_this);
+          break;
+        case "last30Days":
+          setLast30Days(_this);
           break;
         case "thisMonth":
           setThisMonth(_this);
@@ -62,9 +68,20 @@ define("src/salesreports/accountholds.report.vm", [
     _this.data = ukov.wrap({
       startDate: new Date(today.getFullYear(), today.getMonth(), 1),
       endDate: today,
-      salesRepId: 'BLEGT001' || options.user.GPEmployeeID,
+      salesRepId: options.user.GPEmployeeID,
 
     }, schema);
+
+    _this.data.SalesRepsCvm = new ComboViewModel({
+      noItemSelectedText: '[Choose a Sales Rep]',
+      selectedValue: _this.data.salesRepId,
+      list: _this.salesRepsList,
+      fields: {
+        value: "SalesRepId",
+        text: "FullName",
+      },
+      nullable: true,
+    });
 
     //
     // events
@@ -106,6 +123,17 @@ define("src/salesreports/accountholds.report.vm", [
     var startDate = new Date(),
       endDate = new Date();
 
+    _this.data.startDate(startDate);
+    _this.data.endDate(endDate);
+
+  }
+
+  function setLast30Days(_this) {
+    var startDate = new Date(),
+      endDate = new Date();
+
+    // startDate = new Date((startDate.getMonth() + 1) + '/' + '1/' + startDate.getFullYear());
+    startDate.setDate(startDate.getDate() - 30);
     _this.data.startDate(startDate);
     _this.data.endDate(endDate);
 

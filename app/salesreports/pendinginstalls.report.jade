@@ -23,6 +23,11 @@ div(class="filters")
         //- div needed for check mark
         div
         |Today
+      input(id="filterlast30Days",type="radio", value="last30Days", data-bind="checked:filterRange")
+      label(for="filterlast30Days",class="filter-chkbx")
+        //- div needed for check mark
+        div
+        |Last 30 Days
       input(id="filterThisMonth",type="radio", value="thisMonth", data-bind="checked:filterRange")
       label(for="filterThisMonth",class="filter-chkbx")
         //- div needed for check mark
@@ -56,10 +61,10 @@ div(class="report-data")
         td(class="groupie number" data-bind="text:CustomerNumber")
         td(class="groupie number" data-bind="text:AccountID")
         td(class="groupie" data-bind="text:CustomerName")
-        td(class="groupie" data-bind="text:Qualify")
-        td(class="groupie" data-bind="text:SalesInfo")
-        td(class="groupie" data-bind="text:PreSurvey")
-        td(class="groupie" data-bind="text:PostSurvey")
-        td(class="groupie" data-bind="text:InitialPayment")
-        td(class="groupie" data-bind="text:SubmitAccountOnline")
+        td(class="groupie" data-bind="datetext:Qualify")
+        td(class="groupie" data-bind="datetext:SalesInfo")
+        td(class="groupie" data-bind="datetext:PreSurvey")
+        td(class="groupie" data-bind="datetext:PostSurvey")
+        td(class="groupie" data-bind="datetext:InitialPayment")
+        td(class="groupie" data-bind="datetext:SubmitAccountOnline")
 
