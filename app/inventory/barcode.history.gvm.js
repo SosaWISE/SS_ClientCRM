@@ -27,6 +27,31 @@ define("src/inventory/barcode.history.gvm", [
   }
   utils.inherits(BarcodeHistoryGridViewModel, SlickGridViewModel);
 
+  BarcodeHistoryGridViewModel.prototype.setItems = function(items) {
+    var _this = this;
+    var dv = _this.dv;
+    dv.beginUpdate();
+    dv.setItems(items);
+    dv.reSort();
+    dv.endUpdate();
+    _this.setSelectedRows([]);
+    _this.resetActiveCell();
+    _this.updateGrid(true);
+  };
+  BarcodeHistoryGridViewModel.prototype.setItem = function(newItem) {
+    var _this = this;
+    var dv = _this.dv;
+    var id = newItem.ID;
+    var item = dv.getItemById(id);
+    if (!item) {
+      dv.addItem(newItem);
+    } else {
+      dv.updateItem(id, newItem);
+    }
+    dv.reSort();
+    _this.setSelectedRows(_this.getSelectedRows());
+  };
+
   function getColumns(options) {
     var columns = [ //
       {

@@ -51,14 +51,14 @@ define("src/inventory/barcode.history.vm", [
       dataservice.api_inv.productBarcodeHistory.read({
         id: _this.data.BarcodeNumber()
       }, function(resp) {
-        _this.historyListGvm.list(resp);
+        _this.historyListGvm.setItems(resp);
       }, cb);
     });
     _this.resetPage = function() {
       //clear packing slip#
       _this.data.BarcodeNumber(null);
       //clear grid
-      _this.historyListGvm.list([]);
+      _this.historyListGvm.setItems([]);
     };
 
   }
