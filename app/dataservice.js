@@ -64,6 +64,7 @@ define("src/dataservice", [
       "locations",
       "locationTypes",
       "productBarcodes",
+      "productBarcodeHistory",
     ]),
 
     //

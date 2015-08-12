@@ -3,6 +3,7 @@ define("src/inventory/inventory.panel.vm", [
   "src/inventory/receive.inventory.vm",
   "src/inventory/transfer.inventory.vm",
   "src/inventory/report.inventory.vm",
+  "src/inventory/barcode.history.vm",
   "ko",
   "src/core/layers.vm",
   "src/core/utils",
@@ -12,6 +13,7 @@ define("src/inventory/inventory.panel.vm", [
   ReceiveInventoryViewModel,
   TransferInventoryViewModel,
   ReportInventoryViewModel,
+  BarcodeHistoryViewModel,
   ko,
   LayersViewModel,
   utils,
@@ -69,6 +71,12 @@ define("src/inventory/inventory.panel.vm", [
         pcontroller: _this,
         id: "oldaudit",
         title: "Old Audit",
+      }),
+      new BarcodeHistoryViewModel({
+        phil: true,
+        pcontroller: _this,
+        id: "barcodehistory",
+        title: "Barcode History",
       }),
     ]);
     join.add()();
