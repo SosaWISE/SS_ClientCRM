@@ -95,6 +95,7 @@ define("src/core/notify", [
 
     switch (err.Code) {
       case 0:
+      case 100000: // No industry number has been assigned yet.
         msgType = "info";
         break;
       case 20200: // Unhandled exception

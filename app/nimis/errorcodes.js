@@ -36,5 +36,6 @@ define("src/nimis/errorcodes", [], function() {
     "990003": "Request Timeout Error",
     "990004": "Error in setter callback",
 
+    "100000": "FRIENDLY REMINDER: Need to Assign an Industry Number.",
   };
 });
