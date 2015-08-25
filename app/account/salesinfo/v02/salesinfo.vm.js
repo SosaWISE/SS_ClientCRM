@@ -358,6 +358,12 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     return item;
   }
 
+  function getMonContItems(invItems) {
+    return invItems.filter(function(item) {
+      return ((item.ItemId.indexOf('MON_CONT') === 0) || (item.ItemId.indexOf('MMR_SREP') === 0) && (!item.IsDeleted));
+    });
+  }
+
   function packageChanged() {
     /* jshint validthis:true */
     var _this = this;
@@ -366,6 +372,15 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
     var items = mscache.getList("invoices/items").peek();
 
     var invItemsToSave = [];
+
+    // Delete all the MON_CONT and MMR_SREP items
+    var monContItems = getMonContItems(invoiceItems);
+    console.log(monContItems);
+    monContItems.forEach(function(invoiceItem) {
+      invoiceItem.IsDeleted = true;
+      invItemsToSave.push(invoiceItem);
+    });
+
     var pkg = _this._prevpkg;
     if (pkg) {
       // delete package items
@@ -449,6 +464,8 @@ define("src/account/salesinfo/v02/salesinfo.vm", [
         invItemsToSave.push(invoiceItem);
       });
     }
+
+    // Delete all the MON_CONT items
 
     setPkgValidation(_this);
 
